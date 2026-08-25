@@ -1,0 +1,24 @@
+{
+  "name": "math-kings-road",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite --open /dev.html",
+    "build": "vite build && node scripts/promote-build.mjs",
+    "preview": "vite preview --outDir .build"
+  },
+  "dependencies": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "typescript": "5.9.3",
+    "vite": "8.0.13"
+  }
+}

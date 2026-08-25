@@ -1,0 +1,675 @@
+{
+  "version": "character-cast-v2",
+  "provider": "Microsoft Edge Neural",
+  "principles": [
+    "one canonical dialogue script shared by UI and audio generator",
+    "ten character-directed voices instead of two alternating clones",
+    "mood-specific pacing, pitch, volume, and punctuation",
+    "background music ducks while dialogue is playing"
+  ],
+  "cast": [
+    {
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": 10,
+      "pitch": 4,
+      "direction": "小小、彈跳、好奇"
+    },
+    {
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": 7,
+      "pitch": 2,
+      "direction": "親切、俏皮、像愛惡作劇的鄰居"
+    },
+    {
+      "voice": "zh-CN-XiaoyiNeural",
+      "rate": 11,
+      "pitch": 3,
+      "direction": "活潑、轉圈、卡通感"
+    },
+    {
+      "voice": "zh-CN-YunxiNeural",
+      "rate": 8,
+      "pitch": 1,
+      "direction": "陽光、急性子、少年感"
+    },
+    {
+      "voice": "zh-TW-HsiaoYuNeural",
+      "rate": 6,
+      "pitch": 0,
+      "direction": "清楚、認真、偶爾慌張"
+    },
+    {
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": 5,
+      "pitch": 1,
+      "direction": "輕巧、神祕、滴答節奏"
+    },
+    {
+      "voice": "zh-CN-YunjianNeural",
+      "rate": 3,
+      "pitch": -2,
+      "direction": "厚實、熱血、石頭重量感"
+    },
+    {
+      "voice": "zh-CN-YunxiNeural",
+      "rate": 9,
+      "pitch": 2,
+      "direction": "得意、快速、少年龍"
+    },
+    {
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "rate": 4,
+      "pitch": -1,
+      "direction": "端正、溫暖、守衛感"
+    },
+    {
+      "voice": "zh-TW-YunJheNeural",
+      "rate": -3,
+      "pitch": -5,
+      "direction": "沉穩、有壓迫感、保留清楚咬字"
+    }
+  ],
+  "monsterFileCount": 60,
+  "files": [
+    {
+      "filename": "stage-01-entrance.mp3",
+      "text": "欸嘿！想過森林嗎？先陪我算一題！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+10%",
+      "pitch": "+4Hz",
+      "volume": "+0%",
+      "stage": 1,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-01-hurt-1.mp3",
+      "text": "哇！真的被你算中了！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+15%",
+      "pitch": "+6Hz",
+      "volume": "+2%",
+      "stage": 1,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-01-hurt-2.mp3",
+      "text": "欸？你也太準了吧！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+15%",
+      "pitch": "+6Hz",
+      "volume": "+2%",
+      "stage": 1,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-01-attack-1.mp3",
+      "text": "嘿，輪到我出招囉！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+18%",
+      "pitch": "+5Hz",
+      "volume": "+3%",
+      "stage": 1,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-01-attack-2.mp3",
+      "text": "啊哈，這題算錯了喔！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+18%",
+      "pitch": "+5Hz",
+      "volume": "+3%",
+      "stage": 1,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-01-defeat.mp3",
+      "text": "好啦好啦，你贏了！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+8%",
+      "pitch": "+3Hz",
+      "volume": "-1%",
+      "stage": 1,
+      "mood": "defeat"
+    },
+    {
+      "filename": "stage-02-entrance.mp3",
+      "text": "先等等！松果橋要答對才放行喔！",
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": "+7%",
+      "pitch": "+2Hz",
+      "volume": "+0%",
+      "stage": 2,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-02-hurt-1.mp3",
+      "text": "哎呀！我的松果掉滿地了！",
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": "+12%",
+      "pitch": "+4Hz",
+      "volume": "+2%",
+      "stage": 2,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-02-hurt-2.mp3",
+      "text": "哇，你真的會算耶！",
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": "+12%",
+      "pitch": "+4Hz",
+      "volume": "+2%",
+      "stage": 2,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-02-attack-1.mp3",
+      "text": "看我的松果咚咚拳！",
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": "+15%",
+      "pitch": "+3Hz",
+      "volume": "+3%",
+      "stage": 2,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-02-attack-2.mp3",
+      "text": "嘿嘿，換我進攻啦！",
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": "+15%",
+      "pitch": "+3Hz",
+      "volume": "+3%",
+      "stage": 2,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-02-defeat.mp3",
+      "text": "好吧，橋借你走！",
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": "+5%",
+      "pitch": "+1Hz",
+      "volume": "-1%",
+      "stage": 2,
+      "mood": "defeat"
+    },
+    {
+      "filename": "stage-03-entrance.mp3",
+      "text": "歡迎來到菇菇圈！小心別被轉暈囉！",
+      "voice": "zh-CN-XiaoyiNeural",
+      "rate": "+11%",
+      "pitch": "+3Hz",
+      "volume": "+0%",
+      "stage": 3,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-03-hurt-1.mp3",
+      "text": "哎唷！我的菇帽歪掉啦！",
+      "voice": "zh-CN-XiaoyiNeural",
+      "rate": "+16%",
+      "pitch": "+5Hz",
+      "volume": "+2%",
+      "stage": 3,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-03-hurt-2.mp3",
+      "text": "哇，你乘得又快又準！",
+      "voice": "zh-CN-XiaoyiNeural",
+      "rate": "+16%",
+      "pitch": "+5Hz",
+      "volume": "+2%",
+      "stage": 3,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-03-attack-1.mp3",
+      "text": "菇菇孢子，飛出去！",
+      "voice": "zh-CN-XiaoyiNeural",
+      "rate": "+19%",
+      "pitch": "+4Hz",
+      "volume": "+3%",
+      "stage": 3,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-03-attack-2.mp3",
+      "text": "嘿，你剛剛粗心囉！",
+      "voice": "zh-CN-XiaoyiNeural",
+      "rate": "+19%",
+      "pitch": "+4Hz",
+      "volume": "+3%",
+      "stage": 3,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-03-defeat.mp3",
+      "text": "等一下……我真的轉暈啦！",
+      "voice": "zh-CN-XiaoyiNeural",
+      "rate": "+9%",
+      "pitch": "+2Hz",
+      "volume": "-1%",
+      "stage": 3,
+      "mood": "defeat"
+    },
+    {
+      "filename": "stage-04-entrance.mp3",
+      "text": "喀啦喀啦！找到餘數，我就幫你開門！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+8%",
+      "pitch": "+1Hz",
+      "volume": "+0%",
+      "stage": 4,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-04-hurt-1.mp3",
+      "text": "哇啊！我的硬殼裂一條縫啦！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+13%",
+      "pitch": "+3Hz",
+      "volume": "+2%",
+      "stage": 4,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-04-hurt-2.mp3",
+      "text": "什麼？餘數被你找到了！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+13%",
+      "pitch": "+3Hz",
+      "volume": "+2%",
+      "stage": 4,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-04-attack-1.mp3",
+      "text": "甲蟲衝刺，出發！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+16%",
+      "pitch": "+2Hz",
+      "volume": "+3%",
+      "stage": 4,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-04-attack-2.mp3",
+      "text": "除錯了喔，換我啦！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+16%",
+      "pitch": "+2Hz",
+      "volume": "+3%",
+      "stage": 4,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-04-defeat.mp3",
+      "text": "好厲害！門幫你打開啦！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+6%",
+      "pitch": "+0Hz",
+      "volume": "-1%",
+      "stage": 4,
+      "mood": "defeat"
+    },
+    {
+      "filename": "stage-05-entrance.mp3",
+      "text": "站好別動！讓我量量你的數學功力！",
+      "voice": "zh-TW-HsiaoYuNeural",
+      "rate": "+6%",
+      "pitch": "+0Hz",
+      "volume": "+0%",
+      "stage": 5,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-05-hurt-1.mp3",
+      "text": "哇，你量得好準！",
+      "voice": "zh-TW-HsiaoYuNeural",
+      "rate": "+11%",
+      "pitch": "+2Hz",
+      "volume": "+2%",
+      "stage": 5,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-05-hurt-2.mp3",
+      "text": "糟糕！我的刻度歪掉了！",
+      "voice": "zh-TW-HsiaoYuNeural",
+      "rate": "+11%",
+      "pitch": "+2Hz",
+      "volume": "+2%",
+      "stage": 5,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-05-attack-1.mp3",
+      "text": "看我的量尺甩尾！",
+      "voice": "zh-TW-HsiaoYuNeural",
+      "rate": "+14%",
+      "pitch": "+1Hz",
+      "volume": "+3%",
+      "stage": 5,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-05-attack-2.mp3",
+      "text": "單位換錯啦，接招！",
+      "voice": "zh-TW-HsiaoYuNeural",
+      "rate": "+14%",
+      "pitch": "+1Hz",
+      "volume": "+3%",
+      "stage": 5,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-05-defeat.mp3",
+      "text": "好吧，你的量感比我厲害！",
+      "voice": "zh-TW-HsiaoYuNeural",
+      "rate": "+4%",
+      "pitch": "-1Hz",
+      "volume": "-1%",
+      "stage": 5,
+      "mood": "defeat"
+    },
+    {
+      "filename": "stage-06-entrance.mp3",
+      "text": "滴答、滴答！準備好跟時間賽跑了嗎？",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+5%",
+      "pitch": "+1Hz",
+      "volume": "+0%",
+      "stage": 6,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-06-hurt-1.mp3",
+      "text": "哎呀！鐘擺晃歪了！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+10%",
+      "pitch": "+3Hz",
+      "volume": "+2%",
+      "stage": 6,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-06-hurt-2.mp3",
+      "text": "你怎麼算得這麼準！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+10%",
+      "pitch": "+3Hz",
+      "volume": "+2%",
+      "stage": 6,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-06-attack-1.mp3",
+      "text": "滴答衝擊波，發射！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+13%",
+      "pitch": "+2Hz",
+      "volume": "+3%",
+      "stage": 6,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-06-attack-2.mp3",
+      "text": "慢了一拍喔，換我！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+13%",
+      "pitch": "+2Hz",
+      "volume": "+3%",
+      "stage": 6,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-06-defeat.mp3",
+      "text": "叮咚！這次是你贏啦！",
+      "voice": "zh-CN-YunxiaNeural",
+      "rate": "+3%",
+      "pitch": "+0Hz",
+      "volume": "-1%",
+      "stage": 6,
+      "mood": "defeat"
+    },
+    {
+      "filename": "stage-07-entrance.mp3",
+      "text": "嘿！大數字重得不得了，你搬得動嗎？",
+      "voice": "zh-CN-YunjianNeural",
+      "rate": "+3%",
+      "pitch": "-2Hz",
+      "volume": "+0%",
+      "stage": 7,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-07-hurt-1.mp3",
+      "text": "咚！我的石頭裂一格啦！",
+      "voice": "zh-CN-YunjianNeural",
+      "rate": "+8%",
+      "pitch": "+0Hz",
+      "volume": "+2%",
+      "stage": 7,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-07-hurt-2.mp3",
+      "text": "大數也難不倒你嗎？",
+      "voice": "zh-CN-YunjianNeural",
+      "rate": "+8%",
+      "pitch": "+0Hz",
+      "volume": "+2%",
+      "stage": 7,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-07-attack-1.mp3",
+      "text": "萬位重拳，咚！",
+      "voice": "zh-CN-YunjianNeural",
+      "rate": "+11%",
+      "pitch": "-1Hz",
+      "volume": "+3%",
+      "stage": 7,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-07-attack-2.mp3",
+      "text": "位數看錯囉，我來啦！",
+      "voice": "zh-CN-YunjianNeural",
+      "rate": "+11%",
+      "pitch": "-1Hz",
+      "volume": "+3%",
+      "stage": 7,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-07-defeat.mp3",
+      "text": "服了服了，你比巨石還厲害！",
+      "voice": "zh-CN-YunjianNeural",
+      "rate": "+1%",
+      "pitch": "-3Hz",
+      "volume": "-1%",
+      "stage": 7,
+      "mood": "defeat"
+    },
+    {
+      "filename": "stage-08-entrance.mp3",
+      "text": "想登上高塔嗎？先讓我看看你的算式！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+9%",
+      "pitch": "+2Hz",
+      "volume": "+0%",
+      "stage": 8,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-08-hurt-1.mp3",
+      "text": "哇！龍鱗都被你算亮了！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+14%",
+      "pitch": "+4Hz",
+      "volume": "+2%",
+      "stage": 8,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-08-hurt-2.mp3",
+      "text": "你的直式排得真整齊！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+14%",
+      "pitch": "+4Hz",
+      "volume": "+2%",
+      "stage": 8,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-08-attack-1.mp3",
+      "text": "數字火花，噗噗噗！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+17%",
+      "pitch": "+3Hz",
+      "volume": "+3%",
+      "stage": 8,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-08-attack-2.mp3",
+      "text": "乘除算錯了，換我出招！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+17%",
+      "pitch": "+3Hz",
+      "volume": "+3%",
+      "stage": 8,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-08-defeat.mp3",
+      "text": "好吧！高塔的路讓給你！",
+      "voice": "zh-CN-YunxiNeural",
+      "rate": "+7%",
+      "pitch": "+1Hz",
+      "volume": "-1%",
+      "stage": 8,
+      "mood": "defeat"
+    },
+    {
+      "filename": "stage-09-entrance.mp3",
+      "text": "方格城門守衛報到！勇者，來挑戰吧！",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "rate": "+4%",
+      "pitch": "-1Hz",
+      "volume": "+0%",
+      "stage": 9,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-09-hurt-1.mp3",
+      "text": "哎呀！護甲少了一格！",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "rate": "+9%",
+      "pitch": "+1Hz",
+      "volume": "+2%",
+      "stage": 9,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-09-hurt-2.mp3",
+      "text": "連周長都答對了嗎？",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "rate": "+9%",
+      "pitch": "+1Hz",
+      "volume": "+2%",
+      "stage": 9,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-09-attack-1.mp3",
+      "text": "方格旋轉攻擊！",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "rate": "+12%",
+      "pitch": "+0Hz",
+      "volume": "+3%",
+      "stage": 9,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-09-attack-2.mp3",
+      "text": "面積算錯囉，接招！",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "rate": "+12%",
+      "pitch": "+0Hz",
+      "volume": "+3%",
+      "stage": 9,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-09-defeat.mp3",
+      "text": "挑戰成功！城門為你打開！",
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "rate": "+2%",
+      "pitch": "-2Hz",
+      "volume": "-1%",
+      "stage": 9,
+      "mood": "defeat"
+    },
+    {
+      "filename": "stage-10-entrance.mp3",
+      "text": "見習勇者……你終於來到我的王座。算術水晶就在這裡。想把光芒帶回小鎮，就用你的答案，破解最後的混沌算式吧！",
+      "voice": "zh-TW-YunJheNeural",
+      "rate": "-3%",
+      "pitch": "-5Hz",
+      "volume": "+0%",
+      "stage": 10,
+      "mood": "entrance"
+    },
+    {
+      "filename": "stage-10-hurt-1.mp3",
+      "text": "不可能……我的混沌護甲竟然裂開了！",
+      "voice": "zh-TW-YunJheNeural",
+      "rate": "+2%",
+      "pitch": "-3Hz",
+      "volume": "+2%",
+      "stage": 10,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-10-hurt-2.mp3",
+      "text": "這道計算之光，居然穿透了龍鱗！",
+      "voice": "zh-TW-YunJheNeural",
+      "rate": "+2%",
+      "pitch": "-3Hz",
+      "volume": "+2%",
+      "stage": 10,
+      "mood": "hurt"
+    },
+    {
+      "filename": "stage-10-attack-1.mp3",
+      "text": "接下這道混沌算式！",
+      "voice": "zh-TW-YunJheNeural",
+      "rate": "+5%",
+      "pitch": "-4Hz",
+      "volume": "+3%",
+      "stage": 10,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-10-attack-2.mp3",
+      "text": "一步算錯，森林就會再陷入混亂！",
+      "voice": "zh-TW-YunJheNeural",
+      "rate": "+5%",
+      "pitch": "-4Hz",
+      "volume": "+3%",
+      "stage": 10,
+      "mood": "attack"
+    },
+    {
+      "filename": "stage-10-defeat.mp3",
+      "text": "你解開了最後的算式……算術水晶，還給你。讓小鎮重新發光吧！",
+      "voice": "zh-TW-YunJheNeural",
+      "rate": "-5%",
+      "pitch": "-6Hz",
+      "volume": "-1%",
+      "stage": 10,
+      "mood": "defeat"
+    }
+  ]
+}
