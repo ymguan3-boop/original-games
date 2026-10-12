@@ -1,0 +1,10 @@
+authoring/*.blend1
+authoring/*-review.png
+authoring/*-review.json
+authoring/*.log
+authoring/*-qa.cjs
+authoring/*review*.png
+authoring/*review*.json
+authoring/*review*.cjs
+qa/local-*.png
+.DS_Store

@@ -1,0 +1,581 @@
+{
+  "model": "models/world/town.glb",
+  "worldModel": "models/world/town.glb",
+  "spawn": [
+    0,
+    0,
+    4
+  ],
+  "bounds": {
+    "minX": -36,
+    "maxX": 36,
+    "minZ": -36,
+    "maxZ": 36
+  },
+  "collisions": [
+    {
+      "x": 0,
+      "z": -8,
+      "w": 10.8,
+      "d": 8.8,
+      "id": "care_center"
+    },
+    {
+      "x": -20,
+      "z": -8,
+      "w": 9.8,
+      "d": 8.8,
+      "id": "ranger_station"
+    },
+    {
+      "x": 20,
+      "z": -8,
+      "w": 10.8,
+      "d": 9.8,
+      "id": "dream_lab"
+    },
+    {
+      "x": -20,
+      "z": 18,
+      "w": 11.8,
+      "d": 9.8,
+      "id": "gym_light"
+    },
+    {
+      "x": 20,
+      "z": 18,
+      "w": 8.8,
+      "d": 8.8,
+      "id": "tower_starspire"
+    },
+    {
+      "x": 0,
+      "z": 22,
+      "w": 8.8,
+      "d": 7.8,
+      "id": "house_resident_a"
+    },
+    {
+      "x": -31,
+      "z": -28,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": -29,
+      "z": -19,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": -31,
+      "z": -4,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": -31,
+      "z": 7,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": -30,
+      "z": 19,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": -31,
+      "z": 32,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": 31,
+      "z": -28,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": 29,
+      "z": -18,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": 32,
+      "z": -5,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": 31,
+      "z": 7,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": 32,
+      "z": 28,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": -10,
+      "z": -30,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": 2,
+      "z": -31,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": 14,
+      "z": -31,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": -10,
+      "z": 32,
+      "w": 0.75,
+      "d": 0.75
+    },
+    {
+      "x": 9,
+      "z": 32,
+      "w": 0.75,
+      "d": 0.75
+    }
+  ],
+  "buildings": [
+    {
+      "id": "care_center",
+      "name": "幻靈照護所",
+      "position": [
+        0,
+        0,
+        -8
+      ],
+      "w": 10,
+      "d": 8,
+      "h": 4,
+      "color": "sky",
+      "npcIds": [
+        "care_nova",
+        "shop_vendor"
+      ],
+      "entrance": [
+        0,
+        -2.2
+      ],
+      "interiorModel": "models/world/care_center-interior.glb",
+      "spawn": [
+        0,
+        5.4
+      ],
+      "exit": [
+        0,
+        6.7
+      ],
+      "bounds": {
+        "minX": -6.5,
+        "maxX": 6.5,
+        "minZ": -7,
+        "maxZ": 7
+      },
+      "collisions": [
+        {
+          "x": 0,
+          "z": -3.8,
+          "w": 3.7,
+          "d": 1.1
+        },
+        {
+          "x": -4,
+          "z": 2,
+          "w": 2,
+          "d": 3
+        },
+        {
+          "x": 4,
+          "z": -3,
+          "w": 2.5,
+          "d": 2.5
+        },
+        {
+          "x": 4,
+          "z": 2.5,
+          "w": 3.7,
+          "d": 1.1
+        }
+      ],
+      "interiorSize": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "ranger_station",
+      "name": "初光巡護局",
+      "position": [
+        -20,
+        0,
+        -8
+      ],
+      "w": 9,
+      "d": 8,
+      "h": 4.4,
+      "color": "indigo",
+      "npcIds": [
+        "ranger_lumo"
+      ],
+      "entrance": [
+        -20,
+        -2.2
+      ],
+      "interiorModel": "models/world/ranger_station-interior.glb",
+      "spawn": [
+        0,
+        5.4
+      ],
+      "exit": [
+        0,
+        6.7
+      ],
+      "bounds": {
+        "minX": -6.5,
+        "maxX": 6.5,
+        "minZ": -7,
+        "maxZ": 7
+      },
+      "collisions": [
+        {
+          "x": 0,
+          "z": -3.7,
+          "w": 3.7,
+          "d": 1.1
+        },
+        {
+          "x": -4.7,
+          "z": -6,
+          "w": 1.85,
+          "d": 0.8
+        },
+        {
+          "x": 4.7,
+          "z": -6,
+          "w": 1.85,
+          "d": 0.8
+        },
+        {
+          "x": 4,
+          "z": 1,
+          "w": 2.2,
+          "d": 1.2
+        }
+      ],
+      "interiorSize": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "dream_lab",
+      "name": "大夢研究所",
+      "position": [
+        20,
+        0,
+        -8
+      ],
+      "w": 10,
+      "d": 9,
+      "h": 4.6,
+      "color": "mint",
+      "npcIds": [
+        "prof_daydream"
+      ],
+      "entrance": [
+        20,
+        -1.7
+      ],
+      "interiorModel": "models/world/dream_lab-interior.glb",
+      "spawn": [
+        0,
+        5.4
+      ],
+      "exit": [
+        0,
+        6.7
+      ],
+      "bounds": {
+        "minX": -6.5,
+        "maxX": 6.5,
+        "minZ": -7,
+        "maxZ": 7
+      },
+      "collisions": [
+        {
+          "x": 0,
+          "z": -3.5,
+          "w": 3.7,
+          "d": 1.1
+        },
+        {
+          "x": -4.6,
+          "z": -6.5,
+          "w": 1.85,
+          "d": 0.8
+        },
+        {
+          "x": 4.6,
+          "z": -6.5,
+          "w": 1.85,
+          "d": 0.8
+        },
+        {
+          "x": -4,
+          "z": 0,
+          "w": 2.6,
+          "d": 1.5
+        },
+        {
+          "x": 4,
+          "z": 0,
+          "w": 2.4,
+          "d": 2.4
+        }
+      ],
+      "interiorSize": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "gym_light",
+      "name": "初光道館",
+      "position": [
+        -20,
+        0,
+        18
+      ],
+      "w": 11,
+      "d": 9,
+      "h": 5,
+      "color": "gold",
+      "npcIds": [
+        "gym_master"
+      ],
+      "entrance": [
+        -20,
+        24.3
+      ],
+      "interiorModel": "models/world/gym_light-interior.glb",
+      "spawn": [
+        0,
+        5.4
+      ],
+      "exit": [
+        0,
+        6.7
+      ],
+      "bounds": {
+        "minX": -6.5,
+        "maxX": 6.5,
+        "minZ": -7,
+        "maxZ": 7
+      },
+      "collisions": [
+        {
+          "x": 5.2,
+          "z": 1,
+          "w": 1.85,
+          "d": 0.8
+        },
+        {
+          "x": 5.2,
+          "z": 1,
+          "w": 1.8,
+          "d": 0.8
+        },
+        {
+          "x": -4.6,
+          "z": 3.6,
+          "w": 3.7,
+          "d": 1.1
+        }
+      ],
+      "interiorSize": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "tower_starspire",
+      "name": "星穹挑戰塔",
+      "position": [
+        20,
+        0,
+        18
+      ],
+      "w": 8,
+      "d": 8,
+      "h": 8,
+      "color": "purple",
+      "npcIds": [
+        "tower_keeper"
+      ],
+      "entrance": [
+        20,
+        23.8
+      ],
+      "interiorModel": "models/world/tower_starspire-interior.glb",
+      "spawn": [
+        0,
+        5.4
+      ],
+      "exit": [
+        0,
+        6.7
+      ],
+      "bounds": {
+        "minX": -6.5,
+        "maxX": 6.5,
+        "minZ": -7,
+        "maxZ": 7
+      },
+      "collisions": [
+        {
+          "x": -3.7,
+          "z": 1.5,
+          "w": 3.7,
+          "d": 1.1
+        },
+        {
+          "x": 0,
+          "z": -5.8,
+          "w": 4,
+          "d": 1.3
+        },
+        {
+          "x": 4.8,
+          "z": -2,
+          "w": 1.85,
+          "d": 0.8
+        },
+        {
+          "x": 3.5,
+          "z": 2.6,
+          "w": 2,
+          "d": 0.8
+        }
+      ],
+      "interiorSize": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "house_resident_a",
+      "name": "居民民房 A",
+      "position": [
+        0,
+        0,
+        22
+      ],
+      "w": 8,
+      "d": 7,
+      "h": 3.5,
+      "color": "rose",
+      "npcIds": [
+        "resident_berry"
+      ],
+      "entrance": [
+        0,
+        27.3
+      ],
+      "interiorModel": "models/world/house_resident_a-interior.glb",
+      "spawn": [
+        0,
+        5.4
+      ],
+      "exit": [
+        0,
+        6.7
+      ],
+      "bounds": {
+        "minX": -6.5,
+        "maxX": 6.5,
+        "minZ": -7,
+        "maxZ": 7
+      },
+      "collisions": [
+        {
+          "x": -4,
+          "z": -1,
+          "w": 2.6,
+          "d": 1.4
+        },
+        {
+          "x": 1.6,
+          "z": 1,
+          "w": 2.1,
+          "d": 1.6
+        },
+        {
+          "x": 1.6,
+          "z": 2.4,
+          "w": 1.8,
+          "d": 0.7
+        },
+        {
+          "x": 3.7,
+          "z": -5.5,
+          "w": 2.6,
+          "d": 3.4
+        },
+        {
+          "x": -4.4,
+          "z": -6,
+          "w": 1.85,
+          "d": 0.8
+        }
+      ],
+      "interiorSize": [
+        14,
+        16
+      ]
+    }
+  ],
+  "interiors": {
+    "care_center": "models/world/care_center-interior.glb",
+    "ranger_station": "models/world/ranger_station-interior.glb",
+    "dream_lab": "models/world/dream_lab-interior.glb",
+    "gym_light": "models/world/gym_light-interior.glb",
+    "tower_starspire": "models/world/tower_starspire-interior.glb",
+    "house_resident_a": "models/world/house_resident_a-interior.glb"
+  },
+  "props": {
+    "core": "models/props/core.glb",
+    "great_core": "models/props/great_core.glb",
+    "master_core": "models/props/master_core.glb",
+    "berry": "models/props/berry.glb",
+    "potion": "models/props/potion.glb",
+    "evolutionStone": "models/props/evolution-stone.glb",
+    "spiritBall": "models/props/core.glb"
+  },
+  "arena": {
+    "center": [
+      -19,
+      0,
+      -26
+    ],
+    "radius": 6
+  },
+  "npcData": "data/npcs.json",
+  "battleModel": "models/world/arena.glb"
+}

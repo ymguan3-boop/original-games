@@ -1,0 +1,279 @@
+{
+  "npcs": [
+    {
+      "id": "prof_daydream",
+      "name": "大夢博士",
+      "buildingId": "dream_lab",
+      "role": "博士",
+      "model": "models/npcs/prof_daydream.glb",
+      "height": 2.31,
+      "dialogue": [
+        "圖鑑記錄的不只是外貌，也是你與幻靈一起留下的故事。",
+        "先和一位幻靈締約，研究終端就能保存牠的資料。"
+      ],
+      "functions": [
+        "research",
+        "dex"
+      ],
+      "portraits": {
+        "normal": "portraits/prof_daydream-normal.svg",
+        "happy": "portraits/prof_daydream-happy.svg",
+        "serious": "portraits/prof_daydream-serious.svg"
+      },
+      "position": [
+        17.3,
+        0,
+        -1.2
+      ],
+      "interiorPosition": [
+        0,
+        -5
+      ],
+      "roamRadius": 1.3
+    },
+    {
+      "id": "care_nova",
+      "name": "星霧護理員",
+      "buildingId": "care_center",
+      "role": "護理",
+      "model": "models/npcs/care_nova.glb",
+      "height": 2.2,
+      "dialogue": [
+        "歡迎來到幻靈照護所！旅途中也要記得照顧自己。",
+        "我可以協助夥伴回復精神，也會替你準備一些旅行補給。"
+      ],
+      "functions": [
+        "heal",
+        "supplies"
+      ],
+      "portraits": {
+        "normal": "portraits/care_nova-normal.svg",
+        "happy": "portraits/care_nova-happy.svg",
+        "serious": "portraits/care_nova-serious.svg"
+      },
+      "position": [
+        -2.8,
+        0,
+        -1.2
+      ],
+      "interiorPosition": [
+        0,
+        -5.2
+      ],
+      "roamRadius": 1.3
+    },
+    {
+      "id": "ranger_lumo",
+      "name": "巡護員魯莫",
+      "buildingId": "ranger_station",
+      "role": "巡護",
+      "model": "models/npcs/ranger_lumo.glb",
+      "height": 2.38,
+      "dialogue": [
+        "初光鎮由每一位旅人一起守護。請沿著道路探索，留意附近的幻靈。",
+        "巡護公告：北側林地近日有稀有幻靈的足跡。"
+      ],
+      "functions": [
+        "notices",
+        "supplies"
+      ],
+      "portraits": {
+        "normal": "portraits/ranger_lumo-normal.svg",
+        "happy": "portraits/ranger_lumo-happy.svg",
+        "serious": "portraits/ranger_lumo-serious.svg"
+      },
+      "position": [
+        -17,
+        0,
+        -1.2
+      ],
+      "interiorPosition": [
+        0,
+        -5.1
+      ],
+      "roamRadius": 1.3
+    },
+    {
+      "id": "arena_coach",
+      "name": "幻靈擂台訓練家",
+      "buildingId": null,
+      "role": "訓練",
+      "model": "models/npcs/arena_coach.glb",
+      "height": 2.24,
+      "dialogue": [
+        "想試試你的幻靈隊伍嗎？我們進行三對三的友誼對戰。",
+        "每回合可選招式或替換夥伴。準備好三位夥伴再來挑戰吧！"
+      ],
+      "functions": [
+        "battle",
+        "tutorial"
+      ],
+      "portraits": {
+        "normal": "portraits/arena_coach-normal.svg",
+        "happy": "portraits/arena_coach-happy.svg",
+        "serious": "portraits/arena_coach-serious.svg"
+      },
+      "position": [
+        -18,
+        0,
+        -19
+      ],
+      "interiorPosition": [
+        0,
+        0
+      ],
+      "roamRadius": 3
+    },
+    {
+      "id": "gym_master",
+      "name": "初光館主",
+      "buildingId": "gym_light",
+      "role": "館主",
+      "model": "models/npcs/gym_master.glb",
+      "height": 2.42,
+      "dialogue": [
+        "真正的力量來自彼此信任。歡迎參觀初光道館。",
+        "正式道館試煉將於未來開放，目前可以先向擂台訓練家磨練技巧。"
+      ],
+      "functions": [
+        "gym-info"
+      ],
+      "portraits": {
+        "normal": "portraits/gym_master-normal.svg",
+        "happy": "portraits/gym_master-happy.svg",
+        "serious": "portraits/gym_master-serious.svg"
+      },
+      "position": [
+        -17,
+        0,
+        25.5
+      ],
+      "interiorPosition": [
+        0,
+        -5.8
+      ],
+      "roamRadius": 1.3
+    },
+    {
+      "id": "tower_keeper",
+      "name": "星穹管理者",
+      "buildingId": "tower_starspire",
+      "role": "星穹",
+      "model": "models/npcs/tower_keeper.glb",
+      "height": 2.33,
+      "dialogue": [
+        "星穹之上，還有尚未被記錄的旅程。",
+        "這裡是挑戰塔大廳。樓層連戰、排行與印記獎勵仍在籌備中。"
+      ],
+      "functions": [
+        "tower-info"
+      ],
+      "portraits": {
+        "normal": "portraits/tower_keeper-normal.svg",
+        "happy": "portraits/tower_keeper-happy.svg",
+        "serious": "portraits/tower_keeper-serious.svg"
+      },
+      "position": [
+        17,
+        0,
+        25
+      ],
+      "interiorPosition": [
+        -3.7,
+        0
+      ],
+      "roamRadius": 1.3
+    },
+    {
+      "id": "resident_berry",
+      "name": "果姨",
+      "buildingId": "house_resident_a",
+      "role": "居民",
+      "model": "models/npcs/resident_berry.glb",
+      "height": 2.18,
+      "dialogue": [
+        "這些星霧果是今天早上新鮮摘下的，帶一些在路上吧。",
+        "多和鎮上的人聊聊，也許能聽到稀有幻靈的消息。"
+      ],
+      "functions": [
+        "supplies"
+      ],
+      "portraits": {
+        "normal": "portraits/resident_berry-normal.svg",
+        "happy": "portraits/resident_berry-happy.svg",
+        "serious": "portraits/resident_berry-serious.svg"
+      },
+      "position": [
+        -3,
+        0,
+        28
+      ],
+      "interiorPosition": [
+        -2,
+        1
+      ],
+      "roamRadius": 1.3
+    },
+    {
+      "id": "resident_kid",
+      "name": "小探險家阿洛",
+      "buildingId": null,
+      "role": "孩童",
+      "model": "models/npcs/resident_kid.glb",
+      "height": 1.72,
+      "dialogue": [
+        "我最喜歡在草地找幻靈！小小的夥伴也有自己的厲害招式。",
+        "你去過研究所嗎？博士知道好多進階的秘密！"
+      ],
+      "functions": [
+        "tips"
+      ],
+      "portraits": {
+        "normal": "portraits/resident_kid-normal.svg",
+        "happy": "portraits/resident_kid-happy.svg",
+        "serious": "portraits/resident_kid-serious.svg"
+      },
+      "position": [
+        8,
+        0,
+        9
+      ],
+      "interiorPosition": [
+        0,
+        0
+      ],
+      "roamRadius": 3
+    },
+    {
+      "id": "shop_vendor",
+      "name": "旅用品員",
+      "buildingId": "care_center",
+      "role": "商店",
+      "model": "models/npcs/shop_vendor.glb",
+      "height": 2.2,
+      "dialogue": [
+        "靈核球能與幻靈建立連結；星霧果能讓牠們放鬆心情。",
+        "旅行補給不一定每次都有，過一會兒再來找我吧。"
+      ],
+      "functions": [
+        "supplies",
+        "items"
+      ],
+      "portraits": {
+        "normal": "portraits/shop_vendor-normal.svg",
+        "happy": "portraits/shop_vendor-happy.svg",
+        "serious": "portraits/shop_vendor-serious.svg"
+      },
+      "position": [
+        3,
+        0,
+        -0.8
+      ],
+      "interiorPosition": [
+        4,
+        1
+      ],
+      "roamRadius": 1.3
+    }
+  ]
+}

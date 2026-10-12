@@ -1,0 +1,772 @@
+{
+  "spiritCount": 61,
+  "modelCount": 85,
+  "models": [
+    {
+      "file": "models/hero.glb",
+      "bytes": 4209344,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Wave",
+        "Throw",
+        "Attack",
+        "Hurt",
+        "Roll"
+      ]
+    },
+    {
+      "file": "models/npcs/arena_coach.glb",
+      "bytes": 355500,
+      "animations": [
+        "Idle",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/npcs/care_nova.glb",
+      "bytes": 365688,
+      "animations": [
+        "Idle",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/npcs/gym_master.glb",
+      "bytes": 352052,
+      "animations": [
+        "Idle",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/npcs/prof_daydream.glb",
+      "bytes": 434012,
+      "animations": [
+        "Idle",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/npcs/ranger_lumo.glb",
+      "bytes": 364472,
+      "animations": [
+        "Idle",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/npcs/resident_berry.glb",
+      "bytes": 353028,
+      "animations": [
+        "Idle",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/npcs/resident_kid.glb",
+      "bytes": 343620,
+      "animations": [
+        "Idle",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/npcs/shop_vendor.glb",
+      "bytes": 341268,
+      "animations": [
+        "Idle",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/npcs/tower_keeper.glb",
+      "bytes": 367020,
+      "animations": [
+        "Idle",
+        "Walk"
+      ]
+    },
+    {
+      "file": "models/props/berry.glb",
+      "bytes": 26720,
+      "animations": []
+    },
+    {
+      "file": "models/props/core.glb",
+      "bytes": 76724,
+      "animations": []
+    },
+    {
+      "file": "models/props/evolution-stone.glb",
+      "bytes": 22000,
+      "animations": []
+    },
+    {
+      "file": "models/props/great_core.glb",
+      "bytes": 76736,
+      "animations": []
+    },
+    {
+      "file": "models/props/master_core.glb",
+      "bytes": 75800,
+      "animations": []
+    },
+    {
+      "file": "models/props/potion.glb",
+      "bytes": 14680,
+      "animations": []
+    },
+    {
+      "file": "models/spirits/articuno.glb",
+      "bytes": 173492,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/bayleef.glb",
+      "bytes": 188432,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/beedrill.glb",
+      "bytes": 190620,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/blastoise.glb",
+      "bytes": 187440,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/blaziken.glb",
+      "bytes": 113696,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/blissey.glb",
+      "bytes": 230240,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/bulbasaur.glb",
+      "bytes": 189984,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/butterfree.glb",
+      "bytes": 190624,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/caterpie.glb",
+      "bytes": 177576,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/charizard.glb",
+      "bytes": 168144,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/charmander.glb",
+      "bytes": 162952,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/charmeleon.glb",
+      "bytes": 167328,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/chikorita.glb",
+      "bytes": 183768,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/chimchar.glb",
+      "bytes": 193480,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/combusken.glb",
+      "bytes": 109388,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/croconaw.glb",
+      "bytes": 146736,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/cyndaquil.glb",
+      "bytes": 176320,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/dialga.glb",
+      "bytes": 184348,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/empoleon.glb",
+      "bytes": 112316,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/entei.glb",
+      "bytes": 196744,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/feraligatr.glb",
+      "bytes": 156696,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/giratina.glb",
+      "bytes": 205224,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/grotle.glb",
+      "bytes": 256960,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/groudon.glb",
+      "bytes": 247776,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/grovyle.glb",
+      "bytes": 146736,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/infernape.glb",
+      "bytes": 211188,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/ivysaur.glb",
+      "bytes": 200516,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/jigglypuff.glb",
+      "bytes": 210288,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/kakuna.glb",
+      "bytes": 104124,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/kyogre.glb",
+      "bytes": 125832,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/marshtomp.glb",
+      "bytes": 176416,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/meganium.glb",
+      "bytes": 190392,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/metapod.glb",
+      "bytes": 99156,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/mew.glb",
+      "bytes": 193960,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/mewtwo.glb",
+      "bytes": 184256,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/moltres.glb",
+      "bytes": 122624,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/monferno.glb",
+      "bytes": 209544,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/mudkip.glb",
+      "bytes": 175964,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/palkia.glb",
+      "bytes": 107080,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/pikachu.glb",
+      "bytes": 157092,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/piplup.glb",
+      "bytes": 110436,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/prinplup.glb",
+      "bytes": 111372,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/quilava.glb",
+      "bytes": 182580,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/raichu.glb",
+      "bytes": 162264,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/raikou.glb",
+      "bytes": 205196,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/rayquaza.glb",
+      "bytes": 110396,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/sceptile.glb",
+      "bytes": 157008,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/squirtle.glb",
+      "bytes": 175796,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/suicune.glb",
+      "bytes": 183912,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/swampert.glb",
+      "bytes": 187440,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/torchic.glb",
+      "bytes": 106688,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/torterra.glb",
+      "bytes": 276400,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/totodile.glb",
+      "bytes": 146296,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/treecko.glb",
+      "bytes": 145984,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/turtwig.glb",
+      "bytes": 242596,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/typhlosion.glb",
+      "bytes": 191308,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/venusaur.glb",
+      "bytes": 208508,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/wartortle.glb",
+      "bytes": 176408,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/weedle.glb",
+      "bytes": 179236,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/wigglytuff.glb",
+      "bytes": 242088,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/zapdos.glb",
+      "bytes": 190600,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Attack",
+        "Hurt"
+      ]
+    },
+    {
+      "file": "models/world/arena.glb",
+      "bytes": 145424,
+      "animations": []
+    },
+    {
+      "file": "models/world/care_center-interior.glb",
+      "bytes": 278808,
+      "animations": []
+    },
+    {
+      "file": "models/world/dream_lab-interior.glb",
+      "bytes": 583384,
+      "animations": []
+    },
+    {
+      "file": "models/world/gym_light-interior.glb",
+      "bytes": 360320,
+      "animations": []
+    },
+    {
+      "file": "models/world/house_resident_a-interior.glb",
+      "bytes": 394748,
+      "animations": []
+    },
+    {
+      "file": "models/world/ranger_station-interior.glb",
+      "bytes": 587144,
+      "animations": []
+    },
+    {
+      "file": "models/world/tower_starspire-interior.glb",
+      "bytes": 395360,
+      "animations": []
+    },
+    {
+      "file": "models/world/town.glb",
+      "bytes": 2970320,
+      "animations": []
+    }
+  ]
+}

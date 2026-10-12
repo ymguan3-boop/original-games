@@ -1,0 +1,13 @@
+{
+  "blender": "5.2.0 LTS",
+  "buildings": 6,
+  "interiors": 6,
+  "npcs": 9,
+  "portraits": 27,
+  "props": 6,
+  "authoring": "Native Blender meshes and skeletons. No inherited creature assets.",
+  "battleArena": true,
+  "browserReview": "world-review.json",
+  "townTriangles": 86832,
+  "townDrawCalls": 15
+}

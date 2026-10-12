@@ -1,0 +1,2076 @@
+[
+  {
+    "id": "bulbasaur",
+    "speciesId": "bulbasaur",
+    "name": "芽球豚",
+    "element": "grass",
+    "type": "森",
+    "stage": 1,
+    "family": "sprout-boar",
+    "form": "boar",
+    "color": 7514717,
+    "role": "starter",
+    "previous": null,
+    "next": "ivysaur",
+    "model": "models/spirits/bulbasaur.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "ivysaur",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "芽球共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "芽球豚是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "ivysaur",
+    "speciesId": "ivysaur",
+    "name": "蕈傘豚",
+    "element": "grass",
+    "type": "森",
+    "stage": 2,
+    "family": "sprout-boar",
+    "form": "boar",
+    "color": 7514717,
+    "role": "starter",
+    "previous": "bulbasaur",
+    "next": "venusaur",
+    "model": "models/spirits/ivysaur.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "venusaur",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "蕈傘共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "蕈傘豚是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "venusaur",
+    "speciesId": "venusaur",
+    "name": "森冠巨豚",
+    "element": "grass",
+    "type": "森",
+    "stage": 3,
+    "family": "sprout-boar",
+    "form": "boar",
+    "color": 7514717,
+    "role": "starter",
+    "previous": "ivysaur",
+    "next": null,
+    "model": "models/spirits/venusaur.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "森冠共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "森冠巨豚是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "charmander",
+    "speciesId": "charmander",
+    "name": "火球貓",
+    "element": "fire",
+    "type": "焰",
+    "stage": 1,
+    "family": "fire-cat",
+    "form": "cat",
+    "color": 15566655,
+    "role": "starter",
+    "previous": null,
+    "next": "charmeleon",
+    "model": "models/spirits/charmander.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "charmeleon",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "火球共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "火球貓是初光之境的焰屬性幻靈。牠以溫暖的額焰辨認夥伴，尾尖的火光會隨心情搖曳。"
+  },
+  {
+    "id": "charmeleon",
+    "speciesId": "charmeleon",
+    "name": "焰鬃猞猁",
+    "element": "fire",
+    "type": "焰",
+    "stage": 2,
+    "family": "fire-cat",
+    "form": "cat",
+    "color": 15566655,
+    "role": "starter",
+    "previous": "charmander",
+    "next": "charizard",
+    "model": "models/spirits/charmeleon.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "charizard",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "焰鬃共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "焰鬃猞猁是初光之境的焰屬性幻靈。牠以溫暖的額焰辨認夥伴，尾尖的火光會隨心情搖曳。"
+  },
+  {
+    "id": "charizard",
+    "speciesId": "charizard",
+    "name": "曜冠炎獅",
+    "element": "fire",
+    "type": "焰",
+    "stage": 3,
+    "family": "fire-cat",
+    "form": "cat",
+    "color": 15566655,
+    "role": "starter",
+    "previous": "charmeleon",
+    "next": null,
+    "model": "models/spirits/charizard.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "曜冠共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "曜冠炎獅是初光之境的焰屬性幻靈。牠以溫暖的額焰辨認夥伴，尾尖的火光會隨心情搖曳。"
+  },
+  {
+    "id": "squirtle",
+    "speciesId": "squirtle",
+    "name": "露珠獺",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "stream-otter",
+    "form": "otter",
+    "color": 5283775,
+    "role": "starter",
+    "previous": null,
+    "next": "wartortle",
+    "model": "models/spirits/squirtle.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "wartortle",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "露珠共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "露珠獺是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "wartortle",
+    "speciesId": "wartortle",
+    "name": "漣尾獺",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "stream-otter",
+    "form": "otter",
+    "color": 5283775,
+    "role": "starter",
+    "previous": "squirtle",
+    "next": "blastoise",
+    "model": "models/spirits/wartortle.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "blastoise",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "漣尾共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "漣尾獺是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "blastoise",
+    "speciesId": "blastoise",
+    "name": "潮汐海獺",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "stream-otter",
+    "form": "otter",
+    "color": 5283775,
+    "role": "starter",
+    "previous": "wartortle",
+    "next": null,
+    "model": "models/spirits/blastoise.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "潮汐共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "潮汐海獺是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "chikorita",
+    "speciesId": "chikorita",
+    "name": "嫩芽鹿",
+    "element": "grass",
+    "type": "森",
+    "stage": 1,
+    "family": "willow-deer",
+    "form": "deer",
+    "color": 9348961,
+    "role": "starter",
+    "previous": null,
+    "next": "bayleef",
+    "model": "models/spirits/chikorita.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "bayleef",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "嫩芽共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "嫩芽鹿是初光之境的森屬性幻靈。枝角會在夜裡亮起，帶領迷路的旅人返回村莊。"
+  },
+  {
+    "id": "bayleef",
+    "speciesId": "bayleef",
+    "name": "柳鈴鹿",
+    "element": "grass",
+    "type": "森",
+    "stage": 2,
+    "family": "willow-deer",
+    "form": "deer",
+    "color": 9348961,
+    "role": "starter",
+    "previous": "chikorita",
+    "next": "meganium",
+    "model": "models/spirits/bayleef.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "meganium",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "柳鈴共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "柳鈴鹿是初光之境的森屬性幻靈。枝角會在夜裡亮起，帶領迷路的旅人返回村莊。"
+  },
+  {
+    "id": "meganium",
+    "speciesId": "meganium",
+    "name": "森燈冠鹿",
+    "element": "grass",
+    "type": "森",
+    "stage": 3,
+    "family": "willow-deer",
+    "form": "deer",
+    "color": 9348961,
+    "role": "starter",
+    "previous": "bayleef",
+    "next": null,
+    "model": "models/spirits/meganium.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "森燈共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "森燈冠鹿是初光之境的森屬性幻靈。枝角會在夜裡亮起，帶領迷路的旅人返回村莊。"
+  },
+  {
+    "id": "cyndaquil",
+    "speciesId": "cyndaquil",
+    "name": "炭絨刺團",
+    "element": "fire",
+    "type": "焰",
+    "stage": 1,
+    "family": "kiln-shell",
+    "form": "hedgehog",
+    "color": 12090456,
+    "role": "starter",
+    "previous": null,
+    "next": "quilava",
+    "model": "models/spirits/cyndaquil.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "quilava",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "炭絨共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "炭絨刺團是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "quilava",
+    "speciesId": "quilava",
+    "name": "熔陶甲獸",
+    "element": "fire",
+    "type": "焰",
+    "stage": 2,
+    "family": "kiln-shell",
+    "form": "hedgehog",
+    "color": 12090456,
+    "role": "starter",
+    "previous": "cyndaquil",
+    "next": "typhlosion",
+    "model": "models/spirits/quilava.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "typhlosion",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "熔陶共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "熔陶甲獸是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "typhlosion",
+    "speciesId": "typhlosion",
+    "name": "赤窯守甲",
+    "element": "fire",
+    "type": "焰",
+    "stage": 3,
+    "family": "kiln-shell",
+    "form": "hedgehog",
+    "color": 12090456,
+    "role": "starter",
+    "previous": "quilava",
+    "next": null,
+    "model": "models/spirits/typhlosion.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "赤窯共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "赤窯守甲是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "totodile",
+    "speciesId": "totodile",
+    "name": "溪鈴螈",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "crystal-newt",
+    "form": "newt",
+    "color": 6666684,
+    "role": "starter",
+    "previous": null,
+    "next": "croconaw",
+    "model": "models/spirits/totodile.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "croconaw",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "溪鈴共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "溪鈴螈是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "croconaw",
+    "speciesId": "croconaw",
+    "name": "晶鰭螈",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "crystal-newt",
+    "form": "newt",
+    "color": 6666684,
+    "role": "starter",
+    "previous": "totodile",
+    "next": "feraligatr",
+    "model": "models/spirits/croconaw.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "feraligatr",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "晶鰭共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "晶鰭螈是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "feraligatr",
+    "speciesId": "feraligatr",
+    "name": "冰瀑翼螈",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "crystal-newt",
+    "form": "newt",
+    "color": 6666684,
+    "role": "starter",
+    "previous": "croconaw",
+    "next": null,
+    "model": "models/spirits/feraligatr.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "冰瀑共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "冰瀑翼螈是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "treecko",
+    "speciesId": "treecko",
+    "name": "苔點蜥",
+    "element": "grass",
+    "type": "森",
+    "stage": 1,
+    "family": "fern-gecko",
+    "form": "lizard",
+    "color": 5020791,
+    "role": "starter",
+    "previous": null,
+    "next": "grovyle",
+    "model": "models/spirits/treecko.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "grovyle",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "苔點共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "苔點蜥是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "grovyle",
+    "speciesId": "grovyle",
+    "name": "蕨帆蜥",
+    "element": "grass",
+    "type": "森",
+    "stage": 2,
+    "family": "fern-gecko",
+    "form": "lizard",
+    "color": 5020791,
+    "role": "starter",
+    "previous": "treecko",
+    "next": "sceptile",
+    "model": "models/spirits/grovyle.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "sceptile",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "蕨帆共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "蕨帆蜥是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "sceptile",
+    "speciesId": "sceptile",
+    "name": "翠環森蜥",
+    "element": "grass",
+    "type": "森",
+    "stage": 3,
+    "family": "fern-gecko",
+    "form": "lizard",
+    "color": 5020791,
+    "role": "starter",
+    "previous": "grovyle",
+    "next": null,
+    "model": "models/spirits/sceptile.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "翠環共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "翠環森蜥是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "torchic",
+    "speciesId": "torchic",
+    "name": "燈茸雀",
+    "element": "fire",
+    "type": "焰",
+    "stage": 1,
+    "family": "lantern-bird",
+    "form": "bird",
+    "color": 14324047,
+    "role": "starter",
+    "previous": null,
+    "next": "combusken",
+    "model": "models/spirits/torchic.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "combusken",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "燈茸共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "燈茸雀是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "combusken",
+    "speciesId": "combusken",
+    "name": "霞羽鶴",
+    "element": "fire",
+    "type": "焰",
+    "stage": 2,
+    "family": "lantern-bird",
+    "form": "bird",
+    "color": 14324047,
+    "role": "starter",
+    "previous": "torchic",
+    "next": "blaziken",
+    "model": "models/spirits/combusken.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "blaziken",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "霞羽共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "霞羽鶴是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "blaziken",
+    "speciesId": "blaziken",
+    "name": "曦焰長羽",
+    "element": "fire",
+    "type": "焰",
+    "stage": 3,
+    "family": "lantern-bird",
+    "form": "bird",
+    "color": 14324047,
+    "role": "starter",
+    "previous": "combusken",
+    "next": null,
+    "model": "models/spirits/blaziken.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "曦焰共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "曦焰長羽是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "mudkip",
+    "speciesId": "mudkip",
+    "name": "泡泡蛙",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "lotus-frog",
+    "form": "frog",
+    "color": 7058851,
+    "role": "starter",
+    "previous": null,
+    "next": "marshtomp",
+    "model": "models/spirits/mudkip.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "marshtomp",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "泡泡共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "泡泡蛙是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "marshtomp",
+    "speciesId": "marshtomp",
+    "name": "荷盞蛙",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "lotus-frog",
+    "form": "frog",
+    "color": 7058851,
+    "role": "starter",
+    "previous": "mudkip",
+    "next": "swampert",
+    "model": "models/spirits/marshtomp.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "swampert",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "荷盞共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "荷盞蛙是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "swampert",
+    "speciesId": "swampert",
+    "name": "滄瀾角蛙",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "lotus-frog",
+    "form": "frog",
+    "color": 7058851,
+    "role": "starter",
+    "previous": "marshtomp",
+    "next": null,
+    "model": "models/spirits/swampert.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "滄瀾共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "滄瀾角蛙是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "turtwig",
+    "speciesId": "turtwig",
+    "name": "籽背鼴",
+    "element": "grass",
+    "type": "森",
+    "stage": 1,
+    "family": "mountain-badger",
+    "form": "badger",
+    "color": 9473636,
+    "role": "starter",
+    "previous": null,
+    "next": "grotle",
+    "model": "models/spirits/turtwig.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "grotle",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "籽背共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "籽背鼴是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "grotle",
+    "speciesId": "grotle",
+    "name": "石芽獾",
+    "element": "grass",
+    "type": "森",
+    "stage": 2,
+    "family": "mountain-badger",
+    "form": "badger",
+    "color": 9473636,
+    "role": "starter",
+    "previous": "turtwig",
+    "next": "torterra",
+    "model": "models/spirits/grotle.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "torterra",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "石芽共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "石芽獾是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "torterra",
+    "speciesId": "torterra",
+    "name": "嶺苔山獾",
+    "element": "grass",
+    "type": "森",
+    "stage": 3,
+    "family": "mountain-badger",
+    "form": "badger",
+    "color": 9473636,
+    "role": "starter",
+    "previous": "grotle",
+    "next": null,
+    "model": "models/spirits/torterra.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "嶺苔共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "嶺苔山獾是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "chimchar",
+    "speciesId": "chimchar",
+    "name": "星火猿",
+    "element": "fire",
+    "type": "焰",
+    "stage": 1,
+    "family": "comet-ape",
+    "form": "monkey",
+    "color": 13532505,
+    "role": "starter",
+    "previous": null,
+    "next": "monferno",
+    "model": "models/spirits/chimchar.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "monferno",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "星火共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "星火猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "monferno",
+    "speciesId": "monferno",
+    "name": "銅爐猿",
+    "element": "fire",
+    "type": "焰",
+    "stage": 2,
+    "family": "comet-ape",
+    "form": "monkey",
+    "color": 13532505,
+    "role": "starter",
+    "previous": "chimchar",
+    "next": "infernape",
+    "model": "models/spirits/monferno.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "infernape",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "銅爐共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "銅爐猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "infernape",
+    "speciesId": "infernape",
+    "name": "彗拳巨猿",
+    "element": "fire",
+    "type": "焰",
+    "stage": 3,
+    "family": "comet-ape",
+    "form": "monkey",
+    "color": 13532505,
+    "role": "starter",
+    "previous": "monferno",
+    "next": null,
+    "model": "models/spirits/infernape.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "彗拳共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "彗拳巨猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "piplup",
+    "speciesId": "piplup",
+    "name": "霜絨鴞",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "moon-owl",
+    "form": "owl",
+    "color": 8691131,
+    "role": "starter",
+    "previous": null,
+    "next": "prinplup",
+    "model": "models/spirits/piplup.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "prinplup",
+    "rarity": "普通",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "霜絨共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "霜絨鴞是初光之境的潮屬性幻靈。寬闊的翅膀能安靜掠過樹梢，羽紋記錄著月光。"
+  },
+  {
+    "id": "prinplup",
+    "speciesId": "prinplup",
+    "name": "雪幕鴞",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "moon-owl",
+    "form": "owl",
+    "color": 8691131,
+    "role": "starter",
+    "previous": "piplup",
+    "next": "empoleon",
+    "model": "models/spirits/prinplup.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "empoleon",
+    "rarity": "進階",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "雪幕共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "雪幕鴞是初光之境的潮屬性幻靈。寬闊的翅膀能安靜掠過樹梢，羽紋記錄著月光。"
+  },
+  {
+    "id": "empoleon",
+    "speciesId": "empoleon",
+    "name": "月輪翼鴞",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "moon-owl",
+    "form": "owl",
+    "color": 8691131,
+    "role": "starter",
+    "previous": "prinplup",
+    "next": null,
+    "model": "models/spirits/empoleon.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "月輪共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "月輪翼鴞是初光之境的潮屬性幻靈。寬闊的翅膀能安靜掠過樹梢，羽紋記錄著月光。"
+  },
+  {
+    "id": "articuno",
+    "speciesId": "articuno",
+    "name": "霜鏡天鰩",
+    "element": "ice",
+    "type": "霜",
+    "stage": 3,
+    "family": "articuno",
+    "form": "manta",
+    "color": 8505822,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/articuno.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "霜光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "霜鏡共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "霜鏡天鰩是初光之境的霜屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "zapdos",
+    "speciesId": "zapdos",
+    "name": "雷紋巨蛾",
+    "element": "electric",
+    "type": "雷",
+    "stage": 3,
+    "family": "zapdos",
+    "form": "moth",
+    "color": 13940033,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/zapdos.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "雷光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "雷紋共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "雷紋巨蛾是初光之境的雷屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "moltres",
+    "speciesId": "moltres",
+    "name": "赤曜雙翼",
+    "element": "fire",
+    "type": "焰",
+    "stage": 3,
+    "family": "moltres",
+    "form": "phoenix",
+    "color": 14910805,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/moltres.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "赤曜共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "赤曜雙翼是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "raikou",
+    "speciesId": "raikou",
+    "name": "轟角麒麟",
+    "element": "electric",
+    "type": "雷",
+    "stage": 3,
+    "family": "raikou",
+    "form": "kirin",
+    "color": 12952912,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/raikou.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "雷光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "轟角共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "轟角麒麟是初光之境的雷屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "entei",
+    "speciesId": "entei",
+    "name": "熔岩獅鷲",
+    "element": "fire",
+    "type": "焰",
+    "stage": 3,
+    "family": "entei",
+    "form": "griffin",
+    "color": 11232590,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/entei.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "焰光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "熔岩共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "熔岩獅鷲是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "suicune",
+    "speciesId": "suicune",
+    "name": "澄夢長頸鹿",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "suicune",
+    "form": "longdeer",
+    "color": 7976123,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/suicune.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "澄夢共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "澄夢長頸鹿是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "kyogre",
+    "speciesId": "kyogre",
+    "name": "星潮空鯨",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "kyogre",
+    "form": "whale",
+    "color": 6519471,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/kyogre.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "星潮共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "星潮空鯨是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "groudon",
+    "speciesId": "groudon",
+    "name": "大地晶甲龜",
+    "element": "earth",
+    "type": "岩",
+    "stage": 3,
+    "family": "groudon",
+    "form": "turtle",
+    "color": 11110251,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/groudon.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "岩光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "大地共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "大地晶甲龜是初光之境的岩屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "rayquaza",
+    "speciesId": "rayquaza",
+    "name": "風環遊龍",
+    "element": "wind",
+    "type": "風",
+    "stage": 3,
+    "family": "rayquaza",
+    "form": "serpent",
+    "color": 7384491,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/rayquaza.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "float",
+    "skills": [
+      {
+        "name": "風光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "風環共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "風環遊龍是初光之境的風屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "dialga",
+    "speciesId": "dialga",
+    "name": "時砂巨象",
+    "element": "metal",
+    "type": "鋼",
+    "stage": 3,
+    "family": "dialga",
+    "form": "elephant",
+    "color": 8035235,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/dialga.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "鋼光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "時砂共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "時砂巨象是初光之境的鋼屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "palkia",
+    "speciesId": "palkia",
+    "name": "月瀾海馬",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "palkia",
+    "form": "seahorse",
+    "color": 11963323,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/palkia.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "float",
+    "skills": [
+      {
+        "name": "潮光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "月瀾共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "月瀾海馬是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "giratina",
+    "speciesId": "giratina",
+    "name": "暮影六翼鹿",
+    "element": "shadow",
+    "type": "影",
+    "stage": 3,
+    "family": "giratina",
+    "form": "shadowdeer",
+    "color": 8550551,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/giratina.glb",
+    "height": 2.15475,
+    "hp": 210,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "影光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "暮影共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "暮影六翼鹿是初光之境的影屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "pikachu",
+    "speciesId": "pikachu",
+    "name": "閃角兔",
+    "element": "electric",
+    "type": "雷",
+    "stage": 1,
+    "family": "pikachu",
+    "form": "rabbit",
+    "color": 15123559,
+    "role": "gym",
+    "previous": null,
+    "next": "raichu",
+    "model": "models/spirits/pikachu.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "raichu",
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "雷光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "閃角共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "閃角兔是初光之境的雷屬性幻靈。雙耳間的晶角儲存雷光，奔跑時留下明亮足跡。"
+  },
+  {
+    "id": "mew",
+    "speciesId": "mew",
+    "name": "星霧雲靈",
+    "element": "psychic",
+    "type": "星",
+    "stage": 1,
+    "family": "mew",
+    "form": "cloud",
+    "color": 13019357,
+    "role": "gym",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/mew.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "float",
+    "skills": [
+      {
+        "name": "星光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "星霧共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "星霧雲靈是初光之境的星屬性幻靈。柔軟雲絮包裹著星核，喜歡漂浮在信任的旅人身邊。"
+  },
+  {
+    "id": "wigglytuff",
+    "speciesId": "wigglytuff",
+    "name": "絨心團獸",
+    "element": "fairy",
+    "type": "夢",
+    "stage": 1,
+    "family": "wigglytuff",
+    "form": "fluff",
+    "color": 14128044,
+    "role": "gym",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/wigglytuff.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "夢光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "絨心共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "絨心團獸是初光之境的夢屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "blissey",
+    "speciesId": "blissey",
+    "name": "暖巢福鹿",
+    "element": "fairy",
+    "type": "夢",
+    "stage": 1,
+    "family": "blissey",
+    "form": "nestdeer",
+    "color": 14003854,
+    "role": "gym",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/blissey.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "夢光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "暖巢共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "暖巢福鹿是初光之境的夢屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "raichu",
+    "speciesId": "raichu",
+    "name": "霆冠躍兔",
+    "element": "electric",
+    "type": "雷",
+    "stage": 2,
+    "family": "pikachu",
+    "form": "rabbit",
+    "color": 12625488,
+    "role": "wild",
+    "previous": "pikachu",
+    "next": null,
+    "model": "models/spirits/raichu.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": null,
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "雷光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "霆冠共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "霆冠躍兔是初光之境的雷屬性幻靈。雙耳間的晶角儲存雷光，奔跑時留下明亮足跡。"
+  },
+  {
+    "id": "caterpie",
+    "speciesId": "caterpie",
+    "name": "葉露毛球",
+    "element": "grass",
+    "type": "森",
+    "stage": 1,
+    "family": "caterpie",
+    "form": "caterpillar",
+    "color": 9550194,
+    "role": "wild",
+    "previous": null,
+    "next": "metapod",
+    "model": "models/spirits/caterpie.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "metapod",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "葉露共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "葉露毛球是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "metapod",
+    "speciesId": "metapod",
+    "name": "琥葉眠繭",
+    "element": "grass",
+    "type": "森",
+    "stage": 2,
+    "family": "caterpie",
+    "form": "cocoon",
+    "color": 10858342,
+    "role": "wild",
+    "previous": "caterpie",
+    "next": "butterfree",
+    "model": "models/spirits/metapod.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "butterfree",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "琥葉共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "琥葉眠繭是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "butterfree",
+    "speciesId": "butterfree",
+    "name": "晴葉彩蛾",
+    "element": "grass",
+    "type": "森",
+    "stage": 3,
+    "family": "caterpie",
+    "form": "moth",
+    "color": 8633514,
+    "role": "wild",
+    "previous": "metapod",
+    "next": null,
+    "model": "models/spirits/butterfree.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "森光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "晴葉共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "晴葉彩蛾是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "weedle",
+    "speciesId": "weedle",
+    "name": "砂角幼蟲",
+    "element": "earth",
+    "type": "岩",
+    "stage": 1,
+    "family": "weedle",
+    "form": "grub",
+    "color": 12297594,
+    "role": "wild",
+    "previous": null,
+    "next": "kakuna",
+    "model": "models/spirits/weedle.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "kakuna",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "岩光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "砂角共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "砂角幼蟲是初光之境的岩屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "kakuna",
+    "speciesId": "kakuna",
+    "name": "晶砂繭",
+    "element": "earth",
+    "type": "岩",
+    "stage": 2,
+    "family": "weedle",
+    "form": "crystal",
+    "color": 12295287,
+    "role": "wild",
+    "previous": "weedle",
+    "next": "beedrill",
+    "model": "models/spirits/kakuna.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "beedrill",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "岩光輕擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "晶砂共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "晶砂繭是初光之境的岩屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "beedrill",
+    "speciesId": "beedrill",
+    "name": "琥晶蜻靈",
+    "element": "earth",
+    "type": "岩",
+    "stage": 3,
+    "family": "weedle",
+    "form": "dragonfly",
+    "color": 12165222,
+    "role": "wild",
+    "previous": "kakuna",
+    "next": null,
+    "model": "models/spirits/beedrill.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "岩光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "琥晶共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "琥晶蜻靈是初光之境的岩屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "mewtwo",
+    "speciesId": "mewtwo",
+    "name": "紫晶念王",
+    "element": "psychic",
+    "type": "星",
+    "stage": 3,
+    "family": "mewtwo",
+    "form": "oracle",
+    "color": 10387902,
+    "role": "reward",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/mewtwo.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "float",
+    "skills": [
+      {
+        "name": "星光輕擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "紫晶共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "紫晶念王是初光之境的星屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  },
+  {
+    "id": "jigglypuff",
+    "speciesId": "jigglypuff",
+    "name": "夢鈴絨球",
+    "element": "fairy",
+    "type": "夢",
+    "stage": 1,
+    "family": "jigglypuff",
+    "form": "fluff",
+    "color": 14921146,
+    "role": "reward",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/jigglypuff.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "夢光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "夢鈴共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "夢鈴絨球是初光之境的夢屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+  }
+]

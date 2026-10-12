@@ -1,0 +1,1039 @@
+[
+  {
+    "id": "charmander",
+    "name": "火球貓",
+    "vertices": 2392,
+    "triangles": 4660,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 162952,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "piplup",
+    "name": "霜絨鴞",
+    "vertices": 1354,
+    "triangles": 2544,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 110436,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "mewtwo",
+    "name": "紫晶念王",
+    "vertices": 2720,
+    "triangles": 5308,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 184256,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "bulbasaur",
+    "name": "芽球豚",
+    "vertices": 2876,
+    "triangles": 5612,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 189984,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "ivysaur",
+    "name": "蕈傘豚",
+    "vertices": 3042,
+    "triangles": 5936,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 200516,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "venusaur",
+    "name": "森冠巨豚",
+    "vertices": 3208,
+    "triangles": 6260,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 208508,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "charmeleon",
+    "name": "焰鬃猞猁",
+    "vertices": 2476,
+    "triangles": 4772,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 167328,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "charizard",
+    "name": "曜冠炎獅",
+    "vertices": 2488,
+    "triangles": 4788,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 168144,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "squirtle",
+    "name": "露珠獺",
+    "vertices": 2638,
+    "triangles": 5172,
+    "materials": 4,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 175796,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "wartortle",
+    "name": "漣尾獺",
+    "vertices": 2650,
+    "triangles": 5188,
+    "materials": 4,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 176408,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "blastoise",
+    "name": "潮汐海獺",
+    "vertices": 2830,
+    "triangles": 5524,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 187440,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "chikorita",
+    "name": "嫩芽鹿",
+    "vertices": 2764,
+    "triangles": 5384,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 183768,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "bayleef",
+    "name": "柳鈴鹿",
+    "vertices": 2824,
+    "triangles": 5496,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 188432,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "meganium",
+    "name": "森燈冠鹿",
+    "vertices": 2884,
+    "triangles": 5608,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 190392,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "cyndaquil",
+    "name": "炭絨刺團",
+    "vertices": 2634,
+    "triangles": 5112,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 176320,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "quilava",
+    "name": "熔陶甲獸",
+    "vertices": 2724,
+    "triangles": 5280,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 182580,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "typhlosion",
+    "name": "赤窯守甲",
+    "vertices": 2904,
+    "triangles": 5616,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 191308,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "totodile",
+    "name": "溪鈴螈",
+    "vertices": 2090,
+    "triangles": 4068,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 146296,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "croconaw",
+    "name": "晶鰭螈",
+    "vertices": 2102,
+    "triangles": 4084,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 146736,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "feraligatr",
+    "name": "冰瀑翼螈",
+    "vertices": 2282,
+    "triangles": 4420,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 156696,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "treecko",
+    "name": "苔點蜥",
+    "vertices": 2084,
+    "triangles": 4060,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 145984,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "grovyle",
+    "name": "蕨帆蜥",
+    "vertices": 2102,
+    "triangles": 4084,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 146736,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "sceptile",
+    "name": "翠環森蜥",
+    "vertices": 2288,
+    "triangles": 4428,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 157008,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "torchic",
+    "name": "燈茸雀",
+    "vertices": 1442,
+    "triangles": 2800,
+    "materials": 5,
+    "bones": 7,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 106688,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "combusken",
+    "name": "霞羽鶴",
+    "vertices": 1472,
+    "triangles": 2856,
+    "materials": 5,
+    "bones": 7,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 109388,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "blaziken",
+    "name": "曦焰長羽",
+    "vertices": 1414,
+    "triangles": 2648,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 113696,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "mudkip",
+    "name": "泡泡蛙",
+    "vertices": 2638,
+    "triangles": 5172,
+    "materials": 4,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 175964,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "marshtomp",
+    "name": "荷盞蛙",
+    "vertices": 2650,
+    "triangles": 5188,
+    "materials": 4,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 176416,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "swampert",
+    "name": "滄瀾角蛙",
+    "vertices": 2830,
+    "triangles": 5524,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 187440,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "turtwig",
+    "name": "籽背鼴",
+    "vertices": 3818,
+    "triangles": 7472,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 242596,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "grotle",
+    "name": "石芽獾",
+    "vertices": 4076,
+    "triangles": 7976,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 256960,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "torterra",
+    "name": "嶺苔山獾",
+    "vertices": 4424,
+    "triangles": 8648,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 276400,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "chimchar",
+    "name": "星火猿",
+    "vertices": 2882,
+    "triangles": 5652,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 193480,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "monferno",
+    "name": "銅爐猿",
+    "vertices": 3204,
+    "triangles": 6284,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 209544,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "infernape",
+    "name": "彗拳巨猿",
+    "vertices": 3234,
+    "triangles": 6340,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 211188,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "prinplup",
+    "name": "雪幕鴞",
+    "vertices": 1372,
+    "triangles": 2568,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 111372,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "empoleon",
+    "name": "月輪翼鴞",
+    "vertices": 1390,
+    "triangles": 2592,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 112316,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "articuno",
+    "name": "霜鏡天鰩",
+    "vertices": 2536,
+    "triangles": 4968,
+    "materials": 5,
+    "bones": 6,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 173492,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "zapdos",
+    "name": "雷紋巨蛾",
+    "vertices": 2718,
+    "triangles": 5320,
+    "materials": 5,
+    "bones": 10,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 190600,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "moltres",
+    "name": "赤曜雙翼",
+    "vertices": 1576,
+    "triangles": 2948,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 122624,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "raikou",
+    "name": "轟角麒麟",
+    "vertices": 3016,
+    "triangles": 5824,
+    "materials": 5,
+    "bones": 10,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 205196,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "entei",
+    "name": "熔岩獅鷲",
+    "vertices": 2824,
+    "triangles": 5372,
+    "materials": 5,
+    "bones": 10,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 196744,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "suicune",
+    "name": "澄夢長頸鹿",
+    "vertices": 2768,
+    "triangles": 5376,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 183912,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "kyogre",
+    "name": "星潮空鯨",
+    "vertices": 1686,
+    "triangles": 3264,
+    "materials": 5,
+    "bones": 6,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 125832,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "groudon",
+    "name": "大地晶甲龜",
+    "vertices": 3912,
+    "triangles": 7632,
+    "materials": 5,
+    "bones": 8,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 247776,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "rayquaza",
+    "name": "風環遊龍",
+    "vertices": 1556,
+    "triangles": 3012,
+    "materials": 5,
+    "bones": 4,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 110396,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "dialga",
+    "name": "時砂巨象",
+    "vertices": 2844,
+    "triangles": 5572,
+    "materials": 5,
+    "bones": 7,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 184348,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "palkia",
+    "name": "月瀾海馬",
+    "vertices": 1496,
+    "triangles": 2900,
+    "materials": 5,
+    "bones": 4,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 107080,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "giratina",
+    "name": "暮影六翼鹿",
+    "vertices": 3016,
+    "triangles": 5824,
+    "materials": 5,
+    "bones": 10,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 205224,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "pikachu",
+    "name": "閃角兔",
+    "vertices": 2342,
+    "triangles": 4576,
+    "materials": 5,
+    "bones": 7,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 157092,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "mew",
+    "name": "星霧雲靈",
+    "vertices": 2958,
+    "triangles": 5808,
+    "materials": 5,
+    "bones": 6,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 193960,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "wigglytuff",
+    "name": "絨心團獸",
+    "vertices": 3860,
+    "triangles": 7600,
+    "materials": 5,
+    "bones": 7,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 242088,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "blissey",
+    "name": "暖巢福鹿",
+    "vertices": 3598,
+    "triangles": 7016,
+    "materials": 5,
+    "bones": 8,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 230240,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "raichu",
+    "name": "霆冠躍兔",
+    "vertices": 2402,
+    "triangles": 4688,
+    "materials": 5,
+    "bones": 7,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 162264,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "caterpie",
+    "name": "葉露毛球",
+    "vertices": 2716,
+    "triangles": 5320,
+    "materials": 5,
+    "bones": 7,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 177576,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "metapod",
+    "name": "琥葉眠繭",
+    "vertices": 1378,
+    "triangles": 2688,
+    "materials": 5,
+    "bones": 4,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 99156,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "butterfree",
+    "name": "晴葉彩蛾",
+    "vertices": 2718,
+    "triangles": 5320,
+    "materials": 5,
+    "bones": 10,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 190624,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "weedle",
+    "name": "砂角幼蟲",
+    "vertices": 2746,
+    "triangles": 5376,
+    "materials": 5,
+    "bones": 7,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 179236,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "kakuna",
+    "name": "晶砂繭",
+    "vertices": 1468,
+    "triangles": 2856,
+    "materials": 5,
+    "bones": 4,
+    "height": 1.6575,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 104124,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "beedrill",
+    "name": "琥晶蜻靈",
+    "vertices": 2718,
+    "triangles": 5320,
+    "materials": 5,
+    "bones": 10,
+    "height": 2.15475,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 190620,
+    "source": "Blender native authored mesh and skeletal animation"
+  },
+  {
+    "id": "jigglypuff",
+    "name": "夢鈴絨球",
+    "vertices": 3264,
+    "triangles": 6408,
+    "materials": 5,
+    "bones": 7,
+    "height": 1.275,
+    "animations": [
+      "Idle",
+      "Walk",
+      "Attack",
+      "Hurt"
+    ],
+    "fileBytes": 210288,
+    "source": "Blender native authored mesh and skeletal animation"
+  }
+]
