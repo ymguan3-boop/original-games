@@ -42,22 +42,65 @@ body.impact-heavy .vignette{box-shadow:inset 0 0 110px #ffbf5933}body.impact-lig
  #ultimateButton{right:9px;width:113px}
 }
 
-/* 2026-10-13: Thumb fan — three secondary actions orbit left of the main weapon switch. */
+/* 2026-10-13: compact fan controls and consistent tower navigation. */
+/* Shared header style: the return link must match the neighboring buttons. */
+.topbar nav{display:flex;align-items:center;gap:6px}
+.topbar nav .returnTown,.topbar nav #bagButton,.topbar nav #soundButton,.topbar nav #pauseButton{
+ display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;
+ height:38px;min-height:38px;margin:0;padding:0 11px;border-radius:6px;
+ border:1px solid var(--line);background:#162a22c7;color:#f2f0dc;
+ font-size:12px;font-weight:400;line-height:1;text-decoration:none;white-space:nowrap;
+ box-shadow:none;vertical-align:middle;
+}
+.topbar nav .returnTown:hover,.topbar nav .returnTown:focus-visible{background:#354c39;border-color:var(--gold)}
+@media(max-width:700px) and (orientation:portrait){
+ .topbar{gap:6px;padding-left:10px;padding-right:10px}
+ .topbar nav{gap:4px;flex-shrink:0}
+ .topbar nav .returnTown,.topbar nav #bagButton,.topbar nav #soundButton,.topbar nav #pauseButton{
+  height:34px;min-height:34px;padding:0 clamp(5px,1.4vw,9px);
+  border-radius:5px;font-size:clamp(9px,2.5vw,11px);line-height:1;
+ }
+ .chapter{min-width:0;flex:1 1 auto;overflow:hidden}
+ .chapter h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+/* Weapon switch is the main action. Three equally-sized secondary controls form a tight left crescent. */
 @media (pointer:coarse) and (max-width:700px) and (orientation:portrait){
- .mobile-controls #mobileAttack{right:12px!important;bottom:calc(131px + env(safe-area-inset-bottom))!important;width:92px!important;height:92px!important;z-index:5;border-width:2px;touch-action:manipulation;will-change:transform}
- .mobile-controls #mobileDodge{right:145px!important;bottom:calc(155px + env(safe-area-inset-bottom))!important;width:54px!important;height:54px!important;z-index:5;touch-action:manipulation}
- .mobile-controls #mobileHeal{right:120px!important;bottom:calc(242px + env(safe-area-inset-bottom))!important;width:54px!important;height:54px!important;z-index:5;font-size:12px}
- #ultimateButton{right:114px!important;bottom:calc(61px + env(safe-area-inset-bottom))!important;width:90px!important;height:70px!important;z-index:5;padding:6px!important;border-radius:16px;text-align:center;touch-action:manipulation}
- #ultimateButton .ultimate-label{gap:5px;align-items:center;justify-content:center;height:100%}
- #ultimateButton .ultimate-label strong{font-size:11px;line-height:1.2;letter-spacing:0}
- #ultimateButton .ultimate-label small{font-size:11px}
- .mobile-controls #mobileHeal span{display:none}
+ .mobile-controls #mobileAttack{
+  right:12px!important;bottom:calc(127px + env(safe-area-inset-bottom))!important;
+  width:92px!important;height:92px!important;z-index:5;touch-action:manipulation;
+  border-width:2px;will-change:transform;
+ }
+ .mobile-controls #mobileHeal,.mobile-controls #mobileDodge,#ultimateButton{
+  width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+  border-radius:50%!important;box-sizing:border-box;z-index:5;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  padding:2px!important;font-size:11px!important;font-weight:700;line-height:1.15;
+  text-align:center;touch-action:manipulation;
+ }
+ /* Relative to the main button's center: upper-left, direct-left, and lower-left. */
+ .mobile-controls #mobileHeal{right:105px!important;bottom:calc(204px + env(safe-area-inset-bottom))!important}
+ .mobile-controls #mobileDodge{right:126px!important;bottom:calc(152px + env(safe-area-inset-bottom))!important}
+ #ultimateButton{
+  right:105px!important;bottom:calc(99px + env(safe-area-inset-bottom))!important;
+  overflow:hidden;background:#855728e8!important;border-color:#f2cf8b!important;
+ }
+ #ultimateButton .ultimate-label{display:flex;align-items:center;justify-content:center;gap:1px;height:100%;width:100%}
+ #ultimateButton .ultimate-label strong{font-size:10px!important;letter-spacing:0!important;line-height:1.1}
+ #ultimateButton .ultimate-label small{font-size:9px!important;letter-spacing:0;white-space:nowrap;margin:0}
+ #ultimateButton .ultimate-fill{pointer-events:none}
+ #ultimateButton kbd{display:none!important}
 }
 @media (pointer:coarse) and (max-width:360px) and (orientation:portrait){
- .mobile-controls #mobileAttack{right:8px!important;width:78px!important;height:78px!important}
- .mobile-controls #mobileDodge{right:111px!important;bottom:calc(156px + env(safe-area-inset-bottom))!important;width:46px!important;height:46px!important}
- .mobile-controls #mobileHeal{right:100px!important;bottom:calc(229px + env(safe-area-inset-bottom))!important;width:46px!important;height:46px!important}
- #ultimateButton{right:105px!important;bottom:calc(59px + env(safe-area-inset-bottom))!important;width:82px!important;height:66px!important}
+ .mobile-controls #mobileAttack{right:8px!important;width:82px!important;height:82px!important;bottom:calc(127px + env(safe-area-inset-bottom))!important}
+ .mobile-controls #mobileHeal,.mobile-controls #mobileDodge,#ultimateButton{
+  width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;
+  font-size:10px!important;
+ }
+ .mobile-controls #mobileHeal{right:93px!important;bottom:calc(197px + env(safe-area-inset-bottom))!important}
+ .mobile-controls #mobileDodge{right:112px!important;bottom:calc(152px + env(safe-area-inset-bottom))!important}
+ #ultimateButton{right:93px!important;bottom:calc(106px + env(safe-area-inset-bottom))!important}
+ #ultimateButton .ultimate-label strong{font-size:9px!important}
+ #ultimateButton .ultimate-label small{font-size:8px!important}
 }
 </style></head>
 <body>
@@ -302,7 +345,7 @@ function placeFloatingHp(id,x,y,z){
  el.style.top=clamp(pos.y,54,Math.max(54,innerHeight-145))+'px';
 }
 function formatTime(t){return`${Math.floor(t/60).toString().padStart(2,'0')}:${Math.floor(t%60).toString().padStart(2,'0')}`;}
-function updateHUD(){const p=h.player,m=h.monster;$('hp').textContent=Math.ceil(p.hp);$('hpBar').style.width=p.hp/150*100+'%';$('stamina').textContent=Math.floor(p.stamina);$('staminaBar').style.width=p.stamina+'%';$('potions').textContent=h.potions;$('power').textContent=`武器強化 +${h.save.upgrade}`;$('rank').textContent=`RANK ${String(h.save.cleared.length+1).padStart(2,'0')}`;$('bossBar').style.width=m.hp/m.maxHp*100+'%';$('bossHp').textContent=`${Math.ceil(m.hp)} / ${m.maxHp}`;$('bossState').textContent=h.mode==='victory'?'挑戰完成':m.state==='windup'?'蓄力中':m.state==='recover'?'破綻！':m.enraged?'憤怒狀態':h.engaged?'交戰中':'準備就緒';$('itemCount').textContent=Object.values(h.save.inventory).reduce((a,b)=>a+b,0);document.querySelectorAll('[data-weapon]').forEach(el=>{const active=+el.dataset.weapon===p.weapon;el.classList.toggle('active',active);el.setAttribute('aria-pressed',active);});document.getElementById('mobileAttack').querySelector('small').textContent=WEAPONS[p.weapon].short;document.getElementById('mobileHeal').setAttribute('aria-label',`使用道具（剩餘${h.potions}）`);document.getElementById('ultimateFill').style.width=((1-p.ultimateCd/ULTIMATE_COOLDOWN)*100)+'%';document.getElementById('ultimateName').textContent=ULTIMATE_NAMES[p.weapon];document.getElementById('ultimateCharge').textContent=p.ultimateCd>0?'CD '+Math.ceil(p.ultimateCd)+' 秒':'點擊施放';document.getElementById('ultimateButton').classList.toggle('ready',p.ultimateCd<=0);document.getElementById('ultimateButton').setAttribute('aria-disabled',String(p.ultimateCd>0));
+function updateHUD(){const p=h.player,m=h.monster;$('hp').textContent=Math.ceil(p.hp);$('hpBar').style.width=p.hp/150*100+'%';$('stamina').textContent=Math.floor(p.stamina);$('staminaBar').style.width=p.stamina+'%';$('potions').textContent=h.potions;$('power').textContent=`武器強化 +${h.save.upgrade}`;$('rank').textContent=`RANK ${String(h.save.cleared.length+1).padStart(2,'0')}`;$('bossBar').style.width=m.hp/m.maxHp*100+'%';$('bossHp').textContent=`${Math.ceil(m.hp)} / ${m.maxHp}`;$('bossState').textContent=h.mode==='victory'?'挑戰完成':m.state==='windup'?'蓄力中':m.state==='recover'?'破綻！':m.enraged?'憤怒狀態':h.engaged?'交戰中':'準備就緒';$('itemCount').textContent=Object.values(h.save.inventory).reduce((a,b)=>a+b,0);document.querySelectorAll('[data-weapon]').forEach(el=>{const active=+el.dataset.weapon===p.weapon;el.classList.toggle('active',active);el.setAttribute('aria-pressed',active);});document.getElementById('mobileAttack').querySelector('small').textContent=WEAPONS[p.weapon].short;document.getElementById('mobileHeal').setAttribute('aria-label',`使用道具（剩餘${h.potions}）`);document.getElementById('ultimateFill').style.width=((1-p.ultimateCd/ULTIMATE_COOLDOWN)*100)+'%';document.getElementById('ultimateName').textContent='大絕';document.getElementById('ultimateCharge').textContent=p.ultimateCd>0?Math.ceil(p.ultimateCd)+'s':'可用';document.getElementById('ultimateButton').setAttribute('aria-label',`大絕招：${ULTIMATE_NAMES[p.weapon]}${p.ultimateCd>0?`，冷卻中 ${Math.ceil(p.ultimateCd)} 秒`: '，可施放'}`);document.getElementById('ultimateButton').title=ULTIMATE_NAMES[p.weapon];document.getElementById('ultimateButton').classList.toggle('ready',p.ultimateCd<=0);document.getElementById('ultimateButton').setAttribute('aria-disabled',String(p.ultimateCd>0));
  $('playerHpFloatText').textContent=Math.ceil(p.hp)+' / 150';$('playerHpFloatBar').style.width=p.hp/150*100+'%';
  $('bossFloatName').textContent=LEVELS[h.level].monster;$('bossHpFloatText').textContent=Math.ceil(m.hp)+' / '+m.maxHp;$('bossHpFloatBar').style.width=m.hp/m.maxHp*100+'%';
  placeFloatingHp('playerFloatingHp',p.x,(world.hunter?.userData.modelHeight||2.55)+.65,p.z);
