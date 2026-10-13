@@ -41,6 +41,24 @@ body.impact-heavy .vignette{box-shadow:inset 0 0 110px #ffbf5933}body.impact-lig
  .mobile-controls #mobileHeal{right:76px}
  #ultimateButton{right:9px;width:113px}
 }
+
+/* 2026-10-13: Thumb fan — three secondary actions orbit left of the main weapon switch. */
+@media (pointer:coarse) and (max-width:700px) and (orientation:portrait){
+ .mobile-controls #mobileAttack{right:12px!important;bottom:calc(131px + env(safe-area-inset-bottom))!important;width:92px!important;height:92px!important;z-index:5;border-width:2px;touch-action:manipulation;will-change:transform}
+ .mobile-controls #mobileDodge{right:145px!important;bottom:calc(155px + env(safe-area-inset-bottom))!important;width:54px!important;height:54px!important;z-index:5;touch-action:manipulation}
+ .mobile-controls #mobileHeal{right:120px!important;bottom:calc(242px + env(safe-area-inset-bottom))!important;width:54px!important;height:54px!important;z-index:5;font-size:12px}
+ #ultimateButton{right:114px!important;bottom:calc(61px + env(safe-area-inset-bottom))!important;width:90px!important;height:70px!important;z-index:5;padding:6px!important;border-radius:16px;text-align:center;touch-action:manipulation}
+ #ultimateButton .ultimate-label{gap:5px;align-items:center;justify-content:center;height:100%}
+ #ultimateButton .ultimate-label strong{font-size:11px;line-height:1.2;letter-spacing:0}
+ #ultimateButton .ultimate-label small{font-size:11px}
+ .mobile-controls #mobileHeal span{display:none}
+}
+@media (pointer:coarse) and (max-width:360px) and (orientation:portrait){
+ .mobile-controls #mobileAttack{right:8px!important;width:78px!important;height:78px!important}
+ .mobile-controls #mobileDodge{right:111px!important;bottom:calc(156px + env(safe-area-inset-bottom))!important;width:46px!important;height:46px!important}
+ .mobile-controls #mobileHeal{right:100px!important;bottom:calc(229px + env(safe-area-inset-bottom))!important;width:46px!important;height:46px!important}
+ #ultimateButton{right:105px!important;bottom:calc(59px + env(safe-area-inset-bottom))!important;width:82px!important;height:66px!important}
+}
 </style></head>
 <body>
 
@@ -54,7 +72,7 @@ body.impact-heavy .vignette{box-shadow:inset 0 0 110px #ffbf5933}body.impact-lig
   <div id="callout" role="status" aria-live="polite"></div><div id="numbers"></div><div id="toast" role="status"></div>
 
  <div class="touch-move" aria-label="觸控移動"><button data-move="up" aria-label="向前">▲</button><button data-move="left" aria-label="向左">◀</button><button data-move="down" aria-label="向後">▼</button><button data-move="right" aria-label="向右">▶</button></div><div class="touch-actions"><button id="touchHeal">回復</button><button id="touchDodge">翻滾</button><button id="touchAttack">換武器</button></div>
- <section class="mobile-controls" aria-label="手機戰鬥操作"><div id="joystick" role="group" aria-label="移動搖桿"><span class="joystick-guide">移動</span><div id="joystickKnob"></div></div><button id="mobileAttack" aria-label="切換武器"><span>↻</span><strong>換武器</strong><small>大劍</small></button><button id="mobileDodge" aria-label="翻滾閃避">翻滾</button><button id="mobileHeal" aria-label="使用道具（回復藥）">道具 <span id="mobilePotions">5</span></button></section><button id="ultimateButton" aria-label="施放大絕招"><span class="ultimate-fill" id="ultimateFill"></span><span class="ultimate-label"><strong id="ultimateName">裂地天斬</strong><small id="ultimateCharge">可施放</small></span><kbd>R</kbd></button><div id="ultimateBanner" aria-live="polite"></div><dialog id="panel"><button id="closePanel" aria-label="關閉視窗">×</button><div id="panelContent"></div></dialog>
+ <section class="mobile-controls" aria-label="手機戰鬥操作"><div id="joystick" role="group" aria-label="移動搖桿"><span class="joystick-guide">移動</span><div id="joystickKnob"></div></div><button id="mobileAttack" aria-label="切換武器"><span>↻</span><strong>換武器</strong><small>大劍</small></button><button id="mobileDodge" aria-label="翻滾閃避">翻滾</button><button id="mobileHeal" aria-label="使用回復道具">道具</button></section><button id="ultimateButton" aria-label="施放大絕招"><span class="ultimate-fill" id="ultimateFill"></span><span class="ultimate-label"><strong id="ultimateName">裂地天斬</strong><small id="ultimateCharge">可施放</small></span><kbd>R</kbd></button><div id="ultimateBanner" aria-live="polite"></div><dialog id="panel"><button id="closePanel" aria-label="關閉視窗">×</button><div id="panelContent"></div></dialog>
  <div id="loading"><span class="brand-icon">⟐</span><h2>星穹挑戰塔</h2><p>正在準備星穹挑戰塔…</p></div>
  </main><script>/**
  * @license
@@ -78,14 +96,29 @@ const distance=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 const direction=(a,b)=>{let d=distance(a,b)||1;return{x:(b.x-a.x)/d,z:(b.z-a.z)/d};};
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const ULTIMATE_COOLDOWN=18;
+const ULTIMATE_NAMES=['斷岳三連斬','逐風十連擊','曙光箭雨'];
+const ULTIMATE_HITS=[3,10,9];
+const ULTIMATE_DAMAGE=[126,38,43];
 class Hunt {
  constructor(save=freshSave()){this.save=save;this.events=[];this.load(0);}
  emit(type,data={}){this.events.push({type,...data});}
- load(index){this.level=clamp(index,0,2);this.mode='battle';this.engaged=false;this.time=0;this.paused=false;this.rewarded=false;this.potions=5;this.combo=0;this.player={x:0,z:9,hp:150,stamina:100,weapon:0,cooldown:0,invulnerable:0,dodge:0,dx:0,dz:-1,attack:0,ultimateCd:0,special:0,facing:Math.PI};this.monster={x:0,z:-5,hp:LEVELS[this.level].hp,maxHp:LEVELS[this.level].hp,state:'idle',timer:3,phase:0,facing:0,flash:0,enraged:false};this.hazards=[];this.projectiles=[];this.emit('level');}
+ load(index){this.level=clamp(index,0,2);this.mode='battle';this.engaged=false;this.time=0;this.paused=false;this.rewarded=false;this.potions=5;this.combo=0;this.ultimateSequence=null;this.player={x:0,z:9,hp:150,stamina:100,weapon:0,cooldown:0,invulnerable:0,dodge:0,dx:0,dz:-1,attack:0,ultimateCd:0,special:0,facing:Math.PI};this.monster={x:0,z:-5,hp:LEVELS[this.level].hp,maxHp:LEVELS[this.level].hp,state:'idle',timer:3,phase:0,facing:0,flash:0,enraged:false};this.hazards=[];this.projectiles=[];this.emit('level');}
  switchWeapon(i){if(this.mode!=='battle'||this.paused||i<0||i>2)return;this.player.weapon=i;this.emit('weapon',{i});}
  attack(heavy=false){const p=this.player,m=this.monster,w=WEAPONS[p.weapon],cost=heavy?w.heavyCost:w.cost;if(this.mode!=='battle'||this.paused||p.cooldown>0||p.dodge>0||p.stamina<cost)return false;this.engaged=true;p.stamina-=cost;p.cooldown=w.cooldown*(heavy?1.75:1);p.attack=p.cooldown;p.facing=Math.atan2(m.x-p.x,m.z-p.z);this.emit('swing',{heavy,weapon:p.weapon});const amount=Math.round((heavy?w.heavy:w.damage)*(1+this.save.upgrade*.15));if(p.weapon===2){const d=direction(p,m);this.projectiles.push({x:p.x,z:p.z,dx:d.x,dz:d.z,life:w.range/28,damage:amount,heavy});}else if(distance(p,m)<w.range+1){this.damageMonster(amount,heavy);}return true;}
  damageMonster(amount,heavy,ultimate=false){if(this.mode!=='battle')return;const m=this.monster;m.hp=Math.max(0,m.hp-amount);m.flash=ultimate?.3:.14;this.combo++;this.emit('hit',{amount,x:m.x,z:m.z,heavy,ultimate});if(m.hp===0){this.mode='victory';this.hazards=[];this.projectiles=[];m.state='dead';this.emit('victory');this.claimRewards();}}
- unleash(){const p=this.player,m=this.monster;if(this.mode!=='battle'||this.paused||p.ultimateCd>0||p.special>0||distance(p,m)>22)return false;this.engaged=true;p.ultimateCd=ULTIMATE_COOLDOWN;p.special=1.1;p.invulnerable=1.35;p.cooldown=1.1;p.dodge=0;p.facing=Math.atan2(m.x-p.x,m.z-p.z);m.state='recover';m.timer=2.4;this.hazards=[];const names=['裂地天斬','千刃風暴','流星穿雲'];const amount=Math.round([340,310,290][p.weapon]*(1+this.save.upgrade*.15));this.emit('ultimate',{name:names[p.weapon],weapon:p.weapon,x:m.x,z:m.z});this.damageMonster(amount,true,true);return true;}
+ unleash(){const p=this.player,m=this.monster;if(this.mode!=='battle'||this.paused||p.ultimateCd>0||p.special>0||distance(p,m)>22)return false;
+  this.engaged=true;p.ultimateCd=ULTIMATE_COOLDOWN;p.special=1.85;p.invulnerable=2.1;p.cooldown=1.85;p.dodge=0;p.facing=Math.atan2(m.x-p.x,m.z-p.z);m.state='recover';m.timer=2.55;this.hazards=[];
+  this.ultimateSequence={weapon:p.weapon,count:ULTIMATE_HITS[p.weapon],index:0,elapsed:0,interval:[.36,.105,.155][p.weapon],base:Math.round(ULTIMATE_DAMAGE[p.weapon]*(1+this.save.upgrade*.15))};
+  this.emit('ultimate',{name:ULTIMATE_NAMES[p.weapon],weapon:p.weapon,x:m.x,z:m.z});return true;
+ }
+ tickUltimate(dt){const seq=this.ultimateSequence;if(!seq||this.mode!=='battle'||this.paused)return;seq.elapsed+=dt;
+  while(seq.index<seq.count&&seq.elapsed>=seq.index*seq.interval){
+   const index=seq.index++,m=this.monster,offset=seq.weapon===2?(index%3-1)*1.15:0;
+   this.emit('ultimateStrike',{weapon:seq.weapon,index,total:seq.count,x:m.x+offset,z:m.z});
+   this.damageMonster(seq.base,true,true);if(this.mode!=='battle')break;
+  }
+  if(seq.index>=seq.count||this.mode!=='battle')this.ultimateSequence=null;
+ }
  claimRewards(){if(this.rewarded||this.mode!=='victory')return false;this.rewarded=true;const drops=LEVELS[this.level].loot.map((name,i)=>({name,count:i===0?3:i===1?2:1}));for(const d of drops)this.save.inventory[d.name]=(this.save.inventory[d.name]||0)+d.count;if(!this.save.cleared.includes(this.level))this.save.cleared.push(this.level);this.save.kills++;this.emit('rewards',{drops});return true;}
  upgrade(){const name=LEVELS[this.level].loot[0];if(this.mode!=='victory'||this.save.upgrade>=3||(this.save.inventory[name]||0)<3)return false;this.save.inventory[name]-=3;this.save.upgrade++;this.emit('upgrade');return true;}
  dodge(dx=0,dz=0){const p=this.player;if(this.mode!=='battle'||this.paused||p.dodge>0||p.stamina<22)return false;this.engaged=true;const n=Math.hypot(dx,dz);if(n===0){dx=Math.sin(p.facing);dz=Math.cos(p.facing);}else{dx/=n;dz/=n;}p.dx=dx;p.dz=dz;p.dodge=.36;p.invulnerable=.43;p.stamina-=22;this.emit('dodge');return true;}
@@ -93,7 +126,7 @@ class Hunt {
  damagePlayer(amount){const p=this.player;if(p.invulnerable>0||this.mode!=='battle')return false;p.hp=Math.max(0,p.hp-amount);p.invulnerable=.85;this.emit('hurt',{amount});if(p.hp===0){this.mode='defeat';this.emit('defeat');}return true;}
  startPattern(){const m=this.monster,p=this.player;m.phase++;const type=this.level===0?(m.phase%3===0?'stomp':'charge'):this.level===1?(m.phase%2===0?'frost':'charge'):(m.phase%3===0?'charge':m.phase%2===0?'eruption':'breath');m.state='windup';m.pattern=type;m.timer=type==='charge'?1.05:1.35;m.target={x:p.x,z:p.z};m.origin={x:m.x,z:m.z};m.dir=direction(m,p);m.facing=Math.atan2(m.dir.x,m.dir.z);this.emit('warning',{pattern:type});if(type==='frost'||type==='eruption'){for(let i=0;i<3;i++){this.hazards.push({x:p.x+(i-1)*3.8,z:p.z+(i%2)*3,radius:2.6,timer:1.3+i*.3,life:.65,active:false,hit:false,type});}}}
  resolvePattern(){const m=this.monster,p=this.player;const enr=m.enraged?1.2:1;if(m.pattern==='charge'){m.state='charge';m.timer=.85;m.hit=false;}else{if(m.pattern==='stomp'&&distance(m,p)<6)this.damagePlayer(34*enr);if(m.pattern==='breath'){const d=direction(m,p),dot=d.x*m.dir.x+d.z*m.dir.z;if(distance(m,p)<12&&dot>.63)this.damagePlayer(38*enr);}this.emit('impact',{pattern:m.pattern});m.state='recover';m.timer=1.8;}}
- tick(dt,input={}){dt=clamp(dt,0,.05);if(this.paused||this.mode!=='battle')return;if(input.x||input.z)this.engaged=true;if(!this.engaged)return;this.time+=dt;const p=this.player,m=this.monster;p.special=Math.max(0,p.special-dt);p.ultimateCd=Math.max(0,p.ultimateCd-dt);p.cooldown=Math.max(0,p.cooldown-dt);p.attack=Math.max(0,p.attack-dt);p.invulnerable=Math.max(0,p.invulnerable-dt);m.flash=Math.max(0,m.flash-dt);let dx=input.x||0,dz=input.z||0,len=Math.hypot(dx,dz);if(p.dodge>0){p.dodge-=dt;p.x+=p.dx*17*dt;p.z+=p.dz*17*dt;}else{if(len>0){dx/=len;dz/=len;const speed=p.attack>0?3:7.2;p.x+=dx*speed*dt;p.z+=dz*speed*dt;if(p.attack<=0)p.facing=Math.atan2(dx,dz);}p.stamina=clamp(p.stamina+dt*(p.attack>0?5:22),0,100);}let rad=Math.hypot(p.x,p.z);if(rad>22){p.x*=22/rad;p.z*=22/rad;}
+ tick(dt,input={}){dt=clamp(dt,0,.05);if(this.paused||this.mode!=='battle')return;if(input.x||input.z)this.engaged=true;if(!this.engaged)return;this.time+=dt;this.tickUltimate(dt);if(this.mode!=='battle')return;const p=this.player,m=this.monster;p.special=Math.max(0,p.special-dt);p.ultimateCd=Math.max(0,p.ultimateCd-dt);p.cooldown=Math.max(0,p.cooldown-dt);p.attack=Math.max(0,p.attack-dt);p.invulnerable=Math.max(0,p.invulnerable-dt);m.flash=Math.max(0,m.flash-dt);let dx=input.x||0,dz=input.z||0,len=Math.hypot(dx,dz);if(p.dodge>0){p.dodge-=dt;p.x+=p.dx*17*dt;p.z+=p.dz*17*dt;}else{if(len>0){dx/=len;dz/=len;const speed=p.attack>0?3:7.2;p.x+=dx*speed*dt;p.z+=dz*speed*dt;if(p.attack<=0)p.facing=Math.atan2(dx,dz);}p.stamina=clamp(p.stamina+dt*(p.attack>0?5:22),0,100);}let rad=Math.hypot(p.x,p.z);if(rad>22){p.x*=22/rad;p.z*=22/rad;}
  const sep=distance(p,m);if(sep<2.25&&sep>.001){p.x=m.x+(p.x-m.x)*2.25/sep;p.z=m.z+(p.z-m.z)*2.25/sep;}
  for(const shot of this.projectiles){shot.x+=shot.dx*28*dt;shot.z+=shot.dz*28*dt;shot.life-=dt;if(distance(shot,m)<2.5){shot.life=0;this.damageMonster(shot.damage,shot.heavy);}}
  this.projectiles=this.projectiles.filter(v=>v.life>0);if(this.mode!=='battle')return;
@@ -188,7 +221,10 @@ function bindMobileControls({keys,touch,action,readInput,setJoystick}){
  zone.addEventListener('pointerdown',e=>{e.preventDefault();if(pointer!==null)return;pointer=e.pointerId;zone.setPointerCapture(pointer);move(e);zone.classList.add('engaged');});zone.addEventListener('pointermove',e=>{if(e.pointerId===pointer)move(e);});
  function reset(e){if(e&&pointer!==e.pointerId)return;pointer=null;knob.style.transform='translate(0,0)';zone.classList.remove('engaged');setJoystick(0,0);}
  for(const name of ['pointerup','pointercancel','lostpointercapture'])zone.addEventListener(name,reset);addEventListener('blur',()=>reset());
- const cycle=document.getElementById('mobileAttack');cycle.addEventListener('click',()=>action('cycle'));
+ const cycle=document.getElementById('mobileAttack');
+ // Touch the switcher on pointerdown: do not wait for delayed synthetic click.
+ cycle.addEventListener('pointerdown',e=>{if(!e.isPrimary||e.button!==0)return;e.preventDefault();action('cycle');});
+ cycle.addEventListener('click',e=>{if(e.detail===0)action('cycle');});
  for(const [id,type]of[['mobileDodge','dodge'],['mobileHeal','heal'],['ultimateButton','ultimate']])document.getElementById(id).addEventListener('click',()=>action(type));
  return {reset:()=>reset()};
 }
@@ -240,7 +276,7 @@ function placeFloatingHp(id,x,y,z){
  el.style.top=clamp(pos.y,54,Math.max(54,innerHeight-145))+'px';
 }
 function formatTime(t){return`${Math.floor(t/60).toString().padStart(2,'0')}:${Math.floor(t%60).toString().padStart(2,'0')}`;}
-function updateHUD(){const p=h.player,m=h.monster;$('hp').textContent=Math.ceil(p.hp);$('hpBar').style.width=p.hp/150*100+'%';$('stamina').textContent=Math.floor(p.stamina);$('staminaBar').style.width=p.stamina+'%';$('potions').textContent=h.potions;$('power').textContent=`武器強化 +${h.save.upgrade}`;$('rank').textContent=`RANK ${String(h.save.cleared.length+1).padStart(2,'0')}`;$('bossBar').style.width=m.hp/m.maxHp*100+'%';$('bossHp').textContent=`${Math.ceil(m.hp)} / ${m.maxHp}`;$('bossState').textContent=h.mode==='victory'?'挑戰完成':m.state==='windup'?'蓄力中':m.state==='recover'?'破綻！':m.enraged?'憤怒狀態':h.engaged?'交戰中':'準備就緒';$('itemCount').textContent=Object.values(h.save.inventory).reduce((a,b)=>a+b,0);document.querySelectorAll('[data-weapon]').forEach(el=>{const active=+el.dataset.weapon===p.weapon;el.classList.toggle('active',active);el.setAttribute('aria-pressed',active);});document.getElementById('mobileAttack').querySelector('small').textContent=WEAPONS[p.weapon].short;document.getElementById('mobilePotions').textContent=h.potions;document.getElementById('ultimateFill').style.width=((1-p.ultimateCd/ULTIMATE_COOLDOWN)*100)+'%';document.getElementById('ultimateName').textContent=['裂地天斬','千刃風暴','流星穿雲'][p.weapon];document.getElementById('ultimateCharge').textContent=p.ultimateCd>0?'CD '+Math.ceil(p.ultimateCd)+' 秒':'點擊施放';document.getElementById('ultimateButton').classList.toggle('ready',p.ultimateCd<=0);document.getElementById('ultimateButton').setAttribute('aria-disabled',String(p.ultimateCd>0));
+function updateHUD(){const p=h.player,m=h.monster;$('hp').textContent=Math.ceil(p.hp);$('hpBar').style.width=p.hp/150*100+'%';$('stamina').textContent=Math.floor(p.stamina);$('staminaBar').style.width=p.stamina+'%';$('potions').textContent=h.potions;$('power').textContent=`武器強化 +${h.save.upgrade}`;$('rank').textContent=`RANK ${String(h.save.cleared.length+1).padStart(2,'0')}`;$('bossBar').style.width=m.hp/m.maxHp*100+'%';$('bossHp').textContent=`${Math.ceil(m.hp)} / ${m.maxHp}`;$('bossState').textContent=h.mode==='victory'?'挑戰完成':m.state==='windup'?'蓄力中':m.state==='recover'?'破綻！':m.enraged?'憤怒狀態':h.engaged?'交戰中':'準備就緒';$('itemCount').textContent=Object.values(h.save.inventory).reduce((a,b)=>a+b,0);document.querySelectorAll('[data-weapon]').forEach(el=>{const active=+el.dataset.weapon===p.weapon;el.classList.toggle('active',active);el.setAttribute('aria-pressed',active);});document.getElementById('mobileAttack').querySelector('small').textContent=WEAPONS[p.weapon].short;document.getElementById('mobileHeal').setAttribute('aria-label',`使用道具（剩餘${h.potions}）`);document.getElementById('ultimateFill').style.width=((1-p.ultimateCd/ULTIMATE_COOLDOWN)*100)+'%';document.getElementById('ultimateName').textContent=ULTIMATE_NAMES[p.weapon];document.getElementById('ultimateCharge').textContent=p.ultimateCd>0?'CD '+Math.ceil(p.ultimateCd)+' 秒':'點擊施放';document.getElementById('ultimateButton').classList.toggle('ready',p.ultimateCd<=0);document.getElementById('ultimateButton').setAttribute('aria-disabled',String(p.ultimateCd>0));
  $('playerHpFloatText').textContent=Math.ceil(p.hp)+' / 150';$('playerHpFloatBar').style.width=p.hp/150*100+'%';
  $('bossFloatName').textContent=LEVELS[h.level].monster;$('bossHpFloatText').textContent=Math.ceil(m.hp)+' / '+m.maxHp;$('bossHpFloatBar').style.width=m.hp/m.maxHp*100+'%';
  placeFloatingHp('playerFloatingHp',p.x,(world.hunter?.userData.modelHeight||2.55)+.65,p.z);
