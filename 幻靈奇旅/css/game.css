@@ -179,3 +179,41 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 116px);left:50%;r
 
 body.gym-active #battleActions{left:12px;transform:none;width:144px}
 body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;right:12px;transform:none;max-width:none;width:min(220px,calc(100vw - 180px));text-align:left}
+
+/* 2026-10-13 portrait HUD no overflow: keep all five counters inside the safe viewport. */
+@media(max-width:700px) and (orientation:portrait){
+ #hud{
+   left:env(safe-area-inset-left,0px);
+   right:env(safe-area-inset-right,0px);
+   top:calc(env(safe-area-inset-top,0px) + 5px);
+   width:auto;max-width:none;transform:none;
+   padding:0 6px;display:grid;
+   grid-template-columns:minmax(0,1.42fr) minmax(0,1.38fr) repeat(3,minmax(0,1fr));
+   align-items:stretch;gap:3px;
+   box-sizing:border-box;white-space:nowrap;
+ }
+ #hud>*{
+   min-width:0;width:100%;height:42px;min-height:42px;
+   padding:4px 2px;
+   display:flex;flex-wrap:nowrap;
+   align-items:center;justify-content:center;gap:2px;
+   border-radius:12px;
+   font-size:clamp(9px,2.65vw,12px);
+   overflow:hidden;
+ }
+ #hud b{min-width:0;margin:0;white-space:nowrap;font-size:inherit;line-height:1.2;font-variant-numeric:tabular-nums}
+ #hud .hudLabel{display:none}
+ #hud .dexIcon{display:inline-block;font-size:clamp(11px,3vw,15px);line-height:1}
+ #hud .coreBall,#hud .fruitIcon{
+   display:inline-block;flex:0 0 15px;
+   width:15px;height:15px;margin:0;
+ }
+ #hud #dexBtn{height:42px;min-height:42px;padding:4px 2px}
+ #menuBtn{top:calc(env(safe-area-inset-top,0px) + 55px)}
+ #radar{top:calc(env(safe-area-inset-top,0px) + 55px)}
+}
+@media(max-width:360px) and (orientation:portrait){
+ #hud{padding:0 4px;gap:2px}
+ #hud>*{font-size:9px;padding:3px 1px;gap:1px;border-radius:9px}
+ #hud .coreBall,#hud .fruitIcon{flex-basis:13px;width:13px;height:13px}
+}
