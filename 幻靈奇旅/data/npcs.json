@@ -246,18 +246,18 @@
     },
     {
       "id": "shop_vendor",
-      "name": "旅用品員",
+      "name": "寵物商人",
       "buildingId": "care_center",
-      "role": "商店",
+      "role": "寵物兌換",
       "model": "models/npcs/shop_vendor.glb",
       "height": 2.2,
       "dialogue": [
-        "靈核球能與幻靈建立連結；星霧果能讓牠們放鬆心情。",
-        "旅行補給不一定每次都有，過一會兒再來找我吧。"
+        "歡迎來到幻靈寵物商會！挑戰塔魔物有機會掉落珍稀代表卡片。",
+        "蒐集同一種卡片達指定數量，就能兌換可以在初光鎮陪伴旅行的寵物。"
       ],
       "functions": [
-        "supplies",
-        "items"
+        "pets",
+        "cards"
       ],
       "portraits": {
         "normal": "portraits/shop_vendor-normal.svg",
