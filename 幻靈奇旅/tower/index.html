@@ -308,11 +308,14 @@ function bindMobileControls({keys,touch,action,readInput,setJoystick}){
  zone.addEventListener('pointerdown',e=>{e.preventDefault();if(pointer!==null)return;pointer=e.pointerId;zone.setPointerCapture(pointer);move(e);zone.classList.add('engaged');});zone.addEventListener('pointermove',e=>{if(e.pointerId===pointer)move(e);});
  function reset(e){if(e&&pointer!==e.pointerId)return;pointer=null;knob.style.transform='translate(0,0)';zone.classList.remove('engaged');setJoystick(0,0);}
  for(const name of ['pointerup','pointercancel','lostpointercapture'])zone.addEventListener(name,reset);addEventListener('blur',()=>reset());
- const cycle=document.getElementById('mobileAttack');
- // Touch the switcher on pointerdown: do not wait for delayed synthetic click.
- cycle.addEventListener('pointerdown',e=>{if(!e.isPrimary||e.button!==0)return;e.preventDefault();action('cycle');});
- cycle.addEventListener('click',e=>{if(e.detail===0)action('cycle');});
- for(const [id,type]of[['mobileDodge','dodge'],['mobileHeal','heal'],['ultimateButton','ultimate']])document.getElementById(id).addEventListener('click',()=>action(type));
+ // All combat actions use pointerdown for zero-delay, two-thumb operation.
+ // Do not require isPrimary: the second finger must work while holding the joystick.
+ for(const [id,type] of [['mobileAttack','cycle'],['mobileDodge','dodge'],['mobileHeal','heal'],['ultimateButton','ultimate']]){
+  const control=document.getElementById(id);
+  control.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();action(type);});
+  // detail===0 covers keyboard/screen-reader activation, avoiding a second touch action.
+  control.addEventListener('click',e=>{if(e.detail===0)action(type);});
+ }
  return {reset:()=>reset()};
 }
 
