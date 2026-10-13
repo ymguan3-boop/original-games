@@ -1,10 +1,30 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="theme-color" content="#263960"><title>幻靈奇旅：初光之境</title><link rel="stylesheet" href="css/game.css"></head><body>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="theme-color" content="#263960"><title>幻靈奇旅：初光之境</title><link rel="stylesheet" href="css/game.css?v=20261013"></head><body>
 <main id="game"><canvas id="scene" aria-label="初光鎮 3D 探索場景"></canvas><div id="labels"></div><div id="load"><div class="sun">✦</div><h1>幻靈奇旅</h1><p>初光之境</p><span id="loadText">整理行囊，前往初光鎮…</span></div>
-<div id="hud"><button id="dexBtn">圖鑑 <b id="dexCount">0 / 61</b></button><span title="靈核球">◉ <b id="ballCount">30</b></span><span title="高階靈核球">◈ <b id="greatCount">5</b></span><span title="星露果">❧ <b id="berryCount">12</b></span></div>
-<button id="menuBtn" class="floating">☰ <span>旅人手冊</span></button><div id="radar"><canvas id="radarCanvas" width="220" height="220" aria-label="城鎮雷達：建築與 NPC"></canvas></div><div id="location">初光鎮</div>
+<div id="hud" aria-label="締約與圖鑑紀錄">
+<button id="dexBtn" title="幻靈圖鑑"><span class="dexIcon" aria-hidden="true">▤</span><span class="hudLabel">圖鑑</span><b id="dexCount">0 / 61</b></button>
+<span class="supply normal" title="靈核球數量／上限"><i class="coreBall" aria-hidden="true"></i><b id="ballCount">30/30</b></span>
+<span class="supply berry" title="星露果"><span aria-hidden="true">🍇</span><b id="berryCount">12</b></span>
+<span class="supply great" title="高階靈核球"><i class="coreBall" aria-hidden="true"></i><b id="greatCount">5</b></span>
+<span class="supply master" title="星耀靈核球"><i class="coreBall" aria-hidden="true"></i><b id="masterCount">0</b></span>
+</div>
+<button id="menuBtn" class="floating" aria-label="開啟旅人手冊"><span aria-hidden="true">☰</span> <span>旅人手冊</span></button>
+<div id="radar"><canvas id="radarCanvas" width="220" height="220" aria-label="城鎮雷達：建築與 NPC"></canvas></div>
+<div id="location" hidden></div>
+<div id="cameraControls" aria-label="調整場景視角">
+<button id="cameraLeftBtn" aria-label="向左旋轉視角" title="向左旋轉">↶</button><button id="cameraRightBtn" aria-label="向右旋轉視角" title="向右旋轉">↷</button><button id="cameraNearBtn" aria-label="拉近視角" title="拉近">＋</button><button id="cameraFarBtn" aria-label="拉遠視角" title="拉遠">−</button>
+</div>
+<button id="navCancelBtn" hidden aria-label="取消自動導航">× 停止導航</button>
+<div id="broadcast" role="status" aria-live="polite" hidden></div>
 <div id="target"></div><div id="toast" role="status" aria-live="polite"></div><button id="portal" hidden></button>
-<div id="controls"><div id="joystick" aria-label="拖曳移動"><div id="stick"></div></div><div id="actions"><button id="lockBtn" title="切換目標">◎<small>鎖定</small></button><button id="berryBtn">❧<small>星露果</small></button><button id="rollBtn" title="方向翻滾（Shift）">滾</button><button id="captureBtn">◉<small>締約</small></button><button id="ballBtn" class="ballChoice">普通靈核球 ▾</button></div></div>
+<div id="controls"><div id="joystick" aria-label="拖曳移動"><div id="stick"></div></div><div id="actions">
+<button id="berryBtn" aria-label="餵食星露果"><span aria-hidden="true">🍇</span><small>餵食</small></button>
+<button id="ballBtn" class="ballChoice" aria-label="切換締約用品" title="普通靈核球">普通靈核球 ▾</button>
+<button id="unlockBtn" aria-label="取消幻靈鎖定" title="取消鎖定">×</button>
+<button id="lockBtn" aria-label="鎖定可締約幻靈" title="鎖定可締約幻靈"><span aria-hidden="true">◎</span><small>鎖定</small></button>
+<button id="rollBtn" title="配合移動方向翻滾（Shift）" aria-label="方向翻滾">滾</button>
+<button id="captureBtn" aria-label="投出靈核球締約"><span class="captureSymbol" aria-hidden="true"></span><small>締約</small></button>
+</div></div>
 <div id="battleHud" hidden><div id="battleTitle"></div><div id="battleLog" role="status"></div><div id="battleActions"></div></div>
 </main><section id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="panel"><header><h2 id="modalTitle"></h2><button id="closeModal" aria-label="關閉">×</button></header><div id="modalBody"></div></div></section>
-<section id="dialogue" hidden aria-label="NPC 對話"><img id="portrait" alt=""><div class="dialogueText"><strong id="npcName"></strong><p id="npcText"></p><div id="npcActions"></div></div></section><input type="file" id="importFile" accept="application/json,.json" hidden>
-<script src="vendor/three.min.js"></script><script src="vendor/GLTFLoader.js"></script><script src="js/game.js"></script></body></html>
+<section id="dialogue" hidden aria-label="NPC 對話"><img id="portrait" alt=""><div class="dialogueText"><strong id="npcName"></strong><p id="npcText"></p><div id="npcActions"></div></div></section>
+<script src="vendor/three.min.js"></script><script src="vendor/GLTFLoader.js"></script><script src="js/game.js?v=20261013"></script></body></html>

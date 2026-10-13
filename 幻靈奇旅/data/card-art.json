@@ -1,0 +1,612 @@
+{
+  "bulbasaur": {
+    "image": "cards/art/bulbasaur.webp",
+    "name": "芽球豚",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/bulbasaur.glb",
+    "group": 0,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "ivysaur": {
+    "image": "cards/art/ivysaur.webp",
+    "name": "蕈傘豚",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/ivysaur.glb",
+    "group": 0,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "venusaur": {
+    "image": "cards/art/venusaur.webp",
+    "name": "森冠巨豚",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/venusaur.glb",
+    "group": 0,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "charmander": {
+    "image": "cards/art/charmander.webp",
+    "name": "火球貓",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/charmander.glb",
+    "group": 0,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "charmeleon": {
+    "image": "cards/art/charmeleon.webp",
+    "name": "焰鬃猞猁",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/charmeleon.glb",
+    "group": 1,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "charizard": {
+    "image": "cards/art/charizard.webp",
+    "name": "曜冠炎獅",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/charizard.glb",
+    "group": 1,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "squirtle": {
+    "image": "cards/art/squirtle.webp",
+    "name": "露珠獺",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/squirtle.glb",
+    "group": 1,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "wartortle": {
+    "image": "cards/art/wartortle.webp",
+    "name": "漣尾獺",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/wartortle.glb",
+    "group": 1,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "blastoise": {
+    "image": "cards/art/blastoise.webp",
+    "name": "潮汐海獺",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/blastoise.glb",
+    "group": 2,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "chikorita": {
+    "image": "cards/art/chikorita.webp",
+    "name": "嫩芽鹿",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/chikorita.glb",
+    "group": 2,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "bayleef": {
+    "image": "cards/art/bayleef.webp",
+    "name": "柳鈴鹿",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/bayleef.glb",
+    "group": 2,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "meganium": {
+    "image": "cards/art/meganium.webp",
+    "name": "森燈冠鹿",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/meganium.glb",
+    "group": 2,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "cyndaquil": {
+    "image": "cards/art/cyndaquil.webp",
+    "name": "炭絨刺團",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/cyndaquil.glb",
+    "group": 3,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "quilava": {
+    "image": "cards/art/quilava.webp",
+    "name": "熔陶甲獸",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/quilava.glb",
+    "group": 3,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "typhlosion": {
+    "image": "cards/art/typhlosion.webp",
+    "name": "赤窯守甲",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/typhlosion.glb",
+    "group": 3,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "totodile": {
+    "image": "cards/art/totodile.webp",
+    "name": "溪鈴螈",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/totodile.glb",
+    "group": 3,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "croconaw": {
+    "image": "cards/art/croconaw.webp",
+    "name": "晶鰭螈",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/croconaw.glb",
+    "group": 4,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "feraligatr": {
+    "image": "cards/art/feraligatr.webp",
+    "name": "冰瀑翼螈",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/feraligatr.glb",
+    "group": 4,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "treecko": {
+    "image": "cards/art/treecko.webp",
+    "name": "苔點蜥",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/treecko.glb",
+    "group": 4,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "grovyle": {
+    "image": "cards/art/grovyle.webp",
+    "name": "蕨帆蜥",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/grovyle.glb",
+    "group": 4,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "sceptile": {
+    "image": "cards/art/sceptile.webp",
+    "name": "翠環森蜥",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/sceptile.glb",
+    "group": 5,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "torchic": {
+    "image": "cards/art/torchic.webp",
+    "name": "燈茸雀",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/torchic.glb",
+    "group": 5,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "combusken": {
+    "image": "cards/art/combusken.webp",
+    "name": "霞羽鶴",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/combusken.glb",
+    "group": 5,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "blaziken": {
+    "image": "cards/art/blaziken.webp",
+    "name": "曦焰長羽",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/blaziken.glb",
+    "group": 5,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "mudkip": {
+    "image": "cards/art/mudkip.webp",
+    "name": "泡泡蛙",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/mudkip.glb",
+    "group": 6,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "marshtomp": {
+    "image": "cards/art/marshtomp.webp",
+    "name": "荷盞蛙",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/marshtomp.glb",
+    "group": 6,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "swampert": {
+    "image": "cards/art/swampert.webp",
+    "name": "滄瀾角蛙",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/swampert.glb",
+    "group": 6,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "turtwig": {
+    "image": "cards/art/turtwig.webp",
+    "name": "籽背鼴",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/turtwig.glb",
+    "group": 6,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "grotle": {
+    "image": "cards/art/grotle.webp",
+    "name": "石芽獾",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/grotle.glb",
+    "group": 7,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "torterra": {
+    "image": "cards/art/torterra.webp",
+    "name": "嶺苔山獾",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/torterra.glb",
+    "group": 7,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "chimchar": {
+    "image": "cards/art/chimchar.webp",
+    "name": "星火猿",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/chimchar.glb",
+    "group": 7,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "monferno": {
+    "image": "cards/art/monferno.webp",
+    "name": "銅爐猿",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/monferno.glb",
+    "group": 7,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "infernape": {
+    "image": "cards/art/infernape.webp",
+    "name": "彗拳巨猿",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/infernape.glb",
+    "group": 8,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "piplup": {
+    "image": "cards/art/piplup.webp",
+    "name": "霜絨鴞",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/piplup.glb",
+    "group": 8,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "prinplup": {
+    "image": "cards/art/prinplup.webp",
+    "name": "雪幕鴞",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/prinplup.glb",
+    "group": 8,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "empoleon": {
+    "image": "cards/art/empoleon.webp",
+    "name": "月輪翼鴞",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/empoleon.glb",
+    "group": 8,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "articuno": {
+    "image": "cards/art/articuno.webp",
+    "name": "霜鏡天鰩",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/articuno.glb",
+    "group": 9,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "zapdos": {
+    "image": "cards/art/zapdos.webp",
+    "name": "雷紋巨蛾",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/zapdos.glb",
+    "group": 9,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "moltres": {
+    "image": "cards/art/moltres.webp",
+    "name": "赤曜雙翼",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/moltres.glb",
+    "group": 9,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "raikou": {
+    "image": "cards/art/raikou.webp",
+    "name": "轟角麒麟",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/raikou.glb",
+    "group": 9,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "entei": {
+    "image": "cards/art/entei.webp",
+    "name": "熔岩獅鷲",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/entei.glb",
+    "group": 10,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "suicune": {
+    "image": "cards/art/suicune.webp",
+    "name": "澄夢長頸鹿",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/suicune.glb",
+    "group": 10,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "kyogre": {
+    "image": "cards/art/kyogre.webp",
+    "name": "星潮空鯨",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/kyogre.glb",
+    "group": 10,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "groudon": {
+    "image": "cards/art/groudon.webp",
+    "name": "大地晶甲龜",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/groudon.glb",
+    "group": 10,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "rayquaza": {
+    "image": "cards/art/rayquaza.webp",
+    "name": "風環遊龍",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/rayquaza.glb",
+    "group": 11,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "dialga": {
+    "image": "cards/art/dialga.webp",
+    "name": "時砂巨象",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/dialga.glb",
+    "group": 11,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "palkia": {
+    "image": "cards/art/palkia.webp",
+    "name": "月瀾海馬",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/palkia.glb",
+    "group": 11,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "giratina": {
+    "image": "cards/art/giratina.webp",
+    "name": "暮影六翼鹿",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/giratina.glb",
+    "group": 11,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "pikachu": {
+    "image": "cards/art/pikachu.webp",
+    "name": "閃角兔",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/pikachu.glb",
+    "group": 12,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "mew": {
+    "image": "cards/art/mew.webp",
+    "name": "星霧雲靈",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/mew.glb",
+    "group": 12,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "wigglytuff": {
+    "image": "cards/art/wigglytuff.webp",
+    "name": "絨心團獸",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/wigglytuff.glb",
+    "group": 12,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "blissey": {
+    "image": "cards/art/blissey.webp",
+    "name": "暖巢福鹿",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/blissey.glb",
+    "group": 12,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "raichu": {
+    "image": "cards/art/raichu.webp",
+    "name": "霆冠躍兔",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/raichu.glb",
+    "group": 13,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "caterpie": {
+    "image": "cards/art/caterpie.webp",
+    "name": "葉露毛球",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/caterpie.glb",
+    "group": 13,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "metapod": {
+    "image": "cards/art/metapod.webp",
+    "name": "琥葉眠繭",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/metapod.glb",
+    "group": 13,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "butterfree": {
+    "image": "cards/art/butterfree.webp",
+    "name": "晴葉彩蛾",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/butterfree.glb",
+    "group": 13,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "weedle": {
+    "image": "cards/art/weedle.webp",
+    "name": "砂角幼蟲",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/weedle.glb",
+    "group": 14,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "kakuna": {
+    "image": "cards/art/kakuna.webp",
+    "name": "晶砂繭",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/kakuna.glb",
+    "group": 14,
+    "quadrant": 1,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "beedrill": {
+    "image": "cards/art/beedrill.webp",
+    "name": "琥晶蜻靈",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/beedrill.glb",
+    "group": 14,
+    "quadrant": 2,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "mewtwo": {
+    "image": "cards/art/mewtwo.webp",
+    "name": "紫晶念王",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/mewtwo.glb",
+    "group": 14,
+    "quadrant": 3,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  },
+  "jigglypuff": {
+    "image": "cards/art/jigglypuff.webp",
+    "name": "夢鈴絨球",
+    "source": "imagegen-original-model-reference",
+    "referenceModel": "models/spirits/jigglypuff.glb",
+    "group": 15,
+    "quadrant": 0,
+    "style": "original-cute-2d-action-illustration",
+    "generatedAt": "2026-10-12"
+  }
+}
