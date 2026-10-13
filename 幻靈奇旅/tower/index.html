@@ -97,7 +97,7 @@ class World {
  shadow(radius){let o=new T.Mesh(new T.CircleGeometry(radius,32),new T.MeshBasicMaterial({color:0x08120c,transparent:true,opacity:.24,depthWrite:false}));o.rotation.x=-Math.PI/2;o.position.y=.1;this.dynamic.add(o);return o;}
 
  async loadHero(){
-  const gltf=await new Promise((resolve,reject)=>new T.GLTFLoader().load('../models/hero.glb?v=compact-flight-v3',resolve,undefined,reject));
+  const gltf=await new Promise((resolve,reject)=>new T.GLTFLoader().load('../models/hero.glb?v=guardian-turf-v4',resolve,undefined,reject));
   this.heroAsset=gltf;const model=gltf.scene;
   model.traverse(o=>{if(o.userData?.costume)o.visible=false;if(o.isMesh){o.castShadow=true;o.frustumCulled=false;}});
   model.updateMatrixWorld(true);const bounds=new T.Box3(),v=new T.Vector3();

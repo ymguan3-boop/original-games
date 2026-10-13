@@ -1,10 +1,30 @@
 {
   "spiritCount": 61,
-  "modelCount": 85,
+  "modelCount": 90,
   "models": [
     {
+      "file": "models/gyms/electric.glb",
+      "bytes": 3316116,
+      "animations": []
+    },
+    {
+      "file": "models/gyms/healing.glb",
+      "bytes": 1109988,
+      "animations": []
+    },
+    {
+      "file": "models/gyms/mist.glb",
+      "bytes": 1108372,
+      "animations": []
+    },
+    {
+      "file": "models/gyms/sound.glb",
+      "bytes": 2502856,
+      "animations": []
+    },
+    {
       "file": "models/hero.glb",
-      "bytes": 4234948,
+      "bytes": 4263272,
       "animations": [
         "Idle",
         "Walk",
@@ -15,7 +35,9 @@
         "Hurt",
         "Roll",
         "Celebrate",
-        "Disappointed"
+        "Disappointed",
+        "JumpCelebrate",
+        "GroundPoundDisappointed"
       ]
     },
     {
@@ -118,6 +140,11 @@
     {
       "file": "models/props/potion.glb",
       "bytes": 14780,
+      "animations": []
+    },
+    {
+      "file": "models/props/short-grass.glb",
+      "bytes": 56908,
       "animations": []
     },
     {

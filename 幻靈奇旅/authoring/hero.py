@@ -336,6 +336,10 @@ def costumes(rig):
         m=o.modifiers.new('Shared protagonist skeleton','ARMATURE');m.object=rig
 
 rig,skin=hero();costumes(rig)
+# Additional reactions share the same rest skeleton and preserve every earlier action.
+_extra={'__name__':'hero_extra_actions','__file__':str(ROOT/'authoring/hero_extra_actions.py')}
+exec(compile((ROOT/'authoring/hero_extra_actions.py').read_text(encoding='utf-8-sig'),_extra['__file__'],'exec'),_extra)
+_extra['add_extra_hero_actions'](rig)
 # Reduce subdivision density while keeping facial features and silhouette.
 bpy.context.view_layer.objects.active=skin
 mod=skin.modifiers.new('Mobile mesh budget','DECIMATE');mod.ratio=.48

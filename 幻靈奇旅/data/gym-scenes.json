@@ -1,0 +1,86 @@
+{
+  "electric": {
+    "model": "models/gyms/electric.glb",
+    "bounds": {
+      "minX": -14,
+      "maxX": 14,
+      "minZ": -14,
+      "maxZ": 14
+    },
+    "spawn": [
+      0,
+      0,
+      6
+    ],
+    "enemySpawn": [
+      0,
+      0,
+      -6
+    ],
+    "cameraDistance": 18,
+    "theme": "閃角共鳴電場"
+  },
+  "mist": {
+    "model": "models/gyms/mist.glb",
+    "bounds": {
+      "minX": -14,
+      "maxX": 14,
+      "minZ": -14,
+      "maxZ": 14
+    },
+    "spawn": [
+      0,
+      0,
+      6
+    ],
+    "enemySpawn": [
+      0,
+      0,
+      -6
+    ],
+    "cameraDistance": 18,
+    "theme": "星霧月環庭"
+  },
+  "sound": {
+    "model": "models/gyms/sound.glb",
+    "bounds": {
+      "minX": -14,
+      "maxX": 14,
+      "minZ": -14,
+      "maxZ": 14
+    },
+    "spawn": [
+      0,
+      0,
+      6
+    ],
+    "enemySpawn": [
+      0,
+      0,
+      -6
+    ],
+    "cameraDistance": 18,
+    "theme": "絨心音波劇場"
+  },
+  "healing": {
+    "model": "models/gyms/healing.glb",
+    "bounds": {
+      "minX": -14,
+      "maxX": 14,
+      "minZ": -14,
+      "maxZ": 14
+    },
+    "spawn": [
+      0,
+      0,
+      6
+    ],
+    "enemySpawn": [
+      0,
+      0,
+      -6
+    ],
+    "cameraDistance": 18,
+    "theme": "暖巢森療花園"
+  }
+}

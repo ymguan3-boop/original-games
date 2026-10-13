@@ -153,3 +153,29 @@ body.navigating #broadcast{top:calc(env(safe-area-inset-top) + 230px)}
 @media(max-width:359px){#actions{width:156px;right:8px;transform:none}#actions #berryBtn{left:12px}#actions #ballBtn{left:60px}#actions #lockBtn{left:108px}#actions #rollBtn{left:12px}#actions #captureBtn{left:80px}#joystick{width:100px;height:100px;left:10px;bottom:calc(env(safe-area-inset-bottom) + 50px)}}
 
 :root{--unlock-icon:url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M31%208a18%2018%200%200%201%209%2023M17%2040A18%2018%200%200%201%208%2017M7%207l34%2034%22%2F%3E%3Cpath%20stroke%3D%22%23ffb4c8%22%20d%3D%22M36%208h6v6M6%2034v6h6%22%2F%3E%3C%2Fsvg%3E%0A')}
+
+/* Nearby controls, square touch radar, and text-sized notifications without a screen mask. */
+#actions{width:108px;height:112px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 22px)}
+#actions #berryBtn,#actions #ballBtn,#actions #lockBtn,#actions #rollBtn{width:32px;height:32px;min-width:32px;min-height:32px}
+#actions #berryBtn{left:4px;top:0}#actions #ballBtn{left:40px;top:0}#actions #lockBtn{left:76px;top:0}#actions #rollBtn{left:0;top:64px}
+#actions #captureBtn{left:32px;top:36px;right:auto;bottom:auto;width:76px;height:76px}
+#radar{border-radius:8px;overflow:hidden}#radarToggle{border-radius:6px;box-shadow:none}#radarToggle:after{content:none;display:none}
+#toast,#broadcast{width:max-content;max-width:min(270px,calc(100vw - 32px));min-width:0;border:0;border-radius:8px;box-shadow:none;backdrop-filter:none;background:#f7fff51a;color:#213e4b;text-shadow:0 1px 2px #ffffff,0 0 5px #ffffffcc;font-size:12px;font-weight:600;line-height:1.5;letter-spacing:0;text-align:center;padding:5px 8px;overflow-wrap:anywhere;pointer-events:none}
+#toast{top:calc(env(safe-area-inset-top) + 124px)}#broadcast,body.navigating #broadcast{top:calc(env(safe-area-inset-top) + 124px)}
+#toast[data-kind="absorb"]{top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 44px);left:calc(50% + 11.5px);width:max-content;max-width:min(110px,calc(100vw - 279px));white-space:pre-line;font-size:11px;line-height:1.3;padding:3px 4px;color:#214b43;background:transparent;text-shadow:0 1px 2px #ffffff,0 0 5px #ffffffee}
+@media(max-width:359px){#actions{width:108px;right:8px}#actions #berryBtn{left:4px}#actions #ballBtn{left:40px}#actions #lockBtn{left:76px}#actions #rollBtn{left:0}#actions #captureBtn{left:32px}#toast[data-kind="absorb"]{left:calc(50% - 3px);max-width:min(110px,calc(100vw - 242px))}}
+
+#radar{cursor:pointer;touch-action:manipulation}
+#target{width:max-content;max-width:min(270px,calc(100vw - 32px));border:0;border-radius:0;box-shadow:none;background:transparent;color:#213e4b;text-shadow:0 1px 2px #ffffff,0 0 5px #ffffffcc;padding:4px 6px;overflow-wrap:anywhere;line-height:1.5;font-weight:600}
+#battleLog{width:max-content;max-width:min(460px,calc(100vw - 32px));border:0;box-shadow:none;background:transparent;color:#f1fff9;text-shadow:0 1px 2px #10323c,0 0 3px #10323ccc;overflow-wrap:anywhere;padding:5px 8px;line-height:1.5}
+body.battle-active #toast{color:#f1fff9;text-shadow:0 1px 2px #10323c,0 0 3px #10323ccc}
+
+/* Keep trial controls in the header band, above the guardian's head label. */
+body.gym-active #battleTitle{top:calc(env(safe-area-inset-top) + 58px);max-width:calc(100vw - 24px);height:20px;padding:2px 8px;border:0;background:transparent;color:#f1fff9;text-shadow:0 1px 2px #10323c;font-size:11px;line-height:16px;box-shadow:none}
+body.gym-active #battleActions{top:calc(env(safe-area-inset-top) + 82px);left:50%;right:auto;bottom:auto;transform:translateX(-50%);width:168px;height:32px;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+body.gym-active #battleActions button{min-height:32px;height:32px;padding:4px 7px;border-radius:9px;font-size:11px;line-height:1.2}
+body.gym-active #battleActions small{display:none}
+body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 116px);left:50%;right:auto;bottom:auto;transform:translateX(-50%);width:max-content;max-width:min(280px,calc(100vw - 24px));max-height:27px;padding:0 4px;border:0;background:transparent;box-shadow:none;font-size:10.5px;line-height:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+body.gym-active #battleActions{left:12px;transform:none;width:144px}
+body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;right:12px;transform:none;max-width:none;width:min(220px,calc(100vw - 180px));text-align:left}

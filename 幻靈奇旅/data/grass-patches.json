@@ -1,0 +1,380 @@
+{
+  "model": "models/props/short-grass.glb",
+  "heightRange": [
+    0.08,
+    0.22
+  ],
+  "footprint": [
+    3,
+    3
+  ],
+  "collision": false,
+  "traversable": true,
+  "materialMode": "one material with COLOR_0 vertex colors",
+  "patches": [
+    {
+      "id": "short_grass_00",
+      "position": [
+        32,
+        0.025,
+        -14
+      ],
+      "scale": [
+        1.083,
+        1,
+        1.092
+      ],
+      "yaw": 6.056
+    },
+    {
+      "id": "short_grass_01",
+      "position": [
+        -8,
+        0.025,
+        -32
+      ],
+      "scale": [
+        1.008,
+        1,
+        0.957
+      ],
+      "yaw": 2.1517
+    },
+    {
+      "id": "short_grass_02",
+      "position": [
+        -32,
+        0.025,
+        14
+      ],
+      "scale": [
+        1.131,
+        1,
+        1.075
+      ],
+      "yaw": 0.6676
+    },
+    {
+      "id": "short_grass_03",
+      "position": [
+        -32,
+        0.025,
+        -14
+      ],
+      "scale": [
+        1.061,
+        1,
+        0.913
+      ],
+      "yaw": 1.9435
+    },
+    {
+      "id": "short_grass_04",
+      "position": [
+        8,
+        0.025,
+        14
+      ],
+      "scale": [
+        0.907,
+        1,
+        1.095
+      ],
+      "yaw": 4.9069
+    },
+    {
+      "id": "short_grass_05",
+      "position": [
+        -32,
+        0.025,
+        -26
+      ],
+      "scale": [
+        1.027,
+        1,
+        1.041
+      ],
+      "yaw": 4.3178
+    },
+    {
+      "id": "short_grass_06",
+      "position": [
+        8,
+        0.025,
+        -14
+      ],
+      "scale": [
+        0.878,
+        1,
+        1.029
+      ],
+      "yaw": 2.9952
+    },
+    {
+      "id": "short_grass_07",
+      "position": [
+        -26,
+        0.025,
+        -32
+      ],
+      "scale": [
+        0.854,
+        1,
+        1.001
+      ],
+      "yaw": 4.3443
+    },
+    {
+      "id": "short_grass_08",
+      "position": [
+        -8,
+        0.025,
+        20
+      ],
+      "scale": [
+        0.985,
+        1,
+        1.096
+      ],
+      "yaw": 1.9682
+    },
+    {
+      "id": "short_grass_09",
+      "position": [
+        -8,
+        0.025,
+        14
+      ],
+      "scale": [
+        0.915,
+        1,
+        1.014
+      ],
+      "yaw": 3.3356
+    },
+    {
+      "id": "short_grass_10",
+      "position": [
+        -8,
+        0.025,
+        8
+      ],
+      "scale": [
+        1.115,
+        1,
+        0.976
+      ],
+      "yaw": 4.2512
+    },
+    {
+      "id": "short_grass_11",
+      "position": [
+        8,
+        0.025,
+        -8
+      ],
+      "scale": [
+        1.1,
+        1,
+        1.026
+      ],
+      "yaw": 3.0473
+    },
+    {
+      "id": "short_grass_12",
+      "position": [
+        -20,
+        0.025,
+        8
+      ],
+      "scale": [
+        0.878,
+        1,
+        1.071
+      ],
+      "yaw": 3.0632
+    },
+    {
+      "id": "short_grass_13",
+      "position": [
+        -8,
+        0.025,
+        -14
+      ],
+      "scale": [
+        0.885,
+        1,
+        1.069
+      ],
+      "yaw": 3.5766
+    },
+    {
+      "id": "short_grass_14",
+      "position": [
+        32,
+        0.025,
+        20
+      ],
+      "scale": [
+        1.064,
+        1,
+        0.887
+      ],
+      "yaw": 5.6481
+    },
+    {
+      "id": "short_grass_15",
+      "position": [
+        -26,
+        0.025,
+        -20
+      ],
+      "scale": [
+        0.88,
+        1,
+        0.921
+      ],
+      "yaw": 2.8847
+    },
+    {
+      "id": "short_grass_16",
+      "position": [
+        -32,
+        0.025,
+        20
+      ],
+      "scale": [
+        0.883,
+        1,
+        0.984
+      ],
+      "yaw": 0.368
+    },
+    {
+      "id": "short_grass_17",
+      "position": [
+        32,
+        0.025,
+        -8
+      ],
+      "scale": [
+        1.085,
+        1,
+        0.917
+      ],
+      "yaw": 5.2492
+    },
+    {
+      "id": "short_grass_18",
+      "position": [
+        -8,
+        0.025,
+        -26
+      ],
+      "scale": [
+        0.974,
+        1,
+        0.987
+      ],
+      "yaw": 2.3724
+    },
+    {
+      "id": "short_grass_19",
+      "position": [
+        14,
+        0.025,
+        -32
+      ],
+      "scale": [
+        1.029,
+        1,
+        0.987
+      ],
+      "yaw": 0.5421
+    },
+    {
+      "id": "short_grass_20",
+      "position": [
+        -26,
+        0.025,
+        8
+      ],
+      "scale": [
+        0.964,
+        1,
+        0.874
+      ],
+      "yaw": 2.789
+    },
+    {
+      "id": "short_grass_21",
+      "position": [
+        -8,
+        0.025,
+        -8
+      ],
+      "scale": [
+        0.931,
+        1,
+        0.987
+      ],
+      "yaw": 3.4737
+    },
+    {
+      "id": "short_grass_22",
+      "position": [
+        32,
+        0.025,
+        -20
+      ],
+      "scale": [
+        1.026,
+        1,
+        0.95
+      ],
+      "yaw": 6.1633
+    },
+    {
+      "id": "short_grass_23",
+      "position": [
+        26,
+        0.025,
+        8
+      ],
+      "scale": [
+        1.097,
+        1,
+        1.04
+      ],
+      "yaw": 4.4432
+    },
+    {
+      "id": "short_grass_24",
+      "position": [
+        32,
+        0.025,
+        -32
+      ],
+      "scale": [
+        0.919,
+        1,
+        1.009
+      ],
+      "yaw": 4.2441
+    },
+    {
+      "id": "short_grass_25",
+      "position": [
+        -32,
+        0.025,
+        -20
+      ],
+      "scale": [
+        1.115,
+        1,
+        1.031
+      ],
+      "yaw": 0.9146
+    }
+  ]
+}
