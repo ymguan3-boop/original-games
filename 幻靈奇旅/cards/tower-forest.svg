@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600" role="img" aria-label="森棘龍魔物卡片"><defs>
+<linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#163e35"/><stop offset=".55" stop-color="#2d8063"/><stop offset="1" stop-color="#a4c888"/></linearGradient>
+<linearGradient id="plate" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#21373a"/><stop offset="1" stop-color="#101e22"/></linearGradient>
+<filter id="shine"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<rect width="400" height="600" rx="22" fill="#111d22"/>
+<rect x="9" y="9" width="382" height="582" rx="18" fill="url(#sky)" stroke="#e3c78e" stroke-width="10"/>
+<path d="M24 410l70-62 66 28 68-94 155 95v110H22Z" fill="#163e35" opacity=".4"/>
+<circle cx="312" cy="152" r="86" fill="#eadca6" opacity=".08"/><circle cx="312" cy="152" r="63" fill="#eadca6" opacity=".08"/>
+<text x="200" y="52" fill="#fff3d0" font-family="serif" font-size="27" font-weight="bold" text-anchor="middle">幻靈奇旅</text>
+<text x="44" y="98" fill="#96d888" font-family="serif" font-size="32" font-weight="bold">SR</text>
+<text x="353" y="98" text-anchor="end" fill="#fbe6b2" font-size="17">森林 · 大地</text>
+
+<ellipse cx="200" cy="392" rx="143" ry="26" fill="#080c0c" opacity=".25"/>
+<path d="M76 299l45-61 92-28 97 38 34 84-33 58-213-15Z" fill="#548872" stroke="#e1d39c" stroke-width="3"/>
+<path d="M 98 245 l -8 -42 l 29 35 Z" fill="#eadca6" stroke="#f7ebc8" stroke-width="2"/><path d="M 121 227.77924554357097 l -8 -42 l 29 35 Z" fill="#eadca6" stroke="#f7ebc8" stroke-width="2"/><path d="M 144 213.18019484660536 l -8 -42 l 29 35 Z" fill="#eadca6" stroke="#f7ebc8" stroke-width="2"/><path d="M 167 203.4254210369921 l -8 -42 l 29 35 Z" fill="#eadca6" stroke="#f7ebc8" stroke-width="2"/><path d="M 190 200 l -8 -42 l 29 35 Z" fill="#eadca6" stroke="#f7ebc8" stroke-width="2"/><path d="M 213 203.4254210369921 l -8 -42 l 29 35 Z" fill="#eadca6" stroke="#f7ebc8" stroke-width="2"/><path d="M 236 213.18019484660536 l -8 -42 l 29 35 Z" fill="#eadca6" stroke="#f7ebc8" stroke-width="2"/><path d="M 259 227.77924554357097 l -8 -42 l 29 35 Z" fill="#eadca6" stroke="#f7ebc8" stroke-width="2"/><path d="M 282 245 l -8 -42 l 29 35 Z" fill="#eadca6" stroke="#f7ebc8" stroke-width="2"/>
+<path d="M115 306L86 370l60 29 48-63 M288 305l35 70-66 26-47-67" fill="#548872" stroke="#a4c888" stroke-width="5"/>
+<path d="M129 262l34-49 41 30 39-30 35 48 9 69-45 53-93-3-33-51Z" fill="#b4a48a" stroke="#f0dcaa" stroke-width="3"/>
+<path d="M146 250l-32-63 60 49M252 243l29-62-57 54" fill="#eadca6" stroke="#ebc48b" stroke-width="3"/>
+<path d="M153 308l13-8 11 8-11 8M229 308l13-8 11 8-11 8" fill="#fff2cc"/>
+<path d="M174 348l50-1-13 17-23-1Z" fill="#163e35"/><path d="M178 356l8 15 8-15m12 0 8 15 5-16" stroke="#fff6d2" stroke-width="4"/>
+<rect x="24" y="432" width="352" height="137" rx="14" fill="url(#plate)" stroke="#e8d49e" stroke-width="3"/>
+<text x="200" y="477" fill="#ffe7b1" text-anchor="middle" font-family="serif" font-size="35" font-weight="bold">森棘龍</text>
+<path d="M62 488h276" stroke="#bea976" stroke-width="1"/>
+<text x="200" y="521" text-anchor="middle" font-size="15" fill="#daf3e4">森林 · 大地｜SR 魔物</text>
+<text x="200" y="547" text-anchor="middle" font-size="15" fill="#f4e6cb">棘甲衝撞 · 守林突刺</text>
+<path d="M35 35h52m-52 0v52M365 35h-52m52 0v52M35 565h52m-52 0v-52M365 565h-52m52 0v-52" fill="none" stroke="#ffefbd" stroke-width="3"/></svg>
