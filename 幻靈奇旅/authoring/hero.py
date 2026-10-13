@@ -127,9 +127,13 @@ def animations(rig,kind):
                         pb['Thigh'+side].rotation_euler.x=.36*sin(t+phase)
                         pb['Shin'+side].rotation_euler.x=-.42*max(0,-sin(t+phase))
                         pb['UpperArm'+side].rotation_euler.x=-.27*sin(t+phase)
-                        pb['Forearm'+side].rotation_euler.x=-.06
+                        pb['Forearm'+side].rotation_euler.x=.12
                 if label in ('Throw','Attack'):
-                    pb['UpperArmR'].rotation_euler.x=-1.6*sin(t/2);pb['ForearmR'].rotation_euler.x=-.7*sin(t);pb['Torso'].rotation_euler.z=.12*sin(t)
+                    # Positive local X moves the arm toward model +Z (Blender -Y).
+                    reach=sin(t/2)**2
+                    pb['UpperArmR'].rotation_euler.x=1.45*reach
+                    pb['ForearmR'].rotation_euler.x=.28*reach
+                    pb['Torso'].rotation_euler.z=.08*sin(t)
                 if label=='Hurt':pb['Torso'].rotation_euler.z=.11*sin(t)
                 if label=='Wave':
                     pb['UpperArmR'].rotation_euler.z=1.65;pb['ForearmR'].rotation_euler.z=.65+.18*sin(t*3);pb['Head'].rotation_euler.z=-.055

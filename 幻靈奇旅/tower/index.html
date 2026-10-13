@@ -97,7 +97,7 @@ class World {
  shadow(radius){let o=new T.Mesh(new T.CircleGeometry(radius,32),new T.MeshBasicMaterial({color:0x08120c,transparent:true,opacity:.24,depthWrite:false}));o.rotation.x=-Math.PI/2;o.position.y=.1;this.dynamic.add(o);return o;}
 
  async loadHero(){
-  const gltf=await new Promise((resolve,reject)=>new T.GLTFLoader().load('../models/hero.glb',resolve,undefined,reject));
+  const gltf=await new Promise((resolve,reject)=>new T.GLTFLoader().load('../models/hero.glb?v=hand-capture-v2',resolve,undefined,reject));
   this.heroAsset=gltf;const model=gltf.scene;
   model.traverse(o=>{if(o.userData?.costume)o.visible=false;if(o.isMesh){o.castShadow=true;o.frustumCulled=false;}});
   model.updateMatrixWorld(true);const bounds=new T.Box3(),v=new T.Vector3();
@@ -109,19 +109,19 @@ class World {
   const right=model.getObjectByName('ForearmR'),left=model.getObjectByName('ForearmL');if(!right||!left)throw Error('主角模型缺少武器掛接骨架');
   g.weapons=[];
   for(let w=0;w<3;w++){
-   const handle=new T.Group();handle.name=['BladeMount','DualBladeMount','BowMount'][w];handle.position.set(0,.28,0);handle.rotation.x=Math.PI;right.add(handle);
+   const handle=new T.Group();handle.name=['BladeMount','DualBladeMount','BowMount'][w];handle.position.set(0,.28,0);handle.rotation.x=w===2?0:Math.PI;right.add(handle);
    if(w===0){this.part(handle,'box',0x392e28,0,-.15,0,.13,.45,.13);this.part(handle,'box',0xc5ae75,0,.12,.05,.56,.13,.2);this.part(handle,'box',0xc7d3c8,0,.78,.05,.41,1.3,.1);this.part(handle,'cone',0xe2e4cf,0,1.5,.05,.29,.3,.09);}
    else if(w===1){this.part(handle,'box',0x473d34,0,0,0,.11,.35,.11);this.part(handle,'cone',0xdae3d5,0,.54,.06,.18,1.05,.075,0,-.15);const off=new T.Group();off.name='OffhandBlade';off.position.set(0,.28,0);off.rotation.x=Math.PI;left.add(off);this.part(off,'box',0x473d34,0,0,0,.11,.35,.11);this.part(off,'cone',0xdae3d5,0,.54,.06,.18,1.05,.075,0,.15);g.offhand=off;}
    else{const arc=new T.Mesh(new T.TorusGeometry(.62,.058,6,20,Math.PI*1.65),this.mat(0xc8a36b));arc.rotation.z=-Math.PI*.32;handle.add(arc);this.part(handle,'box',0xf2ddaa,.18,0,0,.03,.98,.03);}
    handle.visible=w===0;g.weapons.push(handle);
   }
-  g.offhand.visible=false;g.play('Idle');this.heroRoot=g;return g;
+  g.updateWeaponPose=()=>{const time=g.actions.Attack.time,forward=g.motion==='Attack'?T.MathUtils.smoothstep(time,.06,.30)*(1-T.MathUtils.smoothstep(time,.65,.92)):0;g.weapons[0].rotation.x=Math.PI*(1-forward);g.weapons[1].rotation.x=Math.PI*(1-forward);g.weapons[2].rotation.x=-Math.PI/2*forward;};g.offhand.visible=false;g.play('Idle');g.updateWeaponPose();this.heroRoot=g;return g;
  }
  makeHunter(){if(!this.heroRoot)throw Error('Blender 主角尚未載入');this.root.add(this.heroRoot);this.heroRoot.play('Idle',true);return this.heroRoot;}
  animateHero(p,dt,movement){
   const g=this.hunter;g.position.set(p.x,0,p.z);g.rotation.set(0,p.dodge>0?Math.atan2(p.dx,p.dz):p.facing,0);
   const motion=p.dodge>0?'Roll':p.special>0||p.attack>0?'Attack':this.heroHurt>0?'Hurt':movement?'Run':'Idle';
-  g.play(motion);this.heroHurt=Math.max(0,(this.heroHurt||0)-dt);g.mixer.update(dt);
+  g.play(motion);this.heroHurt=Math.max(0,(this.heroHurt||0)-dt);g.mixer.update(dt);g.updateWeaponPose();
   g.weapons.forEach((w,i)=>w.visible=i===p.weapon);g.offhand.visible=p.weapon===1;g.visible=true;
  }
 

@@ -56,100 +56,604 @@
       "id": "house_resident_a"
     },
     {
+      "id": "woodland_tree_00",
       "x": -31,
       "z": -28,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_01",
       "x": -29,
       "z": -19,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_02",
       "x": -31,
       "z": -4,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_03",
       "x": -31,
       "z": 7,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_04",
       "x": -30,
       "z": 19,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_05",
       "x": -31,
-      "z": 32,
-      "w": 0.75,
-      "d": 0.75
+      "z": 34,
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_06",
       "x": 31,
       "z": -28,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_07",
       "x": 29,
       "z": -18,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_08",
       "x": 32,
       "z": -5,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_09",
       "x": 31,
       "z": 7,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_10",
       "x": 32,
-      "z": 28,
-      "w": 0.75,
-      "d": 0.75
+      "z": 34,
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_11",
       "x": -10,
       "z": -30,
-      "w": 0.75,
-      "d": 0.75
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
     },
     {
-      "x": 2,
-      "z": -31,
-      "w": 0.75,
-      "d": 0.75
-    },
-    {
+      "id": "woodland_tree_12",
       "x": 14,
-      "z": -31,
-      "w": 0.75,
-      "d": 0.75
+      "z": -33,
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_13",
       "x": -10,
-      "z": 32,
-      "w": 0.75,
-      "d": 0.75
+      "z": 34,
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
     },
     {
+      "id": "woodland_tree_14",
       "x": 9,
-      "z": 32,
-      "w": 0.75,
-      "d": 0.75
+      "z": 34,
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_15",
+      "x": -33.585,
+      "z": -32.094,
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_16",
+      "x": 33.763,
+      "z": -33.192,
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_17",
+      "x": -33.393,
+      "z": -25.713,
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_18",
+      "x": 33.741,
+      "z": -25.061,
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_19",
+      "x": -34.225,
+      "z": -16.781,
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_20",
+      "x": 34.021,
+      "z": -17.394,
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_21",
+      "x": -34.353,
+      "z": -9.695,
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_22",
+      "x": 34.393,
+      "z": -9.687,
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_23",
+      "x": -34.46,
+      "z": 7.686,
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_24",
+      "x": 33.366,
+      "z": 6.139,
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_25",
+      "x": -33.795,
+      "z": 15.916,
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_26",
+      "x": 33.907,
+      "z": 15.332,
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_27",
+      "x": -33.782,
+      "z": 22.263,
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_28",
+      "x": 34.234,
+      "z": 23.854,
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_29",
+      "x": -34.565,
+      "z": 34.418,
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_30",
+      "x": 33.608,
+      "z": 34.739,
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_31",
+      "x": -10,
+      "z": -20,
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_32",
+      "x": -9,
+      "z": -25,
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_33",
+      "x": -10,
+      "z": -34,
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_34",
+      "x": 7,
+      "z": -33,
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_35",
+      "x": 10,
+      "z": -29,
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_36",
+      "x": 18,
+      "z": -33,
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_37",
+      "x": 24,
+      "z": -33,
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_38",
+      "x": 29,
+      "z": -33,
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_39",
+      "x": -10,
+      "z": 12,
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_40",
+      "x": -9,
+      "z": 18,
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_41",
+      "x": -9,
+      "z": 23,
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_42",
+      "x": 9,
+      "z": 14,
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_43",
+      "x": 10,
+      "z": 21,
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_44",
+      "x": 10,
+      "z": 25,
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_45",
+      "x": 27,
+      "z": 9,
+      "w": 0.429,
+      "d": 0.429,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_46",
+      "x": -28,
+      "z": 10,
+      "w": 0.552,
+      "d": 0.552,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_47",
+      "x": -27,
+      "z": 34,
+      "w": 0.65,
+      "d": 0.65,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_48",
+      "x": 19,
+      "z": 34,
+      "w": 0.812,
+      "d": 0.812,
+      "kind": "tree"
+    },
+    {
+      "id": "woodland_tree_49",
+      "x": 25,
+      "z": 34,
+      "w": 0.975,
+      "d": 0.975,
+      "kind": "tree"
+    },
+    {
+      "id": "lake_shore_0",
+      "x": 20,
+      "z": -26.68,
+      "w": 8.64,
+      "d": 1.84,
+      "kind": "water"
+    },
+    {
+      "id": "lake_shore_1",
+      "x": 20,
+      "z": -24.84,
+      "w": 10.582,
+      "d": 1.84,
+      "kind": "water"
+    },
+    {
+      "id": "lake_shore_2",
+      "x": 20,
+      "z": -23.0,
+      "w": 10.8,
+      "d": 1.84,
+      "kind": "water"
+    },
+    {
+      "id": "lake_shore_3",
+      "x": 20,
+      "z": -21.16,
+      "w": 10.582,
+      "d": 1.84,
+      "kind": "water"
+    },
+    {
+      "id": "lake_shore_4",
+      "x": 20,
+      "z": -19.32,
+      "w": 8.64,
+      "d": 1.84,
+      "kind": "water"
+    },
+    {
+      "id": "bench_0",
+      "x": -6,
+      "z": 0.98,
+      "w": 1.9,
+      "d": 0.75,
+      "kind": "bench"
+    },
+    {
+      "id": "bench_1",
+      "x": 6,
+      "z": 0.98,
+      "w": 1.9,
+      "d": 0.75,
+      "kind": "bench"
+    },
+    {
+      "id": "bench_2",
+      "x": -13,
+      "z": 5.98,
+      "w": 1.9,
+      "d": 0.75,
+      "kind": "bench"
+    },
+    {
+      "id": "bench_3",
+      "x": 12,
+      "z": 5.98,
+      "w": 1.9,
+      "d": 0.75,
+      "kind": "bench"
+    },
+    {
+      "id": "bench_4",
+      "x": -27,
+      "z": 27.98,
+      "w": 1.9,
+      "d": 0.75,
+      "kind": "bench"
+    },
+    {
+      "id": "bench_5",
+      "x": 27,
+      "z": 27.98,
+      "w": 1.9,
+      "d": 0.75,
+      "kind": "bench"
+    },
+    {
+      "id": "bench_6",
+      "x": -9,
+      "z": -19.02,
+      "w": 1.9,
+      "d": 0.75,
+      "kind": "bench"
+    },
+    {
+      "id": "bench_7",
+      "x": 9,
+      "z": -19.02,
+      "w": 1.9,
+      "d": 0.75,
+      "kind": "bench"
+    },
+    {
+      "id": "care_center_planter_0",
+      "x": -2.2,
+      "z": -3.0,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "care_center_planter_1",
+      "x": 2.2,
+      "z": -3.0,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "ranger_station_planter_0",
+      "x": -22.2,
+      "z": -3.0,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "ranger_station_planter_1",
+      "x": -17.8,
+      "z": -3.0,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "dream_lab_planter_0",
+      "x": 17.8,
+      "z": -2.5,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "dream_lab_planter_1",
+      "x": 22.2,
+      "z": -2.5,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "gym_light_planter_0",
+      "x": -22.2,
+      "z": 23.5,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "gym_light_planter_1",
+      "x": -17.8,
+      "z": 23.5,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "tower_starspire_planter_0",
+      "x": 17.8,
+      "z": 23.0,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "tower_starspire_planter_1",
+      "x": 22.2,
+      "z": 23.0,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "house_resident_a_planter_0",
+      "x": -2.2,
+      "z": 26.5,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
+    },
+    {
+      "id": "house_resident_a_planter_1",
+      "x": 2.2,
+      "z": 26.5,
+      "w": 0.7,
+      "d": 0.7,
+      "kind": "planter"
     }
   ],
   "buildings": [
@@ -577,5 +1081,20 @@
     "radius": 6
   },
   "npcData": "data/npcs.json",
-  "battleModel": "models/world/arena.glb"
+  "battleModel": "models/world/arena.glb",
+  "landscape": {
+    "lake": {
+      "center": [
+        20,
+        -23
+      ],
+      "radii": [
+        5.4,
+        4.6
+      ]
+    },
+    "treeCount": 50,
+    "occluderPrefix": "Occluder_",
+    "occluderUserData": "occluder"
+  }
 }

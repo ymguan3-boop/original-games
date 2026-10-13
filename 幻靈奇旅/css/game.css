@@ -12,9 +12,7 @@
 #hud b{margin:0;line-height:1;font-variant-numeric:tabular-nums}
 #hud .berry{border-color:#d194b965;color:#f4a8da}
 #hud .great{border-color:#6facd966}#hud .master{border-color:#c290e766}
-.dexIcon{font-size:15px;line-height:1}.coreBall{display:block;position:relative;flex:none;width:16px;height:16px;border:1.5px solid #edf5fd;border-radius:50%;background:linear-gradient(#ec5969 0 43%,#233448 43% 56%,#faf2ea 56%);box-shadow:0 1px 4px #0004}
-.coreBall:after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:5px;height:5px;border:1.5px solid #233448;border-radius:50%;background:#fff}
-.great .coreBall{background:linear-gradient(#418be8 0 43%,#233448 43% 56%,#e5f3ff 56%)}.master .coreBall{background:linear-gradient(#ad78dd 0 43%,#233448 43% 56%,#f5eaff 56%)}
+.dexIcon{font-size:15px;line-height:1}
 #menuBtn{top:calc(env(safe-area-inset-top) + 59px);left:12px;height:41px;padding:0 14px;border:1px solid #d4e3eb50;border-radius:15px;background:#142b36eb;color:white;font-size:12px;display:flex;align-items:center;gap:6px;box-shadow:0 4px 12px #1938413a}
 #menuBtn>span:first-child{font-size:21px;line-height:1}
 #radar{top:calc(env(safe-area-inset-top) + 56px);right:9px;width:99px;height:99px;border:2px solid #c6dfc599;box-shadow:0 4px 15px #182a4844}
@@ -39,9 +37,7 @@ body.navigating #broadcast{top:calc(env(safe-area-inset-top) + 195px)}
 #actions #lockBtn{right:0;left:auto;top:127px;width:55px;height:55px;background:#67361ced;border-color:#f2b07385;color:#ffdbaa}
 #actions #lockBtn[aria-pressed="true"],#actions #lockBtn.active{background:#216e68ed;border-color:#a6f2d1;color:#e1ffee}
 #actions #unlockBtn{left:24px;top:127px;width:52px;height:52px;font-size:34px;background:#1b3b49eb;color:#ff82a4;border-color:#b5dce04a}
-#actions #captureBtn{right:0;bottom:-2px;width:96px;height:96px;font-size:0;border:5px solid #172b40;border-radius:50%;background:linear-gradient(#ef4251 0 44%,#192b3d 44% 56%,#fff7ef 56%);box-shadow:0 5px 18px #142f4540,inset 0 2px 10px #ffffff50;overflow:visible}
-#captureBtn .captureSymbol{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:27px;height:27px;border-radius:50%;border:6px solid #172b40;background:white;box-shadow:0 1px 4px #ffffff70}
-#actions #captureBtn small{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);background:#17343ce0;color:#fff;border-radius:10px;padding:3px 9px;font-size:10px;white-space:nowrap;letter-spacing:.14em}
+
 #actions #rollBtn{left:1px;bottom:18px;width:44px;height:44px;font-size:19px;line-height:1;background:#173747ea;border-color:#b1e0e092;color:#e6fffb;box-shadow:0 3px 10px #142f4538}
 #actions #rollBtn:disabled{font-size:19px;opacity:.65}
 #target{bottom:calc(env(safe-area-inset-bottom) + 194px);left:42%;max-width:58%;font-size:11px;padding:7px 12px;background:#172e42e8;box-shadow:0 2px 10px #17364624}
@@ -87,10 +83,53 @@ body.gym-active #battleActions button{min-height:38px;font-size:11px;padding:7px
 body.gym-active #battleActions small{font-size:9px}
 body.gym-active #battleLog{top:105px;bottom:auto;right:12px;left:auto;transform:none;width:calc(100% - 190px);max-width:300px;font-size:11px}
 body.gym-active #berryBtn,body.gym-active #lockBtn,body.gym-active #unlockBtn{display:none}
-#captureBtn[data-ball="great"]{background:linear-gradient(#438ef2 0 44%,#192b3d 44% 56%,#fff7ef 56%)}
-#captureBtn[data-ball="master"]{background:linear-gradient(#9a55d4 0 44%,#192b3d 44% 56%,#fff7ef 56%)}
+
+
 .guideRow{padding:12px 0;border-bottom:1px solid #c2d1d3}.guideRow p{font-size:12px;line-height:1.6;margin:6px 0;color:#5f7480}
 .targetLabel{background:#235952f2;border:2px solid #71e5ba;color:#fff7c7}
 .card img[data-art],#detailArt{object-fit:cover;border-radius:12px}
 .card img[data-art]{height:auto;aspect-ratio:4/5}
 @media(max-width:359px){body.gym-active #battleActions{width:132px}body.gym-active #battleLog{width:calc(100% - 170px)}}
+
+/* Original crystal controls: fixed grid prevents mobile thumb targets overlapping. */
+.coreBall,.fruitIcon{display:block;flex:none;width:19px;height:19px;background:center/contain no-repeat url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20fill%3D%22%2378e3df%22%20fill-opacity%3D%22.23%22%20d%3D%22m24%204%2016%2010v20L24%2044%208%2034V14z%22%2F%3E%3Cpath%20d%3D%22m24%204%2016%2010v20L24%2044%208%2034V14zM24%204v40M8%2014l16%2010%2016-10M8%2034l16-10%2016%2010%22%2F%3E%3Cpath%20stroke%3D%22%23fff3ba%22%20d%3D%22m24%2015%208%209-8%209-8-9z%22%2F%3E%3C%2Fsvg%3E%0A')}
+.fruitIcon{background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20fill%3D%22%23f6c6e4%22%20fill-opacity%3D%22.2%22%20d%3D%22M12%2025c-3-9%209-14%2012-6%204-8%2016-3%2012%206-2%205-8%2010-12%2013-4-3-10-8-12-13z%22%2F%3E%3Cpath%20d%3D%22M12%2025c-3-9%209-14%2012-6%204-8%2016-3%2012%206-2%205-8%2010-12%2013-4-3-10-8-12-13zM24%2018V8m0%207c5%200%209-3%2010-7-5-1-9%202-10%207%22%2F%3E%3Cpath%20d%3D%22m6%2013%202%202m32%2016%202-2%22%2F%3E%3C%2Fsvg%3E%0A')}
+.great .coreBall{filter:hue-rotate(30deg)}.master .coreBall{filter:hue-rotate(95deg)}
+#radar{top:calc(env(safe-area-inset-top) + 62px);right:12px;width:50px;height:50px;z-index:4;transition:width .18s ease,height .18s ease;border-color:#9cded2}
+#radar canvas{display:block;pointer-events:none}
+#radarToggle{position:absolute;inset:0;width:100%;height:100%;min-width:44px;min-height:44px;border:0;border-radius:50%;padding:0;background:transparent;box-shadow:inset 0 0 0 1px #fff3;touch-action:manipulation}
+#radarToggle:after{content:'';position:absolute;right:4px;bottom:4px;width:16px;height:16px;border-radius:4px;background:#173943 url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M9%2019V9h10m10%200h10v10m0%2010v10H29m-10%200H9V29M9%209l12%2012m18-12L27%2021M9%2039l12-12m18%2012L27%2027%22%2F%3E%3C%2Fsvg%3E%0A') center/13px no-repeat;box-shadow:0 0 0 1px #a3e7d7}
+#radar:has(#radarToggle[aria-expanded="true"]){width:106px;height:106px}
+#radarToggle[aria-expanded="true"]:after{transform:rotate(45deg)}
+#menuBtn{height:44px}
+#cameraControls{top:calc(env(safe-area-inset-top) + 116px);gap:4px;padding:4px}
+#cameraControls button{width:44px;height:44px;min-width:44px;min-height:44px}
+#navCancelBtn{top:calc(env(safe-area-inset-top) + 177px);min-height:44px}
+#broadcast{top:calc(env(safe-area-inset-top) + 178px)}
+body.navigating #broadcast{top:calc(env(safe-area-inset-top) + 230px)}
+#toast{top:calc(env(safe-area-inset-top) + 270px)}
+#actions{right:12px;bottom:calc(env(safe-area-inset-bottom) + 22px);width:204px;height:142px;display:grid;grid-template-columns:58px 58px 76px;grid-template-rows:58px 76px;gap:8px 6px;align-items:center;transform:none}
+#actions button,#actions .ballChoice,#actions #berryBtn,#actions #lockBtn,#actions #unlockBtn,#actions #rollBtn,#actions #captureBtn{position:relative;inset:auto;width:58px;height:58px;min-width:44px;min-height:44px;max-width:none;margin:0;padding:0;font-size:0!important;color:#e9fff9;border:1px solid #9ac5c666;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:#173440ed;overflow:hidden;box-shadow:0 4px 12px #112c3a38}
+#actions button:before{content:'';display:block;width:27px;height:27px;flex:none;margin:0;background:center/contain no-repeat;line-height:normal}
+#actions button:after{display:block;position:static;content:attr(aria-label);font-size:10px;color:#eafff9;line-height:13px;letter-spacing:0;margin:0;padding:0;background:none;transform:none;white-space:nowrap}
+#actions #berryBtn{grid-column:1;grid-row:1;background:#63344dec;border-color:#f7abc177}
+#actions #berryBtn:before{background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20fill%3D%22%23f6c6e4%22%20fill-opacity%3D%22.2%22%20d%3D%22M12%2025c-3-9%209-14%2012-6%204-8%2016-3%2012%206-2%205-8%2010-12%2013-4-3-10-8-12-13z%22%2F%3E%3Cpath%20d%3D%22M12%2025c-3-9%209-14%2012-6%204-8%2016-3%2012%206-2%205-8%2010-12%2013-4-3-10-8-12-13zM24%2018V8m0%207c5%200%209-3%2010-7-5-1-9%202-10%207%22%2F%3E%3Cpath%20d%3D%22m6%2013%202%202m32%2016%202-2%22%2F%3E%3C%2Fsvg%3E%0A')}#actions #berryBtn:after{content:'餵食'}
+#actions #ballBtn{grid-column:2;grid-row:1}#actions #ballBtn:before{background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m24%2014%208%205v10l-8%205-8-5V19zM24%2014v20m-8-15%208%205%208-5%22%2F%3E%3Cpath%20stroke%3D%22%23fff3ba%22%20d%3D%22M9%2022a16%2016%200%200%201%2027-10m-6%200h6V6M39%2026a16%2016%200%200%201-27%2010m6%200h-6v6%22%2F%3E%3C%2Fsvg%3E%0A')}#actions #ballBtn:after{content:'換球'}
+#actions #lockBtn{grid-column:3;grid-row:1;justify-self:center;background:#634524ed;border-color:#f2c48588}
+#actions #lockBtn:before{background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2017V7h10m14%200h10v10m0%2014v10H31m-14%200H7V31M24%2012v7m0%2010v7M12%2024h7m10%200h7%22%2F%3E%3Cpath%20fill%3D%22%23fff3ba%22%20stroke%3D%22%23fff3ba%22%20d%3D%22m24%2019%205%205-5%205-5-5z%22%2F%3E%3C%2Fsvg%3E%0A')}#actions #lockBtn:after{content:'鎖定'}
+#actions #unlockBtn{grid-column:1;grid-row:2;border-color:#e7a0b866}#actions #unlockBtn:before{background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M31%208a18%2018%200%200%201%209%2023M17%2040A18%2018%200%200%201%208%2017M7%207l34%2034%22%2F%3E%3Cpath%20stroke%3D%22%23ffb4c8%22%20d%3D%22M36%208h6v6M6%2034v6h6%22%2F%3E%3C%2Fsvg%3E%0A')}#actions #unlockBtn:after{content:'解除鎖定';font-size:9px}
+#actions #rollBtn{grid-column:2;grid-row:2}#actions #rollBtn:before{background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M35%2014a15%2015%200%201%201-21%2021M35%2014h-9m9%200V5M6%2017h10M4%2024h8%22%2F%3E%3Cpath%20fill%3D%22%2378e3df%22%20fill-opacity%3D%22.2%22%20d%3D%22m26%2019%206%206-6%206-6-6z%22%2F%3E%3Cpath%20d%3D%22m26%2019%206%206-6%206-6-6z%22%2F%3E%3C%2Fsvg%3E%0A')}#actions #rollBtn:after{content:'滾'}
+#actions #captureBtn{grid-column:3;grid-row:2;width:76px;height:76px;border-radius:22px;background:radial-gradient(circle at 50% 42%,#277579,#173d51 70%);border:2px solid #e9cf86;box-shadow:0 3px 18px #182f4666,inset 0 0 18px #8ff5df16}
+#actions #captureBtn:before{width:42px;height:42px;background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke%3D%22%23fff3ba%22%20d%3D%22m24%203%2018%2010v22L24%2045%206%2035V13zM24%208v5m0%2022v5M10%2016l5%203m18%2010%205%203M10%2032l5-3m18-10%205-3%22%2F%3E%3Cpath%20fill%3D%22%2378e3df%22%20fill-opacity%3D%22.3%22%20d%3D%22m24%2012%2010%206v12l-10%206-10-6V18z%22%2F%3E%3Cpath%20d%3D%22m24%2012%2010%206v12l-10%206-10-6V18zM24%2012v24m-10-18%2010%206%2010-6m-20%2012%2010-6%2010%206%22%2F%3E%3C%2Fsvg%3E%0A')}#actions #captureBtn:after{content:'締約';font-size:11px;letter-spacing:.16em}
+#actions #captureBtn[data-ball="great"]{background:radial-gradient(circle at 50% 42%,#376db1,#163548 70%);border-color:#98c6ff}
+#actions #captureBtn[data-ball="master"]{background:radial-gradient(circle at 50% 42%,#80519c,#34264e 70%);border-color:#e2b6fc}
+#actions #lockBtn[aria-pressed="true"],#actions #lockBtn.active{background:#22675a;border-color:#a6f2d1}
+#target{left:50%;max-width:88%;bottom:calc(env(safe-area-inset-bottom) + 180px)}
+#portal{bottom:calc(env(safe-area-inset-bottom) + 214px);min-height:44px}
+@media(max-width:359px){#actions{right:9px;width:185px;grid-template-columns:54px 54px 65px;column-gap:6px;transform:none}#actions button,#actions .ballChoice,#actions #berryBtn,#actions #lockBtn,#actions #unlockBtn,#actions #rollBtn{width:54px;height:58px}#actions #captureBtn{width:65px;height:76px}#joystick{width:100px;height:100px;left:10px}.coreBall,.fruitIcon{width:14px;height:14px}}
+@media(max-height:620px) and (min-width:600px){#actions{height:142px;transform:none}#cameraControls{top:116px}}
+@media(prefers-reduced-motion:reduce){#radar{transition:none}}
+
+#actions #ballBtn:before{content:"";font-size:0;color:transparent}
+
+#hud #dexBtn{min-height:44px}.panel header button{width:44px;height:44px;min-width:44px;min-height:44px}

@@ -4,7 +4,7 @@
   "models": [
     {
       "file": "models/hero.glb",
-      "bytes": 4209344,
+      "bytes": 4209068,
       "animations": [
         "Idle",
         "Walk",
@@ -765,7 +765,7 @@
     },
     {
       "file": "models/world/town.glb",
-      "bytes": 2970320,
+      "bytes": 4384616,
       "animations": []
     }
   ]

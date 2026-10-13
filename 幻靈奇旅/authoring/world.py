@@ -2,7 +2,7 @@
 All numeric authoring coordinates are X right, Y up, Z forward. Export is Y-up GLB.
 Run: blender --background --python authoring/world.py
 """
-import bpy, math, json, random
+import bpy, math, json, random, sys
 from mathutils import Vector
 from pathlib import Path
 from math import sin,cos,pi
@@ -10,7 +10,7 @@ ROOT=Path(__file__).resolve().parents[1]
 for d in ('models/world','models/npcs','models/props','data','portraits'): (ROOT/d).mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.read_factory_settings(use_empty=True)
 random.seed(8833)
-PAL={'cream':'F7EFDB','white':'FFFDF2','sky':'76C8DB','indigo':'354B74','gold':'E6B868','glass':'97DFDF','ground':'A9C9A1','grass':'88B68B','leaf':'549B85','leaf2':'75B498','wood':'AF805A','path':'E6D7B3','stone':'D3DCD1','rose':'E9A5B8','purple':'997CC8','skin':'EDBB93','skin2':'CC936F','hair':'433930','gray':'9FA7AD','dark':'253747','orange':'EEA05B','red':'C96B73','mint':'95D5BC','eye':'3D3B48'}
+PAL={'cream':'F7EFDB','white':'FFFDF2','sky':'76C8DB','indigo':'354B74','gold':'E6B868','glass':'97DFDF','ground':'A9C9A1','grass':'88B68B','leaf':'549B85','leaf2':'75B498','wood':'AF805A','path':'E6D7B3','stone':'D3DCD1','rose':'E9A5B8','purple':'997CC8','skin':'EDBB93','skin2':'CC936F','hair':'433930','gray':'9FA7AD','dark':'253747','orange':'EEA05B','red':'C96B73','mint':'95D5BC','eye':'3D3B48','forest':'397A67','sage':'89AF71','lime':'ACBD71','lake':'4BA9BD','shallow':'86CCC7','sand':'DFD6AD'}
 M={}
 def lin(h):
     nums=[int(h[i:i+2],16)/255 for i in (0,2,4)]
@@ -66,7 +66,7 @@ def export(path,objects,anim=False):
     bpy.ops.object.select_all(action='DESELECT')
     for o in objects:o.select_set(True)
     bpy.context.view_layer.objects.active=objects[0]
-    kw=dict(filepath=str(ROOT/path),export_format='GLB',use_selection=True,export_animations=anim,export_yup=True)
+    kw=dict(filepath=str(ROOT/path),export_format='GLB',use_selection=True,export_animations=anim,export_yup=True,export_extras=True)
     if anim:kw.update(export_animation_mode='NLA_TRACKS',export_force_sampling=True)
     bpy.ops.export_scene.gltf(**kw)
 def clear_parts():
@@ -103,6 +103,8 @@ BUILDINGS=[
     dict(id='tower_starspire',name='星穹挑戰塔',position=[20,0,18],w=8,d=8,h=8,color='purple',npcIds=['tower_keeper']),
     dict(id='house_resident_a',name='居民民房 A',position=[0,0,22],w=8,d=7,h=3.5,color='rose',npcIds=['resident_berry'])]
 COLLISIONS=[]
+TOWN_OBJECTS=[]
+LANDSCAPE_IDS=[]
 def exterior(b):
     x,_,z=b['position'];w,d,h=b['w'],b['d'],b['h'];front=z+d/2
     cube(b['id']+' foundation',(x,.2,z),(w+.8,.4,d+.8),'stone',.12)
@@ -131,7 +133,9 @@ def exterior(b):
     cube('Entrance canopy',(x,3.04,front+.56),(3.0,.23,1.6),b['color'],.1)
     for dx in (-w*.33,w*.33):
         cube('Window trim',(x+dx,2.35,front+.08),(1.9,1.75,.15),'white');cube('Window glass',(x+dx,2.35,front+.18),(1.64,1.49,.06),'glass');cube('Window mullion',(x+dx,2.35,front+.23),(.08,1.5,.06),'cream')
-    for dx in (-2.2,2.2):plant(x+dx,front+1)
+    for i,dx in enumerate((-2.2,2.2)):
+        plant(x+dx,front+1)
+        COLLISIONS.append(dict(id=b['id']+'_planter_'+str(i),x=x+dx,z=front+1,w=.7,d=.7,kind='planter'))
     b.update(entrance=[x,front+1.8],interiorModel='models/world/'+b['id']+'-interior.glb',spawn=[0,5.4],exit=[0,6.7],bounds=dict(minX=-6.5,maxX=6.5,minZ=-7,maxZ=7),collisions=[])
     COLLISIONS.append(dict(x=x,z=z,w=w+.8,d=d+.8,id=b['id']))
 def town():
@@ -139,20 +143,53 @@ def town():
     cube('Central main street',(0,.005,0),(7,.03,72),'path',0);cube('North boulevard',(0,.01,1),(72,.025,6),'path',0);cube('South promenade',(0,.01,29),(64,.025,5),'path',0)
     cyl('Care center forecourt',(0,.025,0),7.5,.06,'cream',48);torus('Plaza gold inlay',(0,.065,0),6.4,.07,'gold')
     for b in BUILDINGS:
-        exterior(b);x,_,z=b['position'];front=z+b['d']/2
+        ground_parts=PARTS[:];clear_parts();exterior(b)
+        building_obj=batch('Occluder_Building_'+b['id']);building_obj['occluder']=True;building_obj['occludable']=True;building_obj['occluderId']=b['id'];building_obj['kind']='building';TOWN_OBJECTS.append(building_obj)
+        clear_parts();PARTS.extend(ground_parts)
+        x,_,z=b['position'];front=z+b['d']/2
         cube('Entry walk',(x,.03,(front+29)/2 if z>0 else (front+1)/2),(3,.07,29-front if z>0 else 1-front),'path',0)
     # Open park / arena avoids building collisions and serves capture and duel areas.
     cyl('Open duel ring',(-19,.055,-26),6.0,.08,'cream',48);torus('Duel floor marking',(-19,.105,-26),4.9,.085,'gold')
     for dx in (-3,3):star('Floor sigil',-19+dx,.12,-26,.5,'gold')
-    for x,z in [(-6,1),(6,1),(-13,6),(12,6),(-27,28),(27,28),(-9,-19),(9,-19)]:bench(x,z)
-    for x,z in [(-31,-28),(-29,-19),(-31,-4),(-31,7),(-30,19),(-31,32),(31,-28),(29,-18),(32,-5),(31,7),(32,28),(-10,-30),(2,-31),(14,-31),(-10,32),(9,32)]:
-        cyl('Tree trunk',(x,1.2,z),.28,2.4,'wood',10);ell('Tree crown',(x,3.15,z),(1.65,1.85,1.55),'leaf');ell('Tree highlight',(x-.65,3.8,z+.25),(1.2,1.05,1.1),'leaf2');COLLISIONS.append(dict(x=x,z=z,w=.75,d=.75))
+    for i,(x,z) in enumerate([(-6,1),(6,1),(-13,6),(12,6),(-27,28),(27,28),(-9,-19),(9,-19)]):
+        bench(x,z)
+        COLLISIONS.append(dict(id='bench_'+str(i),x=x,z=z-.02,w=1.9,d=.75,kind='bench'))
+    # Layered woodland islands, keeping roads, entrances and the duel park clear.
+    ground_parts=PARTS[:];clear_parts()
+    points=[(-31,-28),(-29,-19),(-31,-4),(-31,7),(-30,19),(-31,34),(31,-28),(29,-18),(32,-5),(31,7),(32,34),(-10,-30),(14,-33),(-10,34),(9,34)]
+    for z in [-33,-25,-17,-9,7,15,23,34]:
+        for x in [-34,34]:points.append((x+random.uniform(-.7,.7),z+random.uniform(-1,1)))
+    for x,z in [(-10,-20),(-9,-25),(-10,-34),(7,-33),(10,-29),(18,-33),(24,-33),(29,-33),(-10,12),(-9,18),(-9,23),(9,14),(10,21),(10,25),(27,9),(-28,10),(-27,34),(19,34),(25,34)]:points.append((x,z))
+    for i,(x,z) in enumerate(points):
+        size=[.66,.85,1.0,1.25,1.5][i%5];ident='woodland_tree_%02d'%i
+        cyl('Tree trunk',(x,1.2*size,z),.24*size,2.4*size,'wood',10)
+        color=['forest','leaf','sage','leaf2','lime'][i%5]
+        for dx,dy,dz,rr in [(0,3.25,0,1.65),(-.7,3.6,.25,1.18),(.8,2.8,-.15,1.05),(0,4.35,0,.9)]:
+            ell('Layered tree canopy',(x+dx*size,dy*size,z+dz*size),(rr*size,rr*.87*size,rr*.92*size),color if dy<4 else 'leaf2')
+        o=batch('Occluder_Tree_'+ident);o['occluder']=True;o['occludable']=True;o['occluderId']=ident;o['kind']='tree';o['landscapeId']=ident;TOWN_OBJECTS.append(o);clear_parts()
+        COLLISIONS.append(dict(id=ident,x=round(x,3),z=round(z,3),w=round(.65*size,3),d=round(.65*size,3),kind='tree'));LANDSCAPE_IDS.append(ident)
+    PARTS.extend(ground_parts)
+    # Small eastern lake; five adjacent shoreline strips match the ellipse.
+    lake_x,lake_z,rx,rz=20,-23,5.4,4.6
+    ell('Lake sandy shore',(lake_x,-.045,lake_z),(rx+.48,.12,rz+.48),'sand')
+    ell('Lake shallow edge',(lake_x,.025,lake_z),(rx,.06,rz),'shallow')
+    ell('Lake turquoise surface',(lake_x,.105,lake_z),(rx-.45,.025,rz-.45),'lake')
+    for i in range(5):
+        zz=-rz+(i+.5)*2*rz/5;half=rx*math.sqrt(1-(max(0,abs(zz)-rz/5)/rz)**2)
+        ident='lake_shore_%d'%i;COLLISIONS.append(dict(id=ident,x=lake_x,z=round(lake_z+zz,3),w=math.ceil(half*2*1000)/1000,d=math.ceil(2*rz/5*1000)/1000,kind='water'));LANDSCAPE_IDS.append(ident)
+    for i in range(18):
+        a=i*2*pi/18;x=lake_x+cos(a)*(rx+.2);z=lake_z+sin(a)*(rz+.2)
+        if i%3==0:ell('Shore pebble',(x,.12,z),(.34,.20,.26),'stone')
+        else:
+            for j in range(3):line('Lakeside reed',(x+j*.07,.08,z),(x+j*.09,.5+.1*j,z+.1),.025,'sage')
+    for x,z in [(18,-23),(22,-21.5),(19,-25)]:
+        ell('Water lily leaf',(x,.15,z),(.35,.025,.3),'leaf');ell('Water lily bloom',(x,.20,z),(.14,.07,.14),'rose')
     for i in range(80):
         x=random.uniform(-34,34);z=random.uniform(-34,34)
-        if abs(x)<5 or abs(z-1)<5 or any(abs(x-b['position'][0])<b['w']/2+2 and abs(z-b['position'][2])<b['d']/2+2 for b in BUILDINGS):continue
+        if ((x-20)/6)**2+((z+23)/5.2)**2<1 or abs(x)<5 or abs(z-1)<5 or any(abs(x-b['position'][0])<b['w']/2+2 and abs(z-b['position'][2])<b['d']/2+2 for b in BUILDINGS):continue
         for j in range(3):
             dx=sin(j*2)*.22;dz=cos(j*2)*.22;cyl('Flower stem',(x+dx,.22,z+dz),.017,.44,'leaf',5);ell('Wildflower',(x+dx,.45,z+dz),(.12,.055,.12),['white','rose','gold'][j])
-    o=batch('Dawnlight Town · original Blender architecture');export('models/world/town.glb',[o]);return o
+    o=batch('Dawnlight Town · original Blender architecture');export('models/world/town.glb',[o]+TOWN_OBJECTS);return o
 def interior(b):
     clear_parts();key=b['id'];c=b['color'];cols=[]
     cube('Interior floor',(0,-.12,0),(14,.24,16),'cream',0);cube('Back wall',(0,1.8,-7.6),(14,3.6,.22),'white');cube('Left cutaway wall',(-6.9,.65,0),(.22,1.3,15),'white');cube('Right cutaway wall',(6.9,.65,0),(.22,1.3,15),'white')
@@ -288,6 +325,16 @@ def arena():
             cyl('Corner beacon base',(x,.3,z),.55,.6,'indigo',12);ell('Corner crystal',(x,1.0,z),(.24,.65,.24),'gold')
     o=batch('Phantom 3 on 3 battle arena');export('models/world/arena.glb',[o]);o.hide_set(True)
 townobj=town()
+if '--town-only' in sys.argv:
+    path=ROOT/'data/world.json';data=json.loads(path.read_text(encoding='utf-8-sig'))
+    # Only town collision/landscape fields are merged. Gameplay and NPC data survive.
+    old=[c for c in data['collisions'] if c.get('id') and c.get('kind') not in ('tree','water','bench','planter') and not c.get('id','').startswith(('woodland_tree_','lake_shore_'))]
+    data['collisions']=old+[c for c in COLLISIONS if c.get('kind') in ('tree','water','bench','planter')]
+    data['landscape']=dict(lake=dict(center=[20,-23],radii=[5.4,4.6]),treeCount=sum(c.get('kind')=='tree' for c in COLLISIONS),occluderPrefix='Occluder_',occluderUserData='occluder')
+    path.write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
+    bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'authoring/town-landscape.blend'))
+    print('TOWN_LANDSCAPE_COMPLETE',data['landscape']);sys.exit(0)
+
 for b in BUILDINGS:interior(b)
 npcdata=[]
 locations={'prof_daydream':[17.3,0,-1.2],'care_nova':[-2.8,0,-1.2],'ranger_lumo':[-17,0,-1.2],'arena_coach':[-18,0,-19],'gym_master':[-17,0,25.5],'tower_keeper':[17,0,25],'resident_berry':[-3,0,28],'resident_kid':[8,0,9],'shop_vendor':[3,0,-.8]}
