@@ -8,3 +8,8 @@ authoring/*review*.json
 authoring/*review*.cjs
 qa/local-*.png
 .DS_Store
+
+authoring/qa-*
+authoring/qa_*
+authoring/animation-refresh-qa.json
+qa/

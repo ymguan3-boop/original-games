@@ -112,7 +112,7 @@ def bind_parts(name,rig):
     return obj
 
 def animations(rig,kind):
-    for label,duration in [('Idle',48),('Walk',24),('Run',18),('Wave',48),('Throw',24),('Attack',24),('Hurt',18),('Roll',18)]:
+    for label,duration in [('Idle',48),('Walk',24),('Run',18),('Wave',48),('Throw',24),('Attack',24),('Hurt',18),('Roll',18),('Celebrate',60),('Disappointed',60)]:
         if rig.animation_data:rig.animation_data.action=None
         for frame in range(1,duration+2,3):
             t=(frame-1)/duration*2*pi
@@ -137,6 +137,26 @@ def animations(rig,kind):
                 if label=='Hurt':pb['Torso'].rotation_euler.z=.11*sin(t)
                 if label=='Wave':
                     pb['UpperArmR'].rotation_euler.z=1.65;pb['ForearmR'].rotation_euler.z=.65+.18*sin(t*3);pb['Head'].rotation_euler.z=-.055
+                if label=='Celebrate':
+                    envelope=sin(t/2)**2
+                    bounce=max(0,sin(t*2))*envelope
+                    pb['Root'].location.y=.10*bounce
+                    pb['Torso'].rotation_euler.x=-.10*envelope
+                    pb['Head'].rotation_euler.x=-.12*envelope
+                    for side,sgn in [('L',-1),('R',1)]:
+                        pb['UpperArm'+side].rotation_euler.z=sgn*(2.4*envelope+.10*bounce)
+                        pb['Forearm'+side].rotation_euler.x=.48*envelope
+                        pb['Shin'+side].rotation_euler.x=-.10*bounce
+                if label=='Disappointed':
+                    envelope=sin(t/2)**2
+                    pb['Torso'].rotation_euler.x=.23*envelope
+                    pb['Head'].rotation_euler.x=.35*envelope
+                    pb['Head'].rotation_euler.z=.10*sin(t*2)*envelope
+                    pb['Root'].location.y=-.035*envelope
+                    for side,sgn in [('L',-1),('R',1)]:
+                        pb['UpperArm'+side].rotation_euler.z=-sgn*.10*envelope
+                        pb['UpperArm'+side].rotation_euler.x=.10*envelope
+                        pb['Forearm'+side].rotation_euler.x=.16*envelope
                 if label=='Roll':
                     tuck=sin(t/2)**2
                     pb['Root'].rotation_euler.x=t
@@ -285,8 +305,8 @@ def costumes(rig):
         if style=='adventure':
             for s in [-1,1]:
                 panel('Adventure vest','gold',[(s*.04,1.69),(s*.24,1.69),(s*.26,1.15),(s*.04,1.15)],.225,'Torso',.03,.015)
-                curve('Backpack straps','graydark',[(s*.22,1.18,.25),(s*.21,1.65,.20),(s*.20,1.72,-.10),(s*.20,1.25,-.24)],.025,'Torso')
-            ell('Adventure backpack','royal',(0,1.41,-.235),(.235,.25,.105),'Torso')
+                curve('Backpack straps','graydark',[(s*.22,1.18,.25),(s*.21,1.65,.20),(s*.20,1.72,-.10),(s*.20,1.25,-.30)],.025,'Torso')
+            ell('Adventure backpack','royal',(0,1.41,-.315),(.235,.25,.13),'Torso')
         if style=='electric':
             for s in [-1,1]:
                 curve('Rabbit headband','gold',[(s*.35,2.22,-.02),(s*.32,2.52,-.01),(0,2.70,-.01)],.027,'Head')

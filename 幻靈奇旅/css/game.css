@@ -133,3 +133,23 @@ body.navigating #broadcast{top:calc(env(safe-area-inset-top) + 230px)}
 #actions #ballBtn:before{content:"";font-size:0;color:transparent}
 
 #hud #dexBtn{min-height:44px}.panel header button{width:44px;height:44px;min-width:44px;min-height:44px}
+
+/* Compact inverted-L graphics retain separate 44px transparent touch targets. */
+#actions{right:12px;bottom:calc(env(safe-area-inset-bottom) + 22px);width:164px;height:124px;display:block;transform:none}
+#actions #berryBtn,#actions #ballBtn,#actions #lockBtn,#actions #rollBtn{position:absolute;width:44px;height:44px;min-width:44px;min-height:44px;inset:auto;margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible;gap:0;justify-content:center}
+#actions #berryBtn{left:20px;top:0}#actions #ballBtn{left:68px;top:0}#actions #lockBtn{left:116px;top:0}#actions #rollBtn{left:20px;top:48px}
+#actions #berryBtn:before,#actions #ballBtn:before,#actions #lockBtn:before,#actions #rollBtn:before{width:19.333px;height:19.333px;border:1px solid #b1d5cd;border-radius:6px;background-color:var(--compact-color,#234a51);background-size:14px 14px;box-shadow:0 2px 5px #112c3a40}
+#actions #berryBtn{--compact-color:#753558}#actions #ballBtn{--compact-color:#624b21}#actions #ballBtn[data-ball="great"]{--compact-color:#197c85}#actions #ballBtn[data-ball="master"]{--compact-color:#73449b}#actions #lockBtn{--compact-color:#684f2b}#actions #rollBtn{--compact-color:#27526a}
+#actions #berryBtn:after,#actions #ballBtn:after,#actions #lockBtn:after,#actions #rollBtn:after{display:none}
+#actions #lockBtn[aria-pressed="true"]{background:transparent;border:0;--compact-color:#22675a}
+#actions #lockBtn[aria-pressed="true"]:before{background-image:var(--unlock-icon);border-color:#8af1ca}
+#actions #captureBtn{position:absolute;left:88px;top:48px;inset:auto;right:0;bottom:0;width:76px;height:76px;min-width:76px;min-height:76px}
+#joystick{bottom:calc(env(safe-area-inset-bottom) + 50px)}
+#cameraControls{left:50%;top:auto;bottom:calc(env(safe-area-inset-bottom) + 6px);transform:translateX(-50%);width:128px;height:32px;padding:0;gap:0;background:transparent;border:0;border-radius:0;backdrop-filter:none;box-shadow:none}
+#cameraControls button{position:relative;width:32px;height:32px;min-width:32px;min-height:32px;padding:0;border:0;border-radius:0;background:transparent;color:#f0fffa;font-size:14px;isolation:isolate}
+#cameraControls button:before{content:'';position:absolute;z-index:-1;left:5px;top:5px;width:22px;height:22px;border:1px solid #a8cecc66;border-radius:7px;background:#22444be6;box-shadow:0 2px 5px #112c3a20}
+#cameraControls button:active{background:transparent}#cameraControls button:active:before{background:#286976}
+#npcText{white-space:pre-line}#npcActions button{min-height:44px}
+@media(max-width:359px){#actions{width:156px;right:8px;transform:none}#actions #berryBtn{left:12px}#actions #ballBtn{left:60px}#actions #lockBtn{left:108px}#actions #rollBtn{left:12px}#actions #captureBtn{left:80px}#joystick{width:100px;height:100px;left:10px;bottom:calc(env(safe-area-inset-bottom) + 50px)}}
+
+:root{--unlock-icon:url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20stroke%3D%22%23dffbf7%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M31%208a18%2018%200%200%201%209%2023M17%2040A18%2018%200%200%201%208%2017M7%207l34%2034%22%2F%3E%3Cpath%20stroke%3D%22%23ffb4c8%22%20d%3D%22M36%208h6v6M6%2034v6h6%22%2F%3E%3C%2Fsvg%3E%0A')}

@@ -28,9 +28,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 110436,
+    "fileBytes": 116356,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -402,9 +403,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 106688,
+    "fileBytes": 112548,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -419,9 +421,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 109388,
+    "fileBytes": 115384,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -436,9 +439,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 113696,
+    "fileBytes": 119748,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -606,9 +610,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 111372,
+    "fileBytes": 117424,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -623,9 +628,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 112316,
+    "fileBytes": 118372,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -640,9 +646,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 173492,
+    "fileBytes": 178536,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -657,9 +664,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 190600,
+    "fileBytes": 197552,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -674,9 +682,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 122624,
+    "fileBytes": 128692,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -708,9 +717,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 196744,
+    "fileBytes": 203832,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -742,9 +752,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 125832,
+    "fileBytes": 130744,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -963,9 +974,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 190624,
+    "fileBytes": 197576,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {
@@ -1014,9 +1026,10 @@
       "Idle",
       "Walk",
       "Attack",
-      "Hurt"
+      "Hurt",
+      "Fly"
     ],
-    "fileBytes": 190620,
+    "fileBytes": 197572,
     "source": "Blender native authored mesh and skeletal animation"
   },
   {

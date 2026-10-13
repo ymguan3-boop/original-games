@@ -324,6 +324,18 @@ def arena():
         for z in (-10.7,10.7):
             cyl('Corner beacon base',(x,.3,z),.55,.6,'indigo',12);ell('Corner crystal',(x,1.0,z),(.24,.65,.24),'gold')
     o=batch('Phantom 3 on 3 battle arena');export('models/world/arena.glb',[o]);o.hide_set(True)
+if '--props-only' in sys.argv:
+    palette={'sky':'00C7DC','purple':'7020D9','gold':'D99100','glass':'00AD71','rose':'FF246E','leaf':'12783C','cream':'FFF2C3','indigo':'17254F'}
+    for key,color in palette.items():
+        mat=M[key];bs=mat.node_tree.nodes.get('Principled BSDF');mat.diffuse_color=lin(color);bs.inputs['Base Color'].default_value=lin(color)
+        bs.inputs['Roughness'].default_value=.3
+        if key in ('gold','sky','purple'):bs.inputs['Metallic'].default_value=.42
+        if key in ('sky','purple','glass','rose'):
+            bs.inputs['Emission Color'].default_value=lin(color);bs.inputs['Emission Strength'].default_value=.22
+    props()
+    bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'authoring/props.blend'))
+    print('PROPS_ONLY_COMPLETE');sys.exit(0)
+
 townobj=town()
 if '--town-only' in sys.argv:
     path=ROOT/'data/world.json';data=json.loads(path.read_text(encoding='utf-8-sig'))

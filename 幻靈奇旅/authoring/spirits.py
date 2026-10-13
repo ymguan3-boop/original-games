@@ -65,7 +65,7 @@ for d in DATA:
  d.update(model='models/spirits/'+d['id']+'.glb',height=round(1.275*1.3**(d['stage']-1),5),hp=55+35*d['stage']+(50 if d['role']=='legendary' else 0),attack=12+14*d['stage'],evolvesTo=d['next'],rarity='傳說' if d['role']=='legendary' else '稀有' if d['role'] in ('gym','reward') else ['普通','進階','珍稀'][d['stage']-1],motionType='fly' if d['form'] in ('owl','manta','moth','phoenix','griffin','dragonfly','whale') or d['form']=='bird' and d['stage']==3 else 'float' if d['form'] in ('cloud','serpent','seahorse','oracle') else 'walk')
  d['skills']=[dict(name=ELEMENT[d['element']][0]+'光輕擊',power=d['attack'],cost=1),dict(name=d['name'][:2]+'共鳴',power=d['attack']*2,cost=3)]
  d['description']=f"{d['name']}是初光之境的{d['type']}屬性幻靈。"+{'cat':'牠以溫暖的額焰辨認夥伴，尾尖的火光會隨心情搖曳。','deer':'枝角會在夜裡亮起，帶領迷路的旅人返回村莊。','owl':'寬闊的翅膀能安靜掠過樹梢，羽紋記錄著月光。','cloud':'柔軟雲絮包裹著星核，喜歡漂浮在信任的旅人身邊。','rabbit':'雙耳間的晶角儲存雷光，奔跑時留下明亮足跡。'}.get(d['form'],'牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。')
-(ROOT/'data'/'spirits.json').write_text(json.dumps(DATA,ensure_ascii=False,indent=2),encoding='utf-8')
+# Gameplay data is owned separately. Model builds never overwrite spirits.json.
 
 def xyz(p):return (p[0],-p[2],p[1])
 def lin(c):
@@ -343,7 +343,9 @@ def rig_and_export(d):
  # Recalculate coherent outward normals for ellipsoids, curves and closed decorative solids.
  bpy.context.view_layer.objects.active=skin;bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.mesh.normals_make_consistent(inside=False);bpy.ops.object.mode_set(mode='OBJECT')
  bpy.context.scene.render.fps=24
- for label,duration in [('Idle',48),('Walk',24),('Attack',24),('Hurt',18)]:
+ clips=[('Idle',48),('Walk',24),('Attack',24),('Hurt',18)]
+ if 'WingL' in BONES:clips.append(('Fly',24))
+ for label,duration in clips:
   if rig.animation_data:rig.animation_data.action=None
   for frame in range(1,duration+2,3):
    phase=(frame-1)/duration*2*pi;pulse=max(0,sin(phase/2));pb=rig.pose.bones
@@ -351,13 +353,23 @@ def rig_and_export(d):
    pb['Body'].scale=(1+sin(phase)*.008,1+sin(phase)*.008,1+sin(phase)*.008)
    if 'Head' in pb:pb['Head'].rotation_euler.z=.06*sin(phase)
    if 'Tail' in pb:pb['Tail'].rotation_euler.z=.19*sin(phase+.5)
-   if d['motionType'] in ('fly','float'):pb['Root'].location.z=.045*scale*sin(phase)
+   if label=='Fly' or (label=='Idle' and d['motionType'] in ('fly','float')):pb['Root'].location.z=.045*scale*sin(phase)
    if label=='Walk':
     for key,offset in [('FrontL',0),('FrontR',pi),('BackL',pi),('BackR',0)]:
      if key in pb:pb[key].rotation_euler.x=.36*sin(phase+offset)
     pb['Body'].rotation_euler.y=.035*sin(phase)
    for key,s in [('WingL',-1),('WingR',1)]:
-    if key in pb:pb[key].rotation_euler.y=s*(.20 if label=='Idle' else .42)*sin(phase)
+    if key in pb:
+     # Bone local X points laterally; local Z rotation moves the wing vertically.
+     # Body/wing bones point Blender Z, local Y is vertical, local Z is -Y.
+     amplitude=.78 if label=='Fly' else .26 if label=='Walk' else .18
+     pb[key].rotation_euler.z=s*amplitude*sin(phase)
+     pb[key].rotation_euler.x=.12*sin(phase+.55) if label=='Fly' else 0
+   if label=='Fly':
+    pb['Body'].rotation_euler.x=-.06+.04*cos(phase)
+    for key in ('BackL','BackR'):
+     if key in pb:pb[key].rotation_euler.x=-.20
+
    if label=='Attack':
     pb['Body'].rotation_euler.x=-.22*pulse;pb['Root'].location.y=-.18*scale*pulse
     for key in ['FrontL','FrontR']:

@@ -4,7 +4,7 @@
   "models": [
     {
       "file": "models/hero.glb",
-      "bytes": 4209068,
+      "bytes": 4234948,
       "animations": [
         "Idle",
         "Walk",
@@ -13,7 +13,9 @@
         "Throw",
         "Attack",
         "Hurt",
-        "Roll"
+        "Roll",
+        "Celebrate",
+        "Disappointed"
       ]
     },
     {
@@ -90,42 +92,43 @@
     },
     {
       "file": "models/props/berry.glb",
-      "bytes": 26720,
+      "bytes": 28756,
       "animations": []
     },
     {
       "file": "models/props/core.glb",
-      "bytes": 76724,
+      "bytes": 76772,
       "animations": []
     },
     {
       "file": "models/props/evolution-stone.glb",
-      "bytes": 22000,
+      "bytes": 22172,
       "animations": []
     },
     {
       "file": "models/props/great_core.glb",
-      "bytes": 76736,
+      "bytes": 76828,
       "animations": []
     },
     {
       "file": "models/props/master_core.glb",
-      "bytes": 75800,
+      "bytes": 75792,
       "animations": []
     },
     {
       "file": "models/props/potion.glb",
-      "bytes": 14680,
+      "bytes": 14780,
       "animations": []
     },
     {
       "file": "models/spirits/articuno.glb",
-      "bytes": 173492,
+      "bytes": 178536,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -140,12 +143,13 @@
     },
     {
       "file": "models/spirits/beedrill.glb",
-      "bytes": 190620,
+      "bytes": 197572,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -160,12 +164,13 @@
     },
     {
       "file": "models/spirits/blaziken.glb",
-      "bytes": 113696,
+      "bytes": 119748,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -190,12 +195,13 @@
     },
     {
       "file": "models/spirits/butterfree.glb",
-      "bytes": 190624,
+      "bytes": 197576,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -260,12 +266,13 @@
     },
     {
       "file": "models/spirits/combusken.glb",
-      "bytes": 109388,
+      "bytes": 115384,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -300,22 +307,24 @@
     },
     {
       "file": "models/spirits/empoleon.glb",
-      "bytes": 112316,
+      "bytes": 118372,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
       "file": "models/spirits/entei.glb",
-      "bytes": 196744,
+      "bytes": 203832,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -410,12 +419,13 @@
     },
     {
       "file": "models/spirits/kyogre.glb",
-      "bytes": 125832,
+      "bytes": 130744,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -470,12 +480,13 @@
     },
     {
       "file": "models/spirits/moltres.glb",
-      "bytes": 122624,
+      "bytes": 128692,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -520,22 +531,24 @@
     },
     {
       "file": "models/spirits/piplup.glb",
-      "bytes": 110436,
+      "bytes": 116356,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
       "file": "models/spirits/prinplup.glb",
-      "bytes": 111372,
+      "bytes": 117424,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -620,12 +633,13 @@
     },
     {
       "file": "models/spirits/torchic.glb",
-      "bytes": 106688,
+      "bytes": 112548,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
@@ -720,12 +734,13 @@
     },
     {
       "file": "models/spirits/zapdos.glb",
-      "bytes": 190600,
+      "bytes": 197552,
       "animations": [
         "Idle",
         "Walk",
         "Attack",
-        "Hurt"
+        "Hurt",
+        "Fly"
       ]
     },
     {
