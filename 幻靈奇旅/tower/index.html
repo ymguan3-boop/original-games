@@ -68,7 +68,7 @@ body.impact-heavy .vignette{box-shadow:inset 0 0 110px #ffbf5933}body.impact-lig
 @media (pointer:coarse) and (max-width:700px) and (orientation:portrait){
  .mobile-controls #mobileAttack{
   right:10px!important;
-  bottom:calc(35px + env(safe-area-inset-bottom))!important;
+  bottom:calc(45px + env(safe-area-inset-bottom))!important;
   width:90px!important;height:90px!important;
   z-index:5;touch-action:manipulation;border-width:2px;will-change:transform;
  }
@@ -99,7 +99,7 @@ body.impact-heavy .vignette{box-shadow:inset 0 0 110px #ffbf5933}body.impact-lig
 }
 @media (pointer:coarse) and (max-width:360px) and (orientation:portrait){
  .mobile-controls #mobileAttack{
-  right:8px!important;bottom:calc(35px + env(safe-area-inset-bottom))!important;
+  right:8px!important;bottom:calc(45px + env(safe-area-inset-bottom))!important;
   width:82px!important;height:82px!important;
  }
  .mobile-controls #mobileHeal,.mobile-controls #mobileDodge,#ultimateButton{
@@ -155,10 +155,61 @@ const ULTIMATE_DAMAGE=[126,38,43];
 class Hunt {
  constructor(save=freshSave()){this.save=save;this.events=[];this.load(0);}
  emit(type,data={}){this.events.push({type,...data});}
- load(index){this.level=clamp(index,0,2);this.mode='battle';this.engaged=false;this.time=0;this.paused=false;this.rewarded=false;this.potions=5;this.combo=0;this.ultimateSequence=null;this.player={x:0,z:9,hp:150,stamina:100,weapon:0,cooldown:0,invulnerable:0,dodge:0,dx:0,dz:-1,attack:0,ultimateCd:0,special:0,facing:Math.PI};this.monster={x:0,z:-5,hp:LEVELS[this.level].hp,maxHp:LEVELS[this.level].hp,state:'idle',timer:3,phase:0,facing:0,flash:0,enraged:false};this.hazards=[];this.projectiles=[];this.emit('level');}
+ load(index){this.level=clamp(index,0,2);this.mode='battle';this.engaged=false;this.time=0;this.paused=false;this.rewarded=false;this.potions=5;this.combo=0;this.ultimateSequence=null;this.player={x:0,z:9,hp:150,stamina:100,weapon:0,cooldown:0,invulnerable:0,dodge:0,dx:0,dz:-1,attack:0,ultimateCd:0,special:0,facing:Math.PI};this.monster={x:0,z:-5,hp:LEVELS[this.level].hp,maxHp:LEVELS[this.level].hp,state:'idle',timer:3,phase:0,facing:0,flash:0,enraged:false,rageTime:0,rageCooldown:0,evadeTime:0,evadeCooldown:0,poisonTime:0,poisonTick:.9,knockTime:0};this.hazards=[];this.projectiles=[];this.emit('level');}
  switchWeapon(i){if(this.mode!=='battle'||this.paused||this.ultimateSequence||i<0||i>2)return;this.player.weapon=i;this.emit('weapon',{i});}
  attack(heavy=false){const p=this.player,m=this.monster,w=WEAPONS[p.weapon],cost=heavy?w.heavyCost:w.cost;if(this.mode!=='battle'||this.paused||this.ultimateSequence||p.cooldown>0||p.dodge>0||p.stamina<cost)return false;this.engaged=true;p.stamina-=cost;p.cooldown=w.cooldown*(heavy?1.75:1);p.attack=p.cooldown;p.facing=Math.atan2(m.x-p.x,m.z-p.z);this.emit('swing',{heavy,weapon:p.weapon});const amount=Math.round((heavy?w.heavy:w.damage)*(1+this.save.upgrade*.15));if(p.weapon===2){const d=direction(p,m);this.projectiles.push({x:p.x,z:p.z,dx:d.x,dz:d.z,life:w.range/28,damage:amount,heavy});}else if(distance(p,m)<w.range+1){this.damageMonster(amount,heavy);}return true;}
- damageMonster(amount,heavy,ultimate=false){if(this.mode!=='battle')return;const m=this.monster;m.hp=Math.max(0,m.hp-amount);m.flash=ultimate?.3:.14;this.combo++;this.emit('hit',{amount,x:m.x,z:m.z,heavy,ultimate});if(m.hp===0){this.mode='victory';this.hazards=[];this.projectiles=[];m.state='dead';this.emit('victory');this.claimRewards();}}
+ tryMonsterDodge(ultimate=false){
+  const m=this.monster,seq=this.ultimateSequence;
+  // Final greatsword strike is a guaranteed cinematic finisher; all other incoming
+  // direct hits roll a real 20% dodge chance when their short evasive cooldown permits.
+  if(m.evadeCooldown>0||(ultimate&&seq?.weapon===0&&seq.index===seq.count)||Math.random()>=.2)return false;
+  const p=this.player,d=direction(p,m),side=Math.random()<.5?-1:1;
+  m.x=clamp(m.x+d.z*side*3.3,-19.5,19.5);
+  m.z=clamp(m.z-d.x*side*3.3,-19.5,19.5);
+  const r=Math.hypot(m.x,m.z);if(r>19.5){m.x=m.x*19.5/r;m.z=m.z*19.5/r;}
+  m.evadeTime=.45;m.evadeCooldown=2.2;m.state='recover';m.timer=Math.max(.35,m.timer);
+  this.emit('bossEvade',{x:m.x,z:m.z});return true;
+ }
+ maybeRage(ultimate=false){
+  const m=this.monster;
+  if(m.enraged||m.rageCooldown>0||this.mode!=='battle')return;
+  const chance=ultimate?.25:(m.hp<m.maxHp*.4?.17:.10);
+  if(Math.random()<chance){
+   m.enraged=true;m.rageTime=6;m.rageCooldown=15;
+   m.timer=Math.min(m.timer,.65);
+   this.emit('rage',{x:m.x,z:m.z});
+  }
+ }
+ finishMonster(){
+  if(this.mode!=='battle')return;
+  this.mode='victory';this.hazards=[];this.projectiles=[];
+  this.monster.state='dead';this.monster.enraged=false;this.monster.poisonTime=0;
+  this.emit('victory');this.claimRewards();
+ }
+ damageMonster(amount,heavy,ultimate=false){
+  if(this.mode!=='battle')return false;
+  if(this.tryMonsterDodge(ultimate))return false;
+  const m=this.monster,seq=this.ultimateSequence;
+  // Let all three/ten animated strikes play even against low-health bosses.
+  const floor=ultimate&&seq&&seq.index<seq.count?1:0;
+  m.hp=Math.max(floor,m.hp-amount);m.flash=ultimate?.3:.14;this.combo++;
+  this.emit('hit',{amount,x:m.x,z:m.z,heavy,ultimate});
+  if(m.hp===0)this.finishMonster();else this.maybeRage(ultimate);
+  return true;
+ }
+ launchMonster(){
+  const m=this.monster,p=this.player,d=direction(p,m);
+  m.x+=d.x*4.1;m.z+=d.z*4.1;const rad=Math.hypot(m.x,m.z);
+  if(rad>19.5){m.x*=19.5/rad;m.z*=19.5/rad;}
+  m.knockTime=.95;m.evadeTime=0;m.state=this.mode==='battle'?'recover':m.state;
+  m.timer=Math.max(m.timer,1.55);
+  this.emit('bossLaunch',{x:m.x,z:m.z});
+ }
+ poisonMonster(){
+  const m=this.monster;if(this.mode!=='battle')return;
+  m.poisonTime=7;m.poisonTick=.9;
+  this.emit('bossPoison',{x:m.x,z:m.z});
+ }
  unleash(){const p=this.player,m=this.monster;if(this.mode!=='battle'||this.paused||p.ultimateCd>0||p.special>0||distance(p,m)>22)return false;
   this.engaged=true;const weapon=p.weapon,count=ULTIMATE_HITS[weapon],interval=[.36,.105,.155][weapon];
   // Keep the arrow-rain sequence alive through its last arrow flight; movement remains free.
@@ -174,7 +225,10 @@ class Hunt {
   while(seq.index<seq.count&&seq.elapsed>=seq.index*seq.interval){
    const index=seq.index++,m=this.monster,offset=seq.weapon===2?(index%3-1)*1.15:0;
    this.emit('ultimateStrike',{weapon:seq.weapon,index,total:seq.count,x:m.x+offset,z:m.z});
-   this.damageMonster(seq.base,true,true);if(this.mode!=='battle')break;
+   const landed=this.damageMonster(seq.base,true,true);
+   if(seq.weapon===0&&index===seq.count-1&&landed)this.launchMonster();
+   if(seq.weapon===1&&index===seq.count-1&&this.mode==='battle')this.poisonMonster();
+   if(this.mode!=='battle')break;
   }
   // The sequence stays active through the recovery/last arrow's travel time.
   if((seq.index>=seq.count&&seq.elapsed>=seq.duration)||this.mode!=='battle')this.ultimateSequence=null;
@@ -192,14 +246,24 @@ class Hunt {
  }
  heal(){const p=this.player;if(this.mode!=='battle'||this.paused||this.potions<=0||p.hp>=150||p.dodge>0)return false;this.potions--;p.hp=Math.min(150,p.hp+65);this.emit('heal');return true;}
  damagePlayer(amount){const p=this.player;if(p.invulnerable>0||this.mode!=='battle')return false;p.hp=Math.max(0,p.hp-amount);p.invulnerable=.85;this.emit('hurt',{amount});if(p.hp===0){this.mode='defeat';this.emit('defeat');}return true;}
- startPattern(){const m=this.monster,p=this.player;m.phase++;const type=this.level===0?(m.phase%3===0?'stomp':'charge'):this.level===1?(m.phase%2===0?'frost':'charge'):(m.phase%3===0?'charge':m.phase%2===0?'eruption':'breath');m.state='windup';m.pattern=type;m.timer=type==='charge'?1.05:1.35;m.target={x:p.x,z:p.z};m.origin={x:m.x,z:m.z};m.dir=direction(m,p);m.facing=Math.atan2(m.dir.x,m.dir.z);this.emit('warning',{pattern:type});if(type==='frost'||type==='eruption'){for(let i=0;i<3;i++){this.hazards.push({x:p.x+(i-1)*3.8,z:p.z+(i%2)*3,radius:2.6,timer:1.3+i*.3,life:.65,active:false,hit:false,type});}}}
- resolvePattern(){const m=this.monster,p=this.player;const enr=m.enraged?1.2:1;if(m.pattern==='charge'){m.state='charge';m.timer=.85;m.hit=false;}else{if(m.pattern==='stomp'&&distance(m,p)<6)this.damagePlayer(34*enr);if(m.pattern==='breath'){const d=direction(m,p),dot=d.x*m.dir.x+d.z*m.dir.z;if(distance(m,p)<12&&dot>.63)this.damagePlayer(38*enr);}this.emit('impact',{pattern:m.pattern});m.state='recover';m.timer=1.8;}}
- tick(dt,input={}){dt=clamp(dt,0,.05);if(this.paused||this.mode!=='battle')return;if(input.x||input.z)this.engaged=true;if(!this.engaged)return;this.time+=dt;this.tickUltimate(dt);if(this.mode!=='battle')return;const p=this.player,m=this.monster;p.special=Math.max(0,p.special-dt);p.ultimateCd=Math.max(0,p.ultimateCd-dt);p.cooldown=Math.max(0,p.cooldown-dt);p.attack=Math.max(0,p.attack-dt);p.invulnerable=Math.max(0,p.invulnerable-dt);m.flash=Math.max(0,m.flash-dt);let dx=input.x||0,dz=input.z||0,len=Math.hypot(dx,dz);if(p.dodge>0){p.dodge-=dt;p.x+=p.dx*17*dt;p.z+=p.dz*17*dt;}else{if(len>0){dx/=len;dz/=len;const speed=p.attack>0?3:7.2;p.x+=dx*speed*dt;p.z+=dz*speed*dt;if(p.attack<=0)p.facing=Math.atan2(dx,dz);}p.stamina=clamp(p.stamina+dt*(p.attack>0?5:22),0,100);}let rad=Math.hypot(p.x,p.z);if(rad>22){p.x*=22/rad;p.z*=22/rad;}
+ startPattern(){const m=this.monster,p=this.player;m.phase++;const type=this.level===0?(m.phase%3===0?'stomp':'charge'):this.level===1?(m.phase%2===0?'frost':'charge'):(m.phase%3===0?'charge':m.phase%2===0?'eruption':'breath');m.state='windup';m.pattern=type;m.timer=(type==='charge'?1.05:1.35)/(m.enraged?1.45:1);m.target={x:p.x,z:p.z};m.origin={x:m.x,z:m.z};m.dir=direction(m,p);m.facing=Math.atan2(m.dir.x,m.dir.z);this.emit('warning',{pattern:type});if(type==='frost'||type==='eruption'){for(let i=0;i<3;i++){this.hazards.push({x:p.x+(i-1)*3.8,z:p.z+(i%2)*3,radius:2.6,timer:1.3+i*.3,life:.65,active:false,hit:false,type});}}}
+ resolvePattern(){const m=this.monster,p=this.player;const enr=m.enraged?1.2:1;if(m.pattern==='charge'){m.state='charge';m.timer=.85;m.hit=false;}else{if(m.pattern==='stomp'&&distance(m,p)<6)this.damagePlayer(34*enr);if(m.pattern==='breath'){const d=direction(m,p),dot=d.x*m.dir.x+d.z*m.dir.z;if(distance(m,p)<12&&dot>.63)this.damagePlayer(38*enr);}this.emit('impact',{pattern:m.pattern});m.state='recover';m.timer=m.enraged?1.15:1.8;}}
+ tick(dt,input={}){dt=clamp(dt,0,.05);if(this.paused||this.mode!=='battle')return;if(input.x||input.z)this.engaged=true;if(!this.engaged)return;this.time+=dt;this.tickUltimate(dt);if(this.mode!=='battle')return;const p=this.player,m=this.monster;p.special=Math.max(0,p.special-dt);p.ultimateCd=Math.max(0,p.ultimateCd-dt);p.cooldown=Math.max(0,p.cooldown-dt);p.attack=Math.max(0,p.attack-dt);p.invulnerable=Math.max(0,p.invulnerable-dt);m.flash=Math.max(0,m.flash-dt);
+ m.evadeCooldown=Math.max(0,m.evadeCooldown-dt);
+ m.evadeTime=Math.max(0,m.evadeTime-dt);
+ m.knockTime=Math.max(0,m.knockTime-dt);
+ m.rageCooldown=Math.max(0,m.rageCooldown-dt);
+ if(m.rageTime>0){m.rageTime=Math.max(0,m.rageTime-dt);if(m.rageTime===0){m.enraged=false;this.emit('rageEnd');}}
+ if(m.poisonTime>0){m.poisonTime=Math.max(0,m.poisonTime-dt);m.poisonTick-=dt;
+  if(m.poisonTick<=0){m.poisonTick+=.9;m.hp=Math.max(0,m.hp-8);
+   this.emit('poisonTick',{amount:8,x:m.x,z:m.z});if(m.hp===0){this.finishMonster();return;}}
+ }
+ let dx=input.x||0,dz=input.z||0,len=Math.hypot(dx,dz);if(p.dodge>0){p.dodge-=dt;p.x+=p.dx*17*dt;p.z+=p.dz*17*dt;}else{if(len>0){dx/=len;dz/=len;const speed=p.attack>0?3:7.2;p.x+=dx*speed*dt;p.z+=dz*speed*dt;if(p.attack<=0)p.facing=Math.atan2(dx,dz);}p.stamina=clamp(p.stamina+dt*(p.attack>0?5:22),0,100);}let rad=Math.hypot(p.x,p.z);if(rad>22){p.x*=22/rad;p.z*=22/rad;}
  const sep=distance(p,m);if(sep<2.25&&sep>.001){p.x=m.x+(p.x-m.x)*2.25/sep;p.z=m.z+(p.z-m.z)*2.25/sep;}
  for(const shot of this.projectiles){shot.x+=shot.dx*28*dt;shot.z+=shot.dz*28*dt;shot.life-=dt;if(distance(shot,m)<2.5){shot.life=0;this.damageMonster(shot.damage,shot.heavy);}}
  this.projectiles=this.projectiles.filter(v=>v.life>0);if(this.mode!=='battle')return;
  for(const h of this.hazards){h.timer-=dt;if(h.timer<=0){h.active=true;h.life-=dt;if(!h.hit&&distance(p,h)<h.radius){h.hit=this.damagePlayer(29);}}}this.hazards=this.hazards.filter(h=>h.life>0);
- if(m.hp<m.maxHp*.4&&!m.enraged){m.enraged=true;this.emit('rage');}m.timer-=dt;if(m.state==='idle'){const d=direction(m,p);m.facing=Math.atan2(d.x,d.z);if(distance(m,p)>5){m.x+=d.x*2.5*dt;m.z+=d.z*2.5*dt;}if(m.timer<=0)this.startPattern();}else if(m.state==='windup'){if(m.timer<=0)this.resolvePattern();}else if(m.state==='charge'){m.x+=m.dir.x*19*dt;m.z+=m.dir.z*19*dt;if(!m.hit&&distance(m,p)<3.4)m.hit=this.damagePlayer(m.enraged?40:32);const r=Math.hypot(m.x,m.z);if(m.timer<=0||r>20){if(r>20){m.x*=20/r;m.z*=20/r;}m.state='recover';m.timer=2;this.emit('impact',{pattern:'charge'});}}else if(m.state==='recover'&&m.timer<=0){m.state='idle';m.timer=m.enraged?.8:1.4;}}
+ m.timer-=dt;if(m.state==='idle'){const d=direction(m,p);m.facing=Math.atan2(d.x,d.z);if(distance(m,p)>5){m.x+=d.x*2.5*(m.enraged?1.65:1)*dt;m.z+=d.z*2.5*(m.enraged?1.65:1)*dt;}if(m.timer<=0)this.startPattern();}else if(m.state==='windup'){if(m.timer<=0)this.resolvePattern();}else if(m.state==='charge'){m.x+=m.dir.x*19*(m.enraged?1.45:1)*dt;m.z+=m.dir.z*19*(m.enraged?1.45:1)*dt;if(!m.hit&&distance(m,p)<3.4)m.hit=this.damagePlayer(m.enraged?40:32);const r=Math.hypot(m.x,m.z);if(m.timer<=0||r>20){if(r>20){m.x*=20/r;m.z*=20/r;}m.state='recover';m.timer=m.enraged?1.15:2;this.emit('impact',{pattern:'charge'});}}else if(m.state==='recover'&&m.timer<=0){m.state='idle';m.timer=m.enraged?.8:1.4;}}
 }
 
 const T=globalThis.THREE;
