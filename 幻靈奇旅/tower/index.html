@@ -119,6 +119,14 @@ body.impact-heavy .vignette{box-shadow:inset 0 0 110px #ffbf5933}body.impact-lig
 .boss-reaction.evaded{font-size:20px!important;color:#b7f0ff}
 .boss-reaction.enrage{color:#ffa88b}
 
+/* Narrow phone layout: keep the level heading and every top button within the viewport. */
+@media(max-width:410px) and (orientation:portrait){
+ .topbar{display:grid;grid-template-columns:26px minmax(0,1fr);grid-template-rows:22px 34px;row-gap:3px;align-items:center;justify-content:initial}
+ .topbar .brand{grid-column:1;grid-row:1}
+ .topbar .chapter{grid-column:2;grid-row:1;position:static;transform:none;margin:0;text-align:left}
+ .topbar nav{grid-column:1/-1;grid-row:2;display:flex;justify-content:flex-end;width:100%;gap:3px}
+ .topbar nav .shopButton,.topbar nav .returnTown,.topbar nav #bagButton,.topbar nav #soundButton,.topbar nav #pauseButton{height:32px;min-height:32px}
+}
 /* Compact, consistent store button without pushing mobile header outside viewport. */
 @media(max-width:700px) and (orientation:portrait){
  .topbar nav{gap:2px!important}
@@ -285,12 +293,13 @@ class Hunt {
   let selected=defs.filter(d=>Math.random()<d.chance);
   if(!selected.length)selected=[defs[0]];
   this.loot=selected.map((d,i)=>{const angle=i*2.4+Math.random()*.65,rad=3.3+Math.random()*1.4;
-   return{id:this.save.kills*20+i+1,name:d.name,count:d.min+Math.floor(Math.random()*(d.max-d.min+1)),x:clamp(m.x+Math.cos(angle)*rad,-20,20),z:clamp(m.z+Math.sin(angle)*rad,-20,20),card:!!d.card};});
+   const x=m.x+Math.cos(angle)*rad,z=m.z+Math.sin(angle)*rad,distance=Math.hypot(x,z)||1,ratio=Math.min(1,19.8/distance);
+   return{id:this.save.kills*20+i+1,name:d.name,count:d.min+Math.floor(Math.random()*(d.max-d.min+1)),x:x*ratio,z:z*ratio,card:!!d.card};});
   if(!this.save.cleared.includes(this.level))this.save.cleared.push(this.level);
   this.save.kills++;this.emit('lootSpawn',{drops:this.loot.map(d=>({...d}))});return true;
  }
  collectLoot(dt,input={}){
-  const p=this.player;this.time+=dt;const x=input.x||0,z=input.z||0,len=Math.hypot(x,z);
+  const p=this.player;this.time+=dt;this.monster.knockTime=Math.max(0,this.monster.knockTime-dt);const x=input.x||0,z=input.z||0,len=Math.hypot(x,z);
   if(len>.06){const dx=x/len,dz=z/len;p.x+=dx*7.2*dt;p.z+=dz*7.2*dt;p.facing=Math.atan2(dx,dz);}
   const radius=Math.hypot(p.x,p.z);if(radius>22){p.x*=22/radius;p.z*=22/radius;}
   for(const d of [...this.loot])if(distance(p,d)<1.9){
