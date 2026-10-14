@@ -48,3 +48,7 @@
 }
 .mobile-controls button:active,#mobileAttack.held{transform:scale(.94);filter:brightness(1.2)}
 .loot-ground-label{color:#fff0ab!important;text-shadow:0 1px 3px #251000,0 0 6px #000!important}.loot-ground-label[data-card="fire"]{color:#ffb9c7!important}.loot-ground-label[data-card="forest"],.loot-ground-label[data-card="ice"]{color:#edc3ff!important}
+
+/* Long-press item selection: keep label as 道具, show gold outline for attack medicine. */
+#mobileHeal.power-item-selected{outline:2px solid #ffd473!important;outline-offset:2px}
+#mobileHeal{touch-action:none;-webkit-touch-callout:none;user-select:none}
