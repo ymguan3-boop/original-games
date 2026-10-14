@@ -94,106 +94,50 @@ function showPetShop(){
 function disposePetGlow(pet){
  const fx=pet?.footGlow;if(!fx)return;
  fx.group.removeFromParent();
- for(const mesh of [fx.core,fx.halo,fx.inner,fx.wave,fx.outer]){
-  mesh.geometry.dispose();mesh.material.dispose();
- }
+ for(const mesh of [fx.disc,fx.ring]){mesh.geometry.dispose();mesh.material.dispose();}
  pet.footGlow=null;
- pet.idleFollow=null;
 }
 function createPetGlow(pet){
  if(!pet||pet.footGlow)return;
  const group=new T.Group();
- function disc(radius,color,opacity,y){
-  const m=new T.Mesh(new T.CircleGeometry(radius,64),new T.MeshBasicMaterial({
-   color,transparent:true,opacity,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending
-  }));
-  m.rotation.x=-Math.PI/2;m.position.y=y;m.renderOrder=4;group.add(m);return m;
- }
- function ring(innerRadius,outerRadius,color,opacity,y){
-  const m=new T.Mesh(new T.RingGeometry(innerRadius,outerRadius,64),new T.MeshBasicMaterial({
-   color,transparent:true,opacity,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending
-  }));
-  m.rotation.x=-Math.PI/2;m.position.y=y;m.renderOrder=5;group.add(m);return m;
- }
- const halo=disc(.92,0xff81c8,.20,.035);
- const core=disc(.42,0xffd2f1,.48,.043);
- const inner=ring(.46,.57,0xffa5dc,.66,.052);
- const wave=ring(.54,.69,0xff64c9,.64,.059);
- const outer=ring(.77,.86,0xffb6e4,.26,.065);
+ const disc=new T.Mesh(
+  new T.CircleGeometry(.48,40),
+  new T.MeshBasicMaterial({color:0xffdb59,transparent:true,opacity:.12,depthWrite:false,side:T.DoubleSide})
+ );
+ const ring=new T.Mesh(
+  new T.RingGeometry(.37,.54,48),
+  new T.MeshBasicMaterial({color:0xffec82,transparent:true,opacity:.24,depthWrite:false,side:T.DoubleSide})
+ );
+ for(const mesh of [disc,ring]){mesh.rotation.x=-Math.PI/2;mesh.position.y=.045;mesh.renderOrder=3;group.add(mesh);}
  pet.root.add(group);
- pet.footGlow={group,core,halo,inner,wave,outer,time:0,waveAge:0,burst:0,nextBurst:1.6+Math.random()*2};
-}
-function tickPetGlow(pet,dt){
- const g=pet.footGlow;if(!g)return;
- g.time+=dt;g.waveAge=(g.waveAge+dt)%1.5;g.nextBurst-=dt;
- if(g.nextBurst<=0){g.burst=1;g.nextBurst=2.3+Math.random()*3.6;}
- g.burst=Math.max(0,g.burst-dt*1.1);
- const beat=.5+.5*Math.sin(g.time*Math.PI*2*1.45);
- const expand=g.waveAge/1.5;
- // Pink ground-light has a clearly visible rhythm plus a traveling ripple.
- g.halo.scale.setScalar(.92+beat*.24+g.burst*.3);
- g.halo.material.opacity=.22+.19*beat+.14*g.burst;
- g.core.scale.setScalar(.9+beat*.11);
- g.core.material.opacity=.44+.25*beat+.17*g.burst;
- g.inner.scale.setScalar(.92+beat*.13);
- g.inner.material.opacity=.54+.28*beat;
- g.wave.scale.setScalar(.65+expand*1.65);
- g.wave.material.opacity=.88*Math.pow(1-expand,1.2)+.09;
- g.outer.scale.setScalar(1+beat*.14+g.burst*.34);
- g.outer.material.opacity=.26+.28*beat+.24*g.burst;
+ pet.footGlow={group,disc,ring,time:0,pulse:0,next:.9+Math.random()*2};
 }
 function tickPetFollower(dt){
  const pet=petFollower;if(!pet||!hero)return;
  const show=!place&&!battle;
  pet.root.visible=show;
  if(!show)return;
- if(pet.petFxDisabled)return;
  if(!pet.footGlow)createPetGlow(pet);
- const state=pet.idleFollow||= {side:Math.random()<.5?-1:1,still:0,orbit:null,nextOrbit:7+Math.random()*6};
- const x=S.player.x,z=S.player.z,facing=hero.root.rotation.y;
- const p=pet.root.position;
- const previous=state.prev||{x,z};
- const playerMoved=Math.hypot(x-previous.x,z-previous.z)>Math.max(.004,dt*.06);
- state.prev={x,z};
- const canPlay=!modal&&!dialog&&!navigation&&!roll&&!throwing;
- if(playerMoved||!canPlay){
-  state.still=0;state.orbit=null;state.nextOrbit=7+Math.random()*6;
- }else{
-  state.still+=dt;
-  if(state.still>1.7&&!state.sideChosen){state.side=Math.random()<.5?-1:1;state.sideChosen=true;}
-  if(state.still>3){
-   state.nextOrbit-=dt;
-   if(!state.orbit&&state.nextOrbit<=0){
-    state.orbit={angle:state.side*Math.PI/2,progress:0,clockwise:Math.random()<.5?1:-1,duration:3.5+Math.random()*1.6};
-   }
-  }
- }
- if(playerMoved)state.sideChosen=false;
- let angle=Math.PI,radial=1.18;
- if(state.still>1.7){
-  radial=1.17;
-  angle=state.side*Math.PI/2;
- }
- if(state.orbit){
-  const o=state.orbit;
-  o.progress=Math.min(1,o.progress+dt/o.duration);
-  angle=o.angle+o.clockwise*o.progress*Math.PI*2;
-  radial=1.18;
-  if(o.progress>=1){state.orbit=null;state.nextOrbit=8+Math.random()*8;state.side=Math.random()<.5?-1:1;}
- }
- const targetX=x+Math.sin(facing+angle)*radial;
- const targetZ=z+Math.cos(facing+angle)*radial;
- // Do not route a pet through a wall or tree while orbiting the player.
- const safe=blocked(targetX,targetZ,.12)?{x:x-Math.sin(facing)*1.18,z:z-Math.cos(facing)*1.18}:{x:targetX,z:targetZ};
- const dx=safe.x-p.x,dz=safe.z-p.z;
- const motion=Math.hypot(dx,dz);
- const speed=state.orbit?3.2:playerMoved?7:2.7;
- const step=Math.min(1,dt*speed);
- const nx=p.x+dx*step,nz=p.z+dz*step;
- if(!blocked(nx,nz,.08)){p.x=nx;p.z=nz;}
- if(motion>.08)p.rotation.y=Math.atan2(dx,dz);else p.rotation.y=facing;
- pet.play(motion>.16?'Walk':'Idle');
- tickPetGlow(pet,dt);
+ const facing=hero.root.rotation.y,followDistance=1.14;
+ const targetX=S.player.x-Math.sin(facing)*followDistance;
+ const targetZ=S.player.z-Math.cos(facing)*followDistance;
+ const lerpFactor=Math.min(1,dt*7.8);
+ const dx=targetX-pet.root.position.x,dz=targetZ-pet.root.position.z;
+ pet.root.position.x+=dx*lerpFactor;
+ pet.root.position.z+=dz*lerpFactor;
+ pet.root.rotation.y=facing;
+ pet.play(Math.hypot(dx,dz)>.18?'Walk':'Idle');
+ const fx=pet.footGlow;
+ fx.time+=dt;fx.next-=dt;
+ if(fx.next<=0){fx.next=1.3+Math.random()*2.4;fx.pulse=.75;}
+ fx.pulse=Math.max(0,fx.pulse-dt);
+ const beat=(1+Math.sin(fx.time*5.4))*.5;
+ const burst=fx.pulse>0?Math.sin((1-fx.pulse/.75)*Math.PI):0;
+ const scale=1+.11*beat+.52*burst;
+ fx.disc.scale.setScalar(1+.07*beat+.25*burst);
+ fx.ring.scale.setScalar(scale);
+ fx.disc.material.opacity=.09+.09*beat+.10*burst;
+ fx.ring.material.opacity=.11+.16*beat+.22*burst;
 }
 
 async function equipPet(id){
@@ -265,7 +209,7 @@ function combatFx(from,to,element,strong=false,duration=.65){const group=new T.G
 function combatRing(pos,radius,element,duration=1){const m=new T.Mesh(new T.RingGeometry(radius-.09,radius,64),new T.MeshBasicMaterial({color:combatPalette[element]||0xd1eaff,transparent:true,opacity:.85,side:T.DoubleSide}));m.rotation.x=-Math.PI/2;m.position.copy(pos);m.position.y=.08;battleGroup.add(m);effects.push({object:m,start:elapsed,duration,update:t=>{m.scale.setScalar(.3+t*.7);m.material.opacity=.9*(1-t*.65);},done:()=>{m.geometry.dispose();m.material.dispose();}});}
 function statusSet(entry,key,turns=2){entry.status||={};entry.status[key]=turns;updateHp(entry);}
 function statusTick(entry){entry.status||={};if(entry.status.burn)entry.hp=Math.max(0,entry.hp-10);if(entry.status.heal)entry.hp=Math.min(entry.s.hp,entry.hp+8);const stopped=!!(entry.status.freeze||entry.status.stun);for(const k of Object.keys(entry.status))if(--entry.status[k]<=0)delete entry.status[k];updateHp(entry);return stopped;}
-async function startBattle(kind){const gym=gyms.find(g=>g.id===kind);if(!gym&&!S.state.team.length)return toast('先締約幻靈，再從圖鑑加入隊伍。');if(battle)return;cancelNavigation();clearTarget();closeModal();closeDialog();document.body.classList.add('battle-active');$('toast').classList.remove('visible');clearTimeout(toast.timer);stopAppearanceBgm();const previous={position:S.player.clone(),place,background:scene.background.clone(),fog:scene.fog};const pool=spirits.filter(s=>s.stage<=2&&!['mewtwo','jigglypuff'].includes(s.id)),enemies=gym?[byId[gym.spirit]]:[...pool].sort(()=>Math.random()-.5).slice(0,3);battle={kind,gym,previous,allies:S.state.team.filter(id=>byId[id]).map(id=>({s:byId[id],hp:byId[id].hp,energy:2,status:{}})),enemies:enemies.map(s=>({s,hp:gym?s.hp*3:s.hp,energy:2,status:{},maxHp:gym?s.hp*3:s.hp})),ai:0,ei:0,busy:true,turn:1,actors:[],heroHp:100,nextAttack:elapsed+3,heroStatus:{},throwAt:0};townGroup.visible=false;insideGroup.visible=false;battleGroup.visible=true;hero.root.visible=!!gym;if(companion)companion.root.visible=false;target=null;scene.background=new T.Color(gym?0x17273b:0x536a79);scene.fog=null;$('controls').hidden=!gym;$('battleHud').hidden=false;$('portal').hidden=true;$('battleTitle').textContent=gym?'初光挑戰 · '+byId[gym.spirit].name:'幻靈競技擂台 · 3 對 3';$('battleLog').textContent='進場中…';try{const sceneConfig=gym?await gymSceneConfig(gym.costume):null;if(battle)battle.sceneConfig=sceneConfig;const g=await asset(sceneConfig?.model||world.battleModel||'models/world/arena.glb'),arena=g.scene.clone(true);if(!gym)arena.traverse(o=>{if(o.isMesh&&o.material){o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();for(const m of Array.isArray(o.material)?o.material:[o.material]){m.color?.multiplyScalar(.76);m.emissive?.set(0x243540);m.emissiveIntensity=.12;m.roughness=.78;}}});battleGroup.add(arena);battle.arena=arena;if(!gym){shiftArenaRings(arena);ensureArenaSafeExit();}if(gym){battleGroup.add(hero.root);battle.heroLabel=addLabel(hero,'','nameLabel hpLabel');document.body.classList.add('gym-active');S.player.fromArray(sceneConfig.spawn||[0,0,6]);hero.root.position.copy(S.player);hero.root.rotation.y=Math.PI;await battleActors();}else await battleActors();battle.busy=false;battleLog(gym?'首領只會推離或短暫干擾；移動與翻滾閃避光圈，投球完成試煉。':'選擇你的行動。');battleButtons();}catch(e){S.errors.push(e.message);toast('對戰場地載入失敗，已返回探索。');endBattle(false,true);}}
+async function startBattle(kind){const gym=gyms.find(g=>g.id===kind);if(!gym&&!S.state.team.length)return toast('先締約幻靈，再從圖鑑加入隊伍。');if(battle)return;cancelNavigation();clearTarget();closeModal();closeDialog();document.body.classList.add('battle-active');$('toast').classList.remove('visible');clearTimeout(toast.timer);stopAppearanceBgm();const previous={position:S.player.clone(),place,background:scene.background.clone(),fog:scene.fog};const pool=spirits.filter(s=>s.stage<=2&&!['mewtwo','jigglypuff'].includes(s.id)),enemies=gym?[byId[gym.spirit]]:[...pool].sort(()=>Math.random()-.5).slice(0,3);battle={kind,gym,previous,allies:S.state.team.filter(id=>byId[id]).map(id=>({s:byId[id],hp:byId[id].hp,energy:2,status:{}})),enemies:enemies.map(s=>({s,hp:gym?s.hp*3:s.hp,energy:2,status:{},maxHp:gym?s.hp*3:s.hp})),ai:0,ei:0,busy:true,turn:1,actors:[],heroHp:100,nextAttack:elapsed+3,heroStatus:{},throwAt:0};townGroup.visible=false;insideGroup.visible=false;battleGroup.visible=true;hero.root.visible=!!gym;if(companion)companion.root.visible=false;target=null;scene.background=new T.Color(gym?0x17273b:0x536a79);scene.fog=null;$('controls').hidden=!gym;$('battleHud').hidden=false;$('portal').hidden=true;$('battleTitle').textContent=gym?'初光挑戰 · '+byId[gym.spirit].name:'幻靈競技擂台 · 3 對 3';$('battleLog').textContent='進場中…';try{const sceneConfig=gym?await gymSceneConfig(gym.costume):null;if(battle)battle.sceneConfig=sceneConfig;const g=await asset(sceneConfig?.model||world.battleModel||'models/world/arena.glb'),arena=g.scene.clone(true);if(!gym)arena.traverse(o=>{if(o.isMesh&&o.material){o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();for(const m of Array.isArray(o.material)?o.material:[o.material]){m.color?.multiplyScalar(.76);m.emissive?.set(0x243540);m.emissiveIntensity=.12;m.roughness=.78;}}});battleGroup.add(arena);battle.arena=arena;if(!gym)shiftArenaRings(arena);if(gym){battleGroup.add(hero.root);battle.heroLabel=addLabel(hero,'','nameLabel hpLabel');document.body.classList.add('gym-active');S.player.fromArray(sceneConfig.spawn||[0,0,6]);hero.root.position.copy(S.player);hero.root.rotation.y=Math.PI;await battleActors();}else await battleActors();battle.busy=false;battleLog(gym?'首領只會推離或短暫干擾；移動與翻滾閃避光圈，投球完成試煉。':'選擇你的行動。');battleButtons();}catch(e){S.errors.push(e.message);toast('對戰場地載入失敗，已返回探索。');endBattle(false,true);}}
 function shiftArenaRings(arena){
  // The original GLB has three circles merged into one multi-material mesh.
  // The sky/purple floor discs and white edge lines are separate primitives.
@@ -346,22 +290,6 @@ async function throwGymBall(){const b=battle;if(b?.heroStatus.throwBlock>elapsed
  const damage=Math.round((ballType==='master'?60:ballType==='great'?30:S.state.costume==='electric'?24:18)*(b.heroStatus.attackUp>elapsed?1.5:1)*(e.status.defDown?1.4:1));e.hp=Math.max(0,e.hp-damage);e.actor.play('Wave',true);updateHp(e);battleLog('靈核球共鳴 · 信任 +'+damage+'，留意下一次警示光圈！');if(e.hp<=0)await endBattle(true);}catch(error){S.state[key]++;save();S.errors.push(error.message);}finally{b.throwing=false;hero.play('Idle');}}
 function tickGym(dt){const b=battle;if(!b?.gym||b.busy)return;moveGymGuardian(dt);const e=b.enemies[0],a=e.actor;if(!a)return;if(b.defDownUntil&&elapsed>b.defDownUntil){delete e.status.defDown;b.defDownUntil=0;updateHp(e);}for(const k of Object.keys(b.heroStatus))if(b.heroStatus[k]<=elapsed)delete b.heroStatus[k];const statusNames={stun:'短暫暈眩',paralyze:'雷光麻痺・減速',slow:'霧域減速',throwBlock:'投擲受阻',attackUp:'勇氣加攻'};if(b.heroLabel)b.heroLabel.el.innerHTML='<b>旅人 · 閃避試煉</b><small>'+Object.keys(b.heroStatus).map(k=>statusNames[k]||k).join(' · ')+'</small>';if(b.warning){const w=b.warning;if(elapsed>=w.time){b.warning=null;const distance=Math.hypot(S.player.x-w.center.x,S.player.z-w.center.z);a.play('Attack',true);combatFx(a.root.position.clone().add(new T.Vector3(0,1.6,0)),w.center.clone().add(new T.Vector3(0,1,0)),e.s.element,true,.7);if(distance<w.radius&&!roll){for(const [key,duration]of Object.entries(w.statuses))b.heroStatus[key]=elapsed+duration;let away=S.player.clone().sub(a.root.position);away.y=0;if(away.length()<.01)away.set(0,0,1);away.normalize();const pushed=S.player.clone().addScaledVector(away,w.push);if(!gymBoundsBlocked(pushed.x,pushed.z)){S.player.copy(pushed);hero.root.position.copy(S.player);}hero.play('Hurt',true);battleLog(w.name+'：被推離，'+Object.keys(w.statuses).map(k=>statusNames[k]).join('、')+'；效果很快解除。');}else battleLog('成功閃避 '+w.name+'！');updateHp(e);}}else if(elapsed>b.nextAttack){const defs={pikachu:{name:'閃角連雷',radius:2.1,statuses:{stun:.55,paralyze:1.8},push:2.4,gap:3.2},mew:{name:'星霧封環',radius:2.5,statuses:{slow:2,throwBlock:1.5},push:2.6,gap:3.8},wigglytuff:{name:'絨心干擾音浪',radius:2.8,statuses:{stun:.65,throwBlock:1.4},push:3,gap:4.1},blissey:{name:'暖巢再生花環',radius:2.5,statuses:{slow:2.1,throwBlock:1},push:2.2,gap:3.9}},d=defs[b.gym.spirit];b.nextAttack=elapsed+d.gap;b.warning={...d,center:S.player.clone(),time:elapsed+1.1};combatRing(b.warning.center,d.radius,e.s.element,1.1);battleLog(d.name+' · 1.1秒後光圈生效，移動或翻滾閃避！');}a.root.rotation.y=Math.atan2(S.player.x-a.root.position.x,S.player.z-a.root.position.z);}
 
-
-function ensureArenaSafeExit(){
- let btn=document.getElementById('arenaSafeExit');
- if(!btn){
-  btn=document.createElement('button');
-  btn.type='button';btn.id='arenaSafeExit';btn.textContent='退出競技場';
-  btn.setAttribute('aria-label','隨時退出競技場並返回探索');
-  btn.addEventListener('click',()=>{
-   if(!battle||battle.gym)return;
-   endBattle(false,true);
-  });
-  document.body.append(btn);
- }
- btn.hidden=false;
-}
-
 let arenaResultTimer=null;
 function arenaResultOverlay(){
  let root=document.getElementById('arenaResultOverlay');
@@ -375,7 +303,7 @@ function arenaResultOverlay(){
  root.innerHTML='<div class="arenaResultTitle"></div><div class="arenaResultChoices"><button type="button" data-arena-choice="continue">接續戰鬥</button><button type="button" data-arena-choice="exit">退出戰鬥</button></div>';
  root.addEventListener('click',event=>{
   const button=event.target.closest('[data-arena-choice]');
-  if(!button||!battle||battle.gym)return;
+  if(!button||!root.classList.contains('choicesReady'))return;
   resolveArenaResult(button.dataset.arenaChoice==='continue');
  });
  document.body.append(root);
@@ -384,23 +312,17 @@ function arenaResultOverlay(){
 function showArenaResult(won){
  const root=arenaResultOverlay();
  clearTimeout(arenaResultTimer);
- const label=won?'獲勝':'失敗';
- const title=root.querySelector('.arenaResultTitle');
- title.replaceChildren(...Array.from(label,(letter,i)=>{
-  const glyph=document.createElement('span');glyph.className='arenaResultGlyph';glyph.textContent=letter;
-  glyph.setAttribute('aria-hidden','true');glyph.style.setProperty('--glyph-order',i);return glyph;
- }));
- title.setAttribute('aria-label',label);
+ root.querySelector('.arenaResultTitle').textContent=won?'獲勝':'戰敗';
  root.dataset.result=won?'win':'lose';
  root.hidden=false;
  root.classList.remove('shown','choicesReady');
  const buttons=root.querySelectorAll('button');
- buttons.forEach(b=>b.disabled=b.dataset.arenaChoice!=='exit');
+ buttons.forEach(b=>b.disabled=true);
  void root.offsetWidth;
  requestAnimationFrame(()=>root.classList.add('shown'));
  arenaResultTimer=setTimeout(()=>{
   if(!root.hidden&&battle?.ending){root.classList.add('choicesReady');buttons.forEach(b=>b.disabled=false);}
- },2520);
+ },1450);
 }
 async function resolveArenaResult(continueBattle){
  const b=battle;if(!b||b.gym||!b.ending||b.resultResolving)return;
@@ -409,47 +331,19 @@ async function resolveArenaResult(continueBattle){
  const root=document.getElementById('arenaResultOverlay');
  if(root){root.hidden=true;root.classList.remove('shown','choicesReady');}
  const won=b.resultWon;
+ b.ending=false;
  await endBattle(won,true);
  if(continueBattle)await startBattle('arena');
 }
 
-async function endBattle(won,abort=false){const b=battle;if(!b||(b.ending&&!abort))return;if(abort){clearTimeout(arenaResultTimer);const result=document.getElementById('arenaResultOverlay');if(result){result.hidden=true;result.classList.remove('shown','choicesReady');}}if(!b.gym&&!abort){b.ending=true;b.busy=true;b.resultWon=!!won;$('battleActions').innerHTML='';$('battleLog').textContent='';showArenaResult(won);return;}b.ending=true;b.busy=true;const safeExit=document.getElementById('arenaSafeExit');if(safeExit)safeExit.hidden=true;stopAppearanceBgm();if(won){S.state.wins++;S.state.pokeballs+=8;S.state.greatBallCount+=2;if(b.gym){S.state.gyms[b.gym.id]={...S.state.gyms[b.gym.id],cleared:true};if(!S.state.unlockedCostumes.includes(b.gym.costume))S.state.unlockedCostumes.push(b.gym.costume);enqueueGuardianAppearance(b.gym);}save();if(b.gym)await showGymVictory();}b.actors.forEach(removeActor);if(b.heroLabel)removeLabel(b.heroLabel);(place?insideGroup:townGroup).add(hero.root);battleGroup.clear();battleGroup.visible=false;document.body.classList.remove('battle-active','gym-active');scene.background=b.previous.background;scene.fog=b.previous.fog;battle=null;hero.root.visible=true;S.player.copy(b.previous.position);hero.root.position.copy(S.player);townGroup.visible=!place;insideGroup.visible=!!place;$('controls').hidden=false;$('battleHud').hidden=true;setCostume(S.state.costume);if(!abort)toast(won?'挑戰獲勝！靈核球 +8、高階球 +2。':'已安全返回探索，補給後再來挑戰吧！');if(won&&b.gym)await ensureSpecialAppearances();if(won&&!b.gym)for(const id of ['mewtwo','jigglypuff'])if(byId[id]&&!wild.some(w=>w.species.id===id)){while(wild.length>=WILD_LIMIT){const old=wild.find(w=>!w.specialEventId&&w!==target)||wild.find(w=>!w.specialEventId);if(!old)break;wild.splice(wild.indexOf(old),1);if(old===target)clearTarget();removeActor(old);}await spawnWild(byId[id],randomPoint());}}
+async function endBattle(won,abort=false){const b=battle;if(!b||b.ending)return;if(!b.gym&&!abort){b.ending=true;b.busy=true;b.resultWon=!!won;$('battleActions').innerHTML='';$('battleLog').textContent='';showArenaResult(won);return;}b.ending=true;b.busy=true;stopAppearanceBgm();if(won){S.state.wins++;S.state.pokeballs+=8;S.state.greatBallCount+=2;if(b.gym){S.state.gyms[b.gym.id]={...S.state.gyms[b.gym.id],cleared:true};if(!S.state.unlockedCostumes.includes(b.gym.costume))S.state.unlockedCostumes.push(b.gym.costume);enqueueGuardianAppearance(b.gym);}save();if(b.gym)await showGymVictory();}b.actors.forEach(removeActor);if(b.heroLabel)removeLabel(b.heroLabel);(place?insideGroup:townGroup).add(hero.root);battleGroup.clear();battleGroup.visible=false;document.body.classList.remove('battle-active','gym-active');scene.background=b.previous.background;scene.fog=b.previous.fog;battle=null;hero.root.visible=true;S.player.copy(b.previous.position);hero.root.position.copy(S.player);townGroup.visible=!place;insideGroup.visible=!!place;$('controls').hidden=false;$('battleHud').hidden=true;setCostume(S.state.costume);if(!abort)toast(won?'挑戰獲勝！靈核球 +8、高階球 +2。':'已安全返回探索，補給後再來挑戰吧！');if(won&&b.gym)await ensureSpecialAppearances();if(won&&!b.gym)for(const id of ['mewtwo','jigglypuff'])if(byId[id]&&!wild.some(w=>w.species.id===id)){while(wild.length>=WILD_LIMIT){const old=wild.find(w=>!w.specialEventId&&w!==target)||wild.find(w=>!w.specialEventId);if(!old)break;wild.splice(wild.indexOf(old),1);if(old===target)clearTarget();removeActor(old);}await spawnWild(byId[id],randomPoint());}}
 
 function walkActor(a,dt,speed=.6){if(a.capturing)return;updateFlight(a,dt);a.timer-=dt;if(a.timer<0){a.timer=3+Math.random()*4;const theta=Math.random()*Math.PI*2,r=Math.random()*(a.data?1.4:4);a.goal.set(a.home.x+Math.cos(theta)*r,0,a.home.z+Math.sin(theta)*r);}const d=a.goal.clone().sub(a.root.position);d.y=0;let moving=false;if(d.length()>.15){d.normalize();const nx=a.root.position.x+d.x*speed*dt,nz=a.root.position.z+d.z*speed*dt;if(!blocked(nx,nz,.3)){a.root.position.x=nx;a.root.position.z=nz;a.root.rotation.y=Math.atan2(d.x,d.z);moving=true;}else a.timer=0;}const hasFly=Object.keys(a.actions).some(k=>k.toLowerCase()==='fly'),flying=a.airborne&&(a.flightState==='air'||a.root.position.y>.15);a.play(flying?(hasFly?'Fly':'Walk'):moving?'Walk':'Idle');}
 function beginRoll(){if(!hero||roll||modal||dialog||battle&&!battle.gym||throwing||battle?.heroStatus?.freeze>elapsed||battle?.heroStatus?.stun>elapsed)return;cancelNavigation();let x=S.stick.x+(S.keys.KeyD||S.keys.ArrowRight?1:0)-(S.keys.KeyA||S.keys.ArrowLeft?1:0),z=S.stick.y+(S.keys.KeyS||S.keys.ArrowDown?1:0)-(S.keys.KeyW||S.keys.ArrowUp?1:0);const len=Math.hypot(x,z);if(len<.08){x=Math.sin(hero.root.rotation.y);z=Math.cos(hero.root.rotation.y);}else{const yaw=battle?.gym?0:cameraOrbit.yaw;[x,z]=[(x*Math.cos(yaw)+z*Math.sin(yaw))/len,(-x*Math.sin(yaw)+z*Math.cos(yaw))/len];}hero.root.rotation.y=Math.atan2(x,z);roll={x,z,start:elapsed,duration:.42};hero.play('Roll',true);if(hero.actions.Roll)hero.actions.Roll.setEffectiveTimeScale(.75/.42);}
 function updateRoll(dt){const button=$('rollBtn');if(button){button.disabled=!!roll;button.textContent='滾';}if(!roll)return;const t=(elapsed-roll.start)/roll.duration;if(t>=1){roll=null;hero.play('Idle');return;}const speed=10.12*Math.sin(Math.PI*Math.max(.08,t)),nx=S.player.x+roll.x*speed*dt,nz=S.player.z+roll.z*speed*dt;if(!(battle?.gym?gymBoundsBlocked(nx,nz):blocked(nx,nz,.5))){S.player.x=nx;S.player.z=nz;}hero.root.position.copy(S.player);}
-
-const heroGreeting={idleSince:0,until:0,nextAt:0};
-function tickHeroGreeting(){
- if(!hero||battle||place||modal||dialog||navigation||throwing||roll||locked){
-  heroGreeting.idleSince=0;return false;
- }
- if(heroGreeting.until>elapsed)return true;
- const toCamera=camera.position.clone().sub(S.player);
- toCamera.y=0;
- if(toCamera.lengthSq()<.001)return false;
- toCamera.normalize();
- const facing=hero.root.rotation.y;
- const isFacing=toCamera.x*Math.sin(facing)+toCamera.z*Math.cos(facing)>.68;
- if(!isFacing){heroGreeting.idleSince=0;return false;}
- if(!heroGreeting.idleSince)heroGreeting.idleSince=elapsed;
- if(elapsed-heroGreeting.idleSince<1.6||elapsed<heroGreeting.nextAt)return false;
- const keys=Object.keys(hero.actions);
- const name=['Wave','Waving','Hello','Greet','Greeting','Salute','Celebrate','JumpCelebrate']
-  .map(term=>keys.find(key=>key.toLowerCase().includes(term.toLowerCase())))
-  .find(Boolean);
- if(!name){heroGreeting.nextAt=elapsed+15;return false;}
- hero.play(name,true);
- const act=hero.actions[name];
- const duration=act?.getClip().duration/(act?.getEffectiveTimeScale()||1)||1.7;
- heroGreeting.until=elapsed+Math.min(2.6,Math.max(1.2,duration));
- heroGreeting.nextAt=elapsed+9+Math.random()*8;
- return true;
-}
-
-function movement(dt){if(!hero||modal||dialog||battle&&!battle.gym||throwing||roll||battle?.heroStatus?.freeze>elapsed||battle?.heroStatus?.stun>elapsed||battle?.throwing)return;let x=S.stick.x+(S.keys.KeyD||S.keys.ArrowRight?1:0)-(S.keys.KeyA||S.keys.ArrowLeft?1:0),z=S.stick.y+(S.keys.KeyS||S.keys.ArrowDown?1:0)-(S.keys.KeyW||S.keys.ArrowUp?1:0);let len=Math.hypot(x,z);if(len>.06){cancelNavigation();const yaw=battle?.gym?0:cameraOrbit.yaw;[x,z]=[x*Math.cos(yaw)+z*Math.sin(yaw),-x*Math.sin(yaw)+z*Math.cos(yaw)];}else if(navigation){const v=navigationStep();if(v){x=v.x;z=v.z;len=1;}}if(len>.06){x/=Math.max(1,len);z/=Math.max(1,len);const speed=4.73*(S.state.costume==='mist'?1.2:1)*(battle?.heroStatus.slow>elapsed?.55:battle?.heroStatus.paralyze>elapsed?.65:1),nx=S.player.x+x*dt*speed,nz=S.player.z+z*dt*speed,isBlocked=(a,b)=>battle?.gym?gymBoundsBlocked(a,b):blocked(a,b);if(!isBlocked(nx,S.player.z))S.player.x=nx;if(!isBlocked(S.player.x,nz))S.player.z=nz;hero.root.position.copy(S.player);const angle=Math.atan2(x,z),diff=Math.atan2(Math.sin(angle-hero.root.rotation.y),Math.cos(angle-hero.root.rotation.y));hero.root.rotation.y+=diff*Math.min(1,dt*12);heroGreeting.idleSince=0;heroGreeting.until=0;hero.play('Walk');}else{if(locked&&target)hero.root.rotation.y=Math.atan2(target.root.position.x-S.player.x,target.root.position.z-S.player.z);try{if(!tickHeroGreeting())hero.play('Idle');}catch(error){console.error('待機招呼已暫停以確保正常操作',error);heroGreeting.idleSince=0;heroGreeting.until=0;heroGreeting.nextAt=elapsed+60;hero.play('Idle');}}}
+function movement(dt){if(!hero||modal||dialog||battle&&!battle.gym||throwing||roll||battle?.heroStatus?.freeze>elapsed||battle?.heroStatus?.stun>elapsed||battle?.throwing)return;let x=S.stick.x+(S.keys.KeyD||S.keys.ArrowRight?1:0)-(S.keys.KeyA||S.keys.ArrowLeft?1:0),z=S.stick.y+(S.keys.KeyS||S.keys.ArrowDown?1:0)-(S.keys.KeyW||S.keys.ArrowUp?1:0);let len=Math.hypot(x,z);if(len>.06){cancelNavigation();const yaw=battle?.gym?0:cameraOrbit.yaw;[x,z]=[x*Math.cos(yaw)+z*Math.sin(yaw),-x*Math.sin(yaw)+z*Math.cos(yaw)];}else if(navigation){const v=navigationStep();if(v){x=v.x;z=v.z;len=1;}}if(len>.06){x/=Math.max(1,len);z/=Math.max(1,len);const speed=4.73*(S.state.costume==='mist'?1.2:1)*(battle?.heroStatus.slow>elapsed?.55:battle?.heroStatus.paralyze>elapsed?.65:1),nx=S.player.x+x*dt*speed,nz=S.player.z+z*dt*speed,isBlocked=(a,b)=>battle?.gym?gymBoundsBlocked(a,b):blocked(a,b);if(!isBlocked(nx,S.player.z))S.player.x=nx;if(!isBlocked(S.player.x,nz))S.player.z=nz;hero.root.position.copy(S.player);const angle=Math.atan2(x,z),diff=Math.atan2(Math.sin(angle-hero.root.rotation.y),Math.cos(angle-hero.root.rotation.y));hero.root.rotation.y+=diff*Math.min(1,dt*12);hero.play('Walk');}else{hero.play('Idle');if(locked&&target)hero.root.rotation.y=Math.atan2(target.root.position.x-S.player.x,target.root.position.z-S.player.z);}}
 function radar(){const c=$('radarCanvas').getContext('2d'),W=220;c.clearRect(0,0,W,W);c.fillStyle='#28463f';c.fillRect(0,0,W,W);c.strokeStyle='#78938360';c.lineWidth=1;for(let k=0;k<5;k++){c.beginPath();c.moveTo(k*55,0);c.lineTo(k*55,W);c.stroke();c.beginPath();c.moveTo(0,k*55);c.lineTo(W,k*55);c.stroke();}const pos=(x,z)=>[110+(x-S.player.x)*3.4,110+(z-S.player.z)*3.4];c.font='14px sans-serif';c.textAlign='center';if(!place)for(const b of world.buildings){const p=pos(b.position[0],b.position[2]);c.fillStyle='#dfc781';c.fillRect(p[0]-4,p[1]-4,8,8);c.fillStyle='#f6ebc9';const short=b.name.replace('初光','').replace('幻靈','').replace('大夢','').replace('星穹','');c.fillText(short.slice(0,4),p[0],p[1]-9);}for(const n of npcs)if(n.root.visible){const p=pos(n.root.position.x,n.root.position.z);c.fillStyle='#85daf0';c.beginPath();c.arc(...p,3.5,0,Math.PI*2);c.fill();c.font='11px sans-serif';c.fillText(n.data.name.slice(0,3),p[0],p[1]+13);}if(!place)for(const w of wild){const p=pos(w.root.position.x,w.root.position.z);c.fillStyle=w===target?'#ffb269':'#d1dc93';c.beginPath();c.arc(...p,3,0,Math.PI*2);c.fill();}c.fillStyle='#fff8d9';c.beginPath();c.moveTo(110,102);c.lineTo(116,115);c.lineTo(110,112);c.lineTo(104,115);c.closePath();c.fill();}
-function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.05);elapsed+=dt;if(!S.ready)return;tickBroadcast();tickSpecialAppearances(dt);if(battle?.gym)tickGym(dt);for(const a of actors)if(a.root.visible&&a.root.parent?.visible!==false)a.mixer.update(dt);updateRoll(dt);movement(dt);collectSupplies();if(!battle&&!modal&&!dialog){if(!place){for(const w of wild)if(w!==target||!throwing)walkActor(w,dt,.45+(w.species.stage||1)*.1);if(target&&!wild.includes(target))clearTarget();}for(const n of npcs)if(n.root.visible){const d=n.root.position.distanceTo(S.player);if(d>3)n.contactLock=false;if(d>2.5)walkActor(n,dt,.45);else n.play('Idle');if(d<1.6&&!n.contactLock&&elapsed>n.cooldown&&(!navigation||navigation.kind==='npc'&&navigation.id===n.data.id)){talk(n);break;}}}try{tickPetFollower(dt);}catch(error){console.error('寵物特效暫停，已保護遊戲主迴圈',error);if(petFollower){petFollower.root.visible=false;petFollower.petFxDisabled=true;}}if(companion){companion.root.visible=S.state.costume==='mist'&&!battle&&!place;companion.root.position.set(S.player.x+Math.cos(elapsed*1.3)*1.2,1.65+Math.sin(elapsed*2)*.15,S.player.z+Math.sin(elapsed*1.3)*1.2);companion.root.rotation.y=-elapsed*1.3;}for(let i=effects.length-1;i>=0;i--){const e=effects[i],t=Math.min(1,(elapsed-e.start)/e.duration);e.update(t);if(t===1){if(e.object)detach(e.object);effects.splice(i,1);e.done?.();}}const portrait=innerWidth<600;if(battle?.gym){gymCamera();}else if(battle){camera.position.lerp(new T.Vector3(0,portrait?11.3:9.9,portrait?23.5:18),Math.min(1,dt*6));camera.lookAt(0,portrait?-.8:-.2,0);}else{const distance=(place?12.2:portrait?17.3:19.6)*cameraOrbit.zoom,desired=S.player.clone().add(new T.Vector3(Math.sin(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch),distance*Math.sin(cameraOrbit.pitch),Math.cos(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch)));camera.position.lerp(desired,Math.min(1,dt*7));camera.lookAt(S.player.x,1.1,S.player.z);light.position.set(S.player.x-12,25,S.player.z+15);light.target.position.copy(S.player);light.target.updateMatrixWorld();}if(target&&!battle&&!place)$('target').textContent=`${target.species.name} · 第 ${target.species.stage} 階段${target.berry?' · 已餵果':''}`;else $('target').textContent='';portalCheck();updateLabels();if(Math.floor(elapsed*6)!==tick.radarFrame){tick.radarFrame=Math.floor(elapsed*6);radar();}window.PhantomOcclusion?.update(place?insideGroup:townGroup,camera,hero.root,dt,!battle);if(!modal||viewer||elapsed-(tick.modalRenderAt||0)>=.1){renderer.render(scene,camera);tick.modalRenderAt=elapsed;}if(viewer){const v=viewer;v.mix.update(dt);v.cam.position.set(v.center.x+Math.sin(v.yaw)*v.distance*Math.cos(v.pitch),v.center.y+Math.sin(v.pitch)*v.distance,v.center.z+Math.cos(v.yaw)*v.distance*Math.cos(v.pitch));v.cam.lookAt(v.center);v.r.render(v.st,v.cam);}}
+function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.05);elapsed+=dt;if(!S.ready)return;tickBroadcast();tickSpecialAppearances(dt);if(battle?.gym)tickGym(dt);for(const a of actors)if(a.root.visible&&a.root.parent?.visible!==false)a.mixer.update(dt);updateRoll(dt);movement(dt);collectSupplies();if(!battle&&!modal&&!dialog){if(!place){for(const w of wild)if(w!==target||!throwing)walkActor(w,dt,.45+(w.species.stage||1)*.1);if(target&&!wild.includes(target))clearTarget();}for(const n of npcs)if(n.root.visible){const d=n.root.position.distanceTo(S.player);if(d>3)n.contactLock=false;if(d>2.5)walkActor(n,dt,.45);else n.play('Idle');if(d<1.6&&!n.contactLock&&elapsed>n.cooldown&&(!navigation||navigation.kind==='npc'&&navigation.id===n.data.id)){talk(n);break;}}}tickPetFollower(dt);if(companion){companion.root.visible=S.state.costume==='mist'&&!battle&&!place;companion.root.position.set(S.player.x+Math.cos(elapsed*1.3)*1.2,1.65+Math.sin(elapsed*2)*.15,S.player.z+Math.sin(elapsed*1.3)*1.2);companion.root.rotation.y=-elapsed*1.3;}for(let i=effects.length-1;i>=0;i--){const e=effects[i],t=Math.min(1,(elapsed-e.start)/e.duration);e.update(t);if(t===1){if(e.object)detach(e.object);effects.splice(i,1);e.done?.();}}const portrait=innerWidth<600;if(battle?.gym){gymCamera();}else if(battle){camera.position.lerp(new T.Vector3(0,portrait?11.3:9.9,portrait?23.5:18),Math.min(1,dt*6));camera.lookAt(0,portrait?-.8:-.2,0);}else{const distance=(place?12.2:portrait?17.3:19.6)*cameraOrbit.zoom,desired=S.player.clone().add(new T.Vector3(Math.sin(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch),distance*Math.sin(cameraOrbit.pitch),Math.cos(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch)));camera.position.lerp(desired,Math.min(1,dt*7));camera.lookAt(S.player.x,1.1,S.player.z);light.position.set(S.player.x-12,25,S.player.z+15);light.target.position.copy(S.player);light.target.updateMatrixWorld();}if(target&&!battle&&!place)$('target').textContent=`${target.species.name} · 第 ${target.species.stage} 階段${target.berry?' · 已餵果':''}`;else $('target').textContent='';portalCheck();updateLabels();if(Math.floor(elapsed*6)!==tick.radarFrame){tick.radarFrame=Math.floor(elapsed*6);radar();}window.PhantomOcclusion?.update(place?insideGroup:townGroup,camera,hero.root,dt,!battle);if(!modal||viewer||elapsed-(tick.modalRenderAt||0)>=.1){renderer.render(scene,camera);tick.modalRenderAt=elapsed;}if(viewer){const v=viewer;v.mix.update(dt);v.cam.position.set(v.center.x+Math.sin(v.yaw)*v.distance*Math.cos(v.pitch),v.center.y+Math.sin(v.pitch)*v.distance,v.center.z+Math.cos(v.yaw)*v.distance*Math.cos(v.pitch));v.cam.lookAt(v.center);v.r.render(v.st,v.cam);}}
 const clock=new T.Clock();function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}addEventListener('resize',resize);resize();
 const BALL_OPTIONS=[{id:'normal',name:'普通幻靈球',field:'pokeballs'},{id:'great',name:'高階幻靈球',field:'greatBallCount'},{id:'master',name:'星耀幻靈球',field:'masterBallCount'}];
 function chooseBall(id){
