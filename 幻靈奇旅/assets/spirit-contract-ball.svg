@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-label="幻靈球" role="img">
+<defs>
+<radialGradient id="shell" cx=".39" cy=".25" r=".82"><stop stop-color="#d8ffed"/><stop offset=".31" stop-color="#8cf9dc"/><stop offset=".65" stop-color="#34b8b5"/><stop offset=".9" stop-color="#096a72"/><stop offset="1" stop-color="#044550"/></radialGradient>
+<linearGradient id="edge" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#79ffe5"/><stop offset=".38" stop-color="#0b8c9b"/><stop offset=".67" stop-color="#034c59"/><stop offset="1" stop-color="#6dffde"/></linearGradient>
+<radialGradient id="gem" cx=".4" cy=".29" r=".8"><stop stop-color="#fff"/><stop offset=".45" stop-color="#f8fff7"/><stop offset=".85" stop-color="#d8e7dc"/><stop offset="1" stop-color="#b2c9ca"/></radialGradient>
+<linearGradient id="gold" x1=".15" y1=".15" x2=".9" y2=".9"><stop stop-color="#fff3ba"/><stop offset=".32" stop-color="#eec974"/><stop offset=".7" stop-color="#ffdca0"/><stop offset="1" stop-color="#b27b3b"/></linearGradient>
+</defs>
+<circle cx="128" cy="128" r="125" fill="#04161e"/>
+<circle cx="128" cy="128" r="120" fill="url(#edge)" stroke="#05242c" stroke-width="4"/>
+<circle cx="128" cy="126" r="111" fill="url(#shell)" stroke="#a5ffe5" stroke-width="3"/>
+<path d="M23 144C60 193 155 205 229 143c-12 73-54 102-101 102-58 0-98-41-105-101" fill="#034755" opacity=".5"/>
+<path d="M43 59Q90 19 155 28" fill="none" stroke="#e6fff8" stroke-width="12" stroke-linecap="round" opacity=".9"/>
+<path d="M212 196Q221 183 225 163" fill="none" stroke="#b8fff0" stroke-width="5" stroke-linecap="round"/>
+<g transform="translate(128 128)">
+<path d="M-50 20C-64 -19-20 -66 18 -61 61 -59 76 -10 56 23 35 64-16 66-48 35Z" fill="#263d4c" stroke="#192e3f" stroke-width="7"/>
+<ellipse cx="0" cy="0" rx="53" ry="42" transform="rotate(-30)" fill="none" stroke="url(#gold)" stroke-width="14"/>
+<ellipse cx="0" cy="0" rx="45" ry="53" transform="rotate(43)" fill="none" stroke="url(#gold)" stroke-width="11"/>
+<circle r="43" fill="url(#gem)" stroke="#fae3a3" stroke-width="5"/>
+<ellipse cx="-13" cy="-18" rx="16" ry="7" transform="rotate(-29 -13 -18)" fill="white" opacity=".88"/>
+<ellipse cx="21" cy="-17" rx="9" ry="5" transform="rotate(27 21 -17)" fill="white" opacity=".75"/>
+<ellipse cx="-48" cy="23" rx="9" ry="9" fill="#fff8cc" stroke="#e8c070" stroke-width="2"/>
+<ellipse cx="50" cy="19" rx="8" ry="8" fill="#fff8d5" stroke="#e8c070" stroke-width="2"/>
+<ellipse cx="-18" cy="-49" rx="8" ry="8" fill="#fff8d5" stroke="#e8c070" stroke-width="2"/>
+</g>
+</svg>
