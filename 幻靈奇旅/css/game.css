@@ -355,3 +355,22 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;r
  #actions #berryBtn,#actions #lockBtn{left:81px!important}
  #actions #rollBtn{left:11px!important}
 }
+
+/* 2026-10-14: compact bottom-right cross-shaped controls, refined contract orb. */
+#actions{width:168px!important;height:172px!important;right:10px!important;bottom:calc(env(safe-area-inset-bottom) + 57px)!important;overflow:visible!important}
+#actions #captureBtn{left:86px!important;top:76px!important;width:82px!important;height:82px!important;min-width:82px!important;min-height:82px!important;border:1px solid #28353a!important;border-radius:50%!important;background-color:#65999a!important;box-shadow:0 2px 8px #152e3340!important;clip-path:circle(50% at 50% 50%)!important;filter:brightness(1.24) saturate(.88)!important;outline:0!important;-webkit-tap-highlight-color:transparent!important}
+#actions #captureBtn:focus,#actions #captureBtn:focus-visible,#actions #captureBtn:active{outline:0!important;outline-offset:0!important;border:1px solid #28353a!important;box-shadow:0 2px 8px #152e3340!important}
+#actions #captureBtn:active{transform:scale(.97)!important;filter:brightness(1.31) saturate(.88)!important}
+#actions #captureBtn[data-ball="great"]{filter:brightness(1.20) saturate(.9) hue-rotate(27deg)!important}
+#actions #captureBtn[data-ball="master"]{filter:brightness(1.20) saturate(.9) hue-rotate(115deg)!important}
+#actions #berryBtn,#actions #lockBtn,#actions #rollBtn{width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important}
+#actions #berryBtn{left:97px!important;top:-37px!important}
+#actions #lockBtn{left:97px!important;top:19px!important}
+#actions #rollBtn{left:26px!important;top:89px!important}
+#actions #berryBtn::before,#actions #lockBtn::before,#actions #rollBtn::before{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important}
+@media(max-width:359px){
+ #actions{width:160px!important;right:7px!important}
+ #actions #captureBtn{left:81px!important;width:79px!important;height:79px!important;min-width:79px!important;min-height:79px!important}
+ #actions #berryBtn,#actions #lockBtn{left:91px!important}
+ #actions #rollBtn{left:23px!important}
+}
