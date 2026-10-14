@@ -141,6 +141,16 @@ body.impact-heavy .vignette{box-shadow:inset 0 0 110px #ffbf5933}body.impact-lig
 #panelContent .shop-item button{min-width:76px;min-height:42px;padding:7px}
 #panelContent .shop-summary{line-height:1.7;color:#e2e5cf;font-size:12px}
 .loot-ground-label{position:absolute;z-index:3;transform:translate(-50%,-100%);pointer-events:none;white-space:nowrap;background:#16291edb;border:1px solid #d6cd8c9e;border-radius:12px;color:#fff4c5;padding:3px 7px;font-size:10px;text-shadow:0 1px 3px #08160c;box-shadow:0 2px 5px #0509}
+
+/* Strong mobile-readable glow only when the full ultimate is genuinely usable. */
+@keyframes towerUltimateReadyGlow{
+  0%,100%{box-shadow:0 0 10px 3px #ffdf85a8,0 0 20px 3px #e1a33f73,inset 0 0 10px #ffeaa264;filter:brightness(1.08) saturate(1.28)}
+  50%{box-shadow:0 0 17px 6px #fff1b7e6,0 0 30px 12px #fbc25b9c,inset 0 0 14px #fff1a0b0;filter:brightness(1.32) saturate(1.65)}
+}
+#ultimateButton.ready{background:linear-gradient(135deg,#f7c777,#ac6726)!important;border:2px solid #fff6c6!important;color:#fffde8!important;animation:towerUltimateReadyGlow 1.25s ease-in-out infinite;isolation:isolate}
+#ultimateButton.ready .ultimate-fill{background:linear-gradient(110deg,#d69638,#ffe5a3)!important}
+#ultimateButton:not(.ready){animation:none;box-shadow:none}
+@media(prefers-reduced-motion:reduce){#ultimateButton.ready{animation:none;box-shadow:0 0 17px 5px #ffd987b9,inset 0 0 7px #fff0a2}}
 </style><link rel="stylesheet" href="tower-controls.css?v=tower-controls-v3"></head>
 <body>
 
@@ -184,12 +194,21 @@ const SHOP_WEAPONS=[
  {id:'venom_bow',type:2,name:'蛇影毒弓',effect:'poison',label:'中毒',chance:.28,boost:1.10,recipe:[['森棘龍鱗',3],['熔冠甲殼',2]]},
  {id:'storm_bow',type:2,name:'震雷靈弓',effect:'paralyze',label:'麻痺',chance:.22,boost:1.16,recipe:[['熔冠甲殼',3],['龍心結晶',1]]}
 ];
-function freshSave(){return {version:1,baseWeapons:[0],activeWeapon:0,inventory:{},cards:{},registeredCards:{},pets:{},weaponsOwned:{},equipped:{},cleared:[],upgrade:0,kills:0};}
-function parseSave(raw){try{const s=JSON.parse(raw);if(s?.version!==1)return freshSave();const o=freshSave();o.activeWeapon=Number.isInteger(s.activeWeapon)&&s.activeWeapon>=0&&s.activeWeapon<3?s.activeWeapon:0;o.baseWeapons=Array.isArray(s.baseWeapons)?[...new Set([0,...s.baseWeapons.filter(i=>Number.isInteger(i)&&i>=0&&i<3)])]:[0,1,2];o.cleared=[...new Set((s.cleared||[]).filter(v=>Number.isInteger(v)&&v>=0&&v<3))];o.upgrade=Math.min(3,Math.max(0,Math.floor(Number(s.upgrade)||0)));o.kills=Math.max(0,Math.floor(Number(s.kills)||0));o.cards=Object.fromEntries(Object.entries(s.cards||{}).filter(([k,v])=>LEVELS.some(l=>l.monster+'卡片'===k)&&Number.isFinite(v)&&v>=0).map(([k,v])=>[k,Math.floor(v)]));o.registeredCards={...(s.registeredCards||{})};o.pets={...(s.pets||{})};o.weaponsOwned=Object.fromEntries(Object.entries(s.weaponsOwned||{}).filter(([k,v])=>v===true&&SHOP_WEAPONS.some(w=>w.id===k)));o.equipped=Object.fromEntries(Object.entries(s.equipped||{}).filter(([k,v])=>['0','1','2'].includes(k)&&SHOP_WEAPONS.some(w=>w.id===v&&w.type===+k)));for(const [k,v]of Object.entries(s.inventory||{})){if(LEVELS.some(l=>l.loot.includes(k))&&Number.isFinite(v)&&v>0)o.inventory[k]=Math.min(9999,Math.floor(v));}return o;}catch{return freshSave();}}
+function freshSave(){return {version:1,baseWeapons:[0],activeWeapon:0,inventory:{},cards:{},registeredCards:{},pets:{},weaponsOwned:{},equipped:{},cleared:[],upgrade:0,cardAttackBonus:0,defeatedCounts:[0,0,0],kills:0};}
+function parseSave(raw){try{const s=JSON.parse(raw);if(s?.version!==1)return freshSave();const o=freshSave();o.activeWeapon=Number.isInteger(s.activeWeapon)&&s.activeWeapon>=0&&s.activeWeapon<3?s.activeWeapon:0;o.baseWeapons=Array.isArray(s.baseWeapons)?[...new Set([0,...s.baseWeapons.filter(i=>Number.isInteger(i)&&i>=0&&i<3)])]:[0,1,2];o.cleared=[...new Set((s.cleared||[]).filter(v=>Number.isInteger(v)&&v>=0&&v<3))];o.upgrade=Math.min(3,Math.max(0,Math.floor(Number(s.upgrade)||0)));
+ o.cardAttackBonus=Math.min(50,Math.max(0,Math.floor(Number(s.cardAttackBonus??o.upgrade*15)||0)));
+ const oldCounts=Array.isArray(s.defeatedCounts)?s.defeatedCounts:[0,1,2].map(i=>(s.cleared||[]).includes(i)?1:0);
+ o.defeatedCounts=[0,1,2].map(i=>Math.max(0,Math.min(100000,Math.floor(Number(oldCounts[i])||0))));
+ o.kills=Math.max(0,Math.floor(Number(s.kills)||0));o.cards=Object.fromEntries(Object.entries(s.cards||{}).filter(([k,v])=>LEVELS.some(l=>l.monster+'卡片'===k)&&Number.isFinite(v)&&v>=0).map(([k,v])=>[k,Math.floor(v)]));o.registeredCards={...(s.registeredCards||{})};o.pets={...(s.pets||{})};o.weaponsOwned=Object.fromEntries(Object.entries(s.weaponsOwned||{}).filter(([k,v])=>v===true&&SHOP_WEAPONS.some(w=>w.id===k)));o.equipped=Object.fromEntries(Object.entries(s.equipped||{}).filter(([k,v])=>['0','1','2'].includes(k)&&SHOP_WEAPONS.some(w=>w.id===v&&w.type===+k)));for(const [k,v]of Object.entries(s.inventory||{})){if(LEVELS.some(l=>l.loot.includes(k))&&Number.isFinite(v)&&v>0)o.inventory[k]=Math.min(9999,Math.floor(v));}return o;}catch{return freshSave();}}
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 const direction=(a,b)=>{let d=distance(a,b)||1;return{x:(b.x-a.x)/d,z:(b.z-a.z)/d};};
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const ULTIMATE_COOLDOWN=18;
+const CARD_BASE_CHANCE=.04,CARD_CHANCE_PER_WIN=.05;
+const BOSS_HP_ATTACK_DEF_PER_WIN=.05,BOSS_SPEED_FREQ_DODGE_PER_WIN=.02;
+function cardDropChance(defeated){return Math.min(1,CARD_BASE_CHANCE+CARD_CHANCE_PER_WIN*defeated);}
+function sumMonsterCards(cards){return LEVELS.reduce((n,l)=>n+Math.max(0,Math.floor(Number(cards[l.monster+'卡片'])||0)),0);}
+
 const ULTIMATE_NAMES=['斷岳三連斬','逐風十連擊','曙光箭雨'];
 const ULTIMATE_HITS=[3,10,9];
 const ULTIMATE_DAMAGE=[126,38,43];
@@ -200,14 +219,35 @@ class Hunt {
  purchase(id){const w=SHOP_WEAPONS.find(x=>x.id===id);if(!w||this.mode!=='battle'||this.save.weaponsOwned[id])return false;if(w.recipe.some(([n,c])=>(this.save.inventory[n]||0)<c))return false;for(const [n,c] of w.recipe)this.save.inventory[n]-=c;this.save.weaponsOwned[id]=true;this.save.equipped[w.type]=id;this.player.weapon=w.type;this.save.activeWeapon=w.type;this.emit('weapon',{i:w.type});return true;}
  equipShopWeapon(id){const w=SHOP_WEAPONS.find(x=>x.id===id);if(!w||!this.save.weaponsOwned[id])return false;this.save.equipped[w.type]=id;this.player.weapon=w.type;this.save.activeWeapon=w.type;this.emit('weapon',{i:w.type});return true;}
  emit(type,data={}){this.events.push({type,...data});}
- load(index){this.level=clamp(index,0,2);this.mode='battle';this.engaged=false;this.time=0;this.paused=false;this.rewarded=false;this.potions=5;this.combo=0;this.ultimateSequence=null;this.loot=[];this.collectedLoot=[];this.player={x:0,z:9,hp:150,stamina:100,weapon:this.canUseWeapon(this.save.activeWeapon)?this.save.activeWeapon:0,cooldown:0,invulnerable:0,dodge:0,dx:0,dz:-1,attack:0,ultimateCd:0,special:0,facing:Math.PI};this.monster={x:0,z:-5,hp:LEVELS[this.level].hp,maxHp:LEVELS[this.level].hp,state:'idle',timer:3,phase:0,facing:0,flash:0,enraged:false,rageTime:0,rageCooldown:0,evadeTime:0,evadeCooldown:0,poisonTime:0,poisonTick:.9,freezeTime:0,paralyzeTime:0,statusCooldown:0,knockTime:0};this.hazards=[];this.projectiles=[];this.emit('level');}
+ bossPriorWins(level=this.level){return this.save.defeatedCounts[level]||0;}
+ bossGrowth(level=this.level){const n=this.bossPriorWins(level);return{wins:n,
+  health:1+BOSS_HP_ATTACK_DEF_PER_WIN*n,attack:1+BOSS_HP_ATTACK_DEF_PER_WIN*n,
+  defense:1+BOSS_HP_ATTACK_DEF_PER_WIN*n,frequency:1+BOSS_SPEED_FREQ_DODGE_PER_WIN*n,
+  speed:1+BOSS_SPEED_FREQ_DODGE_PER_WIN*n,evade:Math.min(.95,.2+BOSS_SPEED_FREQ_DODGE_PER_WIN*n)};}
+ cardChance(level=this.level){return cardDropChance(this.bossPriorWins(level));}
+ cardCount(){return sumMonsterCards(this.save.cards);}
+ cardBoost(){return this.save.cardAttackBonus;}
+ purchaseCardBoost(){
+  if(this.mode!=='victory'||this.save.cardAttackBonus>=50||this.cardCount()<1)return false;
+  const stack=LEVELS.map(l=>({name:l.monster+'卡片',count:this.save.cards[l.monster+'卡片']||0}))
+   .sort((a,b)=>b.count-a.count)[0];
+  if(!stack||stack.count<1)return false;
+  this.save.cards[stack.name]--;this.save.cardAttackBonus++;
+  this.emit('cardBoost',{card:stack.name,bonus:this.save.cardAttackBonus});return stack.name;
+ }
+
+ load(index){this.level=clamp(index,0,2);this.mode='battle';this.engaged=false;this.time=0;this.paused=false;this.rewarded=false;this.potions=5;this.combo=0;this.ultimateSequence=null;this.loot=[];this.collectedLoot=[];this.player={x:0,z:9,hp:150,stamina:100,weapon:this.canUseWeapon(this.save.activeWeapon)?this.save.activeWeapon:0,cooldown:0,invulnerable:0,dodge:0,dx:0,dz:-1,attack:0,ultimateCd:0,special:0,facing:Math.PI};const growth=this.bossGrowth();
+ this.monster={x:0,z:-5,hp:Math.ceil(LEVELS[this.level].hp*growth.health),maxHp:Math.ceil(LEVELS[this.level].hp*growth.health),
+ damageMultiplier:growth.attack,defenseMultiplier:growth.defense,attackFrequency:growth.frequency,
+ moveMultiplier:growth.speed,evadeChance:growth.evade,priorWins:growth.wins,
+ state:'idle',timer:3/growth.frequency,phase:0,facing:0,flash:0,enraged:false,rageTime:0,rageCooldown:0,evadeTime:0,evadeCooldown:0,poisonTime:0,poisonTick:.9,freezeTime:0,paralyzeTime:0,statusCooldown:0,knockTime:0};this.hazards=[];this.projectiles=[];this.emit('level');}
  switchWeapon(i){if(this.mode!=='battle'||this.paused||this.ultimateSequence||i<0||i>2||!this.canUseWeapon(i))return false;this.player.weapon=i;this.save.activeWeapon=i;this.emit('weapon',{i});}
- attack(heavy=false){const p=this.player,m=this.monster,w=WEAPONS[p.weapon],cost=heavy?w.heavyCost:w.cost;if(this.mode!=='battle'||this.paused||this.ultimateSequence||p.cooldown>0||p.dodge>0||p.stamina<cost)return false;this.engaged=true;p.stamina-=cost;p.cooldown=w.cooldown*(heavy?1.75:1);p.attack=p.cooldown;p.facing=Math.atan2(m.x-p.x,m.z-p.z);this.emit('swing',{heavy,weapon:p.weapon});const mod=this.equippedWeapon();const amount=Math.round((heavy?w.heavy:w.damage)*(1+this.save.upgrade*.15)*(mod?.boost||1));if(p.weapon===2){const d=direction(p,m);this.projectiles.push({x:p.x,z:p.z,dx:d.x,dz:d.z,life:w.range/28,damage:amount,heavy});}else if(distance(p,m)<w.range+1){this.damageMonster(amount,heavy);}return true;}
+ attack(heavy=false){const p=this.player,m=this.monster,w=WEAPONS[p.weapon],cost=heavy?w.heavyCost:w.cost;if(this.mode!=='battle'||this.paused||this.ultimateSequence||p.cooldown>0||p.dodge>0||p.stamina<cost)return false;this.engaged=true;p.stamina-=cost;p.cooldown=w.cooldown*(heavy?1.75:1);p.attack=p.cooldown;p.facing=Math.atan2(m.x-p.x,m.z-p.z);this.emit('swing',{heavy,weapon:p.weapon});const mod=this.equippedWeapon();const amount=Math.round((heavy?w.heavy:w.damage)*(1+this.cardBoost()/100)*(mod?.boost||1));if(p.weapon===2){const d=direction(p,m);this.projectiles.push({x:p.x,z:p.z,dx:d.x,dz:d.z,life:w.range/28,damage:amount,heavy});}else if(distance(p,m)<w.range+1){this.damageMonster(amount,heavy);}return true;}
  tryMonsterDodge(ultimate=false){
   const m=this.monster,seq=this.ultimateSequence;
   // Final greatsword strike is a guaranteed cinematic finisher; all other incoming
   // direct hits roll a real 20% dodge chance when their short evasive cooldown permits.
-  if(m.evadeCooldown>0||(ultimate&&seq?.weapon===0&&seq.index===seq.count)||Math.random()>=.2)return false;
+  if(m.evadeCooldown>0||(ultimate&&seq?.weapon===0&&seq.index===seq.count)||Math.random()>=m.evadeChance)return false;
   const p=this.player,d=direction(p,m),side=Math.random()<.5?-1:1;
   m.x=clamp(m.x+d.z*side*3.3,-19.5,19.5);
   m.z=clamp(m.z-d.x*side*3.3,-19.5,19.5);
@@ -237,8 +277,8 @@ class Hunt {
   const m=this.monster,seq=this.ultimateSequence;
   // Let all three/ten animated strikes play even against low-health bosses.
   const floor=ultimate&&seq&&seq.index<seq.count?1:0;
-  m.hp=Math.max(floor,m.hp-amount);m.flash=ultimate?.3:.14;this.combo++;
-  this.emit('hit',{amount,x:m.x,z:m.z,heavy,ultimate});
+  const dealt=Math.max(1,Math.round(amount/m.defenseMultiplier));m.hp=Math.max(floor,m.hp-dealt);m.flash=ultimate?.3:.14;this.combo++;
+  this.emit('hit',{amount:dealt,x:m.x,z:m.z,heavy,ultimate});
   if(m.hp===0)this.finishMonster();else{this.applyWeaponEffect();this.maybeRage(ultimate);}
   return true;
  }
@@ -272,7 +312,7 @@ class Hunt {
   p.cooldown=duration;p.attack=0;p.dodge=0;p.facing=Math.atan2(m.x-p.x,m.z-p.z);
   m.state='recover';m.timer=Math.max(2.55,duration+.45);this.hazards=[];
   this.ultimateSequence={weapon,count,index:0,elapsed:0,interval,duration,
-    base:Math.round(ULTIMATE_DAMAGE[weapon]*(1+this.save.upgrade*.15))};
+    base:Math.round(ULTIMATE_DAMAGE[weapon]*(1+this.cardBoost()/100))};
   this.emit('ultimate',{name:ULTIMATE_NAMES[p.weapon],weapon:p.weapon,x:m.x,z:m.z});return true;
  }
  tickUltimate(dt){const seq=this.ultimateSequence;if(!seq||this.mode!=='battle'||this.paused)return;seq.elapsed+=dt;
@@ -290,14 +330,16 @@ class Hunt {
  claimRewards(){
   if(this.rewarded||this.mode!=='loot')return false;this.rewarded=true;
   const l=LEVELS[this.level],m=this.monster;
-  const defs=[{name:l.loot[0],chance:.94,min:1,max:3},{name:l.loot[1],chance:.48,min:1,max:2},{name:l.loot[2],chance:.19,min:1,max:1},{name:l.monster+'卡片',chance:.04,min:1,max:1,card:true}];
+  const defs=[{name:l.loot[0],chance:.94,min:1,max:3},{name:l.loot[1],chance:.48,min:1,max:2},{name:l.loot[2],chance:.19,min:1,max:1},{name:l.monster+'卡片',chance:this.cardChance(),min:1,max:1,card:true}];
   let selected=defs.filter(d=>Math.random()<d.chance);
   if(!selected.length)selected=[defs[0]];
   this.loot=selected.map((d,i)=>{const angle=i*2.4+Math.random()*.65,rad=3.3+Math.random()*1.4;
    const x=m.x+Math.cos(angle)*rad,z=m.z+Math.sin(angle)*rad,distance=Math.hypot(x,z)||1,ratio=Math.min(1,19.8/distance);
    return{id:this.save.kills*20+i+1,name:d.name,count:d.min+Math.floor(Math.random()*(d.max-d.min+1)),x:x*ratio,z:z*ratio,card:!!d.card};});
   if(!this.save.cleared.includes(this.level))this.save.cleared.push(this.level);
-  this.save.kills++;this.emit('lootSpawn',{drops:this.loot.map(d=>({...d}))});return true;
+  this.save.kills++;
+ this.save.defeatedCounts[this.level]=this.bossPriorWins()+1;
+ this.emit('lootSpawn',{drops:this.loot.map(d=>({...d}))});return true;
  }
  collectLoot(dt,input={}){
   const p=this.player;this.time+=dt;this.monster.knockTime=Math.max(0,this.monster.knockTime-dt);const x=input.x||0,z=input.z||0,len=Math.hypot(x,z);
@@ -310,7 +352,6 @@ class Hunt {
   }
   if(!this.loot.length){this.mode='victory';this.emit('rewards',{drops:this.collectedLoot.map(d=>({...d}))});}
  }
- upgrade(){const name=LEVELS[this.level].loot[0];if(this.mode!=='victory'||this.save.upgrade>=3||(this.save.inventory[name]||0)<3)return false;this.save.inventory[name]-=3;this.save.upgrade++;this.emit('upgrade');return true;}
  dodge(dx=0,dz=0){const p=this.player;
   if(this.mode!=='battle'||this.paused||p.dodge>0||p.stamina<22)return false;
   this.engaged=true;const n=Math.hypot(dx,dz);
@@ -321,9 +362,9 @@ class Hunt {
   this.emit('dodge');return true;
  }
  heal(){const p=this.player;if(this.mode!=='battle'||this.paused||this.potions<=0||p.hp>=150||p.dodge>0)return false;this.potions--;p.hp=Math.min(150,p.hp+65);this.emit('heal');return true;}
- damagePlayer(amount){const p=this.player;if(p.invulnerable>0||this.mode!=='battle')return false;p.hp=Math.max(0,p.hp-amount);p.invulnerable=.85;this.emit('hurt',{amount});if(p.hp===0){this.mode='defeat';this.emit('defeat');}return true;}
- startPattern(){const m=this.monster,p=this.player;m.phase++;const type=this.level===0?(m.phase%3===0?'stomp':'charge'):this.level===1?(m.phase%2===0?'frost':'charge'):(m.phase%3===0?'charge':m.phase%2===0?'eruption':'breath');m.state='windup';m.pattern=type;m.timer=(type==='charge'?1.05:1.35)/(m.enraged?1.45:1);m.target={x:p.x,z:p.z};m.origin={x:m.x,z:m.z};m.dir=direction(m,p);m.facing=Math.atan2(m.dir.x,m.dir.z);this.emit('warning',{pattern:type});if(type==='frost'||type==='eruption'){for(let i=0;i<3;i++){this.hazards.push({x:p.x+(i-1)*3.8,z:p.z+(i%2)*3,radius:2.6,timer:1.3+i*.3,life:.65,active:false,hit:false,type});}}}
- resolvePattern(){const m=this.monster,p=this.player;const enr=m.enraged?1.2:1;if(m.pattern==='charge'){m.state='charge';m.timer=.85;m.hit=false;}else{if(m.pattern==='stomp'&&distance(m,p)<6)this.damagePlayer(34*enr);if(m.pattern==='breath'){const d=direction(m,p),dot=d.x*m.dir.x+d.z*m.dir.z;if(distance(m,p)<12&&dot>.63)this.damagePlayer(38*enr);}this.emit('impact',{pattern:m.pattern});m.state='recover';m.timer=m.enraged?1.15:1.8;}}
+ damagePlayer(amount){const p=this.player;if(p.invulnerable>0||this.mode!=='battle')return false;const dealt=Math.max(1,Math.round(amount*this.monster.damageMultiplier));p.hp=Math.max(0,p.hp-dealt);p.invulnerable=.85;this.emit('hurt',{amount:dealt});if(p.hp===0){this.mode='defeat';this.emit('defeat');}return true;}
+ startPattern(){const m=this.monster,p=this.player;m.phase++;const type=this.level===0?(m.phase%3===0?'stomp':'charge'):this.level===1?(m.phase%2===0?'frost':'charge'):(m.phase%3===0?'charge':m.phase%2===0?'eruption':'breath');m.state='windup';m.pattern=type;m.timer=(type==='charge'?1.05:1.35)/(m.attackFrequency*(m.enraged?1.45:1));m.target={x:p.x,z:p.z};m.origin={x:m.x,z:m.z};m.dir=direction(m,p);m.facing=Math.atan2(m.dir.x,m.dir.z);this.emit('warning',{pattern:type});if(type==='frost'||type==='eruption'){for(let i=0;i<3;i++){this.hazards.push({x:p.x+(i-1)*3.8,z:p.z+(i%2)*3,radius:2.6,timer:1.3+i*.3,life:.65,active:false,hit:false,type});}}}
+ resolvePattern(){const m=this.monster,p=this.player;const enr=m.enraged?1.2:1;if(m.pattern==='charge'){m.state='charge';m.timer=.85/m.attackFrequency;m.hit=false;}else{if(m.pattern==='stomp'&&distance(m,p)<6)this.damagePlayer(34*enr);if(m.pattern==='breath'){const d=direction(m,p),dot=d.x*m.dir.x+d.z*m.dir.z;if(distance(m,p)<12&&dot>.63)this.damagePlayer(38*enr);}this.emit('impact',{pattern:m.pattern});m.state='recover';m.timer=(m.enraged?1.15:1.8)/m.attackFrequency;}}
  tick(dt,input={}){dt=clamp(dt,0,.05);if(this.paused)return;if(this.mode==='loot'){this.collectLoot(dt,input);return;}if(this.mode!=='battle')return;if(input.x||input.z)this.engaged=true;if(!this.engaged)return;this.time+=dt;this.tickUltimate(dt);if(this.mode!=='battle')return;const p=this.player,m=this.monster;p.special=Math.max(0,p.special-dt);p.ultimateCd=Math.max(0,p.ultimateCd-dt);p.cooldown=Math.max(0,p.cooldown-dt);p.attack=Math.max(0,p.attack-dt);p.invulnerable=Math.max(0,p.invulnerable-dt);m.flash=Math.max(0,m.flash-dt);
  m.evadeCooldown=Math.max(0,m.evadeCooldown-dt);
  m.evadeTime=Math.max(0,m.evadeTime-dt);
@@ -331,15 +372,15 @@ class Hunt {
  m.rageCooldown=Math.max(0,m.rageCooldown-dt);m.statusCooldown=Math.max(0,m.statusCooldown-dt);m.freezeTime=Math.max(0,m.freezeTime-dt);m.paralyzeTime=Math.max(0,m.paralyzeTime-dt);
  if(m.rageTime>0){m.rageTime=Math.max(0,m.rageTime-dt);if(m.rageTime===0){m.enraged=false;this.emit('rageEnd');}}
  if(m.poisonTime>0){m.poisonTime=Math.max(0,m.poisonTime-dt);m.poisonTick-=dt;
-  if(m.poisonTick<=0){m.poisonTick+=.9;m.hp=Math.max(0,m.hp-8);
-   this.emit('poisonTick',{amount:8,x:m.x,z:m.z});if(m.hp===0){this.finishMonster();return;}}
+  if(m.poisonTick<=0){m.poisonTick+=.9;m.hp=Math.max(0,m.hp-Math.max(1,Math.round(8/m.defenseMultiplier)));
+   this.emit('poisonTick',{amount:Math.max(1,Math.round(8/m.defenseMultiplier)),x:m.x,z:m.z});if(m.hp===0){this.finishMonster();return;}}
  }
  let dx=input.x||0,dz=input.z||0,len=Math.hypot(dx,dz);if(p.dodge>0){p.dodge-=dt;p.x+=p.dx*17*dt;p.z+=p.dz*17*dt;}else{if(len>0){dx/=len;dz/=len;const speed=p.attack>0?3:7.2;p.x+=dx*speed*dt;p.z+=dz*speed*dt;if(p.attack<=0)p.facing=Math.atan2(dx,dz);}p.stamina=clamp(p.stamina+dt*(p.attack>0?5:22),0,100);}let rad=Math.hypot(p.x,p.z);if(rad>22){p.x*=22/rad;p.z*=22/rad;}
  const sep=distance(p,m);if(sep<2.25&&sep>.001){p.x=m.x+(p.x-m.x)*2.25/sep;p.z=m.z+(p.z-m.z)*2.25/sep;}
  for(const shot of this.projectiles){shot.x+=shot.dx*28*dt;shot.z+=shot.dz*28*dt;shot.life-=dt;if(distance(shot,m)<2.5){shot.life=0;this.damageMonster(shot.damage,shot.heavy);}}
  this.projectiles=this.projectiles.filter(v=>v.life>0);if(this.mode!=='battle')return;
  for(const h of this.hazards){h.timer-=dt;if(h.timer<=0){h.active=true;h.life-=dt;if(!h.hit&&distance(p,h)<h.radius){h.hit=this.damagePlayer(29);}}}this.hazards=this.hazards.filter(h=>h.life>0);
- if(m.freezeTime>0||m.paralyzeTime>0){m.state='recover';m.timer=Math.max(m.timer,.15);return;}m.timer-=dt;if(m.state==='idle'){const d=direction(m,p);m.facing=Math.atan2(d.x,d.z);if(distance(m,p)>5){m.x+=d.x*2.5*(m.enraged?1.65:1)*dt;m.z+=d.z*2.5*(m.enraged?1.65:1)*dt;}if(m.timer<=0)this.startPattern();}else if(m.state==='windup'){if(m.timer<=0)this.resolvePattern();}else if(m.state==='charge'){m.x+=m.dir.x*19*(m.enraged?1.45:1)*dt;m.z+=m.dir.z*19*(m.enraged?1.45:1)*dt;if(!m.hit&&distance(m,p)<3.4)m.hit=this.damagePlayer(m.enraged?40:32);const r=Math.hypot(m.x,m.z);if(m.timer<=0||r>20){if(r>20){m.x*=20/r;m.z*=20/r;}m.state='recover';m.timer=m.enraged?1.15:2;this.emit('impact',{pattern:'charge'});}}else if(m.state==='recover'&&m.timer<=0){m.state='idle';m.timer=m.enraged?.8:1.4;}}
+ if(m.freezeTime>0||m.paralyzeTime>0){m.state='recover';m.timer=Math.max(m.timer,.15);return;}m.timer-=dt;if(m.state==='idle'){const d=direction(m,p);m.facing=Math.atan2(d.x,d.z);if(distance(m,p)>5){m.x+=d.x*2.5*m.moveMultiplier*(m.enraged?1.65:1)*dt;m.z+=d.z*2.5*m.moveMultiplier*(m.enraged?1.65:1)*dt;}if(m.timer<=0)this.startPattern();}else if(m.state==='windup'){if(m.timer<=0)this.resolvePattern();}else if(m.state==='charge'){m.x+=m.dir.x*19*m.moveMultiplier*(m.enraged?1.45:1)*dt;m.z+=m.dir.z*19*m.moveMultiplier*(m.enraged?1.45:1)*dt;if(!m.hit&&distance(m,p)<3.4)m.hit=this.damagePlayer(m.enraged?40:32);const r=Math.hypot(m.x,m.z);if(m.timer<=0||r>20){if(r>20){m.x*=20/r;m.z*=20/r;}m.state='recover';m.timer=(m.enraged?1.15:2)/m.attackFrequency;this.emit('impact',{pattern:'charge'});}}else if(m.state==='recover'&&m.timer<=0){m.state='idle';m.timer=(m.enraged?.8:1.4)/m.attackFrequency;}}
 }
 
 const T=globalThis.THREE;
@@ -618,9 +659,9 @@ function openPanel(kind){clearInput();h.paused=true;window.PhantomBgm?.setDucked
  else if(kind==='bag'){const entries=Object.entries(h.save.inventory).filter(([,n])=>n>0);content.innerHTML='<div class="eyebrow">FIELD INVENTORY</div><h2>素材袋</h2><p>擊敗魔王後靠近地面掉落物自行拾取；拾取的素材可兌換特殊武器，卡片可於初光鎮換取寵物。</p>'+ (entries.length?entries.map(([name,count])=>`<div class="loot-row"><span>${name}</span><b>× ${count}</b></div>`).join(''):'<p>尚未取得素材。擊敗第一隻魔物開始收集。</p>')+'<div class="actions"><button class="primary" data-action="resume">返回戰鬥</button></div>';}
  else if(kind==='pause'){content.innerHTML='<div class="eyebrow">TAKE A BREATH</div><h2>挑戰暫停</h2><p>WASD／方向鍵／搖桿移動 · 進入武器射程自動攻擊<br>Space 翻滾 · 1–3 切換已持有武器 · 長按 V 選武器 · Q 回復藥 · R 大絕<br>點擊「換武器」輪流切換；1–3 亦可直接選擇。獵弓適合拉開距離。</p><div class="actions"><button class="primary" data-action="resume">繼續挑戰</button><button data-action="retry">重新挑戰</button></div>';}
  else if(kind==='defeat'){content.innerHTML='<div class="eyebrow">HUNT FAILED</div><h2>重整旗鼓</h2><p>已收集的素材仍然保留。留意橘紅色攻擊預警，保留耐力翻滾；使用獵弓能維持安全距離。</p><div class="actions"><button class="primary" data-action="retry">再次挑戰</button></div>';}
- else{content.innerHTML=`<div class="result-icon">⟐</div><div class="eyebrow">${h.level===2?'ALL HUNTS COMPLETE':'HUNT COMPLETE'}</div><h2>${h.level===2?'三域征服者':'挑戰成功'}</h2><p>${l.monster}已被擊敗 · 用時 ${formatTime(h.time)}<br>已拾取的獎勵：</p>${h.collectedLoot.map(d=>`<div class="loot-row"><span>${d.name}${d.card?'（已登錄圖鑑）':''}</span><b>× ${d.count}</b></div>`).join('')}<div class="actions"><button data-action="upgrade" ${h.save.upgrade>=3||(h.save.inventory[l.loot[0]]||0)<3?'disabled':''}>強化 +${h.save.upgrade} → +${Math.min(3,h.save.upgrade+1)}<br><small>消耗 ${l.loot[0]} ×3</small></button><button class="primary" data-action="next">${h.level===2?'再戰古林':'前往下一關 →'}</button></div><p class="subtle">所有武器每級傷害 +15%，最多 +45%。${saveAvailable?'素材已保存在此瀏覽器。':'目前使用本次遊戲暫存。'}</p>`;}
+ else{content.innerHTML=`<div class="result-icon">⟐</div><div class="eyebrow">${h.level===2?'ALL HUNTS COMPLETE':'HUNT COMPLETE'}</div><h2>${h.level===2?'三域征服者':'挑戰成功'}</h2><p>${l.monster}已被擊敗 · 用時 ${formatTime(h.time)}<br>已拾取的獎勵：</p>${h.collectedLoot.map(d=>`<div class="loot-row"><span>${d.name}${d.card?'（已登錄圖鑑）':''}</span><b>× ${d.count}</b></div>`).join('')}<div class="actions"><button data-action="cardBoost" ${h.cardBoost()>=50||h.cardCount()<1?'disabled':''}>卡片攻擊強化 +${h.cardBoost()}% → +${Math.min(50,h.cardBoost()+1)}%<br><small>${h.cardBoost()>=50?'已達 50% 上限':'任意魔物卡片 ×1｜持有 '+h.cardCount()+' 張'}</small></button><button class="primary" data-action="next">${h.level===2?'再戰古林':'前往下一關 →'}</button></div><p class="subtle">魔物卡片每張永久攻擊 +1%，最高 +50%；也可保留兌換寵物。<br>本魔王已擊敗 ${h.bossPriorWins()} 次，下次卡片掉率 ${Math.round(h.cardChance()*100)}%。<br>再戰生命／攻防 +${h.bossPriorWins()*5}%，攻速／移速 +${h.bossPriorWins()*2}%，閃躲機率 +${h.bossPriorWins()*2} 個百分點（封頂 95%）。<br>${saveAvailable?'進度已儲存在此瀏覽器。':'目前使用本次遊戲暫存。'}</p>`;}
 }
-$('panelContent').addEventListener('click',e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(action?.startsWith('quick-')){if(action.startsWith('quick-base-')){const i=Number(action.slice(11));delete h.save.equipped[i];closePanel();h.switchWeapon(i);}else{const id=action.slice(11);h.equipShopWeapon(id);closePanel();}save();return;}if(action?.startsWith('shop-')){const id=action.slice(5);if(h.save.weaponsOwned[id]?h.equipShopWeapon(id):h.purchase(id)){save();openPanel('shop');toast('武器已裝備：'+SHOP_WEAPONS.find(w=>w.id===id)?.name);}return;}if(action==='resume')closePanel();if(action==='retry')load(h.level);if(action==='next')load((h.level+1)%3);if(action==='upgrade'&&h.upgrade()){save();openPanel('victory');toast('所有武器傷害提升 15%');}});
+$('panelContent').addEventListener('click',e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(action?.startsWith('quick-')){if(action.startsWith('quick-base-')){const i=Number(action.slice(11));delete h.save.equipped[i];closePanel();h.switchWeapon(i);}else{const id=action.slice(11);h.equipShopWeapon(id);closePanel();}save();return;}if(action?.startsWith('shop-')){const id=action.slice(5);if(h.save.weaponsOwned[id]?h.equipShopWeapon(id):h.purchase(id)){save();openPanel('shop');toast('武器已裝備：'+SHOP_WEAPONS.find(w=>w.id===id)?.name);}return;}if(action==='resume')closePanel();if(action==='retry')load(h.level);if(action==='next')load((h.level+1)%3);if(action==='cardBoost'){const used=h.purchaseCardBoost();if(used){save();openPanel('victory');toast('消耗 '+used+' ×1｜永久攻擊 +1%（目前 '+h.cardBoost()+'%）');}return;}});
 $('panel').addEventListener('cancel',e=>{e.preventDefault();closePanel();});$('closePanel').onclick=closePanel;
 function load(level){$('panel').close();dialogKind='';clearInput();h.load(level);world.load(level);const l=LEVELS[level];$('chapterNo').textContent=`挑戰樓層 0${level+1} / 03`;$('location').textContent=l.name;$('locationEn').textContent=l.en;$('targetName').textContent=$('bossName').textContent=l.monster;$('objectiveHint').textContent=l.brief;document.querySelectorAll('.chapter-dots span').forEach((el,i)=>el.className=i===level?'active':h.save.cleared.includes(i)?'done':'');callout(`${l.name} · 樓層挑戰開始`,2200);$('world').focus();}
 function placeFloatingHp(id,x,y,z){
@@ -630,7 +671,8 @@ function placeFloatingHp(id,x,y,z){
  el.style.top=clamp(pos.y,54,Math.max(54,innerHeight-145))+'px';
 }
 function formatTime(t){return`${Math.floor(t/60).toString().padStart(2,'0')}:${Math.floor(t%60).toString().padStart(2,'0')}`;}
-function updateHUD(){const p=h.player,m=h.monster;$('hp').textContent=Math.ceil(p.hp);$('hpBar').style.width=p.hp/150*100+'%';$('stamina').textContent=Math.floor(p.stamina);$('staminaBar').style.width=p.stamina+'%';$('potions').textContent=h.potions;$('power').textContent=`武器強化 +${h.save.upgrade}`;$('rank').textContent=`RANK ${String(h.save.cleared.length+1).padStart(2,'0')}`;$('bossBar').style.width=m.hp/m.maxHp*100+'%';$('bossHp').textContent=`${Math.ceil(m.hp)} / ${m.maxHp}`;$('bossState').textContent=h.mode==='victory'?'挑戰完成':m.state==='windup'?'蓄力中':m.state==='recover'?'破綻！':m.enraged?'憤怒狀態':h.engaged?'交戰中':'準備就緒';$('itemCount').textContent=Object.values(h.save.inventory).reduce((a,b)=>a+b,0);document.querySelectorAll('[data-weapon]').forEach(el=>{const active=+el.dataset.weapon===p.weapon;el.classList.toggle('active',active);el.setAttribute('aria-pressed',active);});document.getElementById('mobileAttack').querySelector('small').textContent=WEAPONS[p.weapon].short;document.getElementById('mobileAttack').title=h.equippedWeapon()?.name||WEAPONS[p.weapon].name;document.getElementById('mobileHeal').setAttribute('aria-label',`使用道具（剩餘${h.potions}）`);document.getElementById('ultimateFill').style.width=((1-p.ultimateCd/ULTIMATE_COOLDOWN)*100)+'%';document.getElementById('ultimateName').textContent='大絕';document.getElementById('ultimateCharge').textContent=p.ultimateCd>0?Math.ceil(p.ultimateCd)+'s':'可用';document.getElementById('ultimateButton').setAttribute('aria-label',`大絕招：${ULTIMATE_NAMES[p.weapon]}${p.ultimateCd>0?`，冷卻中 ${Math.ceil(p.ultimateCd)} 秒`: '，可施放'}`);document.getElementById('ultimateButton').title=ULTIMATE_NAMES[p.weapon];document.getElementById('ultimateButton').classList.toggle('ready',p.ultimateCd<=0);document.getElementById('ultimateButton').setAttribute('aria-disabled',String(p.ultimateCd>0));
+function updateHUD(){const p=h.player,m=h.monster;$('hp').textContent=Math.ceil(p.hp);$('hpBar').style.width=p.hp/150*100+'%';$('stamina').textContent=Math.floor(p.stamina);$('staminaBar').style.width=p.stamina+'%';$('potions').textContent=h.potions;$('power').textContent=`卡片攻擊 +${h.cardBoost()}%`;$('rank').textContent=`RANK ${String(h.save.cleared.length+1).padStart(2,'0')}`;$('bossBar').style.width=m.hp/m.maxHp*100+'%';$('bossHp').textContent=`${Math.ceil(m.hp)} / ${m.maxHp}`;$('bossState').textContent=h.mode==='victory'?'挑戰完成':m.state==='windup'?'蓄力中':m.state==='recover'?'破綻！':m.enraged?'憤怒狀態':h.engaged?'交戰中':'準備就緒';$('itemCount').textContent=Object.values(h.save.inventory).reduce((a,b)=>a+b,0);document.querySelectorAll('[data-weapon]').forEach(el=>{const active=+el.dataset.weapon===p.weapon;el.classList.toggle('active',active);el.setAttribute('aria-pressed',active);});document.getElementById('mobileAttack').querySelector('small').textContent=WEAPONS[p.weapon].short;document.getElementById('mobileAttack').title=h.equippedWeapon()?.name||WEAPONS[p.weapon].name;document.getElementById('mobileHeal').setAttribute('aria-label',`使用道具（剩餘${h.potions}）`);document.getElementById('ultimateFill').style.width=((1-p.ultimateCd/ULTIMATE_COOLDOWN)*100)+'%';document.getElementById('ultimateName').textContent='大絕';document.getElementById('ultimateCharge').textContent=p.ultimateCd>0?Math.ceil(p.ultimateCd)+'s':'可用';document.getElementById('ultimateButton').setAttribute('aria-label',`大絕招：${ULTIMATE_NAMES[p.weapon]}${p.ultimateCd>0?`，冷卻中 ${Math.ceil(p.ultimateCd)} 秒`: '，可施放'}`);document.getElementById('ultimateButton').title=ULTIMATE_NAMES[p.weapon];const canUltimate=h.mode==='battle'&&!h.paused&&p.ultimateCd<=0&&p.special<=0&&distance(p,m)<=22;
+ document.getElementById('ultimateButton').classList.toggle('ready',canUltimate);document.getElementById('ultimateButton').setAttribute('aria-disabled',String(!canUltimate));
  $('playerHpFloatText').textContent=Math.ceil(p.hp)+' / 150';$('playerHpFloatBar').style.width=p.hp/150*100+'%';
  $('bossFloatName').textContent=LEVELS[h.level].monster+(m.poisonTime>0?' ☠中毒':'')+(m.enraged?' ⚡狂暴':'')+(m.freezeTime>0?' ❄冰凍':'')+(m.paralyzeTime>0?' ⚡麻痺':'');$('bossHpFloatText').textContent=Math.ceil(m.hp)+' / '+m.maxHp;$('bossHpFloatBar').style.width=m.hp/m.maxHp*100+'%';
  placeFloatingHp('playerFloatingHp',p.x,(world.hunter?.userData.modelHeight||2.55)+.65,p.z);
