@@ -146,8 +146,11 @@ function tickPetFollower(dt){
   // At 2 PI radians the position is identical, without interpolation drift or side swapping.
   const phase=orbit.direction*orbit.progress*Math.PI*2;
   const c=Math.cos(phase),sn=Math.sin(phase);
-  p.x=orbit.centerX+orbit.offsetX*c-orbit.offsetZ*sn;
-  p.z=orbit.centerZ+orbit.offsetX*sn+orbit.offsetZ*c;
+  // Widen only the middle of the lap so the pet is less likely to hide behind the hero.
+  // The radius multiplier is exactly 1 at both ends, preserving the saved start point.
+  const radius=1+.20*Math.sin(orbit.progress*Math.PI);
+  p.x=orbit.centerX+(orbit.offsetX*c-orbit.offsetZ*sn)*radius;
+  p.z=orbit.centerZ+(orbit.offsetX*sn+orbit.offsetZ*c)*radius;
   if(orbit.progress>=1){
    p.x=orbit.startX;p.z=orbit.startZ;
    state.orbit=null;state.nextOrbit=10+Math.random()*8;
