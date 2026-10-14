@@ -33,6 +33,18 @@
 .mobile-controls #mobileAttack,.mobile-controls #mobileHeal,.mobile-controls #mobileDodge,#ultimateButton{background:transparent url('../assets/ui/tower-action-disc.png') center/100% 100% no-repeat!important;border:0!important;box-shadow:0 4px 10px #07170c66!important;color:#f1f6df!important;text-shadow:0 1px 3px #071b09,0 0 3px #071b09;isolation:isolate}
 #mobileAttack>span,#mobileAttack small{color:#e1efc9!important}#mobileAttack strong{color:#f1f6df}
 #ultimateButton .ultimate-fill{background:#b6e49b!important;opacity:.12;z-index:-1;border-radius:50%}
-#ultimateButton:not(.ready){filter:brightness(.8)}#ultimateButton.ready{filter:brightness(1.15);box-shadow:0 0 12px #b3ef8c66!important}
+#ultimateButton:not(.ready){filter:brightness(.8)}#ultimateButton.ready{
+ filter:brightness(1.35) saturate(1.5);
+ box-shadow:0 0 12px 5px #ffe6a3e6,0 0 23px 9px #ffc55a96,inset 0 0 8px #fff8c6d9!important;
+ outline:1px solid #fff6cd;outline-offset:1px;
+ animation:towerUltimateDiscHighlight 1.2s ease-in-out infinite!important;
+}
+@keyframes towerUltimateDiscHighlight{
+ 0%,100%{filter:brightness(1.15) saturate(1.3);transform:scale(1)}
+ 50%{filter:brightness(1.6) saturate(1.65);transform:scale(1.06)}
+}
+@media(prefers-reduced-motion:reduce){
+ #ultimateButton.ready{animation:none!important;filter:brightness(1.3)!important}
+}
 .mobile-controls button:active,#mobileAttack.held{transform:scale(.94);filter:brightness(1.2)}
 .loot-ground-label{color:#fff0ab!important;text-shadow:0 1px 3px #251000,0 0 6px #000!important}.loot-ground-label[data-card="fire"]{color:#ffb9c7!important}.loot-ground-label[data-card="forest"],.loot-ground-label[data-card="ice"]{color:#edc3ff!important}
