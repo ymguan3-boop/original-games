@@ -94,50 +94,69 @@ function showPetShop(){
 function disposePetGlow(pet){
  const fx=pet?.footGlow;if(!fx)return;
  fx.group.removeFromParent();
- for(const mesh of [fx.disc,fx.ring]){mesh.geometry.dispose();mesh.material.dispose();}
+ for(const mesh of [fx.disc,fx.ring,fx.wave]){mesh.geometry.dispose();mesh.material.dispose();}
  pet.footGlow=null;
 }
 function createPetGlow(pet){
  if(!pet||pet.footGlow)return;
  const group=new T.Group();
- const disc=new T.Mesh(
-  new T.CircleGeometry(.48,40),
-  new T.MeshBasicMaterial({color:0xffdb59,transparent:true,opacity:.12,depthWrite:false,side:T.DoubleSide})
- );
- const ring=new T.Mesh(
-  new T.RingGeometry(.37,.54,48),
-  new T.MeshBasicMaterial({color:0xffec82,transparent:true,opacity:.24,depthWrite:false,side:T.DoubleSide})
- );
- for(const mesh of [disc,ring]){mesh.rotation.x=-Math.PI/2;mesh.position.y=.045;mesh.renderOrder=3;group.add(mesh);}
+ const mat=(color,opacity)=>new T.MeshBasicMaterial({color,transparent:true,opacity,depthWrite:false,side:T.DoubleSide,toneMapped:false});
+ const disc=new T.Mesh(new T.CircleGeometry(.63,48),mat(0xf34e9e,.25));
+ const ring=new T.Mesh(new T.RingGeometry(.43,.55,48),mat(0xfb64b3,.56));
+ const wave=new T.Mesh(new T.RingGeometry(.49,.61,48),mat(0xe9439b,.62));
+ for(const [i,m] of [disc,ring,wave].entries()){m.rotation.x=-Math.PI/2;m.position.y=.052+i*.007;m.renderOrder=4+i;group.add(m);}
  pet.root.add(group);
- pet.footGlow={group,disc,ring,time:0,pulse:0,next:.9+Math.random()*2};
+ pet.footGlow={group,disc,ring,wave,time:0,burst:0,nextBurst:2+Math.random()*3};
+}
+function tickPetGlow(pet,dt){
+ const g=pet?.footGlow;if(!g)return;
+ g.time+=dt;g.nextBurst-=dt;
+ if(g.nextBurst<=0){g.burst=.8;g.nextBurst=2.4+Math.random()*3.5;}
+ g.burst=Math.max(0,g.burst-dt);
+ const beat=.5+.5*Math.sin(g.time*Math.PI*3.2);
+ const spread=g.time*.82%1;
+ const flash=g.burst>0?Math.sin((1-g.burst/.8)*Math.PI):0;
+ g.disc.scale.setScalar(.92+.23*beat+.16*flash);
+ g.disc.material.opacity=.20+.15*beat+.08*flash;
+ g.ring.scale.setScalar(.92+.15*beat);
+ g.ring.material.opacity=.48+.21*beat;
+ g.wave.scale.setScalar(.65+spread*1.55);
+ g.wave.material.opacity=.68*Math.pow(1-spread,1.3);
 }
 function tickPetFollower(dt){
  const pet=petFollower;if(!pet||!hero)return;
- const show=!place&&!battle;
- pet.root.visible=show;
- if(!show)return;
+ const visible=!place&&!battle;
+ pet.root.visible=visible;
+ if(!visible)return;
  if(!pet.footGlow)createPetGlow(pet);
- const facing=hero.root.rotation.y,followDistance=1.14;
- const targetX=S.player.x-Math.sin(facing)*followDistance;
- const targetZ=S.player.z-Math.cos(facing)*followDistance;
- const lerpFactor=Math.min(1,dt*7.8);
- const dx=targetX-pet.root.position.x,dz=targetZ-pet.root.position.z;
- pet.root.position.x+=dx*lerpFactor;
- pet.root.position.z+=dz*lerpFactor;
- pet.root.rotation.y=facing;
- pet.play(Math.hypot(dx,dz)>.18?'Walk':'Idle');
- const fx=pet.footGlow;
- fx.time+=dt;fx.next-=dt;
- if(fx.next<=0){fx.next=1.3+Math.random()*2.4;fx.pulse=.75;}
- fx.pulse=Math.max(0,fx.pulse-dt);
- const beat=(1+Math.sin(fx.time*5.4))*.5;
- const burst=fx.pulse>0?Math.sin((1-fx.pulse/.75)*Math.PI):0;
- const scale=1+.11*beat+.52*burst;
- fx.disc.scale.setScalar(1+.07*beat+.25*burst);
- fx.ring.scale.setScalar(scale);
- fx.disc.material.opacity=.09+.09*beat+.10*burst;
- fx.ring.material.opacity=.11+.16*beat+.22*burst;
+ const face=hero.root.rotation.y,x=S.player.x,z=S.player.z;
+ const state=pet.followState||={lastX:x,lastZ:z,still:0,side:Math.random()<.5?-1:1,orbit:null,nextOrbit:11+Math.random()*6};
+ const moving=Math.hypot(x-state.lastX,z-state.lastZ)>.008;
+ state.lastX=x;state.lastZ=z;
+ if(moving||modal||dialog||navigation||roll||throwing){state.still=0;state.orbit=null;state.nextOrbit=11+Math.random()*6;}
+ else state.still+=dt;
+ let angle=Math.PI;
+ if(state.still>2){
+  angle=state.side*Math.PI/2;
+  if(!state.orbit&&state.still>5){state.nextOrbit-=dt;
+   if(state.nextOrbit<=0)state.orbit={progress:0,angle,direction:Math.random()<.5?-1:1,duration:3.8+Math.random()*1.6};
+  }
+ }
+ if(state.orbit){
+  const orbit=state.orbit;
+  orbit.progress=Math.min(1,orbit.progress+dt/orbit.duration);
+  angle=orbit.angle+orbit.direction*orbit.progress*Math.PI*2;
+  if(orbit.progress>=1){state.orbit=null;state.side=Math.random()<.5?-1:1;state.nextOrbit=10+Math.random()*8;}
+ }
+ // Pure animation follower: do not run world collision checks that can freeze pets.
+ const tx=x+Math.sin(face+angle)*1.13,tz=z+Math.cos(face+angle)*1.13;
+ const p=pet.root.position,dx=tx-p.x,dz=tz-p.z,gap=Math.hypot(dx,dz);
+ const alpha=Math.min(1,dt*(moving?8.3:state.orbit?5:3.5));
+ p.x+=dx*alpha;p.z+=dz*alpha;
+ if(gap>.1)pet.root.rotation.y=Math.atan2(dx,dz);
+ else pet.root.rotation.y=face;
+ pet.play(gap>.14?'Walk':'Idle');
+ tickPetGlow(pet,dt);
 }
 
 async function equipPet(id){
