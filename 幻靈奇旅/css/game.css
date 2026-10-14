@@ -316,3 +316,42 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;r
  #actions #rollBtn{left:38px!important}
  #actions #captureBtn{left:94px!important;width:86px!important;height:86px!important;min-width:86px!important;min-height:86px!important}
 }
+
+/* 2026-10-14 final portrait controls: circular capture, no square active/focus artifacts. */
+#actions{width:176px!important;height:218px!important;right:10px!important;bottom:calc(env(safe-area-inset-bottom) + 35px)!important}
+#actions #captureBtn{
+ left:86px!important;top:119px!important;right:auto!important;bottom:auto!important;
+ width:90px!important;height:90px!important;min-width:90px!important;min-height:90px!important;
+ border-radius:50%!important;outline:none!important;outline-offset:0!important;
+ clip-path:circle(50% at 50% 50%)!important;
+ -webkit-tap-highlight-color:transparent!important;
+ appearance:none!important;-webkit-appearance:none!important;
+ transition:filter .12s ease,transform .12s ease!important;
+}
+#actions #captureBtn:focus,#actions #captureBtn:focus-visible,#actions #captureBtn:active{
+ outline:none!important;border-radius:50%!important;box-shadow:inset 0 5px 10px #ffffff5e,inset 0 -8px 12px #00000063,0 4px 12px #101c2645!important;
+}
+#actions #captureBtn:active{filter:brightness(1.15);transform:scale(.97)}
+#actions #captureBtn::before,#actions #captureBtn::after{border-radius:50%!important}
+#actions #rollBtn,#actions #berryBtn,#actions #lockBtn{
+ position:absolute!important;width:64px!important;height:64px!important;
+ min-width:64px!important;min-height:64px!important;
+ border-radius:12px!important;background:transparent!important;border:0!important;
+ box-shadow:none!important;margin:0!important;touch-action:manipulation;
+}
+#actions #rollBtn{left:16px!important;top:130px!important}
+#actions #berryBtn{left:84px!important;top:0!important}
+#actions #lockBtn{left:84px!important;top:61px!important}
+#actions #rollBtn::before,#actions #berryBtn::before,#actions #lockBtn::before{
+ width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;
+ background-size:27px 27px!important;border:2px solid #a8cbc3!important;
+ border-radius:10px!important;box-shadow:0 2px 7px #0a253b50!important;
+}
+#actions #berryBtn::after,#actions #lockBtn::after,#actions #rollBtn::after{display:none!important}
+#actions #ballBtn{display:none!important}
+@media(max-width:359px){
+ #actions{width:165px!important;right:7px!important}
+ #actions #captureBtn{left:81px!important;width:84px!important;height:84px!important;min-width:84px!important;min-height:84px!important}
+ #actions #berryBtn,#actions #lockBtn{left:81px!important}
+ #actions #rollBtn{left:11px!important}
+}
