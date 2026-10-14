@@ -374,3 +374,7 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;r
  #actions #berryBtn,#actions #lockBtn{left:91px!important}
  #actions #rollBtn{left:23px!important}
 }
+
+/* Arena ally HP follows ground position and avoids the skill panel. */
+body.battle-active:not(.gym-active) #labels .arenaAllyHp{transform:translateX(-50%)!important;width:138px;max-width:min(138px,42vw);z-index:7;pointer-events:none}
+body.battle-active:not(.gym-active) #labels .arenaAllyHp b,body.battle-active:not(.gym-active) #labels .arenaAllyHp small{display:block;line-height:1.25}
