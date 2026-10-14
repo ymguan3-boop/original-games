@@ -299,7 +299,7 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;r
 #actions #captureBtn{
  left:112px!important;top:65px!important;width:96px!important;height:96px!important;
  min-width:96px!important;min-height:96px!important;
- background:#052c3c url('../assets/spirit-contract-ball.svg') center / 100% 100% no-repeat!important;
+ background:#052c3c url('../assets/spirit-contract-ball.svg?v=amber-gem-v1') center / 100% 100% no-repeat!important;
  border:0!important;border-radius:50%!important;
  box-shadow:0 4px 14px #03192265,0 0 0 2px #061e27!important;
  font-size:0!important;color:transparent!important;text-shadow:none!important;
@@ -358,11 +358,11 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;r
 
 /* 2026-10-14: compact bottom-right cross-shaped controls, refined contract orb. */
 #actions{width:168px!important;height:172px!important;right:10px!important;bottom:calc(env(safe-area-inset-bottom) + 57px)!important;overflow:visible!important}
-#actions #captureBtn{left:86px!important;top:76px!important;width:82px!important;height:82px!important;min-width:82px!important;min-height:82px!important;border:1px solid #28353a!important;border-radius:50%!important;background-color:#65999a!important;box-shadow:0 2px 8px #152e3340!important;clip-path:circle(50% at 50% 50%)!important;filter:brightness(1.24) saturate(.88)!important;outline:0!important;-webkit-tap-highlight-color:transparent!important}
-#actions #captureBtn:focus,#actions #captureBtn:focus-visible,#actions #captureBtn:active{outline:0!important;outline-offset:0!important;border:1px solid #28353a!important;box-shadow:0 2px 8px #152e3340!important}
-#actions #captureBtn:active{transform:scale(.97)!important;filter:brightness(1.31) saturate(.88)!important}
-#actions #captureBtn[data-ball="great"]{filter:brightness(1.20) saturate(.9) hue-rotate(27deg)!important}
-#actions #captureBtn[data-ball="master"]{filter:brightness(1.20) saturate(.9) hue-rotate(115deg)!important}
+#actions #captureBtn{left:86px!important;top:76px!important;width:82px!important;height:82px!important;min-width:82px!important;min-height:82px!important;border:1px solid #794525!important;border-radius:50%!important;background-color:#d69358!important;box-shadow:0 2px 10px #8e482b4d!important;clip-path:circle(50% at 50% 50%)!important;filter:brightness(1.07) saturate(.96)!important;outline:0!important;-webkit-tap-highlight-color:transparent!important}
+#actions #captureBtn:focus,#actions #captureBtn:focus-visible,#actions #captureBtn:active{outline:0!important;outline-offset:0!important;border:1px solid #794525!important;box-shadow:0 2px 10px #8e482b4d!important}
+#actions #captureBtn:active{transform:scale(.97)!important;filter:brightness(1.15) saturate(1.02)!important}
+#actions #captureBtn[data-ball="great"]{filter:brightness(1.1) saturate(1) hue-rotate(10deg)!important}
+#actions #captureBtn[data-ball="master"]{filter:brightness(1.10) saturate(1.04) hue-rotate(-28deg)!important}
 #actions #berryBtn,#actions #lockBtn,#actions #rollBtn{width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important}
 #actions #berryBtn{left:97px!important;top:-37px!important}
 #actions #lockBtn{left:97px!important;top:19px!important}
