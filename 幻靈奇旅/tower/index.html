@@ -330,7 +330,7 @@ class Hunt {
   m.poisonTime=7;m.poisonTick=.9;
   this.emit('bossPoison',{x:m.x,z:m.z});
  }
- unleash(){const p=this.player,m=this.monster;if(this.mode!=='battle'||this.paused||p.ultimateCd>0||p.special>0||distance(p,m)>22)return false;
+ unleash(){const p=this.player,m=this.monster;if(this.mode!=='battle'||this.paused||p.ultimateCd>0||p.special>0||distance(p,m)>(p.weapon===2?WEAPONS[2].range:WEAPONS[p.weapon].range+1))return false;
   this.engaged=true;const weapon=p.weapon,count=ULTIMATE_HITS[weapon],interval=[.36,.105,.155][weapon];
   // Keep the arrow-rain sequence alive through its last arrow flight; movement remains free.
   const duration=(count-1)*interval+[.36,.13,.75][weapon];
@@ -344,10 +344,12 @@ class Hunt {
  tickUltimate(dt){const seq=this.ultimateSequence;if(!seq||this.mode!=='battle'||this.paused)return;seq.elapsed+=dt;
   while(seq.index<seq.count&&seq.elapsed>=seq.index*seq.interval){
    const index=seq.index++,m=this.monster,offset=seq.weapon===2?(index%3-1)*1.15:0;
+   if(seq.weapon<2&&distance(this.player,m)>WEAPONS[seq.weapon].range+1)continue;
    this.emit('ultimateStrike',{weapon:seq.weapon,index,total:seq.count,x:m.x+offset,z:m.z});
    const landed=this.damageMonster(seq.base,true,true);
+   seq.hitAny=seq.hitAny||landed;
    if(seq.weapon===0&&index===seq.count-1&&landed)this.launchMonster();
-   if(seq.weapon===1&&index===seq.count-1&&this.mode==='battle')this.poisonMonster();
+   if(seq.weapon===1&&index===seq.count-1&&seq.hitAny&&this.mode==='battle')this.poisonMonster();
    if(this.mode!=='battle')break;
   }
   // The sequence stays active through the recovery/last arrow's travel time.
@@ -728,7 +730,8 @@ function formatTime(t){return`${Math.floor(t/60).toString().padStart(2,'0')}:${M
 function updateHUD(){const p=h.player,m=h.monster;$('hp').textContent=Math.ceil(p.hp);$('hpBar').style.width=p.hp/150*100+'%';$('stamina').textContent=Math.floor(p.stamina);$('staminaBar').style.width=p.stamina+'%';$('potions').textContent=h.potions;$('power').textContent=`卡片攻擊 +${h.cardBoost()}%${p.attackBoostTime>0?' · 戰意 +25% '+Math.ceil(p.attackBoostTime)+'s':''}`;$('rank').textContent=`RANK ${String(h.save.cleared.length+1).padStart(2,'0')}`;$('bossBar').style.width=m.hp/m.maxHp*100+'%';$('bossHp').textContent=`${Math.ceil(m.hp)} / ${m.maxHp}`;$('bossState').textContent=h.mode==='victory'?'挑戰完成':m.state==='windup'?'蓄力中':m.state==='recover'?'破綻！':m.enraged?'憤怒狀態':h.engaged?'交戰中':'準備就緒';$('itemCount').textContent=Object.values(h.save.inventory).reduce((a,b)=>a+b,0);document.querySelectorAll('[data-weapon]').forEach(el=>{const active=+el.dataset.weapon===p.weapon;el.classList.toggle('active',active);el.setAttribute('aria-pressed',active);});document.getElementById('mobileAttack').querySelector('small').textContent=WEAPONS[p.weapon].short;document.getElementById('mobileAttack').title=h.equippedWeapon()?.name||WEAPONS[p.weapon].name;document.getElementById('mobileHeal').setAttribute('aria-label',`道具：${h.save.selectedConsumable==='power'?'戰意藥劑':'回復藥'}，剩餘 ${h.itemCount(h.save.selectedConsumable)} 個；短按使用，長按更換`);
  document.getElementById('mobileHeal').title='短按使用・長按切換道具';
  document.getElementById('mobileHeal').classList.toggle('power-item-selected',h.save.selectedConsumable==='power');
- $('potions').textContent=h.itemCount('heal');document.getElementById('ultimateFill').style.width=((1-p.ultimateCd/ULTIMATE_COOLDOWN)*100)+'%';document.getElementById('ultimateName').textContent='大絕';document.getElementById('ultimateCharge').textContent=p.ultimateCd>0?Math.ceil(p.ultimateCd)+'s':'可用';document.getElementById('ultimateButton').setAttribute('aria-label',`大絕招：${ULTIMATE_NAMES[p.weapon]}${p.ultimateCd>0?`，冷卻中 ${Math.ceil(p.ultimateCd)} 秒`: '，可施放'}`);document.getElementById('ultimateButton').title=ULTIMATE_NAMES[p.weapon];const canUltimate=h.mode==='battle'&&!h.paused&&p.ultimateCd<=0&&p.special<=0&&distance(p,m)<=22;
+ $('potions').textContent=h.itemCount('heal');document.getElementById('ultimateFill').style.width=((1-p.ultimateCd/ULTIMATE_COOLDOWN)*100)+'%';document.getElementById('ultimateName').textContent='大絕';document.getElementById('ultimateCharge').textContent=p.ultimateCd>0?Math.ceil(p.ultimateCd)+'s':'可用';document.getElementById('ultimateButton').setAttribute('aria-label',`大絕招：${ULTIMATE_NAMES[p.weapon]}${p.ultimateCd>0?`，冷卻中 ${Math.ceil(p.ultimateCd)} 秒`: '，可施放'}`);document.getElementById('ultimateButton').title=ULTIMATE_NAMES[p.weapon];const ultimateReach=p.weapon===2?WEAPONS[2].range:WEAPONS[p.weapon].range+1;
+ const canUltimate=h.mode==='battle'&&!h.paused&&p.ultimateCd<=0&&p.special<=0&&distance(p,m)<=ultimateReach;
  document.getElementById('ultimateButton').classList.toggle('ready',canUltimate);document.getElementById('ultimateButton').setAttribute('aria-disabled',String(!canUltimate));
  $('playerHpFloatText').textContent=Math.ceil(p.hp)+' / 150';$('playerHpFloatBar').style.width=p.hp/150*100+'%';
  $('bossFloatName').textContent=LEVELS[h.level].monster+(m.poisonTime>0?' ☠中毒':'')+(m.enraged?' ⚡狂暴':'')+(m.freezeTime>0?' ❄冰凍':'')+(m.paralyzeTime>0?' ⚡麻痺':'');$('bossHpFloatText').textContent=Math.ceil(m.hp)+' / '+m.maxHp;$('bossHpFloatBar').style.width=m.hp/m.maxHp*100+'%';
