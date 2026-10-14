@@ -447,39 +447,3 @@ body.battle-active:not(.gym-active) #labels .arenaAllyHp{transform:translateX(-5
  #arenaResultOverlay,#arenaResultOverlay .arenaResultTitle,
  #arenaResultOverlay .arenaResultChoices{transition-duration:.01s}
 }
-
-/* 2026-10-15: reveal arena battle outcome one glyph at a time, not whole-title fading. */
-#arenaResultOverlay .arenaResultTitle,
-#arenaResultOverlay.shown .arenaResultTitle{
- display:flex;align-items:center;justify-content:center;
- opacity:1;transform:none;transition:none;
- min-height:1.5em;letter-spacing:0;gap:.12em;
-}
-#arenaResultOverlay .arenaResultGlyph{
- display:inline-block;opacity:0;transform:translateY(24px) scale(.72);
- filter:blur(8px);
-}
-#arenaResultOverlay.shown .arenaResultGlyph{
- animation:arenaResultGlyphAppear .95s cubic-bezier(.17,.67,.19,1.02) both;
- animation-delay:calc(.25s + var(--glyph-order,0) * .65s);
-}
-@keyframes arenaResultGlyphAppear{
- 0%{opacity:0;transform:translateY(24px) scale(.72);filter:blur(8px)}
- 54%{opacity:.76;transform:translateY(-4px) scale(1.1);filter:blur(2px)}
- 100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
-}
-@media(prefers-reduced-motion:reduce){
- #arenaResultOverlay.shown .arenaResultGlyph{animation-duration:.08s;filter:none}
-}
-
-/* Emergency arena exit: remains usable while a result animation or turn is locked. */
-#arenaSafeExit{
- position:fixed;right:12px;top:calc(env(safe-area-inset-top) + 110px);z-index:90;
- border:1px solid rgba(227,237,240,.72);border-radius:18px;
- background:rgba(31,55,75,.87);color:#fff;font-weight:700;
- padding:8px 12px;font-size:12px;min-height:36px;
- box-shadow:0 3px 12px #10253655;touch-action:manipulation;
- pointer-events:auto;cursor:pointer;
-}
-#arenaSafeExit[hidden]{display:none!important}
-@media(max-width:420px){#arenaSafeExit{right:8px;top:calc(env(safe-area-inset-top) + 105px);font-size:11px;padding:7px 9px}}
