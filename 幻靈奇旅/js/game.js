@@ -133,32 +133,50 @@ function tickPetFollower(dt){
  const state=pet.followState||={lastX:x,lastZ:z,still:0,side:Math.random()<.5?-1:1,orbit:null,nextOrbit:11+Math.random()*6};
  const moving=Math.hypot(x-state.lastX,z-state.lastZ)>.008;
  state.lastX=x;state.lastZ=z;
- if(moving||modal||dialog||navigation||roll||throwing){state.still=0;state.orbit=null;state.nextOrbit=11+Math.random()*6;}
- else state.still+=dt;
- let angle=Math.PI;
- if(state.still>2){
-  angle=state.side*Math.PI/2;
-  if(!state.orbit&&state.still>5){state.nextOrbit-=dt;
-   if(state.nextOrbit<=0)state.orbit={progress:0,angle,direction:Math.random()<.5?-1:1,duration:3.8+Math.random()*1.6};
-  }
- }
- if(state.orbit){
+ const interrupted=moving||modal||dialog||navigation||roll||throwing;
+ if(interrupted){
+  state.still=0;state.orbit=null;state.nextOrbit=11+Math.random()*6;
+ }else state.still+=dt;
+ const p=pet.root.position;
+ if(!interrupted&&state.orbit){
   const orbit=state.orbit;
   orbit.progress=Math.min(1,orbit.progress+dt/orbit.duration);
-  angle=orbit.angle+orbit.direction*orbit.progress*Math.PI*2;
-  if(orbit.progress>=1){state.orbit=null;state.side=Math.random()<.5?-1:1;state.nextOrbit=10+Math.random()*8;}
+  // Use the exact world-space starting position as the circular path's anchor.
+  // At 2 PI radians the position is identical, without interpolation drift or side swapping.
+  const phase=orbit.direction*orbit.progress*Math.PI*2;
+  const c=Math.cos(phase),sn=Math.sin(phase);
+  p.x=orbit.centerX+orbit.offsetX*c-orbit.offsetZ*sn;
+  p.z=orbit.centerZ+orbit.offsetX*sn+orbit.offsetZ*c;
+  if(orbit.progress>=1){
+   p.x=orbit.startX;p.z=orbit.startZ;
+   state.orbit=null;state.nextOrbit=10+Math.random()*8;
+   state.still=3;
+   pet.play('Idle');
+  }else{
+   const dx=-orbit.offsetX*sn-orbit.offsetZ*c,dz=orbit.offsetX*c-orbit.offsetZ*sn;
+   pet.root.rotation.y=Math.atan2(dx*orbit.direction,dz*orbit.direction);
+   pet.play('Walk');
+  }
+ }else{
+  const angle=state.still>2?state.side*Math.PI/2:Math.PI;
+  const tx=x+Math.sin(face+angle)*1.13,tz=z+Math.cos(face+angle)*1.13;
+  const dx=tx-p.x,dz=tz-p.z,gap=Math.hypot(dx,dz);
+  const alpha=Math.min(1,dt*(moving?8.3:3.5));
+  p.x+=dx*alpha;p.z+=dz*alpha;
+  if(gap>.1)pet.root.rotation.y=Math.atan2(dx,dz);
+  else pet.root.rotation.y=face;
+  pet.play(gap>.14?'Walk':'Idle');
+  if(!interrupted&&state.still>5&&gap<.12){
+   state.nextOrbit-=dt;
+   if(state.nextOrbit<=0){
+    state.orbit={startX:p.x,startZ:p.z,centerX:x,centerZ:z,
+     offsetX:p.x-x,offsetZ:p.z-z,progress:0,
+     direction:Math.random()<.5?-1:1,duration:3.8+Math.random()*1.6};
+   }
+  }
  }
- // Pure animation follower: do not run world collision checks that can freeze pets.
- const tx=x+Math.sin(face+angle)*1.13,tz=z+Math.cos(face+angle)*1.13;
- const p=pet.root.position,dx=tx-p.x,dz=tz-p.z,gap=Math.hypot(dx,dz);
- const alpha=Math.min(1,dt*(moving?8.3:state.orbit?5:3.5));
- p.x+=dx*alpha;p.z+=dz*alpha;
- if(gap>.1)pet.root.rotation.y=Math.atan2(dx,dz);
- else pet.root.rotation.y=face;
- pet.play(gap>.14?'Walk':'Idle');
  tickPetGlow(pet,dt);
 }
-
 async function equipPet(id){
  if(petFollower){disposePetGlow(petFollower);removeActor(petFollower);petFollower=null;}
  const p=TOWER_PETS.find(x=>x.id===id);if(!p||!byId[p.model]||!S.state.petActive)return;
