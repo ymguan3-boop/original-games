@@ -160,8 +160,46 @@ function combatRing(pos,radius,element,duration=1){const m=new T.Mesh(new T.Ring
 function statusSet(entry,key,turns=2){entry.status||={};entry.status[key]=turns;updateHp(entry);}
 function statusTick(entry){entry.status||={};if(entry.status.burn)entry.hp=Math.max(0,entry.hp-10);if(entry.status.heal)entry.hp=Math.min(entry.s.hp,entry.hp+8);const stopped=!!(entry.status.freeze||entry.status.stun);for(const k of Object.keys(entry.status))if(--entry.status[k]<=0)delete entry.status[k];updateHp(entry);return stopped;}
 async function startBattle(kind){const gym=gyms.find(g=>g.id===kind);if(!gym&&!S.state.team.length)return toast('先締約幻靈，再從圖鑑加入隊伍。');if(battle)return;cancelNavigation();clearTarget();closeModal();closeDialog();document.body.classList.add('battle-active');$('toast').classList.remove('visible');clearTimeout(toast.timer);stopAppearanceBgm();const previous={position:S.player.clone(),place,background:scene.background.clone(),fog:scene.fog};const pool=spirits.filter(s=>s.stage<=2&&!['mewtwo','jigglypuff'].includes(s.id)),enemies=gym?[byId[gym.spirit]]:[...pool].sort(()=>Math.random()-.5).slice(0,3);battle={kind,gym,previous,allies:S.state.team.filter(id=>byId[id]).map(id=>({s:byId[id],hp:byId[id].hp,energy:2,status:{}})),enemies:enemies.map(s=>({s,hp:gym?s.hp*3:s.hp,energy:2,status:{},maxHp:gym?s.hp*3:s.hp})),ai:0,ei:0,busy:true,turn:1,actors:[],heroHp:100,nextAttack:elapsed+3,heroStatus:{},throwAt:0};townGroup.visible=false;insideGroup.visible=false;battleGroup.visible=true;hero.root.visible=!!gym;if(companion)companion.root.visible=false;target=null;scene.background=new T.Color(gym?0x17273b:0x536a79);scene.fog=null;$('controls').hidden=!gym;$('battleHud').hidden=false;$('portal').hidden=true;$('battleTitle').textContent=gym?'初光挑戰 · '+byId[gym.spirit].name:'幻靈競技擂台 · 3 對 3';$('battleLog').textContent='進場中…';try{const sceneConfig=gym?await gymSceneConfig(gym.costume):null;if(battle)battle.sceneConfig=sceneConfig;const g=await asset(sceneConfig?.model||world.battleModel||'models/world/arena.glb'),arena=g.scene.clone(true);if(!gym)arena.traverse(o=>{if(o.isMesh&&o.material){o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();for(const m of Array.isArray(o.material)?o.material:[o.material]){m.color?.multiplyScalar(.76);m.emissive?.set(0x243540);m.emissiveIntensity=.12;m.roughness=.78;}}});battleGroup.add(arena);battle.arena=arena;if(!gym)shiftArenaRings(arena);if(gym){battleGroup.add(hero.root);battle.heroLabel=addLabel(hero,'','nameLabel hpLabel');document.body.classList.add('gym-active');S.player.fromArray(sceneConfig.spawn||[0,0,6]);hero.root.position.copy(S.player);hero.root.rotation.y=Math.PI;await battleActors();}else await battleActors();battle.busy=false;battleLog(gym?'首領只會推離或短暫干擾；移動與翻滾閃避光圈，投球完成試煉。':'選擇你的行動。');battleButtons();}catch(e){S.errors.push(e.message);toast('對戰場地載入失敗，已返回探索。');endBattle(false,true);}}
-function shiftArenaRings(arena){arena.updateMatrixWorld(true);arena.traverse(o=>{if(!o.isMesh||!o.material)return;const mats=Array.isArray(o.material)?o.material:[o.material];const box=new T.Box3().setFromObject(o),size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3());if(size.x<1.5||size.z<1||size.y>1.2)return;const title=(o.name+' '+mats.map(m=>m.name||'').join(' ')).toLowerCase();const purple=mats.some(m=>m.color&&m.color.b>m.color.g*1.12&&m.color.r>m.color.g*.9)||/purple|violet/.test(title);const cyan=mats.some(m=>m.color&&m.color.g>m.color.r*1.06&&m.color.b>m.color.r*1.1)||/cyan|teal/.test(title);const offset=center.z< -1.4&&purple?1.75:center.z>1.4&&cyan?-1.75:0;if(!offset)return;const point=o.getWorldPosition(new T.Vector3()).add(new T.Vector3(offset,0,0));o.position.copy(o.parent.worldToLocal(point));});}
-async function battleActors(){const b=battle;if(!b)return;for(const a of b.actors)removeActor(a);b.actors=[];const entries=b.gym?[[b.enemies[0],0,-3.2,0]]:[[b.allies[b.ai],-1.75,5,Math.PI*.75],[b.enemies[b.ei],1.75,-5.65,-Math.PI*.25]];for(const [entry,x,z,ry]of entries){const a=await actor(entry.s.model,b.gym?3.05:2.05,battleGroup);a.root.position.set(x,0,z);if(b.gym&&b.sceneConfig?.enemySpawn)a.root.position.fromArray(b.sceneConfig.enemySpawn);a.root.rotation.y=ry;entry.actor=a;b.actors.push(a);entry.label=addLabel(a,'','nameLabel hpLabel');if(!b.gym)entry.label.el.classList.add(entry===b.allies[b.ai]?'arenaAllyHp':'arenaEnemyHp');updateHp(entry);}}
+function shiftArenaRings(arena){
+ // The original GLB has three circles merged into one multi-material mesh.
+ // The sky/purple floor discs and white edge lines are separate primitives.
+ // Move both the disc and its edge vertices together; keep the gold centre ring intact.
+ arena.traverse(mesh=>{
+  if(!mesh.isMesh||!mesh.geometry||!mesh.material)return;
+  const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];
+  const geometry=mesh.geometry,attribute=geometry.getAttribute('position');
+  if(!attribute)return;
+  const index=geometry.index;
+  const groups=geometry.groups.length?geometry.groups:[{start:0,count:index?index.count:attribute.count,materialIndex:0}];
+  const movable=new Set();
+  for(const group of groups){
+   const material=materials[group.materialIndex]||materials[0];
+   if(!['sky','purple','white'].includes((material?.name||'').toLowerCase()))continue;
+   for(let i=group.start;i<group.start+group.count;i++){
+    movable.add(index?index.getX(i):i);
+   }
+  }
+  if(!movable.size)return;
+  // GLTFLoader caches geometry; editing a private clone prevents later battles shifting twice.
+  mesh.geometry=geometry.clone();
+  const points=mesh.geometry.getAttribute('position');
+  let changed=0;
+  for(const i of movable){
+   const x=points.getX(i),y=points.getY(i),z=points.getZ(i);
+   if(Math.abs(x)>3.55||y<.25||y>.85)continue;
+   const dx=z< -3.35&&z> -9?1.75:z>3.35&&z<9?-1.75:0;
+   if(dx){points.setX(i,x+dx);changed++;}
+  }
+  if(changed){
+   points.needsUpdate=true;
+   mesh.geometry.computeBoundingBox();
+   mesh.geometry.computeBoundingSphere();
+   arena.userData.diagonalRingVertices=(arena.userData.diagonalRingVertices||0)+changed;
+  }
+ });
+}
+
+async function battleActors(){const b=battle;if(!b)return;for(const a of b.actors)removeActor(a);b.actors=[];const entries=b.gym?[[b.enemies[0],0,-3.2,0]]:[[b.allies[b.ai],-1.75,6,Math.PI*.75],[b.enemies[b.ei],1.75,-6,-Math.PI*.25]];for(const [entry,x,z,ry]of entries){const a=await actor(entry.s.model,b.gym?3.05:(entry===b.enemies[b.ei]?2.55:2.05),battleGroup);a.root.position.set(x,0,z);if(b.gym&&b.sceneConfig?.enemySpawn)a.root.position.fromArray(b.sceneConfig.enemySpawn);a.root.rotation.y=ry;entry.actor=a;b.actors.push(a);entry.label=addLabel(a,'','nameLabel hpLabel');if(!b.gym)entry.label.el.classList.add(entry===b.allies[b.ai]?'arenaAllyHp':'arenaEnemyHp');updateHp(entry);}}
 function updateHp(e){if(!e?.label)return;if(battle?.gym){const max=e.maxHp||e.s.hp,progress=max-e.hp;e.label.el.innerHTML='<b>'+esc(e.s.name)+'</b><div class="hp"><i style="width:'+Math.max(0,progress)/max*100+'%"></i></div><small>信任 '+Math.round(progress/max*100)+'% · 締約試煉</small>';return;}const max=e.maxHp||e.s.hp,status=Object.keys(e.status||{}).filter(k=>e.status[k]>0).map(k=>combatStatusNames[k]||k);e.label.el.innerHTML=`<b>${esc(e.s.name)}</b><div class="hp"><i style="width:${Math.max(0,e.hp)/max*100}%"></i></div><small>${Math.max(0,e.hp)} / ${max}${battle?.gym?'':' · 能量 '+e.energy}</small>${status.length?`<small style="display:block;color:#fff3a7">${status.map(esc).join(' · ')}</small>`:''}`;}
 function battleLog(t){$('battleLog').textContent=t;}
 function battleItems(){const b=battle;if(!b||b.busy)return;const defs=[['potion',itemNames.potion,'回復 45 HP'],['armorBreak',itemNames.armorBreak,b.gym?'敵方減防 6 秒':'敵方減防 3 回合'],['attackBoost',itemNames.attackBoost,b.gym?'旅人加攻 12 秒':'己方加攻 3 回合']];$('battleActions').innerHTML=defs.map(([key,name,desc])=>`<button data-battle="item:${key}" ${number(S.state.items[key])<1?'disabled':''}>${name}<small>${desc} · ${number(S.state.items[key])} 份</small></button>`).join('')+'<button data-battle="itemsBack">返回戰鬥</button>'; }
