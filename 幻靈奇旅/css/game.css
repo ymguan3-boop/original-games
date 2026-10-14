@@ -299,7 +299,7 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;r
 #actions #captureBtn{
  left:112px!important;top:65px!important;width:96px!important;height:96px!important;
  min-width:96px!important;min-height:96px!important;
- background:#052c3c url('../assets/spirit-contract-ball.svg?v=amber-gem-v1') center / 100% 100% no-repeat!important;
+ background:#052c3c url('../assets/spirit-contract-ball.svg?v=pastel-pink-v2') center / 100% 100% no-repeat!important;
  border:0!important;border-radius:50%!important;
  box-shadow:0 4px 14px #03192265,0 0 0 2px #061e27!important;
  font-size:0!important;color:transparent!important;text-shadow:none!important;
@@ -382,3 +382,68 @@ body.battle-active:not(.gym-active) #labels .arenaAllyHp b,body.battle-active:no
 /* Diagonal arena: enemy HP above, ally HP below; JS keeps ally clear of the skill panel. */
 body.battle-active:not(.gym-active) #labels .arenaEnemyHp{transform:translate(-50%,-100%)!important;width:138px;max-width:min(138px,42vw);pointer-events:none}
 body.battle-active:not(.gym-active) #labels .arenaAllyHp{transform:translateX(-50%)!important;width:138px;max-width:min(138px,42vw);pointer-events:none}
+
+
+/* 2026-10-15: pastel-pink capture orb with translucent thin outer line. */
+#actions #captureBtn{
+  background-color:rgba(248,189,221,.7)!important;
+  border:1px solid rgba(176,94,143,.38)!important;
+  box-shadow:0 2px 9px rgba(152,68,114,.23)!important;
+  opacity:.87!important;
+  filter:brightness(1.06) saturate(.92)!important;
+}
+#actions #captureBtn:focus,#actions #captureBtn:focus-visible,#actions #captureBtn:active{
+  outline:none!important;
+  border:1px solid rgba(176,94,143,.38)!important;
+  box-shadow:0 2px 9px rgba(152,68,114,.23)!important;
+}
+#actions #captureBtn:active{filter:brightness(1.15) saturate(.94)!important}
+#actions #captureBtn[data-ball="great"]{filter:brightness(1.07) saturate(1.05) hue-rotate(-13deg)!important}
+#actions #captureBtn[data-ball="master"]{filter:brightness(1.04) saturate(1.04) hue-rotate(22deg)!important}
+
+/* Normal arena battles show the result first; choices fade in after 1.45 seconds. */
+#arenaResultOverlay{
+ position:fixed;inset:0;z-index:75;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:25px;background:rgba(9,17,32,.51);backdrop-filter:blur(3px);
+ opacity:0;pointer-events:auto;transition:opacity .5s ease;
+ padding:16px;box-sizing:border-box;
+}
+#arenaResultOverlay[hidden]{display:none!important}
+#arenaResultOverlay.shown{opacity:1}
+#arenaResultOverlay .arenaResultTitle{
+ font-size:clamp(44px,12vw,82px);font-weight:900;letter-spacing:.22em;
+ color:#ffe8ad;text-shadow:0 3px 12px #0009,0 0 28px #ffc86f88;
+ opacity:0;transform:translateY(20px) scale(.84);
+ transition:opacity 1.15s ease,transform 1.15s cubic-bezier(.2,.7,.2,1);
+}
+#arenaResultOverlay[data-result="lose"] .arenaResultTitle{
+ color:#ffd4db;text-shadow:0 3px 12px #0009,0 0 24px #ff98a666;
+}
+#arenaResultOverlay.shown .arenaResultTitle{opacity:1;transform:translateY(0) scale(1)}
+#arenaResultOverlay .arenaResultChoices{
+ display:flex;flex-wrap:wrap;justify-content:center;gap:12px;
+ opacity:0;transform:translateY(13px);pointer-events:none;
+ transition:opacity .55s ease,transform .55s ease;
+}
+#arenaResultOverlay.choicesReady .arenaResultChoices{
+ opacity:1;transform:translateY(0);pointer-events:auto;
+}
+#arenaResultOverlay .arenaResultChoices button{
+ min-width:130px;min-height:48px;padding:10px 18px;
+ border:1px solid #ffebc077;border-radius:13px;
+ background:#234258ed;color:#fff8ec;font-size:15px;font-weight:700;
+ box-shadow:0 6px 18px #0005;touch-action:manipulation;
+}
+#arenaResultOverlay .arenaResultChoices button:first-child{
+ background:#3b665bed;border-color:#a6e2b0a8;
+}
+#arenaResultOverlay .arenaResultChoices button:disabled{pointer-events:none}
+@media(max-width:360px){
+ #arenaResultOverlay .arenaResultChoices{gap:8px}
+ #arenaResultOverlay .arenaResultChoices button{min-width:120px;padding:9px 10px}
+}
+@media(prefers-reduced-motion:reduce){
+ #arenaResultOverlay,#arenaResultOverlay .arenaResultTitle,
+ #arenaResultOverlay .arenaResultChoices{transition-duration:.01s}
+}
