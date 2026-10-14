@@ -447,3 +447,31 @@ body.battle-active:not(.gym-active) #labels .arenaAllyHp{transform:translateX(-5
  #arenaResultOverlay,#arenaResultOverlay .arenaResultTitle,
  #arenaResultOverlay .arenaResultChoices{transition-duration:.01s}
 }
+
+
+/* Stable rebuild: result letters appear sequentially; no floating escape control. */
+#arenaResultOverlay .arenaResultTitle,
+#arenaResultOverlay.shown .arenaResultTitle{
+ display:flex;align-items:center;justify-content:center;gap:.10em;
+ min-height:1.5em;letter-spacing:0;opacity:1;transform:none;transition:none;
+}
+#arenaResultOverlay .arenaResultGlyph{
+ display:inline-block;opacity:0;filter:blur(5px);transform:translateY(15px) scale(.85);
+}
+#arenaResultOverlay.shown .arenaResultGlyph{
+ animation:arenaLetterReveal .85s ease-out both;
+ animation-delay:calc(.2s + var(--glyph-order,0)*.68s);
+}
+@keyframes arenaLetterReveal{
+ 0%{opacity:0;filter:blur(5px);transform:translateY(15px) scale(.85)}
+ 100%{opacity:1;filter:blur(0);transform:translateY(0) scale(1)}
+}
+/* Keep enemy health in the title-to-character gap rather than over either. */
+body.battle-active:not(.gym-active) #labels .arenaEnemyHp{
+ width:124px!important;max-width:min(124px,34vw);
+ padding:3px 6px;font-size:10px;line-height:1.2;
+}
+body.battle-active:not(.gym-active) #labels .arenaEnemyHp small{font-size:9px;line-height:1.2}
+@media(prefers-reduced-motion:reduce){
+ #arenaResultOverlay.shown .arenaResultGlyph{animation-duration:.1s}
+}
