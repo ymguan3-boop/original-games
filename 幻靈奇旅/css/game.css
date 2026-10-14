@@ -217,3 +217,66 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;r
  #hud>*{font-size:9px;padding:3px 1px;gap:1px;border-radius:9px}
  #hud .coreBall,#hud .fruitIcon{flex-basis:13px;width:13px;height:13px}
 }
+
+/* 2026-10-14 — long-press sphere capture and doubled lock/roll graphics.
+   Keeps the bottom-right scene clear and works down to 320px portrait. */
+#actions{width:190px!important;height:169px!important;right:10px!important;bottom:calc(env(safe-area-inset-bottom) + 14px)!important;transform:none!important}
+#actions #ballBtn{display:none!important}
+#actions #berryBtn{position:absolute!important;left:82px!important;top:3px!important;width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important}
+#actions #lockBtn,#actions #rollBtn{
+ position:absolute!important;left:0!important;width:64px!important;height:64px!important;
+ min-width:64px!important;min-height:64px!important;border:0!important;
+ background:transparent!important;box-shadow:none!important;touch-action:manipulation;
+}
+#actions #lockBtn{top:0!important}
+#actions #rollBtn{top:75px!important}
+#actions #lockBtn::before,#actions #rollBtn::before{
+ width:39px!important;height:39px!important;min-width:39px!important;min-height:39px!important;
+ background-size:26px 26px!important;border-width:2px!important;border-radius:10px!important;
+ box-shadow:0 2px 8px #0d2c4270!important;
+}
+#actions #captureBtn{
+ position:absolute!important;left:91px!important;top:58px!important;
+ right:auto!important;bottom:auto!important;width:94px!important;height:94px!important;
+ min-width:94px!important;min-height:94px!important;border-radius:50%!important;
+ --orb-top:#87cfb9;--orb-bottom:#225f66;
+ border:4px solid #101720!important;box-sizing:border-box;
+ background:linear-gradient(180deg,var(--orb-top) 0%,var(--orb-top) 45%,#14222c 45%,#14222c 54%,var(--orb-bottom) 54%,var(--orb-bottom) 100%)!important;
+ box-shadow:inset 0 5px 10px #ffffff5e,inset 0 -8px 12px #00000063,0 2px 0 #0b121b,0 4px 12px #101c2645!important;
+ display:flex!important;align-items:center;justify-content:center;
+ color:#fffcea!important;font-weight:800!important;font-size:13px!important;text-shadow:0 1px 3px #0b1521,0 0 5px #051116;
+ touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+}
+#actions #captureBtn[data-ball="great"]{--orb-top:#77daf6;--orb-bottom:#145083}
+#actions #captureBtn[data-ball="master"]{--orb-top:#d3abf4;--orb-bottom:#4d297c}
+#actions #captureBtn::before{
+ content:''!important;position:absolute!important;top:50%!important;left:50%!important;
+ width:36px!important;height:36px!important;box-sizing:border-box;
+ transform:translate(-50%,-50%)!important;border-radius:50%!important;
+ border:4px solid #0b141d!important;
+ background:radial-gradient(circle at 36% 28%,#ffffff,#b8d4ca 66%,#5d7d82)!important;
+ box-shadow:0 1px 4px #10191a9c!important;z-index:0;pointer-events:none;
+}
+#actions #captureBtn::after{
+ content:''!important;position:absolute!important;inset:3px!important;border-radius:50%!important;
+ border:2px solid #ffffff65!important;pointer-events:none;
+}
+#actions #captureBtn{isolation:isolate}
+#ballPicker{
+ position:fixed;right:12px;bottom:calc(188px + env(safe-area-inset-bottom));
+ z-index:80;display:flex;flex-direction:column;gap:7px;
+ width:min(205px,calc(100vw - 28px));padding:12px;
+ background:#142d2df5;color:#eaffef;border:1px solid #d9cd94;border-radius:14px;
+ box-shadow:0 7px 24px #05171aa3;backdrop-filter:blur(9px);
+}
+#ballPicker[hidden]{display:none!important}
+#ballPicker strong{font-size:13px;text-align:center;letter-spacing:.05em}
+#ballPicker button{border-radius:10px;border:1px solid #8fbbb2;background:#215058;color:#fcffe8;padding:9px 7px;min-height:40px;font-weight:600}
+#ballPicker button[aria-pressed="true"]{border-color:#fbe39c;background:#665522}
+#ballPicker button:disabled{opacity:.42}
+@media(max-width:359px){
+ #actions{width:170px!important;right:8px!important}
+ #actions #berryBtn{left:74px!important}
+ #actions #captureBtn{left:80px!important;width:88px!important;height:88px!important;min-width:88px!important;min-height:88px!important}
+ #actions #lockBtn,#actions #rollBtn{width:60px!important;height:60px!important;min-width:60px!important;min-height:60px!important}
+}
