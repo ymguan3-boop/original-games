@@ -280,3 +280,39 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;r
  #actions #captureBtn{left:80px!important;width:88px!important;height:88px!important;min-width:88px!important;min-height:88px!important}
  #actions #lockBtn,#actions #rollBtn{width:60px!important;height:60px!important;min-width:60px!important;min-height:60px!important}
 }
+
+/* 2026-10-14 compact contract controls, aligned to the supplied spirit-ball art.
+   Berry and lock are the same size; lock is immediately to the right of berry. */
+#actions{width:212px!important;height:176px!important;right:9px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important}
+#actions #berryBtn,#actions #lockBtn,#actions #rollBtn{
+ width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;
+ position:absolute!important;box-sizing:border-box!important;
+ touch-action:manipulation;
+}
+#actions #berryBtn{left:56px!important;top:18px!important}
+#actions #lockBtn{left:112px!important;top:6px!important}
+#actions #rollBtn{left:56px!important;top:102px!important}
+#actions #berryBtn::before,#actions #lockBtn::before,#actions #rollBtn::before{
+ width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;
+ background-size:27px 27px!important;border-radius:11px!important;
+}
+#actions #captureBtn{
+ left:112px!important;top:65px!important;width:96px!important;height:96px!important;
+ min-width:96px!important;min-height:96px!important;
+ background:#052c3c url('../assets/spirit-contract-ball.svg') center / 100% 100% no-repeat!important;
+ border:0!important;border-radius:50%!important;
+ box-shadow:0 4px 14px #03192265,0 0 0 2px #061e27!important;
+ font-size:0!important;color:transparent!important;text-shadow:none!important;
+}
+#actions #captureBtn::before,#actions #captureBtn::after{content:none!important;display:none!important}
+#actions #captureBtn:focus-visible{outline:3px solid #ffdc89!important;outline-offset:3px}
+#actions #captureBtn:active{filter:brightness(1.23);transform:scale(.97)}
+#actions #captureBtn[data-ball="great"]{filter:hue-rotate(27deg)}
+#actions #captureBtn[data-ball="master"]{filter:hue-rotate(115deg)}
+@media(max-width:359px){
+ #actions{width:184px!important;right:7px!important}
+ #actions #berryBtn{left:38px!important}
+ #actions #lockBtn{left:94px!important}
+ #actions #rollBtn{left:38px!important}
+ #actions #captureBtn{left:94px!important;width:86px!important;height:86px!important;min-width:86px!important;min-height:86px!important}
+}
