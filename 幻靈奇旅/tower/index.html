@@ -184,22 +184,29 @@ const WEAPONS=[
 ];
 /* Nine elemental weapons can be bought independently and equipped per weapon class. */
 const SHOP_WEAPONS=[
- {id:'stone_great',type:0,name:'岩震巨刃',effect:'knock',label:'擊退',chance:.26,boost:1.15,recipe:[['森棘龍鱗',4],['翠晶角',2]]},
- {id:'ice_great',type:0,name:'霜封重劍',effect:'freeze',label:'冰凍',chance:.23,boost:1.12,recipe:[['霜牙獸皮',4],['冰晶獠牙',2]]},
- {id:'thunder_great',type:0,name:'雷鳴斷岳',effect:'paralyze',label:'麻痺',chance:.24,boost:1.13,recipe:[['古林精華',3],['霜原精華',2]]},
- {id:'venom_dual',type:1,name:'毒牙雙刃',effect:'poison',label:'中毒',chance:.27,boost:1.1,recipe:[['森棘龍鱗',3],['古林精華',2]]},
- {id:'storm_dual',type:1,name:'風裂雙牙',effect:'knock',label:'擊退',chance:.20,boost:1.17,recipe:[['灼焰翼膜',3],['翠晶角',2]]},
- {id:'lightning_dual',type:1,name:'電迅雙鋒',effect:'paralyze',label:'麻痺',chance:.25,boost:1.12,recipe:[['翠晶角',3],['霜原精華',2]]},
- {id:'ice_bow',type:2,name:'冰羽長弓',effect:'freeze',label:'冰凍',chance:.24,boost:1.12,recipe:[['霜牙獸皮',3],['冰晶獠牙',2]]},
- {id:'venom_bow',type:2,name:'蛇影毒弓',effect:'poison',label:'中毒',chance:.28,boost:1.10,recipe:[['森棘龍鱗',3],['熔冠甲殼',2]]},
- {id:'storm_bow',type:2,name:'震雷靈弓',effect:'paralyze',label:'麻痺',chance:.22,boost:1.16,recipe:[['熔冠甲殼',3],['龍心結晶',1]]}
+ {id:'stone_great',type:0,name:'岩震巨刃',effect:'knock',label:'擊退',chance:.26,boost:1.15,recipe:[['森棘龍鱗',12],['翠晶角',6]]},
+ {id:'ice_great',type:0,name:'霜封重劍',effect:'freeze',label:'冰凍',chance:.23,boost:1.12,recipe:[['霜牙獸皮',12],['冰晶獠牙',6]]},
+ {id:'thunder_great',type:0,name:'雷鳴斷岳',effect:'paralyze',label:'麻痺',chance:.24,boost:1.13,recipe:[['古林精華',9],['霜原精華',6]]},
+ {id:'venom_dual',type:1,name:'毒牙雙刃',effect:'poison',label:'中毒',chance:.27,boost:1.1,recipe:[['森棘龍鱗',9],['古林精華',6]]},
+ {id:'storm_dual',type:1,name:'風裂雙牙',effect:'knock',label:'擊退',chance:.20,boost:1.17,recipe:[['灼焰翼膜',9],['翠晶角',6]]},
+ {id:'lightning_dual',type:1,name:'電迅雙鋒',effect:'paralyze',label:'麻痺',chance:.25,boost:1.12,recipe:[['翠晶角',9],['霜原精華',6]]},
+ {id:'ice_bow',type:2,name:'冰羽長弓',effect:'freeze',label:'冰凍',chance:.24,boost:1.12,recipe:[['霜牙獸皮',9],['冰晶獠牙',6]]},
+ {id:'venom_bow',type:2,name:'蛇影毒弓',effect:'poison',label:'中毒',chance:.28,boost:1.10,recipe:[['森棘龍鱗',9],['熔冠甲殼',6]]},
+ {id:'storm_bow',type:2,name:'震雷靈弓',effect:'paralyze',label:'麻痺',chance:.22,boost:1.16,recipe:[['熔冠甲殼',9],['龍心結晶',3]]}
 ];
-function freshSave(){return {version:1,baseWeapons:[0],activeWeapon:0,inventory:{},cards:{},registeredCards:{},pets:{},weaponsOwned:{},equipped:{},cleared:[],upgrade:0,cardAttackBonus:0,defeatedCounts:[0,0,0],kills:0};}
+const SHOP_CONSUMABLES=[
+ {id:'heal',name:'強效回復藥',description:'戰鬥中回復 65 點生命，購買後加入永久道具庫存',recipe:[['森棘龍鱗',6],['古林精華',2]],count:2},
+ {id:'power',name:'戰意藥劑',description:'12 秒內一般攻擊與大絕傷害增加 25%，相同效果不重複疊加',recipe:[['灼焰翼膜',5],['霜原精華',2]],count:1}
+];
+function freshSave(){return {version:1,baseWeapons:[0],activeWeapon:0,inventory:{},cards:{},registeredCards:{},pets:{},weaponsOwned:{},equipped:{},consumables:{heal:0,power:0},selectedConsumable:'heal',cleared:[],upgrade:0,cardAttackBonus:0,defeatedCounts:[0,0,0],kills:0};}
 function parseSave(raw){try{const s=JSON.parse(raw);if(s?.version!==1)return freshSave();const o=freshSave();o.activeWeapon=Number.isInteger(s.activeWeapon)&&s.activeWeapon>=0&&s.activeWeapon<3?s.activeWeapon:0;o.baseWeapons=Array.isArray(s.baseWeapons)?[...new Set([0,...s.baseWeapons.filter(i=>Number.isInteger(i)&&i>=0&&i<3)])]:[0,1,2];o.cleared=[...new Set((s.cleared||[]).filter(v=>Number.isInteger(v)&&v>=0&&v<3))];o.upgrade=Math.min(3,Math.max(0,Math.floor(Number(s.upgrade)||0)));
  o.cardAttackBonus=Math.min(50,Math.max(0,Math.floor(Number(s.cardAttackBonus??o.upgrade*15)||0)));
  const oldCounts=Array.isArray(s.defeatedCounts)?s.defeatedCounts:[0,1,2].map(i=>o.cleared.includes(i)?1:0);
  o.defeatedCounts=[0,1,2].map(i=>Math.max(0,Math.min(100000,Math.floor(Number(oldCounts[i])||0))));
- o.kills=Math.max(0,Math.floor(Number(s.kills)||0));o.cards=Object.fromEntries(Object.entries(s.cards||{}).filter(([k,v])=>LEVELS.some(l=>l.monster+'卡片'===k)&&Number.isFinite(v)&&v>=0).map(([k,v])=>[k,Math.floor(v)]));o.registeredCards={...(s.registeredCards||{})};o.pets={...(s.pets||{})};o.weaponsOwned=Object.fromEntries(Object.entries(s.weaponsOwned||{}).filter(([k,v])=>v===true&&SHOP_WEAPONS.some(w=>w.id===k)));o.equipped=Object.fromEntries(Object.entries(s.equipped||{}).filter(([k,v])=>['0','1','2'].includes(k)&&SHOP_WEAPONS.some(w=>w.id===v&&w.type===+k)));for(const [k,v]of Object.entries(s.inventory||{})){if(LEVELS.some(l=>l.loot.includes(k))&&Number.isFinite(v)&&v>0)o.inventory[k]=Math.min(9999,Math.floor(v));}return o;}catch{return freshSave();}}
+ o.kills=Math.max(0,Math.floor(Number(s.kills)||0));o.cards=Object.fromEntries(Object.entries(s.cards||{}).filter(([k,v])=>LEVELS.some(l=>l.monster+'卡片'===k)&&Number.isFinite(v)&&v>=0).map(([k,v])=>[k,Math.floor(v)]));o.registeredCards={...(s.registeredCards||{})};o.pets={...(s.pets||{})};o.weaponsOwned=Object.fromEntries(Object.entries(s.weaponsOwned||{}).filter(([k,v])=>v===true&&SHOP_WEAPONS.some(w=>w.id===k)));o.equipped=Object.fromEntries(Object.entries(s.equipped||{}).filter(([k,v])=>['0','1','2'].includes(k)&&SHOP_WEAPONS.some(w=>w.id===v&&w.type===+k)));
+ o.consumables={heal:Math.min(9999,Math.max(0,Math.floor(Number(s.consumables?.heal)||0))),
+  power:Math.min(9999,Math.max(0,Math.floor(Number(s.consumables?.power)||0)))};
+ o.selectedConsumable=s.selectedConsumable==='power'?'power':'heal';for(const [k,v]of Object.entries(s.inventory||{})){if(LEVELS.some(l=>l.loot.includes(k))&&Number.isFinite(v)&&v>0)o.inventory[k]=Math.min(9999,Math.floor(v));}return o;}catch{return freshSave();}}
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 const direction=(a,b)=>{let d=distance(a,b)||1;return{x:(b.x-a.x)/d,z:(b.z-a.z)/d};};
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -216,6 +223,25 @@ class Hunt {
  constructor(save=freshSave()){this.save=save;this.events=[];this.load(0);}
  canUseWeapon(i){return this.save.baseWeapons.includes(i)||SHOP_WEAPONS.some(w=>w.type===i&&this.save.weaponsOwned[w.id]);}
  equippedWeapon(){return SHOP_WEAPONS.find(w=>w.type===this.player.weapon&&w.id===this.save.equipped[this.player.weapon])||null;}
+ purchaseConsumable(id){
+  const item=SHOP_CONSUMABLES.find(v=>v.id===id);
+  if(!item||this.mode!=='battle'||item.recipe.some(([n,c])=>(this.save.inventory[n]||0)<c))return false;
+  for(const [n,c] of item.recipe)this.save.inventory[n]-=c;
+  this.save.consumables[id]=(this.save.consumables[id]||0)+item.count;return true;
+ }
+ selectConsumable(id){if(!SHOP_CONSUMABLES.some(c=>c.id===id))return false;this.save.selectedConsumable=id;return true;}
+ itemCount(id){return id==='heal'?this.potions+(this.save.consumables.heal||0):(this.save.consumables.power||0);}
+ useItem(){
+  if(this.mode!=='battle'||this.paused||this.player.dodge>0)return false;
+  const id=this.save.selectedConsumable;
+  if(id==='heal')return this.heal();
+  if(id==='power'){
+   if(this.itemCount('power')<1||this.player.attackBoostTime>0)return false;
+   this.save.consumables.power--;this.player.attackBoostTime=12;
+   this.emit('attackBoost',{duration:12});return true;
+  }
+  return false;
+ }
  purchase(id){const w=SHOP_WEAPONS.find(x=>x.id===id);if(!w||this.mode!=='battle'||this.save.weaponsOwned[id])return false;if(w.recipe.some(([n,c])=>(this.save.inventory[n]||0)<c))return false;for(const [n,c] of w.recipe)this.save.inventory[n]-=c;this.save.weaponsOwned[id]=true;this.save.equipped[w.type]=id;this.player.weapon=w.type;this.save.activeWeapon=w.type;this.emit('weapon',{i:w.type});return true;}
  equipShopWeapon(id){const w=SHOP_WEAPONS.find(x=>x.id===id);if(!w||!this.save.weaponsOwned[id])return false;this.save.equipped[w.type]=id;this.player.weapon=w.type;this.save.activeWeapon=w.type;this.emit('weapon',{i:w.type});return true;}
  emit(type,data={}){this.events.push({type,...data});}
@@ -236,13 +262,13 @@ class Hunt {
   this.emit('cardBoost',{card:stack.name,bonus:this.save.cardAttackBonus});return stack.name;
  }
 
- load(index){this.level=clamp(index,0,2);this.mode='battle';this.engaged=false;this.time=0;this.paused=false;this.rewarded=false;this.potions=5;this.combo=0;this.ultimateSequence=null;this.loot=[];this.collectedLoot=[];this.player={x:0,z:9,hp:150,stamina:100,weapon:this.canUseWeapon(this.save.activeWeapon)?this.save.activeWeapon:0,cooldown:0,invulnerable:0,dodge:0,dx:0,dz:-1,attack:0,ultimateCd:0,special:0,facing:Math.PI};const growth=this.bossGrowth();
+ load(index){this.level=clamp(index,0,2);this.mode='battle';this.engaged=false;this.time=0;this.paused=false;this.rewarded=false;this.potions=5;this.combo=0;this.ultimateSequence=null;this.loot=[];this.collectedLoot=[];this.player={x:0,z:9,hp:150,stamina:100,weapon:this.canUseWeapon(this.save.activeWeapon)?this.save.activeWeapon:0,cooldown:0,invulnerable:0,dodge:0,dx:0,dz:-1,attack:0,ultimateCd:0,special:0,attackBoostTime:0,facing:Math.PI};const growth=this.bossGrowth();
  this.monster={x:0,z:-5,hp:Math.ceil(LEVELS[this.level].hp*growth.health),maxHp:Math.ceil(LEVELS[this.level].hp*growth.health),
  damageMultiplier:growth.attack,defenseMultiplier:growth.defense,attackFrequency:growth.frequency,
  moveMultiplier:growth.speed,evadeChance:growth.evade,priorWins:growth.wins,
  state:'idle',timer:3/growth.frequency,phase:0,facing:0,flash:0,enraged:false,rageTime:0,rageCooldown:0,evadeTime:0,evadeCooldown:0,poisonTime:0,poisonTick:.9,freezeTime:0,paralyzeTime:0,statusCooldown:0,knockTime:0};this.hazards=[];this.projectiles=[];this.emit('level');}
  switchWeapon(i){if(this.mode!=='battle'||this.paused||this.ultimateSequence||i<0||i>2||!this.canUseWeapon(i))return false;this.player.weapon=i;this.save.activeWeapon=i;this.emit('weapon',{i});}
- attack(heavy=false){const p=this.player,m=this.monster,w=WEAPONS[p.weapon],cost=heavy?w.heavyCost:w.cost;if(this.mode!=='battle'||this.paused||this.ultimateSequence||p.cooldown>0||p.dodge>0||p.stamina<cost)return false;this.engaged=true;p.stamina-=cost;p.cooldown=w.cooldown*(heavy?1.75:1);p.attack=p.cooldown;p.facing=Math.atan2(m.x-p.x,m.z-p.z);this.emit('swing',{heavy,weapon:p.weapon});const mod=this.equippedWeapon();const amount=Math.round((heavy?w.heavy:w.damage)*(1+this.cardBoost()/100)*(mod?.boost||1));if(p.weapon===2){const d=direction(p,m);this.projectiles.push({x:p.x,z:p.z,dx:d.x,dz:d.z,life:w.range/28,damage:amount,heavy});}else if(distance(p,m)<w.range+1){this.damageMonster(amount,heavy);}return true;}
+ attack(heavy=false){const p=this.player,m=this.monster,w=WEAPONS[p.weapon],cost=heavy?w.heavyCost:w.cost;if(this.mode!=='battle'||this.paused||this.ultimateSequence||p.cooldown>0||p.dodge>0||p.stamina<cost)return false;this.engaged=true;p.stamina-=cost;p.cooldown=w.cooldown*(heavy?1.75:1);p.attack=p.cooldown;p.facing=Math.atan2(m.x-p.x,m.z-p.z);this.emit('swing',{heavy,weapon:p.weapon});const mod=this.equippedWeapon();const amount=Math.round((heavy?w.heavy:w.damage)*(1+this.cardBoost()/100)*(mod?.boost||1)*(p.attackBoostTime>0?1.25:1));if(p.weapon===2){const d=direction(p,m);this.projectiles.push({x:p.x,z:p.z,dx:d.x,dz:d.z,life:w.range/28,damage:amount,heavy});}else if(distance(p,m)<w.range+1){this.damageMonster(amount,heavy);}return true;}
  tryMonsterDodge(ultimate=false){
   const m=this.monster,seq=this.ultimateSequence;
   // Final greatsword strike is a guaranteed cinematic finisher; all other incoming
@@ -312,7 +338,7 @@ class Hunt {
   p.cooldown=duration;p.attack=0;p.dodge=0;p.facing=Math.atan2(m.x-p.x,m.z-p.z);
   m.state='recover';m.timer=Math.max(2.55,duration+.45);this.hazards=[];
   this.ultimateSequence={weapon,count,index:0,elapsed:0,interval,duration,
-    base:Math.round(ULTIMATE_DAMAGE[weapon]*(1+this.cardBoost()/100))};
+    base:Math.round(ULTIMATE_DAMAGE[weapon]*(1+this.cardBoost()/100)*(p.attackBoostTime>0?1.25:1))};
   this.emit('ultimate',{name:ULTIMATE_NAMES[p.weapon],weapon:p.weapon,x:m.x,z:m.z});return true;
  }
  tickUltimate(dt){const seq=this.ultimateSequence;if(!seq||this.mode!=='battle'||this.paused)return;seq.elapsed+=dt;
@@ -361,11 +387,13 @@ class Hunt {
   p.dx=dx;p.dz=dz;p.dodge=.36;p.invulnerable=.43;p.stamina-=22;
   this.emit('dodge');return true;
  }
- heal(){const p=this.player;if(this.mode!=='battle'||this.paused||this.potions<=0||p.hp>=150||p.dodge>0)return false;this.potions--;p.hp=Math.min(150,p.hp+65);this.emit('heal');return true;}
+ heal(){const p=this.player;if(this.mode!=='battle'||this.paused||this.itemCount('heal')<=0||p.hp>=150||p.dodge>0)return false;
+ if(this.potions>0)this.potions--;else this.save.consumables.heal--;
+ p.hp=Math.min(150,p.hp+65);this.emit('heal');return true;}
  damagePlayer(amount){const p=this.player;if(p.invulnerable>0||this.mode!=='battle')return false;const dealt=Math.max(1,Math.round(amount*this.monster.damageMultiplier));p.hp=Math.max(0,p.hp-dealt);p.invulnerable=.85;this.emit('hurt',{amount:dealt});if(p.hp===0){this.mode='defeat';this.emit('defeat');}return true;}
  startPattern(){const m=this.monster,p=this.player;m.phase++;const type=this.level===0?(m.phase%3===0?'stomp':'charge'):this.level===1?(m.phase%2===0?'frost':'charge'):(m.phase%3===0?'charge':m.phase%2===0?'eruption':'breath');m.state='windup';m.pattern=type;m.timer=(type==='charge'?1.05:1.35)/(m.attackFrequency*(m.enraged?1.45:1));m.target={x:p.x,z:p.z};m.origin={x:m.x,z:m.z};m.dir=direction(m,p);m.facing=Math.atan2(m.dir.x,m.dir.z);this.emit('warning',{pattern:type});if(type==='frost'||type==='eruption'){for(let i=0;i<3;i++){this.hazards.push({x:p.x+(i-1)*3.8,z:p.z+(i%2)*3,radius:2.6,timer:1.3+i*.3,life:.65,active:false,hit:false,type});}}}
  resolvePattern(){const m=this.monster,p=this.player;const enr=m.enraged?1.2:1;if(m.pattern==='charge'){m.state='charge';m.timer=.85/m.attackFrequency;m.hit=false;}else{if(m.pattern==='stomp'&&distance(m,p)<6)this.damagePlayer(34*enr);if(m.pattern==='breath'){const d=direction(m,p),dot=d.x*m.dir.x+d.z*m.dir.z;if(distance(m,p)<12&&dot>.63)this.damagePlayer(38*enr);}this.emit('impact',{pattern:m.pattern});m.state='recover';m.timer=(m.enraged?1.15:1.8)/m.attackFrequency;}}
- tick(dt,input={}){dt=clamp(dt,0,.05);if(this.paused)return;if(this.mode==='loot'){this.collectLoot(dt,input);return;}if(this.mode!=='battle')return;if(input.x||input.z)this.engaged=true;if(!this.engaged)return;this.time+=dt;this.tickUltimate(dt);if(this.mode!=='battle')return;const p=this.player,m=this.monster;p.special=Math.max(0,p.special-dt);p.ultimateCd=Math.max(0,p.ultimateCd-dt);p.cooldown=Math.max(0,p.cooldown-dt);p.attack=Math.max(0,p.attack-dt);p.invulnerable=Math.max(0,p.invulnerable-dt);m.flash=Math.max(0,m.flash-dt);
+ tick(dt,input={}){dt=clamp(dt,0,.05);if(this.paused)return;if(this.mode==='loot'){this.collectLoot(dt,input);return;}if(this.mode!=='battle')return;if(input.x||input.z)this.engaged=true;if(!this.engaged)return;this.time+=dt;this.tickUltimate(dt);if(this.mode!=='battle')return;const p=this.player,m=this.monster;p.special=Math.max(0,p.special-dt);p.attackBoostTime=Math.max(0,p.attackBoostTime-dt);p.ultimateCd=Math.max(0,p.ultimateCd-dt);p.cooldown=Math.max(0,p.cooldown-dt);p.attack=Math.max(0,p.attack-dt);p.invulnerable=Math.max(0,p.invulnerable-dt);m.flash=Math.max(0,m.flash-dt);
  m.evadeCooldown=Math.max(0,m.evadeCooldown-dt);
  m.evadeTime=Math.max(0,m.evadeTime-dt);
  m.knockTime=Math.max(0,m.knockTime-dt);
