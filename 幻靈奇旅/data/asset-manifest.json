@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 90,
+  "modelCount": 97,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -211,16 +211,6 @@
       ]
     },
     {
-      "file": "models/spirits/bulbasaur.glb",
-      "bytes": 189984,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/butterfree.glb",
       "bytes": 197576,
       "animations": [
@@ -407,16 +397,6 @@
     {
       "file": "models/spirits/infernape.glb",
       "bytes": 211188,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/ivysaur.glb",
-      "bytes": 200516,
       "animations": [
         "Idle",
         "Walk",
@@ -629,6 +609,33 @@
       ]
     },
     {
+      "file": "models/spirits/spiral-snail-1.glb",
+      "bytes": 1751604,
+      "animations": [
+        "Idle",
+        "Walk",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/spiral-snail-2.glb",
+      "bytes": 2084092,
+      "animations": [
+        "Idle",
+        "Walk",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/spiral-snail-3.glb",
+      "bytes": 2522944,
+      "animations": [
+        "Idle",
+        "Walk",
+        "React"
+      ]
+    },
+    {
       "file": "models/spirits/squirtle.glb",
       "bytes": 175796,
       "animations": [
@@ -720,16 +727,6 @@
       ]
     },
     {
-      "file": "models/spirits/venusaur.glb",
-      "bytes": 208508,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/wartortle.glb",
       "bytes": 176408,
       "animations": [
@@ -769,6 +766,41 @@
         "Hurt",
         "Fly"
       ]
+    },
+    {
+      "file": "models/tower/bow.glb",
+      "bytes": 85000,
+      "animations": []
+    },
+    {
+      "file": "models/tower/collectible-card.glb",
+      "bytes": 31756,
+      "animations": []
+    },
+    {
+      "file": "models/tower/crystal-horn.glb",
+      "bytes": 7216,
+      "animations": []
+    },
+    {
+      "file": "models/tower/dualblade.glb",
+      "bytes": 24204,
+      "animations": []
+    },
+    {
+      "file": "models/tower/essence-vial.glb",
+      "bytes": 29136,
+      "animations": []
+    },
+    {
+      "file": "models/tower/greatsword.glb",
+      "bytes": 45520,
+      "animations": []
+    },
+    {
+      "file": "models/tower/scale-plate.glb",
+      "bytes": 5064,
+      "animations": []
     },
     {
       "file": "models/world/arena.glb",

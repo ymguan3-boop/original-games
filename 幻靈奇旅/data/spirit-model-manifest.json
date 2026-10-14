@@ -53,54 +53,54 @@
   },
   {
     "id": "bulbasaur",
-    "name": "芽球豚",
-    "vertices": 2876,
-    "triangles": 5612,
-    "materials": 5,
-    "bones": 8,
+    "name": "青螺靈",
+    "vertices": 25422,
+    "triangles": 50808,
+    "materials": 6,
+    "bones": 18,
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "React"
     ],
-    "fileBytes": 189984,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1751604,
+    "source": "Native Blender spiral-snail skeletal model",
+    "model": "models/spirits/spiral-snail-1.glb"
   },
   {
     "id": "ivysaur",
-    "name": "蕈傘豚",
-    "vertices": 3042,
-    "triangles": 5936,
-    "materials": 5,
-    "bones": 8,
+    "name": "紫羽螺",
+    "vertices": 29370,
+    "triangles": 58680,
+    "materials": 8,
+    "bones": 36,
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "React"
     ],
-    "fileBytes": 200516,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 2084092,
+    "source": "Native Blender spiral-snail skeletal model",
+    "model": "models/spirits/spiral-snail-2.glb"
   },
   {
     "id": "venusaur",
-    "name": "森冠巨豚",
-    "vertices": 3208,
-    "triangles": 6260,
-    "materials": 5,
-    "bones": 8,
+    "name": "赤鎧螺王",
+    "vertices": 34634,
+    "triangles": 69176,
+    "materials": 8,
+    "bones": 60,
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "React"
     ],
-    "fileBytes": 208508,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 2522944,
+    "source": "Native Blender spiral-snail skeletal model",
+    "model": "models/spirits/spiral-snail-3.glb"
   },
   {
     "id": "charmeleon",

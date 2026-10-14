@@ -2,17 +2,17 @@
   {
     "id": "bulbasaur",
     "speciesId": "bulbasaur",
-    "name": "芽球豚",
+    "name": "青螺靈",
     "element": "grass",
     "type": "森",
     "stage": 1,
-    "family": "sprout-boar",
-    "form": "boar",
-    "color": 7514717,
+    "family": "spiral-snail",
+    "form": "snail",
+    "color": 1473682,
     "role": "starter",
     "previous": null,
     "next": "ivysaur",
-    "model": "models/spirits/bulbasaur.glb",
+    "model": "models/spirits/spiral-snail-1.glb",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -21,32 +21,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "殼光輕擊",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "芽球共鳴",
+        "name": "青螺共鳴",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "芽球豚是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "青螺靈以柔軟腹足波浪般蠕動，青藍螺殼隨步伐輕輕彈動。喜歡雨後的草地與苔蘚。"
   },
   {
     "id": "ivysaur",
     "speciesId": "ivysaur",
-    "name": "蕈傘豚",
+    "name": "紫羽螺",
     "element": "grass",
     "type": "森",
     "stage": 2,
-    "family": "sprout-boar",
-    "form": "boar",
-    "color": 7514717,
+    "family": "spiral-snail",
+    "form": "snail",
+    "color": 9654241,
     "role": "starter",
     "previous": "bulbasaur",
     "next": "venusaur",
-    "model": "models/spirits/ivysaur.glb",
+    "model": "models/spirits/spiral-snail-2.glb",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
@@ -55,32 +55,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "紫羽切波",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "蕈傘共鳴",
+        "name": "紫羽共鳴",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "蕈傘豚是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "紫羽螺的螺殼進化為亮紫金屬，層疊羽片隨身體蠕動自然擺動，能以殼光守護森林夥伴。"
   },
   {
     "id": "venusaur",
     "speciesId": "venusaur",
-    "name": "森冠巨豚",
+    "name": "赤鎧螺王",
     "element": "grass",
     "type": "森",
     "stage": 3,
-    "family": "sprout-boar",
-    "form": "boar",
-    "color": 7514717,
+    "family": "spiral-snail",
+    "form": "snail",
+    "color": 12400939,
     "role": "starter",
     "previous": "ivysaur",
     "next": null,
-    "model": "models/spirits/venusaur.glb",
+    "model": "models/spirits/spiral-snail-3.glb",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
@@ -89,17 +89,17 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "赤鎧旋刃",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "森冠共鳴",
+        "name": "赤鎧共鳴",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "森冠巨豚是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "赤鎧螺王披著赤紅銅金螺旋甲，繁密的金屬羽片以不同節奏擺動。身軀沉穩，能凝聚強大的螺旋力量。"
   },
   {
     "id": "charmander",

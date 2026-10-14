@@ -13,3 +13,5 @@ authoring/qa-*
 authoring/qa_*
 authoring/animation-refresh-qa.json
 qa/
+
+authoring/*-review.py

@@ -1,0 +1,122 @@
+{
+  "coordinateSystem": {
+    "up": "+Y",
+    "front": "+Z",
+    "weaponGrip": [
+      0,
+      0,
+      0
+    ]
+  },
+  "weapons": {
+    "greatsword": {
+      "model": "models/tower/greatsword.glb",
+      "grip": [
+        0,
+        0,
+        0
+      ],
+      "axis": "+Y",
+      "length": 1.99
+    },
+    "dualblade": {
+      "model": "models/tower/dualblade.glb",
+      "grip": [
+        0,
+        0,
+        0
+      ],
+      "axis": "+Y",
+      "length": 1.12
+    },
+    "bow": {
+      "model": "models/tower/bow.glb",
+      "grip": [
+        0,
+        0,
+        0
+      ],
+      "axis": "+Y",
+      "length": 1.37
+    }
+  },
+  "drops": {
+    "scale": {
+      "model": "models/tower/scale-plate.glb",
+      "height": 0.57
+    },
+    "horn": {
+      "model": "models/tower/crystal-horn.glb",
+      "height": 0.59
+    },
+    "essence": {
+      "model": "models/tower/essence-vial.glb",
+      "height": 0.525
+    },
+    "card": {
+      "model": "models/tower/collectible-card.glb",
+      "height": 0.65,
+      "frontMesh": "cardFront",
+      "frontNormal": "+Z",
+      "portraitUV": "0..1"
+    }
+  },
+  "assets": [
+    {
+      "id": "greatsword",
+      "model": "models/tower/greatsword.glb",
+      "triangles": 748,
+      "meshes": 1,
+      "materials": 6,
+      "fileBytes": 45520
+    },
+    {
+      "id": "dualblade",
+      "model": "models/tower/dualblade.glb",
+      "triangles": 420,
+      "meshes": 1,
+      "materials": 5,
+      "fileBytes": 24204
+    },
+    {
+      "id": "bow",
+      "model": "models/tower/bow.glb",
+      "triangles": 1428,
+      "meshes": 1,
+      "materials": 5,
+      "fileBytes": 85000
+    },
+    {
+      "id": "scale-plate",
+      "model": "models/tower/scale-plate.glb",
+      "triangles": 56,
+      "meshes": 1,
+      "materials": 2,
+      "fileBytes": 5064
+    },
+    {
+      "id": "crystal-horn",
+      "model": "models/tower/crystal-horn.glb",
+      "triangles": 76,
+      "meshes": 1,
+      "materials": 2,
+      "fileBytes": 7216
+    },
+    {
+      "id": "essence-vial",
+      "model": "models/tower/essence-vial.glb",
+      "triangles": 644,
+      "meshes": 1,
+      "materials": 5,
+      "fileBytes": 29136
+    },
+    {
+      "id": "collectible-card",
+      "model": "models/tower/collectible-card.glb",
+      "triangles": 666,
+      "meshes": 2,
+      "materials": 4,
+      "fileBytes": 31756
+    }
+  ]
+}

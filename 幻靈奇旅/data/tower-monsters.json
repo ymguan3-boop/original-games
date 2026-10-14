@@ -1,0 +1,40 @@
+{
+  "monsters": [
+    {
+      "id": "forest",
+      "name": "森棘龍",
+      "hp": 650,
+      "element": "森",
+      "attack": 41,
+      "weakness": "火焰",
+      "description": "古林中的重甲魔物，以衝鋒與震地逼近旅人。看到路徑預警後向側面翻滾。",
+      "portrait": "assets/tower-cards/forest.png",
+      "source": "使用者提供魔物肖像",
+      "category": "挑戰塔魔物"
+    },
+    {
+      "id": "ice",
+      "name": "霜牙獸",
+      "hp": 850,
+      "element": "霜",
+      "attack": 40,
+      "weakness": "火焰",
+      "description": "寒峽中的冰甲獵獸，冰爆會追蹤站位。持續移動，避開逐次亮起的冰圈。",
+      "portrait": "assets/tower-cards/ice.png",
+      "source": "使用者提供魔物肖像",
+      "category": "挑戰塔魔物"
+    },
+    {
+      "id": "fire",
+      "name": "熔冠翼龍",
+      "hp": 1100,
+      "element": "炎",
+      "attack": 46,
+      "weakness": "寒霜",
+      "description": "龍巢中的熔冠守衛，以烈焰吐息和熔岩圈封鎖路徑。吐息後是安全反擊時機。",
+      "portrait": "assets/tower-cards/fire.png",
+      "source": "使用者提供魔物肖像",
+      "category": "挑戰塔魔物"
+    }
+  ]
+}

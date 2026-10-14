@@ -1,33 +1,27 @@
 {
   "bulbasaur": {
-    "image": "cards/art/bulbasaur.webp",
-    "name": "芽球豚",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/bulbasaur.glb",
-    "group": 0,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/spiral-snail-1.webp",
+    "name": "青螺靈",
+    "source": "imagegen-original-snail-reference",
+    "referenceModel": "models/spirits/spiral-snail-1.glb",
+    "style": "cute-colored-snail-action-illustration",
+    "generatedAt": "2026-10-14"
   },
   "ivysaur": {
-    "image": "cards/art/ivysaur.webp",
-    "name": "蕈傘豚",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/ivysaur.glb",
-    "group": 0,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/spiral-snail-2.webp",
+    "name": "紫羽螺",
+    "source": "imagegen-original-snail-reference",
+    "referenceModel": "models/spirits/spiral-snail-2.glb",
+    "style": "cute-colored-snail-action-illustration",
+    "generatedAt": "2026-10-14"
   },
   "venusaur": {
-    "image": "cards/art/venusaur.webp",
-    "name": "森冠巨豚",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/venusaur.glb",
-    "group": 0,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/spiral-snail-3.webp",
+    "name": "赤鎧螺王",
+    "source": "imagegen-original-snail-reference",
+    "referenceModel": "models/spirits/spiral-snail-3.glb",
+    "style": "cute-colored-snail-action-illustration",
+    "generatedAt": "2026-10-14"
   },
   "charmander": {
     "image": "cards/art/charmander.webp",
