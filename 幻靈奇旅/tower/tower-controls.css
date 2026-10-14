@@ -28,3 +28,11 @@
 .weapon-quick-list{display:grid;gap:8px;margin-top:18px}.weapon-quick-list button{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:11px 13px;border-radius:9px;text-align:left;font-size:12px;line-height:1.5}.weapon-quick-list button.active,.weapon-quick-list button[aria-pressed="true"]{background:#b3a06b30;border-color:#e6cc91}.weapon-quick-list button small{font-size:10px;color:#cfddb8}
 
 .weapon-quick-list{display:grid;gap:8px}.weapon-quick-list button{text-align:left;padding:12px 16px;min-height:44px;border-radius:10px}.weapon-quick-list button:focus-visible{outline:2px solid #ffdc93}
+
+/* Generated forest-metal discs share the movement control palette. */
+.mobile-controls #mobileAttack,.mobile-controls #mobileHeal,.mobile-controls #mobileDodge,#ultimateButton{background:transparent url('../assets/ui/tower-action-disc.png') center/100% 100% no-repeat!important;border:0!important;box-shadow:0 4px 10px #07170c66!important;color:#f1f6df!important;text-shadow:0 1px 3px #071b09,0 0 3px #071b09;isolation:isolate}
+#mobileAttack>span,#mobileAttack small{color:#e1efc9!important}#mobileAttack strong{color:#f1f6df}
+#ultimateButton .ultimate-fill{background:#b6e49b!important;opacity:.12;z-index:-1;border-radius:50%}
+#ultimateButton:not(.ready){filter:brightness(.8)}#ultimateButton.ready{filter:brightness(1.15);box-shadow:0 0 12px #b3ef8c66!important}
+.mobile-controls button:active,#mobileAttack.held{transform:scale(.94);filter:brightness(1.2)}
+.loot-ground-label{color:#fff0ab!important;text-shadow:0 1px 3px #251000,0 0 6px #000!important}.loot-ground-label[data-card="fire"]{color:#ffb9c7!important}.loot-ground-label[data-card="forest"],.loot-ground-label[data-card="ice"]{color:#edc3ff!important}

@@ -15,5 +15,5 @@
 
 .towerMonsterThumb:disabled{opacity:1;cursor:default;position:relative}
 .towerMonsterThumb:disabled .collectionCard{filter:grayscale(1) brightness(.15)}
-.towerMonsterThumb:disabled::after{content:'未取得 · 擊敗後解鎖';position:absolute;inset:0;display:grid;place-content:center;color:#f2e8ff;font-size:clamp(9px,4cqi,14px);text-shadow:0 1px 4px #000;pointer-events:none}
+.towerMonsterThumb:disabled::after{content:'未取得 · 取得卡牌後解鎖';position:absolute;inset:0;display:grid;place-content:center;color:#f2e8ff;font-size:clamp(9px,4cqi,14px);text-shadow:0 1px 4px #000;pointer-events:none}
 .towerMonsterCard[data-locked="true"] .collectionSkills,.towerMonsterCard[data-locked="true"] .collectionSynopsis{visibility:hidden}
