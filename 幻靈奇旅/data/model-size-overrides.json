@@ -38,19 +38,19 @@
   "squirtle": {
     "desiredWorldHeight": 1.17,
     "stage": 1,
-    "form": "otter",
+    "form": "woolball",
     "maxSpan": 2.6
   },
   "wartortle": {
     "desiredWorldHeight": 1.521,
     "stage": 2,
-    "form": "otter",
+    "form": "woolball",
     "maxSpan": 3.3800000000000003
   },
   "blastoise": {
     "desiredWorldHeight": 1.977,
     "stage": 3,
-    "form": "otter",
+    "form": "woolball",
     "maxSpan": 4.394000000000001
   },
   "chikorita": {

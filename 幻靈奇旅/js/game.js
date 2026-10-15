@@ -9,7 +9,7 @@ let spirits=[],byId={},world,npcData,hero,town,interior,place=null,battle=null,t
 const pickups=[];let modelSizeOverrides={},adventureCollectAt=15,pickupCostume=null,guideBroadcastAt=300,guideBroadcastIndex=0;
 let navigation=null,navRoute=[],navReplan=0,spawnPending=0,locked=false,lockLabel=null,cardArt={};let petFollower=null,petEquipGeneration=0,petChangeGeneration=0,petLoadingId=null;
 const cameraOrbit={yaw:0,zoom:1,pitch:.68},WILD_LIMIT=8;
-const TOWER_KEY='phantom-starspire-tower-v1';const TOWER_PETS=[{id:'forest',card:'森棘龍卡片',name:'青螺幼靈',model:'bulbasaur',cost:3},{id:'ice',card:'霜牙獸卡片',name:'雪芽靈獸',model:'squirtle',cost:3},{id:'fire',card:'熔冠翼龍卡片',name:'椒香小雞',model:'charmander',cost:3}];
+const TOWER_KEY='phantom-starspire-tower-v1';const TOWER_PETS=[{id:'forest',card:'森棘龍卡片',name:'青螺幼靈',model:'bulbasaur',cost:3},{id:'ice',card:'霜牙獸卡片',name:'小芝麻',model:'squirtle',cost:3},{id:'fire',card:'熔冠翼龍卡片',name:'椒香小雞',model:'charmander',cost:3}];
 function towerProgress(){try{const v=JSON.parse(localStorage.getItem(TOWER_KEY)||'{}');return {...v,inventory:{...(v.inventory||{})},cards:{...(v.cards||{})},pets:{...(v.pets||{})}};}catch{return {inventory:{},cards:{},pets:{}};}}
 function saveTowerProgress(v){try{localStorage.setItem(TOWER_KEY,JSON.stringify(v));return true;}catch{return false;}}
 let broadcastAt=90+Math.random()*90;
@@ -33,7 +33,7 @@ async function asset(path){if(!path)throw Error('模型路徑未設定');if(!cac
 function cloneSkin(source){const clone=source.clone(true),a=new Map(),b=new Map();const pair=(x,y)=>{a.set(y,x);b.set(x,y);x.children.forEach((ch,i)=>pair(ch,y.children[i]));};pair(source,clone);clone.traverse(n=>{if(n.isSkinnedMesh){const original=a.get(n);n.skeleton=original.skeleton.clone();n.bindMatrix.copy(original.bindMatrix);n.skeleton.bones=original.skeleton.bones.map(bone=>b.get(bone));n.bind(n.skeleton,n.bindMatrix);}});return clone;}
 function posedBounds(root,baseOnly=false){const b=new T.Box3(),v=new T.Vector3();root.updateMatrixWorld(true);root.traverse(n=>{if(!n.isMesh)return;if(baseOnly){let p=n;while(p){if(p.userData.costume)return;p=p.parent;}}if(n.isSkinnedMesh)n.skeleton.update();const points=n.geometry.attributes.position;for(let i=0;i<points.count;i++){v.fromBufferAttribute(points,i);if(n.isSkinnedMesh)n.boneTransform(i,v);b.expandByPoint(v.applyMatrix4(n.matrixWorld));}});return b;}
 const actorBaseBounds=new Map();
-async function actor(path,height,parent=townGroup){const g=await asset(path),object=cloneSkin(g.scene),root=new T.Group();root.add(object);object.updateMatrixWorld(true);let box=actorBaseBounds.get(path);if(!box){box=posedBounds(object,path.includes('hero.glb'));actorBaseBounds.set(path,box.clone());}else box=box.clone();const size=box.getSize(new T.Vector3());if(height){const ratio=height/Math.max(size.y,.001);object.scale.multiplyScalar(ratio);object.position.y-=box.min.y*ratio;}else object.position.y-=box.min.y;object.traverse(n=>{if(n.isMesh){n.castShadow=true;n.receiveShadow=true;n.frustumCulled=false;}});const mixer=new T.AnimationMixer(object),actions={};g.animations.forEach(c=>{const name=c.name.replace(/.*[|]/,'');actions[name]=mixer.clipAction(c);});const a={root,object,mixer,actions,mode:null,height:height||size.y,path,worldSize:new T.Vector3(size.x*(height?height/Math.max(size.y,.001):1),height||size.y,size.z*(height?height/Math.max(size.y,.001):1))};a.play=(name,once=false)=>{if(path.includes('pepper-chick-')&&['Attack','Hurt'].includes(name))name='React';const key=Object.keys(actions).find(k=>k.toLowerCase()===name.toLowerCase())||Object.keys(actions).find(k=>k.toLowerCase().includes(name.toLowerCase()))||Object.keys(actions)[0];if(!key||a.mode===key&&!once)return;Object.values(actions).forEach(x=>x.fadeOut(.16));const action=actions[key];action.reset().fadeIn(.16);action.setLoop(once?T.LoopOnce:T.LoopRepeat,once?1:Infinity);action.clampWhenFinished=once;action.play();a.mode=key;};a.play('Idle');parent.add(root);actors.push(a);return a;}
+async function actor(path,height,parent=townGroup){const g=await asset(path),object=cloneSkin(g.scene),root=new T.Group();root.add(object);object.updateMatrixWorld(true);let box=actorBaseBounds.get(path);if(!box){box=posedBounds(object,path.includes('hero.glb'));actorBaseBounds.set(path,box.clone());}else box=box.clone();const size=box.getSize(new T.Vector3());if(height){const ratio=height/Math.max(size.y,.001);object.scale.multiplyScalar(ratio);object.position.y-=box.min.y*ratio;}else object.position.y-=box.min.y;object.traverse(n=>{if(n.isMesh){n.castShadow=true;n.receiveShadow=true;n.frustumCulled=false;}});const mixer=new T.AnimationMixer(object),actions={};g.animations.forEach(c=>{const name=c.name.replace(/.*[|]/,'');actions[name]=mixer.clipAction(c);});const a={root,object,mixer,actions,mode:null,height:height||size.y,path,worldSize:new T.Vector3(size.x*(height?height/Math.max(size.y,.001):1),height||size.y,size.z*(height?height/Math.max(size.y,.001):1))};a.play=(name,once=false)=>{if(/pepper-chick-|sesame-spirit-/.test(path)&&['Attack','Hurt'].includes(name))name='React';const key=Object.keys(actions).find(k=>k.toLowerCase()===name.toLowerCase())||Object.keys(actions).find(k=>k.toLowerCase().includes(name.toLowerCase()))||Object.keys(actions)[0];if(!key||a.mode===key&&!once)return;Object.values(actions).forEach(x=>x.fadeOut(.16));const action=actions[key];action.reset().fadeIn(.16);action.setLoop(once?T.LoopOnce:T.LoopRepeat,once?1:Infinity);action.clampWhenFinished=once;action.play();a.mode=key;};a.play('Idle');parent.add(root);actors.push(a);return a;}
 function removeActor(a){if(!a)return;detach(a.root);a.mixer.stopAllAction();a.mixer.uncacheRoot(a.object);const i=actors.indexOf(a);if(i>=0)actors.splice(i,1);if(a.label)removeLabel(a.label);}
 function addLabel(a,text,kind='nameLabel'){const el=document.createElement('div');el.className=kind;el.textContent=text;$('labels').append(el);const l={a,el};labels.push(l);a.label=l;return l;}
 function removeLabel(l){l.el.remove();const i=labels.indexOf(l);if(i>=0)labels.splice(i,1);}
@@ -84,7 +84,7 @@ function closeModal(){stopViewer();modal=false;$('modal').hidden=true;}
 function closeDialog(){if(dialog){dialog.cooldown=elapsed+5;dialog.contactLock=true;}dialog=null;$('dialogue').hidden=true;}
 function talk(n){if(modal||battle||dialog)return;cancelNavigation();dialog=n;S.stick.x=S.stick.y=0;$('stick').style.transform='';n.play('Idle');$('npcName').textContent=n.data.name;const lines=n.data.dialogue||['歡迎來到初光鎮！'];$('npcText').textContent=lines.map(line=>typeof line==='string'?line:line?.text||'').filter(Boolean).join('\n\n')||'祝你的旅途充滿新發現。';$('portrait').src=n.data.portraits?.normal||n.data.portrait||'';$('portrait').alt=n.data.name+'半身立繪';$('dialogue').hidden=false;const funcs=n.data.functions||[];let buttons='';if(n.data.id==='shop_vendor')buttons+='<button data-npc="pets">卡片兌換寵物</button>';if(funcs.some(f=>/heal|care|restore|回復/.test(f)))buttons+='<button data-npc="heal">休息與補給</button>';if(funcs.some(f=>/team|隊伍/.test(f)))buttons+='<button data-npc="team">整理隊伍</button>';if(funcs.some(f=>/quest|patrol|task|任務/.test(f)))buttons+='<button data-npc="quest">接受委託</button>';if(n.data.id==='prof_daydream'&&!S.state.adventureClaimed)buttons+='<button data-npc="adventure">領取冒險服</button>';else if(n.data.id!=='prof_daydream'&&funcs.some(f=>/research|dex|starter|研究/.test(f)))buttons+='<button data-npc="research">生態研究</button>';if(funcs.some(f=>/battle|arena|challenge|gym|對戰/.test(f))&&!funcs.some(f=>/tower/.test(f)))buttons+='<button data-npc="battle">3 對 3 對戰</button>';if(funcs.some(f=>/tower/.test(f))||n.data.buildingId==='tower_starspire')buttons+='<button data-npc="tower">開始星穹挑戰</button>';if(n.data.buildingId==='gym_light')buttons+='<button data-npc="gym">道館挑戰</button>';buttons+='<button data-npc="gift">問候與補給</button><button data-npc="close">離開</button>';$('npcActions').innerHTML=buttons;if(n.data.id==='prof_daydream'&&S.state.adventureClaimed)$('npcText').textContent+='\n\n已領得冒險服：穿著後每 15 秒自動吸收附近可見補給。';const gift=maybeNpcGift(n);if(gift)$('npcText').textContent+=' '+gift;}
 function npcAction(action){const n=dialog;if(!n)return;const s=S.state;if(action==='close')return closeDialog();if(action==='pets'){closeDialog();return showPetShop();}if(action==='adventure'&&n.data.id==='prof_daydream'){if(!s.adventureClaimed){s.adventureClaimed=true;if(!s.unlockedCostumes.includes('adventure'))s.unlockedCostumes.push('adventure');$('npcText').textContent='已領得冒險服！在旅人手冊 → 冒險衣櫃穿上後，每 15 秒自動收集附近可見補給，不必逐一走近。';$('npcActions').querySelector('[data-npc="adventure"]')?.remove();toast('已領得冒險服｜每 15 秒自動吸收附近補給');save();}return;}if(action==='team'){closeDialog();return showTeam();}if(action==='battle'){closeDialog();return startBattle('arena');}if(action==='gym'){closeDialog();return showGyms();}if(action==='tower'){save();location.href='tower/?v=20261015-tower-card-v3';return;}if(action==='heal'){const key=n.data.id+'-care',last=number(s.npcRewards[key]);if(Date.now()-last>=120000){s.npcRewards[key]=Date.now();s.items.potion=number(s.items.potion)+2;s.pokeballs=Math.max(s.pokeballs,15);$('npcText').textContent='夥伴已恢復精神！靈核球補足至 15 顆，並領取 2 份初光藥劑。';}else $('npcText').textContent='夥伴已恢復精神！補給每兩分鐘準備一次，請稍後再來。';}if(action==='quest'){const count=spirits.filter(x=>owned(x.id)).length;if(count>=5&&!s.quests.firstResearch){s.quests.firstResearch=true;s.items.thunderStone=number(s.items.thunderStone)+1;s.worldFlags.raichuSpawnUnlocked=true;$('npcText').textContent='你已締約 5 種幻靈，巡護委託完成！獲得雷光結晶；新的進階幻靈已能在城鎮出現。';}else $('npcText').textContent=s.quests.firstResearch?'初光鎮的安全，就交給我們一起守護。':'委託：締約 5 種不同幻靈，再回來領取雷光結晶。';}if(action==='research'){$('npcText').textContent='御靈的第一步是觀察。重複締約可累積進階所需的羈絆；在圖鑑中選擇夥伴，查看進階鏈。';}if(action==='gift'){$('npcText').textContent=maybeNpcGift(n,true)||'補給還在準備中，過一會兒再來找我吧。';}if(n.data.portraits?.happy)$('portrait').src=n.data.portraits.happy;save();}
-function showMenu(){openModal('旅人手冊',`<div class="menuGrid"><button data-menu="dex">✦ 幻靈圖鑑</button><button data-menu="team">☷ 幻靈隊伍</button><button data-menu="monsters">◇ 魔物圖鑑</button><button data-menu="bgm">♫ 背景音樂</button><button data-menu="costume">◇ 冒險衣櫃</button><button data-menu="gym">⚑ 初光挑戰</button><button data-menu="tower">✧ 星穹挑戰塔</button><button data-menu="pets">♧ 寵物商人</button><button data-menu="bag">◈ 旅人背包</button><button data-menu="guide">⌖ 建物與居民</button><button data-menu="help">？旅行指南</button><button data-menu="studio">↗ Blender 模型室</button><button data-menu="reset" class="danger">重置遊戲</button></div><p class="muted">進度自動保存在此瀏覽器，重新整理或回到同一網址可繼續遊玩。清除網站資料或更換裝置不會保留紀錄。</p>`);}
+function showMenu(){openModal('旅人手冊',`<div class="menuGrid"><button data-menu="dex">✦ 幻靈圖鑑</button><button data-menu="team">☷ 幻靈隊伍</button><button data-menu="bgm">♫ 背景音樂</button><button data-menu="costume">◇ 冒險衣櫃</button><button data-menu="gym">⚑ 初光挑戰</button><button data-menu="tower">✧ 星穹挑戰塔</button><button data-menu="pets">♧ 寵物商人</button><button data-menu="bag">◈ 旅人背包</button><button data-menu="guide">⌖ 建物與居民</button><button data-menu="help">？旅行指南</button><button data-menu="studio">↗ Blender 模型室</button><button data-menu="reset" class="danger">重置遊戲</button></div><p class="muted">進度自動保存在此瀏覽器，重新整理或回到同一網址可繼續遊玩。清除網站資料或更換裝置不會保留紀錄。</p>`);}
 function showPetShop(){
  const t=towerProgress();
  const rows=TOWER_PETS.map(p=>{
@@ -135,61 +135,80 @@ function tickPetGlow(pet,dt){
 }
 function tickPetFollower(dt){
  const pet=petFollower;if(!pet||!hero)return;
+ const face=hero.root.rotation.y,x=S.player.x,z=S.player.z,p=pet.root.position;
  const targetGroup=place?insideGroup:townGroup;
- if(pet.root.parent!==targetGroup)targetGroup.add(pet.root);
- const visible=!battle;
- pet.root.visible=visible;
- if(!visible)return;
- if(!pet.footGlow)createPetGlow(pet);
- const face=hero.root.rotation.y,x=S.player.x,z=S.player.z;
- const state=pet.followState||={lastX:x,lastZ:z,still:0,side:Math.random()<.5?-1:1,orbit:null,nextOrbit:11+Math.random()*6};
- const moving=Math.hypot(x-state.lastX,z-state.lastZ)>.008;
+ const state=pet.followState||={lastX:x,lastZ:z,still:0,side:Math.random()<.5?-1:1,
+  orbit:null,activity:null,phase:'approaching',scene:targetGroup};
+ // Only a scene change may relocate the pet: local coordinates from the previous
+ // room are unrelated. All ordinary following and activity cancellation interpolate.
+ if(pet.root.parent!==targetGroup||state.scene!==targetGroup){
+  targetGroup.add(pet.root);state.scene=targetGroup;
+  p.x=x-Math.sin(face)*1.13;p.y=0;p.z=z-Math.cos(face)*1.13;
+  state.still=0;state.orbit=null;state.activity=null;state.phase='approaching';
+  state.lastX=x;state.lastZ=z;
+ }
+ const moving=Math.hypot(x-state.lastX,z-state.lastZ)>.0005;
  state.lastX=x;state.lastZ=z;
- const interrupted=moving||modal||dialog||navigation||roll||throwing;
- if(interrupted){
-  state.still=0;state.orbit=null;state.nextOrbit=11+Math.random()*6;
- }else state.still+=dt;
- const p=pet.root.position;
- if(!interrupted&&state.orbit){
+ const blocked=!!(modal||dialog||navigation||roll||throwing||battle);
+ pet.root.visible=!battle;
+ if(moving||blocked){
+  state.still=0;state.orbit=null;state.activity=null;
+  state.phase=blocked?'blocked':'following';
+ }
+ if(battle){pet.play('Idle');return;}
+ if(!pet.footGlow)createPetGlow(pet);
+ let heading=face;
+ if(!moving&&!blocked&&state.orbit){
   const orbit=state.orbit;
   orbit.progress=Math.min(1,orbit.progress+dt/orbit.duration);
-  // Use the exact world-space starting position as the circular path's anchor.
-  // At 2 PI radians the position is identical, without interpolation drift or side swapping.
-  const phase=orbit.direction*orbit.progress*Math.PI*2;
-  const c=Math.cos(phase),sn=Math.sin(phase);
-  // Widen only the middle of the lap so the pet is less likely to hide behind the hero.
-  // The radius multiplier is exactly 1 at both ends, preserving the saved start point.
-  const radius=1+.20*Math.sin(orbit.progress*Math.PI);
-  p.x=orbit.centerX+(orbit.offsetX*c-orbit.offsetZ*sn)*radius;
-  p.z=orbit.centerZ+(orbit.offsetX*sn+orbit.offsetZ*c)*radius;
+  const phase=orbit.direction*orbit.progress*Math.PI*2,c=Math.cos(phase),sn=Math.sin(phase);
+  p.x=orbit.centerX+orbit.offsetX*c-orbit.offsetZ*sn;
+  p.z=orbit.centerZ+orbit.offsetX*sn+orbit.offsetZ*c;
+  heading=Math.atan2((-orbit.offsetX*sn-orbit.offsetZ*c)*orbit.direction,
+   (orbit.offsetX*c-orbit.offsetZ*sn)*orbit.direction);
   if(orbit.progress>=1){
-   p.x=orbit.startX;p.z=orbit.startZ;
-   state.orbit=null;state.nextOrbit=10+Math.random()*8;
-   state.still=3;
-   pet.play('Idle');
-  }else{
-   const dx=-orbit.offsetX*sn-orbit.offsetZ*c,dz=orbit.offsetX*c-orbit.offsetZ*sn;
-   pet.root.rotation.y=Math.atan2(dx*orbit.direction,dz*orbit.direction);
-   pet.play('Walk');
+   state.orbit=null;state.still=0;state.phase='waiting';pet.play('Idle');heading=face;
+  }else pet.play('Walk');
+ }else if(!moving&&!blocked&&state.activity){
+  state.activity.remaining-=dt;
+  if(state.activity.remaining<=0){
+   state.activity=null;state.still=0;state.phase='waiting';pet.play('Idle');
   }
  }else{
-  const angle=state.still>2?state.side*Math.PI/2:Math.PI;
+  const angle=moving||blocked?Math.PI:state.side*Math.PI/2;
   const tx=x+Math.sin(face+angle)*1.13,tz=z+Math.cos(face+angle)*1.13;
   const dx=tx-p.x,dz=tz-p.z,gap=Math.hypot(dx,dz);
-  const alpha=Math.min(1,dt*(moving?8.3:3.5));
-  p.x+=dx*alpha;p.z+=dz*alpha;
-  if(gap>.1)pet.root.rotation.y=Math.atan2(dx,dz);
-  else pet.root.rotation.y=face;
-  pet.play(gap>.14?'Walk':'Idle');
-  if(!interrupted&&state.still>5&&gap<.12){
-   state.nextOrbit-=dt;
-   if(state.nextOrbit<=0){
-    state.orbit={startX:p.x,startZ:p.z,centerX:x,centerZ:z,
-     offsetX:p.x-x,offsetZ:p.z-z,progress:0,
-     direction:Math.random()<.5?-1:1,duration:3.8+Math.random()*1.6};
+  // Stop within the arrival radius. Travel time never contributes to the two
+  // seconds of rest, and the stopped position is also the exact orbit anchor.
+  if(gap>.035){
+   const step=Math.min(gap*(1-Math.exp(-dt*(moving?8.3:4.5))),dt*(moving?6.2:3.2));
+   p.x+=dx/gap*step;p.z+=dz/gap*step;
+   heading=Math.atan2(dx,dz);state.still=0;
+   state.phase=blocked?'blocked':moving?'following':'approaching';pet.play('Walk');
+  }else{
+   pet.play('Idle');
+   if(!moving&&!blocked){
+    state.phase='waiting';state.still+=dt;
+    if(state.still>=2){
+     state.still=0;
+     if(pet.petId==='forest'){
+      state.orbit={centerX:x,centerZ:z,offsetX:p.x-x,offsetZ:p.z-z,
+       progress:0,direction:Math.random()<.5?-1:1,duration:4.6};
+      state.phase='orbit';pet.play('Walk');
+     }else if(pet.petId==='ice'||pet.petId==='fire'){
+      const name=pet.petId==='ice'?(Math.random()<.5?'InspectHat':'Hop'):
+       (Math.random()<.5?'Eat':'Count');
+      const key=Object.keys(pet.actions||{}).find(k=>k.toLowerCase()===name.toLowerCase());
+      const duration=key?pet.actions[key].getClip?.().duration:0;
+      state.activity={name,remaining:Number.isFinite(duration)&&duration>0?duration:2.4};
+      state.phase='activity';pet.play(name,true);
+     }
+    }
    }
   }
  }
+ const turn=Math.atan2(Math.sin(heading-pet.root.rotation.y),Math.cos(heading-pet.root.rotation.y));
+ pet.root.rotation.y+=turn*(1-Math.exp(-dt*10));
  tickPetGlow(pet,dt);
 }
 
@@ -337,7 +356,7 @@ function showDex(){openModal('幻靈圖鑑',`<div class="toolbar"><input id="dex
 const heroOutcomeNames=['Celebrate','JumpCelebrate','Disappointed','GroundPoundDisappointed'],townGrassMeshes=[];let townGrassMetadata=null;
 function prepareHeroOutcomeActions(){if(!hero)return;for(const name of heroOutcomeNames)if(hero.actions[name])hero.actions[name].setEffectiveTimeScale(2.5);}
 function playHeroOutcome(success){prepareHeroOutcomeActions();const candidates=(success?['Celebrate','JumpCelebrate']:['Disappointed','GroundPoundDisappointed']).filter(name=>hero.actions[name]),name=candidates[Math.random()<.5?0:candidates.length-1]||'Idle';hero.play(name,true);const action=hero.actions[name];return {name,duration:action?Math.max(.05,action.getClip().duration/(heroOutcomeNames.includes(name)?2.5:1)):.1};}
-async function loadTownGrass(){const r=await fetch('data/grass-patches.json?v=20261014-snail-release');if(!r.ok)throw Error('短草配置未就緒');const data=await r.json(),g=await asset(data.model),source=g.scene;source.updateMatrixWorld(true);const bounds=new T.Box3().setFromObject(source),baseHeight=Math.max(.001,bounds.max.y-bounds.min.y),patches=data.patches||[],range=data.heightRange||[.08,.22];townGrassMetadata=data;source.traverse(node=>{if(!node.isMesh)return;const materials=Array.isArray(node.material)?node.material.map(m=>m.clone()):node.material.clone(),mesh=new T.InstancedMesh(node.geometry,materials,patches.length);mesh.name='短草・可穿越';mesh.userData.townGrass=true;mesh.userData.collision=false;mesh.frustumCulled=false;mesh.receiveShadow=true;mesh.castShadow=false;for(let i=0;i<patches.length;i++){const patch=patches[i],pos=patch.position||[0,0,0],scale=patch.scale||[1,1,1],height=range[0]+(range[1]-range[0])*(((i*73+19)%101)/100),matrix=new T.Matrix4().compose(new T.Vector3(pos[0],(pos[1]||0)+.005,pos[2]),new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),patch.yaw||0),new T.Vector3(scale[0],height/baseHeight,scale[2]));matrix.multiply(node.matrixWorld);mesh.setMatrixAt(i,matrix);}mesh.instanceMatrix.needsUpdate=true;townGroup.add(mesh);townGrassMeshes.push(mesh);});}
+async function loadTownGrass(){const r=await fetch('data/grass-patches.json?v=20261015-sesame-pets-v1');if(!r.ok)throw Error('短草配置未就緒');const data=await r.json(),g=await asset(data.model),source=g.scene;source.updateMatrixWorld(true);const bounds=new T.Box3().setFromObject(source),baseHeight=Math.max(.001,bounds.max.y-bounds.min.y),patches=data.patches||[],range=data.heightRange||[.08,.22];townGrassMetadata=data;source.traverse(node=>{if(!node.isMesh)return;const materials=Array.isArray(node.material)?node.material.map(m=>m.clone()):node.material.clone(),mesh=new T.InstancedMesh(node.geometry,materials,patches.length);mesh.name='短草・可穿越';mesh.userData.townGrass=true;mesh.userData.collision=false;mesh.frustumCulled=false;mesh.receiveShadow=true;mesh.castShadow=false;for(let i=0;i<patches.length;i++){const patch=patches[i],pos=patch.position||[0,0,0],scale=patch.scale||[1,1,1],height=range[0]+(range[1]-range[0])*(((i*73+19)%101)/100),matrix=new T.Matrix4().compose(new T.Vector3(pos[0],(pos[1]||0)+.005,pos[2]),new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),patch.yaw||0),new T.Vector3(scale[0],height/baseHeight,scale[2]));matrix.multiply(node.matrixWorld);mesh.setMatrixAt(i,matrix);}mesh.instanceMatrix.needsUpdate=true;townGroup.add(mesh);townGrassMeshes.push(mesh);});}
 function collectionCardHtml(s){return `<article class="collectionCard" data-collection="${esc(s.id)}"><img class="collectionArt" data-art="${esc(s.id)}" decoding="async" alt="${esc(s.name)}的原創插畫"><img class="collectionFrame" src="assets/cards/frame.png" decoding="async" alt=""><h3 class="collectionName">${esc(s.name)}</h3><div class="collectionInfo"><div class="collectionType">${esc(s.type||s.element)} · ${esc(s.rarity||'普通')} · 第 ${s.stage||1} 階段</div><div class="collectionStats"><span>HP ${s.hp}</span><span>攻擊 ${s.attack}</span><span class="collectionBond">羈絆 ×${number(S.state.captureCounts[s.id])}</span></div><ul class="collectionSkills">${(s.skills||[]).slice(0,2).map(k=>`<li><span>${esc(k.name)}</span><b>${k.power}／${k.cost||1}能量</b></li>`).join('')}</ul><div class="collectionSynopsis">${esc((s.description||'初光鎮的原創幻靈夥伴。').slice(0,30))}${(s.description||'').length>30?'…':''}</div></div></article>`;}
 async function collectDuplicateCard(s,worldPosition){const node=document.createElement('div');node.className='collectionPickup';node.dataset.spirit=s.id;node.innerHTML=collectionCardHtml(s);document.body.append(node);requestArt(s,node.querySelector('[data-art]'));const p=worldPosition.clone().project(camera),sx=(p.x*.5+.5)*innerWidth,sy=(-p.y*.5+.5)*innerHeight;node.style.left=(sx-35)+'px';node.style.top=(sy-49)+'px';try{await captureTween(.45,t=>{node.style.transform=`translateY(${-t*28}px) rotateY(${t*360}deg) scale(${.75+t*.25})`;});const r=$('dexBtn').getBoundingClientRect(),ex=r.x+r.width/2,ey=r.y+r.height/2,cx=sx+(ex-sx)*.35,cy=Math.max(20,Math.min(sy,ey)-120);await captureTween(.95,t=>{const u=1-t,x=u*u*sx+2*u*t*cx+t*t*ex,y=u*u*(sy-28)+2*u*t*cy+t*t*ey;node.style.left=(x-35)+'px';node.style.top=(y-49)+'px';node.style.transform=`rotate(${t*18}deg) scale(${1-t*.8})`;node.style.opacity=String(1-Math.max(0,t-.8)*5);});$('dexBtn').animate([{filter:'brightness(1)'},{filter:'brightness(2)',transform:'scale(1.12)'},{filter:'brightness(1)',transform:'scale(1)'}],{duration:500});}finally{node.remove();}}
 function renderCards(){const q=$('dexSearch').value,filter=$('dexFilter').value,list=spirits.filter(s=>(!q||owned(s.id)&&s.name.includes(q))&&(filter==='all'||filter==='owned'&&owned(s.id)||String(s.stage)===filter));$('cardGrid').innerHTML=list.map(s=>owned(s.id)?`<button class="collectionThumb" data-detail="${s.id}" aria-label="查看${esc(s.name)}收藏卡">${collectionCardHtml(s)}</button>`:'<div class="card locked"><small>未締約</small><div class="seal">◇</div><strong>未知幻靈</strong><p class="muted">等待旅途中的相遇</p></div>').join('');$('cardGrid').querySelectorAll('.collectionFrame').forEach(img=>img.loading='lazy');$('cardGrid').querySelectorAll('[data-art]').forEach(img=>requestArt(byId[img.dataset.art],img));}
@@ -347,7 +366,7 @@ function showTeam(){openModal('幻靈隊伍 · 3 對 3',`<p class="muted">上場
 function showCostumes(){const names={trainer:'初光旅人',adventure:'博士贈送冒險服',electric:'閃角兔電系套裝',mist:'星霧雲靈同行',sound:'絨心團獸音波套裝',healing:'暖巢福鹿治癒套裝'};openModal('冒險衣櫃',Object.entries(names).map(([id,name])=>`<div class="row"><span>${name}</span><button data-costume="${id}" ${S.state.unlockedCostumes.includes(id)?'':'disabled'}>${S.state.costume===id?'穿著中':S.state.unlockedCostumes.includes(id)?'換裝':id==='adventure'?'向大夢博士領取':'道館解鎖'}</button></div>`).join(''));}
 const gyms=[{id:'gym_1',spirit:'pikachu',costume:'electric'},{id:'gym_2',spirit:'mew',costume:'mist'},{id:'gym_3',spirit:'wigglytuff',costume:'sound'},{id:'gym_4',spirit:'blissey',costume:'healing'}];
 function showGyms(){openModal('初光挑戰 · 四大守護者',`<p class="muted">親自走進 3D 試煉場，移動與翻滾避開推離和短暫干擾，投擲靈核球累積守護者的信任。旅人不會受到傷害；完成試煉解鎖專屬變裝，守護神獸將出現於初光鎮等待正式締約。幻靈競技則保留獨立 3 對 3 對決。</p><div class="cards">${gyms.map((g,i)=>`<button class="card" data-arena="${g.id}"><small>試煉 ${i+1} · ${['雷電奔襲','星霧念動','絨心音浪','暖巢治癒'][i]}</small><img data-art="${g.spirit}" alt="${esc(byId[g.spirit]?.name)}"><strong>${esc(byId[g.spirit]?.name)}</strong><div class="stats">${S.state.gyms[g.id]?.cleared?'✓ 已完成':'進入試煉 · 解鎖專屬裝備'}</div></button>`).join('')}</div>`);$('modalBody').querySelectorAll('[data-art]').forEach(img=>requestArt(byId[img.dataset.art],img));}
-async function showViewer(id){const s=byId[id];if(!s)return;openModal(s.name+' · 3D 模型','<div class="viewer" id="viewer"></div><p class="viewerNote">拖曳旋轉 · 滾輪縮放 · Blender 原創模型</p><div class="toolbar"><button data-vmotion="Idle">待機</button><button data-vmotion="Walk">行走</button><button data-vmotion="Attack">攻擊</button>'+(s.family==='pepper-chick'?'<button data-vmotion="Eat">吃辣椒</button><button data-vmotion="Count">坐下數椒</button><button data-vmotion="React">回應</button>':'')+'<button data-detail="'+id+'">返回收藏卡</button></div>');const host=$('viewer'),g=await asset(s.model);if(!host.isConnected)return;const r=new T.WebGLRenderer({antialias:true,alpha:false});r.setPixelRatio(Math.min(devicePixelRatio,1.7));r.setSize(host.clientWidth,host.clientHeight);r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;host.append(r.domElement);const st=new T.Scene();st.background=new T.Color('#192c42');st.add(new T.HemisphereLight(0xd8eeff,0x7c7183,1.3));const l=new T.DirectionalLight(0xffe6ca,2);l.position.set(-3,5,4);st.add(l);const o=cloneSkin(g.scene);st.add(o);const box=posedBounds(o),center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3()),cam=new T.PerspectiveCamera(36,host.clientWidth/host.clientHeight,.01,100),mix=new T.AnimationMixer(o),acts={};g.animations.forEach(c=>acts[c.name]=mix.clipAction(c));viewer={r,st,cam,o,mix,acts,center,distance:Math.max(size.x,size.y,size.z)*2,yaw:.3,pitch:.15};viewerMotion('Idle');let last=null;host.onpointerdown=e=>{last=[e.clientX,e.clientY];host.setPointerCapture(e.pointerId)};host.onpointermove=e=>{if(last&&viewer){viewer.yaw-=(e.clientX-last[0])*.012;viewer.pitch=Math.max(-.35,Math.min(.8,viewer.pitch+(e.clientY-last[1])*.009));last=[e.clientX,e.clientY];}};host.onpointerup=()=>last=null;host.onwheel=e=>{e.preventDefault();viewer.distance*=e.deltaY>0?1.1:.9;},{passive:false};}
+async function showViewer(id){const s=byId[id];if(!s)return;openModal(s.name+' · 3D 模型','<div class="viewer" id="viewer"></div><p class="viewerNote">拖曳旋轉 · 滾輪縮放 · Blender 原創模型</p><div class="toolbar"><button data-vmotion="Idle">待機</button><button data-vmotion="Walk">行走</button><button data-vmotion="Attack">攻擊</button>'+(s.family==='sesame-spirit'?'<button data-vmotion="Hop">跳躍</button><button data-vmotion="InspectHat">摘帽檢查</button><button data-vmotion="React">回應</button>':s.family==='pepper-chick'?'<button data-vmotion="Eat">吃辣椒</button><button data-vmotion="Count">坐下數椒</button><button data-vmotion="React">回應</button>':'')+'<button data-detail="'+id+'">返回收藏卡</button></div>');const host=$('viewer'),g=await asset(s.model);if(!host.isConnected)return;const r=new T.WebGLRenderer({antialias:true,alpha:false});r.setPixelRatio(Math.min(devicePixelRatio,1.7));r.setSize(host.clientWidth,host.clientHeight);r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;host.append(r.domElement);const st=new T.Scene();st.background=new T.Color('#192c42');st.add(new T.HemisphereLight(0xd8eeff,0x7c7183,1.3));const l=new T.DirectionalLight(0xffe6ca,2);l.position.set(-3,5,4);st.add(l);const o=cloneSkin(g.scene);st.add(o);const box=posedBounds(o),center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3()),cam=new T.PerspectiveCamera(36,host.clientWidth/host.clientHeight,.01,100),mix=new T.AnimationMixer(o),acts={};g.animations.forEach(c=>acts[c.name]=mix.clipAction(c));viewer={r,st,cam,o,mix,acts,center,distance:Math.max(size.x,size.y,size.z)*2,yaw:.3,pitch:.15};viewerMotion('Idle');let last=null;host.onpointerdown=e=>{last=[e.clientX,e.clientY];host.setPointerCapture(e.pointerId)};host.onpointermove=e=>{if(last&&viewer){viewer.yaw-=(e.clientX-last[0])*.012;viewer.pitch=Math.max(-.35,Math.min(.8,viewer.pitch+(e.clientY-last[1])*.009));last=[e.clientX,e.clientY];}};host.onpointerup=()=>last=null;host.onwheel=e=>{e.preventDefault();viewer.distance*=e.deltaY>0?1.1:.9;},{passive:false};}
 function viewerMotion(n){if(!viewer)return;Object.values(viewer.acts).forEach(a=>a.stop());const requested=n==='Attack'&&!viewer.acts.Attack&&viewer.acts.React?'React':n;const name=Object.keys(viewer.acts).find(k=>k.toLowerCase().includes(requested.toLowerCase()));if(name)viewer.acts[name].reset().play();}
 function stopViewer(){if(viewer){viewer.mix.stopAllAction();viewer.r.dispose();viewer.r.domElement.remove();viewer=null;}}
 function selectTarget(cycle=false){if(place||battle&&!battle.gym||throwing)return;const nearby=wild.filter(w=>w.root.visible&&w.root.parent===townGroup&&eligible(w.species)).sort((a,b)=>a.root.position.distanceTo(S.player)-b.root.position.distanceTo(S.player));if(!nearby.length){clearTarget();if(cycle)toast('目前沒有可締約的幻靈。');return;}if(!target||!nearby.includes(target))target=nearby[0];else if(cycle)target=nearby[(nearby.indexOf(target)+1)%nearby.length];if(cycle){locked=true;$('lockBtn').setAttribute('aria-pressed','true');$('lockBtn').setAttribute('aria-label','解除幻靈鎖定');$('lockBtn').title='解除鎖定';const dx=target.root.position.x-S.player.x,dz=target.root.position.z-S.player.z;hero.root.rotation.y=Math.atan2(dx,dz);cameraOrbit.yaw=Math.atan2(-dx,-dz);if(lockLabel)removeLabel(lockLabel);lockLabel=addLabel(target,'▼ '+target.species.name+' · 已鎖定','nameLabel targetLabel');showLockMarker(target);toast('已鎖定 '+target.species.name+(target.root.position.distanceTo(S.player)>12?'，請再靠近投擲。':''));}}
@@ -622,7 +641,7 @@ function warmBattleModels(){
  }
 }
 
-async function init(){try{const responses=await Promise.all(['data/spirits.json','data/world.json','data/npcs.json'].map(p=>fetch(p+'?v=20261015-pepper-v1').then(r=>{if(!r.ok)throw Error(p+' 尚未就緒');return r.json()})));spirits=Array.isArray(responses[0])?responses[0]:responses[0].spirits;spirits.forEach(s=>{s.id=s.id||s.speciesId;s.name=s.name||s.displayName;byId[s.id]=s;});world=responses[1];npcData=Array.isArray(responses[2])?responses[2]:responses[2].npcs;const extraDataRequests=[(async()=>{try{const r=await fetch('data/model-size-overrides.json?v=20261014-snail-release');if(r.ok){const v=await r.json();modelSizeOverrides=v.overrides||v;}}catch(e){console.warn('尺寸設定尚未就緒',e);}})(),(async()=>{try{const r=await fetch('data/tower-monsters.json?v=20261014e');if(r.ok)towerMonsters=(await r.json()).monsters||[];}catch(e){console.warn('魔物卡牌尚未載入',e);}})(),(async()=>{try{const r=await fetch('data/card-art.json?v=20261015-pepper-v1');if(r.ok){const v=await r.json();cardArt=v.cards||v.art||v;}}catch(e){console.warn('卡圖清單尚未就緒',e);}})()];await Promise.all(extraDataRequests);S.state=loadSave();const restoredBuilding=S.state.buildingId,restoredPosition=S.state.position?.slice();S.state.team=S.state.team.filter(id=>byId[id]&&owned(id));if(!S.state.team.length)S.state.team=spirits.filter(s=>owned(s.id)).slice(0,3).map(s=>s.id);for(const g of gyms)if(S.state.gyms[g.id]?.cleared&&!S.state.unlockedCostumes.includes(g.costume))S.state.unlockedCostumes.push(g.costume);$('loadText').textContent='載入初光鎮與旅人…';const townAsset=await asset(world.worldModel||world.model);town=townAsset.scene.clone(true);townGroup.add(town);town.traverse(n=>{if(n.isMesh){n.receiveShadow=true;n.castShadow=true;}});hero=await actor('models/hero.glb',2.55);prepareHeroOutcomeActions();hero.root.rotation.y=Math.PI;S.player.fromArray(world.spawn||[0,0,4]);if(S.state.position?.length===2&&!blocked(...S.state.position))S.player.set(S.state.position[0],0,S.state.position[1]);hero.root.position.copy(S.player);setCostume(S.state.costume);$('loadText').textContent='準備鄰近居民與初始幻靈…';
+async function init(){try{const responses=await Promise.all(['data/spirits.json','data/world.json','data/npcs.json'].map(p=>fetch(p+'?v=20261015-sesame-pets-v1').then(r=>{if(!r.ok)throw Error(p+' 尚未就緒');return r.json()})));spirits=Array.isArray(responses[0])?responses[0]:responses[0].spirits;spirits.forEach(s=>{s.id=s.id||s.speciesId;s.name=s.name||s.displayName;byId[s.id]=s;});world=responses[1];npcData=Array.isArray(responses[2])?responses[2]:responses[2].npcs;const extraDataRequests=[(async()=>{try{const r=await fetch('data/model-size-overrides.json?v=20261015-sesame-pets-v1');if(r.ok){const v=await r.json();modelSizeOverrides=v.overrides||v;}}catch(e){console.warn('尺寸設定尚未就緒',e);}})(),(async()=>{try{const r=await fetch('data/tower-monsters.json?v=20261014e');if(r.ok)towerMonsters=(await r.json()).monsters||[];}catch(e){console.warn('魔物卡牌尚未載入',e);}})(),(async()=>{try{const r=await fetch('data/card-art.json?v=20261015-sesame-pets-v1');if(r.ok){const v=await r.json();cardArt=v.cards||v.art||v;}}catch(e){console.warn('卡圖清單尚未就緒',e);}})()];await Promise.all(extraDataRequests);S.state=loadSave();const restoredBuilding=S.state.buildingId,restoredPosition=S.state.position?.slice();S.state.team=S.state.team.filter(id=>byId[id]&&owned(id));if(!S.state.team.length)S.state.team=spirits.filter(s=>owned(s.id)).slice(0,3).map(s=>s.id);for(const g of gyms)if(S.state.gyms[g.id]?.cleared&&!S.state.unlockedCostumes.includes(g.costume))S.state.unlockedCostumes.push(g.costume);$('loadText').textContent='載入初光鎮與旅人…';const townAsset=await asset(world.worldModel||world.model);town=townAsset.scene.clone(true);townGroup.add(town);town.traverse(n=>{if(n.isMesh){n.receiveShadow=true;n.castShadow=true;}});hero=await actor('models/hero.glb',2.55);prepareHeroOutcomeActions();hero.root.rotation.y=Math.PI;S.player.fromArray(world.spawn||[0,0,4]);if(S.state.position?.length===2&&!blocked(...S.state.position))S.player.set(S.state.position[0],0,S.state.position[1]);hero.root.position.copy(S.player);setCostume(S.state.costume);$('loadText').textContent='準備鄰近居民與初始幻靈…';
 const nearestNpcs=[...npcData].sort((a,b)=>{
  const p=a.position||[0,0,0],q=b.position||[0,0,0],az=p.length===2?p[1]:p[2],bz=q.length===2?q[1]:q[2];
  return Math.hypot(p[0]-S.player.x,az-S.player.z)-Math.hypot(q[0]-S.player.x,bz-S.player.z);

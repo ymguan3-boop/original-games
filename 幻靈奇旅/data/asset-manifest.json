@@ -180,16 +180,6 @@
       ]
     },
     {
-      "file": "models/spirits/blastoise.glb",
-      "bytes": 187440,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/blaziken.glb",
       "bytes": 119748,
       "animations": [
@@ -612,6 +602,39 @@
       ]
     },
     {
+      "file": "models/spirits/sesame-spirit-1.glb",
+      "bytes": 2232756,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Hop",
+        "InspectHat",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/sesame-spirit-2.glb",
+      "bytes": 2661476,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Hop",
+        "InspectHat",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/sesame-spirit-3.glb",
+      "bytes": 2992392,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Hop",
+        "InspectHat",
+        "React"
+      ]
+    },
+    {
       "file": "models/spirits/spiral-snail-1.glb",
       "bytes": 1751604,
       "animations": [
@@ -636,16 +659,6 @@
         "Idle",
         "Walk",
         "React"
-      ]
-    },
-    {
-      "file": "models/spirits/squirtle.glb",
-      "bytes": 175796,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
       ]
     },
     {
@@ -722,16 +735,6 @@
     {
       "file": "models/spirits/typhlosion.glb",
       "bytes": 191308,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/wartortle.glb",
-      "bytes": 176408,
       "animations": [
         "Idle",
         "Walk",

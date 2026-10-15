@@ -14,7 +14,7 @@ OUT=ROOT/'models'/'spirits';OUT.mkdir(parents=True,exist_ok=True)
 FAMILIES=[
  ('grass','sprout-boar','boar',0x72AA5D,['bulbasaur','ivysaur','venusaur'],['青螺靈','紫羽螺','赤鎧螺王']),
  ('fire','fire-cat','cat',0xED873F,['charmander','charmeleon','charizard'],['剝皮辣椒雞','雙椒辣椒雞','豐椒辣椒雞王']),
- ('water','stream-otter','otter',0x509FBF,['squirtle','wartortle','blastoise'],['露珠獺','漣尾獺','潮汐海獺']),
+ ('water','sesame-spirit','woolball',0x509FBF,['squirtle','wartortle','blastoise'],['小芝麻','絨芝麻','星冠芝麻']),
  ('grass','willow-deer','deer',0x8EA761,['chikorita','bayleef','meganium'],['嫩芽鹿','柳鈴鹿','森燈冠鹿']),
  ('fire','kiln-shell','hedgehog',0xB87C58,['cyndaquil','quilava','typhlosion'],['炭絨刺團','熔陶甲獸','赤窯守甲']),
  ('water','crystal-newt','newt',0x65B9BC,['totodile','croconaw','feraligatr'],['溪鈴螈','晶鰭螈','冰瀑翼螈']),
@@ -390,8 +390,8 @@ def rig_and_export(d):
 
 if __name__=='__main__':
  args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
- # These stable save IDs now use the dedicated spiral-snail.py and pepper-chick.py authoring pipelines.
- selected=[d for d in DATA if d['id'] not in ('bulbasaur','ivysaur','venusaur','charmander','charmeleon','charizard') and (not args or d['id'] in args)];reports=[]
+ # These stable save IDs now use the dedicated spiral-snail.py, pepper-chick.py and sesame-spirit.py authoring pipelines.
+ selected=[d for d in DATA if d['id'] not in ('bulbasaur','ivysaur','venusaur','charmander','charmeleon','charizard','squirtle','wartortle','blastoise') and (not args or d['id'] in args)];reports=[]
  for d in selected:reports.append(rig_and_export(d))
  manifest=ROOT/'data'/'spirit-model-manifest.json'
  old=json.loads(manifest.read_text(encoding='utf-8')) if manifest.exists() else []

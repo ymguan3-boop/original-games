@@ -209,17 +209,17 @@
   {
     "id": "squirtle",
     "speciesId": "squirtle",
-    "name": "露珠獺",
+    "name": "小芝麻",
     "element": "water",
     "type": "潮",
     "stage": 1,
-    "family": "stream-otter",
-    "form": "otter",
-    "color": 5283775,
+    "family": "sesame-spirit",
+    "form": "woolball",
+    "color": 7482268,
     "role": "starter",
     "previous": null,
     "next": "wartortle",
-    "model": "models/spirits/squirtle.glb",
+    "model": "models/spirits/sesame-spirit-1.glb",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -228,32 +228,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "潮光輕擊",
+        "name": "芝麻輕撞",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "露珠共鳴",
+        "name": "淨帽共鳴",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "露珠獺是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "小芝麻是愛乾淨的紫色毛球，戴著奶油白帽子。散步時偶爾輕跳，休息時會摘帽仔細檢查。"
   },
   {
     "id": "wartortle",
     "speciesId": "wartortle",
-    "name": "漣尾獺",
+    "name": "絨芝麻",
     "element": "water",
     "type": "潮",
     "stage": 2,
-    "family": "stream-otter",
-    "form": "otter",
-    "color": 5283775,
+    "family": "sesame-spirit",
+    "form": "woolball",
+    "color": 8402846,
     "role": "starter",
     "previous": "squirtle",
     "next": "blastoise",
-    "model": "models/spirits/wartortle.glb",
+    "model": "models/spirits/sesame-spirit-2.glb",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
@@ -262,32 +262,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "潮光輕擊",
+        "name": "絨毛旋舞",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "漣尾共鳴",
+        "name": "絨芝共鳴",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "漣尾獺是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "絨芝麻長出更綿密的葡萄紫捲毛，湖水綠帽子繡著月亮與星紋，總會停下來確認帽子乾乾淨淨。"
   },
   {
     "id": "blastoise",
     "speciesId": "blastoise",
-    "name": "潮汐海獺",
+    "name": "星冠芝麻",
     "element": "water",
     "type": "潮",
     "stage": 3,
-    "family": "stream-otter",
-    "form": "otter",
-    "color": 5283775,
+    "family": "sesame-spirit",
+    "form": "woolball",
+    "color": 9917364,
     "role": "starter",
     "previous": "wartortle",
     "next": null,
-    "model": "models/spirits/blastoise.glb",
+    "model": "models/spirits/sesame-spirit-3.glb",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
@@ -296,17 +296,17 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "潮光輕擊",
+        "name": "星冠躍擊",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "潮汐共鳴",
+        "name": "星冠共鳴",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "潮汐海獺是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "星冠芝麻披著蓬鬆的淡紫捲毛，戴著珊瑚橘星冠帽。牠喜歡輕快跳躍，也愛向旅人展示整理好的帽子。"
   },
   {
     "id": "chikorita",

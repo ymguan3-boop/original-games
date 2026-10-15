@@ -155,7 +155,7 @@ body.impact-heavy .vignette{box-shadow:inset 0 0 110px #ffbf5933}body.impact-lig
 /* Choose one of three tower guardians, then reveal the outcome one glyph at a time. */
 .huntLevelChoices{display:grid;gap:10px;margin-top:20px}
 .huntLevelChoices button{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:13px 16px;min-height:74px;border-radius:10px;text-align:left}
-.huntLevelChoices strong{font-size:18px;color:#ffe3ae}
+.huntLevelChoices button{background-image:linear-gradient(90deg,rgba(12,30,24,.94),rgba(12,30,24,.48) 58%,rgba(12,30,24,.16)),var(--monster-portrait);background-size:cover;background-position:center,70% 65%;min-height:132px;box-shadow:inset 0 0 0 1px #ffffff10;text-shadow:0 2px 6px #000}.huntLevelChoices button:hover,.huntLevelChoices button:focus-visible{border-color:#e7cf89;box-shadow:0 0 0 2px #e7cf8940}.huntLevelChoices strong{font-size:18px;color:#ffe3ae}
 .huntLevelChoices span{font-size:13px;color:#dee8d1}
 .huntLevelChoices small{font-size:11px;color:#b0c4ad}
 .huntResultWord{display:flex;justify-content:center;gap:.18em;font-size:clamp(48px,10vw,72px);margin:12px 0}
@@ -767,7 +767,7 @@ function openPanel(kind){
  if(!panel.open)panel.showModal();
  const content=$('panelContent'),l=LEVELS[h.level];
  if(kind==='choose'){
- content.innerHTML='<div class="eyebrow">SELECT A CHALLENGE</div><h2>選擇挑戰魔獸</h2><p>選擇魔獸即可直接前往對應場地；既有素材、卡片與武器進度保留。</p><div class="huntLevelChoices">'+LEVELS.map((entry,i)=>'<button type="button" data-action="choose-'+i+'"><strong>'+entry.monster+'</strong><span>'+entry.name+'</span><small>生命 '+Math.ceil(entry.hp*h.bossGrowth(i).health)+' · 已擊敗 '+h.bossPriorWins(i)+' 次</small></button>').join('')+'</div><div class="actions"><button type="button" data-action="exit">退出挑戰塔</button></div>';
+ content.innerHTML='<div class="eyebrow">SELECT A CHALLENGE</div><h2>選擇挑戰魔獸</h2><p>選擇魔獸即可直接前往對應場地；既有素材、卡片與武器進度保留。</p><div class="huntLevelChoices">'+LEVELS.map((entry,i)=>'<button type="button" data-action="choose-'+i+'" style="--monster-portrait:url(\'../assets/tower-cards/'+entry.kind+'.webp\')"><strong>'+entry.monster+'</strong><span>'+entry.name+'</span><small>生命 '+Math.ceil(entry.hp*h.bossGrowth(i).health)+' · 已擊敗 '+h.bossPriorWins(i)+' 次</small></button>').join('')+'</div><div class="actions"><button type="button" data-action="exit">退出挑戰塔</button></div>';
  }
  else if(kind==='weapons'){content.innerHTML=quickWeaponsHtml();}
  else if(kind==='items'){content.innerHTML=itemMenuHtml();}

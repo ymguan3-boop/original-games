@@ -51,34 +51,31 @@
     "path": "cards/art/pepper-chick-3.webp"
   },
   "squirtle": {
-    "image": "cards/art/squirtle.webp",
-    "name": "露珠獺",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/squirtle.glb",
-    "group": 1,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/sesame-spirit-1.webp",
+    "path": "cards/art/sesame-spirit-1.webp",
+    "name": "小芝麻",
+    "source": "User supplied sesame spirit portrait",
+    "referenceModel": "models/spirits/sesame-spirit-1.glb",
+    "style": "user-supplied-sesame-spirit-portrait",
+    "generatedAt": "2026-10-13"
   },
   "wartortle": {
-    "image": "cards/art/wartortle.webp",
-    "name": "漣尾獺",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/wartortle.glb",
-    "group": 1,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/sesame-spirit-2.webp",
+    "path": "cards/art/sesame-spirit-2.webp",
+    "name": "絨芝麻",
+    "source": "User supplied sesame spirit portrait",
+    "referenceModel": "models/spirits/sesame-spirit-2.glb",
+    "style": "user-supplied-sesame-spirit-portrait",
+    "generatedAt": "2026-10-13"
   },
   "blastoise": {
-    "image": "cards/art/blastoise.webp",
-    "name": "潮汐海獺",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/blastoise.glb",
-    "group": 2,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/sesame-spirit-3.webp",
+    "path": "cards/art/sesame-spirit-3.webp",
+    "name": "星冠芝麻",
+    "source": "User supplied sesame spirit portrait",
+    "referenceModel": "models/spirits/sesame-spirit-3.glb",
+    "style": "user-supplied-sesame-spirit-portrait",
+    "generatedAt": "2026-10-13"
   },
   "chikorita": {
     "image": "cards/art/chikorita.webp",

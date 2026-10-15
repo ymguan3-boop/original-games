@@ -144,54 +144,60 @@
   },
   {
     "id": "squirtle",
-    "name": "露珠獺",
-    "vertices": 2638,
-    "triangles": 5172,
-    "materials": 4,
-    "bones": 8,
+    "name": "小芝麻",
+    "vertices": 21666,
+    "triangles": 40260,
+    "materials": 7,
+    "bones": 17,
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Hop",
+      "InspectHat",
+      "React"
     ],
-    "fileBytes": 175796,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 2232756,
+    "source": "Approved native Blender sesame spirit with connected two-bone IK and removable hat",
+    "model": "models/spirits/sesame-spirit-1.glb"
   },
   {
     "id": "wartortle",
-    "name": "漣尾獺",
-    "vertices": 2650,
-    "triangles": 5188,
-    "materials": 4,
-    "bones": 8,
+    "name": "絨芝麻",
+    "vertices": 28401,
+    "triangles": 53332,
+    "materials": 7,
+    "bones": 17,
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Hop",
+      "InspectHat",
+      "React"
     ],
-    "fileBytes": 176408,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 2661476,
+    "source": "Approved native Blender sesame spirit with connected two-bone IK and removable hat",
+    "model": "models/spirits/sesame-spirit-2.glb"
   },
   {
     "id": "blastoise",
-    "name": "潮汐海獺",
-    "vertices": 2830,
-    "triangles": 5524,
-    "materials": 5,
-    "bones": 8,
+    "name": "星冠芝麻",
+    "vertices": 33610,
+    "triangles": 63340,
+    "materials": 7,
+    "bones": 17,
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Hop",
+      "InspectHat",
+      "React"
     ],
-    "fileBytes": 187440,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 2992392,
+    "source": "Approved native Blender sesame spirit with connected two-bone IK and removable hat",
+    "model": "models/spirits/sesame-spirit-3.glb"
   },
   {
     "id": "chikorita",
