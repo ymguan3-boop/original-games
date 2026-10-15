@@ -7,7 +7,7 @@ const loader=new T.GLTFLoader(),cache=new Map(),actors=[],wild=[],npcs=[],labels
 let towerMonsters=[];
 let spirits=[],byId={},world,npcData,hero,town,interior,place=null,battle=null,target=null,modal=false,dialog=null,viewer=null,elapsed=0,ballType='normal',throwing=false,portalAction=null,companion=null,roll=null,rollReady=0;
 const pickups=[];let modelSizeOverrides={},adventureCollectAt=15,pickupCostume=null,guideBroadcastAt=300,guideBroadcastIndex=0;
-let navigation=null,navRoute=[],navReplan=0,spawnPending=0,locked=false,lockLabel=null,cardArt={};let petFollower=null;
+let navigation=null,navRoute=[],navReplan=0,spawnPending=0,locked=false,lockLabel=null,cardArt={};let petFollower=null,petEquipGeneration=0,petChangeGeneration=0,petLoadingId=null;
 const cameraOrbit={yaw:0,zoom:1,pitch:.68},WILD_LIMIT=8;
 const TOWER_KEY='phantom-starspire-tower-v1';const TOWER_PETS=[{id:'forest',card:'森棘龍卡片',name:'青螺幼靈',model:'bulbasaur',cost:3},{id:'ice',card:'霜牙獸卡片',name:'雪芽靈獸',model:'squirtle',cost:3},{id:'fire',card:'熔冠翼龍卡片',name:'椒香小雞',model:'charmander',cost:3}];
 function towerProgress(){try{const v=JSON.parse(localStorage.getItem(TOWER_KEY)||'{}');return {...v,inventory:{...(v.inventory||{})},cards:{...(v.cards||{})},pets:{...(v.pets||{})}};}catch{return {inventory:{},cards:{},pets:{}};}}
@@ -87,9 +87,18 @@ function npcAction(action){const n=dialog;if(!n)return;const s=S.state;if(action
 function showMenu(){openModal('旅人手冊',`<div class="menuGrid"><button data-menu="dex">✦ 幻靈圖鑑</button><button data-menu="team">☷ 幻靈隊伍</button><button data-menu="monsters">◇ 魔物圖鑑</button><button data-menu="bgm">♫ 背景音樂</button><button data-menu="costume">◇ 冒險衣櫃</button><button data-menu="gym">⚑ 初光挑戰</button><button data-menu="tower">✧ 星穹挑戰塔</button><button data-menu="pets">♧ 寵物商人</button><button data-menu="bag">◈ 旅人背包</button><button data-menu="guide">⌖ 建物與居民</button><button data-menu="help">？旅行指南</button><button data-menu="studio">↗ Blender 模型室</button><button data-menu="reset" class="danger">重置遊戲</button></div><p class="muted">進度自動保存在此瀏覽器，重新整理或回到同一網址可繼續遊玩。清除網站資料或更換裝置不會保留紀錄。</p>`);}
 function showPetShop(){
  const t=towerProgress();
- const rows=TOWER_PETS.map(p=>{const count=number(t.cards[p.card]),owned=!!t.pets[p.id],active=S.state.petActive===p.id;
- return '<div class="row"><span><strong>'+p.name+'</strong><small style="display:block">需要 '+p.card+' ×'+p.cost+' ｜目前 '+count+' 張</small></span><button data-pet="'+p.id+'" '+(!owned&&count<p.cost?'disabled':'')+'>'+(active?'取消隨行':owned?'設為隨行':'兌換寵物')+'</button></div>';}).join('');
- openModal('寵物商人・卡片兌換','<p class="muted">挑戰塔掉落的卡片可換取永久寵物。兌換後可選擇一隻在初光鎮隨行。已登錄的圖鑑紀錄不會因兌換而消失。</p>'+rows);
+ const rows=TOWER_PETS.map(p=>{
+  const count=number(t.cards[p.card]),owned=!!t.pets[p.id],active=S.state.petActive===p.id;
+  const loading=active&&petLoadingId===p.id;
+  const label=loading?'切換中…':active?'取消隨行':owned?'設為隨行':'兌換寵物';
+  return '<div class="row"><span><strong>'+p.name+'</strong><small style="display:block">需要 '+p.card+' ×'+p.cost+' ｜目前 '+count+' 張'+(active?' ｜目前設定隨行':'')+'</small></span><button data-pet="'+p.id+'" '+(!owned&&count<p.cost?'disabled':'')+'>'+(loading?'◌ ':'')+label+'</button></div>';
+ }).join('');
+ openModal('寵物商人・卡片兌換','<p class="muted">挑戰塔掉落的卡片可換取永久寵物。選擇後會立即替換場景中的隨行寵物，不需重新載入遊戲。</p>'+rows);
+ // Start cache warming when visiting the merchant so switching can finish quickly.
+ // Only owned pets are warmed, and failures never interrupt the current scene.
+ for(const p of TOWER_PETS){
+  if(t.pets[p.id]&&byId[p.model]?.model)void asset(byId[p.model].model).catch(e=>console.warn('預載隨行寵物失敗',e));
+ }
 }
 
 function disposePetGlow(pet){
@@ -126,7 +135,9 @@ function tickPetGlow(pet,dt){
 }
 function tickPetFollower(dt){
  const pet=petFollower;if(!pet||!hero)return;
- const visible=!place&&!battle;
+ const targetGroup=place?insideGroup:townGroup;
+ if(pet.root.parent!==targetGroup)targetGroup.add(pet.root);
+ const visible=!battle;
  pet.root.visible=visible;
  if(!visible)return;
  if(!pet.footGlow)createPetGlow(pet);
@@ -182,15 +193,70 @@ function tickPetFollower(dt){
  tickPetGlow(pet,dt);
 }
 async function equipPet(id){
- if(petFollower){disposePetGlow(petFollower);removeActor(petFollower);petFollower=null;}
- const p=TOWER_PETS.find(x=>x.id===id);if(!p||!byId[p.model]||!S.state.petActive)return;
- try{petFollower=await actor(byId[p.model].model,.88);petFollower.root.visible=!place&&!battle;petFollower.root.position.set(S.player.x-Math.sin(hero.root.rotation.y)*1.14,0,S.player.z-Math.cos(hero.root.rotation.y)*1.14);createPetGlow(petFollower);petFollower.play('Walk');}catch(err){console.warn('寵物載入失敗',err);toast('寵物模型載入失敗，請重新進入遊戲。');}
+ const version=++petEquipGeneration;
+ if(!id){
+  if(petFollower){disposePetGlow(petFollower);removeActor(petFollower);petFollower=null;}
+  return true;
+ }
+ const petConfig=TOWER_PETS.find(p=>p.id===id);
+ const spirit=petConfig&&byId[petConfig.model];
+ if(!spirit?.model){
+  console.warn('隨行寵物缺少對應模型',id);
+  return false;
+ }
+ let next=null;
+ try{
+  // Keep the existing pet visible until the new actor is ready.  Rapid changes
+  // cannot install a stale model because every request has a version token.
+  next=await actor(spirit.model,.88,place?insideGroup:townGroup);
+  if(version!==petEquipGeneration||S.state.petActive!==id){removeActor(next);return false;}
+  const group=place?insideGroup:townGroup;
+  if(next.root.parent!==group)group.add(next.root);
+  next.petId=id;
+  const face=hero?.root.rotation.y||0;
+  next.root.position.set(S.player.x-Math.sin(face)*1.14,0,S.player.z-Math.cos(face)*1.14);
+  next.root.visible=!battle;
+  createPetGlow(next);
+  next.play('Idle');
+  const previous=petFollower;
+  petFollower=next;
+  if(previous&&previous!==next){disposePetGlow(previous);removeActor(previous);}
+  return true;
+ }catch(error){
+  if(next&&petFollower!==next)removeActor(next);
+  if(version===petEquipGeneration){
+   console.warn('即時切換寵物失敗',id,error);
+   toast('寵物模型載入失敗，原有隨行寵物已保留。');
+  }
+  return false;
+ }
 }
-function changePet(id){
- const p=TOWER_PETS.find(x=>x.id===id);if(!p)return;const t=towerProgress(),count=number(t.cards[p.card]);
- if(!t.pets[p.id]){if(count<p.cost)return toast('卡片不足，請先挑戰魔物。');t.cards[p.card]=count-p.cost;t.pets[p.id]=true;if(!saveTowerProgress(t))return toast('無法儲存寵物兌換，請檢查網站儲存權限。');}
- S.state.petActive=S.state.petActive===p.id?null:p.id;save();equipPet(S.state.petActive);showPetShop();
+async function changePet(id){
+ const p=TOWER_PETS.find(x=>x.id===id);if(!p)return;
+ const t=towerProgress(),count=number(t.cards[p.card]);
+ if(!t.pets[p.id]){
+  if(count<p.cost)return toast('卡片不足，請先挑戰魔物。');
+  t.cards[p.card]=count-p.cost;t.pets[p.id]=true;
+  if(!saveTowerProgress(t))return toast('無法儲存寵物兌換，請檢查網站儲存權限。');
+ }
+ const previousId=S.state.petActive;
+ const nextId=previousId===p.id?null:p.id;
+ const version=++petChangeGeneration;
+ S.state.petActive=nextId;
+ petLoadingId=nextId;
+ save();
+ showPetShop();
+ const ok=await equipPet(nextId);
+ if(version!==petChangeGeneration)return;
+ petLoadingId=null;
+ if(!ok){
+  // Undo only this unsuccessful selection, without touching purchased pets.
+  S.state.petActive=previousId;
+  save();
+ }else toast(nextId?'已立即切換隨行寵物：'+p.name:'已取消隨行寵物');
+ if(modal&&$('modalTitle').textContent.includes('寵物商人'))showPetShop();
 }
+
 function towerCardCounts(){const t=towerProgress();return Object.fromEntries(towerMonsters.map(s=>[s.id,number(t.cards[s.name+'卡片'])]));}
 function towerCardOwned(id){const t=towerProgress(),s=towerMonsters.find(s=>s.id===id);return !!s&&(!!t.registeredCards?.[s.name+'卡片']||number(t.cards[s.name+'卡片'])>0);}
 function monsterCard(s,detail=false){const n=number(towerCardCounts()[s.id]),registered=towerCardOwned(s.id),color=s.id==='fire'?'red':'purple',moves={forest:[['衝鋒突進',32],['古林震地',34]],ice:[['霜牙衝刺',32],['冰圈爆破',29]],fire:[['烈焰吐息',38],['熔岩爆發',29]]}[s.id]||[];const card=`<article class="collectionCard towerMonsterCard" data-frame="${color}" data-locked="${!registered}"><img class="collectionArt" src="${esc(s.portrait)}" alt="${esc(s.name)}肖像" loading="lazy" decoding="async"><img class="collectionFrame" src="assets/cards/frame.png" alt="" decoding="async"><h3 class="collectionName">${registered?esc(s.name):'未知魔物'}</h3><div class="collectionInfo"><div class="collectionType">${registered?esc(s.element):'???'} · 挑戰塔魔物</div><div class="collectionStats"><span>HP ${registered?s.hp:'???'}</span><span>攻擊 ${registered?s.attack:'???'}</span><span class="collectionBond">卡牌 ×${n}</span></div><ul class="collectionSkills">${moves.map(([name,power])=>`<li><span>${name}</span><b>${power}／傷害</b></li>`).join('')}</ul><div class="collectionSynopsis">${esc(s.description.slice(0,28))}…</div></div></article>`;return detail?card:`<button class="collectionThumb towerMonsterThumb" data-monster="${s.id}" ${registered?'':'disabled'} aria-label="${registered?'查看'+esc(s.name)+'卡牌':'未取得魔物卡牌，取得卡牌後解鎖'}">${card}</button>`;}
