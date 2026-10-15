@@ -192,45 +192,102 @@ function tickPetFollower(dt){
  }
  tickPetGlow(pet,dt);
 }
+
+async function createPetFallbackActor(path,height,parent){
+ // If the full actor initializer fails for an otherwise valid GLB, preserve
+ // the visible mesh and its animations without the expensive posedBounds pass.
+ const gltf=await asset(path);
+ const object=cloneSkin(gltf.scene);
+ const root=new T.Group();root.add(object);
+ object.updateMatrixWorld(true);
+ const bounds=new T.Box3().setFromObject(object);
+ const size=bounds.getSize(new T.Vector3());
+ const scale=Number.isFinite(size.y)&&size.y>.001?height/size.y:1;
+ object.scale.multiplyScalar(scale);
+ if(Number.isFinite(bounds.min.y))object.position.y-=bounds.min.y*scale;
+ object.traverse(mesh=>{if(mesh.isMesh){mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;}});
+ const mixer=new T.AnimationMixer(object),actions={};
+ for(const clip of gltf.animations||[]){
+  const name=clip.name.replace(/.*[|]/,'');
+  try{actions[name]=mixer.clipAction(clip);}catch(error){console.warn('寵物動畫片段略過',name,error);}
+ }
+ const pet={root,object,mixer,actions,mode:null,path,height};
+ pet.play=(name)=>{
+  const key=Object.keys(actions).find(k=>k.toLowerCase()===name.toLowerCase())
+   ||Object.keys(actions).find(k=>k.toLowerCase().includes(name.toLowerCase()))
+   ||Object.keys(actions)[0];
+  if(!key||pet.mode===key)return;
+  for(const a of Object.values(actions))a.fadeOut(.15);
+  const action=actions[key];action.reset().fadeIn(.15).setLoop(T.LoopRepeat,Infinity).play();
+  pet.mode=key;
+ };
+ parent.add(root);actors.push(pet);
+ pet.play('Idle');
+ return pet;
+}
 async function equipPet(id){
  const version=++petEquipGeneration;
  if(!id){
-  if(petFollower){disposePetGlow(petFollower);removeActor(petFollower);petFollower=null;}
+  const previous=petFollower;petFollower=null;
+  if(previous){
+   try{disposePetGlow(previous);}catch(error){console.warn('寵物光效清理略過',error);}
+   removeActor(previous);
+  }
   return true;
  }
  const petConfig=TOWER_PETS.find(p=>p.id===id);
  const spirit=petConfig&&byId[petConfig.model];
  if(!spirit?.model){
-  console.warn('隨行寵物缺少對應模型',id);
+  console.warn('寵物沒有對應的模型資料',id,petConfig?.model);
+  toast('找不到這隻寵物的模型資料，已保留原有寵物。');
   return false;
  }
  let next=null;
  try{
-  // Keep the existing pet visible until the new actor is ready.  Rapid changes
-  // cannot install a stale model because every request has a version token.
-  next=await actor(spirit.model,.88,place?insideGroup:townGroup);
-  if(version!==petEquipGeneration||S.state.petActive!==id){removeActor(next);return false;}
-  const group=place?insideGroup:townGroup;
-  if(next.root.parent!==group)group.add(next.root);
+  const parent=place?insideGroup:townGroup;
+  try{
+   next=await actor(spirit.model,.88,parent);
+  }catch(originalError){
+   console.warn('寵物完整模型建立失敗，改用簡化模型載入',id,originalError);
+   next=await createPetFallbackActor(spirit.model,.88,parent);
+  }
+  // Older asynchronous requests may finish after the player has switched again.
+  if(version!==petEquipGeneration||S.state.petActive!==id){
+   removeActor(next);
+   return false;
+  }
+  const targetParent=place?insideGroup:townGroup;
+  if(next.root.parent!==targetParent)targetParent.add(next.root);
   next.petId=id;
   const face=hero?.root.rotation.y||0;
   next.root.position.set(S.player.x-Math.sin(face)*1.14,0,S.player.z-Math.cos(face)*1.14);
   next.root.visible=!battle;
-  createPetGlow(next);
-  next.play('Idle');
-  const previous=petFollower;
-  petFollower=next;
-  if(previous&&previous!==next){disposePetGlow(previous);removeActor(previous);}
+  // Optional presentation effects must never cause a successful model swap to fail.
+  try{createPetGlow(next);}catch(error){console.warn('寵物粉紅光效暫時略過',id,error);}
+  try{next.play('Idle');}catch(error){console.warn('寵物待機動畫暫時略過',id,error);}
+  const previous=petFollower;petFollower=next;
+  if(previous&&previous!==next){
+   try{disposePetGlow(previous);}catch(error){console.warn('舊寵物光效清理略過',error);}
+   try{removeActor(previous);}catch(error){
+    console.warn('舊寵物清理略過',error);
+    detach(previous.root);
+    const idx=actors.indexOf(previous);if(idx>=0)actors.splice(idx,1);
+   }
+  }
   return true;
  }catch(error){
-  if(next&&petFollower!==next)removeActor(next);
+  if(next&&petFollower!==next){
+   try{removeActor(next);}catch(cleanupError){console.warn('寵物載入失敗清理略過',cleanupError);}
+  }
   if(version===petEquipGeneration){
-   console.warn('即時切換寵物失敗',id,error);
-   toast('寵物模型載入失敗，原有隨行寵物已保留。');
+   console.error('隨行寵物切換失敗',id,'model:',spirit.model,error);
+   S.errors.push('隨行寵物 '+id+'：'+(error?.message||String(error)));
+   toast('隨行寵物切換失敗，已保留原有寵物。請查看遊戲診斷資訊。');
   }
   return false;
  }
 }
+
 async function changePet(id){
  const p=TOWER_PETS.find(x=>x.id===id);if(!p)return;
  const t=towerProgress(),count=number(t.cards[p.card]);
