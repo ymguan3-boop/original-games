@@ -104,17 +104,17 @@
   {
     "id": "charmander",
     "speciesId": "charmander",
-    "name": "火球貓",
+    "name": "剝皮辣椒雞",
     "element": "fire",
     "type": "焰",
     "stage": 1,
-    "family": "fire-cat",
-    "form": "cat",
-    "color": 15566655,
+    "family": "pepper-chick",
+    "form": "chick",
+    "color": 16762941,
     "role": "starter",
     "previous": null,
     "next": "charmeleon",
-    "model": "models/spirits/charmander.glb",
+    "model": "models/spirits/pepper-chick-1.glb",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -123,32 +123,33 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "椒香啄擊",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "火球共鳴",
+        "name": "暖椒共鳴",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "火球貓是初光之境的焰屬性幻靈。牠以溫暖的額焰辨認夥伴，尾尖的火光會隨心情搖曳。"
+    "description": "剝皮辣椒雞總背著一根剝皮辣椒，走路時搖頭晃腦、好奇張望，偶爾會停下來拿辣椒細細品嚐。",
+    "pepperCount": 1
   },
   {
     "id": "charmeleon",
     "speciesId": "charmeleon",
-    "name": "焰鬃猞猁",
+    "name": "雙椒辣椒雞",
     "element": "fire",
     "type": "焰",
     "stage": 2,
-    "family": "fire-cat",
-    "form": "cat",
-    "color": 15566655,
+    "family": "pepper-chick",
+    "form": "chick",
+    "color": 16762941,
     "role": "starter",
     "previous": "charmander",
     "next": "charizard",
-    "model": "models/spirits/charmeleon.glb",
+    "model": "models/spirits/pepper-chick-2.glb",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
@@ -157,32 +158,33 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "雙椒連啄",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "焰鬃共鳴",
+        "name": "雙椒熱舞",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "焰鬃猞猁是初光之境的焰屬性幻靈。牠以溫暖的額焰辨認夥伴，尾尖的火光會隨心情搖曳。"
+    "description": "雙椒辣椒雞背著兩根剝皮辣椒，喜歡一邊張望一邊踏步，休息時會坐下數辣椒，再一起抱到嘴邊享用。",
+    "pepperCount": 2
   },
   {
     "id": "charizard",
     "speciesId": "charizard",
-    "name": "曜冠炎獅",
+    "name": "豐椒辣椒雞王",
     "element": "fire",
     "type": "焰",
     "stage": 3,
-    "family": "fire-cat",
-    "form": "cat",
-    "color": 15566655,
+    "family": "pepper-chick",
+    "form": "chick",
+    "color": 16762941,
     "role": "starter",
     "previous": "charmeleon",
     "next": null,
-    "model": "models/spirits/charizard.glb",
+    "model": "models/spirits/pepper-chick-3.glb",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
@@ -191,17 +193,18 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "豐椒旋翼",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "曜冠共鳴",
+        "name": "百椒暖焰",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "曜冠炎獅是初光之境的焰屬性幻靈。牠以溫暖的額焰辨認夥伴，尾尖的火光會隨心情搖曳。"
+    "description": "豐椒辣椒雞王背著五根剝皮辣椒，蓬鬆羽毛藏著滿滿椒香，能同時抱起三根品嚐，也愛坐下仔細清點珍藏。",
+    "pepperCount": 5
   },
   {
     "id": "squirtle",

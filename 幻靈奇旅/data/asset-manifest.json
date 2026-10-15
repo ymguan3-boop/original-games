@@ -232,36 +232,6 @@
       ]
     },
     {
-      "file": "models/spirits/charizard.glb",
-      "bytes": 168144,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/charmander.glb",
-      "bytes": 162952,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/charmeleon.glb",
-      "bytes": 167328,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/chikorita.glb",
       "bytes": 183768,
       "animations": [
@@ -524,6 +494,39 @@
         "Walk",
         "Attack",
         "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/pepper-chick-1.glb",
+      "bytes": 1387648,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Eat",
+        "Count",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/pepper-chick-2.glb",
+      "bytes": 1823608,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Eat",
+        "Count",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/pepper-chick-3.glb",
+      "bytes": 2804184,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Eat",
+        "Count",
+        "React"
       ]
     },
     {

@@ -24,34 +24,31 @@
     "generatedAt": "2026-10-14"
   },
   "charmander": {
-    "image": "cards/art/charmander.webp",
-    "name": "火球貓",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/charmander.glb",
-    "group": 0,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/pepper-chick-1.webp",
+    "name": "剝皮辣椒雞",
+    "source": "User supplied approved pepper chick portrait",
+    "referenceModel": "models/spirits/pepper-chick-1.glb",
+    "style": "user-supplied-pepper-chick-portrait",
+    "generatedAt": "2026-10-13",
+    "path": "cards/art/pepper-chick-1.webp"
   },
   "charmeleon": {
-    "image": "cards/art/charmeleon.webp",
-    "name": "焰鬃猞猁",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/charmeleon.glb",
-    "group": 1,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/pepper-chick-2.webp",
+    "name": "雙椒辣椒雞",
+    "source": "User supplied approved pepper chick portrait",
+    "referenceModel": "models/spirits/pepper-chick-2.glb",
+    "style": "user-supplied-pepper-chick-portrait",
+    "generatedAt": "2026-10-13",
+    "path": "cards/art/pepper-chick-2.webp"
   },
   "charizard": {
-    "image": "cards/art/charizard.webp",
-    "name": "曜冠炎獅",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/charizard.glb",
-    "group": 1,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/pepper-chick-3.webp",
+    "name": "豐椒辣椒雞王",
+    "source": "User supplied approved pepper chick portrait",
+    "referenceModel": "models/spirits/pepper-chick-3.glb",
+    "style": "user-supplied-pepper-chick-portrait",
+    "generatedAt": "2026-10-13",
+    "path": "cards/art/pepper-chick-3.webp"
   },
   "squirtle": {
     "image": "cards/art/squirtle.webp",

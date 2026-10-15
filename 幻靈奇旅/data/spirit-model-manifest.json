@@ -1,20 +1,22 @@
 [
   {
     "id": "charmander",
-    "name": "火球貓",
-    "vertices": 2392,
-    "triangles": 4660,
-    "materials": 5,
-    "bones": 8,
+    "name": "剝皮辣椒雞",
+    "vertices": 16686,
+    "triangles": 32928,
+    "materials": 12,
+    "bones": 22,
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Eat",
+      "Count",
+      "React"
     ],
-    "fileBytes": 162952,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1387648,
+    "source": "Approved native Blender pepper chick with connected limb IK animation",
+    "model": "models/spirits/pepper-chick-1.glb"
   },
   {
     "id": "piplup",
@@ -104,37 +106,41 @@
   },
   {
     "id": "charmeleon",
-    "name": "焰鬃猞猁",
-    "vertices": 2476,
-    "triangles": 4772,
-    "materials": 5,
-    "bones": 8,
+    "name": "雙椒辣椒雞",
+    "vertices": 23152,
+    "triangles": 45224,
+    "materials": 14,
+    "bones": 23,
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Eat",
+      "Count",
+      "React"
     ],
-    "fileBytes": 167328,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1823608,
+    "source": "Approved native Blender pepper chick with connected limb IK animation",
+    "model": "models/spirits/pepper-chick-2.glb"
   },
   {
     "id": "charizard",
-    "name": "曜冠炎獅",
-    "vertices": 2488,
-    "triangles": 4788,
-    "materials": 5,
-    "bones": 8,
+    "name": "豐椒辣椒雞王",
+    "vertices": 37792,
+    "triangles": 73176,
+    "materials": 15,
+    "bones": 26,
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Eat",
+      "Count",
+      "React"
     ],
-    "fileBytes": 168144,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 2804184,
+    "source": "Approved native Blender pepper chick with connected limb IK animation",
+    "model": "models/spirits/pepper-chick-3.glb"
   },
   {
     "id": "squirtle",
