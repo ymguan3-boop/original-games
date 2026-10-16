@@ -106,3 +106,13 @@ Three.js 與 GLTFLoader 採 MIT 授權，詳見 vendor 內原始碼授權註記�
 銅寶箱、銀寶箱、金寶箱取代原葉露毛球進化線，保留 `caterpie`、`metapod`、`butterfree` 存檔識別碼、進化關係及戰鬥數值。三階統一為 `chest-spirit` 家族、`chest` 形態，採用標準三階高度並在地面移動。GLB 包含 Idle、Walk、React、TongueWiggle；模型室可操作「擺動舌頭」。
 
 可編輯母版位於 `authoring/chest-spirit-stage-1.blend` 至 `chest-spirit-stage-3.blend`，專用重建腳本為 `authoring/chest-spirit.py`（Blender 執行後輸出至工作區 `artifacts/chest-spirit`，驗收後再整合）；通用 `spirits.py` 跳過這三個 ID，避免覆寫。模型結構、舌骨與後方箱蓋鉸鏈資訊記錄於 `data/chest-spirit-models.json`。卡面使用生成的 `portrait-stage-N.png` 肖像作品轉為 896×896、品質 90 的 WebP，高品質原始 PNG 保留在工作區 artifacts，未使用模型參考圖替代卡面。
+
+## 書本幻靈三階整合（2026-10-16）
+
+破書、論語、辭海取代原砂角幼蟲進化線，保留 `weedle`、`kakuna`、`beedrill` 存檔識別碼、土屬性、進化關係及戰鬥數值。三階統一為 `book-spirit` 家族、`book` 形態，採用標準三階高度並在地面搖擺前進。GLB 包含 Idle、Walk、React、PageFlutter，模型室可操作「翻動書頁」。
+
+可編輯母版位於 `authoring/book-spirit-stage-1.blend` 至 `book-spirit-stage-3.blend`，專用腳本為 `authoring/book-spirit.py`（Blender 執行後輸出至工作區 `artifacts/book-spirit`，驗收後再整合）；通用 `spirits.py` 跳過三個 ID，避免覆寫。書封鉸鏈、書頁骨架、眼鏡與模型來源雜湊記錄於 `data/book-spirit-models.json`。卡面由已生成的肖像 PNG 轉為 896×896、品質 90 的 WebP，原始作品保留於工作區 `artifacts/book-spirit/portraits`。
+
+
+## 書櫃奇遇與寶箱轉移
+隊伍放滿三位已締約夥伴，靠近室內實際書櫃可點選「翻書」，迎戰破書、論語、辭海；勝利返回原建築後出現隨機一本供捕捉。敗退不生成。寶箱捕捉失敗立即移到另一棟有效建築，種類重新抽選；驚動及消失使用 imagegen 生成的透明符號。

@@ -1909,17 +1909,17 @@
   {
     "id": "weedle",
     "speciesId": "weedle",
-    "name": "砂角幼蟲",
+    "name": "破書",
     "element": "earth",
     "type": "岩",
     "stage": 1,
-    "family": "weedle",
-    "form": "grub",
-    "color": 12297594,
+    "family": "book-spirit",
+    "form": "book",
+    "color": 8545093,
     "role": "wild",
     "previous": null,
     "next": "kakuna",
-    "model": "models/spirits/weedle.glb",
+    "model": "models/spirits/book-spirit-1.glb",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -1928,32 +1928,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "岩光輕擊",
+        "name": "書角輕撞",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "砂角共鳴",
+        "name": "破書共鳴",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "砂角幼蟲是初光之境的岩屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "破書帶著磨損的書封與厚實書頁，在地面輕輕搖擺前進。牠會眨動雙眼、翻動書頁，回應願意陪伴牠的旅人。"
   },
   {
     "id": "kakuna",
     "speciesId": "kakuna",
-    "name": "晶砂繭",
+    "name": "論語",
     "element": "earth",
     "type": "岩",
     "stage": 2,
-    "family": "weedle",
-    "form": "crystal",
-    "color": 12295287,
+    "family": "book-spirit",
+    "form": "book",
+    "color": 9726530,
     "role": "wild",
     "previous": "weedle",
     "next": "beedrill",
-    "model": "models/spirits/kakuna.glb",
+    "model": "models/spirits/book-spirit-2.glb",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
@@ -1962,51 +1962,51 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "岩光輕擊",
+        "name": "書卷震擊",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "晶砂共鳴",
+        "name": "論語共鳴",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "晶砂繭是初光之境的岩屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "論語披著典雅書封，戴著眼鏡閱讀旅途中的故事。牠以沉穩的步伐搖晃前進，開合書封與書頁傳達心情。"
   },
   {
     "id": "beedrill",
     "speciesId": "beedrill",
-    "name": "琥晶蜻靈",
+    "name": "辭海",
     "element": "earth",
     "type": "岩",
     "stage": 3,
-    "family": "weedle",
-    "form": "dragonfly",
-    "color": 12165222,
+    "family": "book-spirit",
+    "form": "book",
+    "color": 4684690,
     "role": "wild",
     "previous": "kakuna",
     "next": null,
-    "model": "models/spirits/beedrill.glb",
+    "model": "models/spirits/book-spirit-3.glb",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
     "evolvesTo": null,
     "rarity": "珍稀",
-    "motionType": "fly",
+    "motionType": "walk",
     "skills": [
       {
-        "name": "岩光輕擊",
+        "name": "辭海重擊",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "琥晶共鳴",
+        "name": "辭海共鳴",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "琥晶蜻靈是初光之境的岩屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "辭海收藏著豐富的旅途知識，厚重書身搭配醒目的眼鏡。牠能靈活翻動層層書頁，以溫和的目光守護夥伴。"
   },
   {
     "id": "mewtwo",

@@ -169,17 +169,6 @@
       ]
     },
     {
-      "file": "models/spirits/beedrill.glb",
-      "bytes": 197572,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
-    },
-    {
       "file": "models/spirits/blaziken.glb",
       "bytes": 119748,
       "animations": [
@@ -198,6 +187,36 @@
         "Walk",
         "Attack",
         "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/book-spirit-1.glb",
+      "bytes": 3085968,
+      "animations": [
+        "Idle",
+        "Walk",
+        "React",
+        "PageFlutter"
+      ]
+    },
+    {
+      "file": "models/spirits/book-spirit-2.glb",
+      "bytes": 3414276,
+      "animations": [
+        "Idle",
+        "Walk",
+        "React",
+        "PageFlutter"
+      ]
+    },
+    {
+      "file": "models/spirits/book-spirit-3.glb",
+      "bytes": 3496836,
+      "animations": [
+        "Idle",
+        "Walk",
+        "React",
+        "PageFlutter"
       ]
     },
     {
@@ -376,16 +395,6 @@
     {
       "file": "models/spirits/jigglypuff.glb",
       "bytes": 210288,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/kakuna.glb",
-      "bytes": 104124,
       "animations": [
         "Idle",
         "Walk",
@@ -734,16 +743,6 @@
     {
       "file": "models/spirits/typhlosion.glb",
       "bytes": 191308,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/weedle.glb",
-      "bytes": 179236,
       "animations": [
         "Idle",
         "Walk",

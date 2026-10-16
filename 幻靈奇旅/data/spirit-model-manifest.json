@@ -996,55 +996,57 @@
   },
   {
     "id": "weedle",
-    "name": "砂角幼蟲",
-    "vertices": 2746,
-    "triangles": 5376,
-    "materials": 5,
-    "bones": 7,
+    "name": "破書",
+    "vertices": 52812,
+    "triangles": 40292,
+    "materials": 13,
+    "bones": 9,
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "React",
+      "PageFlutter"
     ],
-    "fileBytes": 179236,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 3085968,
+    "source": "Native Blender book spirit with articulated cover hinges, page bones and face-mounted glasses",
+    "model": "models/spirits/book-spirit-1.glb"
   },
   {
     "id": "kakuna",
-    "name": "晶砂繭",
-    "vertices": 1468,
-    "triangles": 2856,
-    "materials": 5,
-    "bones": 4,
+    "name": "論語",
+    "vertices": 58418,
+    "triangles": 46664,
+    "materials": 12,
+    "bones": 9,
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "React",
+      "PageFlutter"
     ],
-    "fileBytes": 104124,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 3414276,
+    "source": "Native Blender book spirit with articulated cover hinges, page bones and face-mounted glasses",
+    "model": "models/spirits/book-spirit-2.glb"
   },
   {
     "id": "beedrill",
-    "name": "琥晶蜻靈",
-    "vertices": 2718,
-    "triangles": 5320,
-    "materials": 5,
-    "bones": 10,
+    "name": "辭海",
+    "vertices": 59637,
+    "triangles": 50356,
+    "materials": 11,
+    "bones": 9,
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt",
-      "Fly"
+      "React",
+      "PageFlutter"
     ],
-    "fileBytes": 197572,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 3496836,
+    "source": "Native Blender book spirit with articulated cover hinges, page bones and face-mounted glasses",
+    "model": "models/spirits/book-spirit-3.glb"
   },
   {
     "id": "jigglypuff",

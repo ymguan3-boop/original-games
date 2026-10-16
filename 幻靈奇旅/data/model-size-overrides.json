@@ -336,21 +336,21 @@
     "maxSpan": 4.5
   },
   "weedle": {
-    "desiredWorldHeight": 0.8,
+    "desiredWorldHeight": 1.275,
     "stage": 1,
-    "form": "grub",
+    "form": "book",
     "maxSpan": 2.6
   },
   "kakuna": {
-    "desiredWorldHeight": 1.17,
+    "desiredWorldHeight": 1.6575,
     "stage": 2,
-    "form": "crystal",
+    "form": "book",
     "maxSpan": 3.3800000000000003
   },
   "beedrill": {
-    "desiredWorldHeight": 1.622,
+    "desiredWorldHeight": 2.15475,
     "stage": 3,
-    "form": "dragonfly",
+    "form": "book",
     "maxSpan": 4.5
   },
   "mewtwo": {

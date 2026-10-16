@@ -46,9 +46,9 @@ EXTRAS=[
  ('caterpie','銅寶箱','grass','chest',0x91B972,1,'wild'),
  ('metapod','銀寶箱','grass','chest',0xA5AF66,2,'wild'),
  ('butterfree','金寶箱','grass','chest',0x83BCAA,3,'wild'),
- ('weedle','砂角幼蟲','earth','grub',0xBBA57A,1,'wild'),
- ('kakuna','晶砂繭','earth','crystal',0xBB9C77,2,'wild'),
- ('beedrill','琥晶蜻靈','earth','dragonfly',0xB9A066,3,'wild'),
+ ('weedle','破書','earth','book',0xBBA57A,1,'wild'),
+ ('kakuna','論語','earth','book',0xBB9C77,2,'wild'),
+ ('beedrill','辭海','earth','book',0xB9A066,3,'wild'),
  ('mewtwo','紫晶念王','psychic','oracle',0x9E81BE,3,'reward'),
  ('jigglypuff','夢鈴絨球','fairy','fluff',0xE3ADBA,1,'reward'),
 ]
@@ -390,8 +390,8 @@ def rig_and_export(d):
 
 if __name__=='__main__':
  args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
- # These stable save IDs use the dedicated spiral-snail.py, pepper-chick.py, sesame-spirit.py and chest-spirit.py authoring pipelines.
- selected=[d for d in DATA if d['id'] not in ('bulbasaur','ivysaur','venusaur','charmander','charmeleon','charizard','squirtle','wartortle','blastoise','caterpie','metapod','butterfree') and (not args or d['id'] in args)];reports=[]
+ # These stable save IDs use the dedicated spiral-snail.py, pepper-chick.py, sesame-spirit.py chest-spirit.py and book-spirit.py authoring pipelines.
+ selected=[d for d in DATA if d['id'] not in ('bulbasaur','ivysaur','venusaur','charmander','charmeleon','charizard','squirtle','wartortle','blastoise','caterpie','metapod','butterfree','weedle','kakuna','beedrill') and (not args or d['id'] in args)];reports=[]
  for d in selected:reports.append(rig_and_export(d))
  manifest=ROOT/'data'/'spirit-model-manifest.json'
  old=json.loads(manifest.read_text(encoding='utf-8')) if manifest.exists() else []

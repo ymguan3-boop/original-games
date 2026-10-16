@@ -545,34 +545,31 @@
     "generatedAt": "2026-10-16"
   },
   "weedle": {
-    "image": "cards/art/weedle.webp",
-    "name": "砂角幼蟲",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/weedle.glb",
-    "group": 14,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/book-spirit-1.webp",
+    "path": "cards/art/book-spirit-1.webp",
+    "name": "破書",
+    "source": "AI-generated book spirit portrait artwork; original PNG retained in artifacts/book-spirit/portraits/portrait-stage-N.png",
+    "referenceModel": "models/spirits/book-spirit-1.glb",
+    "style": "generated-book-spirit-portrait",
+    "generatedAt": "2026-10-16"
   },
   "kakuna": {
-    "image": "cards/art/kakuna.webp",
-    "name": "晶砂繭",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/kakuna.glb",
-    "group": 14,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/book-spirit-2.webp",
+    "path": "cards/art/book-spirit-2.webp",
+    "name": "論語",
+    "source": "AI-generated book spirit portrait artwork; original PNG retained in artifacts/book-spirit/portraits/portrait-stage-N.png",
+    "referenceModel": "models/spirits/book-spirit-2.glb",
+    "style": "generated-book-spirit-portrait",
+    "generatedAt": "2026-10-16"
   },
   "beedrill": {
-    "image": "cards/art/beedrill.webp",
-    "name": "琥晶蜻靈",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/beedrill.glb",
-    "group": 14,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/book-spirit-3.webp",
+    "path": "cards/art/book-spirit-3.webp",
+    "name": "辭海",
+    "source": "AI-generated book spirit portrait artwork; original PNG retained in artifacts/book-spirit/portraits/portrait-stage-N.png",
+    "referenceModel": "models/spirits/book-spirit-3.glb",
+    "style": "generated-book-spirit-portrait",
+    "generatedAt": "2026-10-16"
   },
   "mewtwo": {
     "image": "cards/art/mewtwo.webp",

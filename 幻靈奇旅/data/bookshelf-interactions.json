@@ -1,0 +1,44 @@
+{
+  "source": "authoring/world.py: shelf(), interior(); merged interior GLB cabinet geometry matches these authored coordinates.",
+  "reach": 2.15,
+  "shelves": {
+    "ranger_station": [
+      [
+        -4.7,
+        -6
+      ],
+      [
+        4.7,
+        -6
+      ]
+    ],
+    "dream_lab": [
+      [
+        -4.6,
+        -6.5
+      ],
+      [
+        4.6,
+        -6.5
+      ]
+    ],
+    "gym_light": [
+      [
+        5.2,
+        1
+      ]
+    ],
+    "tower_starspire": [
+      [
+        4.8,
+        -2
+      ]
+    ],
+    "house_resident_a": [
+      [
+        -4.4,
+        -6
+      ]
+    ]
+  }
+}

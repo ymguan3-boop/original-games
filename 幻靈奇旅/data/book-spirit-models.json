@@ -1,0 +1,215 @@
+{
+  "name": "書本幻靈",
+  "glbUp": "+Y",
+  "glbForward": "+Z",
+  "fps": 30,
+  "stages": [
+    {
+      "stage": 1,
+      "name": "破書",
+      "triangles": 40292,
+      "bones": 9,
+      "clips": [
+        {
+          "name": "Idle",
+          "duration": 4.0
+        },
+        {
+          "name": "Walk",
+          "duration": 2.0
+        },
+        {
+          "name": "React",
+          "duration": 3.0
+        },
+        {
+          "name": "PageFlutter",
+          "duration": 2.0
+        }
+      ],
+      "exportedAnimations": [
+        "Idle",
+        "Walk",
+        "React",
+        "PageFlutter"
+      ],
+      "glbBytes": 3085968,
+      "skins": 1,
+      "materials": 13,
+      "checks": [
+        {
+          "clip": "Idle",
+          "loopEndpointMaxError": 0.0,
+          "rootStationary": true
+        },
+        {
+          "clip": "Walk",
+          "loopEndpointMaxError": 5.878304429187663e-18,
+          "rootStationary": true
+        },
+        {
+          "clip": "React",
+          "loopEndpointMaxError": 2.249639599097593e-33,
+          "rootStationary": true
+        },
+        {
+          "clip": "PageFlutter",
+          "loopEndpointMaxError": 0.0,
+          "rootStationary": true
+        }
+      ],
+      "pageLeafCount": 162,
+      "hasHandsOrFeet": false,
+      "id": "weedle",
+      "model": "models/spirits/book-spirit-1.glb",
+      "authoring": "authoring/book-spirit-stage-1.blend",
+      "portrait": "cards/art/book-spirit-1.webp",
+      "modelSha256": "66858e621d9901ecb4b51d6b409fcd5acc6c0f9223ccd24763e6ee6ddae89c84",
+      "authoringSha256": "1fa577a64cc957cdf723143079ff84d39fa8f77ee66ddc8bd29354eb549dc96a",
+      "portraitSourceSha256": "450e667d9979b2d9d9a345976629f265b5b1ed505598fc51a22f69913a34024e"
+    },
+    {
+      "stage": 2,
+      "name": "論語",
+      "triangles": 46664,
+      "bones": 9,
+      "clips": [
+        {
+          "name": "Idle",
+          "duration": 4.0
+        },
+        {
+          "name": "Walk",
+          "duration": 2.0
+        },
+        {
+          "name": "React",
+          "duration": 3.0
+        },
+        {
+          "name": "PageFlutter",
+          "duration": 2.0
+        }
+      ],
+      "exportedAnimations": [
+        "Idle",
+        "Walk",
+        "React",
+        "PageFlutter"
+      ],
+      "glbBytes": 3414276,
+      "skins": 1,
+      "materials": 12,
+      "checks": [
+        {
+          "clip": "Idle",
+          "loopEndpointMaxError": 0.0,
+          "rootStationary": true
+        },
+        {
+          "clip": "Walk",
+          "loopEndpointMaxError": 5.878304429187663e-18,
+          "rootStationary": true
+        },
+        {
+          "clip": "React",
+          "loopEndpointMaxError": 2.249639599097593e-33,
+          "rootStationary": true
+        },
+        {
+          "clip": "PageFlutter",
+          "loopEndpointMaxError": 0.0,
+          "rootStationary": true
+        }
+      ],
+      "pageLeafCount": 162,
+      "hasHandsOrFeet": false,
+      "id": "kakuna",
+      "model": "models/spirits/book-spirit-2.glb",
+      "authoring": "authoring/book-spirit-stage-2.blend",
+      "portrait": "cards/art/book-spirit-2.webp",
+      "modelSha256": "eed68bcdb0b7a5c9b8f682cbf1088bed4c3a60a788583a8e8fb0df5d3f026306",
+      "authoringSha256": "ecac488dbd5fce9ff1a337123c57a4fba2c640b07f796f6aef93239227c39348",
+      "portraitSourceSha256": "dfa033b56ed6db97c3c82d228939cc723a7b66cdbb631485c2960a225930342d"
+    },
+    {
+      "stage": 3,
+      "name": "辭海",
+      "triangles": 50356,
+      "bones": 9,
+      "clips": [
+        {
+          "name": "Idle",
+          "duration": 4.0
+        },
+        {
+          "name": "Walk",
+          "duration": 2.0
+        },
+        {
+          "name": "React",
+          "duration": 3.0
+        },
+        {
+          "name": "PageFlutter",
+          "duration": 2.0
+        }
+      ],
+      "exportedAnimations": [
+        "Idle",
+        "Walk",
+        "React",
+        "PageFlutter"
+      ],
+      "glbBytes": 3496836,
+      "skins": 1,
+      "materials": 11,
+      "checks": [
+        {
+          "clip": "Idle",
+          "loopEndpointMaxError": 0.0,
+          "rootStationary": true
+        },
+        {
+          "clip": "Walk",
+          "loopEndpointMaxError": 5.878304429187663e-18,
+          "rootStationary": true
+        },
+        {
+          "clip": "React",
+          "loopEndpointMaxError": 2.249639599097593e-33,
+          "rootStationary": true
+        },
+        {
+          "clip": "PageFlutter",
+          "loopEndpointMaxError": 0.0,
+          "rootStationary": true
+        }
+      ],
+      "pageLeafCount": 162,
+      "hasHandsOrFeet": false,
+      "id": "beedrill",
+      "model": "models/spirits/book-spirit-3.glb",
+      "authoring": "authoring/book-spirit-stage-3.blend",
+      "portrait": "cards/art/book-spirit-3.webp",
+      "modelSha256": "286c8192d68ba3655cb71e392136fdcbc4273dcefba138f9c2085b9289fbca95",
+      "authoringSha256": "61c2f491eee1c7572f4866b2727b8c55fcfe285bd4188c6aaef98cac6aa2d610",
+      "portraitSourceSha256": "f3d46d786d2106b4adb8ae83ab9676a0119253c7bfd0d326ef8f3e9f3bf10c5a"
+    }
+  ],
+  "notes": [
+    "All clips are in place.",
+    "Glasses bridge and temples move together with the face bone.",
+    "Cover hinges rotate around the outer vertical spine.",
+    "Page leaves have real thickness and separate articulated page bones.",
+    "Traditional Chinese title uses Windows DFKai-SB font converted to mesh.",
+    "Stylized interpretation of supplied reference; no hands or feet."
+  ],
+  "family": "book-spirit",
+  "stableSaveIds": [
+    "weedle",
+    "kakuna",
+    "beedrill"
+  ],
+  "portraitSource": "AI-generated portrait-stage-N.png artwork; source PNGs retained outside runtime repository"
+}
