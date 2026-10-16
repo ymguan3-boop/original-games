@@ -138,34 +138,28 @@
     "generatedAt": "2026-10-12"
   },
   "totodile": {
-    "image": "cards/art/totodile.webp",
-    "name": "溪鈴螈",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/totodile.glb",
-    "group": 3,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/elephant-family-1.webp",
+    "name": "小肥象",
+    "source": "imagegen-user-family-reference",
+    "referenceModel": "native://totodile",
+    "style": "fantasy-3d-creature-portrait",
+    "generatedAt": "2026-10-16"
   },
   "croconaw": {
-    "image": "cards/art/croconaw.webp",
-    "name": "晶鰭螈",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/croconaw.glb",
-    "group": 4,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/elephant-family-2.webp",
+    "name": "小飛",
+    "source": "imagegen-user-family-reference",
+    "referenceModel": "native://croconaw",
+    "style": "fantasy-3d-creature-portrait",
+    "generatedAt": "2026-10-16"
   },
   "feraligatr": {
-    "image": "cards/art/feraligatr.webp",
-    "name": "冰瀑翼螈",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/feraligatr.glb",
-    "group": 4,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/elephant-family-3.webp",
+    "name": "阿拉肥",
+    "source": "imagegen-user-family-reference",
+    "referenceModel": "native://feraligatr",
+    "style": "fantasy-3d-creature-portrait",
+    "generatedAt": "2026-10-16"
   },
   "treecko": {
     "image": "cards/art/treecko.webp",
@@ -318,34 +312,28 @@
     "generatedAt": "2026-10-12"
   },
   "piplup": {
-    "image": "cards/art/piplup.webp",
-    "name": "霜絨鴞",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/piplup.glb",
-    "group": 8,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/bird-family-1.webp",
+    "name": "雛鳥",
+    "source": "imagegen-user-family-reference",
+    "referenceModel": "native://piplup",
+    "style": "fantasy-3d-creature-portrait",
+    "generatedAt": "2026-10-16"
   },
   "prinplup": {
-    "image": "cards/art/prinplup.webp",
-    "name": "雪幕鴞",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/prinplup.glb",
-    "group": 8,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/bird-family-2.webp",
+    "name": "青羽鳥",
+    "source": "imagegen-user-family-reference",
+    "referenceModel": "native://prinplup",
+    "style": "fantasy-3d-creature-portrait",
+    "generatedAt": "2026-10-16"
   },
   "empoleon": {
-    "image": "cards/art/empoleon.webp",
-    "name": "月輪翼鴞",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/empoleon.glb",
-    "group": 8,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/bird-family-3.webp",
+    "name": "天翼王",
+    "source": "imagegen-user-family-reference",
+    "referenceModel": "native://empoleon",
+    "style": "fantasy-3d-creature-portrait",
+    "generatedAt": "2026-10-16"
   },
   "articuno": {
     "image": "cards/art/articuno.webp",

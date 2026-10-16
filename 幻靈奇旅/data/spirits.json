@@ -515,23 +515,23 @@
   {
     "id": "totodile",
     "speciesId": "totodile",
-    "name": "溪鈴螈",
+    "name": "小肥象",
     "element": "water",
     "type": "潮",
     "stage": 1,
     "family": "crystal-newt",
-    "form": "newt",
+    "form": "elephant",
     "color": 6666684,
     "role": "starter",
     "previous": null,
     "next": "croconaw",
-    "model": "models/spirits/totodile.glb",
+    "model": "native://totodile",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
     "evolvesTo": "croconaw",
     "rarity": "普通",
-    "motionType": "walk",
+    "motionType": "native-cycle",
     "skills": [
       {
         "name": "潮光輕擊",
@@ -544,28 +544,28 @@
         "cost": 3
       }
     ],
-    "description": "溪鈴螈是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "小肥象是初光之境的潮屬性幻靈。牠會擺動象鼻散步、坐下休息，蓄力後用大耳朵拍動飛翔。"
   },
   {
     "id": "croconaw",
     "speciesId": "croconaw",
-    "name": "晶鰭螈",
+    "name": "小飛",
     "element": "water",
     "type": "潮",
     "stage": 2,
     "family": "crystal-newt",
-    "form": "newt",
+    "form": "elephant",
     "color": 6666684,
     "role": "starter",
     "previous": "totodile",
     "next": "feraligatr",
-    "model": "models/spirits/croconaw.glb",
+    "model": "native://croconaw",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
     "evolvesTo": "feraligatr",
     "rarity": "進階",
-    "motionType": "walk",
+    "motionType": "native-cycle",
     "skills": [
       {
         "name": "潮光輕擊",
@@ -578,28 +578,28 @@
         "cost": 3
       }
     ],
-    "description": "晶鰭螈是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "小飛是初光之境的潮屬性幻靈。牠會擺動象鼻散步、坐下休息，蓄力後用大耳朵拍動飛翔。"
   },
   {
     "id": "feraligatr",
     "speciesId": "feraligatr",
-    "name": "冰瀑翼螈",
+    "name": "阿拉肥",
     "element": "water",
     "type": "潮",
     "stage": 3,
     "family": "crystal-newt",
-    "form": "newt",
+    "form": "elephant",
     "color": 6666684,
     "role": "starter",
     "previous": "croconaw",
     "next": null,
-    "model": "models/spirits/feraligatr.glb",
+    "model": "native://feraligatr",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
     "evolvesTo": null,
     "rarity": "珍稀",
-    "motionType": "walk",
+    "motionType": "native-cycle",
     "skills": [
       {
         "name": "潮光輕擊",
@@ -612,7 +612,7 @@
         "cost": 3
       }
     ],
-    "description": "冰瀑翼螈是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "阿拉肥是初光之境的潮屬性幻靈。牠會擺動象鼻散步、坐下休息，蓄力後用大耳朵拍動飛翔。"
   },
   {
     "id": "treecko",
@@ -1127,23 +1127,23 @@
   {
     "id": "piplup",
     "speciesId": "piplup",
-    "name": "霜絨鴞",
+    "name": "雛鳥",
     "element": "water",
     "type": "潮",
     "stage": 1,
     "family": "moon-owl",
-    "form": "owl",
+    "form": "bird",
     "color": 8691131,
     "role": "starter",
     "previous": null,
     "next": "prinplup",
-    "model": "models/spirits/piplup.glb",
+    "model": "native://piplup",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
     "evolvesTo": "prinplup",
     "rarity": "普通",
-    "motionType": "fly",
+    "motionType": "native-cycle",
     "skills": [
       {
         "name": "潮光輕擊",
@@ -1156,28 +1156,28 @@
         "cost": 3
       }
     ],
-    "description": "霜絨鴞是初光之境的潮屬性幻靈。寬闊的翅膀能安靜掠過樹梢，羽紋記錄著月光。"
+    "description": "雛鳥是初光之境的潮屬性幻靈。牠會在地面散步、坐下休息，蓄力後振翅飛翔。"
   },
   {
     "id": "prinplup",
     "speciesId": "prinplup",
-    "name": "雪幕鴞",
+    "name": "青羽鳥",
     "element": "water",
     "type": "潮",
     "stage": 2,
     "family": "moon-owl",
-    "form": "owl",
+    "form": "bird",
     "color": 8691131,
     "role": "starter",
     "previous": "piplup",
     "next": "empoleon",
-    "model": "models/spirits/prinplup.glb",
+    "model": "native://prinplup",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
     "evolvesTo": "empoleon",
     "rarity": "進階",
-    "motionType": "fly",
+    "motionType": "native-cycle",
     "skills": [
       {
         "name": "潮光輕擊",
@@ -1190,28 +1190,28 @@
         "cost": 3
       }
     ],
-    "description": "雪幕鴞是初光之境的潮屬性幻靈。寬闊的翅膀能安靜掠過樹梢，羽紋記錄著月光。"
+    "description": "青羽鳥是初光之境的潮屬性幻靈。牠會在地面散步、坐下休息，蓄力後振翅飛翔。"
   },
   {
     "id": "empoleon",
     "speciesId": "empoleon",
-    "name": "月輪翼鴞",
+    "name": "天翼王",
     "element": "water",
     "type": "潮",
     "stage": 3,
     "family": "moon-owl",
-    "form": "owl",
+    "form": "bird",
     "color": 8691131,
     "role": "starter",
     "previous": "prinplup",
     "next": null,
-    "model": "models/spirits/empoleon.glb",
+    "model": "native://empoleon",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
     "evolvesTo": null,
     "rarity": "珍稀",
-    "motionType": "fly",
+    "motionType": "native-cycle",
     "skills": [
       {
         "name": "潮光輕擊",
@@ -1224,7 +1224,7 @@
         "cost": 3
       }
     ],
-    "description": "月輪翼鴞是初光之境的潮屬性幻靈。寬闊的翅膀能安靜掠過樹梢，羽紋記錄著月光。"
+    "description": "天翼王是初光之境的潮屬性幻靈。牠會在地面散步、坐下休息，蓄力後振翅飛翔。"
   },
   {
     "id": "articuno",

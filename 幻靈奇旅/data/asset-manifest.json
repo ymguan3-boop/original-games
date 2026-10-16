@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 97,
+  "modelCount": 91,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -281,16 +281,6 @@
       ]
     },
     {
-      "file": "models/spirits/croconaw.glb",
-      "bytes": 146736,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/cyndaquil.glb",
       "bytes": 176320,
       "animations": [
@@ -311,17 +301,6 @@
       ]
     },
     {
-      "file": "models/spirits/empoleon.glb",
-      "bytes": 118372,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
-    },
-    {
       "file": "models/spirits/entei.glb",
       "bytes": 203832,
       "animations": [
@@ -330,16 +309,6 @@
         "Attack",
         "Hurt",
         "Fly"
-      ]
-    },
-    {
-      "file": "models/spirits/feraligatr.glb",
-      "bytes": 156696,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
       ]
     },
     {
@@ -538,28 +507,6 @@
       ]
     },
     {
-      "file": "models/spirits/piplup.glb",
-      "bytes": 116356,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
-    },
-    {
-      "file": "models/spirits/prinplup.glb",
-      "bytes": 117424,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
-    },
-    {
       "file": "models/spirits/quilava.glb",
       "bytes": 182580,
       "animations": [
@@ -711,16 +658,6 @@
       ]
     },
     {
-      "file": "models/spirits/totodile.glb",
-      "bytes": 146296,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/treecko.glb",
       "bytes": 145984,
       "animations": [
@@ -845,6 +782,116 @@
       "file": "models/world/town.glb",
       "bytes": 4384616,
       "animations": []
+    }
+  ],
+  "nativeModelCount": 6,
+  "nativeModels": [
+    {
+      "id": "piplup",
+      "key": "native://piplup",
+      "runtime": "three-r128",
+      "triangles": 206536,
+      "meshes": 15,
+      "animations": [
+        "Walk",
+        "Sit",
+        "Takeoff",
+        "Fly",
+        "Idle",
+        "Landing"
+      ]
+    },
+    {
+      "id": "prinplup",
+      "key": "native://prinplup",
+      "runtime": "three-r128",
+      "triangles": 288020,
+      "meshes": 24,
+      "animations": [
+        "Walk",
+        "Sit",
+        "Takeoff",
+        "Fly",
+        "Idle",
+        "Landing"
+      ]
+    },
+    {
+      "id": "empoleon",
+      "key": "native://empoleon",
+      "runtime": "three-r128",
+      "triangles": 630032,
+      "meshes": 20,
+      "animations": [
+        "Walk",
+        "Sit",
+        "Takeoff",
+        "Fly",
+        "Idle",
+        "Landing"
+      ]
+    },
+    {
+      "id": "totodile",
+      "key": "native://totodile",
+      "runtime": "three-r128",
+      "triangles": 268988,
+      "meshes": 34,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Sit",
+        "Takeoff",
+        "Fly",
+        "Landing"
+      ]
+    },
+    {
+      "id": "croconaw",
+      "key": "native://croconaw",
+      "runtime": "three-r128",
+      "triangles": 408784,
+      "meshes": 42,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Sit",
+        "Takeoff",
+        "Fly",
+        "Landing"
+      ]
+    },
+    {
+      "id": "feraligatr",
+      "key": "native://feraligatr",
+      "runtime": "three-r128",
+      "triangles": 496368,
+      "meshes": 45,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Sit",
+        "Takeoff",
+        "Fly",
+        "Landing"
+      ]
+    }
+  ],
+  "nativeSources": [
+    {
+      "file": "models/native/birds-blueprint.js",
+      "bytes": 20195,
+      "sha256": "02b64360bf51a9dc2b896967be8703c749d5e1d03b8ba4de005e23046e125200"
+    },
+    {
+      "file": "models/native/elephants-blueprint.js",
+      "bytes": 27300,
+      "sha256": "f063fa32d3a633c7ff36357610398256897ca684db2a6170304ff692b8943d8f"
+    },
+    {
+      "file": "models/native/families.js",
+      "bytes": 13077,
+      "sha256": "c317f7b2315d56fcfd10a44154d3e1a711a57c412f853398d039760d236c5aea"
     }
   ]
 }

@@ -17,13 +17,13 @@ FAMILIES=[
  ('water','sesame-spirit','woolball',0x509FBF,['squirtle','wartortle','blastoise'],['小芝麻','絨芝麻','星冠芝麻']),
  ('grass','willow-deer','deer',0x8EA761,['chikorita','bayleef','meganium'],['嫩芽鹿','柳鈴鹿','森燈冠鹿']),
  ('fire','kiln-shell','hedgehog',0xB87C58,['cyndaquil','quilava','typhlosion'],['炭絨刺團','熔陶甲獸','赤窯守甲']),
- ('water','crystal-newt','newt',0x65B9BC,['totodile','croconaw','feraligatr'],['溪鈴螈','晶鰭螈','冰瀑翼螈']),
+ ('water','crystal-newt','newt',0x65B9BC,['totodile','croconaw','feraligatr'],['小肥象','小飛','阿拉肥']),
  ('grass','fern-gecko','lizard',0x4C9C77,['treecko','grovyle','sceptile'],['苔點蜥','蕨帆蜥','翠環森蜥']),
  ('fire','lantern-bird','bird',0xDA914F,['torchic','combusken','blaziken'],['燈茸雀','霞羽鶴','曦焰長羽']),
  ('water','lotus-frog','frog',0x6BB5A3,['mudkip','marshtomp','swampert'],['泡泡蛙','荷盞蛙','滄瀾角蛙']),
  ('grass','mountain-badger','badger',0x908E64,['turtwig','grotle','torterra'],['籽背鼴','石芽獾','嶺苔山獾']),
  ('fire','comet-ape','monkey',0xCE7D59,['chimchar','monferno','infernape'],['星火猿','銅爐猿','彗拳巨猿']),
- ('water','moon-owl','owl',0x849DBB,['piplup','prinplup','empoleon'],['霜絨鴞','雪幕鴞','月輪翼鴞']),
+ ('water','moon-owl','owl',0x849DBB,['piplup','prinplup','empoleon'],['雛鳥','青羽鳥','天翼王']),
 ]
 EXTRAS=[
  ('articuno','霜鏡天鰩','ice','manta',0x81C9DE,3,'legendary'),
@@ -391,7 +391,7 @@ def rig_and_export(d):
 if __name__=='__main__':
  args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
  # These stable save IDs use the dedicated spiral-snail.py, pepper-chick.py, sesame-spirit.py chest-spirit.py and book-spirit.py authoring pipelines.
- selected=[d for d in DATA if d['id'] not in ('bulbasaur','ivysaur','venusaur','charmander','charmeleon','charizard','squirtle','wartortle','blastoise','caterpie','metapod','butterfree','weedle','kakuna','beedrill') and (not args or d['id'] in args)];reports=[]
+ selected=[d for d in DATA if d['id'] not in ('bulbasaur','ivysaur','venusaur','charmander','charmeleon','charizard','squirtle','wartortle','blastoise','caterpie','metapod','butterfree','weedle','kakuna','beedrill','piplup','prinplup','empoleon','totodile','croconaw','feraligatr') and (not args or d['id'] in args)];reports=[]
  for d in selected:reports.append(rig_and_export(d))
  manifest=ROOT/'data'/'spirit-model-manifest.json'
  old=json.loads(manifest.read_text(encoding='utf-8')) if manifest.exists() else []

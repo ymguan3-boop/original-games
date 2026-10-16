@@ -20,21 +20,23 @@
   },
   {
     "id": "piplup",
-    "name": "霜絨鴞",
-    "vertices": 1354,
-    "triangles": 2544,
-    "materials": 5,
-    "bones": 8,
+    "name": "雛鳥",
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt",
-      "Fly"
+      "Sit",
+      "Takeoff",
+      "Fly",
+      "Landing"
     ],
-    "fileBytes": 116356,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "User supplied native Three.js blueprint, original articulated animation tracks; r128 compatibility adapter",
+    "model": "native://piplup",
+    "triangles": 206536,
+    "vertices": 110566,
+    "meshes": 15,
+    "runtime": "native-threejs",
+    "sourceBlueprint": "models/native/birds-blueprint.js"
   },
   {
     "id": "mewtwo",
@@ -303,54 +305,63 @@
   },
   {
     "id": "totodile",
-    "name": "溪鈴螈",
-    "vertices": 2090,
-    "triangles": 4068,
-    "materials": 5,
-    "bones": 8,
+    "name": "小肥象",
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Sit",
+      "Takeoff",
+      "Fly",
+      "Landing"
     ],
-    "fileBytes": 146296,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "User supplied native Three.js blueprint, original articulated animation tracks; r128 compatibility adapter",
+    "model": "native://totodile",
+    "triangles": 268988,
+    "vertices": 159787,
+    "meshes": 34,
+    "runtime": "native-threejs",
+    "sourceBlueprint": "models/native/elephants-blueprint.js"
   },
   {
     "id": "croconaw",
-    "name": "晶鰭螈",
-    "vertices": 2102,
-    "triangles": 4084,
-    "materials": 5,
-    "bones": 8,
+    "name": "小飛",
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Sit",
+      "Takeoff",
+      "Fly",
+      "Landing"
     ],
-    "fileBytes": 146736,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "User supplied native Three.js blueprint, original articulated animation tracks; r128 compatibility adapter",
+    "model": "native://croconaw",
+    "triangles": 408784,
+    "vertices": 244963,
+    "meshes": 42,
+    "runtime": "native-threejs",
+    "sourceBlueprint": "models/native/elephants-blueprint.js"
   },
   {
     "id": "feraligatr",
-    "name": "冰瀑翼螈",
-    "vertices": 2282,
-    "triangles": 4420,
-    "materials": 5,
-    "bones": 8,
+    "name": "阿拉肥",
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Sit",
+      "Takeoff",
+      "Fly",
+      "Landing"
     ],
-    "fileBytes": 156696,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "User supplied native Three.js blueprint, original articulated animation tracks; r128 compatibility adapter",
+    "model": "native://feraligatr",
+    "triangles": 496368,
+    "vertices": 289156,
+    "meshes": 45,
+    "runtime": "native-threejs",
+    "sourceBlueprint": "models/native/elephants-blueprint.js"
   },
   {
     "id": "treecko",
@@ -612,39 +623,43 @@
   },
   {
     "id": "prinplup",
-    "name": "雪幕鴞",
-    "vertices": 1372,
-    "triangles": 2568,
-    "materials": 5,
-    "bones": 8,
+    "name": "青羽鳥",
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt",
-      "Fly"
+      "Sit",
+      "Takeoff",
+      "Fly",
+      "Landing"
     ],
-    "fileBytes": 117424,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "User supplied native Three.js blueprint, original articulated animation tracks; r128 compatibility adapter",
+    "model": "native://prinplup",
+    "triangles": 288020,
+    "vertices": 167329,
+    "meshes": 24,
+    "runtime": "native-threejs",
+    "sourceBlueprint": "models/native/birds-blueprint.js"
   },
   {
     "id": "empoleon",
-    "name": "月輪翼鴞",
-    "vertices": 1390,
-    "triangles": 2592,
-    "materials": 5,
-    "bones": 8,
+    "name": "天翼王",
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt",
-      "Fly"
+      "Sit",
+      "Takeoff",
+      "Fly",
+      "Landing"
     ],
-    "fileBytes": 118372,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "User supplied native Three.js blueprint, original articulated animation tracks; r128 compatibility adapter",
+    "model": "native://empoleon",
+    "triangles": 630032,
+    "vertices": 338703,
+    "meshes": 20,
+    "runtime": "native-threejs",
+    "sourceBlueprint": "models/native/birds-blueprint.js"
   },
   {
     "id": "articuno",
