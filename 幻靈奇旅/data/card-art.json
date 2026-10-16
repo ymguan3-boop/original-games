@@ -518,34 +518,31 @@
     "generatedAt": "2026-10-12"
   },
   "caterpie": {
-    "image": "cards/art/caterpie.webp",
-    "name": "葉露毛球",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/caterpie.glb",
-    "group": 13,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/chest-spirit-1.webp",
+    "path": "cards/art/chest-spirit-1.webp",
+    "name": "銅寶箱",
+    "source": "AI-generated chest spirit portrait artwork; original PNG retained in artifacts/chest-spirit/portraits/portrait-stage-N.png",
+    "referenceModel": "models/spirits/chest-spirit-1.glb",
+    "style": "generated-chest-spirit-portrait",
+    "generatedAt": "2026-10-16"
   },
   "metapod": {
-    "image": "cards/art/metapod.webp",
-    "name": "琥葉眠繭",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/metapod.glb",
-    "group": 13,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/chest-spirit-2.webp",
+    "path": "cards/art/chest-spirit-2.webp",
+    "name": "銀寶箱",
+    "source": "AI-generated chest spirit portrait artwork; original PNG retained in artifacts/chest-spirit/portraits/portrait-stage-N.png",
+    "referenceModel": "models/spirits/chest-spirit-2.glb",
+    "style": "generated-chest-spirit-portrait",
+    "generatedAt": "2026-10-16"
   },
   "butterfree": {
-    "image": "cards/art/butterfree.webp",
-    "name": "晴葉彩蛾",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/butterfree.glb",
-    "group": 13,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/chest-spirit-3.webp",
+    "path": "cards/art/chest-spirit-3.webp",
+    "name": "金寶箱",
+    "source": "AI-generated chest spirit portrait artwork; original PNG retained in artifacts/chest-spirit/portraits/portrait-stage-N.png",
+    "referenceModel": "models/spirits/chest-spirit-3.glb",
+    "style": "generated-chest-spirit-portrait",
+    "generatedAt": "2026-10-16"
   },
   "weedle": {
     "image": "cards/art/weedle.webp",

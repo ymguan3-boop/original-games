@@ -1807,17 +1807,17 @@
   {
     "id": "caterpie",
     "speciesId": "caterpie",
-    "name": "葉露毛球",
+    "name": "銅寶箱",
     "element": "grass",
     "type": "森",
     "stage": 1,
-    "family": "caterpie",
-    "form": "caterpillar",
-    "color": 9550194,
+    "family": "chest-spirit",
+    "form": "chest",
+    "color": 11894090,
     "role": "wild",
     "previous": null,
     "next": "metapod",
-    "model": "models/spirits/caterpie.glb",
+    "model": "models/spirits/chest-spirit-1.glb",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -1826,32 +1826,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "銅箱輕撞",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "葉露共鳴",
+        "name": "銅寶共鳴",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "葉露毛球是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "銅寶箱藏著一條靈活的舌頭與兩顆金色眼睛。牠會搖動箱身慢慢前進，遇見旅人時掀起箱蓋回應。"
   },
   {
     "id": "metapod",
     "speciesId": "metapod",
-    "name": "琥葉眠繭",
+    "name": "銀寶箱",
     "element": "grass",
     "type": "森",
     "stage": 2,
-    "family": "caterpie",
-    "form": "cocoon",
-    "color": 10858342,
+    "family": "chest-spirit",
+    "form": "chest",
+    "color": 12176085,
     "role": "wild",
     "previous": "caterpie",
     "next": "butterfree",
-    "model": "models/spirits/metapod.glb",
+    "model": "models/spirits/chest-spirit-2.glb",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
@@ -1860,51 +1860,51 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "銀箱震擊",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "琥葉共鳴",
+        "name": "銀寶共鳴",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "琥葉眠繭是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "銀寶箱換上帶著銀色飾邊的箱殼，喜歡一邊散步一邊晃動舌頭。牠用明亮的雙眼觀察值得信任的夥伴。"
   },
   {
     "id": "butterfree",
     "speciesId": "butterfree",
-    "name": "晴葉彩蛾",
+    "name": "金寶箱",
     "element": "grass",
     "type": "森",
     "stage": 3,
-    "family": "caterpie",
-    "form": "moth",
-    "color": 8633514,
+    "family": "chest-spirit",
+    "form": "chest",
+    "color": 15252299,
     "role": "wild",
     "previous": "metapod",
     "next": null,
-    "model": "models/spirits/butterfree.glb",
+    "model": "models/spirits/chest-spirit-3.glb",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
     "evolvesTo": null,
     "rarity": "珍稀",
-    "motionType": "fly",
+    "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "金箱猛撞",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "晴葉共鳴",
+        "name": "金寶共鳴",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "晴葉彩蛾是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "金寶箱披著華麗的金色箱殼與寶石裝飾。牠會昂起箱蓋、擺動長舌，向熟悉的旅人展示活潑的心情。"
   },
   {
     "id": "weedle",

@@ -19,5 +19,8 @@
   ],
   "wingFlapAxis": "local Z (Blender bone local Y is vertical)",
   "notes": "Small birds and insects are below half hero height; boars and badgers are above. Legendary species use explicit 2.65-4.40 world-unit heights. Do not normalize wing span independently. maxSpan is a ceiling on horizontal span and takes precedence over target height for thin manta, serpent, and long-wing silhouettes.",
-  "scaleRule": "min(desiredWorldHeight / neutralBBoxHeight, maxSpan / max(neutralBBoxWidth, neutralBBoxDepth)); one uniform scale for all axes"
+  "scaleRule": "min(desiredWorldHeight / neutralBBoxHeight, maxSpan / max(neutralBBoxWidth, neutralBBoxDepth)); one uniform scale for all axes",
+  "familyNotes": {
+    "chest-spirit": "Grounded chest form. Use standard stage heights 1.275 / 1.6575 / 2.15475 with uniform scaling; retain maxSpan ceilings and include the tongue in bounds."
+  }
 }

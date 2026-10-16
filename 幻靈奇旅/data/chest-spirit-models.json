@@ -1,0 +1,196 @@
+{
+  "name": "寶箱幻靈",
+  "glbUp": "+Y",
+  "glbForward": "+Z",
+  "fps": 30,
+  "stages": [
+    {
+      "stage": 1,
+      "name": "銅寶箱",
+      "triangles": 17408,
+      "bones": 10,
+      "clips": [
+        {
+          "name": "Idle",
+          "duration": 4.0,
+          "frames": 121
+        },
+        {
+          "name": "Walk",
+          "duration": 2.0,
+          "frames": 61
+        },
+        {
+          "name": "React",
+          "duration": 3.0,
+          "frames": 91
+        },
+        {
+          "name": "TongueWiggle",
+          "duration": 2.0,
+          "frames": 61
+        }
+      ],
+      "exportedAnimations": [
+        "Idle",
+        "Walk",
+        "React",
+        "TongueWiggle"
+      ],
+      "glbBytes": 1018620,
+      "boundsRestGLTF": {
+        "min": [
+          -1.0500000715255737,
+          0,
+          -0.8483826518058777
+        ],
+        "max": [
+          1.0500000715255737,
+          1.968000054359436,
+          1.3664766550064087
+        ]
+      },
+      "materials": 5,
+      "skins": 1,
+      "tongueContinuous": true,
+      "tongueBones": 5,
+      "lidMinimumDegrees": 19,
+      "lidMaximumDegrees": 44,
+      "eyes": "exactly two emissive golden beans, no pupil or iris",
+      "id": "caterpie",
+      "model": "models/spirits/chest-spirit-1.glb",
+      "authoring": "authoring/chest-spirit-stage-1.blend",
+      "portrait": "cards/art/chest-spirit-1.webp"
+    },
+    {
+      "stage": 2,
+      "name": "銀寶箱",
+      "triangles": 19088,
+      "bones": 10,
+      "clips": [
+        {
+          "name": "Idle",
+          "duration": 4.0,
+          "frames": 121
+        },
+        {
+          "name": "Walk",
+          "duration": 2.0,
+          "frames": 61
+        },
+        {
+          "name": "React",
+          "duration": 3.0,
+          "frames": 91
+        },
+        {
+          "name": "TongueWiggle",
+          "duration": 2.0,
+          "frames": 61
+        }
+      ],
+      "exportedAnimations": [
+        "Idle",
+        "Walk",
+        "React",
+        "TongueWiggle"
+      ],
+      "glbBytes": 1135672,
+      "boundsRestGLTF": {
+        "min": [
+          -1.1739999055862427,
+          0,
+          -0.8483826518058777
+        ],
+        "max": [
+          1.1739999055862427,
+          2.0999999046325684,
+          1.3664766550064087
+        ]
+      },
+      "materials": 6,
+      "skins": 1,
+      "tongueContinuous": true,
+      "tongueBones": 5,
+      "lidMinimumDegrees": 19,
+      "lidMaximumDegrees": 44,
+      "eyes": "exactly two emissive golden beans, no pupil or iris",
+      "id": "metapod",
+      "model": "models/spirits/chest-spirit-2.glb",
+      "authoring": "authoring/chest-spirit-stage-2.blend",
+      "portrait": "cards/art/chest-spirit-2.webp"
+    },
+    {
+      "stage": 3,
+      "name": "金寶箱",
+      "triangles": 25704,
+      "bones": 10,
+      "clips": [
+        {
+          "name": "Idle",
+          "duration": 4.0,
+          "frames": 121
+        },
+        {
+          "name": "Walk",
+          "duration": 2.0,
+          "frames": 61
+        },
+        {
+          "name": "React",
+          "duration": 3.0,
+          "frames": 91
+        },
+        {
+          "name": "TongueWiggle",
+          "duration": 2.0,
+          "frames": 61
+        }
+      ],
+      "exportedAnimations": [
+        "Idle",
+        "Walk",
+        "React",
+        "TongueWiggle"
+      ],
+      "glbBytes": 1693312,
+      "boundsRestGLTF": {
+        "min": [
+          -1.1739999055862427,
+          0,
+          -1.0240000486373901
+        ],
+        "max": [
+          1.1739999055862427,
+          2.0999999046325684,
+          1.3664766550064087
+        ]
+      },
+      "materials": 8,
+      "skins": 1,
+      "tongueContinuous": true,
+      "tongueBones": 5,
+      "lidMinimumDegrees": 19,
+      "lidMaximumDegrees": 44,
+      "eyes": "exactly two emissive golden beans, no pupil or iris",
+      "id": "butterfree",
+      "model": "models/spirits/chest-spirit-3.glb",
+      "authoring": "authoring/chest-spirit-stage-3.blend",
+      "portrait": "cards/art/chest-spirit-3.webp"
+    }
+  ],
+  "notes": [
+    "All animations are in-place; viewer translates root in world space.",
+    "Tongue uses a continuous closed mesh with normalized linear weights across five joints.",
+    "Lid rotates about the real rear horizontal hinge.",
+    "Rest accessor bounds describe closed geometry; animated bounds must be sampled.",
+    "PNG previews include idle, walking, reaction and a blink pose."
+  ],
+  "family": "chest-spirit",
+  "stableSaveIds": [
+    "caterpie",
+    "metapod",
+    "butterfree"
+  ],
+  "portraitSource": "AI-generated portrait-stage-N.png artwork; source PNGs retained outside runtime repository"
+}

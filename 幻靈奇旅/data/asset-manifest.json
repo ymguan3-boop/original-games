@@ -201,24 +201,33 @@
       ]
     },
     {
-      "file": "models/spirits/butterfree.glb",
-      "bytes": 197576,
+      "file": "models/spirits/chest-spirit-1.glb",
+      "bytes": 1018620,
       "animations": [
         "Idle",
         "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
+        "React",
+        "TongueWiggle"
       ]
     },
     {
-      "file": "models/spirits/caterpie.glb",
-      "bytes": 177576,
+      "file": "models/spirits/chest-spirit-2.glb",
+      "bytes": 1135672,
       "animations": [
         "Idle",
         "Walk",
-        "Attack",
-        "Hurt"
+        "React",
+        "TongueWiggle"
+      ]
+    },
+    {
+      "file": "models/spirits/chest-spirit-3.glb",
+      "bytes": 1693312,
+      "animations": [
+        "Idle",
+        "Walk",
+        "React",
+        "TongueWiggle"
       ]
     },
     {
@@ -408,16 +417,6 @@
     {
       "file": "models/spirits/meganium.glb",
       "bytes": 190392,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/metapod.glb",
-      "bytes": 99156,
       "animations": [
         "Idle",
         "Walk",

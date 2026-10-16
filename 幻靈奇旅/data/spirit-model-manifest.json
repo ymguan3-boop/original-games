@@ -942,55 +942,57 @@
   },
   {
     "id": "caterpie",
-    "name": "葉露毛球",
-    "vertices": 2716,
-    "triangles": 5320,
+    "name": "銅寶箱",
+    "vertices": 15400,
+    "triangles": 17408,
     "materials": 5,
-    "bones": 7,
+    "bones": 10,
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "React",
+      "TongueWiggle"
     ],
-    "fileBytes": 177576,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1018620,
+    "source": "Native Blender chest spirit with rear lid hinge and continuous five-joint tongue",
+    "model": "models/spirits/chest-spirit-1.glb"
   },
   {
     "id": "metapod",
-    "name": "琥葉眠繭",
-    "vertices": 1378,
-    "triangles": 2688,
-    "materials": 5,
-    "bones": 4,
+    "name": "銀寶箱",
+    "vertices": 17488,
+    "triangles": 19088,
+    "materials": 6,
+    "bones": 10,
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "React",
+      "TongueWiggle"
     ],
-    "fileBytes": 99156,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1135672,
+    "source": "Native Blender chest spirit with rear lid hinge and continuous five-joint tongue",
+    "model": "models/spirits/chest-spirit-2.glb"
   },
   {
     "id": "butterfree",
-    "name": "晴葉彩蛾",
-    "vertices": 2718,
-    "triangles": 5320,
-    "materials": 5,
+    "name": "金寶箱",
+    "vertices": 27332,
+    "triangles": 25704,
+    "materials": 8,
     "bones": 10,
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt",
-      "Fly"
+      "React",
+      "TongueWiggle"
     ],
-    "fileBytes": 197576,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1693312,
+    "source": "Native Blender chest spirit with rear lid hinge and continuous five-joint tongue",
+    "model": "models/spirits/chest-spirit-3.glb"
   },
   {
     "id": "weedle",

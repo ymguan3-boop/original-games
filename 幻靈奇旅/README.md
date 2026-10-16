@@ -100,3 +100,9 @@ Three.js 與 GLTFLoader 採 MIT 授權，詳見 vendor 內原始碼授權註記�
 ## 小芝麻與隨行寵物更新（2026-10-15）
 
 先同步 GitHub cb5874b，再將雪芽靈獸寵物對應的三階幻靈替換成小芝麻、絨芝麻、星冠芝麻；保留原存檔識別碼。模型支援垂手行走、跳躍、摘帽檢查與回應。隨行寵物到達身旁靜止 2 秒後播放各自的活動，主角移動時平滑恢復跟隨。旅人手冊保留整合圖鑑，挑戰塔選單使用輕量魔獸肖像。
+
+## 寶箱幻靈三階整合（2026-10-16）
+
+銅寶箱、銀寶箱、金寶箱取代原葉露毛球進化線，保留 `caterpie`、`metapod`、`butterfree` 存檔識別碼、進化關係及戰鬥數值。三階統一為 `chest-spirit` 家族、`chest` 形態，採用標準三階高度並在地面移動。GLB 包含 Idle、Walk、React、TongueWiggle；模型室可操作「擺動舌頭」。
+
+可編輯母版位於 `authoring/chest-spirit-stage-1.blend` 至 `chest-spirit-stage-3.blend`，專用重建腳本為 `authoring/chest-spirit.py`（Blender 執行後輸出至工作區 `artifacts/chest-spirit`，驗收後再整合）；通用 `spirits.py` 跳過這三個 ID，避免覆寫。模型結構、舌骨與後方箱蓋鉸鏈資訊記錄於 `data/chest-spirit-models.json`。卡面使用生成的 `portrait-stage-N.png` 肖像作品轉為 896×896、品質 90 的 WebP，高品質原始 PNG 保留在工作區 artifacts，未使用模型參考圖替代卡面。
