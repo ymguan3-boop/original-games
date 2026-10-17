@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 90,
+  "modelCount": 89,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -678,16 +678,6 @@
       ]
     },
     {
-      "file": "models/spirits/wigglytuff.glb",
-      "bytes": 242088,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/zapdos.glb",
       "bytes": 197552,
       "animations": [
@@ -774,7 +764,7 @@
       "animations": []
     }
   ],
-  "nativeModelCount": 7,
+  "nativeModelCount": 8,
   "nativeModels": [
     {
       "id": "piplup",
@@ -878,6 +868,21 @@
       ],
       "controller": "RiceballSpirit",
       "instancedRiceGrains": 2170
+    },
+    {
+      "id": "wigglytuff",
+      "key": "xiaoshan://wigglytuff",
+      "runtime": "three-r128",
+      "animations": [
+        "Idle",
+        "Walk",
+        "Sleep",
+        "Wake",
+        "Jump",
+        "Scared",
+        "React"
+      ],
+      "controller": "XiaoshanSpirit"
     }
   ],
   "nativeSources": [
@@ -900,6 +905,11 @@
       "file": "models/native/riceball.js",
       "bytes": 13030,
       "sha256": "c4b12b6c8c6aa8eeed43293f330f6c6fd89402f952a1248741259de029864fec"
+    },
+    {
+      "file": "models/native/xiaoshan.js",
+      "bytes": 7899,
+      "sha256": "afc4eecac4cfa8f8131a0706556e554478a28e122e24010c35d7532e5fcd4d85"
     }
   ]
 }

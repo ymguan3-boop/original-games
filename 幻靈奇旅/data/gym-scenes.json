@@ -57,10 +57,10 @@
     "enemySpawn": [
       0,
       0,
-      -6
+      0
     ],
     "cameraDistance": 18,
-    "theme": "絨心音波劇場"
+    "theme": "小山木頭人驚跳庭"
   },
   "healing": {
     "model": "models/gyms/healing.glb",

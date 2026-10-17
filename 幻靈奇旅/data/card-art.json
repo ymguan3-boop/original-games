@@ -474,14 +474,12 @@
     "generatedAt": "2026-10-17"
   },
   "wigglytuff": {
-    "image": "cards/art/wigglytuff.webp",
-    "name": "絨心團獸",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/wigglytuff.glb",
-    "group": 12,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/xiaoshan-spirit.webp",
+    "name": "小山",
+    "source": "imagegen-original-reference",
+    "referenceModel": "xiaoshan://wigglytuff",
+    "style": "original-cute-3d-fantasy-portrait",
+    "generatedAt": "2026-10-17"
   },
   "blissey": {
     "image": "cards/art/blissey.webp",

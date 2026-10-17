@@ -1707,36 +1707,38 @@
   {
     "id": "wigglytuff",
     "speciesId": "wigglytuff",
-    "name": "絨心團獸",
+    "name": "小山",
     "element": "fairy",
     "type": "夢",
     "stage": 1,
-    "family": "wigglytuff",
-    "form": "fluff",
-    "color": 14128044,
+    "family": "xiaoshan-spirit",
+    "form": "mountain",
+    "color": 10213212,
     "role": "gym",
     "previous": null,
     "next": null,
-    "model": "models/spirits/wigglytuff.glb",
+    "model": "xiaoshan://wigglytuff",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
     "evolvesTo": null,
-    "rarity": "稀有",
+    "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
-        "name": "夢光輕擊",
+        "name": "木頭人驚跳",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "絨心共鳴",
+        "name": "小山震地",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "絨心團獸是初光之境的夢屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "小山是戴著紫色蝴蝶髮飾的傳說守護者，平時總愛打瞌睡。在木頭人試煉中，牠聽完倒數便會驚醒躍起；震地落下後驚恐的三秒，才願意回應旅人的靈核球。",
+    "stageLabel": "守護者",
+    "cardFrame": "red"
   },
   {
     "id": "blissey",

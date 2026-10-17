@@ -906,20 +906,19 @@
   },
   {
     "id": "wigglytuff",
-    "name": "絨心團獸",
-    "vertices": 3860,
-    "triangles": 7600,
-    "materials": 5,
-    "bones": 7,
+    "name": "小山",
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Sleep",
+      "Wake",
+      "Jump",
+      "Scared",
+      "React"
     ],
-    "fileBytes": 242088,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "Original native Three.js Xiaoshan; independent per-actor connected procedural rig",
+    "model": "xiaoshan://wigglytuff"
   },
   {
     "id": "blissey",
