@@ -721,23 +721,27 @@ async function loadDeferredTown(nearNpcs){
  ];
  for(const task of tasks){
   if(!S.ready)break;
-  await delay(35);
+  await delay(mobileGraphics?450:75);
+  // Delay model parsing while combat or capture is in progress on phones.
+  while(mobileGraphics&&S.ready&&(battle||throwing||enterBusy||document.hidden))await delay(300);
   try{await task();if(place)setNpcPlace();}
   catch(e){S.errors.push('背景圖資：'+e.message);console.warn('背景資源稍後可重試',e);}
  }
 }
 function warmBattleModels(){
  if(!S.ready)return;
+ if(mobileGraphics&&(battle||throwing||enterBusy||modal||document.hidden)){setTimeout(warmBattleModels,2000);return;}
  // Don't block first paint or flood the network: queue assets one at a time.
  const models=[world.battleModel||'models/world/arena.glb',...S.state.team.map(id=>byId[id]?.model).filter(Boolean)];
  let n=0;
  const next=()=>{if(n>=models.length||!S.ready)return;
+  if(mobileGraphics&&(battle||throwing||enterBusy||modal||document.hidden)){setTimeout(next,2200);return;}
   const path=models[n++];
-  asset(path).catch(e=>console.warn('預先載入場地或隊伍模型失敗',e)).finally(()=>setTimeout(next,160));
+  asset(path).catch(e=>console.warn('預先載入場地或隊伍模型失敗',e)).finally(()=>setTimeout(next,mobileGraphics?850:160));
  };
  next();
  // Browser may cache the challenge-tower document before the player opens it.
- if(!document.querySelector('link[data-tower-prefetch]')){
+ if(!mobileGraphics&&!document.querySelector('link[data-tower-prefetch]')){
   const link=document.createElement('link');link.rel='prefetch';link.href='tower/?v=20261017-performance-v1';link.as='document';
   link.dataset.towerPrefetch='true';document.head.append(link);
  }
@@ -748,7 +752,7 @@ const nearestNpcs=[...npcData].sort((a,b)=>{
  const p=a.position||[0,0,0],q=b.position||[0,0,0],az=p.length===2?p[1]:p[2],bz=q.length===2?q[1]:q[2];
  return Math.hypot(p[0]-S.player.x,az-S.player.z)-Math.hypot(q[0]-S.player.x,bz-S.player.z);
 }).slice(0,2);
-await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);if(byId.mew){companion=await actor(byId.mew.model,.55);companion.root.visible=false;companion.root.position.copy(S.player);companion.idleSince=elapsed;}camera.position.copy(S.player).add(new T.Vector3(0,8.6,10.7));setNpcPlace();if(S.state.petActive)void equipPet(S.state.petActive);if(restoredBuilding){const b=world.buildings.find(x=>x.id===restoredBuilding);if(b){await enterBuilding(b);if(restoredPosition&&!blocked(...restoredPosition)){S.player.set(restoredPosition[0],0,restoredPosition[1]);hero.root.position.copy(S.player);}}}bindUi();hud();S.ready=true;if(new URLSearchParams(location.search).get('monsterDex')==='1')showMonsterDex();$('load').hidden=true;document.body.dataset.ready='true';setTimeout(()=>void loadDeferredTown(nearestNpcs),350);setTimeout(()=>warmBattleModels(),2300);setInterval(save,15000);addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});setInterval(()=>{if(!place&&!battle&&!modal){const far=wild.find(w=>w!==target&&!w.specialEventId&&w.root.position.distanceTo(S.player)>24);if(far){wild.splice(wild.indexOf(far),1);removeActor(far);replenish();}}},45000);toast(S.state.migratedFrom?'歡迎回來！你的舊版進度已接續。':'歡迎來到初光鎮！靠近幻靈，投出靈核球締約。');}catch(e){S.errors.push(e.message);$('loadText').textContent=e.message+'。請重新整理，或確認資產是否完整。';console.error(e);}}
+await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);if(byId.mew){companion=await actor(byId.mew.model,.55);companion.root.visible=false;companion.root.position.copy(S.player);companion.idleSince=elapsed;}camera.position.copy(S.player).add(new T.Vector3(0,8.6,10.7));setNpcPlace();if(S.state.petActive)void equipPet(S.state.petActive);if(restoredBuilding){const b=world.buildings.find(x=>x.id===restoredBuilding);if(b){await enterBuilding(b);if(restoredPosition&&!blocked(...restoredPosition)){S.player.set(restoredPosition[0],0,restoredPosition[1]);hero.root.position.copy(S.player);}}}bindUi();hud();S.ready=true;if(new URLSearchParams(location.search).get('monsterDex')==='1')showMonsterDex();$('load').hidden=true;document.body.dataset.ready='true';setTimeout(()=>void loadDeferredTown(nearestNpcs),mobileGraphics?900:350);setTimeout(()=>warmBattleModels(),mobileGraphics?8000:2300);setInterval(save,15000);addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});setInterval(()=>{if(!place&&!battle&&!modal){const far=wild.find(w=>w!==target&&!w.specialEventId&&w.root.position.distanceTo(S.player)>24);if(far){wild.splice(wild.indexOf(far),1);removeActor(far);replenish();}}},45000);toast(S.state.migratedFrom?'歡迎回來！你的舊版進度已接續。':'歡迎來到初光鎮！靠近幻靈，投出靈核球締約。');}catch(e){S.errors.push(e.message);$('loadText').textContent=e.message+'。請重新整理，或確認資產是否完整。';console.error(e);}}
 window.PhantomGame={eligible,spawnWeight,chooseWild,beginNavigation,cancelNavigation,get navigation(){return navigation},cameraOrbit,clearTarget,showGuide,showReset,resetGame,grantSupply,tickBroadcast,get cardArt(){return cardArt},get elapsed(){return elapsed},broadcastNow(){broadcastAt=elapsed;tickBroadcast()},endBattle,playerTurn,tickGym,state:S,scene,camera,renderer,actors,wild,npcs,asset,cloneSkin,showDex,showTeam,showGyms,showViewer,startBattle,enterBuilding,leaveBuilding,grant,save,showMenu,throwBall,useBerry,selectTarget,get spirits(){return spirits},get world(){return world},get hero(){return hero},get battle(){return battle},get place(){return place},captureCandidates,readBookshelf,nearbyBookshelf,validBookTeam,get bookshelfData(){return bookshelfData},get bookEncounter(){return bookEncounter},get chestEncounter(){return chestEncounter},get chestNextAt(){return chestNextAt},get viewer(){return viewer},get labels(){return labels},get target(){return target},beginRoll,get roll(){return roll},blocked,teleport(x,z){S.player.set(x,0,z);hero.root.position.copy(S.player);},setCostume};
 
 function spawnWeight(s){return 1/Math.pow(1+number(S.state.captureCounts[s.id]),1.6)/(1+wild.filter(w=>w.species.id===s.id).length*3);}
