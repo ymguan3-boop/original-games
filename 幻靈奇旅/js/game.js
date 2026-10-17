@@ -382,7 +382,7 @@ function showMonsterDetail(id){const s=towerMonsters.find(s=>s.id===id);if(!s)re
 function towerDexHtml(){return `<section class="towerDex"><h3>星穹挑戰塔 · 魔物卡牌</h3><div class="towerMonsterGrid">${towerMonsters.map(s=>monsterCard(s)).join('')}</div></section>`;}
 function showBag(){openModal('旅人背包',`<div class="row">靈核球 <b>${S.state.pokeballs}</b></div><div class="row">高階靈核球 <b>${S.state.greatBallCount}</b></div><div class="row">星耀靈核球 <b>${S.state.masterBallCount}</b></div><div class="row">星露果 <b>${S.state.berryCount}</b></div>${Object.entries(itemNames).map(([k,n])=>`<div class="row">${n}<b>${number(S.state.items[k])}</b></div>`).join('')}<p class="muted">回復藥恢復生命；裂甲粉降低敵方防禦；勇氣結晶提升我方攻擊。可從居民對話及不定時補給廣播獲得。</p>`);}
 function exportSave(){showReset();}
-function showHelp(){openModal('旅行指南','<p>左側搖桿移動，右側「鎖定」自動選取可締約幻靈，再按「締約」投出靈核球。星露果可提高成功率；換球切換普通、高階與星耀球。</p><p>桌面 WASD／方向鍵移動，空白締約、E 進出、Tab 鎖定／解除目標、Shift 翻滾。翻滾沒有冷卻，完成動作後可再次翻滾。拖曳場景旋轉，雙指捏合或滾輪縮放；小型鏡頭按鈕也可操作。</p><p>手冊「建物與居民」點名稱即可自動導航。操作方向鍵或按取消可中止導航。碰到居民就會對話，有機會得到回復、減防、加攻道具及締約用品。</p><p>場上維持 8 隻幻靈；已捕捉越多的種類出現率越低。重複締約三次，可在圖鑑消耗兩份羈絆進階。</p><p>初光挑戰：旅人在特色道館移動、翻滾閃避推離與短暫干擾，投靈核球累積信任完成試煉，旅人不會受傷。通關後守護神獸會出現於初光鎮，每三分鐘公告，捕獲該隻後公告停止。競技擂台則是幻靈小隊回合對戰，技能可附加狀態，使用道具或換位應對。</p><p>進度自動存於此瀏覽器。手冊的重置需兩次確認。星穹挑戰塔已開放三層魔物挑戰，靠近武器範圍會自動攻擊，原攻擊鍵改為換武器。</p>');}
+function showHelp(){openModal('旅行指南','<p>左側搖桿移動，右側「鎖定」自動選取可締約幻靈，再按「締約」投出靈核球。星露果可提高成功率；換球切換普通、高階與星耀球。</p><p>桌面 WASD／方向鍵移動，空白締約、E 進出、Tab 鎖定／解除目標、Shift 翻滾。翻滾沒有冷卻，完成動作後可再次翻滾。拖曳場景旋轉，雙指捏合或滾輪縮放；小型鏡頭按鈕也可操作。</p><p>手冊「建物與居民」點名稱即可自動導航。操作方向鍵或按取消可中止導航。碰到居民就會對話，有機會得到回復、減防、加攻道具及締約用品。</p><p>場上維持 8 隻幻靈；已捕捉越多的種類出現率越低。一階進階至二階需消耗 10 份羈絆，二階至三階需消耗 30 份羈絆；成功進階前會播放 3D 角色閃光旋轉動畫。</p><p>初光挑戰：旅人在特色道館移動、翻滾閃避推離與短暫干擾，投靈核球累積信任完成試煉，旅人不會受傷。通關後守護神獸會出現於初光鎮，每三分鐘公告，捕獲該隻後公告停止。競技擂台則是幻靈小隊回合對戰，技能可附加狀態，使用道具或換位應對。</p><p>進度自動存於此瀏覽器。手冊的重置需兩次確認。星穹挑戰塔已開放三層魔物挑戰，靠近武器範圍會自動攻擊，原攻擊鍵改為換武器。</p>');}
 const artCache=new Map(),artQueue=[];let artBusy=false;
 const decodedCardImages=new Map();
 function decodeCardImage(src){if(!src)return Promise.resolve(null);if(decodedCardImages.has(src)){const cached=decodedCardImages.get(src);decodedCardImages.delete(src);decodedCardImages.set(src,cached);return cached.promise;}const image=new Image();image.decoding='async';image.src=src;const entry={image,ready:false,promise:null};entry.promise=(image.decode?image.decode():new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=reject})).then(()=>{entry.ready=true;return image}).catch(()=>null);decodedCardImages.set(src,entry);while(decodedCardImages.size>8){const oldest=Array.from(decodedCardImages.keys()).find(key=>key!=='assets/cards/frame.png');if(!oldest)break;decodedCardImages.delete(oldest);}return entry.promise;}
@@ -452,7 +452,7 @@ async function playEvolutionSequence(before,after){
   const size=bounds.getSize(new T.Vector3()),center=bounds.getCenter(new T.Vector3());
   const root=new T.Group();
   object.position.sub(center);
-  root.scale.setScalar(Math.min(3/Math.max(.01,size.y),3.8/Math.max(.01,size.x),2.9/Math.max(.01,size.z)));
+  root.scale.setScalar(Math.min(3/Math.max(.01,size.y),mobileGraphics?2.5/Math.max(.01,size.x):3.8/Math.max(.01,size.x),2.9/Math.max(.01,size.z)));
   root.add(object);
   const materialCache=new Map(),materials=[];
   function ownMaterial(material){
