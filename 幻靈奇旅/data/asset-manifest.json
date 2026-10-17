@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 91,
+  "modelCount": 90,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -403,16 +403,6 @@
       ]
     },
     {
-      "file": "models/spirits/mew.glb",
-      "bytes": 193960,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/mewtwo.glb",
       "bytes": 184256,
       "animations": [
@@ -784,7 +774,7 @@
       "animations": []
     }
   ],
-  "nativeModelCount": 6,
+  "nativeModelCount": 7,
   "nativeModels": [
     {
       "id": "piplup",
@@ -875,6 +865,19 @@
         "Fly",
         "Landing"
       ]
+    },
+    {
+      "id": "mew",
+      "key": "riceball://mew",
+      "runtime": "three-r128",
+      "animations": [
+        "Idle",
+        "Roll",
+        "Stuck",
+        "Wave"
+      ],
+      "controller": "RiceballSpirit",
+      "instancedRiceGrains": 2170
     }
   ],
   "nativeSources": [
@@ -892,6 +895,11 @@
       "file": "models/native/families.js",
       "bytes": 13077,
       "sha256": "c317f7b2315d56fcfd10a44154d3e1a711a57c412f853398d039760d236c5aea"
+    },
+    {
+      "file": "models/native/riceball.js",
+      "bytes": 13030,
+      "sha256": "c4b12b6c8c6aa8eeed43293f330f6c6fd89402f952a1248741259de029864fec"
     }
   ]
 }

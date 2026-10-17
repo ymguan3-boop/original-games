@@ -1671,36 +1671,38 @@
   {
     "id": "mew",
     "speciesId": "mew",
-    "name": "星霧雲靈",
+    "name": "小飯團",
     "element": "psychic",
     "type": "星",
     "stage": 1,
-    "family": "mew",
-    "form": "cloud",
+    "family": "riceball-spirit",
+    "form": "riceball",
     "color": 13019357,
     "role": "gym",
     "previous": null,
     "next": null,
-    "model": "models/spirits/mew.glb",
+    "model": "riceball://mew",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
     "evolvesTo": null,
-    "rarity": "稀有",
-    "motionType": "float",
+    "rarity": "傳說",
+    "motionType": "roll",
     "skills": [
       {
-        "name": "星光輕擊",
+        "name": "飯團滾擊",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "星霧共鳴",
+        "name": "紫波連環",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "星霧雲靈是初光之境的星屬性幻靈。柔軟雲絮包裹著星核，喜歡漂浮在信任的旅人身邊。"
+    "description": "散發紫色光波的傳說守護者。小飯團以橫向翻滾移動，偶爾卡住時會露出 >_< 的表情，並釋放連續光波。",
+    "stageLabel": "守護者",
+    "cardFrame": "red"
   },
   {
     "id": "wigglytuff",

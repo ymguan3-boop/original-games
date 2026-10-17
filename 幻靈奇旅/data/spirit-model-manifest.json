@@ -889,20 +889,20 @@
   },
   {
     "id": "mew",
-    "name": "星霧雲靈",
+    "name": "小飯團",
     "vertices": 2958,
     "triangles": 5808,
     "materials": 5,
-    "bones": 6,
+    "bones": 0,
     "height": 1.275,
     "animations": [
       "Idle",
-      "Walk",
-      "Attack",
-      "Hurt"
+      "Roll",
+      "Stuck",
+      "Wave"
     ],
-    "fileBytes": 193960,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "Original native Three.js riceball; independent per-actor controller",
+    "model": "riceball://mew"
   },
   {
     "id": "wigglytuff",

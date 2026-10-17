@@ -10,7 +10,7 @@ ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'models/gyms';OUT.mkdir(parents=True,exist_ok=True)
 QA=ROOT/'qa/gym-scenes';QA.mkdir(parents=True,exist_ok=True)
 PALETTE={'ink':'152342','gold':'F4B72F','copper':'BC673B','cyan':'13DCE9','violet':'7749CC','lilac':'CCA8EF','pink':'FC649C','cream':'FFF0D1','green':'197B65','mint':'8CE7AD','wood':'875642','blue':'216BAA','white':'EFFFFF','darkrose':'582549'}
-THEMES={'electric':('閃角共鳴電場','ink','gold','cyan'),'mist':('星霧月環庭','violet','lilac','cyan'),'sound':('絨心音波劇場','darkrose','pink','gold'),'healing':('暖巢森療花園','green','mint','cream')}
+THEMES={'electric':('閃角共鳴電場','ink','gold','cyan'),'mist':('小飯團紫波滾動庭','violet','lilac','cyan'),'sound':('絨心音波劇場','darkrose','pink','gold'),'healing':('暖巢森療花園','green','mint','cream')}
 M={}
 def xyz(p):return (p[0],-p[2],p[1])
 def linear(h):

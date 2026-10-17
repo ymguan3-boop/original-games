@@ -466,14 +466,12 @@
     "generatedAt": "2026-10-12"
   },
   "mew": {
-    "image": "cards/art/mew.webp",
-    "name": "星霧雲靈",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/mew.glb",
-    "group": 12,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/riceball-spirit.webp",
+    "name": "小飯團",
+    "source": "imagegen-original-reference",
+    "referenceModel": "riceball://mew",
+    "style": "original-cute-3d-fantasy-portrait",
+    "generatedAt": "2026-10-17"
   },
   "wigglytuff": {
     "image": "cards/art/wigglytuff.webp",

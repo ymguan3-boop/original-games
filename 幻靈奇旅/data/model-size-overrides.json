@@ -294,9 +294,9 @@
     "maxSpan": 2.6
   },
   "mew": {
-    "desiredWorldHeight": 1.16,
+    "desiredWorldHeight": 1.275,
     "stage": 1,
-    "form": "cloud",
+    "form": "riceball",
     "maxSpan": 2.6
   },
   "wigglytuff": {

@@ -14,3 +14,6 @@
 .collectionThumb .collectionSynopsis,.collectionThumb .collectionSkills,.collectionPickup .collectionSynopsis{display:none}
 .collectionPickup{position:fixed;width:70px;height:98px;pointer-events:none;z-index:9;transform-origin:50% 50%;container-type:inline-size;filter:drop-shadow(0 0 13px #fff5ad) drop-shadow(0 0 24px #c89bff);will-change:transform,left,top}.collectionPickup .collectionName{font-size:4px}.collectionPickup .collectionInfo{font-size:3px;gap:1px}.collectionPickup .collectionCard{height:100%;width:100%}.collectionPickup .collectionArt{border-radius:7%}.collectionPickup .collectionSkills{display:none}.collectionPickup::after{content:'';position:absolute;inset:-9px;border-radius:10px;border:2px solid #ffed98;box-shadow:0 0 15px #fff2ac;animation:collectionShine .5s ease-in-out infinite alternate}
 @keyframes collectionShine{from{opacity:.3;transform:scale(.95)}to{opacity:1;transform:scale(1.06)}}
+
+.collectionCard[data-frame="red"]{background:linear-gradient(145deg,#ffdfdc,#b52635);box-shadow:inset 0 0 0 3px #a91d30}
+.collectionCard[data-frame="red"] .collectionFrame{filter:hue-rotate(315deg) saturate(2.3) brightness(.98)}
