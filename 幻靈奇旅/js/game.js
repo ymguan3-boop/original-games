@@ -66,7 +66,16 @@ function loadSave(){try{const own=localStorage.getItem(KEY);if(own)return migrat
 function save(){if(!S.state)return;try{const pos=battle?battle.previous.position:S.player;S.state.position=[pos.x,pos.z];S.state.buildingId=(battle?battle.previous.place:place)?.id||null;localStorage.setItem(KEY,JSON.stringify(S.state));}catch(e){toast('此瀏覽器無法儲存進度，請檢查網站儲存權限。');}hud();}
 function hud(){if(!S.state)return;$('dexCount').textContent=`${spirits.filter(s=>owned(s.id)).length} / ${spirits.length}`;$('ballCount').textContent=S.state.pokeballs+'/'+(S.state.costume==='sound'||S.state.costume==='healing'?60:30);$('greatCount').textContent=S.state.greatBallCount;$('berryCount').textContent=S.state.berryCount;if($('masterCount'))$('masterCount').textContent=S.state.masterBallCount;const berry=$('berryBadge');if(berry)berry.textContent=S.state.berryCount;}
 function owned(id){return !!(S.state.pokedexUnlocks[id]||S.state.captureCounts[id]>0);}
-function grant(id,count=1){S.state.captureCounts[id]=number(S.state.captureCounts[id])+count;S.state.pokedexUnlocks[id]=true;if(S.state.team.length<3&&!S.state.team.includes(id))S.state.team.push(id);save();}
+function grant(id,count=1){
+ S.state.captureCounts[id]=number(S.state.captureCounts[id])+count;
+ S.state.pokedexUnlocks[id]=true;
+ if(labClaimed()&&id!==S.state.dreamLabLegendChoice&&LAB_LEGENDS.some(x=>x.id===id)&&labLegendMilestoneReached()){
+  S.state.worldFlags.labLegendWildCaught||={};
+  S.state.worldFlags.labLegendWildCaught[id]=true;
+ }
+ if(S.state.team.length<3&&!S.state.team.includes(id))S.state.team.push(id);
+ save();
+}
 const RICEBALL_MODEL='riceball://mew',XIAOSHAN_MODEL='xiaoshan://wigglytuff';
 const isXiaoshan=path=>path===XIAOSHAN_MODEL;
 function controllerBounds(path){return isXiaoshan(path)?new T.Box3(new T.Vector3(-1.6,0,-1.15),new T.Vector3(1.6,2.85,1.15)):new T.Box3(new T.Vector3(-1.35,0,-.75),new T.Vector3(1.35,2.7,.75));}
@@ -115,7 +124,7 @@ function labLegendMilestoneReached(){return spirits.length>0&&spirits.filter(s=>
 function eligible(s){if(isBook(s))return false;
  if(LAB_LEGENDS.some(e=>e.id===s.id)){
   if(!labClaimed())return false;
-  if(s.id!==S.state.dreamLabLegendChoice&&!labLegendMilestoneReached())return false;
+  if(s.id!==S.state.dreamLabLegendChoice)return labLegendMilestoneReached();
  }if(specialEvents().some(e=>e.speciesId===s.id))return true;if(['mewtwo','jigglypuff'].includes(s.id))return S.state.wins>0;const gym=gyms.find(g=>g.spirit===s.id);if(gym&&!S.state.gyms[gym.id]?.cleared)return false;if(['mew','wigglytuff'].includes(s.id))return true;if(s.id==='raichu'&&!(S.state.worldFlags.raichuSpawnUnlocked||S.state.items.thunderStone))return false;if(s.previous&&!owned(s.previous))return false;if(s.role==='legendary'||s.rarity==='傳說'){const list=spirits.filter(x=>(x.role==='legendary'||x.rarity==='傳說')&&!['mew','wigglytuff'].includes(x.id)),index=list.indexOf(s),threshold=index<4?.25:index<8?.5:.75;return spirits.filter(x=>owned(x.id)).length/spirits.length>=threshold;}return true;}
 function isAirborne(s){return /^(fly|flying|float|hover)$/.test(s.motionType||'')||/^(bird|owl|phoenix|manta|moth|dragonfly|serpent|griffin)$/.test(s.form||'');}
 function captureTween(duration,update){return new Promise(resolve=>effects.push({start:elapsed,duration,update,done:resolve}));}
@@ -143,7 +152,7 @@ async function ensureLabLegendWilds(){
  const appeared=[];
  try{
   for(const entry of LAB_LEGENDS){
-   if(entry.id===S.state.dreamLabLegendChoice||owned(entry.id)||wild.some(w=>w.species.id===entry.id))continue;
+   if(entry.id===S.state.dreamLabLegendChoice||S.state.worldFlags?.labLegendWildCaught?.[entry.id]||wild.some(w=>w.species.id===entry.id))continue;
    if(place||battle)break;
    if(wild.length>=WILD_LIMIT){
     const victim=wild.find(w=>w!==target&&!w.specialEventId&&!w.labLegendStarter);
