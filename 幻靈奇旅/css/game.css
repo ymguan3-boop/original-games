@@ -475,3 +475,7 @@ body.battle-active:not(.gym-active) #labels .arenaEnemyHp small{font-size:9px;li
 @media(prefers-reduced-motion:reduce){
  #arenaResultOverlay.shown .arenaResultGlyph{animation-duration:.1s}
 }
+
+/* 2026-10-17: Initial-light guardian trial uses a single, reachable exit. */
+body.gym-active #battleActions{width:148px;grid-template-columns:1fr}
+body.gym-active #battleActions .gymExitOnly{min-height:43px;background:#29495b;color:#fff;font-size:13px;font-weight:700}
