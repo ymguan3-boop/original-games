@@ -933,7 +933,7 @@ function frame(now){if(document.hidden){last=now;requestAnimationFrame(frame);re
  // Simulation, collision and controller input run at every RAF tick, but
  // rendering is capped at 30fps on phones to prevent GPU overload.
  frame.visualAccum=Math.min(.08,(frame.visualAccum||0)+dt);
- const interval=h.paused?100:(world.mobileGraphics?1000/30:0);
+ const interval=h.paused?100:(world.mobileGraphics?28:0);
  if(now-(frame.lastPausedRender||0)>=interval){
   world.render(h,h.paused?0:frame.visualAccum,!!(i.x||i.z)&&!h.paused);
   frame.visualAccum=0;frame.lastPausedRender=now;
