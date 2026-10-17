@@ -872,20 +872,24 @@
   },
   {
     "id": "pikachu",
-    "name": "閃角兔",
-    "vertices": 2342,
-    "triangles": 4576,
-    "materials": 5,
-    "bones": 7,
+    "name": "歐頭慢",
+    "vertices": 46011,
+    "triangles": 45062,
+    "materials": 8,
+    "bones": 0,
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
+      "Wave",
+      "BeamPose",
+      "Roll",
+      "Jump",
       "Hurt"
     ],
-    "fileBytes": 157092,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 14011,
+    "source": "Native Three.js procedural joint rig",
+    "model": "outouman://pikachu"
   },
   {
     "id": "mew",

@@ -38,7 +38,7 @@ EXTRAS=[
  ('dialga','時砂巨象','metal','elephant',0x7A9BA3,3,'legendary'),
  ('palkia','月瀾海馬','water','seahorse',0xB68BBB,3,'legendary'),
  ('giratina','暮影六翼鹿','shadow','shadowdeer',0x827897,3,'legendary'),
- ('pikachu','閃角兔','electric','rabbit',0xE6C467,1,'gym'),
+ ('pikachu','歐頭慢','electric','rabbit',0xE6C467,1,'gym'),
  ('mew','小飯團','psychic','riceball',0xC6A8DD,1,'gym'),
  ('wigglytuff','小山','fairy','mountain',0x9BD75C,1,'gym'),
  ('blissey','暖巢福鹿','fairy','nestdeer',0xD5AE8E,1,'gym'),
@@ -391,7 +391,7 @@ def rig_and_export(d):
 if __name__=='__main__':
  args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
  # These stable save IDs use the dedicated spiral-snail.py, pepper-chick.py, sesame-spirit.py chest-spirit.py and book-spirit.py authoring pipelines.
- selected=[d for d in DATA if d['id'] not in ('bulbasaur','ivysaur','venusaur','charmander','charmeleon','charizard','squirtle','wartortle','blastoise','caterpie','metapod','butterfree','weedle','kakuna','beedrill','piplup','prinplup','empoleon','totodile','croconaw','feraligatr','mew','wigglytuff') and (not args or d['id'] in args)];reports=[]
+ selected=[d for d in DATA if d['id'] not in ('bulbasaur','ivysaur','venusaur','charmander','charmeleon','charizard','squirtle','wartortle','blastoise','caterpie','metapod','butterfree','weedle','kakuna','beedrill','piplup','prinplup','empoleon','totodile','croconaw','feraligatr','mew','wigglytuff','pikachu') and (not args or d['id'] in args)];reports=[]
  for d in selected:reports.append(rig_and_export(d))
  manifest=ROOT/'data'/'spirit-model-manifest.json'
  old=json.loads(manifest.read_text(encoding='utf-8')) if manifest.exists() else []

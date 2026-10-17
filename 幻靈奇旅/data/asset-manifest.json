@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 89,
+  "modelCount": 88,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -487,16 +487,6 @@
       ]
     },
     {
-      "file": "models/spirits/pikachu.glb",
-      "bytes": 157092,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/quilava.glb",
       "bytes": 182580,
       "animations": [
@@ -764,7 +754,7 @@
       "animations": []
     }
   ],
-  "nativeModelCount": 8,
+  "nativeModelCount": 9,
   "nativeModels": [
     {
       "id": "piplup",
@@ -883,6 +873,22 @@
         "React"
       ],
       "controller": "XiaoshanSpirit"
+    },
+    {
+      "id": "pikachu",
+      "key": "outouman://pikachu",
+      "runtime": "three-r128",
+      "triangles": 45062,
+      "meshes": 83,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Wave",
+        "BeamPose",
+        "Roll",
+        "Jump",
+        "Hurt"
+      ]
     }
   ],
   "nativeSources": [
@@ -910,6 +916,11 @@
       "file": "models/native/xiaoshan.js",
       "bytes": 7899,
       "sha256": "afc4eecac4cfa8f8131a0706556e554478a28e122e24010c35d7532e5fcd4d85"
+    },
+    {
+      "file": "models/native/outouman.js",
+      "bytes": 14011,
+      "sha256": "01098967307ce25221e9828d8bbc4692edc9e67d34ff008fd7d5af74aa09d770"
     }
   ]
 }

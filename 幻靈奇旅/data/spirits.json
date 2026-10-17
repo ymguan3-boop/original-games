@@ -1637,17 +1637,17 @@
   {
     "id": "pikachu",
     "speciesId": "pikachu",
-    "name": "閃角兔",
+    "name": "歐頭慢",
     "element": "electric",
     "type": "雷",
     "stage": 1,
     "family": "pikachu",
-    "form": "rabbit",
-    "color": 15123559,
+    "form": "armored-hero",
+    "color": 13053233,
     "role": "gym",
     "previous": null,
     "next": "raichu",
-    "model": "models/spirits/pikachu.glb",
+    "model": "outouman://pikachu",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -1656,17 +1656,17 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "雷光輕擊",
+        "name": "彩虹光束",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "閃角共鳴",
+        "name": "閃身翻滾",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "閃角兔是初光之境的雷屬性幻靈。雙耳間的晶角儲存雷光，奔跑時留下明亮足跡。"
+    "description": "歐頭慢是身穿銀紅裝甲的雷屬性守護者，胸前藍燈閃爍。彩虹光束能使旅人短暫麻痺，翻滾時靈巧避開締約。"
   },
   {
     "id": "mew",

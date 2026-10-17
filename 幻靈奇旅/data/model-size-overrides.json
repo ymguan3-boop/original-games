@@ -290,7 +290,7 @@
   "pikachu": {
     "desiredWorldHeight": 1.12,
     "stage": 1,
-    "form": "rabbit",
+    "form": "armored-hero",
     "maxSpan": 2.6
   },
   "mew": {

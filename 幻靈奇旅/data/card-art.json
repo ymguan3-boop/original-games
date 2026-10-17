@@ -456,14 +456,14 @@
     "generatedAt": "2026-10-12"
   },
   "pikachu": {
-    "image": "cards/art/pikachu.webp",
-    "name": "閃角兔",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/pikachu.glb",
+    "image": "cards/art/outouman-spirit.webp",
+    "name": "歐頭慢",
+    "source": "imagegen-reference-portrait",
+    "referenceModel": "outouman://pikachu",
     "group": 12,
     "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "style": "stylized-3d-rainbow-guardian",
+    "generatedAt": "2026-10-17"
   },
   "mew": {
     "image": "cards/art/riceball-spirit.webp",
