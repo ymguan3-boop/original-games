@@ -112,7 +112,10 @@ function create(options={}){
   if(mode==='Walk'){lift=Math.abs(Math.sin(phase))*.045;bodyPitch=.035;}
   if(mode==='Jump'){const p=time%2.5;if(p<.45)compression=1-.09*Math.sin(p/.45*Math.PI/2);else if(p<1.55){lift=1.55*Math.sin((p-.45)/1.10*Math.PI);compression=1+.035*Math.sin((p-.45)/1.10*Math.PI);}else if(p<1.85)compression=1-.10*Math.sin((p-1.55)/.30*Math.PI);}
   rig.position.y=smooth(rig.position.y,lift,k);rig.scale.y=smooth(rig.scale.y,compression+Math.sin(age*2.2)*.002,k);rig.rotation.x=smooth(rig.rotation.x,bodyPitch,k);head.rotation.y=smooth(head.rotation.y,headYaw,k);
-  const rollAngle=mode==='Roll'?Math.min(1,time/.60)*Math.PI*2:0;rig.rotation.x=mode==='Roll'?-rollAngle:smooth(rig.rotation.x,bodyPitch,k);rig.position.z=mode==='Roll'?2.1*Math.sin(rollAngle):smooth(rig.position.z,0,k);
+  const rollAngle=mode==='Roll'?Math.min(1,time/.60)*Math.PI*2:0;// Model faces +Z: positive X-axis pitch sends the head forward (+Z).
+  rig.rotation.x=mode==='Roll'?rollAngle:smooth(rig.rotation.x,bodyPitch,k);
+  // The guardian's world root already travels toward its dodge goal; do not double-shift the rig.
+  rig.position.z=smooth(rig.position.z,0,k);
   if(mode==='Roll'){const c=Math.cos(rollAngle),sn=-Math.sin(rollAngle);let contact=0;for(const [cy,cz,ry,rz] of [[2.99,0,1.14,.91],[1.48,0,.57,.3],[.13,.13,.19,.34]])contact=Math.max(contact,-cy*c-cz*sn+Math.hypot(ry*c,rz*sn));for(const [z,y]of profile)contact=Math.max(contact,-(y+2.99)*c-z*sn);rig.position.y=contact+.02;}
   if(mode==='Hurt')rig.rotation.z=Math.sin(time*27)*.025;else rig.rotation.z=smooth(rig.rotation.z,0,k);
   blue.emissiveIntensity=.50+.12*Math.sin(age*2.2);halo.material.opacity=.045+.015*Math.sin(age*2.2);eyeMat.emissiveIntensity=.65+.05*Math.sin(age*1.3);
