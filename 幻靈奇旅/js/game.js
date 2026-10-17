@@ -14,6 +14,8 @@ let chestEncounter=null,chestSpawnPromise=null,chestNextAt=0,enterBusy=false;
 // Dream Laboratory three-ball selection; all selections share the normal save.
 const LAB_LEGENDS=[{id:'raikou',color:0xf2c64c},{id:'entei',color:0xf17e58},{id:'suicune',color:0x80c9ff}];
 const LAB_CENTER=new T.Vector3(-4,0,0);
+const LAB_PROFESSOR_POSITION=new T.Vector3(-1.7,0,-1.55);
+const LAB_START_POSITION=new T.Vector3(-3.7,0,3.35);
 let labDisplay=null,labEvent=null,labClaimBusy=false;
 const labClaimed=()=>!!S.state?.dreamLabLegendClaimed&&!!S.state?.dreamLabLegendChoice;
 const isChest=s=>s?.family==='chest-spirit';
@@ -141,7 +143,7 @@ async function loadNpc(n){
  npcLoadPromises.set(n.id,pending);
  try{return await pending;}finally{npcLoadPromises.delete(n.id);}
 }
-function setNpcPlace(){for(const n of npcs){const match=place?n.data.buildingId===place.id:true;n.root.visible=match;(place?insideGroup:townGroup).add(n.root);if(match){const p=place?(n.data.interiorPosition||n.data.position):n.data.position;n.root.position.fromArray(p.length===2?[p[0],0,p[1]]:p);n.home.copy(n.root.position);n.goal.copy(n.home);}}}
+function setNpcPlace(){for(const n of npcs){const match=place?n.data.buildingId===place.id:true;n.root.visible=match;(place?insideGroup:townGroup).add(n.root);if(match){const p=place?.id==='dream_lab'&&n.data.id==='prof_daydream'?[LAB_PROFESSOR_POSITION.x,LAB_PROFESSOR_POSITION.z]:(place?(n.data.interiorPosition||n.data.position):n.data.position);n.root.position.fromArray(p.length===2?[p[0],0,p[1]]:p);n.home.copy(n.root.position);n.goal.copy(n.home);if(place?.id==='dream_lab'&&n.data.id==='prof_daydream'){n.contactLock=false;n.cooldown=0;n.play('Idle');n.root.rotation.y=-1.1;}}}}
 // The three original mint-colored vials are triangles in a single GLB mesh.
 // Remove only the glass triangles within their tabletop footprint, leaving
 // the counter display, bookshelves, and all other glass geometry untouched.
@@ -166,26 +168,34 @@ function removeLabVials(root){
   }
  });
 }
-function buildLabBall(entry,i){
- const g=new T.Group();
- const radius=.32,colored=new T.MeshStandardMaterial({color:entry.color,roughness:.24,metalness:.25,emissive:entry.color,emissiveIntensity:.16});
- const lower=new T.MeshStandardMaterial({color:0xf8f9fa,roughness:.35,metalness:.12});
- const seam=new T.MeshStandardMaterial({color:0x203e5a,roughness:.32,metalness:.35});
- for(const [material,start,length] of [[colored,0,Math.PI/2],[lower,Math.PI/2,Math.PI/2]]){
-  const half=new T.Mesh(new T.SphereGeometry(radius,24,16,0,Math.PI,start,length),material);
-  half.userData.labLegendId=entry.id;g.add(half);
- }
- const band=new T.Mesh(new T.CylinderGeometry(radius+.009,radius+.009,.075,32),seam);
- band.userData.labLegendId=entry.id;g.add(band);
- const button=new T.Mesh(new T.SphereGeometry(.085,16,12),lower);
- button.position.z=radius-.012;button.userData.labLegendId=entry.id;g.add(button);
- const rim=new T.Mesh(new T.TorusGeometry(.091,.023,8,24),seam);
- rim.position.z=radius-.008;rim.userData.labLegendId=entry.id;g.add(rim);
- g.position.set(-4.82+i*.82,1.5,0);
+async function buildLabBall(entry,i){
+ // Match the exact GLB mesh used when the player throws a normal spirit ball.
+ const source=await asset(world.props?.core||'models/props/core.glb');
+ const g=new T.Group(),o=cloneSkin(source.scene);
+ o.traverse(n=>{
+  if(!n.isMesh)return;
+  n.material=Array.isArray(n.material)?n.material.map(m=>m.clone()):n.material.clone();
+  const materials=Array.isArray(n.material)?n.material:[n.material];
+  for(const m of materials){
+   if(m.name==='sky'||m.name==='purple'){
+    m.color.setHex(entry.color);
+    if(m.emissive){m.emissive.setHex(entry.color);m.emissiveIntensity=.25;}
+   }
+   m.roughness=.3;
+  }
+  n.castShadow=true;
+  n.userData.labLegendId=entry.id;
+ });
+ const bounds=new T.Box3().setFromObject(o),size=bounds.getSize(new T.Vector3()),center=bounds.getCenter(new T.Vector3());
+ const scale=.64/Math.max(size.x,size.y,size.z,.001);
+ o.scale.setScalar(scale);
+ o.position.set(-center.x*scale,-bounds.min.y*scale,-center.z*scale);
+ g.add(o);
+ g.position.set(-4.82+i*.82,1.17,0);
  g.userData.labLegendId=entry.id;
  return g;
 }
-function decorateLabInterior(root){
+async function decorateLabInterior(root){
  removeLabVials(root);
  const group=new T.Group();
  group.name='大夢研究所・傳說幻靈三選一球桌';
@@ -193,8 +203,10 @@ function decorateLabInterior(root){
  tabletop.name='加長研究桌桌面';
  tabletop.position.set(-4,1.05,0);
  tabletop.receiveShadow=true;group.add(tabletop);
- const balls=LAB_LEGENDS.map((item,i)=>{const ball=buildLabBall(item,i);group.add(ball);return ball;});
  root.add(group);
+ const balls=await Promise.all(LAB_LEGENDS.map((item,i)=>buildLabBall(item,i)));
+ if(root!==interior)return;
+ for(const ball of balls)group.add(ball);
  labDisplay={group,balls};
  syncLabBallDisplay();
 }
@@ -215,23 +227,29 @@ function showLabProfessorDialogue(n){
  $('dialogue').hidden=false;
  if(labEvent)labEvent.phase='dialogue';
 }
+function updateLabGuide(){
+ const first=!!S.state&&!spirits.some(s=>owned(s.id));
+ let hint=document.getElementById('labNewPlayerGuide');
+ const show=place?.id==='dream_lab'&&first&&!labClaimed();
+ if(!show){if(hint)hint.hidden=true;return;}
+ if(!hint){hint=document.createElement('div');hint.id='labNewPlayerGuide';hint.setAttribute('role','status');document.body.append(hint);}
+ hint.hidden=false;
+ const near=S.player.distanceTo(LAB_CENTER)<3.2;
+ const message=near?'第一站｜和大夢博士對話，從桌上的三顆幻靈球選一顆！':'第一站｜向桌上的三顆幻靈球前進，選擇你的第一位幻靈！';
+ if(hint.textContent!==message)hint.textContent=message;
+}
 function tickLabEvent(dt){
+ updateLabGuide();
  if(place?.id!=='dream_lab'||labClaimed()||!labDisplay||battle||modal||dialog||enterBusy)return;
- const n=labProfessor();
- if(!n)return;
+ const n=labProfessor();if(!n)return;
+ // The professor stays in this collision-safe spot beside the desk.
+ n.root.position.copy(LAB_PROFESSOR_POSITION);
+ n.home.copy(LAB_PROFESSOR_POSITION);
+ n.play('Idle');
  if(!labEvent&&S.player.distanceTo(LAB_CENTER)<3.2){
-  labEvent={phase:'walking',index:0,waypoints:[new T.Vector3(-2.5,0,-5),new T.Vector3(-2.45,0,-.65)]};
+  labEvent={phase:'ready'};
   n.contactLock=true;n.cooldown=elapsed+60;
- }
- if(labEvent?.phase!=='walking')return;
- const goal=labEvent.waypoints[labEvent.index],direction=goal.clone().sub(n.root.position);
- direction.y=0;const length=direction.length();
- if(length<.13){
-  if(++labEvent.index>=labEvent.waypoints.length){showLabProfessorDialogue(n);return;}
- }else{
-  n.root.position.addScaledVector(direction,Math.min(1,dt*2.85/Math.max(length,.001)));
-  n.root.rotation.y=Math.atan2(direction.x,direction.z);
-  n.play('Walk');
+  showLabProfessorDialogue(n);
  }
 }
 function showLabSelection(){
@@ -250,7 +268,7 @@ function claimLabLegend(id){
   // Mark the one-time reward before grant(), which persists the save.
   S.state.dreamLabLegendChoice=id;S.state.dreamLabLegendClaimed=true;
   grant(id);
-  syncLabBallDisplay();
+  syncLabBallDisplay();updateLabGuide();
   if(labEvent)labEvent.phase='claimed';
   showDetail(id);
   toast('大夢博士贈送了 '+spirit.name+'！已收錄圖鑑。');
@@ -265,7 +283,7 @@ function tapLabBall(e){
  const hit=ray.intersectObjects(meshes,false).find(x=>x.object.visible&&x.object.parent?.visible);
  if(hit)showLabSelection();
 }
-async function enterBuilding(b){if(battle||throwing||enterBusy)return;enterBusy=true;cancelNavigation();clearTarget();closeDialog();$('loadText').textContent='走進'+b.name+'…';$('load').hidden=false;try{if(interior)insideGroup.remove(interior);const g=await asset(b.interiorModel);interior=g.scene.clone(true);insideGroup.add(interior);labDisplay=null;labEvent=null;if(b.id==='dream_lab')decorateLabInterior(interior);interior.traverse(n=>{if(n.isMesh){n.receiveShadow=true;n.castShadow=true;}});place=b;townGroup.visible=false;insideGroup.visible=true;detach(hero.root);insideGroup.add(hero.root);const p=b.spawn||[0,4];S.player.set(p[0],0,p.length===3?p[2]:p[1]);hero.root.position.copy(S.player);setNpcPlace();if(b.id==='dream_lab'&&!npcs.some(n=>n.data?.id==='prof_daydream')){await loadNpc(npcData.find(n=>n.id==='prof_daydream'));setNpcPlace();}syncChestRoom();syncBookRoom();await ensureChestActor();await ensureBookActor();$('location').textContent=b.name;scene.fog.near=30;scene.fog.far=85;target=null;save();}catch(e){toast(e.message);S.errors.push(e.message);}finally{enterBusy=false;$('load').hidden=true;}}
+async function enterBuilding(b){if(battle||throwing||enterBusy)return;enterBusy=true;cancelNavigation();clearTarget();closeDialog();$('loadText').textContent='走進'+b.name+'…';$('load').hidden=false;try{if(interior)insideGroup.remove(interior);const g=await asset(b.interiorModel);interior=g.scene.clone(true);insideGroup.add(interior);labDisplay=null;labEvent=null;if(b.id==='dream_lab')await decorateLabInterior(interior);interior.traverse(n=>{if(n.isMesh){n.receiveShadow=true;n.castShadow=true;}});place=b;townGroup.visible=false;insideGroup.visible=true;detach(hero.root);insideGroup.add(hero.root);const p=b.spawn||[0,4];S.player.set(p[0],0,p.length===3?p[2]:p[1]);hero.root.position.copy(S.player);setNpcPlace();if(b.id==='dream_lab'&&!npcs.some(n=>n.data?.id==='prof_daydream')){await loadNpc(npcData.find(n=>n.id==='prof_daydream'));setNpcPlace();}syncChestRoom();syncBookRoom();await ensureChestActor();await ensureBookActor();$('location').textContent=b.name;scene.fog.near=30;scene.fog.far=85;target=null;save();}catch(e){toast(e.message);S.errors.push(e.message);}finally{enterBusy=false;$('load').hidden=true;}}
 function leaveBuilding(){if(!place||throwing||enterBusy||battle)return;clearTarget();labEvent=null;labDisplay=null;const p=place.entrance;S.player.set(p[0],0,p.length===3?p[2]:p[1]+2);place=null;syncChestRoom();syncBookRoom();insideGroup.visible=false;townGroup.visible=true;townGroup.add(hero.root);hero.root.position.copy(S.player);setNpcPlace();$('location').textContent='初光鎮';closeDialog();save();}
 function portalCheck(){portalAction=null;if(battle||dialog||modal||throwing||enterBusy){$('portal').hidden=true;return;}if(place){const e=place.exit||[0,5];if(Math.hypot(S.player.x-e[0],S.player.z-(e.length===3?e[2]:e[1]))<2.1){portalAction=leaveBuilding;$('portal').textContent='離開'+place.name+' ↗';}}else for(const b of world.buildings){const p=b.entrance;if(Math.hypot(S.player.x-p[0],S.player.z-(p.length===3?p[2]:p[1]))<2.8){portalAction=()=>enterBuilding(b);$('portal').textContent='進入'+b.name+' ↗';break;}}if(!portalAction&&nearbyBookshelf()&&validBookTeam()&&!bookEncounter&&!bookChallengeBusy){portalAction=readBookshelf;$('portal').textContent='翻書 · 書本幻靈 3 對 3 挑戰';}$('portal').hidden=!portalAction;}
 function openModal(title,html){closeDialog();stopViewer();modal=true;S.stick.x=S.stick.y=0;$('stick').style.transform='';$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').hidden=false;}
@@ -992,7 +1010,7 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
    }
   }
   return;
- }tickBookEncounter();tickBroadcast();if(elapsed>=(tick.specialCheckAt||0)){tickSpecialAppearances(elapsed-(tick.specialCheckedAt||elapsed));tick.specialCheckedAt=elapsed;tick.specialCheckAt=elapsed+.2;}if(battle?.gym)tickGym(dt);for(const a of actors)if(a.root.visible&&a.root.parent?.visible!==false){a.mixer.update(dt);if(a.controller&&!a.capturing){a.controller.setMotionSpeed(Math.min(6,Math.max(0,(Number.isFinite(a.motionSpeed)?a.motionSpeed:0)/Math.max(.35,a.object.scale.x))));try{a.controller.update(dt);}catch(error){a.controller.setMode('Idle');a.controller.setMotionSpeed(0);if(!a.controllerErrorLogged){a.controllerErrorLogged=true;S.errors.push('角色動畫已安全暫停：'+error.message);}}}}updateRoll(dt);movement(dt);tickLabEvent(dt);tickChestEncounter(dt);collectSupplies();if(!battle&&!modal&&!dialog){if(!place){for(const w of wild)if(w!==target||!throwing)walkActor(w,dt,.45+(w.species.stage||1)*.1);if(target&&!wild.includes(target))clearTarget();}for(const n of npcs)if(n.root.visible){if(n.data?.id==='prof_daydream'&&labEvent?.phase==='walking')continue;const d=n.root.position.distanceTo(S.player);if(d>3)n.contactLock=false;if(d>2.5)walkActor(n,dt,.45);else n.play('Idle');if(d<1.6&&!n.contactLock&&elapsed>n.cooldown&&(!navigation||navigation.kind==='npc'&&navigation.id===n.data.id)){talk(n);break;}}}try{tickPetFollower(dt);}catch(error){if(!tick.petErrorReported){tick.petErrorReported=true;console.warn('寵物互動暫停，保護遊戲主迴圈',error);}if(petFollower){const face=hero.root.rotation.y;petFollower.root.position.lerp(new T.Vector3(S.player.x-Math.sin(face)*1.13,0,S.player.z-Math.cos(face)*1.13),Math.min(1,dt*7));}}if(companion){companion.root.visible=S.state.costume==='mist'&&!battle&&!place;if(companion.root.visible){const face=hero.root.rotation.y,goal=new T.Vector3(S.player.x-Math.sin(face)*1.25,0,S.player.z-Math.cos(face)*1.25),d=goal.sub(companion.root.position),dist=d.length(),moving=dist>.08;if(moving){const step=Math.min(dist,dt*Math.max(1.8,dist*4));companion.root.position.addScaledVector(d,step/Math.max(dist,.001));companion.root.rotation.y=Math.atan2(-d.z,d.x);companion.motionSpeed=step/dt;companion.play('Walk');companion.idleSince=elapsed;}else{companion.motionSpeed=0;const q=(elapsed-(companion.idleSince||elapsed))%9;companion.play(q>4.5&&q<6.2?'Stuck':q>6.2?'Wave':'Idle');}}}for(let i=effects.length-1;i>=0;i--){const e=effects[i],t=Math.min(1,(elapsed-e.start)/e.duration);e.update(t);if(t===1){if(e.object)detach(e.object);effects.splice(i,1);e.done?.();}}const portrait=innerWidth<600;if(battle?.gym){gymCamera();}else if(battle){camera.position.lerp(new T.Vector3(0,portrait?11.3:9.9,portrait?23.5:18),Math.min(1,dt*6));camera.lookAt(0,portrait?-.8:-.2,0);}else{const distance=(place?12.2:portrait?17.3:19.6)*cameraOrbit.zoom,desired=S.player.clone().add(new T.Vector3(Math.sin(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch),distance*Math.sin(cameraOrbit.pitch),Math.cos(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch)));camera.position.lerp(desired,Math.min(1,dt*7));camera.lookAt(S.player.x,1.1,S.player.z);light.position.set(S.player.x-12,25,S.player.z+15);light.target.position.copy(S.player);light.target.updateMatrixWorld();}const targetText=target&&!battle&&captureCandidates().includes(target)?`${target.species.name} · ${target.species.stageLabel||'第 '+target.species.stage+' 階段'}${target.berry?' · 已餵果':''}`:'';if($('target').textContent!==targetText)$('target').textContent=targetText;portalCheck();if(elapsed>=(tick.nextLabelsAt||0)){updateLabels();tick.nextLabelsAt=elapsed+(mobileGraphics?.05:.035);}if(Math.floor(elapsed*6)!==tick.radarFrame){tick.radarFrame=Math.floor(elapsed*6);radar();}window.PhantomOcclusion?.update(place?insideGroup:townGroup,camera,hero.root,dt,!battle);if(!mobileGraphics||elapsed-(tick.lastWorldRenderAt||0)>=.028){renderer.render(scene,camera);tick.lastWorldRenderAt=elapsed;}}
+ }tickBookEncounter();tickBroadcast();if(elapsed>=(tick.specialCheckAt||0)){tickSpecialAppearances(elapsed-(tick.specialCheckedAt||elapsed));tick.specialCheckedAt=elapsed;tick.specialCheckAt=elapsed+.2;}if(battle?.gym)tickGym(dt);for(const a of actors)if(a.root.visible&&a.root.parent?.visible!==false){a.mixer.update(dt);if(a.controller&&!a.capturing){a.controller.setMotionSpeed(Math.min(6,Math.max(0,(Number.isFinite(a.motionSpeed)?a.motionSpeed:0)/Math.max(.35,a.object.scale.x))));try{a.controller.update(dt);}catch(error){a.controller.setMode('Idle');a.controller.setMotionSpeed(0);if(!a.controllerErrorLogged){a.controllerErrorLogged=true;S.errors.push('角色動畫已安全暫停：'+error.message);}}}}updateRoll(dt);movement(dt);tickLabEvent(dt);tickChestEncounter(dt);collectSupplies();if(!battle&&!modal&&!dialog){if(!place){for(const w of wild)if(w!==target||!throwing)walkActor(w,dt,.45+(w.species.stage||1)*.1);if(target&&!wild.includes(target))clearTarget();}for(const n of npcs)if(n.root.visible){if(n.data?.id==='prof_daydream'&&place?.id==='dream_lab'){n.play('Idle');continue;}const d=n.root.position.distanceTo(S.player);if(d>3)n.contactLock=false;if(d>2.5)walkActor(n,dt,.45);else n.play('Idle');if(d<1.6&&!n.contactLock&&elapsed>n.cooldown&&(!navigation||navigation.kind==='npc'&&navigation.id===n.data.id)){talk(n);break;}}}try{tickPetFollower(dt);}catch(error){if(!tick.petErrorReported){tick.petErrorReported=true;console.warn('寵物互動暫停，保護遊戲主迴圈',error);}if(petFollower){const face=hero.root.rotation.y;petFollower.root.position.lerp(new T.Vector3(S.player.x-Math.sin(face)*1.13,0,S.player.z-Math.cos(face)*1.13),Math.min(1,dt*7));}}if(companion){companion.root.visible=S.state.costume==='mist'&&!battle&&!place;if(companion.root.visible){const face=hero.root.rotation.y,goal=new T.Vector3(S.player.x-Math.sin(face)*1.25,0,S.player.z-Math.cos(face)*1.25),d=goal.sub(companion.root.position),dist=d.length(),moving=dist>.08;if(moving){const step=Math.min(dist,dt*Math.max(1.8,dist*4));companion.root.position.addScaledVector(d,step/Math.max(dist,.001));companion.root.rotation.y=Math.atan2(-d.z,d.x);companion.motionSpeed=step/dt;companion.play('Walk');companion.idleSince=elapsed;}else{companion.motionSpeed=0;const q=(elapsed-(companion.idleSince||elapsed))%9;companion.play(q>4.5&&q<6.2?'Stuck':q>6.2?'Wave':'Idle');}}}for(let i=effects.length-1;i>=0;i--){const e=effects[i],t=Math.min(1,(elapsed-e.start)/e.duration);e.update(t);if(t===1){if(e.object)detach(e.object);effects.splice(i,1);e.done?.();}}const portrait=innerWidth<600;if(battle?.gym){gymCamera();}else if(battle){camera.position.lerp(new T.Vector3(0,portrait?11.3:9.9,portrait?23.5:18),Math.min(1,dt*6));camera.lookAt(0,portrait?-.8:-.2,0);}else{const distance=(place?12.2:portrait?17.3:19.6)*cameraOrbit.zoom,desired=S.player.clone().add(new T.Vector3(Math.sin(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch),distance*Math.sin(cameraOrbit.pitch),Math.cos(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch)));camera.position.lerp(desired,Math.min(1,dt*7));camera.lookAt(S.player.x,1.1,S.player.z);light.position.set(S.player.x-12,25,S.player.z+15);light.target.position.copy(S.player);light.target.updateMatrixWorld();}const targetText=target&&!battle&&captureCandidates().includes(target)?`${target.species.name} · ${target.species.stageLabel||'第 '+target.species.stage+' 階段'}${target.berry?' · 已餵果':''}`:'';if($('target').textContent!==targetText)$('target').textContent=targetText;portalCheck();if(elapsed>=(tick.nextLabelsAt||0)){updateLabels();tick.nextLabelsAt=elapsed+(mobileGraphics?.05:.035);}if(Math.floor(elapsed*6)!==tick.radarFrame){tick.radarFrame=Math.floor(elapsed*6);radar();}window.PhantomOcclusion?.update(place?insideGroup:townGroup,camera,hero.root,dt,!battle);if(!mobileGraphics||elapsed-(tick.lastWorldRenderAt||0)>=.028){renderer.render(scene,camera);tick.lastWorldRenderAt=elapsed;}}
 // Preserve the selected render quality; never automatically blur high quality.
 function adjustGraphics(dt){graphicsQuality.smoothed=graphicsQuality.smoothed*.96+dt*.04;}
 function setGraphicsPreset(preset){
@@ -1103,12 +1121,12 @@ function warmBattleModels(){
  }
 }
 
-async function init(){try{const responses=await Promise.all(['data/spirits.json','data/world.json','data/npcs.json'].map(p=>fetch(p+'?v=20261017-dream-lab-v1').then(r=>{if(!r.ok)throw Error(p+' 尚未就緒');return r.json()})));spirits=Array.isArray(responses[0])?responses[0]:responses[0].spirits;spirits.forEach(s=>{s.id=s.id||s.speciesId;s.name=s.name||s.displayName;byId[s.id]=s;});world=responses[1];npcData=Array.isArray(responses[2])?responses[2]:responses[2].npcs;const extraDataRequests=[(async()=>{try{const r=await fetch('data/bookshelf-interactions.json?v=20261016-books-v1');if(r.ok)bookshelfData=await r.json();}catch(e){S.errors.push('書櫃配置：'+e.message);}})(),(async()=>{try{const r=await fetch('data/model-size-overrides.json?v=20261017-xiaoshan-sync-v2');if(r.ok){const v=await r.json();modelSizeOverrides=v.overrides||v;}}catch(e){console.warn('尺寸設定尚未就緒',e);}})(),(async()=>{try{const r=await fetch('data/tower-monsters.json?v=20261014e');if(r.ok)towerMonsters=(await r.json()).monsters||[];}catch(e){console.warn('魔物卡牌尚未載入',e);}})(),(async()=>{try{const r=await fetch('data/card-art.json?v=20261017-xiaoshan-sync-v2');if(r.ok){const v=await r.json();cardArt=v.cards||v.art||v;}}catch(e){console.warn('卡圖清單尚未就緒',e);}})()];await Promise.all(extraDataRequests);S.state=loadSave();planChestEncounter();const restoredBuilding=S.state.buildingId,restoredPosition=S.state.position?.slice();S.state.team=S.state.team.filter(id=>byId[id]&&owned(id));if(!S.state.team.length)S.state.team=spirits.filter(s=>owned(s.id)).slice(0,3).map(s=>s.id);for(const g of gyms)if(S.state.gyms[g.id]?.cleared&&!S.state.unlockedCostumes.includes(g.costume))S.state.unlockedCostumes.push(g.costume);$('loadText').textContent='載入初光鎮與旅人…';const townAsset=await asset(world.worldModel||world.model);town=townAsset.scene.clone(true);townGroup.add(town);town.traverse(n=>{if(n.isMesh){n.receiveShadow=true;n.castShadow=true;}});hero=await actor('models/hero.glb',2.55);prepareHeroOutcomeActions();hero.root.rotation.y=Math.PI;S.player.fromArray(world.spawn||[0,0,4]);if(S.state.position?.length===2&&!blocked(...S.state.position))S.player.set(S.state.position[0],0,S.state.position[1]);hero.root.position.copy(S.player);setCostume(S.state.costume);$('loadText').textContent='準備鄰近居民與初始幻靈…';
+async function init(){try{const responses=await Promise.all(['data/spirits.json','data/world.json','data/npcs.json'].map(p=>fetch(p+'?v=20261017-dream-lab-v1').then(r=>{if(!r.ok)throw Error(p+' 尚未就緒');return r.json()})));spirits=Array.isArray(responses[0])?responses[0]:responses[0].spirits;spirits.forEach(s=>{s.id=s.id||s.speciesId;s.name=s.name||s.displayName;byId[s.id]=s;});world=responses[1];npcData=Array.isArray(responses[2])?responses[2]:responses[2].npcs;const extraDataRequests=[(async()=>{try{const r=await fetch('data/bookshelf-interactions.json?v=20261016-books-v1');if(r.ok)bookshelfData=await r.json();}catch(e){S.errors.push('書櫃配置：'+e.message);}})(),(async()=>{try{const r=await fetch('data/model-size-overrides.json?v=20261017-xiaoshan-sync-v2');if(r.ok){const v=await r.json();modelSizeOverrides=v.overrides||v;}}catch(e){console.warn('尺寸設定尚未就緒',e);}})(),(async()=>{try{const r=await fetch('data/tower-monsters.json?v=20261014e');if(r.ok)towerMonsters=(await r.json()).monsters||[];}catch(e){console.warn('魔物卡牌尚未載入',e);}})(),(async()=>{try{const r=await fetch('data/card-art.json?v=20261017-xiaoshan-sync-v2');if(r.ok){const v=await r.json();cardArt=v.cards||v.art||v;}}catch(e){console.warn('卡圖清單尚未就緒',e);}})()];await Promise.all(extraDataRequests);S.state=loadSave();planChestEncounter();const newPlayerStart=!spirits.some(s=>owned(s.id))&&!labClaimed();const restoredBuilding=newPlayerStart?'dream_lab':S.state.buildingId,restoredPosition=newPlayerStart?null:S.state.position?.slice();S.state.team=S.state.team.filter(id=>byId[id]&&owned(id));if(!S.state.team.length)S.state.team=spirits.filter(s=>owned(s.id)).slice(0,3).map(s=>s.id);for(const g of gyms)if(S.state.gyms[g.id]?.cleared&&!S.state.unlockedCostumes.includes(g.costume))S.state.unlockedCostumes.push(g.costume);$('loadText').textContent='載入初光鎮與旅人…';const townAsset=await asset(world.worldModel||world.model);town=townAsset.scene.clone(true);townGroup.add(town);town.traverse(n=>{if(n.isMesh){n.receiveShadow=true;n.castShadow=true;}});hero=await actor('models/hero.glb',2.55);prepareHeroOutcomeActions();hero.root.rotation.y=Math.PI;S.player.fromArray(world.spawn||[0,0,4]);if(!newPlayerStart&&S.state.position?.length===2&&!blocked(...S.state.position))S.player.set(S.state.position[0],0,S.state.position[1]);hero.root.position.copy(S.player);setCostume(S.state.costume);$('loadText').textContent='準備鄰近居民與初始幻靈…';
 const nearestNpcs=[...npcData].sort((a,b)=>{
  const p=a.position||[0,0,0],q=b.position||[0,0,0],az=p.length===2?p[1]:p[2],bz=q.length===2?q[1]:q[2];
  return Math.hypot(p[0]-S.player.x,az-S.player.z)-Math.hypot(q[0]-S.player.x,bz-S.player.z);
 }).slice(0,2);
-await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);if(byId.mew){companion=await actor(byId.mew.model,.55);companion.root.visible=false;companion.root.position.copy(S.player);companion.idleSince=elapsed;}camera.position.copy(S.player).add(new T.Vector3(0,8.6,10.7));setNpcPlace();if(S.state.petActive)void equipPet(S.state.petActive);if(restoredBuilding){const b=world.buildings.find(x=>x.id===restoredBuilding);if(b){await enterBuilding(b);if(restoredPosition&&!blocked(...restoredPosition)){S.player.set(restoredPosition[0],0,restoredPosition[1]);hero.root.position.copy(S.player);}}}bindUi();hud();S.ready=true;if(new URLSearchParams(location.search).get('monsterDex')==='1')showMonsterDex();$('load').hidden=true;document.body.dataset.ready='true';setTimeout(()=>void loadDeferredTown(nearestNpcs),mobileGraphics?900:350);setTimeout(()=>warmBattleModels(),mobileGraphics?8000:2300);setInterval(save,15000);addEventListener('pagehide',e=>{save();if(!e.persisted&&battle)disposeXiaoshanTrial(battle);else if(battle?.xiaoshanTrial?.utterance)window.speechSynthesis?.cancel();});document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});setInterval(()=>{if(!place&&!battle&&!modal){const far=wild.find(w=>w!==target&&!w.specialEventId&&w.root.position.distanceTo(S.player)>24);if(far){wild.splice(wild.indexOf(far),1);removeActor(far);replenish();}}},45000);toast(S.state.migratedFrom?'歡迎回來！你的舊版進度已接續。':'歡迎來到初光鎮！靠近幻靈，投出靈核球締約。');}catch(e){S.errors.push(e.message);$('loadText').textContent=e.message+'。請重新整理，或確認資產是否完整。';console.error(e);}}
+await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);if(byId.mew){companion=await actor(byId.mew.model,.55);companion.root.visible=false;companion.root.position.copy(S.player);companion.idleSince=elapsed;}camera.position.copy(S.player).add(new T.Vector3(0,8.6,10.7));setNpcPlace();if(S.state.petActive)void equipPet(S.state.petActive);if(restoredBuilding){const b=world.buildings.find(x=>x.id===restoredBuilding);if(b){await enterBuilding(b);if(newPlayerStart){if(!blocked(LAB_START_POSITION.x,LAB_START_POSITION.z,.45)){S.player.copy(LAB_START_POSITION);hero.root.position.copy(S.player);}save();}else if(restoredPosition&&!blocked(...restoredPosition)){S.player.set(restoredPosition[0],0,restoredPosition[1]);hero.root.position.copy(S.player);}}}bindUi();hud();S.ready=true;if(new URLSearchParams(location.search).get('monsterDex')==='1')showMonsterDex();$('load').hidden=true;document.body.dataset.ready='true';setTimeout(()=>void loadDeferredTown(nearestNpcs),mobileGraphics?900:350);setTimeout(()=>warmBattleModels(),mobileGraphics?8000:2300);setInterval(save,15000);addEventListener('pagehide',e=>{save();if(!e.persisted&&battle)disposeXiaoshanTrial(battle);else if(battle?.xiaoshanTrial?.utterance)window.speechSynthesis?.cancel();});document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});setInterval(()=>{if(!place&&!battle&&!modal){const far=wild.find(w=>w!==target&&!w.specialEventId&&w.root.position.distanceTo(S.player)>24);if(far){wild.splice(wild.indexOf(far),1);removeActor(far);replenish();}}},45000);toast(newPlayerStart?'歡迎來到大夢研究所！請向桌上的幻靈球前進，選擇第一位幻靈。':S.state.migratedFrom?'歡迎回來！你的舊版進度已接續。':'歡迎來到初光鎮！靠近幻靈，投出靈核球締約。');updateLabGuide();}catch(e){S.errors.push(e.message);$('loadText').textContent=e.message+'。請重新整理，或確認資產是否完整。';console.error(e);}}
 window.PhantomGame={eligible,spawnWeight,chooseWild,beginNavigation,cancelNavigation,get navigation(){return navigation},cameraOrbit,clearTarget,showGuide,showReset,resetGame,grantSupply,tickBroadcast,get cardArt(){return cardArt},get elapsed(){return elapsed},broadcastNow(){broadcastAt=elapsed;tickBroadcast()},endBattle,playerTurn,tickGym,state:S,scene,camera,renderer,actors,wild,npcs,asset,cloneSkin,showDex,showTeam,showGyms,showViewer,startBattle,enterBuilding,leaveBuilding,grant,save,showMenu,throwBall,useBerry,selectTarget,get spirits(){return spirits},get world(){return world},get hero(){return hero},get battle(){return battle},get place(){return place},captureCandidates,readBookshelf,nearbyBookshelf,validBookTeam,get bookshelfData(){return bookshelfData},get bookEncounter(){return bookEncounter},get chestEncounter(){return chestEncounter},get chestNextAt(){return chestNextAt},get viewer(){return viewer},get labels(){return labels},get target(){return target},beginRoll,get roll(){return roll},blocked,teleport(x,z){S.player.set(x,0,z);hero.root.position.copy(S.player);},setCostume};
 
 function spawnWeight(s){return 1/Math.pow(1+number(S.state.captureCounts[s.id]),1.6)/(1+wild.filter(w=>w.species.id===s.id).length*3);}
