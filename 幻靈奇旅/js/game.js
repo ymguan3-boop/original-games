@@ -279,8 +279,7 @@ function tapLabBall(e){
  if(S.player.distanceTo(LAB_CENTER)>3.8)return;
  const point=new T.Vector2(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);
  const ray=new T.Raycaster();ray.setFromCamera(point,camera);
- const meshes=labDisplay.balls.flatMap(ball=>ball.children);
- const hit=ray.intersectObjects(meshes,false).find(x=>x.object.visible&&x.object.parent?.visible);
+ const hit=ray.intersectObjects(labDisplay.balls,true).find(x=>x.object.visible&&x.object.parent?.visible);
  if(hit)showLabSelection();
 }
 async function enterBuilding(b){if(battle||throwing||enterBusy)return;enterBusy=true;cancelNavigation();clearTarget();closeDialog();$('loadText').textContent='走進'+b.name+'…';$('load').hidden=false;try{if(interior)insideGroup.remove(interior);const g=await asset(b.interiorModel);interior=g.scene.clone(true);insideGroup.add(interior);labDisplay=null;labEvent=null;if(b.id==='dream_lab')await decorateLabInterior(interior);interior.traverse(n=>{if(n.isMesh){n.receiveShadow=true;n.castShadow=true;}});place=b;townGroup.visible=false;insideGroup.visible=true;detach(hero.root);insideGroup.add(hero.root);const p=b.spawn||[0,4];S.player.set(p[0],0,p.length===3?p[2]:p[1]);hero.root.position.copy(S.player);setNpcPlace();if(b.id==='dream_lab'&&!npcs.some(n=>n.data?.id==='prof_daydream')){await loadNpc(npcData.find(n=>n.id==='prof_daydream'));setNpcPlace();}syncChestRoom();syncBookRoom();await ensureChestActor();await ensureBookActor();$('location').textContent=b.name;scene.fog.near=30;scene.fog.far=85;target=null;save();}catch(e){toast(e.message);S.errors.push(e.message);}finally{enterBusy=false;$('load').hidden=true;}}
