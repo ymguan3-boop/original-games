@@ -513,3 +513,17 @@ body.evolution-playing{overflow:hidden}
 .bgmRangeLabel output{font-variant-numeric:tabular-nums;color:#365f86}
 .bgmVolumeRange{display:block;width:100%;height:36px;accent-color:#326a90;touch-action:pan-x;cursor:pointer}
 @media(max-width:460px){.graphicsPresets{gap:7px}.graphicsPresets .graphicsPreset{min-height:124px;padding:10px 5px}.graphicsPreset strong{font-size:15px}.graphicsPreset small{font-size:11px}}
+
+/* 大夢研究所三色傳說幻靈球 · 一次性選擇 */
+.labChoice{display:flex;flex-direction:column;gap:11px;max-width:560px;margin:0 auto}
+.labChoice>p{margin:0 0 4px;line-height:1.65;font-size:14px;color:#485968}
+.labChoice>p strong{color:#915136}
+.labOption{display:flex;align-items:center;gap:16px;width:100%;min-height:86px;padding:13px 15px;border:2px solid #d4dcd4;border-radius:16px;background:#fcfcf5;color:#243951;text-align:left;transition:border-color .14s,background .14s}
+.labOption:hover,.labOption:focus-visible{border-color:#488ba0;background:#edf7fc}
+.labOption>span:last-child{display:flex;flex-direction:column;gap:5px}
+.labOption strong{font-size:18px}
+.labOption small{font-size:12px;color:#66747e}
+.labOptionOrb{position:relative;display:block;flex:0 0 52px;width:52px;height:52px;border-radius:50%;border:2px solid #28465d;background:linear-gradient(to bottom,var(--lab-ball) 0 46%,#254457 46% 55%,#fafafa 55%);box-shadow:inset -5px -7px 9px #1830474a,0 3px 7px #22374a33}
+.labOptionOrb::after{content:"";position:absolute;width:13px;height:13px;top:calc(50% - 6.5px);left:calc(50% - 6.5px);border-radius:50%;background:#fff;border:3px solid #32506b}
+.labChoice>button:last-child{min-height:46px;background:#eaf0ed;border:1px solid #bdccc9;border-radius:12px;color:#294a60;font-weight:700}
+@media(max-width:480px){.labOption{min-height:78px}.labOption strong{font-size:16px}.labOptionOrb{flex-basis:44px;width:44px;height:44px}}
