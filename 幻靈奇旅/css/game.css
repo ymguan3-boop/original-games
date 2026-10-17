@@ -527,3 +527,8 @@ body.evolution-playing{overflow:hidden}
 .labOptionOrb::after{content:"";position:absolute;width:13px;height:13px;top:calc(50% - 6.5px);left:calc(50% - 6.5px);border-radius:50%;background:#fff;border:3px solid #32506b}
 .labChoice>button:last-child{min-height:46px;background:#eaf0ed;border:1px solid #bdccc9;border-radius:12px;color:#294a60;font-weight:700}
 @media(max-width:480px){.labOption{min-height:78px}.labOption strong{font-size:16px}.labOptionOrb{flex-basis:44px;width:44px;height:44px}}
+
+/* Zero-card onboarding: gently guides the first visit to Dream Laboratory. */
+#labNewPlayerGuide{position:fixed;z-index:12;top:clamp(280px,26vh,390px);left:50%;transform:translateX(-50%);width:min(440px,88vw);padding:11px 15px;border:1px solid #f6d28f;border-radius:14px;background:#243d55e8;color:#fff9dc;box-shadow:0 5px 16px #122a4766;text-align:center;font-size:14px;font-weight:800;line-height:1.5;pointer-events:none;text-shadow:0 1px 2px #172b45}
+#labNewPlayerGuide[hidden]{display:none!important}
+@media(max-width:480px){#labNewPlayerGuide{font-size:13px;top:clamp(280px,24vh,355px);padding:10px 12px}}
