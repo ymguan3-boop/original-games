@@ -496,3 +496,20 @@ body.gym-active #battleActions .gymExitOnly{min-height:43px;background:#29495b;c
 .evolutionMessage{font-size:clamp(14px,3.2vw,19px);font-weight:800;line-height:1.5;color:#f5e6ff;text-shadow:0 0 16px #d0b7ff}
 body.evolution-playing{overflow:hidden}
 @media(max-height:570px){.evolutionPanel{gap:4px}.evolutionStage{min-height:200px;height:52dvh}}
+
+/* 2026-10-17 可持久化顯示設定與背景音樂音量 */
+.displaySettings{display:flex;flex-direction:column;gap:16px;max-width:720px;margin-inline:auto}
+.displaySettings>.muted{margin:0;padding:0 2px;color:#617486}
+.graphicsPresets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.graphicsPresets .graphicsPreset{min-width:0;min-height:110px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:7px;padding:14px 9px;border:2px solid #c7d1d1;border-radius:16px;background:#f2f6f3;color:#294456;box-shadow:0 3px 10px #233f5010;text-align:center;transition:border-color .15s,background .15s,box-shadow .15s}
+.graphicsPreset strong{font-size:17px;line-height:1.2}
+.graphicsPreset small{font-size:12px;line-height:1.4;color:#627482;white-space:normal}
+.graphicsPreset.selected,.graphicsPreset[aria-pressed="true"]{background:#e0efff;border-color:#4b7ca9;box-shadow:0 0 0 2px #4b7ca922}
+.graphicsPreset.selected strong{color:#1e557e}
+.displayAudioEntry,.displayBack{min-height:53px;border-radius:14px;padding:13px 16px;text-align:left;border:1px solid #bbcaca;background:#f1f8fa;color:#29455b;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.displayAudioEntry span{font-size:13px;color:#607e8a}
+.displayBack{background:#faf4e8;border-color:#d8cba8;justify-content:center}
+.bgmRangeLabel{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:800;color:#253d50}
+.bgmRangeLabel output{font-variant-numeric:tabular-nums;color:#365f86}
+.bgmVolumeRange{display:block;width:100%;height:36px;accent-color:#326a90;touch-action:pan-x;cursor:pointer}
+@media(max-width:460px){.graphicsPresets{gap:7px}.graphicsPresets .graphicsPreset{min-height:124px;padding:10px 5px}.graphicsPreset strong{font-size:15px}.graphicsPreset small{font-size:11px}}
