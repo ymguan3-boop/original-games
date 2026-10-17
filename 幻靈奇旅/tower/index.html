@@ -472,8 +472,8 @@ class World {
  constructor(canvas){
   if(!T)throw new Error('本機 3D 引擎未載入');
   this.mobileGraphics=Math.min(innerWidth,innerHeight)<760;
-  this.graphicsQuality={dpr:Math.min(devicePixelRatio||1,this.mobileGraphics?1.05:1.35),min:Math.min(devicePixelRatio||1,this.mobileGraphics?.78:.9),max:Math.min(devicePixelRatio||1,this.mobileGraphics?1.15:1.5),average:1/60,lastChange:performance.now(),samples:0};
-  this.renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});this.renderer.setPixelRatio(this.graphicsQuality.dpr);this.renderer.outputEncoding=T.sRGBEncoding;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.toneMappingExposure=.88;this.scene=new T.Scene();this.camera=new T.PerspectiveCamera(48,1,.1,160);this.materials=new Map();this.geometries=new Map();this.effects=[];this.visualFX=[];
+  this.graphicsQuality={dpr:Math.min(devicePixelRatio||1,this.mobileGraphics?.9:1.35),min:Math.min(devicePixelRatio||1,this.mobileGraphics?.65:.9),max:Math.min(devicePixelRatio||1,this.mobileGraphics?1.05:1.5),average:1/60,lastChange:performance.now(),samples:0};
+  this.renderer=new T.WebGLRenderer({canvas,antialias:!this.mobileGraphics,powerPreference:'high-performance'});this.renderer.setPixelRatio(this.graphicsQuality.dpr);this.renderer.outputEncoding=T.sRGBEncoding;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.toneMappingExposure=.88;this.scene=new T.Scene();this.camera=new T.PerspectiveCamera(48,1,.1,160);this.materials=new Map();this.geometries=new Map();this.effects=[];this.visualFX=[];
   this.lootItems=[];this.scene.add(new T.HemisphereLight(0xe9f5df,0x3d4937,.8));const sun=new T.DirectionalLight(0xffe4ad,1.15);sun.position.set(-15,30,12);this.scene.add(sun);this.resize();this.resizeHandler=()=>this.resize();addEventListener('resize',this.resizeHandler);
  }
  resize(){this.renderer.setSize(innerWidth,innerHeight);this.camera.aspect=innerWidth/innerHeight;this.camera.updateProjectionMatrix();}
@@ -929,7 +929,16 @@ function frame(now){if(document.hidden){last=now;requestAnimationFrame(frame);re
   // Reserve enough stamina for an emergency roll; otherwise auto-attacks consume it all.
   const weapon=WEAPONS[h.player.weapon];
   if(h.player.stamina>=weapon.cost+22)h.attack();
- }events();if(resultDelay>0&&!towerCardRevealOpen&&!towerCardFlights){resultDelay-=dt;if(resultDelay<=0)openPanel('victory');}if(!h.paused)world.adjustGraphics(dt,now);if(!h.paused||now-(frame.lastPausedRender||0)>100){world.render(h,h.paused?0:dt,!!(i.x||i.z)&&!h.paused);frame.lastPausedRender=now;}updateHUD(now);requestAnimationFrame(frame);}
+ }events();if(resultDelay>0&&!towerCardRevealOpen&&!towerCardFlights){resultDelay-=dt;if(resultDelay<=0)openPanel('victory');}if(!h.paused)world.adjustGraphics(dt,now);
+ // Simulation, collision and controller input run at every RAF tick, but
+ // rendering is capped at 30fps on phones to prevent GPU overload.
+ frame.visualAccum=Math.min(.08,(frame.visualAccum||0)+dt);
+ const interval=h.paused?100:(world.mobileGraphics?1000/30:0);
+ if(now-(frame.lastPausedRender||0)>=interval){
+  world.render(h,h.paused?0:frame.visualAccum,!!(i.x||i.z)&&!h.paused);
+  frame.visualAccum=0;frame.lastPausedRender=now;
+ }
+ updateHUD(now);requestAnimationFrame(frame);}
 async function boot(){try{let raw;try{raw=localStorage.getItem('phantom-starspire-tower-v1');}catch{saveAvailable=false;}window.PhantomBgm?.setScene('challenge');h=new Hunt(parseSave(raw));world=new World($('world'));$('loading').querySelector('p').textContent='正在載入 Blender 旅人…';await world.loadTowerProps();await world.loadHero();load(0);world.render(h,0,false);$('loading').hidden=true;$('loading').style.display='none';performance.mark('hunt-ready');document.documentElement.dataset.ready='true';document.documentElement.dataset.readyMs=String(Math.round(performance.now()));document.documentElement.dataset.sceneStats=JSON.stringify(world.stats());last=performance.now();openPanel('choose');requestAnimationFrame(frame);
  // Read-only diagnostics; no gameplay cheats are exposed by the shipped build.
  globalThis.huntDiagnostics=()=>({ready:true,modelSource:world.hunter.userData.modelSource,modelHeight:world.hunter.userData.modelHeight,animations:Object.keys(world.hunter.actions),motion:world.hunter.motion,autoAttack:true,attackRange:WEAPONS[h.player.weapon].range,level:h.level,mode:h.mode,paused:h.paused,hp:h.player.hp,stamina:h.player.stamina,weapon:h.player.weapon,player:{x:h.player.x,z:h.player.z},monsterHp:h.monster.hp,kills:h.save.kills,inventory:{...h.save.inventory},baseWeapons:[...h.save.baseWeapons],shopWeaponsOwned:{...h.save.weaponsOwned},nativeAssets:Object.keys(world.nativeProps),weaponModelSources:world.hunter.weapons.map(w=>w.userData.modelSource),lootNative:world.lootItems.map(o=>({id:o.id,source:o.mesh.userData.modelSource})),readyMs:performance.getEntriesByName('hunt-ready')[0].startTime,renderPixelRatio:world.renderer.getPixelRatio(),estimatedFPS:Math.round(1/Math.max(.001,world.graphicsQuality.average)),...world.stats()});
