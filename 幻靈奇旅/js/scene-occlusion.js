@@ -6,8 +6,40 @@ function tagged(o){return o.userData.occludable===true||o.userData.occluder===tr
 function collect(root,previous=[]){const records=[],known=new Map(previous.map(r=>[r.object,r]));root.updateMatrixWorld(true);root.traverse(o=>{if(!tagged(o))return;let parent=o.parent;while(parent&&parent!==root){if(tagged(parent))return;parent=parent.parent;}const meshes=[];o.traverse(n=>{if(n.isMesh)meshes.push(n)});if(meshes.length)records.push(known.get(o)||{object:o,meshes,box:new T.Box3().setFromObject(o),factor:1,materials:null,obstructed:false});});return records;}
 function materialsFor(r){if(r.materials)return r.materials;const originals=new Map(),result=[];for(const mesh of r.meshes){const original=mesh.material;const list=(Array.isArray(original)?original:[original]).map(m=>{if(!originals.has(m)){const clone=m.clone();originals.set(m,clone);result.push({material:clone,opacity:m.opacity,transparent:m.transparent,depthWrite:m.depthWrite});}return originals.get(m)});mesh.material=Array.isArray(original)?list:list[0];}r.materials=result;return result;}
 function fade(r,target,dt){r.factor+=(target-r.factor)*(1-Math.exp(-Math.max(0,dt)*(target<1?14:5)));if(Math.abs(r.factor-target)<.003)r.factor=target;if(r.factor===1&&!r.materials)return;for(const entry of materialsFor(r)){const m=entry.material;m.opacity=entry.opacity*r.factor;const faded=r.factor<.999;m.transparent=faded||entry.transparent;m.depthWrite=faded?false:entry.depthWrite;}r.object.userData.occlusionOpacity=r.factor;}
-function update(root,camera,hero,dt,enabled=true){let state=states.get(root);if(root&&!state){state={records:collect(root),childCount:root.children.length};states.set(root,state);}if(state&&state.childCount!==root.children.length){for(const r of state.records)fade(r,1,10);state.records=collect(root,state.records);state.childCount=root.children.length;}
- for(const [key,value] of states){const active=enabled&&key===root&&root.visible; if(active){root.updateMatrixWorld(true);camera.getWorldPosition(origin);hero.getWorldPosition(point);point.y+=1.4;direction.subVectors(point,origin);const distance=direction.length();direction.normalize();ray.set(origin,direction);ray.near=.05;ray.far=Math.max(.05,distance-.3);for(const r of value.records){r.obstructed=!!ray.ray.intersectBox(r.box,new T.Vector3())&&ray.intersectObjects(r.meshes,false).length>0;fade(r,r.obstructed?.24:1,dt);}}else for(const r of value.records){r.obstructed=false;fade(r,1,dt);}}
+// Static occluders do not need a full raycast for every animation frame.
+const hitPoint=new T.Vector3();
+function update(root,camera,hero,dt,enabled=true){
+ let state=states.get(root);
+ if(root&&!state){state={records:collect(root),childCount:root.children.length,probeClock:0,wasActive:false};states.set(root,state);}
+ if(state&&state.childCount!==root.children.length){
+  for(const r of state.records)fade(r,1,10);
+  state.records=collect(root,state.records);state.childCount=root.children.length;state.probeClock=0;
+ }
+ for(const [key,value] of states){
+  const active=enabled&&key===root&&root.visible;
+  if(active){
+   value.probeClock=(value.probeClock||0)-dt;
+   if(value.probeClock<=0||!value.wasActive){
+    value.probeClock=.09;
+    root.updateMatrixWorld(true);
+    camera.getWorldPosition(origin);hero.getWorldPosition(point);point.y+=1.4;
+    direction.subVectors(point,origin);
+    const distance=direction.length();
+    if(distance>.01){
+     direction.multiplyScalar(1/distance);ray.set(origin,direction);ray.near=.05;ray.far=Math.max(.05,distance-.3);
+     for(const r of value.records){
+      // Cheap static AABB pre-filter avoids mesh raycasts for irrelevant trees.
+      r.obstructed=!!ray.ray.intersectBox(r.box,hitPoint)&&ray.intersectObjects(r.meshes,false).length>0;
+     }
+    }else for(const r of value.records)r.obstructed=false;
+   }
+   for(const r of value.records)fade(r,r.obstructed?.24:1,dt);
+  }else{
+   value.probeClock=0;
+   for(const r of value.records){r.obstructed=false;fade(r,1,dt);}
+  }
+  value.wasActive=active;
+ }
 }
 window.PhantomOcclusion={update,inspect(){return Array.from(states.values()).flatMap(s=>s.records.map(r=>({id:r.object.userData.occluderId||r.object.name,opacity:r.factor,obstructed:r.obstructed,meshes:r.meshes.length})));}};
 })();
