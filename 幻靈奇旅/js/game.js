@@ -180,7 +180,7 @@ function decorateLabInterior(root){
  tabletop.position.set(-4,1.05,0);
  tabletop.receiveShadow=true;group.add(tabletop);
  const balls=LAB_LEGENDS.map((item,i)=>{const ball=buildLabBall(item,i);group.add(ball);return ball;});
- root.parent?.add(group);
+ root.add(group);
  labDisplay={group,balls};
  syncLabBallDisplay();
 }
@@ -221,7 +221,7 @@ function tickLabEvent(dt){
  }
 }
 function showLabSelection(){
- if(place?.id!=='dream_lab'||labClaimed()||labClaimBusy)return;
+ if(place?.id!=='dream_lab'||labClaimed()||labClaimBusy||!labEvent||labEvent.phase==='walking')return;
  const options=LAB_LEGENDS.map((entry,i)=>{
   const s=byId[entry.id];
   return `<button class="labOption" type="button" data-lab-pick="${entry.id}"><span class="labOptionOrb" style="--lab-ball:${['#f2c64c','#f17e58','#80c9ff'][i]}"></span><span><strong>${esc(s?.name||entry.id)}</strong><small>${esc(s?.type||'傳說')}屬性 · 傳說幻靈</small></span></button>`;
