@@ -26,10 +26,10 @@
         -1.2
       ],
       "interiorPosition": [
-        0,
-        -5
+        -1.7,
+        -1.55
       ],
-      "roamRadius": 1.3
+      "roamRadius": 0
     },
     {
       "id": "care_nova",
