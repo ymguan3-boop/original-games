@@ -860,30 +860,23 @@ function outoumanSkillFx(from,to,skillName){
  const rainbow=skillName==='彩虹光束',duration=.7,group=new T.Group();
  const delta=to.clone().sub(from),distance=Math.max(.01,delta.length());
  const forward=delta.lengthSq()<1e-6?new T.Vector3(0,0,1):delta.normalize();
- const side=new T.Vector3().crossVectors(forward,new T.Vector3(0,1,0));
+ // Keep the seven colors separated across the camera-facing width of the beam.
+ const side=new T.Vector3().crossVectors(forward,camera.getWorldDirection(new T.Vector3()));
  if(side.lengthSq()<.01)side.set(1,0,0);else side.normalize();
  const orientation=new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),forward);
  const colors=rainbow?[0xff3b46,0xffa236,0xfff35a,0x55ff8a,0x44dfff,0x527cff,0xc879ff]:Array(7).fill(0xffffff);
- const radius=rainbow?.24:.115,spacing=rainbow?.18:.085;
+ // Avoid heavily overlapping seven cylinders: additive overlap clipped into white.
+ const radius=rainbow?.125:.115,spacing=rainbow?.265:.085;
  const geometry=new T.CylinderGeometry(1,1,1,12,1,true),beams=[];
  for(let i=0;i<colors.length;i++){
-  const material=new T.MeshBasicMaterial({color:colors[i],transparent:true,opacity:.9,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide});
+  const material=new T.MeshBasicMaterial({color:colors[i],transparent:true,opacity:1,depthWrite:false,blending:rainbow?T.NormalBlending:T.AdditiveBlending,side:T.DoubleSide,toneMapped:!rainbow});
   const mesh=new T.Mesh(geometry,material);
   mesh.quaternion.copy(orientation);
   mesh.scale.set(radius,.01,radius);
   mesh.position.copy(from).addScaledVector(side,(i-3)*spacing);
   group.add(mesh);beams.push({mesh,material,i});
  }
- // A broader, translucent halo gives the four-energy rainbow beam extra mass
- // without a particle-heavy animation or additional geometry allocations.
- let haloMaterial=null;
- if(rainbow){
-  haloMaterial=new T.MeshBasicMaterial({color:0xffecff,transparent:true,opacity:.16,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide});
-  const halo=new T.Mesh(geometry,haloMaterial);
-  halo.quaternion.copy(orientation);
-  halo.position.copy(from);halo.scale.set(.72,.01,.72);
-  group.add(halo);
- }
+ // Never overlay an additive white halo on the rainbow strips: it washes out the colors.
  battleGroup.add(group);
  combatSound('electric',rainbow);
  const middle=from.clone(),distanceOffset=distance*.5;
@@ -894,15 +887,10 @@ function outoumanSkillFx(from,to,skillName){
    for(const {mesh,material,i} of beams){
     mesh.position.copy(middle).addScaledVector(side,(i-3)*spacing);
     mesh.scale.y=beamLength;
-    material.opacity=Math.max(0,(1-t)*(.69+.13*Math.sin(t*32+i)));
+    material.opacity=rainbow?(t<.76?1:Math.max(0,(1-t)/.24)):Math.max(0,(1-t)*(.69+.13*Math.sin(t*32+i)));
    }
-   if(haloMaterial){
-    const halo=group.children[group.children.length-1];
-    halo.position.copy(middle);
-    halo.scale.y=beamLength;haloMaterial.opacity=Math.max(0,(1-t)*.13);
-   }
-  },
-  done:()=>{geometry.dispose();for(const v of beams)v.material.dispose();haloMaterial?.dispose();}
+     },
+  done:()=>{geometry.dispose();for(const v of beams)v.material.dispose();}
  });
 }
 async function strike(attacker,defender,skill){if(!battle)return;if(statusTick(attacker)){attacker.actor.play('Hurt',true);battleLog(attacker.s.name+'受狀態影響，暫停一次行動。');await delay(600);return;}attacker.actor.play('Attack',true);const strong=(skill.cost||0)>=3,p=attacker.actor.root.position.clone(),to=defender.actor.root.position.clone().add(new T.Vector3(0,1,0)),dir=to.clone().sub(p).setY(0).normalize();battleLog(attacker.s.name+'使用'+skill.name+'！');if(attacker.s.id==='pikachu'&&['白色光波','彩虹光束'].includes(skill.name))outoumanSkillFx(p.clone().add(new T.Vector3(0,1,0)),to,skill.name);else combatFx(p.clone().add(new T.Vector3(0,1,0)),to,attacker.s.element,strong);if(strong)combatRing(defender.actor.root.position,1.7,attacker.s.element,.8);await new Promise(resolve=>effects.push({start:elapsed,duration:.55,update:t=>attacker.actor.root.position.copy(p).addScaledVector(dir,Math.sin(t*Math.PI)*.5),done:()=>{attacker.actor.root.position.copy(p);resolve();}}));const damage=Math.max(8,Math.round((skill.power||attacker.s.attack)*(attacker.status?.attackUp?1.45:1)*(defender.status?.defDown?1.4:1)*(.88+Math.random()*.24)));defender.hp=Math.max(0,defender.hp-damage);defender.actor.play('Hurt',true);attacker.energy=Math.max(0,attacker.energy-(skill.cost||1));if(strong){const status=combatStatusFor[attacker.s.element]||'defDown';statusSet(['heal','attackUp'].includes(status)?attacker:defender,status,3);}updateHp(attacker);updateHp(defender);battleLog(defender.s.name+'受到 '+damage+' 點傷害。'+(strong?'共鳴狀態已發動！':''));await delay(600);attacker.actor.play('Idle');defender.actor.play('Idle');}
