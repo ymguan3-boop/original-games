@@ -129,7 +129,7 @@
     "desiredWorldHeight": 0.96,
     "stage": 1,
     "form": "bird",
-    "maxSpan": 3.0
+    "maxSpan": 3
   },
   "combusken": {
     "desiredWorldHeight": 1.248,
@@ -201,7 +201,7 @@
     "desiredWorldHeight": 1.09,
     "stage": 1,
     "form": "bird",
-    "maxSpan": 3.0
+    "maxSpan": 3
   },
   "prinplup": {
     "desiredWorldHeight": 1.417,
@@ -288,7 +288,7 @@
     "maxSpan": 5.8
   },
   "pikachu": {
-    "desiredWorldHeight": 1.12,
+    "desiredWorldHeight": 2.55,
     "stage": 1,
     "form": "armored-hero",
     "maxSpan": 2.6
