@@ -1657,12 +1657,12 @@
     "skills": [
       {
         "name": "白色光波",
-        "power": 26,
+        "power": 60,
         "cost": 1
       },
       {
         "name": "彩虹光束",
-        "power": 70,
+        "power": 120,
         "cost": 4
       }
     ],
