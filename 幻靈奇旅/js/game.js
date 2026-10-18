@@ -379,6 +379,59 @@ function showBgmSettings(){
  openModal('背景音樂',`<div class="displaySettings"><p class="muted">背景音樂的音量會套用到探索、初光挑戰及挑戰塔，並在下次開啟遊戲時保留。</p><button type="button" data-bgm-toggle="1" class="displayAudioEntry" aria-pressed="${!muted}">♫ 背景音樂 <strong>${muted?'開啟音樂':'關閉音樂'}</strong></button><label for="bgmVolumeRange" class="bgmRangeLabel">背景音樂音量 <output id="bgmVolumeValue">${volume}%</output></label><input id="bgmVolumeRange" type="range" min="0" max="100" step="1" value="${volume}" aria-label="背景音樂音量" class="bgmVolumeRange"><button type="button" data-menu="display" class="displayBack">← 返回顯示設定</button></div>`);
 }
 function showMenu(){openModal('旅人手冊',`<div class="menuGrid"><button data-menu="dex">✦ 幻靈圖鑑</button><button data-menu="team">☷ 幻靈隊伍</button><button data-menu="display">⚙ 顯示設定</button><button data-menu="costume">◇ 冒險衣櫃</button><button data-menu="gym">⚑ 初光挑戰</button><button data-menu="tower">✧ 星穹挑戰塔</button><button data-menu="pets">♧ 寵物商人</button><button data-menu="bag">◈ 旅人背包</button><button data-menu="guide">⌖ 建物與居民</button><button data-menu="help">？旅行指南</button><button data-menu="studio">↗ Blender 模型室</button><button data-menu="reset" class="danger">重置遊戲</button></div><p class="muted">進度自動保存在此瀏覽器，重新整理或回到同一網址可繼續遊玩。清除網站資料或更換裝置不會保留紀錄。</p>`);}
+
+// Regular spirit cards are the duplicate capture/bond counts already stored in
+// phantom_journey_v1. Trading consumes quantities, NEVER Pokedex unlock flags.
+const spiritCardTradeDraft=Object.create(null);
+let spiritTradeSelectedId=null;
+function spiritCardTradeTotal(){return Object.values(spiritCardTradeDraft).reduce((sum,v)=>sum+v,0);}
+function spiritCardTradeEntries(){
+ return spirits.filter(spirit=>owned(spirit.id)&&number(S.state.captureCounts[spirit.id])>0);
+}
+function showSpiritCardTrade(t){
+ const total=spiritCardTradeTotal(),candidates=spiritCardTradeEntries();
+ const available=candidates.filter(sp=>number(S.state.captureCounts[sp.id])>number(spiritCardTradeDraft[sp.id]));
+ if(!available.some(sp=>sp.id===spiritTradeSelectedId))spiritTradeSelectedId=available[0]?.id||null;
+ const options=available.map(sp=>`<option value="${esc(sp.id)}" ${spiritTradeSelectedId===sp.id?'selected':''}>${esc(sp.name)}（可用 ${number(S.state.captureCounts[sp.id])-number(spiritCardTradeDraft[sp.id])} 張）</option>`).join('');
+ const chosen=Object.entries(spiritCardTradeDraft).filter(([id,count])=>count>0&&byId[id]).map(([id,count])=>`<div class="spiritTradeSelected"><span>${esc(byId[id].name)} ×${count}</span><button type="button" data-spirit-trade-remove="${esc(id)}" aria-label="移除一張${esc(byId[id].name)}卡片">－ 移除</button></div>`).join('');
+ return `<section class="spiritCardTrade"><h3>一般幻靈卡片兌換星耀幻靈球</h3><p class="muted">任意 <strong>3 張</strong>一般幻靈卡片，可換 <strong>1 顆星耀幻靈球</strong>。可混搭不同種類，也可使用相同種類的多張卡片。消耗的是圖鑑卡片上顯示的羈絆張數，不影響已解鎖的圖鑑或已加入的隊伍。</p><div class="spiritTradePicker"><label for="spiritTradeSelect">選擇幻靈卡片</label><select id="spiritTradeSelect" aria-label="選擇欲兌換的幻靈卡片" ${!options||total>=3?'disabled':''}>${options||'<option>目前沒有可用的幻靈卡片</option>'}</select><button type="button" data-spirit-trade-add="1" ${!options||total>=3?'disabled':''}>加入一張</button></div><div class="spiritTradeProgress">已選 ${total}／3 張　｜　星耀幻靈球目前 ${number(S.state.masterBallCount)} 顆</div><div class="spiritTradeChosen">${chosen||'<span class="muted">尚未選擇卡片</span>'}</div><button type="button" class="spiritTradeConfirm" data-spirit-trade-confirm="1" ${total!==3?'disabled':''}>確認兌換 3 張卡片 → 1 顆星耀幻靈球</button></section>`;
+}
+function addSpiritTradeCard(){
+ if(spiritCardTradeTotal()>=3)return;
+ const id=document.getElementById('spiritTradeSelect')?.value;
+ if(!id||!byId[id]||!owned(id))return;
+ const used=number(spiritCardTradeDraft[id]),stock=number(S.state.captureCounts[id]);
+ if(used>=stock)return toast('這種幻靈卡片可用數量不足。');
+ spiritCardTradeDraft[id]=used+1;
+ spiritTradeSelectedId=id;showPetShop();
+}
+function removeSpiritTradeCard(id){
+ if(!byId[id]||!number(spiritCardTradeDraft[id]))return;
+ spiritCardTradeDraft[id]--;
+ if(!spiritCardTradeDraft[id])delete spiritCardTradeDraft[id];
+ spiritTradeSelectedId=id;showPetShop();
+}
+function exchangeSpiritCardsForMasterBall(){
+ const selections=Object.entries(spiritCardTradeDraft).filter(([,n])=>n>0);
+ if(spiritCardTradeTotal()!==3)return toast('請先選滿 3 張一般幻靈卡片。');
+ const nextCounts={...S.state.captureCounts};
+ for(const [id,n] of selections){
+  if(!byId[id]||!owned(id)||!Number.isInteger(n)||n<1||n>number(nextCounts[id]))return toast('卡片數量已變動，請重新檢查。');
+  nextCounts[id]=number(nextCounts[id])-n;
+ }
+ // A single save write commits the 3-card deduction and the master-ball reward
+ // together. If storage fails, the live game state and all cards are unchanged.
+ const pos=battle?battle.previous.position:S.player;
+ const newMaster=number(S.state.masterBallCount)+1;
+ const snapshot={...S.state,captureCounts:nextCounts,masterBallCount:newMaster,
+  position:[pos.x,pos.z],buildingId:(battle?battle.previous.place:place)?.id||null};
+ try{localStorage.setItem(KEY,JSON.stringify(snapshot));}
+ catch(error){return toast('無法儲存兌換，卡片尚未扣除，請確認瀏覽器儲存權限。');}
+ S.state.captureCounts=nextCounts;S.state.masterBallCount=newMaster;
+ for(const id of Object.keys(spiritCardTradeDraft))delete spiritCardTradeDraft[id];
+ spiritTradeSelectedId=null;hud();showPetShop();
+ toast('兌換成功！已扣除 3 張一般幻靈卡片，星耀幻靈球 +1。');
+}
 function showPetShop(){
  const t=towerProgress();
  const rows=TOWER_PETS.map(p=>{
@@ -387,7 +440,7 @@ function showPetShop(){
   const label=loading?'切換中…':active?'取消隨行':owned?'設為隨行':'兌換寵物';
   return '<div class="row"><span><strong>'+p.name+'</strong><small style="display:block">需要 '+p.card+' ×'+p.cost+' ｜目前 '+count+' 張'+(active?' ｜目前設定隨行':'')+'</small></span><button data-pet="'+p.id+'" '+(!owned&&count<p.cost?'disabled':'')+'>'+(loading?'◌ ':'')+label+'</button></div>';
  }).join('');
- openModal('寵物商人・卡片兌換','<p class="muted">挑戰塔掉落的卡片可換取永久寵物。選擇後會立即替換場景中的隨行寵物，不需重新載入遊戲。</p>'+rows);
+ openModal('寵物商人・卡片兌換','<p class="muted">挑戰塔掉落的魔物卡片可換取永久寵物。選擇後會立即替換場景中的隨行寵物，不需重新載入遊戲。</p>'+rows+showSpiritCardTrade(t));
  // Start cache warming when visiting the merchant so switching can finish quickly.
  // Only owned pets are warmed, and failures never interrupt the current scene.
  for(const p of TOWER_PETS){
@@ -1225,7 +1278,7 @@ function bindCaptureLongPress(){
  button.addEventListener('click',e=>{if(e.detail===0){menu.hidden=true;throwBall();}});
  document.addEventListener('pointerdown',e=>{if(!menu.hidden&&!menu.contains(e.target)&&!button.contains(e.target))menu.hidden=true;},true);
 }
-function bindUi(){$('radar').onclick=()=>{const button=$('radarToggle'),expanded=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(expanded));button.setAttribute('aria-label',expanded?'縮小城鎮雷達':'展開城鎮雷達');layoutWorldNotifications();};$('menuBtn').onclick=showMenu;$('dexBtn').onclick=showDex;$('closeModal').onclick=closeModal;bindCaptureLongPress();$('lockBtn').onclick=()=>{if(battle?.gym)return toast('道館首領已自動鎖定。');if(locked)clearTarget();else{clearTarget();selectTarget(true);}};bindCamera();$('navCancelBtn').onclick=cancelNavigation;$('berryBtn').onclick=useBerry;$('rollBtn').onclick=beginRoll;$('portal').onclick=()=>portalAction?.();$('npcActions').onclick=e=>{const b=e.target.closest('[data-npc]');if(b)npcAction(b.dataset.npc);};$('modalBody').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.labPick)return claimLabLegend(d.labPick);if(d.labClose){deferLabChoice();return closeModal();}if(d.reset==='first')return showReset(true);if(d.reset==='final')return resetGame();if(d.navBuilding)return beginNavigation('building',d.navBuilding);if(d.navNpc)return beginNavigation('npc',d.navNpc);if(d.graphicsQuality){setGraphicsPreset(d.graphicsQuality);showDisplaySettings();return;}if(d.displayAudio)return showBgmSettings();if(d.bgmToggle){window.PhantomBgm?.toggle();showBgmSettings();return;}if(d.menu){const actions={monsters:showMonsterDex,display:showDisplaySettings,home:showMenu,pets:showPetShop,dex:showDex,team:showTeam,costume:showCostumes,gym:showGyms,bag:showBag,help:showHelp,studio:()=>window.open('model-preview.html','_blank','noopener'),guide:showGuide,reset:showReset,tower:()=>{save();location.href='tower/?v=20261017-display-v1'}};actions[d.menu]?.();}if(d.monster)return showMonsterDetail(d.monster);if(d.pet)return changePet(d.pet);if(d.detail)showDetail(d.detail);if(d.view)showViewer(d.view);if(d.vmotion)viewerMotion(d.vmotion);if(d.evolve)evolve(d.evolve);if(d.add){if(S.state.team.includes(d.add))return toast('這位夥伴已在隊伍中。');if(S.state.team.length>=3)return toast('隊伍已滿，請先在隊伍頁移出一位。');S.state.team.push(d.add);save();toast('已加入隊伍。');}if(d.remove){S.state.team=S.state.team.filter(id=>id!==d.remove);save();showTeam();}if(d.costume){setCostume(d.costume);showCostumes();}if(d.arena)startBattle(d.arena);};$('modalBody').addEventListener('input',e=>{if(e.target?.id!=='bgmVolumeRange')return;const v=window.PhantomBgm?.setVolume(Number(e.target.value));const output=$('bgmVolumeValue');if(output)output.textContent=(v??e.target.value)+'%';});
+function bindUi(){$('radar').onclick=()=>{const button=$('radarToggle'),expanded=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(expanded));button.setAttribute('aria-label',expanded?'縮小城鎮雷達':'展開城鎮雷達');layoutWorldNotifications();};$('menuBtn').onclick=showMenu;$('dexBtn').onclick=showDex;$('closeModal').onclick=closeModal;bindCaptureLongPress();$('lockBtn').onclick=()=>{if(battle?.gym)return toast('道館首領已自動鎖定。');if(locked)clearTarget();else{clearTarget();selectTarget(true);}};bindCamera();$('navCancelBtn').onclick=cancelNavigation;$('berryBtn').onclick=useBerry;$('rollBtn').onclick=beginRoll;$('portal').onclick=()=>portalAction?.();$('npcActions').onclick=e=>{const b=e.target.closest('[data-npc]');if(b)npcAction(b.dataset.npc);};$('modalBody').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.labPick)return claimLabLegend(d.labPick);if(d.labClose){deferLabChoice();return closeModal();}if(d.reset==='first')return showReset(true);if(d.reset==='final')return resetGame();if(d.navBuilding)return beginNavigation('building',d.navBuilding);if(d.navNpc)return beginNavigation('npc',d.navNpc);if(d.graphicsQuality){setGraphicsPreset(d.graphicsQuality);showDisplaySettings();return;}if(d.displayAudio)return showBgmSettings();if(d.bgmToggle){window.PhantomBgm?.toggle();showBgmSettings();return;}if(d.menu){const actions={monsters:showMonsterDex,display:showDisplaySettings,home:showMenu,pets:showPetShop,dex:showDex,team:showTeam,costume:showCostumes,gym:showGyms,bag:showBag,help:showHelp,studio:()=>window.open('model-preview.html','_blank','noopener'),guide:showGuide,reset:showReset,tower:()=>{save();location.href='tower/?v=20261017-display-v1'}};actions[d.menu]?.();}if(d.monster)return showMonsterDetail(d.monster);if(d.spiritTradeAdd)return addSpiritTradeCard();if(d.spiritTradeRemove)return removeSpiritTradeCard(d.spiritTradeRemove);if(d.spiritTradeConfirm)return exchangeSpiritCardsForMasterBall();if(d.pet)return changePet(d.pet);if(d.detail)showDetail(d.detail);if(d.view)showViewer(d.view);if(d.vmotion)viewerMotion(d.vmotion);if(d.evolve)evolve(d.evolve);if(d.add){if(S.state.team.includes(d.add))return toast('這位夥伴已在隊伍中。');if(S.state.team.length>=3)return toast('隊伍已滿，請先在隊伍頁移出一位。');S.state.team.push(d.add);save();toast('已加入隊伍。');}if(d.remove){S.state.team=S.state.team.filter(id=>id!==d.remove);save();showTeam();}if(d.costume){setCostume(d.costume);showCostumes();}if(d.arena)startBattle(d.arena);};$('modalBody').addEventListener('change',e=>{if(e.target?.id==='spiritTradeSelect')spiritTradeSelectedId=e.target.value;});$('modalBody').addEventListener('input',e=>{if(e.target?.id!=='bgmVolumeRange')return;const v=window.PhantomBgm?.setVolume(Number(e.target.value));const output=$('bgmVolumeValue');if(output)output.textContent=(v??e.target.value)+'%';});
 $('battleActions').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.skill!==undefined)playerTurn('skill',Number(b.dataset.skill));if(b.dataset.battle==='retreat')endBattle(false,true);else if(b.dataset.battle)playerTurn(b.dataset.battle);};const viewCanvas=$('scene');let labTapStart=null;
  viewCanvas.addEventListener('pointerdown',e=>{labTapStart={x:e.clientX,y:e.clientY,id:e.pointerId};},{passive:true});
  viewCanvas.addEventListener('pointerup',e=>{if(labTapStart?.id===e.pointerId&&Math.hypot(e.clientX-labTapStart.x,e.clientY-labTapStart.y)<14)tapLabBall(e);labTapStart=null;},{passive:true});
