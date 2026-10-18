@@ -346,14 +346,12 @@
     "generatedAt": "2026-10-12"
   },
   "zapdos": {
-    "image": "cards/art/zapdos.webp",
-    "name": "雷紋巨蛾",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/zapdos.glb",
-    "group": 9,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/fire-monkey-c-elder.webp",
+    "name": "C老猴",
+    "source": "imagegen-reference",
+    "referenceModel": "fire-monkey://zapdos",
+    "style": "stylized-3d-fantasy-portrait",
+    "generatedAt": "2026-10-18"
   },
   "moltres": {
     "image": "cards/art/moltres.webp",
@@ -366,14 +364,12 @@
     "generatedAt": "2026-10-12"
   },
   "raikou": {
-    "image": "cards/art/raikou.webp",
-    "name": "轟角麒麟",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/raikou.glb",
-    "group": 9,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/fire-monkey-c-kid.webp",
+    "name": "C囝仔",
+    "source": "imagegen-reference",
+    "referenceModel": "fire-monkey://raikou",
+    "style": "stylized-3d-fantasy-portrait",
+    "generatedAt": "2026-10-18"
   },
   "entei": {
     "image": "cards/art/entei.webp",

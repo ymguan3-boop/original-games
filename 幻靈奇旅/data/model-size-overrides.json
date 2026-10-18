@@ -223,8 +223,8 @@
   },
   "zapdos": {
     "desiredWorldHeight": 2.65,
-    "stage": 3,
-    "form": "moth",
+    "stage": 2,
+    "form": "monkey",
     "maxSpan": 5.8
   },
   "moltres": {
@@ -234,9 +234,9 @@
     "maxSpan": 5.8
   },
   "raikou": {
-    "desiredWorldHeight": 3.55,
-    "stage": 3,
-    "form": "kirin",
+    "desiredWorldHeight": 1.85,
+    "stage": 1,
+    "form": "monkey",
     "maxSpan": 5.8
   },
   "entei": {

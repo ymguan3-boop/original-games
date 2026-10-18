@@ -1263,36 +1263,38 @@
   {
     "id": "zapdos",
     "speciesId": "zapdos",
-    "name": "雷紋巨蛾",
-    "element": "electric",
-    "type": "雷",
-    "stage": 3,
-    "family": "zapdos",
-    "form": "moth",
-    "color": 13940033,
+    "name": "C老猴",
+    "element": "fire",
+    "type": "火",
+    "stage": 2,
+    "family": "fire-monkey",
+    "form": "monkey",
+    "color": 12412475,
     "role": "legendary",
     "previous": null,
     "next": null,
-    "model": "models/spirits/zapdos.glb",
-    "height": 2.15475,
+    "model": "fire-monkey://zapdos",
+    "height": 2.65,
     "hp": 210,
     "attack": 54,
     "evolvesTo": null,
-    "rarity": "傳說",
-    "motionType": "fly",
+    "rarity": "稀有",
+    "motionType": "walk",
     "skills": [
       {
-        "name": "雷光輕擊",
+        "name": "金棍三連",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "雷紋共鳴",
+        "name": "烈焰棍舞",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "雷紋巨蛾是初光之境的雷屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "歷練成長的火猴守護者，戴著金箍、披著赤紅長巾，手持金箍棍。擅長靈敏步法與連續三下的耍棍動作。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
   },
   {
     "id": "moltres",
@@ -1331,36 +1333,38 @@
   {
     "id": "raikou",
     "speciesId": "raikou",
-    "name": "轟角麒麟",
-    "element": "electric",
-    "type": "雷",
-    "stage": 3,
-    "family": "raikou",
-    "form": "kirin",
-    "color": 12952912,
+    "name": "C囝仔",
+    "element": "fire",
+    "type": "火",
+    "stage": 1,
+    "family": "fire-monkey",
+    "form": "monkey",
+    "color": 12412475,
     "role": "legendary",
     "previous": null,
     "next": null,
-    "model": "models/spirits/raikou.glb",
-    "height": 2.15475,
+    "model": "fire-monkey://raikou",
+    "height": 1.85,
     "hp": 210,
     "attack": 54,
     "evolvesTo": null,
-    "rarity": "傳說",
+    "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
-        "name": "雷光輕擊",
+        "name": "調皮火球",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "轟角共鳴",
+        "name": "赤焰連爪",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "轟角麒麟是初光之境的雷屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "調皮靈敏的小火猴，缺一顆門牙的壞笑是牠的招牌。閒下來時偶爾朝前方丟出火球，尾尖火焰隨動作搖曳。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
   },
   {
     "id": "entei",

@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 88,
+  "modelCount": 86,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -507,16 +507,6 @@
       ]
     },
     {
-      "file": "models/spirits/raikou.glb",
-      "bytes": 205196,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/rayquaza.glb",
       "bytes": 110396,
       "animations": [
@@ -668,17 +658,6 @@
       ]
     },
     {
-      "file": "models/spirits/zapdos.glb",
-      "bytes": 197552,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
-    },
-    {
       "file": "models/tower/bow.glb",
       "bytes": 85000,
       "animations": []
@@ -754,7 +733,7 @@
       "animations": []
     }
   ],
-  "nativeModelCount": 9,
+  "nativeModelCount": 11,
   "nativeModels": [
     {
       "id": "piplup",
@@ -889,6 +868,36 @@
         "Jump",
         "Hurt"
       ]
+    },
+    {
+      "id": "raikou",
+      "key": "fire-monkey://raikou",
+      "runtime": "three-r128",
+      "triangles": 31704,
+      "meshes": 61,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Fireball",
+        "React",
+        "Hurt",
+        "Jump"
+      ]
+    },
+    {
+      "id": "zapdos",
+      "key": "fire-monkey://zapdos",
+      "runtime": "three-r128",
+      "triangles": 38060,
+      "meshes": 82,
+      "animations": [
+        "Idle",
+        "Walk",
+        "StaffCombo",
+        "React",
+        "Hurt",
+        "Jump"
+      ]
     }
   ],
   "nativeSources": [
@@ -914,13 +923,18 @@
     },
     {
       "file": "models/native/xiaoshan.js",
-      "bytes": 7899,
-      "sha256": "afc4eecac4cfa8f8131a0706556e554478a28e122e24010c35d7532e5fcd4d85"
+      "bytes": 10402,
+      "sha256": "469958b15aeb98cbea372cb2403d1e5fb8364d31d7a771e067c208351e3f2416"
     },
     {
       "file": "models/native/outouman.js",
-      "bytes": 14011,
-      "sha256": "01098967307ce25221e9828d8bbc4692edc9e67d34ff008fd7d5af74aa09d770"
+      "bytes": 14149,
+      "sha256": "fb46d1036f7195884232247d54ee2bc8a97b51bb5c5fdbd911f058a7bc954b6c"
+    },
+    {
+      "file": "models/native/fire-monkey.js",
+      "bytes": 18634,
+      "sha256": "fd02ab17225f8ddd21549f9fa7cdc461747de3e2b3eddcccd8da20e1c903d8f2"
     }
   ]
 }

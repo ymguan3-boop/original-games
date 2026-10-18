@@ -681,21 +681,24 @@
   },
   {
     "id": "zapdos",
-    "name": "雷紋巨蛾",
-    "vertices": 2718,
-    "triangles": 5320,
-    "materials": 5,
-    "bones": 10,
-    "height": 2.15475,
+    "name": "C老猴",
+    "vertices": 97613,
+    "triangles": 38060,
+    "materials": 15,
+    "bones": 0,
+    "height": 2.65,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
+      "StaffCombo",
+      "React",
       "Hurt",
-      "Fly"
+      "Jump"
     ],
-    "fileBytes": 197552,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 18634,
+    "source": "Native Three.js connected shoulder-elbow-wrist hip-knee-ankle and nine-joint tail rig",
+    "joints": 21,
+    "model": "fire-monkey://zapdos"
   },
   {
     "id": "moltres",
@@ -717,20 +720,24 @@
   },
   {
     "id": "raikou",
-    "name": "轟角麒麟",
-    "vertices": 3016,
-    "triangles": 5824,
-    "materials": 5,
-    "bones": 10,
-    "height": 2.15475,
+    "name": "C囝仔",
+    "vertices": 78911,
+    "triangles": 31704,
+    "materials": 15,
+    "bones": 0,
+    "height": 1.85,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Fireball",
+      "React",
+      "Hurt",
+      "Jump"
     ],
-    "fileBytes": 205196,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 18634,
+    "source": "Native Three.js connected shoulder-elbow-wrist hip-knee-ankle and nine-joint tail rig",
+    "joints": 21,
+    "model": "fire-monkey://raikou"
   },
   {
     "id": "entei",

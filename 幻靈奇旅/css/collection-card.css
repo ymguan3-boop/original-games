@@ -17,3 +17,7 @@
 
 .collectionCard[data-frame="red"]{background:linear-gradient(145deg,#ffdfdc,#b52635);box-shadow:inset 0 0 0 3px #a91d30}
 .collectionCard[data-frame="red"] .collectionFrame{filter:hue-rotate(315deg) saturate(2.3) brightness(.98)}
+
+/* Fire monkey guardians share the purple collection frame treatment. */
+.collectionCard[data-frame="purple"]{background:linear-gradient(145deg,#f3e3ff,#b380db);box-shadow:inset 0 0 0 3px #8142b1}
+.collectionCard[data-frame="purple"] .collectionFrame{filter:hue-rotate(245deg) saturate(1.8) brightness(1.09)}
