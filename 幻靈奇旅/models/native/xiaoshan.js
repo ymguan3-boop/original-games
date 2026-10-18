@@ -96,11 +96,12 @@
       if(disposed)return;
       age+=Math.min(.06,Math.max(0,dt||0));
       for(const {hinge,sign} of wings){
-        hinge.rotation.y=sign*(.23+.76*Math.sin(age*24));
-        hinge.rotation.z=sign*.065*Math.sin(age*12+sign);
+        hinge.rotation.y=sign*(.23+.76*Math.sin(age*10));
+        hinge.rotation.z=sign*.055*Math.sin(age*6+sign);
       }
-      root.rotation.z=.09*Math.sin(age*4.4);
-      root.rotation.x=.09*Math.sin(age*3.2);
+      root.rotation.z=.07*Math.sin(age*2.6);
+      // Butterfly faces +Z; pitch forward slightly, with a gentle natural sway.
+      root.rotation.x=.17+.055*Math.sin(age*2.0);
     }
     function dispose(){
       if(disposed)return;disposed=true;root.removeFromParent();
