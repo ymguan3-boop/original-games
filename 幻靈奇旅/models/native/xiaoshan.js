@@ -62,5 +62,53 @@
     update(0);
     return {root,update,setMode,setMotionSpeed:value=>{motionSpeed=clamp(Number(value)||1,0,8);},dispose,getState:()=>({mode,phase:mode.toLowerCase(),time,expression:mode==='Scared'?'scared':'sleepy',sleepGlyphs:mode==='Sleep'?4:0,height:2.85})};
   }
-  window.XiaoshanSpirit={create};
+  // Reuse the same yellow-body/purple-wing design as Xiaoshan's hair ornament
+  // as a lightweight, independently animated companion for the sound costume.
+  function createButterfly() {
+    const T=THREE, root=new T.Group(),parts=[],geometries=[],materials=[];
+    root.name='小山蝴蝶套裝・漂浮蝴蝶';
+    const material=(hex,opacity=1)=>{
+      const m=new T.MeshStandardMaterial({color:new T.Color(hex).convertSRGBToLinear(),roughness:.34,metalness:.08,transparent:opacity<1,opacity,side:T.DoubleSide,depthWrite:opacity>=1});
+      materials.push(m);return m;
+    };
+    const purple=material(0x8651b6,.92),lilac=material(0xc899ed,.64),yellow=material(0xffd61d),dark=material(0x242924);
+    const sphere=new T.SphereGeometry(1,14,10);geometries.push(sphere);
+    function oval(parent,mat,x,y,z,sx,sy,sz){
+      const m=new T.Mesh(sphere,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=false;parent.add(m);return m;
+    }
+    oval(root,yellow,0,0,.04,.082,.18,.08);
+    oval(root,yellow,0,.145,.05,.073,.07,.065);
+    const wings=[];
+    for(const sign of [-1,1]){
+      const hinge=new T.Group();hinge.position.set(sign*.04,.045,0);root.add(hinge);
+      for(const [x,y,sx,sy] of [[.19,.15,.16,.23],[.14,-.1,.12,.13]]){
+        oval(hinge,purple,sign*x,y,0,sx,sy,.035).rotation.z=-sign*.42;
+        oval(hinge,lilac,sign*x,y,.03,sx*.81,sy*.84,.021).rotation.z=-sign*.42;
+      }
+      const feeler=new T.Mesh(new T.CylinderGeometry(.009,.009,.19,6),dark);
+      feeler.position.set(sign*.10,.235,.08);feeler.rotation.z=-sign*.35;root.add(feeler);parts.push(feeler);
+      oval(root,dark,sign*.128,.34,.08,.024,.024,.024);
+      wings.push({hinge,sign});
+    }
+    let age=0,disposed=false;
+    root.scale.setScalar(1.1);
+    function update(dt){
+      if(disposed)return;
+      age+=Math.min(.06,Math.max(0,dt||0));
+      for(const {hinge,sign} of wings){
+        hinge.rotation.y=sign*(.23+.76*Math.sin(age*24));
+        hinge.rotation.z=sign*.065*Math.sin(age*12+sign);
+      }
+      root.rotation.z=.09*Math.sin(age*4.4);
+      root.rotation.x=.09*Math.sin(age*3.2);
+    }
+    function dispose(){
+      if(disposed)return;disposed=true;root.removeFromParent();
+      for(const g of geometries)g.dispose();
+      for(const m of materials)m.dispose();
+    }
+    update(0);
+    return {root,update,dispose};
+  }
+  window.XiaoshanSpirit={create,createButterfly};
 })();
