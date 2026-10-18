@@ -848,56 +848,62 @@ function shiftArenaRings(arena){
  });
 }
 
-async function battleActors(){const b=battle;if(!b)return;for(const a of b.actors)removeActor(a);b.actors=[];const entries=b.gym?[[b.enemies[0],0,-3.2,0]]:[[b.allies[b.ai],-1.75,6,Math.PI*.75],[b.enemies[b.ei],1.75,-6,-Math.PI*.25]];for(const [entry,x,z,ry]of entries){const a=await actor(entry.s.model,b.gym?3.05:(entry===b.enemies[b.ei]?2.55:2.05),battleGroup);a.root.position.set(x,0,z);if(b.gym&&b.sceneConfig?.enemySpawn)a.root.position.fromArray(b.sceneConfig.enemySpawn);a.root.rotation.y=ry;entry.actor=a;b.actors.push(a);entry.label=addLabel(a,'','nameLabel hpLabel');if(!b.gym)entry.label.el.classList.add(entry===b.allies[b.ai]?'arenaAllyHp':'arenaEnemyHp');updateHp(entry);}}
+async function battleActors(){const b=battle;if(!b)return;for(const a of b.actors)removeActor(a);b.actors=[];const entries=b.gym?[[b.enemies[0],0,-3.2,0]]:[[b.allies[b.ai],-1.75,6,Math.PI*.75],[b.enemies[b.ei],1.75,-6,-Math.PI*.25]];for(const [entry,x,z,ry]of entries){const baseHeight=b.gym?3.05:(entry===b.enemies[b.ei]?2.55:2.05),height=!b.gym&&entry.s.id==='pikachu'?baseHeight*1.5:baseHeight;const a=await actor(entry.s.model,height,battleGroup);a.root.position.set(x,0,z);if(b.gym&&b.sceneConfig?.enemySpawn)a.root.position.fromArray(b.sceneConfig.enemySpawn);a.root.rotation.y=ry;entry.actor=a;b.actors.push(a);entry.label=addLabel(a,'','nameLabel hpLabel');if(!b.gym)entry.label.el.classList.add(entry===b.allies[b.ai]?'arenaAllyHp':'arenaEnemyHp');updateHp(entry);}}
 function updateHp(e){if(!e?.label)return;if(battle?.gym){const max=e.maxHp||e.s.hp,progress=max-e.hp;e.label.el.innerHTML='<b>'+esc(e.s.name)+'</b><div class="hp"><i style="width:'+Math.max(0,progress)/max*100+'%"></i></div><small>信任 '+Math.round(progress/max*100)+'% · 締約試煉</small>';return;}const max=e.maxHp||e.s.hp,status=Object.keys(e.status||{}).filter(k=>e.status[k]>0).map(k=>combatStatusNames[k]||k);e.label.el.innerHTML=`<b>${esc(e.s.name)}</b><div class="hp"><i style="width:${Math.max(0,e.hp)/max*100}%"></i></div><small>${Math.max(0,e.hp)} / ${max}${battle?.gym?'':' · 能量 '+e.energy}</small>${status.length?`<small style="display:block;color:#fff3a7">${status.map(esc).join(' · ')}</small>`:''}`;}
 function battleLog(t){$('battleLog').textContent=t;}
 function battleItems(){const b=battle;if(!b||b.busy)return;const defs=[['potion',itemNames.potion,'回復 45 HP'],['armorBreak',itemNames.armorBreak,b.gym?'敵方減防 6 秒':'敵方減防 3 回合'],['attackBoost',itemNames.attackBoost,b.gym?'旅人加攻 12 秒':'己方加攻 3 回合']];$('battleActions').innerHTML=defs.map(([key,name,desc])=>`<button data-battle="item:${key}" ${number(S.state.items[key])<1?'disabled':''}>${name}<small>${desc} · ${number(S.state.items[key])} 份</small></button>`).join('')+'<button data-battle="itemsBack">返回戰鬥</button>'; }
 function battleButtons(){if(!battle)return;const b=battle;if(b.gym){$('battleActions').innerHTML='<button data-battle="retreat" class="gymExitOnly">離開挑戰</button>';return;}const p=b.allies[b.ai],skills=p.s.skills?.length?p.s.skills:[{name:'靈光衝擊',power:p.s.attack,cost:1},{name:'全力一擊',power:p.s.attack*1.6,cost:3}];$('battleActions').innerHTML=skills.slice(0,2).map((s,i)=>`<button data-skill="${i}" ${b.busy||p.energy<(s.cost||1)?'disabled':''}>${esc(s.name)}<small>${s.power} 威力 · ${s.cost||1} 能量${i?' · '+(combatStatusNames[combatStatusFor[p.s.element]]||'共鳴'):''}</small></button>`).join('')+`<button data-battle="switch" ${b.busy?'disabled':''}>換位<small>其餘 ${b.allies.filter((a,i)=>a.hp>0&&i!==b.ai).length} 位夥伴</small></button><button data-battle="items" ${b.busy?'disabled':''}>道具<small>回血 / 減防 / 加攻</small></button><button data-battle="retreat" style="grid-column:1/-1;min-height:24px;padding:5px;font-size:10px">結束切磋，返回探索</button>`;}
 // Both arena techniques use their own visual identity. Other spirits keep normal combat effects.
+// The two arena skills share the original forward beam animation, with
+// independent coloring and thickness. No other spirit uses these materials.
 function outoumanSkillFx(from,to,skillName){
- const group=new T.Group(),duration=.67,objects=[],direction=to.clone().sub(from),length=direction.length(),axis=new T.Vector3(0,1,0);
- const rainbow=skillName==='彩虹光束';
- if(rainbow){
-  const colors=[0xff3549,0xff9730,0xffe658,0x5ff29a,0x46d9ff,0x557cff,0xc879ff];
-  const geometry=new T.CylinderGeometry(.09,.09,1,10,1,true),angle=new T.Quaternion().setFromUnitVectors(axis,direction.clone().normalize());
-  for(let i=0;i<colors.length;i++){
-   const material=new T.MeshBasicMaterial({color:colors[i],transparent:true,opacity:.85,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide});
-   const mesh=new T.Mesh(geometry,material);
-   mesh.quaternion.copy(angle);mesh.position.copy(from);
-   group.add(mesh);objects.push({mesh,material,i});
-  }
-  combatSound('electric',true);
-  battleGroup.add(group);
-  effects.push({object:group,start:elapsed,duration,
-   update:t=>{const progress=Math.min(1,t*3);
-    for(const {mesh,material,i} of objects){
-     const offset=(i-3)*.12,point=from.clone().lerp(to,progress*.5);
-     point.x+=offset;mesh.position.copy(point);
-     mesh.scale.set(1,Math.max(.01,length*progress),1);
-     material.opacity=(1-t)*(.62+.18*Math.sin(t*30+i));
-    }
-   },
-   done:()=>{geometry.dispose();for(const v of objects)v.material.dispose();}
-  });
- }else{
-  const geometry=new T.RingGeometry(.57,.79,40);
-  for(let i=0;i<3;i++){
-   const material=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.95,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide});
-   const mesh=new T.Mesh(geometry,material);
-   mesh.rotation.x=-Math.PI/2;group.add(mesh);objects.push({mesh,material,i});
-  }
-  combatSound('electric',false);
-  battleGroup.add(group);
-  effects.push({object:group,start:elapsed,duration,
-   update:t=>{for(const {mesh,material,i} of objects){
-    const progress=Math.max(0,Math.min(1,(t-i*.12)/.55));
-    mesh.position.lerpVectors(from,to,progress);mesh.position.y+=.1;
-    mesh.scale.setScalar(.5+progress*1.4);
-    material.opacity=Math.max(0,(1-progress)*.85);
-   }},
-   done:()=>{geometry.dispose();for(const v of objects)v.material.dispose();}
-  });
+ const rainbow=skillName==='彩虹光束',duration=.7,group=new T.Group();
+ const delta=to.clone().sub(from),distance=Math.max(.01,delta.length());
+ const forward=delta.lengthSq()<1e-6?new T.Vector3(0,0,1):delta.normalize();
+ const side=new T.Vector3().crossVectors(forward,new T.Vector3(0,1,0));
+ if(side.lengthSq()<.01)side.set(1,0,0);else side.normalize();
+ const orientation=new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),forward);
+ const colors=rainbow?[0xff3b46,0xffa236,0xfff35a,0x55ff8a,0x44dfff,0x527cff,0xc879ff]:Array(7).fill(0xffffff);
+ const radius=rainbow?.24:.115,spacing=rainbow?.18:.085;
+ const geometry=new T.CylinderGeometry(1,1,1,12,1,true),beams=[];
+ for(let i=0;i<colors.length;i++){
+  const material=new T.MeshBasicMaterial({color:colors[i],transparent:true,opacity:.9,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide});
+  const mesh=new T.Mesh(geometry,material);
+  mesh.quaternion.copy(orientation);
+  mesh.scale.set(radius,.01,radius);
+  mesh.position.copy(from).addScaledVector(side,(i-3)*spacing);
+  group.add(mesh);beams.push({mesh,material,i});
  }
+ // A broader, translucent halo gives the four-energy rainbow beam extra mass
+ // without a particle-heavy animation or additional geometry allocations.
+ let haloMaterial=null;
+ if(rainbow){
+  haloMaterial=new T.MeshBasicMaterial({color:0xffecff,transparent:true,opacity:.16,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide});
+  const halo=new T.Mesh(geometry,haloMaterial);
+  halo.quaternion.copy(orientation);
+  halo.position.copy(from);halo.scale.set(.72,.01,.72);
+  group.add(halo);
+ }
+ battleGroup.add(group);
+ combatSound('electric',rainbow);
+ const middle=from.clone(),distanceOffset=distance*.5;
+ effects.push({object:group,start:elapsed,duration,
+  update:t=>{
+   const reach=Math.min(1,t*2.6),beamLength=Math.max(.01,distance*reach);
+   middle.copy(from).addScaledVector(forward,distanceOffset*reach);
+   for(const {mesh,material,i} of beams){
+    mesh.position.copy(middle).addScaledVector(side,(i-3)*spacing);
+    mesh.scale.y=beamLength;
+    material.opacity=Math.max(0,(1-t)*(.69+.13*Math.sin(t*32+i)));
+   }
+   if(haloMaterial){
+    const halo=group.children[group.children.length-1];
+    halo.position.copy(middle);
+    halo.scale.y=beamLength;haloMaterial.opacity=Math.max(0,(1-t)*.13);
+   }
+  },
+  done:()=>{geometry.dispose();for(const v of beams)v.material.dispose();haloMaterial?.dispose();}
+ });
 }
 async function strike(attacker,defender,skill){if(!battle)return;if(statusTick(attacker)){attacker.actor.play('Hurt',true);battleLog(attacker.s.name+'受狀態影響，暫停一次行動。');await delay(600);return;}attacker.actor.play('Attack',true);const strong=(skill.cost||0)>=3,p=attacker.actor.root.position.clone(),to=defender.actor.root.position.clone().add(new T.Vector3(0,1,0)),dir=to.clone().sub(p).setY(0).normalize();battleLog(attacker.s.name+'使用'+skill.name+'！');if(attacker.s.id==='pikachu'&&['白色光波','彩虹光束'].includes(skill.name))outoumanSkillFx(p.clone().add(new T.Vector3(0,1,0)),to,skill.name);else combatFx(p.clone().add(new T.Vector3(0,1,0)),to,attacker.s.element,strong);if(strong)combatRing(defender.actor.root.position,1.7,attacker.s.element,.8);await new Promise(resolve=>effects.push({start:elapsed,duration:.55,update:t=>attacker.actor.root.position.copy(p).addScaledVector(dir,Math.sin(t*Math.PI)*.5),done:()=>{attacker.actor.root.position.copy(p);resolve();}}));const damage=Math.max(8,Math.round((skill.power||attacker.s.attack)*(attacker.status?.attackUp?1.45:1)*(defender.status?.defDown?1.4:1)*(.88+Math.random()*.24)));defender.hp=Math.max(0,defender.hp-damage);defender.actor.play('Hurt',true);attacker.energy=Math.max(0,attacker.energy-(skill.cost||1));if(strong){const status=combatStatusFor[attacker.s.element]||'defDown';statusSet(['heal','attackUp'].includes(status)?attacker:defender,status,3);}updateHp(attacker);updateHp(defender);battleLog(defender.s.name+'受到 '+damage+' 點傷害。'+(strong?'共鳴狀態已發動！':''));await delay(600);attacker.actor.play('Idle');defender.actor.play('Idle');}
 async function playerTurn(action,index){const b=battle;if(!b)return;if(action==='retreat')return endBattle(false,true);if(b.busy)return;if(action==='items')return battleItems();if(action==='itemsBack')return battleButtons();if(action==='retreat')return endBattle(false,true);if(action==='potion')action='item:potion';if(b.gym){if(action.startsWith('item:')){const key=action.slice(5);if(number(S.state.items[key])<1)return;S.state.items[key]--;if(key==='potion')for(const k of Object.keys(b.heroStatus))if(k!=='attackUp')delete b.heroStatus[k];if(key==='armorBreak'){statusSet(b.enemies[0],'defDown',6);b.defDownUntil=elapsed+6;}if(key==='attackBoost')b.heroStatus.attackUp=elapsed+12;save();battleLog('使用道具 · 回復藥解除短暫干擾。');battleButtons();}return;}b.busy=true;battleButtons();let p=b.allies[b.ai],e=b.enemies[b.ei];if(action==='skill'){const skill=p.s.skills?.[index]||{name:'靈光衝擊',power:p.s.attack,cost:1};if(p.energy<(skill.cost||1)){b.busy=false;return battleButtons();}await strike(p,e,skill);}else if(action.startsWith('item:')){const key=action.slice(5);if(number(S.state.items[key])<1){b.busy=false;return battleButtons();}S.state.items[key]--;if(key==='potion')p.hp=Math.min(p.s.hp,p.hp+45);if(key==='armorBreak')statusSet(e,'defDown',3);if(key==='attackBoost')statusSet(p,'attackUp',3);save();updateHp(p);battleLog('道具生效！');await delay(350);}else if(action==='switch'){const i=b.allies.findIndex((x,i)=>x.hp>0&&i!==b.ai);if(i<0){b.busy=false;return battleButtons();}b.ai=i;await battleActors();p=b.allies[b.ai];e=b.enemies[b.ei];}if(!battle)return;if(e.hp<=0){const next=b.enemies.findIndex(x=>x.hp>0);if(next<0)return endBattle(true);b.ei=next;await battleActors();e=b.enemies[b.ei];}e.energy=Math.min(5,e.energy+1);const skills=e.s.skills||[{name:'靈光衝擊',power:e.s.attack,cost:1}],choice=skills.filter(s=>(s.cost||1)<=e.energy).slice(-1)[0]||{name:'蓄力輕擊',power:12,cost:0};await strike(e,p,choice);if(!battle)return;if(p.hp<=0){const next=b.allies.findIndex(x=>x.hp>0);if(next<0)return endBattle(false);b.ai=next;await battleActors();p=b.allies[b.ai];}p.energy=Math.min(5,p.energy+2);b.turn++;updateHp(p);updateHp(b.enemies[b.ei]);b.busy=false;battleLog('第 '+b.turn+' 回合 · 選擇行動');battleButtons();}
