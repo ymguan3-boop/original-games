@@ -199,6 +199,39 @@ function ensureSoundCostume(){
   pivot.add(hero.object);
   hero.soundHoverAnchor=anchor;hero.soundTiltPivot=pivot;
  }
+ if(!hero.soundBackpack&&window.XiaoshanSpirit?.create){
+  // The backpack uses the authentic Xiaoshan character silhouette, scaled down
+  // and facing outward from the hero's back. The former skin-tone chest plate
+  // and red headset/microphone meshes are retired below in setCostume().
+  const controller=window.XiaoshanSpirit.create({inPlace:true});
+  const accessory=new T.Group();
+  accessory.name='小山造型後背包';
+  const model=controller.root;
+  model.scale.setScalar(.32);
+  model.rotation.y=Math.PI;
+  accessory.add(model);
+  accessory.position.set(0,-.18,-.55);
+  hero.soundTiltPivot.add(accessory);
+  // Two muted-purple fabric-like straps run across the shoulders. All geometry
+  // is created once, not rebuilt in the frame loop.
+  const strapMaterial=new T.MeshStandardMaterial({color:0x78599a,roughness:.88,metalness:0});
+  const straps=[];
+  for(const sign of [-1,1]){
+    const curve=new T.CatmullRomCurve3([
+      new T.Vector3(sign*.24,.38,-.53),
+      new T.Vector3(sign*.32,.44,-.22),
+      new T.Vector3(sign*.34,.31,.04),
+      new T.Vector3(sign*.31,-.24,.13),
+      new T.Vector3(sign*.28,-.38,-.16)
+    ]);
+    const geometry=new T.TubeGeometry(curve,14,.034,6,false);
+    const strap=new T.Mesh(geometry,strapMaterial);
+    strap.castShadow=false;
+    hero.soundTiltPivot.add(strap);
+    straps.push({mesh:strap,geometry});
+  }
+  hero.soundBackpack={root:accessory,controller,straps,strapMaterial};
+ }
  if(!soundButterfly&&window.XiaoshanSpirit?.createButterfly){
   soundButterfly=window.XiaoshanSpirit.createButterfly();
   soundButterfly.root.visible=false;
@@ -222,19 +255,34 @@ function updateSoundCostume(dt){
   hero.soundTiltPivot.rotation.x=motion.lean;
   hero.soundTiltPivot.rotation.z=moving?.025*Math.sin(elapsed*6):0;
  }
+ if(hero.soundBackpack){
+  // The miniature Xiaoshan keeps the gentle sleepy breathing animation while
+  // secured to the character's back; it inherits all gliding body transforms.
+  if(active){
+   hero.soundBackpack.controller.update(Math.min(dt,.05));
+   hero.soundBackpack.root.rotation.z=.016*Math.sin(elapsed*2.2);
+  }
+ }
  if(!soundButterfly)return;
  const visual=soundButterfly.root;
  visual.visible=active&&hero.root.visible!==false;
  if(!visual.visible)return;
  const parent=hero.root.parent;
  if(parent&&visual.parent!==parent)parent.add(visual);
- const angle=elapsed*1.65,orbit=1.13+.15*Math.sin(elapsed*1.3);
- const height=1.80+.23*Math.sin(elapsed*3.2)+.12*Math.sin(elapsed*6.1);
+ // One gentle orbit takes ~9 seconds; a taller, two-frequency vertical
+ // trajectory keeps the butterfly alive without hectic movement.
+ const angle=elapsed*.72,orbit=1.17+.13*Math.sin(elapsed*.75);
+ const height=1.95+.52*Math.sin(elapsed*1.65)+.17*Math.sin(elapsed*2.65+.4);
  visual.position.set(hero.root.position.x+orbit*Math.sin(angle),hero.root.position.y+height,hero.root.position.z+orbit*Math.cos(angle));
- visual.rotation.y=angle+.55*Math.sin(elapsed*1.1);
+ visual.rotation.y=angle+.32*Math.sin(elapsed*.7);
  soundButterfly.update(dt);
 }
-function setCostume(id){S.state.costume=id;if(id==='electric')ensureOutoumanTransformation();if(id==='sound')ensureSoundCostume();if(id!=='sound'){soundCostumeMotion.hover=0;soundCostumeMotion.lean=0;if(hero.soundHoverAnchor)hero.soundHoverAnchor.position.y=0;if(hero.soundTiltPivot)hero.soundTiltPivot.rotation.set(0,0,0);}if(soundButterfly)soundButterfly.root.visible=id==='sound';hero.object.visible=id!=='electric'||!hero.outoumanVisual;if(hero.outoumanVisual){hero.outoumanVisual.visible=id==='electric';hero.outoumanController.setMode('Idle');}hero.object.traverse(n=>{if(n.userData.costume)n.visible=n.userData.costume===id||n.userData.costume==='trainer';});if(companion)companion.root.visible=id==='mist'&&!battle;save();}
+function setCostume(id){S.state.costume=id;if(id==='electric')ensureOutoumanTransformation();if(id==='sound')ensureSoundCostume();if(id!=='sound'){soundCostumeMotion.hover=0;soundCostumeMotion.lean=0;if(hero.soundHoverAnchor)hero.soundHoverAnchor.position.y=0;if(hero.soundTiltPivot)hero.soundTiltPivot.rotation.set(0,0,0);}if(soundButterfly)soundButterfly.root.visible=id==='sound';if(hero.soundBackpack){hero.soundBackpack.root.visible=id==='sound';for(const strap of hero.soundBackpack.straps)strap.mesh.visible=id==='sound';}hero.object.visible=id!=='electric'||!hero.outoumanVisual;if(hero.outoumanVisual){hero.outoumanVisual.visible=id==='electric';hero.outoumanController.setMode('Idle');}hero.object.traverse(n=>{
+  if(!n.userData.costume)return;
+  // Retire the old sound-costume's red headphone/microphone and beige belly
+  // shield. Show the regular trainer body + the new Xiaoshan backpack instead.
+  n.visible=n.userData.costume==='trainer'||(n.userData.costume===id&&id!=='sound');
+ });if(companion)companion.root.visible=id==='mist'&&!battle;save();}
 function heroBallOrigin(){return S.player.clone().add(new T.Vector3(Math.sin(hero.root.rotation.y)*(S.state.costume==='electric'?.62:0),1.35,Math.cos(hero.root.rotation.y)*(S.state.costume==='electric'?.62:0)));}
 
 const npcLoadPromises=new Map();
