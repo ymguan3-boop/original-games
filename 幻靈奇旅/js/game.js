@@ -210,23 +210,55 @@ function ensureSoundCostume(){
   model.scale.setScalar(.32);
   model.rotation.y=Math.PI;
   accessory.add(model);
-  accessory.position.set(0,-.18,-.55);
+  accessory.position.set(0,-.10,-.42);
   hero.soundTiltPivot.add(accessory);
-  // Two muted-purple fabric-like straps run across the shoulders. All geometry
-  // is created once, not rebuilt in the frame loop.
-  const strapMaterial=new T.MeshStandardMaterial({color:0x78599a,roughness:.88,metalness:0});
+  // Proper continuous shoulder harness: backpack upper mount -> over shoulder
+  // -> chest outer edge -> under the armpit -> back to the lower mount.
+  // A flat, double-sided ribbon follows the torso instead of a dangling tube.
+  const strapMaterial=new T.MeshStandardMaterial({color:0x78599a,roughness:.82,metalness:0,side:T.DoubleSide});
   const straps=[];
   for(const sign of [-1,1]){
-    const curve=new T.CatmullRomCurve3([
-      new T.Vector3(sign*.24,.38,-.53),
-      new T.Vector3(sign*.32,.44,-.22),
-      new T.Vector3(sign*.34,.31,.04),
-      new T.Vector3(sign*.31,-.24,.13),
-      new T.Vector3(sign*.28,-.38,-.16)
-    ]);
-    const geometry=new T.TubeGeometry(curve,14,.034,6,false);
+    const points=[
+      [ .20,-.20,-.43], // lower anchor, on the back of the bag
+      [ .24, .02,-.47], // side of the backpack
+      [ .25, .35,-.43], // upper mount behind shoulder
+      [ .23, .52,-.25], // shoulder crest
+      [ .25, .50,-.035], // passes over shoulder
+      [ .28, .38, .105], // clavicle / upper chest
+      [ .29, .19, .15], // chest side (not over belly)
+      [ .31,-.005,.135], // passes directly under the arm
+      [ .31,-.13,-.025], // side of torso behind armpit
+      [ .27,-.22,-.26], // lower side returns to back
+      [ .20,-.20,-.43]
+    ].map(([x,y,z])=>new T.Vector3(sign*x,y,z));
+    const curve=new T.CatmullRomCurve3(points,false,'centripetal');
+    const segments=48,halfWidth=.047,vertices=[],normals=[],indices=[];
+    for(let i=0;i<=segments;i++){
+      const t=i/segments,point=curve.getPoint(t),tangent=curve.getTangent(t).normalize();
+      // The local surface normal changes from back to shoulder to chest, then
+      // to the outer ribcage. Width stays parallel to the body at each point.
+      const surfaceNormal=new T.Vector3(
+        sign*(point.y<.10?.50:.18),
+        point.y>.39?.68:.08,
+        point.z>-.02?1:-.45
+      ).normalize();
+      const across=new T.Vector3().crossVectors(tangent,surfaceNormal);
+      if(across.lengthSq()<1e-6)across.set(1,0,0);
+      across.normalize().multiplyScalar(halfWidth);
+      vertices.push(point.x-across.x,point.y-across.y,point.z-across.z,
+        point.x+across.x,point.y+across.y,point.z+across.z);
+      for(let j=0;j<2;j++)normals.push(surfaceNormal.x,surfaceNormal.y,surfaceNormal.z);
+      if(i<segments){
+        const k=i*2;indices.push(k,k+2,k+1,k+1,k+2,k+3);
+      }
+    }
+    const geometry=new T.BufferGeometry();
+    geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));
+    geometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));
+    geometry.setIndex(indices);
     const strap=new T.Mesh(geometry,strapMaterial);
-    strap.castShadow=false;
+    strap.name=sign<0?'小山背包左肩帶':'小山背包右肩帶';
+    strap.castShadow=false;strap.receiveShadow=false;
     hero.soundTiltPivot.add(strap);
     straps.push({mesh:strap,geometry});
   }
@@ -274,8 +306,14 @@ function updateSoundCostume(dt){
  const angle=elapsed*.72,orbit=1.17+.13*Math.sin(elapsed*.75);
  const height=1.95+.52*Math.sin(elapsed*1.65)+.17*Math.sin(elapsed*2.65+.4);
  visual.position.set(hero.root.position.x+orbit*Math.sin(angle),hero.root.position.y+height,hero.root.position.z+orbit*Math.cos(angle));
- visual.rotation.y=angle+.32*Math.sin(elapsed*.7);
+ // Face the actual orbit tangent instead of pointing outward from the hero.
+ // Applying pitch AFTER the native wing update prevents its mild sway from
+ // visually cancelling the forward-facing flying posture.
  soundButterfly.update(dt);
+ visual.rotation.order='YXZ';
+ visual.rotation.y=angle+Math.PI/2+.12*Math.sin(elapsed*.55);
+ visual.rotation.x=.31+.05*Math.sin(elapsed*1.2);
+ visual.rotation.z=.03*Math.sin(elapsed*1.5);
 }
 function setCostume(id){S.state.costume=id;if(id==='electric')ensureOutoumanTransformation();if(id==='sound')ensureSoundCostume();if(id!=='sound'){soundCostumeMotion.hover=0;soundCostumeMotion.lean=0;if(hero.soundHoverAnchor)hero.soundHoverAnchor.position.y=0;if(hero.soundTiltPivot)hero.soundTiltPivot.rotation.set(0,0,0);}if(soundButterfly)soundButterfly.root.visible=id==='sound';if(hero.soundBackpack){hero.soundBackpack.root.visible=id==='sound';for(const strap of hero.soundBackpack.straps)strap.mesh.visible=id==='sound';}hero.object.visible=id!=='electric'||!hero.outoumanVisual;if(hero.outoumanVisual){hero.outoumanVisual.visible=id==='electric';hero.outoumanController.setMode('Idle');}hero.object.traverse(n=>{
   if(!n.userData.costume)return;
