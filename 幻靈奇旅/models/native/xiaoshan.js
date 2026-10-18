@@ -100,8 +100,8 @@
         hinge.rotation.z=sign*.055*Math.sin(age*6+sign);
       }
       root.rotation.z=.07*Math.sin(age*2.6);
-      // Butterfly faces +Z; pitch forward slightly, with a gentle natural sway.
-      root.rotation.x=.17+.055*Math.sin(age*2.0);
+      // Keep the face naturally pitched forward even when used outside the orbiting costume.
+      root.rotation.x=.31+.05*Math.sin(age*1.2);
     }
     function dispose(){
       if(disposed)return;disposed=true;root.removeFromParent();
