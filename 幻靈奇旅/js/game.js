@@ -418,6 +418,74 @@ function heroChestRig(){
  rig.matrix.copy(rest.matrixWorld).invert().multiply(toModel);chest.add(rig);
  return hero.chestRig=rig;
 }
+// Both costumes use the same continuous, shoulder-spanning harness geometry.
+// Coordinates are in the chest-rest frame of the 2.55-high hero, so the harness
+// follows the animated torso.  The previous short chest-only tabs did not
+// reach the shoulder crest and exposed the blue sleeve at the seam.
+function ensureBackpackHarness(costume){
+ if(!hero)return null;
+ const property=costume==='sound'?'soundHarness':'adventureHarness';
+ if(hero[property])return hero[property];
+ const sound=costume==='sound';
+ const material=new T.MeshStandardMaterial({
+  color:sound?0x80609f:0xbf9450,roughness:.72,metalness:.03,
+  side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2
+ });
+ const group=new T.Group();group.name=sound?'小山套裝・跨肩雙背帶':'博士冒險服・跨肩雙背帶';
+ const straps=[],geometries=[];
+ for(const sign of [-1,1]){
+  // Bag rear -> outer shoulder (back) -> over the shoulder crown ->
+  // front of chest -> below armhole -> behind torso -> bag rear.
+  // Bulging outward at the shoulder keeps the ribbon off the blue sleeves.
+  const waypoints=[
+   [.24,-.12,-.48],[.30,.14,-.49],[.37,.43,-.40],
+   [.42,.66,-.27],[.43,.79,-.13],[.43,.81,.035],
+   [.41,.70,.20],[.36,.54,.30],[.35,.34,.33],
+   [.42,.22,.27],[.49,.15,.09],[.45,.15,-.15],
+   [.36,.09,-.37],[.24,-.12,-.48]
+  ].map(([x,y,z])=>new T.Vector3(sign*x,y,z));
+  const curve=new T.CatmullRomCurve3(waypoints,false,'centripetal');
+  const seg=72,vertices=[],uvs=[],indices=[];
+  for(let i=0;i<=seg;i++){
+   const t=i/seg,p=curve.getPoint(t),tangent=curve.getTangent(t).normalize();
+   // Exterior surface normal: face forward on the chest, upward on the
+   // shoulder, sideways beneath the armpit and backward along the bag.
+   const n=new T.Vector3(
+    sign*(p.y<.23?.78:p.y>.58?.35:.51),
+    p.y>.62?.64:p.y<.20?-.10:.24,
+    p.z>.08?1:p.z<-.22?-.75:.10
+   ).normalize();
+   const across=new T.Vector3().crossVectors(tangent,n);
+   if(across.lengthSq()<1e-8)across.set(1,0,0);
+   const shoulder=t>.20&&t<.55;
+   const halfWidth=shoulder?.084:.066;
+   across.normalize().multiplyScalar(halfWidth);
+   const center=p.addScaledVector(n,.027);
+   for(const side of [-1,1]){
+    const v=center.clone().addScaledVector(across,side);
+    vertices.push(v.x,v.y,v.z);
+    uvs.push(side<0?0:1,t);
+   }
+   if(i<seg){const k=i*2;indices.push(k,k+2,k+1,k+1,k+2,k+3);}
+  }
+  const geometry=new T.BufferGeometry();
+  geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));
+  geometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  geometries.push(geometry);
+  const strap=new T.Mesh(geometry,material);
+  strap.name=(sound?'小山蝴蝶':'博士冒險')+(sign<0?'左':'右')+'肩部連續背帶';
+  strap.castShadow=false;strap.receiveShadow=false;strap.renderOrder=2;
+  strap.userData.costume=costume;
+  group.add(strap);straps.push({mesh:strap,geometry});
+ }
+ heroChestRig().add(group);
+ const result={root:group,straps,material,geometries};
+ result.root.visible=S.state?.costume===costume;
+ hero[property]=result;
+ return result;
+}
 function ensureSoundCostume(){
  if(!hero)return;
  if(!hero.soundHoverAnchor){
@@ -444,57 +512,8 @@ function ensureSoundCostume(){
   accessory.add(model);
   accessory.position.set(0,-.10,-.44);
   heroChestRig().add(accessory);
-  // Proper continuous shoulder harness: backpack upper mount -> over shoulder
-  // -> chest outer edge -> under the armpit -> back to the lower mount.
-  // A flat, double-sided ribbon follows the torso instead of a dangling tube.
-  const strapMaterial=new T.MeshStandardMaterial({color:0x78599a,roughness:.82,metalness:0,side:T.DoubleSide});
-  const straps=[];
-  for(const sign of [-1,1]){
-    const points=[
-      [ .20,-.12,-.44], // lower anchor, on the back of the bag
-      [ .23, .10,-.48], // side of the backpack
-      [ .21, .40,-.38], // upper mount behind shoulder
-      [ .18, .58,-.16], // shoulder crest (between collar and the sleeve dome)
-      [ .18, .60, .04], // passes over shoulder
-      [ .21, .47, .20], // clavicle / upper chest
-      [ .27, .33, .235], // chest side, in front of the armpit
-      [ .345, .25, .09], // under the arm (armpit, just below the sleeve)
-      [ .35, .23,-.10], // behind the armpit
-      [ .30, .08,-.30], // back side returns to the bag
-      [ .20,-.12,-.44]
-    ].map(([x,y,z])=>new T.Vector3(sign*x,y,z));
-    const curve=new T.CatmullRomCurve3(points,false,'centripetal');
-    const segments=48,halfWidth=.047,vertices=[],normals=[],indices=[];
-    for(let i=0;i<=segments;i++){
-      const t=i/segments,point=curve.getPoint(t),tangent=curve.getTangent(t).normalize();
-      // The local surface normal changes from back to shoulder to chest, then
-      // to the outer ribcage. Width stays parallel to the body at each point.
-      const surfaceNormal=new T.Vector3(
-        sign*(point.y<.10?.50:.18),
-        point.y>.39?.68:.08,
-        point.z>-.02?1:-.45
-      ).normalize();
-      const across=new T.Vector3().crossVectors(tangent,surfaceNormal);
-      if(across.lengthSq()<1e-6)across.set(1,0,0);
-      across.normalize().multiplyScalar(halfWidth);
-      vertices.push(point.x-across.x,point.y-across.y,point.z-across.z,
-        point.x+across.x,point.y+across.y,point.z+across.z);
-      for(let j=0;j<2;j++)normals.push(surfaceNormal.x,surfaceNormal.y,surfaceNormal.z);
-      if(i<segments){
-        const k=i*2;indices.push(k,k+2,k+1,k+1,k+2,k+3);
-      }
-    }
-    const geometry=new T.BufferGeometry();
-    geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));
-    geometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));
-    geometry.setIndex(indices);
-    const strap=new T.Mesh(geometry,strapMaterial);
-    strap.name=sign<0?'小山背包左肩帶':'小山背包右肩帶';
-    strap.castShadow=false;strap.receiveShadow=false;
-    heroChestRig().add(strap);
-    straps.push({mesh:strap,geometry});
-  }
-  hero.soundBackpack={root:accessory,controller,straps,strapMaterial};
+  const harness=ensureBackpackHarness('sound');
+  hero.soundBackpack={root:accessory,controller,straps:harness.straps,strapMaterial:harness.material};
  }
  if(!soundButterfly&&window.XiaoshanSpirit?.createButterfly){
   soundButterfly=window.XiaoshanSpirit.createButterfly();
@@ -547,7 +566,23 @@ function updateSoundCostume(dt){
  visual.rotation.x=.31+.05*Math.sin(elapsed*1.2);
  visual.rotation.z=.03*Math.sin(elapsed*1.5);
 }
-function setCostume(id){S.state.costume=id;if(id==='sound')ensureSoundCostume();if(id!=='sound'){soundCostumeMotion.hover=0;soundCostumeMotion.lean=0;if(hero.soundHoverAnchor)hero.soundHoverAnchor.position.y=0;if(hero.soundTiltPivot)hero.soundTiltPivot.rotation.set(0,0,0);}if(soundButterfly)soundButterfly.root.visible=id==='sound';if(hero.soundBackpack){hero.soundBackpack.root.visible=id==='sound';for(const strap of hero.soundBackpack.straps)strap.mesh.visible=id==='sound';}applyHeroCostumeLook(hero.object,id);if(companion)companion.root.visible=id==='mist'&&!battle;save();}
+function setCostume(id){
+ S.state.costume=id;
+ if(id==='sound')ensureSoundCostume();
+ if(id==='adventure')ensureBackpackHarness('adventure');
+ if(id!=='sound'){
+  soundCostumeMotion.hover=0;soundCostumeMotion.lean=0;
+  if(hero.soundHoverAnchor)hero.soundHoverAnchor.position.y=0;
+  if(hero.soundTiltPivot)hero.soundTiltPivot.rotation.set(0,0,0);
+ }
+ if(soundButterfly)soundButterfly.root.visible=id==='sound';
+ if(hero.soundBackpack)hero.soundBackpack.root.visible=id==='sound';
+ if(hero.soundHarness)hero.soundHarness.root.visible=id==='sound';
+ if(hero.adventureHarness)hero.adventureHarness.root.visible=id==='adventure';
+ applyHeroCostumeLook(hero.object,id);
+ if(companion)companion.root.visible=id==='mist'&&!battle;
+ save();
+}
 // 主角 Throw 動作：2.4 倍速播放，第 48% 出手（球在出手前跟著右手，模型的 ball 節點）
 const HERO_THROW_SPEED=2.4,HERO_THROW_RELEASE=.48;
 function heroThrowRelease(){const a=hero?.actions?.Throw;return a?Math.round(a.getClip().duration*HERO_THROW_RELEASE/HERO_THROW_SPEED*1000):250;}
