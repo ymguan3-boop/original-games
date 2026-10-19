@@ -629,3 +629,34 @@ body.gym-active #battleLog{
  text-shadow:0 1px 2px #07182f,0 0 6px #08182fd9;
  pointer-events:none;
 }
+
+/* 2026-10-19 · Initial-light trial: except Xiaoshan, narration follows the hero. */
+body.gym-active.gym-player-narration #battleLog{
+ position:absolute;
+ top:0;
+ left:0;
+ right:auto;
+ bottom:auto;
+ transform:translate(-50%,-100%);
+ width:max-content;
+ max-width:min(310px,calc(100vw - 24px));
+ max-height:none;
+ padding:7px 11px;
+ border:1px solid rgba(212,230,236,.42);
+ border-radius:11px;
+ background:rgba(23,48,66,.87);
+ box-shadow:0 3px 12px rgba(5,25,41,.24);
+ color:#ffe46b;
+ font-size:clamp(12px,3.2vw,15px);
+ font-weight:800;
+ line-height:1.4;
+ text-align:center;
+ white-space:normal;
+ overflow-wrap:anywhere;
+ overflow:visible;
+ display:block;
+ -webkit-line-clamp:unset;
+ -webkit-box-orient:initial;
+ pointer-events:none;
+ z-index:8;
+}
