@@ -183,7 +183,7 @@ function hairGeometry(n) {
       const psi = (2 * Math.PI * j) / nu, y0 = cutY(psi);
       const t = i / nv, y = y0 + (top - y0) * (1 - Math.pow(1 - t, 1.6)); // 頭頂附近加密
       const r = i === nv ? 0 : rAt(y) + off;
-      pos.push(r * Math.sin(psi), y, r * Math.cos(psi));
+      pos.push(r * Math.sin(psi), i === nv ? y + off : y, r * Math.cos(psi));   // 頭頂中心也往外加厚（否則低面數時頭頂露出頭皮）
     }
     return start;
   };

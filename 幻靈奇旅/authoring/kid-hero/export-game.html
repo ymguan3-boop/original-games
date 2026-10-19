@@ -38,6 +38,10 @@ const CLIP_NAMES = {
   GunsReady: 'gunsReady', GunsCombo: 'gunsCombo', KnifeReady: 'knifeReady', KnifeCombo: 'knifeCombo',
 };
 const IN_PLACE = ['roll'];   // 遊戲自己移動角色：翻滾的前進位移歸零
+// 遊戲的翻滾（閃避）只有 0.36–0.42 秒：只取「前撲 → 手撐地 → 滾一圈 → 蹲起」這段完整的翻滾，去掉前面的伸手預備
+const TRIM = { roll: [0.27, 0.86] };
+// 丟球：球只在出手前握在手上；出手後由遊戲自己的幻靈球飛出去（不要模型內建的球）
+const HELD_UNTIL = { throw: 0.48 };
 
 // 遊戲用材質：不帶布紋貼圖；金屬度壓低（遊戲場景沒有環境貼圖，全金屬會變黑）
 function gameMaterial(m) {
@@ -111,10 +115,19 @@ async function run() {
     const a = ACTIONS.find((x) => x.id === id);
     if (!a) throw Error('缺少動作 ' + id);
     let src = a;
+    if (TRIM[id] || IN_PLACE.includes(id) || HELD_UNTIL[id] !== undefined) src = JSON.parse(JSON.stringify(a));
+    if (TRIM[id]) {
+      const i0 = Math.round(TRIM[id][0] * a.frames), i1 = Math.round(TRIM[id][1] * a.frames);
+      for (const tr of Object.values(src.tracks)) for (const k of ['p', 'r', 's']) if (tr[k]) tr[k] = tr[k].slice(i0, i1 + 1);
+      src.frames = i1 - i0;
+    }
     if (IN_PLACE.includes(id)) {
-      src = JSON.parse(JSON.stringify(a));
       const p0 = src.tracks.hips.p[0][2];
       src.tracks.hips.p = src.tracks.hips.p.map(([x, y]) => [x, y, p0]);
+    }
+    if (HELD_UNTIL[id] !== undefined) {
+      const cut = Math.round(HELD_UNTIL[id] * src.frames);
+      src.tracks.ball.s = src.tracks.ball.s.map((v, i) => (i >= cut ? [0.0001, 0.0001, 0.0001] : v));
     }
     acts.push({ ...src, id: game });
   }

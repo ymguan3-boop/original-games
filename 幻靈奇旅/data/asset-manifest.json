@@ -24,7 +24,7 @@
     },
     {
       "file": "models/hero.glb",
-      "bytes": 3965428,
+      "bytes": 3951400,
       "animations": [
         "Idle",
         "Walk",
@@ -653,6 +653,11 @@
     {
       "file": "models/tower/kid-gun.glb",
       "bytes": 64484,
+      "animations": []
+    },
+    {
+      "file": "models/tower/kid-knife.glb",
+      "bytes": 264280,
       "animations": []
     },
     {
