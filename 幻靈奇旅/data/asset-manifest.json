@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 86,
+  "modelCount": 82,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -159,16 +159,6 @@
       ]
     },
     {
-      "file": "models/spirits/bayleef.glb",
-      "bytes": 188432,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/blaziken.glb",
       "bytes": 119748,
       "animations": [
@@ -177,16 +167,6 @@
         "Attack",
         "Hurt",
         "Fly"
-      ]
-    },
-    {
-      "file": "models/spirits/blissey.glb",
-      "bytes": 230240,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
       ]
     },
     {
@@ -247,16 +227,6 @@
         "Walk",
         "React",
         "TongueWiggle"
-      ]
-    },
-    {
-      "file": "models/spirits/chikorita.glb",
-      "bytes": 183768,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
       ]
     },
     {
@@ -385,16 +355,6 @@
     {
       "file": "models/spirits/marshtomp.glb",
       "bytes": 176416,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/meganium.glb",
-      "bytes": 190392,
       "animations": [
         "Idle",
         "Walk",
@@ -733,7 +693,7 @@
       "animations": []
     }
   ],
-  "nativeModelCount": 11,
+  "nativeModelCount": 15,
   "nativeModels": [
     {
       "id": "piplup",
@@ -898,6 +858,71 @@
         "Hurt",
         "Jump"
       ]
+    },
+    {
+      "id": "chikorita",
+      "key": "floral-deer://chikorita",
+      "runtime": "three-r128",
+      "triangles": 77402,
+      "meshes": 73,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Greet",
+        "Rest",
+        "Pulse"
+      ],
+      "controller": "FloralDeer"
+    },
+    {
+      "id": "bayleef",
+      "key": "floral-deer://bayleef",
+      "runtime": "three-r128",
+      "triangles": 193898,
+      "meshes": 119,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Greet",
+        "Rest",
+        "Pulse"
+      ],
+      "controller": "FloralDeer"
+    },
+    {
+      "id": "meganium",
+      "key": "floral-deer://meganium",
+      "runtime": "three-r128",
+      "triangles": 201050,
+      "meshes": 125,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Greet",
+        "Rest",
+        "Pulse"
+      ],
+      "controller": "FloralDeer"
+    },
+    {
+      "id": "blissey",
+      "key": "light-phoenix://blissey",
+      "runtime": "three-r128",
+      "triangles": 209664,
+      "meshes": 181,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Takeoff",
+        "Fly",
+        "Land",
+        "WingBurst",
+        "FeatherVolley"
+      ],
+      "controller": "LightPhoenix"
     }
   ],
   "nativeSources": [
@@ -935,6 +960,16 @@
       "file": "models/native/fire-monkey.js",
       "bytes": 18634,
       "sha256": "fd02ab17225f8ddd21549f9fa7cdc461747de3e2b3eddcccd8da20e1c903d8f2"
+    },
+    {
+      "file": "models/native/floral-deer.js",
+      "bytes": 31087,
+      "sha256": "e899a13a3ff81a43a9fc75fd92f5f22faa6c2d7accd1ac65bdff3d4a66f6bcef"
+    },
+    {
+      "file": "models/native/light-phoenix.js",
+      "bytes": 32805,
+      "sha256": "25f68d41df05ff75cb41c756bffe9a77e3a14ba3ff2b5523c04a2a5432cf5c5b"
     }
   ]
 }

@@ -78,34 +78,28 @@
     "generatedAt": "2026-10-13"
   },
   "chikorita": {
-    "image": "cards/art/chikorita.webp",
-    "name": "嫩芽鹿",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/chikorita.glb",
-    "group": 2,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/floral-deer-chikorita.webp",
+    "name": "沒花鹿",
+    "source": "imagegen-reference",
+    "referenceModel": "floral-deer://chikorita",
+    "style": "stylized-3d-fantasy-portrait",
+    "generatedAt": "2026-10-19"
   },
   "bayleef": {
-    "image": "cards/art/bayleef.webp",
-    "name": "柳鈴鹿",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/bayleef.glb",
-    "group": 2,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/floral-deer-bayleef.webp",
+    "name": "花鹿米",
+    "source": "imagegen-reference",
+    "referenceModel": "floral-deer://bayleef",
+    "style": "stylized-3d-fantasy-portrait",
+    "generatedAt": "2026-10-19"
   },
   "meganium": {
-    "image": "cards/art/meganium.webp",
-    "name": "森燈冠鹿",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/meganium.glb",
-    "group": 2,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/floral-deer-meganium.webp",
+    "name": "藏鏡鹿",
+    "source": "imagegen-reference",
+    "referenceModel": "floral-deer://meganium",
+    "style": "stylized-3d-fantasy-portrait",
+    "generatedAt": "2026-10-19"
   },
   "cyndaquil": {
     "image": "cards/art/cyndaquil.webp",
@@ -478,14 +472,12 @@
     "generatedAt": "2026-10-17"
   },
   "blissey": {
-    "image": "cards/art/blissey.webp",
-    "name": "暖巢福鹿",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/blissey.glb",
-    "group": 12,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/light-phoenix-blissey.webp",
+    "name": "光鳳鷹",
+    "source": "imagegen-reference",
+    "referenceModel": "light-phoenix://blissey",
+    "style": "stylized-3d-fantasy-portrait",
+    "generatedAt": "2026-10-19"
   },
   "raichu": {
     "image": "cards/art/raichu.webp",

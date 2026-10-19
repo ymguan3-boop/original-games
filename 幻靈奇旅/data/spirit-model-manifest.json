@@ -203,54 +203,72 @@
   },
   {
     "id": "chikorita",
-    "name": "嫩芽鹿",
-    "vertices": 2764,
-    "triangles": 5384,
-    "materials": 5,
-    "bones": 8,
-    "height": 1.275,
+    "name": "沒花鹿",
+    "vertices": 162587,
+    "triangles": 77402,
+    "materials": 19,
+    "height": 2.2772903312816584,
+    "meshes": 73,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Run",
+      "Greet",
+      "Rest",
+      "Pulse"
     ],
-    "fileBytes": 183768,
-    "source": "Blender native authored mesh and skeletal animation"
+    "bones": 33,
+    "runtime": "native-threejs",
+    "source": "Approved native Three.js articulated character; stable save ID retained",
+    "model": "floral-deer://chikorita",
+    "sourceBlueprint": "models/native/floral-deer.js",
+    "fileBytes": 31087
   },
   {
     "id": "bayleef",
-    "name": "柳鈴鹿",
-    "vertices": 2824,
-    "triangles": 5496,
-    "materials": 5,
-    "bones": 8,
-    "height": 1.6575,
+    "name": "花鹿米",
+    "vertices": 493889,
+    "triangles": 193898,
+    "materials": 22,
+    "height": 4.063300908217593,
+    "meshes": 119,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Run",
+      "Greet",
+      "Rest",
+      "Pulse"
     ],
-    "fileBytes": 188432,
-    "source": "Blender native authored mesh and skeletal animation"
+    "bones": 43,
+    "runtime": "native-threejs",
+    "source": "Approved native Three.js articulated character; stable save ID retained",
+    "model": "floral-deer://bayleef",
+    "sourceBlueprint": "models/native/floral-deer.js",
+    "fileBytes": 31087
   },
   {
     "id": "meganium",
-    "name": "森燈冠鹿",
-    "vertices": 2884,
-    "triangles": 5608,
-    "materials": 5,
-    "bones": 8,
-    "height": 2.15475,
+    "name": "藏鏡鹿",
+    "vertices": 534940,
+    "triangles": 201050,
+    "materials": 24,
+    "height": 4.639329304969732,
+    "meshes": 125,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Run",
+      "Greet",
+      "Rest",
+      "Pulse"
     ],
-    "fileBytes": 190392,
-    "source": "Blender native authored mesh and skeletal animation"
+    "bones": 40,
+    "runtime": "native-threejs",
+    "source": "Approved native Three.js articulated character; stable save ID retained",
+    "model": "floral-deer://meganium",
+    "sourceBlueprint": "models/native/floral-deer.js",
+    "fileBytes": 31087
   },
   {
     "id": "cyndaquil",
@@ -933,20 +951,27 @@
   },
   {
     "id": "blissey",
-    "name": "暖巢福鹿",
-    "vertices": 3598,
-    "triangles": 7016,
-    "materials": 5,
-    "bones": 8,
-    "height": 1.275,
+    "name": "光鳳鷹",
+    "vertices": 526722,
+    "triangles": 209664,
+    "materials": 48,
+    "height": 6.4,
+    "meshes": 181,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Takeoff",
+      "Fly",
+      "Land",
+      "WingBurst",
+      "FeatherVolley"
     ],
-    "fileBytes": 230240,
-    "source": "Blender native authored mesh and skeletal animation"
+    "bones": 102,
+    "runtime": "native-threejs",
+    "source": "Approved native Three.js articulated character; stable save ID retained",
+    "model": "light-phoenix://blissey",
+    "sourceBlueprint": "models/native/light-phoenix.js",
+    "fileBytes": 32805
   },
   {
     "id": "raichu",

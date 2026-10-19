@@ -311,17 +311,17 @@
   {
     "id": "chikorita",
     "speciesId": "chikorita",
-    "name": "嫩芽鹿",
+    "name": "沒花鹿",
     "element": "grass",
     "type": "森",
     "stage": 1,
-    "family": "willow-deer",
+    "family": "floral-deer",
     "form": "deer",
     "color": 9348961,
     "role": "starter",
     "previous": null,
     "next": "bayleef",
-    "model": "models/spirits/chikorita.glb",
+    "model": "floral-deer://chikorita",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -330,32 +330,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "花芽輕擊",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "嫩芽共鳴",
+        "name": "金蕊共鳴",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "嫩芽鹿是初光之境的森屬性幻靈。枝角會在夜裡亮起，帶領迷路的旅人返回村莊。"
+    "description": "有著奶油白瀏海與金色花飾的小鹿，眼睛與嘴巴會自然開合。踏著短短四肢，喜歡親近旅人。"
   },
   {
     "id": "bayleef",
     "speciesId": "bayleef",
-    "name": "柳鈴鹿",
+    "name": "花鹿米",
     "element": "grass",
     "type": "森",
     "stage": 2,
-    "family": "willow-deer",
+    "family": "floral-deer",
     "form": "deer",
     "color": 9348961,
     "role": "starter",
     "previous": "chikorita",
     "next": "meganium",
-    "model": "models/spirits/bayleef.glb",
+    "model": "floral-deer://bayleef",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
@@ -364,32 +364,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "櫻花輕舞",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "柳鈴共鳴",
+        "name": "花葉共鳴",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "柳鈴鹿是初光之境的森屬性幻靈。枝角會在夜裡亮起，帶領迷路的旅人返回村莊。"
+    "description": "花葉枝角與金色白斑映著陽光，身旁固定有八片櫻花環繞，腳步輕盈而溫柔。"
   },
   {
     "id": "meganium",
     "speciesId": "meganium",
-    "name": "森燈冠鹿",
+    "name": "藏鏡鹿",
     "element": "grass",
     "type": "森",
     "stage": 3,
-    "family": "willow-deer",
+    "family": "floral-deer",
     "form": "deer",
     "color": 9348961,
     "role": "starter",
     "previous": "bayleef",
     "next": null,
-    "model": "models/spirits/meganium.glb",
+    "model": "floral-deer://meganium",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
@@ -398,17 +398,17 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "櫻鏡流光",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "森燈共鳴",
+        "name": "花冠映照",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "森燈冠鹿是初光之境的森屬性幻靈。枝角會在夜裡亮起，帶領迷路的旅人返回村莊。"
+    "description": "長頸承托金花冠角，白金葉披隨步伐搖曳，兩面櫻花造型鏡子持續環繞守護。"
   },
   {
     "id": "cyndaquil",
@@ -1749,36 +1749,38 @@
   {
     "id": "blissey",
     "speciesId": "blissey",
-    "name": "暖巢福鹿",
+    "name": "光鳳鷹",
     "element": "fairy",
     "type": "夢",
     "stage": 1,
-    "family": "blissey",
-    "form": "nestdeer",
+    "family": "light-phoenix",
+    "form": "phoenix",
     "color": 14003854,
     "role": "gym",
     "previous": null,
     "next": null,
-    "model": "models/spirits/blissey.glb",
-    "height": 1.275,
+    "model": "light-phoenix://blissey",
+    "height": 3.8,
     "hp": 90,
     "attack": 26,
     "evolvesTo": null,
-    "rarity": "稀有",
-    "motionType": "walk",
+    "rarity": "傳說",
+    "motionType": "fly",
     "skills": [
       {
-        "name": "夢光輕擊",
+        "name": "振翼光波",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "暖巢共鳴",
+        "name": "鳳羽連射",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "暖巢福鹿是初光之境的夢屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "白金羽翼與七條流光長尾閃耀著守護之光。初光挑戰中交替施放全場振翼光波與鳳羽連射；在受擊時翻滾可打斷攻擊，露出三秒破綻。",
+    "stageLabel": "守護者",
+    "cardFrame": "red"
   },
   {
     "id": "raichu",

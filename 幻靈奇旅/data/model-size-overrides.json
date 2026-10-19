@@ -306,10 +306,10 @@
     "maxSpan": 2.6
   },
   "blissey": {
-    "desiredWorldHeight": 1.48,
+    "desiredWorldHeight": 3.8,
     "stage": 1,
-    "form": "nestdeer",
-    "maxSpan": 2.6
+    "form": "phoenix",
+    "maxSpan": 6.4
   },
   "raichu": {
     "desiredWorldHeight": 1.456,
