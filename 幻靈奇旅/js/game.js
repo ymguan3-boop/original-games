@@ -418,73 +418,110 @@ function heroChestRig(){
  rig.matrix.copy(rest.matrixWorld).invert().multiply(toModel);chest.add(rig);
  return hero.chestRig=rig;
 }
-// Both costumes use the same continuous, shoulder-spanning harness geometry.
-// Coordinates are in the chest-rest frame of the 2.55-high hero, so the harness
-// follows the animated torso.  The previous short chest-only tabs did not
-// reach the shoulder crest and exposed the blue sleeve at the seam.
-function ensureBackpackHarness(costume){
- if(!hero)return null;
- const property=costume==='sound'?'soundHarness':'adventureHarness';
- if(hero[property])return hero[property];
- const sound=costume==='sound';
- const material=new T.MeshStandardMaterial({
-  color:sound?0x80609f:0xbf9450,roughness:.72,metalness:.03,
-  side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2
- });
- const group=new T.Group();group.name=sound?'小山套裝・跨肩雙背帶':'博士冒險服・跨肩雙背帶';
- const straps=[],geometries=[];
- for(const sign of [-1,1]){
-  // Bag rear -> outer shoulder (back) -> over the shoulder crown ->
-  // front of chest -> below armhole -> behind torso -> bag rear.
-  // Bulging outward at the shoulder keeps the ribbon off the blue sleeves.
-  const waypoints=[
-   [.24,-.12,-.48],[.30,.14,-.49],[.37,.43,-.40],
-   [.42,.66,-.27],[.43,.79,-.13],[.43,.81,.035],
-   [.41,.70,.20],[.36,.54,.30],[.35,.34,.33],
-   [.42,.22,.27],[.49,.15,.09],[.45,.15,-.15],
-   [.36,.09,-.37],[.24,-.12,-.48]
-  ].map(([x,y,z])=>new T.Vector3(sign*x,y,z));
-  const curve=new T.CatmullRomCurve3(waypoints,false,'centripetal');
-  const seg=72,vertices=[],uvs=[],indices=[];
-  for(let i=0;i<=seg;i++){
-   const t=i/seg,p=curve.getPoint(t),tangent=curve.getTangent(t).normalize();
-   // Exterior surface normal: face forward on the chest, upward on the
-   // shoulder, sideways beneath the armpit and backward along the bag.
-   const n=new T.Vector3(
-    sign*(p.y<.23?.78:p.y>.58?.35:.51),
-    p.y>.62?.64:p.y<.20?-.10:.24,
-    p.z>.08?1:p.z<-.22?-.75:.10
-   ).normalize();
-   const across=new T.Vector3().crossVectors(tangent,n);
-   if(across.lengthSq()<1e-8)across.set(1,0,0);
-   const shoulder=t>.20&&t<.55;
-   const halfWidth=shoulder?.084:.066;
-   across.normalize().multiplyScalar(halfWidth);
-   const center=p.addScaledVector(n,.027);
-   for(const side of [-1,1]){
-    const v=center.clone().addScaledVector(across,side);
-    vertices.push(v.x,v.y,v.z);
-    uvs.push(side<0?0:1,t);
-   }
-   if(i<seg){const k=i*2;indices.push(k,k+2,k+1,k+1,k+2,k+3);}
+// Curved fabric strips are mounted on the animated chest, not in world-space.
+// Xiaoshan uses an actual narrow backpack harness; Adventure uses NO harness.
+// Its yellow cloth panels are extensions of the vest over the exposed shoulders.
+function createChestFabricStrip(points,widths,material,name,costume){
+ const curve=new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p)),false,'centripetal');
+ const vertices=[],uv=[],indices=[],segments=64;
+ for(let i=0;i<=segments;i++){
+  const t=i/segments,point=curve.getPoint(t),tangent=curve.getTangent(t).normalize();
+  // Exposed upper body normal: forward over the chest, up on the shoulder
+  // crown, back toward the pack; interpolate smoothly without long tubes.
+  const normal=new T.Vector3(
+   Math.sign(point.x)*(point.y<.22?.55:point.y>.57?.22:.37),
+   point.y>.58?.75:.08,
+   point.z>.09?1:point.z<-.18?-.72:.20
+  ).normalize();
+  const sideways=new T.Vector3().crossVectors(tangent,normal);
+  if(sideways.lengthSq()<1e-8)sideways.set(1,0,0);
+  const scaled=t*(widths.length-1),idx=Math.min(widths.length-2,Math.floor(scaled));
+  const halfWidth=widths[idx]+(widths[idx+1]-widths[idx])*(scaled-idx);
+  sideways.normalize().multiplyScalar(halfWidth);
+  const center=point.addScaledVector(normal,costume==='sound'?.012:.021);
+  for(const side of [-1,1]){
+   const v=center.clone().addScaledVector(sideways,side);
+   vertices.push(v.x,v.y,v.z);uv.push(side<0?0:1,t);
   }
-  const geometry=new T.BufferGeometry();
-  geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));
-  geometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));
-  geometry.setIndex(indices);
-  geometry.computeVertexNormals();
-  geometries.push(geometry);
-  const strap=new T.Mesh(geometry,material);
-  strap.name=(sound?'小山蝴蝶':'博士冒險')+(sign<0?'左':'右')+'肩部連續背帶';
-  strap.castShadow=false;strap.receiveShadow=false;strap.renderOrder=2;
-  strap.userData.costume=costume;
-  group.add(strap);straps.push({mesh:strap,geometry});
+  if(i<segments){const k=i*2;indices.push(k,k+2,k+1,k+1,k+2,k+3);}
  }
- heroChestRig().add(group);
- const result={root:group,straps,material,geometries};
- result.root.visible=S.state?.costume===costume;
- hero[property]=result;
- return result;
+ const geometry=new T.BufferGeometry();
+ geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));
+ geometry.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
+ geometry.setIndex(indices);geometry.computeVertexNormals();
+ const mesh=new T.Mesh(geometry,material);
+ mesh.name=name;mesh.userData.costume=costume;
+ mesh.castShadow=false;mesh.receiveShadow=false;mesh.renderOrder=2;
+ heroChestRig().add(mesh);
+ return {mesh,geometry};
+}
+function ensureSoundHarness(){
+ if(!hero)return null;
+ if(hero.soundHarness)return hero.soundHarness;
+ const material=new T.MeshStandardMaterial({
+  color:0x9175aa,roughness:.78,metalness:0,side:T.DoubleSide,
+  polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2
+ });
+ const straps=[];
+ for(const sign of [-1,1]){
+  // Each thin strap is closed at the pack, travels over the real shoulder
+  // crown and closely follows the side of the torso under the armpit.
+  const path=[
+   [.21,-.10,-.44],[.23,.10,-.43],[.27,.35,-.34],
+   [.29,.53,-.23],[.30,.64,-.11],[.30,.66,.025],
+   [.30,.56,.16],[.31,.43,.22],[.33,.29,.23],
+   [.36,.20,.12],[.36,.19,-.065],[.31,.12,-.29],
+   [.21,-.10,-.44]
+  ].map(([x,y,z])=>[sign*x,y,z]);
+  const widths=[.029,.032,.034,.037,.038,.037,.034,.032,.031,.03,.028,.03,.029];
+  straps.push(createChestFabricStrip(path,widths,material,
+   (sign<0?'小山左':'小山右')+'貼身背包肩帶','sound'));
+ }
+ hero.soundHarness={straps,material,root:new T.Group()};
+ // Keep the two strap meshes on the chest bone for animation; root only
+ // stores visibility state while toggling actual strap meshes in setCostume().
+ return hero.soundHarness;
+}
+function ensureAdventureVestShoulders(){
+ if(!hero)return null;
+ if(hero.adventureVestShoulders)return hero.adventureVestShoulders;
+ // Match the vest's existing golden-yellow fabric when its GLB material is
+ // accessible. This is a VEST repair, not a backpack shoulder strap.
+ let vestColor=null,best=-Infinity;
+ hero.object.traverse(node=>{
+  if(!node.isMesh||!node.material)return;
+  let p=node,adventure=false;
+  while(p){if(p.userData?.costume==='adventure'){adventure=true;break;}if(p===hero.object)break;p=p.parent;}
+  if(!adventure)return;
+  for(const mat of Array.isArray(node.material)?node.material:[node.material]){
+   const c=mat?.color;if(!c)continue;
+   if(c.r>.3&&c.g>.19&&c.b<.38&&c.r>c.b*1.65&&c.g>c.b*1.3){
+    const label=(mat.name||'').toLowerCase();
+    const score=c.g-c.b+(/vest|yellow|gold|adventure|背心|黃色/.test(label)?2:0);
+    if(score>best){best=score;vestColor=c.clone();}
+   }
+  }
+ });
+ const material=new T.MeshStandardMaterial({
+  color:vestColor||new T.Color(0xe7b743),
+  roughness:.85,metalness:0,side:T.DoubleSide,
+  polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-3
+ });
+ const panels=[];
+ for(const sign of [-1,1]){
+  // Broad, smooth sleeveless VEST shoulder fabric, not a narrow strap.
+  // The lower ends merge into the existing vest front and back.
+  const points=[
+   [.265,.34,.31],[.285,.46,.32],[.30,.58,.27],
+   [.31,.72,.17],[.31,.75,.04],[.30,.72,-.08],
+   [.30,.60,-.21],[.275,.41,-.29]
+  ].map(([x,y,z])=>[sign*x,y,z]);
+  const widths=[.11,.115,.12,.123,.12,.112,.103,.09];
+  panels.push(createChestFabricStrip(points,widths,material,
+   (sign<0?'左':'右')+'側黃色背心肩部補片','adventure'));
+ }
+ hero.adventureVestShoulders={panels,material};
+ return hero.adventureVestShoulders;
 }
 function ensureSoundCostume(){
  if(!hero)return;
@@ -512,7 +549,7 @@ function ensureSoundCostume(){
   accessory.add(model);
   accessory.position.set(0,-.10,-.44);
   heroChestRig().add(accessory);
-  const harness=ensureBackpackHarness('sound');
+  const harness=ensureSoundHarness();
   hero.soundBackpack={root:accessory,controller,straps:harness.straps,strapMaterial:harness.material};
  }
  if(!soundButterfly&&window.XiaoshanSpirit?.createButterfly){
@@ -569,7 +606,7 @@ function updateSoundCostume(dt){
 function setCostume(id){
  S.state.costume=id;
  if(id==='sound')ensureSoundCostume();
- if(id==='adventure')ensureBackpackHarness('adventure');
+ if(id==='adventure')ensureAdventureVestShoulders();
  if(id!=='sound'){
   soundCostumeMotion.hover=0;soundCostumeMotion.lean=0;
   if(hero.soundHoverAnchor)hero.soundHoverAnchor.position.y=0;
@@ -577,8 +614,8 @@ function setCostume(id){
  }
  if(soundButterfly)soundButterfly.root.visible=id==='sound';
  if(hero.soundBackpack)hero.soundBackpack.root.visible=id==='sound';
- if(hero.soundHarness)hero.soundHarness.root.visible=id==='sound';
- if(hero.adventureHarness)hero.adventureHarness.root.visible=id==='adventure';
+ if(hero.soundHarness)for(const strap of hero.soundHarness.straps)strap.mesh.visible=id==='sound';
+ if(hero.adventureVestShoulders)for(const panel of hero.adventureVestShoulders.panels)panel.mesh.visible=id==='adventure';
  applyHeroCostumeLook(hero.object,id);
  if(companion)companion.root.visible=id==='mist'&&!battle;
  save();
