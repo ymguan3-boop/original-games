@@ -121,13 +121,14 @@ function create(options={}){
  const fixedBounds=restBounds.clone();fixedBounds.min.y+=floorOffset;fixedBounds.max.y+=floorOffset;fixedBounds.min.min(new T.Vector3(-4.75,0,-4.15));fixedBounds.max.max(new T.Vector3(4.75,6.40,3.10));const fixedSize=new T.Vector3();fixedBounds.getSize(fixedSize);
  const pose=[];rig.traverse(node=>{if(node.isGroup)pose.push({node,position:new T.Vector3(),quaternion:new T.Quaternion(),scale:new T.Vector3(),targetPosition:new T.Vector3(),targetQuaternion:new T.Quaternion(),targetScale:new T.Vector3()});});
  const modes=['Idle','Walk','Takeoff','Fly','Land','WingBurst','FeatherVolley'],duration={Takeoff:2.10,Land:2.10,WingBurst:2.40,FeatherVolley:2.70},volleyPhases=['volley-1','volley-2','volley-3'];
- let mode='Idle',phase='idle',elapsed=0,modeTime=0,motionSpeed=1,transitionAge=.25,altitude=0,startAltitude=0,bodyPitch=0,startBodyPitch=0,kneeBend=0,grounding=1,returnMode='Idle',disposed=false,attackCompleted=false,lastAttackTime=0,lastAttackDuration=0,lastAttackName='',shotsFired=0,burstCount=0,volleyCount=0;
+ let flightHeight=1.75;let mode='Idle',phase='idle',elapsed=0,modeTime=0,motionSpeed=1,transitionAge=.25,altitude=0,startAltitude=0,bodyPitch=0,startBodyPitch=0,kneeBend=0,grounding=1,returnMode='Idle',disposed=false,attackCompleted=false,lastAttackTime=0,lastAttackDuration=0,lastAttackName='',shotsFired=0,burstCount=0,volleyCount=0;
  const smooth=v=>{const x=Math.max(0,Math.min(1,v));return x*x*(3-2*x);};
  function isAttack(name){return name==='WingBurst'||name==='FeatherVolley';}
  function capturePose(){for(const p of pose){p.position.copy(p.node.position);p.quaternion.copy(p.node.quaternion);p.scale.copy(p.node.scale);}transitionAge=0;}
  function hideEffects(){for(const w of waves)w.node.visible=false;for(const b of bolts){b.node.visible=false;b.released=false;}}
  function beginMode(name){const previous=mode;capturePose();mode=name;phase=name==='Fly'?'flight':name==='Walk'?'stride':name==='Takeoff'?'crouch':name==='Land'?'descending':isAttack(name)?'charge':'idle';modeTime=0;startAltitude=altitude;startBodyPitch=bodyPitch;hideEffects();if(isAttack(name)){returnMode=previous==='Fly'||previous==='Takeoff'||altitude>.35?'Fly':'Idle';attackCompleted=false;lastAttackTime=0;lastAttackDuration=duration[name];lastAttackName=name;shotsFired=0;burstCount=0;volleyCount=0;}}
  function setMode(value){const aliases={Attack:'WingBurst',Burst:'WingBurst',Volley:'FeatherVolley',Run:'Walk'};let name=String(value||'Idle');name=aliases[name]||name;if(!modes.includes(name))name='Idle';if(mode===name)return mode;beginMode(name);return mode;}
+ function setFlightHeight(value){const n=Number(value);if(Number.isFinite(n))flightHeight=Math.max(1.75,Math.min(6,n));return flightHeight;}
  function setMotionSpeed(value){const n=Number(value);motionSpeed=Number.isFinite(n)?Math.max(0,Math.min(3,n)):1;return motionSpeed;}
  const upperLength=Math.hypot(.34,.035),lowerLength=Math.hypot(.31,.005),upperOffset=Math.atan2(-.035,.34),lowerOffset=Math.atan2(-.005,.31);
  function groundLeg(l,weight,footY,footZ){
@@ -147,10 +148,10 @@ function create(options={}){
   phase='idle';altitude=0;bodyPitch=0;grounding=1;
   // Walking uses a three-joint folded Z-chain: upper wing sweeps aft, forearm folds forward, primaries tuck aft/down.
   if(walk){phase='stride';shoulderZ=-.10+Math.sin(t*3.5)*.008;shoulderY=1.45+Math.sin(t*2.1)*.008;elbowZ=.20;wristZ=-1.45;bodyPitch=.035;}
-  if(fly){phase='flight';altitude=1.75+Math.sin(t*2.8)*.055;bodyPitch=Math.PI/2;grounding=0;shoulderY=Math.sin(flap)*.52;shoulderZ=.14+Math.cos(flap-.18)*.27;elbowZ=Math.cos(flap-.42)*.14;wristZ=Math.cos(flap-.72)*.09;}
+  if(fly){phase='flight';altitude=flightHeight+Math.sin(t*2.8)*.055;bodyPitch=Math.PI/2;grounding=0;shoulderY=Math.sin(flap)*.52;shoulderZ=.14+Math.cos(flap-.18)*.27;elbowZ=Math.cos(flap-.42)*.14;wristZ=Math.cos(flap-.72)*.09;}
   if(takeoff){
    const squat=smooth(a/.40),lean=smooth((a-.40)/.45),lift=smooth((a-.85)/.95),finish=smooth((a-1.55)/.55);phase=a<.40?'crouch':a<.85?'lean-forward':a<1.80?'lift-off':'flight-settle';
-   crouch=.24*squat*(1-lift);bodyPitch=.48*lean+(Math.PI/2-.48)*lift;altitude=startAltitude+(1.75-startAltitude)*lift;grounding=1-smooth((a-.85)/.52);
+   crouch=.24*squat*(1-lift);bodyPitch=.48*lean+(Math.PI/2-.48)*lift;altitude=startAltitude+(flightHeight-startAltitude)*lift;grounding=1-smooth((a-.85)/.52);
    shoulderY=(1-lift)*(.28+.38*Math.sin(a*5.8))+lift*Math.sin(a*9.2)*.52;shoulderZ=.14+Math.sin(a*9.2)*(lift*.30+(1-lift)*.10);elbowZ=Math.sin(a*9.2-.40)*.13;wristZ=Math.sin(a*9.2-.70)*.09;corePower=1.10+finish*.05;
   }
   if(land){
@@ -192,7 +193,7 @@ function create(options={}){
  function getMotionState(){const active=isAttack(mode),progress=active?Math.min(1,modeTime/duration[mode]):attackCompleted?1:0;return{name:root.name,mode,phase,modeTime,altitude,bodyPitch,kneeBend,grounding,attack:lastAttackName,attackTime:lastAttackTime,attackElapsed:lastAttackTime,attackDuration:lastAttackDuration,attackProgress:progress,specialActive:active,completed:attackCompleted,attackCompleted,returnMode,shotsFired,volleyCount,burstCount,transitioning:transitionAge<.25,motionSpeed,disposed};}
  function getState(){let meshes=0,triangles=0;rig.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;}});return Object.assign(getMotionState(),{height:fixedSize.y,bounds:{min:fixedBounds.min.toArray(),max:fixedBounds.max.toArray(),size:fixedSize.toArray()},min:fixedBounds.min.toArray(),max:fixedBounds.max.toArray(),size:fixedSize.toArray(),meshes,triangles:Math.round(triangles),joints:joints.length,modes:modes.slice()});}
  function dispose(){if(disposed)return;disposed=true;if(root.parent)root.parent.remove(root);root.clear();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();geometries.clear();materials.clear();}
- update(0);return{root,update,setMode,setMotionSpeed,dispose,getState,getMotionState,get mode(){return mode;},get phase(){return phase;},get attackProgress(){return isAttack(mode)?Math.min(1,modeTime/duration[mode]):attackCompleted?1:0;},get completed(){return attackCompleted;}};
+ update(0);return{root,update,setMode,setMotionSpeed,setFlightHeight,dispose,getState,getMotionState,get mode(){return mode;},get phase(){return phase;},get attackProgress(){return isAttack(mode)?Math.min(1,modeTime/duration[mode]):attackCompleted?1:0;},get completed(){return attackCompleted;}};
 }
 window.LightPhoenix={create,version:'2.1.0'};
 })();
