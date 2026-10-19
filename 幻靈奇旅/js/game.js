@@ -94,7 +94,65 @@ async function actor(path,height,parent=townGroup){const g=await asset(path),con
 function removeActor(a){if(!a)return;detach(a.root);a.mixer.stopAllAction();a.mixer.uncacheRoot(a.object);a.controller?.dispose();const i=actors.indexOf(a);if(i>=0)actors.splice(i,1);if(a.label)removeLabel(a.label);}
 function addLabel(a,text,kind='nameLabel'){const el=document.createElement('div');el.className=kind;el.textContent=text;$('labels').append(el);const l={a,el};labels.push(l);a.label=l;return l;}
 function removeLabel(l){l.el.remove();const i=labels.indexOf(l);if(i>=0)labels.splice(i,1);}
-function updateLabels(){for(const l of labels){const ally=!!(battle&&!battle.gym&&l.el.classList.contains('arenaAllyHp')),enemy=!!(battle&&!battle.gym&&l.el.classList.contains('arenaEnemyHp'));const p=l.a.root.getWorldPosition(new T.Vector3());p.y+=ally?.15:(l.a.height||2)+.25;p.project(camera);const visible=(!l.a.data||l.a.root.position.distanceTo(S.player)<7)&&l.a.root.visible&&l.a.root.parent?.visible!==false&&p.z<1&&Math.abs(p.x)<1.1&&Math.abs(p.y)<1.1;l.el.hidden=!visible;if(visible){l.el.style.left=(p.x*.5+.5)*innerWidth+'px';let top=(-p.y*.5+.5)*innerHeight;if(ally){const h=l.el.offsetHeight||60,panel=$('battleActions')?.getBoundingClientRect().top??innerHeight-170;const intended=top+20;top=Math.min(intended,panel-h-10);if(top<intended-10){l.el.hidden=true;continue;}}else if(enemy){const title=$('battleTitle');const titleBottom=title?.getBoundingClientRect().bottom||0;top=Math.max(top-8,titleBottom+(l.el.offsetHeight||52)+9);}l.el.style.top=top+'px';}}}
+// Project each gym guardian's trust bar from its actual head, not the wing span
+// or a world-space model height. Keep the icon position linked to the bar.
+function gymGuardianHeadPoint(a){
+ const anchors={
+  'outouman://pikachu':['HelmetPivot',1.26],
+  'xiaoshan://wigglytuff':['BodyAndFace',2.65],
+  'light-phoenix://blissey':['Head',.53]
+ };
+ const def=anchors[a.path],head=def&&a.object.getObjectByName(def[0]);
+ if(head)return head.localToWorld(new T.Vector3(0,def[1],0));
+ const p=a.root.getWorldPosition(new T.Vector3());
+ p.y+=(a.height||2)*.94; // Riceball and any future guardian without a named head
+ return p;
+}
+function gymTrialSymbol(l){
+ return !!battle?.gym&&(
+  l.el.classList.contains('phoenixSurprise')||
+  l.el.classList.contains('outoumanMiss')||
+  l.el.classList.contains('encounterSymbol')
+ );
+}
+function updateLabels(){
+ // Position ordinary labels and the boss trust bar before drawing any trial icon.
+ for(const l of labels){
+  if(gymTrialSymbol(l))continue;
+  const ally=!!(battle&&!battle.gym&&l.el.classList.contains('arenaAllyHp'));
+  const enemy=!!(battle&&!battle.gym&&l.el.classList.contains('arenaEnemyHp'));
+  const gymTrust=!!(battle?.gym&&l.el.classList.contains('gymTrustLabel'));
+  const p=gymTrust?gymGuardianHeadPoint(l.a):l.a.root.getWorldPosition(new T.Vector3());
+  if(!gymTrust)p.y+=ally?.15:(l.a.height||2)+.25;
+  p.project(camera);
+  const visible=(!l.a.data||l.a.root.position.distanceTo(S.player)<7)&&l.a.root.visible&&l.a.root.parent?.visible!==false&&p.z<1&&Math.abs(p.x)<1.1&&Math.abs(p.y)<1.1;
+  l.el.hidden=!visible;
+  if(!visible)continue;
+  l.el.style.left=(p.x*.5+.5)*innerWidth+'px';
+  let top=(-p.y*.5+.5)*innerHeight;
+  if(ally){
+   const h=l.el.offsetHeight||60,panel=$('battleActions')?.getBoundingClientRect().top??innerHeight-170,intended=top+20;
+   top=Math.min(intended,panel-h-10);
+   if(top<intended-10){l.el.hidden=true;continue;}
+  }else if(enemy){
+   const titleBottom=$('battleTitle')?.getBoundingClientRect().bottom||0;
+   top=Math.max(top-8,titleBottom+(l.el.offsetHeight||52)+9);
+  }
+  l.el.style.top=top+'px';
+ }
+ if(!battle?.gym)return;
+ const bar=battle.enemies[0]?.label?.el;
+ for(const l of labels){
+  if(!gymTrialSymbol(l))continue;
+  const active=!!bar&&!bar.hidden&&l.el.style.display!=='none'&&l.a.root.visible;
+  l.el.hidden=!active;
+  if(!active)continue;
+  const rect=bar.getBoundingClientRect();
+  // The symbol's bottom is 9px above the TRUST CARD's top, never over its text/progress.
+  l.el.style.left=(rect.left+rect.width/2)+'px';
+  l.el.style.top=(rect.top-9)+'px';
+ }
+}
 
 function normalizeBounds(b){if(Array.isArray(b))return{minX:b[0],maxX:b[1],minZ:b[2],maxZ:b[3]};return b||{minX:-36,maxX:36,minZ:-36,maxZ:36};}
 function blocked(x,z,margin=.42){const b=normalizeBounds(place?place.bounds:world.bounds);if(x<b.minX+margin||x>b.maxX-margin||z<b.minZ+margin||z>b.maxZ-margin)return true;return((place?place.collisions:world.collisions)||[]).some(c=>{const cx=c.x??c.position?.[0]??0,cz=c.z??c.position?.[2]??0,w=c.w??c.width??c.size?.[0]??0,d=c.d??c.depth??c.size?.[2]??0;return Math.abs(x-cx)<w/2+margin&&Math.abs(z-cz)<d/2+margin;});}
@@ -1128,7 +1186,7 @@ function shiftArenaRings(arena){
  });
 }
 
-async function battleActors(){const b=battle;if(!b)return;for(const a of b.actors)removeActor(a);b.actors=[];const entries=b.gym?[[b.enemies[0],0,-3.2,0]]:[[b.allies[b.ai],-1.75,6,Math.PI*.75],[b.enemies[b.ei],1.75,-6,-Math.PI*.25]];for(const [entry,x,z,ry]of entries){const baseHeight=b.gym?3.05:(entry===b.enemies[b.ei]?2.55:2.05),height=b.gym&&entry.s.id==='blissey'?baseHeight*2.5:!b.gym&&entry.s.id==='pikachu'?baseHeight*1.5:baseHeight;const a=await actor(entry.s.model,height,battleGroup);a.root.position.set(x,0,z);if(b.gym&&b.sceneConfig?.enemySpawn)a.root.position.fromArray(b.sceneConfig.enemySpawn);a.root.rotation.y=ry;entry.actor=a;b.actors.push(a);entry.label=addLabel(a,'','nameLabel hpLabel');if(!b.gym)entry.label.el.classList.add(entry===b.allies[b.ai]?'arenaAllyHp':'arenaEnemyHp');updateHp(entry);}}
+async function battleActors(){const b=battle;if(!b)return;for(const a of b.actors)removeActor(a);b.actors=[];const entries=b.gym?[[b.enemies[0],0,-3.2,0]]:[[b.allies[b.ai],-1.75,6,Math.PI*.75],[b.enemies[b.ei],1.75,-6,-Math.PI*.25]];for(const [entry,x,z,ry]of entries){const baseHeight=b.gym?3.05:(entry===b.enemies[b.ei]?2.55:2.05),height=b.gym&&entry.s.id==='blissey'?baseHeight*2.5:!b.gym&&entry.s.id==='pikachu'?baseHeight*1.5:baseHeight;const a=await actor(entry.s.model,height,battleGroup);a.root.position.set(x,0,z);if(b.gym&&b.sceneConfig?.enemySpawn)a.root.position.fromArray(b.sceneConfig.enemySpawn);a.root.rotation.y=ry;entry.actor=a;b.actors.push(a);entry.label=addLabel(a,'','nameLabel hpLabel');if(b.gym)entry.label.el.classList.add('gymTrustLabel');else entry.label.el.classList.add(entry===b.allies[b.ai]?'arenaAllyHp':'arenaEnemyHp');updateHp(entry);}}
 function updateHp(e){if(!e?.label)return;if(battle?.gym){const max=e.maxHp||e.s.hp,progress=max-e.hp;e.label.el.innerHTML='<b>'+esc(e.s.name)+'</b><div class="hp"><i style="width:'+Math.max(0,progress)/max*100+'%"></i></div><small>信任 '+Math.round(progress/max*100)+'% · 締約試煉</small>';return;}const max=e.maxHp||e.s.hp,status=Object.keys(e.status||{}).filter(k=>e.status[k]>0).map(k=>combatStatusNames[k]||k);e.label.el.innerHTML=`<b>${esc(e.s.name)}</b><div class="hp"><i style="width:${Math.max(0,e.hp)/max*100}%"></i></div><small>${Math.max(0,e.hp)} / ${max}${battle?.gym?'':' · 能量 '+e.energy}</small>${status.length?`<small style="display:block;color:#fff3a7">${status.map(esc).join(' · ')}</small>`:''}`;}
 function battleLog(t){$('battleLog').textContent=t;}
 function battleItems(){const b=battle;if(!b||b.busy)return;const defs=[['potion',itemNames.potion,'回復 45 HP'],['armorBreak',itemNames.armorBreak,b.gym?'敵方減防 6 秒':'敵方減防 3 回合'],['attackBoost',itemNames.attackBoost,b.gym?'旅人加攻 12 秒':'己方加攻 3 回合']];$('battleActions').innerHTML=defs.map(([key,name,desc])=>`<button data-battle="item:${key}" ${number(S.state.items[key])<1?'disabled':''}>${name}<small>${desc} · ${number(S.state.items[key])} 份</small></button>`).join('')+'<button data-battle="itemsBack">返回戰鬥</button>'; }
