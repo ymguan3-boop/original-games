@@ -3,6 +3,7 @@
 <body style="font:14px system-ui;padding:16px">
 <h1>幻靈奇旅主角匯出</h1>
 <p id="log">準備中…</p>
+<script src="../../js/hero-costumes.js?v=20261019-chest-fit-v1"></script>
 <script src="kid-model.js"></script>
 <script src="props.js"></script>
 <script src="actions.baked.js"></script>
@@ -131,6 +132,7 @@ async function run() {
     }
     acts.push({ ...src, id: game });
   }
+  HeroCostumes.create(THREE).prepare(model);
   const merged = mergeByJoint(model);
   const clips = buildClips(acts, model);
   const glb = await exportGLB(model, Object.values(clips));

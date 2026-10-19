@@ -1,0 +1,300 @@
+{
+  "family": "robot-evolution",
+  "version": "5.4.0",
+  "approvedByUser": true,
+  "sourceBlueprint": "models/native/robot-evolution.js",
+  "legacyIds": [
+    "cyndaquil",
+    "quilava",
+    "typhlosion"
+  ],
+  "portraits": [
+    "cards/art/robot-evolution-1.webp",
+    "cards/art/robot-evolution-2.webp",
+    "cards/art/robot-evolution-3.webp"
+  ],
+  "models": [
+    {
+      "name": "A1",
+      "stage": 1,
+      "height": 3.585719368500956,
+      "bounds": {
+        "min": [
+          -1.2244050055742264,
+          0.01859999999999999,
+          -0.8998064398765564
+        ],
+        "max": [
+          1.2244050055742264,
+          3.6043193685009562,
+          0.935040295124054
+        ],
+        "size": [
+          2.4488100111484528,
+          3.585719368500956,
+          1.8348467350006104
+        ]
+      },
+      "mode": "Idle",
+      "phase": "待機",
+      "modeTime": 0,
+      "triangles": 66580,
+      "meshes": 150,
+      "joints": 57,
+      "mergedParts": 51,
+      "thrustersActive": false,
+      "thrust": 0,
+      "altitude": 0,
+      "crouchAmount": 0,
+      "recoilAmount": 0,
+      "flightPitch": 0,
+      "beamActive": false,
+      "beamColor": null,
+      "angry": false,
+      "expression": "happy",
+      "projectileActive": false,
+      "projectileFired": false,
+      "projectileRadius": 0,
+      "projectileOrigin": [
+        0,
+        0,
+        0
+      ],
+      "projectilePosition": [
+        0,
+        0,
+        0
+      ],
+      "waveActive": false,
+      "waveKind": null,
+      "waveRadius": 0,
+      "waveOrigin": [
+        0,
+        0,
+        0
+      ],
+      "waveDirection": [
+        0,
+        0,
+        1
+      ],
+      "wavePosition": [
+        0,
+        0,
+        0
+      ],
+      "charging": 0,
+      "beamOrigin": [
+        0,
+        1.2781000000000002,
+        0.53
+      ],
+      "beamDirection": [
+        0,
+        0,
+        1
+      ],
+      "modes": [
+        "Idle",
+        "Walk",
+        "Wave",
+        "Punch",
+        "PunchNova"
+      ],
+      "mouth": false,
+      "faceDesign": "compact-reference-visor-white-V-brow",
+      "handDesign": "anatomical-right-at-negative-X-palms-medial-at-rest-flexion-toward-palm",
+      "disposed": false
+    },
+    {
+      "name": "A傑特",
+      "stage": 2,
+      "height": 4.460521859216134,
+      "bounds": {
+        "min": [
+          -1.3354027584251151,
+          0.0029180000275372204,
+          -0.8998064398765564
+        ],
+        "max": [
+          1.3354027584251151,
+          4.463439859243671,
+          0.935040295124054
+        ],
+        "size": [
+          2.6708055168502303,
+          4.460521859216134,
+          1.8348467350006104
+        ]
+      },
+      "mode": "Idle",
+      "phase": "待機",
+      "modeTime": 0,
+      "triangles": 76034,
+      "meshes": 179,
+      "joints": 64,
+      "mergedParts": 56,
+      "thrustersActive": false,
+      "thrust": 0,
+      "altitude": 0,
+      "crouchAmount": 0,
+      "recoilAmount": 0,
+      "flightPitch": 0,
+      "beamActive": false,
+      "beamColor": null,
+      "angry": false,
+      "expression": "happy",
+      "projectileActive": false,
+      "projectileFired": false,
+      "projectileRadius": 0,
+      "projectileOrigin": [
+        0,
+        0,
+        0
+      ],
+      "projectilePosition": [
+        0,
+        0,
+        0
+      ],
+      "waveActive": false,
+      "waveKind": null,
+      "waveRadius": 0,
+      "waveOrigin": [
+        0,
+        0,
+        0
+      ],
+      "waveDirection": [
+        0,
+        0,
+        1
+      ],
+      "wavePosition": [
+        0,
+        0,
+        0
+      ],
+      "charging": 0,
+      "beamOrigin": [
+        0,
+        1.995,
+        0.53
+      ],
+      "beamDirection": [
+        0,
+        0,
+        1
+      ],
+      "modes": [
+        "Idle",
+        "Walk",
+        "Takeoff",
+        "Fly",
+        "Land",
+        "Wave",
+        "ChestBeam",
+        "ChestNova"
+      ],
+      "mouth": false,
+      "faceDesign": "compact-reference-visor-white-V-brow",
+      "handDesign": "anatomical-right-at-negative-X-palms-medial-at-rest-flexion-toward-palm",
+      "disposed": false
+    },
+    {
+      "name": "假維斯",
+      "stage": 3,
+      "height": 4.573488678138881,
+      "bounds": {
+        "min": [
+          -2.2171030032711028,
+          0.0038249144360955993,
+          -0.9673278693008422
+        ],
+        "max": [
+          2.2171030032711028,
+          4.577313592574977,
+          0.7233066768969584
+        ],
+        "size": [
+          4.4342060065422055,
+          4.573488678138881,
+          1.6906345461978005
+        ]
+      },
+      "mode": "Idle",
+      "phase": "待機",
+      "modeTime": 0,
+      "triangles": 56309,
+      "meshes": 186,
+      "joints": 63,
+      "mergedParts": 34,
+      "thrustersActive": false,
+      "thrust": 0,
+      "altitude": 0,
+      "crouchAmount": 0,
+      "recoilAmount": 0,
+      "flightPitch": 0,
+      "beamActive": false,
+      "beamColor": null,
+      "angry": false,
+      "expression": "focused",
+      "projectileActive": false,
+      "projectileFired": false,
+      "projectileRadius": 0,
+      "projectileOrigin": [
+        0,
+        0,
+        0
+      ],
+      "projectilePosition": [
+        0,
+        0,
+        0
+      ],
+      "waveActive": false,
+      "waveKind": null,
+      "waveRadius": 0,
+      "waveOrigin": [
+        0,
+        0,
+        0
+      ],
+      "waveDirection": [
+        0,
+        0,
+        1
+      ],
+      "wavePosition": [
+        0,
+        0,
+        0
+      ],
+      "charging": 0,
+      "beamOrigin": [
+        -0.6328,
+        1.8157856999999993,
+        4.0471346274273403e-17
+      ],
+      "beamDirection": [
+        1,
+        0,
+        2.2053787367732574e-16
+      ],
+      "modes": [
+        "Idle",
+        "Walk",
+        "Takeoff",
+        "Fly",
+        "Land",
+        "Wave",
+        "PalmBeam",
+        "PalmNova"
+      ],
+      "mouth": false,
+      "faceDesign": "rounded-convex-reference-face-visible-ears-raised-V",
+      "handDesign": "anatomical-right-at-negative-X-palms-medial-at-rest-flexion-toward-palm",
+      "disposed": false
+    }
+  ]
+}

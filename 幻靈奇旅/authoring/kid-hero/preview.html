@@ -174,6 +174,7 @@ attachProp('propR', gltf.scene);       <span class="muted">// 或改 props.js �
   <footer>檔案：<code>kid-model.js</code>（角色造型、骨架、掛點、冒險套裝、鹹蛋超人）· <code>props.js</code>（物品庫）· <code>actions.baked.js</code>（19 個動作，由 <code>kid-actions.js</code> 離線烘焙，含武器防穿透）· <code>builder.js</code>（Three.js 建模）</footer>
 </div>
 
+<script src="../../js/hero-costumes.js?v=20261019-chest-fit-v1"></script>
 <script src="kid-model.js"></script>
 <script src="props.js"></script>
 <script src="actions.baked.js"></script>
@@ -240,6 +241,7 @@ scene.add(ground);
 // ---------- 角色
 const t0 = performance.now();
 const model = buildModel(CHARACTER);
+HeroCostumes.create(THREE).prepare(model);
 const buildMs = performance.now() - t0;
 scene.add(model);
 const tris = countTriangles(model);

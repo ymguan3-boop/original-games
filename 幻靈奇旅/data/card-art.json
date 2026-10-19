@@ -102,34 +102,28 @@
     "generatedAt": "2026-10-19"
   },
   "cyndaquil": {
-    "image": "cards/art/cyndaquil.webp",
-    "name": "炭絨刺團",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/cyndaquil.glb",
-    "group": 3,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/robot-evolution-1.webp",
+    "name": "A1",
+    "source": "imagegen-approved-robot-v5.4-model-reference",
+    "referenceModel": "robot-evolution://cyndaquil",
+    "style": "stylized-3d-mechanical-portrait",
+    "generatedAt": "2026-10-19"
   },
   "quilava": {
-    "image": "cards/art/quilava.webp",
-    "name": "熔陶甲獸",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/quilava.glb",
-    "group": 3,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/robot-evolution-2.webp",
+    "name": "A傑特",
+    "source": "imagegen-approved-robot-v5.4-model-reference",
+    "referenceModel": "robot-evolution://quilava",
+    "style": "stylized-3d-mechanical-portrait",
+    "generatedAt": "2026-10-19"
   },
   "typhlosion": {
-    "image": "cards/art/typhlosion.webp",
-    "name": "赤窯守甲",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/typhlosion.glb",
-    "group": 3,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/robot-evolution-3.webp",
+    "name": "假維斯",
+    "source": "imagegen-approved-robot-v5.4-model-reference",
+    "referenceModel": "robot-evolution://typhlosion",
+    "style": "stylized-3d-mechanical-portrait",
+    "generatedAt": "2026-10-19"
   },
   "totodile": {
     "image": "cards/art/elephant-family-1.webp",

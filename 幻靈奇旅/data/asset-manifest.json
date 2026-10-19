@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 82,
+  "modelCount": 81,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -259,16 +259,6 @@
       ]
     },
     {
-      "file": "models/spirits/cyndaquil.glb",
-      "bytes": 176320,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/dialga.glb",
       "bytes": 184348,
       "animations": [
@@ -455,16 +445,6 @@
       ]
     },
     {
-      "file": "models/spirits/quilava.glb",
-      "bytes": 182580,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/raichu.glb",
       "bytes": 162264,
       "animations": [
@@ -616,16 +596,6 @@
       ]
     },
     {
-      "file": "models/spirits/typhlosion.glb",
-      "bytes": 191308,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/tower/collectible-card.glb",
       "bytes": 31756,
       "animations": []
@@ -711,7 +681,7 @@
       "animations": []
     }
   ],
-  "nativeModelCount": 15,
+  "nativeModelCount": 18,
   "nativeModels": [
     {
       "id": "piplup",
@@ -941,6 +911,57 @@
         "FeatherVolley"
       ],
       "controller": "LightPhoenix"
+    },
+    {
+      "id": "cyndaquil",
+      "key": "robot-evolution://cyndaquil",
+      "runtime": "three-r128",
+      "triangles": 66580,
+      "meshes": 150,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Wave",
+        "Punch",
+        "PunchNova"
+      ],
+      "controller": "RobotEvolution"
+    },
+    {
+      "id": "quilava",
+      "key": "robot-evolution://quilava",
+      "runtime": "three-r128",
+      "triangles": 76034,
+      "meshes": 179,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Takeoff",
+        "Fly",
+        "Land",
+        "Wave",
+        "ChestBeam",
+        "ChestNova"
+      ],
+      "controller": "RobotEvolution"
+    },
+    {
+      "id": "typhlosion",
+      "key": "robot-evolution://typhlosion",
+      "runtime": "three-r128",
+      "triangles": 56309,
+      "meshes": 186,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Takeoff",
+        "Fly",
+        "Land",
+        "Wave",
+        "PalmBeam",
+        "PalmNova"
+      ],
+      "controller": "RobotEvolution"
     }
   ],
   "nativeSources": [
@@ -988,6 +1009,16 @@
       "file": "models/native/light-phoenix.js",
       "bytes": 32805,
       "sha256": "25f68d41df05ff75cb41c756bffe9a77e3a14ba3ff2b5523c04a2a5432cf5c5b"
+    },
+    {
+      "file": "models/native/robot-evolution.js",
+      "bytes": 40723,
+      "sha256": "59722a80315dedf845ec76b65838ba6844e8236ee8c82630405c925f5b450755"
+    },
+    {
+      "file": "models/native/robot-spirits.js",
+      "bytes": 1381,
+      "sha256": "80ba0afa319746aa16370109429c404fe970b2d1ab8177d300d1d476522a0dfe"
     }
   ]
 }

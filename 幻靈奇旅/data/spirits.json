@@ -413,17 +413,17 @@
   {
     "id": "cyndaquil",
     "speciesId": "cyndaquil",
-    "name": "炭絨刺團",
+    "name": "A1",
     "element": "fire",
     "type": "焰",
     "stage": 1,
-    "family": "kiln-shell",
-    "form": "hedgehog",
+    "family": "robot-evolution",
+    "form": "robot",
     "color": 12090456,
     "role": "starter",
     "previous": null,
     "next": "quilava",
-    "model": "models/spirits/cyndaquil.glb",
+    "model": "robot-evolution://cyndaquil",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -432,32 +432,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "集能小光波",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "炭絨共鳴",
+        "name": "集能大光波",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "炭絨刺團是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "以圓形核心蓄能出拳，向前發出小光波；集能後可釋放大型光波。"
   },
   {
     "id": "quilava",
     "speciesId": "quilava",
-    "name": "熔陶甲獸",
+    "name": "A傑特",
     "element": "fire",
     "type": "焰",
     "stage": 2,
-    "family": "kiln-shell",
-    "form": "hedgehog",
+    "family": "robot-evolution",
+    "form": "robot",
     "color": 12090456,
     "role": "starter",
     "previous": "cyndaquil",
     "next": "typhlosion",
-    "model": "models/spirits/quilava.glb",
+    "model": "robot-evolution://quilava",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
@@ -466,32 +466,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "胸口紅色光束",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "熔陶共鳴",
+        "name": "紅色能量球",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "熔陶甲獸是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "藍色推進器帶動前傾飛行；半跪蓄能時雙眼轉為銳利，從胸口射出紅光或大型能量球。"
   },
   {
     "id": "typhlosion",
     "speciesId": "typhlosion",
-    "name": "赤窯守甲",
+    "name": "假維斯",
     "element": "fire",
     "type": "焰",
     "stage": 3,
-    "family": "kiln-shell",
-    "form": "hedgehog",
+    "family": "robot-evolution",
+    "form": "robot",
     "color": 12090456,
     "role": "starter",
     "previous": "quilava",
     "next": null,
-    "model": "models/spirits/typhlosion.glb",
+    "model": "robot-evolution://typhlosion",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
@@ -500,17 +500,17 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "掌心藍色光束",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "赤窯共鳴",
+        "name": "藍色能量球",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "赤窯守甲是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "白金裝甲與大型背翼的成熟型機器人；以分腿半跪承受後座力，掌心發射藍光或大型能量球。"
   },
   {
     "id": "totodile",

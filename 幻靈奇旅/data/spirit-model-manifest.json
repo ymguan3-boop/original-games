@@ -272,54 +272,66 @@
   },
   {
     "id": "cyndaquil",
-    "name": "炭絨刺團",
-    "vertices": 2634,
-    "triangles": 5112,
-    "materials": 5,
-    "bones": 8,
+    "name": "A1",
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Wave",
+      "Punch",
+      "PunchNova"
     ],
-    "fileBytes": 176320,
-    "source": "Blender native authored mesh and skeletal animation"
+    "model": "robot-evolution://cyndaquil",
+    "sourceBlueprint": "models/native/robot-evolution.js",
+    "source": "User-approved native Three.js articulated robot v5.4",
+    "runtime": "native-threejs",
+    "triangles": 66580,
+    "meshes": 150,
+    "joints": 57
   },
   {
     "id": "quilava",
-    "name": "熔陶甲獸",
-    "vertices": 2724,
-    "triangles": 5280,
-    "materials": 5,
-    "bones": 8,
+    "name": "A傑特",
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Takeoff",
+      "Fly",
+      "Land",
+      "Wave",
+      "ChestBeam",
+      "ChestNova"
     ],
-    "fileBytes": 182580,
-    "source": "Blender native authored mesh and skeletal animation"
+    "model": "robot-evolution://quilava",
+    "sourceBlueprint": "models/native/robot-evolution.js",
+    "source": "User-approved native Three.js articulated robot v5.4",
+    "runtime": "native-threejs",
+    "triangles": 76034,
+    "meshes": 179,
+    "joints": 64
   },
   {
     "id": "typhlosion",
-    "name": "赤窯守甲",
-    "vertices": 2904,
-    "triangles": 5616,
-    "materials": 5,
-    "bones": 8,
+    "name": "假維斯",
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Takeoff",
+      "Fly",
+      "Land",
+      "Wave",
+      "PalmBeam",
+      "PalmNova"
     ],
-    "fileBytes": 191308,
-    "source": "Blender native authored mesh and skeletal animation"
+    "model": "robot-evolution://typhlosion",
+    "sourceBlueprint": "models/native/robot-evolution.js",
+    "source": "User-approved native Three.js articulated robot v5.4",
+    "runtime": "native-threejs",
+    "triangles": 56309,
+    "meshes": 186,
+    "joints": 63
   },
   {
     "id": "totodile",

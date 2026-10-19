@@ -72,21 +72,21 @@
     "maxSpan": 4.394000000000001
   },
   "cyndaquil": {
-    "desiredWorldHeight": 1.08,
+    "desiredWorldHeight": 1.275,
     "stage": 1,
-    "form": "hedgehog",
+    "form": "robot",
     "maxSpan": 2.6
   },
   "quilava": {
-    "desiredWorldHeight": 1.404,
+    "desiredWorldHeight": 1.6575,
     "stage": 2,
-    "form": "hedgehog",
+    "form": "robot",
     "maxSpan": 3.3800000000000003
   },
   "typhlosion": {
-    "desiredWorldHeight": 1.825,
+    "desiredWorldHeight": 2.15475,
     "stage": 3,
-    "form": "hedgehog",
+    "form": "robot",
     "maxSpan": 4.394000000000001
   },
   "totodile": {

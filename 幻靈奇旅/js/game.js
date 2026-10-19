@@ -87,19 +87,20 @@ function grant(id,count=1){
 }
 const RICEBALL_MODEL='riceball://mew',XIAOSHAN_MODEL='xiaoshan://wigglytuff',OUTOUMAN_MODEL='outouman://pikachu';
 const isOutouman=path=>path===OUTOUMAN_MODEL;
+const isRobot=path=>window.RobotSpirits.has(path);
 const isFireMonkey=path=>path==='fire-monkey://raikou'||path==='fire-monkey://zapdos';
 const fireMonkeyStage=path=>path==='fire-monkey://zapdos'?2:1;
 const isFloralDeer=path=>['floral-deer://chikorita','floral-deer://bayleef','floral-deer://meganium'].includes(path);
 const floralDeerStage=path=>path==='floral-deer://meganium'?3:path==='floral-deer://bayleef'?2:1;
 const isLightPhoenix=path=>path==='light-phoenix://blissey';
 const isXiaoshan=path=>path===XIAOSHAN_MODEL;
-function controllerBounds(path,controller){if(isFloralDeer(path)||isLightPhoenix(path)){const cached=actorBaseBounds.get(path);if(cached)return cached.clone();const bounds=controller?.getState?.().bounds;if(bounds?.min?.length===3&&bounds?.max?.length===3){const box=new T.Box3(new T.Vector3().fromArray(bounds.min),new T.Vector3().fromArray(bounds.max));actorBaseBounds.set(path,box.clone());return box;}throw Error('原生模型缺少固定尺寸：'+path);}return isFireMonkey(path)?new T.Box3(new T.Vector3(-1.42,0,-.84),new T.Vector3(1.42,fireMonkeyStage(path)===2?4.4121804411:3.3978477293,.84)):isOutouman(path)?new T.Box3(new T.Vector3(-1.4,0,-1.1),new T.Vector3(1.4,4.53,1.1)):isXiaoshan(path)?new T.Box3(new T.Vector3(-1.6,0,-1.15),new T.Vector3(1.6,2.85,1.15)):new T.Box3(new T.Vector3(-1.35,0,-.75),new T.Vector3(1.35,2.7,.75));}
+function controllerBounds(path,controller){if(isRobot(path)||isFloralDeer(path)||isLightPhoenix(path)){const cached=actorBaseBounds.get(path);if(cached)return cached.clone();const bounds=controller?.getState?.().bounds;if(bounds?.min?.length===3&&bounds?.max?.length===3){const box=new T.Box3(new T.Vector3().fromArray(bounds.min),new T.Vector3().fromArray(bounds.max));actorBaseBounds.set(path,box.clone());return box;}throw Error('原生模型缺少固定尺寸：'+path);}return isFireMonkey(path)?new T.Box3(new T.Vector3(-1.42,0,-.84),new T.Vector3(1.42,fireMonkeyStage(path)===2?4.4121804411:3.3978477293,.84)):isOutouman(path)?new T.Box3(new T.Vector3(-1.4,0,-1.1),new T.Vector3(1.4,4.53,1.1)):isXiaoshan(path)?new T.Box3(new T.Vector3(-1.6,0,-1.15),new T.Vector3(1.6,2.85,1.15)):new T.Box3(new T.Vector3(-1.35,0,-.75),new T.Vector3(1.35,2.7,.75));}
 function isRiceball(path){return path===RICEBALL_MODEL;}
-async function asset(path){if(isFloralDeer(path)||isLightPhoenix(path)){if(!cache.has(path)){const create=isFloralDeer(path)?()=>window.FloralDeer.create({stage:floralDeerStage(path),inPlace:true}):()=>window.LightPhoenix.create({inPlace:true});cache.set(path,Promise.resolve({create,animations:[]}));S.assetLoads++;}return cache.get(path);}if(isFireMonkey(path)){if(!cache.has(path)){cache.set(path,Promise.resolve({create:()=>FireMonkeySpirit.create({stage:fireMonkeyStage(path),inPlace:true}),animations:[]}));S.assetLoads++;}return cache.get(path);}if(isOutouman(path)){if(!cache.has(path)){cache.set(path,Promise.resolve({create:()=>OutoumanSpirit.create({inPlace:true}),animations:[]}));S.assetLoads++;}return cache.get(path);}if(isXiaoshan(path)){if(!cache.has(path)){cache.set(path,Promise.resolve({create:()=>XiaoshanSpirit.create({inPlace:true}),animations:[]}));S.assetLoads++;}return cache.get(path);}if(isRiceball(path)){if(!cache.has(path)){cache.set(path,Promise.resolve({create:()=>RiceballSpirit.create({inPlace:true}),animations:[]}));S.assetLoads++;}return cache.get(path);}if(!path)throw Error('模型路徑未設定');if(window.NativeFamilies?.has(path)){if(!cache.has(path)){cache.set(path,Promise.resolve(NativeFamilies.build(path)));S.assetLoads++;}return cache.get(path);}if(!cache.has(path)){cache.set(path,new Promise((resolve,reject)=>loader.load(path+(path.includes("?")?"&":"?")+"v=20261019-kid-hero-v2",g=>{S.assetLoads++;resolve(g)},undefined,e=>{cache.delete(path);reject(Error('無法載入 '+path))})));}return cache.get(path);}
+async function asset(path){if(isRobot(path)){if(!cache.has(path)){cache.set(path,Promise.resolve({create:()=>RobotSpirits.create(path),animations:[]}));S.assetLoads++;}return cache.get(path);}if(isFloralDeer(path)||isLightPhoenix(path)){if(!cache.has(path)){const create=isFloralDeer(path)?()=>window.FloralDeer.create({stage:floralDeerStage(path),inPlace:true}):()=>window.LightPhoenix.create({inPlace:true});cache.set(path,Promise.resolve({create,animations:[]}));S.assetLoads++;}return cache.get(path);}if(isFireMonkey(path)){if(!cache.has(path)){cache.set(path,Promise.resolve({create:()=>FireMonkeySpirit.create({stage:fireMonkeyStage(path),inPlace:true}),animations:[]}));S.assetLoads++;}return cache.get(path);}if(isOutouman(path)){if(!cache.has(path)){cache.set(path,Promise.resolve({create:()=>OutoumanSpirit.create({inPlace:true}),animations:[]}));S.assetLoads++;}return cache.get(path);}if(isXiaoshan(path)){if(!cache.has(path)){cache.set(path,Promise.resolve({create:()=>XiaoshanSpirit.create({inPlace:true}),animations:[]}));S.assetLoads++;}return cache.get(path);}if(isRiceball(path)){if(!cache.has(path)){cache.set(path,Promise.resolve({create:()=>RiceballSpirit.create({inPlace:true}),animations:[]}));S.assetLoads++;}return cache.get(path);}if(!path)throw Error('模型路徑未設定');if(window.NativeFamilies?.has(path)){if(!cache.has(path)){cache.set(path,Promise.resolve(NativeFamilies.build(path)));S.assetLoads++;}return cache.get(path);}if(!cache.has(path)){cache.set(path,new Promise((resolve,reject)=>loader.load(path+(path.includes("?")?"&":"?")+"v=20261019-kid-hero-v2",g=>{S.assetLoads++;resolve(g)},undefined,e=>{cache.delete(path);reject(Error('無法載入 '+path))})));}return cache.get(path);}
 function cloneSkin(source){const clone=source.clone(true),a=new Map(),b=new Map();const pair=(x,y)=>{a.set(y,x);b.set(x,y);x.children.forEach((ch,i)=>pair(ch,y.children[i]));};pair(source,clone);clone.traverse(n=>{if(n.isSkinnedMesh){const original=a.get(n);n.skeleton=original.skeleton.clone();n.bindMatrix.copy(original.bindMatrix);n.skeleton.bones=original.skeleton.bones.map(bone=>b.get(bone));n.bind(n.skeleton,n.bindMatrix);}});return clone;}
 function posedBounds(root,baseOnly=false){const b=new T.Box3(),v=new T.Vector3();root.updateMatrixWorld(true);root.traverse(n=>{if(!n.isMesh)return;if(baseOnly){let p=n;while(p){if(p.userData.costume)return;p=p.parent;}}if(n.isSkinnedMesh)n.skeleton.update();const points=n.geometry.attributes.position;for(let i=0;i<points.count;i++){v.fromBufferAttribute(points,i);if(n.isSkinnedMesh)n.boneTransform(i,v);b.expandByPoint(v.applyMatrix4(n.matrixWorld));}});return b;}
 const actorBaseBounds=new Map();
-async function actor(path,height,parent=townGroup){const g=await asset(path),controller=g.create?.(),object=controller?controller.root:cloneSkin(g.scene),root=new T.Group();root.add(object);object.updateMatrixWorld(true);let box=actorBaseBounds.get(path);if(!box){box=controller?controllerBounds(path,controller):posedBounds(object,path.includes('hero.glb'));actorBaseBounds.set(path,box.clone());}else box=box.clone();const size=box.getSize(new T.Vector3());if(height){const ratio=height/Math.max(size.y,.001);object.scale.multiplyScalar(ratio);object.position.y-=box.min.y*ratio;}else object.position.y-=box.min.y;object.traverse(n=>{if(n.isMesh){n.castShadow=true;n.receiveShadow=true;n.frustumCulled=mobileGraphics&&!n.isSkinnedMesh;}});const mixer=new T.AnimationMixer(object),actions={};g.animations.forEach(c=>{const name=c.name.replace(/.*[|]/,'');actions[name]=mixer.clipAction(c);});const a={root,object,mixer,actions,mode:null,height:height||size.y,path,worldSize:new T.Vector3(size.x*(height?height/Math.max(size.y,.001):1),height||size.y,size.z*(height?height/Math.max(size.y,.001):1))};a.controller=controller;a.motionSpeed=1.42;a.play=(name,once=false)=>{if(controller){if(isFloralDeer(path)){const mode=({Attack:'Pulse',Throw:'Pulse',React:'Greet',Hurt:'Greet',Wave:'Greet',Celebrate:'Greet',Sleep:'Rest'})[name]||name;controller.setMode(['Idle','Walk','Run','Greet','Rest','Pulse'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(isLightPhoenix(path)){const mode=({Run:'Walk',Attack:'WingBurst',Throw:'WingBurst',React:'Idle',Hurt:'Idle',Wave:'Idle',Landing:'Land'})[name]||name;controller.setMode(['Idle','Walk','Takeoff','Fly','Land','WingBurst','FeatherVolley'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(isFireMonkey(path)){const mode=({Run:'Walk',Throw:'Attack',Wave:'React',Celebrate:'React'})[name]||name;controller.setMode(['Idle','Walk','Attack','Fireball','StaffCombo','React','Hurt','Jump'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(isOutouman(path)){const mode=({Run:'Walk',Attack:'BeamPose',Throw:'BeamPose',React:'Wave',Hurt:'Hurt'})[name]||name;controller.setMode(['Idle','Walk','Wave','Beam','BeamPose','Roll','Jump','Hurt'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(isXiaoshan(path)){const mode=({Run:'Walk',Attack:'React',Hurt:'Scared',Wave:'React'})[name]||name;controller.setMode(['Idle','Walk','Sleep','Wake','Jump','Scared','React'].includes(mode)?mode:'Idle');a.mode=mode;return;}const mode=({Walk:'Roll',Run:'Roll',Attack:'Wave',React:'Wave',Hurt:'Stuck'})[name]||name;controller.setMotionSpeed?.(name==='Run'||name==='Walk'?Math.min(6,Math.max(.5,a.motionSpeed||1.42)):0);controller.setMode(['Idle','Roll','Stuck','Wave','Auto'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(NativeFamilies.has(path)&&['Attack','Hurt','React','Run'].includes(name))name=name==='Hurt'?'Sit':name==='Run'?'Walk':'Takeoff';if(/pepper-chick-|sesame-spirit-|chest-spirit-|book-spirit-/.test(path)&&['Attack','Hurt'].includes(name))name='React';const key=Object.keys(actions).find(k=>k.toLowerCase()===name.toLowerCase())||Object.keys(actions).find(k=>k.toLowerCase().includes(name.toLowerCase()))||Object.keys(actions)[0];if(!key||a.mode===key&&!once)return;const fade=NativeFamilies.has(path)?.65:.16;Object.values(actions).forEach(x=>x.fadeOut(fade));const action=actions[key];action.reset().fadeIn(fade);action.setLoop(once?T.LoopOnce:T.LoopRepeat,once?1:Infinity);action.clampWhenFinished=once;action.play();a.mode=key;};a.play('Idle');parent.add(root);actors.push(a);return a;}
+async function actor(path,height,parent=townGroup){const g=await asset(path),controller=g.create?.(),object=controller?controller.root:cloneSkin(g.scene),root=new T.Group();root.add(object);object.updateMatrixWorld(true);let box=actorBaseBounds.get(path);if(!box){box=controller?controllerBounds(path,controller):posedBounds(object,path.includes('hero.glb'));actorBaseBounds.set(path,box.clone());}else box=box.clone();const size=box.getSize(new T.Vector3());if(height){const ratio=height/Math.max(size.y,.001);object.scale.multiplyScalar(ratio);object.position.y-=box.min.y*ratio;}else object.position.y-=box.min.y;object.traverse(n=>{if(n.isMesh){n.castShadow=true;n.receiveShadow=true;n.frustumCulled=mobileGraphics&&!n.isSkinnedMesh;}});const mixer=new T.AnimationMixer(object),actions={};g.animations.forEach(c=>{const name=c.name.replace(/.*[|]/,'');actions[name]=mixer.clipAction(c);});const a={root,object,mixer,actions,mode:null,height:height||size.y,path,worldSize:new T.Vector3(size.x*(height?height/Math.max(size.y,.001):1),height||size.y,size.z*(height?height/Math.max(size.y,.001):1))};a.controller=controller;a.motionSpeed=1.42;a.play=(name,once=false)=>{if(controller){if(isRobot(path)){const mode=RobotSpirits.motion(path,name);if(a.mode===mode&&!once)return;controller.setMode(mode);a.mode=mode;return;}if(isFloralDeer(path)){const mode=({Attack:'Pulse',Throw:'Pulse',React:'Greet',Hurt:'Greet',Wave:'Greet',Celebrate:'Greet',Sleep:'Rest'})[name]||name;controller.setMode(['Idle','Walk','Run','Greet','Rest','Pulse'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(isLightPhoenix(path)){const mode=({Run:'Walk',Attack:'WingBurst',Throw:'WingBurst',React:'Idle',Hurt:'Idle',Wave:'Idle',Landing:'Land'})[name]||name;controller.setMode(['Idle','Walk','Takeoff','Fly','Land','WingBurst','FeatherVolley'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(isFireMonkey(path)){const mode=({Run:'Walk',Throw:'Attack',Wave:'React',Celebrate:'React'})[name]||name;controller.setMode(['Idle','Walk','Attack','Fireball','StaffCombo','React','Hurt','Jump'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(isOutouman(path)){const mode=({Run:'Walk',Attack:'BeamPose',Throw:'BeamPose',React:'Wave',Hurt:'Hurt'})[name]||name;controller.setMode(['Idle','Walk','Wave','Beam','BeamPose','Roll','Jump','Hurt'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(isXiaoshan(path)){const mode=({Run:'Walk',Attack:'React',Hurt:'Scared',Wave:'React'})[name]||name;controller.setMode(['Idle','Walk','Sleep','Wake','Jump','Scared','React'].includes(mode)?mode:'Idle');a.mode=mode;return;}const mode=({Walk:'Roll',Run:'Roll',Attack:'Wave',React:'Wave',Hurt:'Stuck'})[name]||name;controller.setMotionSpeed?.(name==='Run'||name==='Walk'?Math.min(6,Math.max(.5,a.motionSpeed||1.42)):0);controller.setMode(['Idle','Roll','Stuck','Wave','Auto'].includes(mode)?mode:'Idle');a.mode=mode;return;}if(NativeFamilies.has(path)&&['Attack','Hurt','React','Run'].includes(name))name=name==='Hurt'?'Sit':name==='Run'?'Walk':'Takeoff';if(/pepper-chick-|sesame-spirit-|chest-spirit-|book-spirit-/.test(path)&&['Attack','Hurt'].includes(name))name='React';const key=Object.keys(actions).find(k=>k.toLowerCase()===name.toLowerCase())||Object.keys(actions).find(k=>k.toLowerCase().includes(name.toLowerCase()))||Object.keys(actions)[0];if(!key||a.mode===key&&!once)return;const fade=NativeFamilies.has(path)?.65:.16;Object.values(actions).forEach(x=>x.fadeOut(fade));const action=actions[key];action.reset().fadeIn(fade);action.setLoop(once?T.LoopOnce:T.LoopRepeat,once?1:Infinity);action.clampWhenFinished=once;action.play();a.mode=key;};a.play('Idle');parent.add(root);actors.push(a);return a;}
 function removeActor(a){if(!a)return;detach(a.root);a.mixer.stopAllAction();a.mixer.uncacheRoot(a.object);a.controller?.dispose();const i=actors.indexOf(a);if(i>=0)actors.splice(i,1);if(a.label)removeLabel(a.label);}
 function addLabel(a,text,kind='nameLabel'){const el=document.createElement('div');el.className=kind;el.textContent=text;$('labels').append(el);const l={a,el};labels.push(l);a.label=l;return l;}
 function removeLabel(l){l.el.remove();const i=labels.indexOf(l);if(i>=0)labels.splice(i,1);}
@@ -203,7 +204,7 @@ function authorizedGuardianActor(a){
  const gym=gyms.find(g=>g.spirit===a.species.id),event=S.state?.specialAppearances?.[gym?.id];
  return !!event&&event.eventId===a.specialEventId&&guardianEncounterAuthorized(a.species,event);
 }
-async function gymSceneConfig(key){gymScenePromise||=fetch('data/gym-scenes.json?v=20261019-floral-phoenix-v1').then(r=>{if(!r.ok)throw Error('道館場景資料未就緒');return r.json();}).catch(e=>{gymScenePromise=null;throw e;});const config=(await gymScenePromise)[key];if(!config?.model)throw Error('道館場景未設定：'+key);return config;}
+async function gymSceneConfig(key){gymScenePromise||=fetch('data/gym-scenes.json?v=20261019-robot-outfit-v1').then(r=>{if(!r.ok)throw Error('道館場景資料未就緒');return r.json();}).catch(e=>{gymScenePromise=null;throw e;});const config=(await gymScenePromise)[key];if(!config?.model)throw Error('道館場景未設定：'+key);return config;}
 function gymBoundsBlocked(x,z,margin=.5){const b=battle?.sceneConfig?.bounds||{minX:-14,maxX:14,minZ:-14,maxZ:14};return x<b.minX+margin||x>b.maxX-margin||z<b.minZ+margin||z>b.maxZ-margin;}
 function guardianPoint(){for(let i=0;i<24;i++){const angle=i/24*Math.PI*2,r=5.5+(i%3)*.7,x=S.player.x+Math.sin(angle)*r,z=S.player.z+Math.cos(angle)*r;if(!blocked(x,z,1.2))return new T.Vector3(x,0,z);}return randomPoint();}
 // Scale only Xiaoshan summoned into the outdoor map after the third gym victory.
@@ -278,7 +279,7 @@ async function spawnWild(species,position,guardianEvent=null){
  if(isGymGuardian(species)&&!guardianEncounterAuthorized(species,guardianEvent)){removeActor(a);return null;}
  const dimensions=a.worldSize||posedBounds(a.object).getSize(new T.Vector3()),maxSpan=Math.min(6,Number(rule.maxSpan)||6),ratio=Math.min(1,maxSpan/Math.max(dimensions.x,dimensions.z,.001));if(ratio<1){a.object.scale.multiplyScalar(ratio);a.object.position.multiplyScalar(ratio);a.height*=ratio;a.worldSize.multiplyScalar(ratio);}
  // Outdoor capturable instances only; gym/arena/collection visuals keep their own sizes.
- const wildFactor=species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);a.root.position.copy(position||randomPoint());a.airborne=!isLightPhoenix(species.model)&&!isFloralDeer(species.model)&&!isFireMonkey(species.model)&&!isOutouman(species.model)&&!isRiceball(species.model)&&!NativeFamilies.has(species.model)&&isAirborne(species);a.flightState=a.airborne?'air':'ground';a.flightAltitude=1.8+Math.random()*1.2;a.flightRemaining=20+Math.random()*20;a.flightBase=a.airborne?a.flightAltitude:0;a.flightPhase=Math.random()*Math.PI*2;a.root.position.y=a.flightBase;a.home=a.root.position.clone();a.goal=a.home.clone();a.timer=Math.random()*3;a.berry=false;wild.push(a);return a;}
+ const wildFactor=species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);a.root.position.copy(position||randomPoint());a.airborne=!isRobot(species.model)&&!isLightPhoenix(species.model)&&!isFloralDeer(species.model)&&!isFireMonkey(species.model)&&!isOutouman(species.model)&&!isRiceball(species.model)&&!NativeFamilies.has(species.model)&&isAirborne(species);a.flightState=a.airborne?'air':'ground';a.flightAltitude=1.8+Math.random()*1.2;a.flightRemaining=20+Math.random()*20;a.flightBase=a.airborne?a.flightAltitude:0;a.flightPhase=Math.random()*Math.PI*2;a.root.position.y=a.flightBase;a.home=a.root.position.clone();a.goal=a.home.clone();a.timer=Math.random()*3;a.berry=false;wild.push(a);return a;}
 let labWildSpawnBusy=false;
 function labLegendWildPoint(){
  for(let i=0;i<32;i++){
@@ -380,149 +381,9 @@ function collectSupplies(){
  if(candidates.length)startAdventureAbsorption(candidates);
  if(received.length){save();toast('取得補給｜'+received.join('、'));}
 }
-const HERO_SUIT_SWAP={shirt:'ultraSilver',shirtLight:'ultraRed',shorts:'ultraRed',skin:'ultraSilver',shoe:'ultraSilver',sole:'ultraRed'};
-function applyHeroCostumeLook(root,id){
- if(!root)return;
- if(!root.userData.costumeLook){
-  const look={materials:{},cache:{}};
-  root.traverse(n=>{
-   if(!n.isMesh||!n.material)return;
-   if(n.material.name==='outline'){n.material.side=T.BackSide;n.castShadow=false;n.receiveShadow=false;}
-   n.userData.baseMaterial=n.material;
-   if(n.material.name)look.materials[n.material.name]=look.materials[n.material.name]||n.material;
-   let p=n.parent,inHead=false;for(;p;p=p.parent)if(p.name==='head'){inHead=true;break;}
-   n.userData.inHead=inHead;
-  });
-  root.userData.costumeLook=look;
- }
- const look=root.userData.costumeLook;
- root.traverse(n=>{
-  if(n.userData.costume)n.visible=n.userData.costume===id;
-  if(!n.isMesh||!n.userData.baseMaterial)return;
-  const base=n.userData.baseMaterial,part=n.userData.part||{},to=id==='electric'&&!(part.m==='skin'&&n.userData.inHead)?HERO_SUIT_SWAP[part.m]:null;
-  if(to&&look.materials[to]){const k=to+'|'+base.side;n.material=look.cache[k]||(look.cache[k]=Object.assign(look.materials[to].clone(),{side:base.side}));}
-  else n.material=base;
-  if(part.uo)n.visible=id!=='electric';
- });
-}
-let soundButterfly=null;
+const heroCostumes=HeroCostumes.create(T);
+function applyHeroCostumeLook(root,id){heroCostumes.apply(root,id);}
 const soundCostumeMotion={previousX:null,previousZ:null,hover:0,lean:0};
-// 胸口關節上的掛架：座標與「小山蝴蝶套裝・主角前傾支點」相同（主角高 2.55、肩下 1.10 為原點），但跟著胸口一起轉動
-function heroChestRig(){
- if(hero.chestRig)return hero.chestRig;
- const chest=hero.object.getObjectByName('chest'),rest=hero.restScene?.getObjectByName('chest');
- if(!chest||!rest)return hero.soundTiltPivot;
- hero.restScene.updateMatrixWorld(true);
- const o=hero.object,toModel=new T.Matrix4().makeScale(1/o.scale.x,1/o.scale.y,1/o.scale.z).multiply(new T.Matrix4().makeTranslation(-o.position.x,-o.position.y,-o.position.z));
- const rig=new T.Group();rig.name='小山背包掛架（胸口）';rig.matrixAutoUpdate=false;
- rig.matrix.copy(rest.matrixWorld).invert().multiply(toModel);chest.add(rig);
- return hero.chestRig=rig;
-}
-// Curved fabric strips are mounted on the animated chest, not in world-space.
-// Xiaoshan uses an actual narrow backpack harness; Adventure uses NO harness.
-// Its yellow cloth panels are extensions of the vest over the exposed shoulders.
-function createChestFabricStrip(points,widths,material,name,costume){
- const curve=new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p)),false,'centripetal');
- const vertices=[],uv=[],indices=[],segments=64;
- for(let i=0;i<=segments;i++){
-  const t=i/segments,point=curve.getPoint(t),tangent=curve.getTangent(t).normalize();
-  // Exposed upper body normal: forward over the chest, up on the shoulder
-  // crown, back toward the pack; interpolate smoothly without long tubes.
-  const normal=new T.Vector3(
-   Math.sign(point.x)*(point.y<.22?.55:point.y>.57?.22:.37),
-   point.y>.58?.75:.08,
-   point.z>.09?1:point.z<-.18?-.72:.20
-  ).normalize();
-  const sideways=new T.Vector3().crossVectors(tangent,normal);
-  if(sideways.lengthSq()<1e-8)sideways.set(1,0,0);
-  const scaled=t*(widths.length-1),idx=Math.min(widths.length-2,Math.floor(scaled));
-  const halfWidth=widths[idx]+(widths[idx+1]-widths[idx])*(scaled-idx);
-  sideways.normalize().multiplyScalar(halfWidth);
-  const center=point.addScaledVector(normal,costume==='sound'?.012:.021);
-  for(const side of [-1,1]){
-   const v=center.clone().addScaledVector(sideways,side);
-   vertices.push(v.x,v.y,v.z);uv.push(side<0?0:1,t);
-  }
-  if(i<segments){const k=i*2;indices.push(k,k+2,k+1,k+1,k+2,k+3);}
- }
- const geometry=new T.BufferGeometry();
- geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));
- geometry.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
- geometry.setIndex(indices);geometry.computeVertexNormals();
- const mesh=new T.Mesh(geometry,material);
- mesh.name=name;mesh.userData.costume=costume;
- mesh.castShadow=false;mesh.receiveShadow=false;mesh.renderOrder=2;
- heroChestRig().add(mesh);
- return {mesh,geometry};
-}
-function ensureSoundHarness(){
- if(!hero)return null;
- if(hero.soundHarness)return hero.soundHarness;
- const material=new T.MeshStandardMaterial({
-  color:0x9175aa,roughness:.78,metalness:0,side:T.DoubleSide,
-  polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2
- });
- const straps=[];
- for(const sign of [-1,1]){
-  // Each thin strap is closed at the pack, travels over the real shoulder
-  // crown and closely follows the side of the torso under the armpit.
-  const path=[
-   [.21,-.10,-.44],[.23,.10,-.43],[.27,.35,-.34],
-   [.29,.53,-.23],[.30,.64,-.11],[.30,.66,.025],
-   [.30,.56,.16],[.31,.43,.22],[.33,.29,.23],
-   [.36,.20,.12],[.36,.19,-.065],[.31,.12,-.29],
-   [.21,-.10,-.44]
-  ].map(([x,y,z])=>[sign*x,y,z]);
-  const widths=[.029,.032,.034,.037,.038,.037,.034,.032,.031,.03,.028,.03,.029];
-  straps.push(createChestFabricStrip(path,widths,material,
-   (sign<0?'小山左':'小山右')+'貼身背包肩帶','sound'));
- }
- hero.soundHarness={straps,material,root:new T.Group()};
- // Keep the two strap meshes on the chest bone for animation; root only
- // stores visibility state while toggling actual strap meshes in setCostume().
- return hero.soundHarness;
-}
-function ensureAdventureVestShoulders(){
- if(!hero)return null;
- if(hero.adventureVestShoulders)return hero.adventureVestShoulders;
- // Match the vest's existing golden-yellow fabric when its GLB material is
- // accessible. This is a VEST repair, not a backpack shoulder strap.
- let vestColor=null,best=-Infinity;
- hero.object.traverse(node=>{
-  if(!node.isMesh||!node.material)return;
-  let p=node,adventure=false;
-  while(p){if(p.userData?.costume==='adventure'){adventure=true;break;}if(p===hero.object)break;p=p.parent;}
-  if(!adventure)return;
-  for(const mat of Array.isArray(node.material)?node.material:[node.material]){
-   const c=mat?.color;if(!c)continue;
-   if(c.r>.3&&c.g>.19&&c.b<.38&&c.r>c.b*1.65&&c.g>c.b*1.3){
-    const label=(mat.name||'').toLowerCase();
-    const score=c.g-c.b+(/vest|yellow|gold|adventure|背心|黃色/.test(label)?2:0);
-    if(score>best){best=score;vestColor=c.clone();}
-   }
-  }
- });
- const material=new T.MeshStandardMaterial({
-  color:vestColor||new T.Color(0xe7b743),
-  roughness:.85,metalness:0,side:T.DoubleSide,
-  polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-3
- });
- const panels=[];
- for(const sign of [-1,1]){
-  // Broad, smooth sleeveless VEST shoulder fabric, not a narrow strap.
-  // The lower ends merge into the existing vest front and back.
-  const points=[
-   [.265,.34,.31],[.285,.46,.32],[.30,.58,.27],
-   [.31,.72,.17],[.31,.75,.04],[.30,.72,-.08],
-   [.30,.60,-.21],[.275,.41,-.29]
-  ].map(([x,y,z])=>[sign*x,y,z]);
-  const widths=[.11,.115,.12,.123,.12,.112,.103,.09];
-  panels.push(createChestFabricStrip(points,widths,material,
-   (sign<0?'左':'右')+'側黃色背心肩部補片','adventure'));
- }
- hero.adventureVestShoulders={panels,material};
- return hero.adventureVestShoulders;
-}
 function ensureSoundCostume(){
  if(!hero)return;
  if(!hero.soundHoverAnchor){
@@ -536,27 +397,9 @@ function ensureSoundCostume(){
   pivot.add(hero.object);
   hero.soundHoverAnchor=anchor;hero.soundTiltPivot=pivot;
  }
- if(!hero.soundBackpack&&window.XiaoshanSpirit?.create){
-  // The backpack uses the authentic Xiaoshan character silhouette, scaled down
-  // and facing outward from the hero's back. The former skin-tone chest plate
-  // and red headset/microphone meshes are retired below in setCostume().
-  const controller=window.XiaoshanSpirit.create({inPlace:true});
-  const accessory=new T.Group();
-  accessory.name='小山造型後背包';
-  const model=controller.root;
-  model.scale.setScalar(.32);
-  model.rotation.y=Math.PI;
-  accessory.add(model);
-  accessory.position.set(0,-.10,-.44);
-  heroChestRig().add(accessory);
-  const harness=ensureSoundHarness();
-  hero.soundBackpack={root:accessory,controller,straps:harness.straps,strapMaterial:harness.material};
- }
- if(!soundButterfly&&window.XiaoshanSpirit?.createButterfly){
-  soundButterfly=window.XiaoshanSpirit.createButterfly();
-  soundButterfly.root.visible=false;
- }
+ if(!hero.soundBackpack)hero.soundBackpack=heroCostumes.ensureSound(hero.object);
 }
+
 function updateSoundCostume(dt){
  if(!hero||!S.state)return;
  const active=S.state.costume==='sound',motion=soundCostumeMotion;
@@ -575,47 +418,18 @@ function updateSoundCostume(dt){
   hero.soundTiltPivot.rotation.x=motion.lean;
   hero.soundTiltPivot.rotation.z=moving?.025*Math.sin(elapsed*6):0;
  }
- if(hero.soundBackpack){
-  // The miniature Xiaoshan keeps the gentle sleepy breathing animation while
-  // secured to the character's back; it inherits all gliding body transforms.
-  if(active){
-   hero.soundBackpack.controller.update(Math.min(dt,.05));
-   hero.soundBackpack.root.rotation.z=.016*Math.sin(elapsed*2.2);
-  }
- }
- if(!soundButterfly)return;
- const visual=soundButterfly.root;
- visual.visible=active&&hero.root.visible!==false;
- if(!visual.visible)return;
- const parent=hero.root.parent;
- if(parent&&visual.parent!==parent)parent.add(visual);
- // One gentle orbit takes ~9 seconds; a taller, two-frequency vertical
- // trajectory keeps the butterfly alive without hectic movement.
- const angle=elapsed*.72,orbit=1.17+.13*Math.sin(elapsed*.75);
- const height=1.95+.52*Math.sin(elapsed*1.65)+.17*Math.sin(elapsed*2.65+.4);
- visual.position.set(hero.root.position.x+orbit*Math.sin(angle),hero.root.position.y+height,hero.root.position.z+orbit*Math.cos(angle));
- // Face the actual orbit tangent instead of pointing outward from the hero.
- // Applying pitch AFTER the native wing update prevents its mild sway from
- // visually cancelling the forward-facing flying posture.
- soundButterfly.update(dt);
- visual.rotation.order='YXZ';
- visual.rotation.y=angle+Math.PI/2+.12*Math.sin(elapsed*.55);
- visual.rotation.x=.31+.05*Math.sin(elapsed*1.2);
- visual.rotation.z=.03*Math.sin(elapsed*1.5);
+ heroCostumes.update(hero.object,dt);
 }
+
 function setCostume(id){
  S.state.costume=id;
  if(id==='sound')ensureSoundCostume();
- if(id==='adventure')ensureAdventureVestShoulders();
  if(id!=='sound'){
   soundCostumeMotion.hover=0;soundCostumeMotion.lean=0;
   if(hero.soundHoverAnchor)hero.soundHoverAnchor.position.y=0;
   if(hero.soundTiltPivot)hero.soundTiltPivot.rotation.set(0,0,0);
  }
- if(soundButterfly)soundButterfly.root.visible=id==='sound';
  if(hero.soundBackpack)hero.soundBackpack.root.visible=id==='sound';
- if(hero.soundHarness)for(const strap of hero.soundHarness.straps)strap.mesh.visible=id==='sound';
- if(hero.adventureVestShoulders)for(const panel of hero.adventureVestShoulders.panels)panel.mesh.visible=id==='adventure';
  applyHeroCostumeLook(hero.object,id);
  if(companion)companion.root.visible=id==='mist'&&!battle;
  save();
@@ -1309,7 +1123,7 @@ function showCostumes(){
 }
 const gyms=[{id:'gym_1',spirit:'pikachu',costume:'electric'},{id:'gym_2',spirit:'mew',costume:'mist'},{id:'gym_3',spirit:'wigglytuff',costume:'sound'},{id:'gym_4',spirit:'blissey',costume:'healing'}];
 function showGyms(){openModal('初光挑戰 · 四大守護者',`<p class="muted">親自走進 3D 試煉場，移動與翻滾避開推離和短暫干擾，投擲靈核球累積守護者的信任。旅人不會受到傷害；完成試煉解鎖專屬變裝，守護神獸將出現於初光鎮等待正式締約。幻靈競技則保留獨立 3 對 3 對決。</p><div class="cards">${gyms.map((g,i)=>`<button class="card" data-arena="${g.id}"><small>試煉 ${i+1} · ${['雷電奔襲','紫波滾動','木頭人驚跳','光鳳破綻'][i]}</small><img data-art="${g.spirit}" alt="${esc(byId[g.spirit]?.name)}"><strong>${esc(byId[g.spirit]?.name)}</strong><div class="stats">${S.state.gyms[g.id]?.cleared?'✓ 已完成':'進入試煉 · 解鎖專屬裝備'}</div></button>`).join('')}</div>`);$('modalBody').querySelectorAll('[data-art]').forEach(img=>requestArt(byId[img.dataset.art],img));}
-async function showViewer(id){const s=byId[id];if(!s)return;openModal(s.name+' · 3D 模型','<div class="viewer" id="viewer"></div><p class="viewerNote">拖曳旋轉 · 滾輪縮放 · Blender 原創模型</p><div class="toolbar"><button data-vmotion="Idle">待機</button><button data-vmotion="Walk">行走</button><button data-vmotion="Attack">攻擊</button>'+(isBook(s)?'<button data-vmotion="PageFlutter">翻動書頁</button><button data-vmotion="React">回應</button>':s.family==='chest-spirit'?'<button data-vmotion="TongueWiggle">擺動舌頭</button><button data-vmotion="React">回應</button>':s.family==='sesame-spirit'?'<button data-vmotion="Hop">跳躍</button><button data-vmotion="InspectHat">摘帽檢查</button><button data-vmotion="React">回應</button>':s.family==='pepper-chick'?'<button data-vmotion="Eat">吃辣椒</button><button data-vmotion="Count">坐下數椒</button><button data-vmotion="React">回應</button>':'')+'<button data-detail="'+id+'">返回收藏卡</button></div>');if(NativeFamilies.has(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');if(toolbar){toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());for(const name of ['Idle','Walk','Sit','Takeoff','Fly','Landing']){const b=document.createElement('button');b.dataset.vmotion=name;b.textContent=NativeFamilies.labelsFor(s.model)[name];toolbar.prepend(b);}}const note=document.querySelector('.viewerNote');if(note)note.textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 關節模型';}if(isFireMonkey(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());const modes={Idle:'待機',Walk:'敏捷行走',Attack:fireMonkeyStage(s.model)===2?'三連耍棍':'丟出火球',React:'回應',Jump:'跳躍'};for(const [mode,label] of Object.entries(modes)){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.append(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 火猴關節模型';}if(isOutouman(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());for(const [mode,label] of Object.entries({Idle:'待機',Walk:'行走',Wave:'揮手',Beam:'光線姿勢',Roll:'翻滾',Jump:'跳躍'})){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.prepend(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 歐頭慢';}if(isXiaoshan(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());for(const [mode,label] of Object.entries({Idle:'待機',Walk:'四腳行走',Sleep:'打瞌睡',Wake:'醒來',Jump:'起跳',Scared:'驚恐',React:'回應'})){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.prepend(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 小山';}if(isRiceball(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());for(const [mode,label] of Object.entries({Idle:'待機',Roll:'橫向翻滾',Stuck:'卡住 >_<',Wave:'紫色光波'})){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.prepend(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 小飯團';}if(isFloralDeer(s.model)||isLightPhoenix(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());const modes=isFloralDeer(s.model)?{Idle:'待機',Walk:'行走',Run:'奔跑',Greet:'打招呼',Rest:'休息',Pulse:'花光脈衝'}:{Idle:'待機',Walk:'收翼行走',Takeoff:'起飛',Fly:'水平飛行',Land:'降落',WingBurst:'振翼光波',FeatherVolley:'羽芒齊射'};for(const [mode,label]of Object.entries(modes)){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.append(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js '+(isFloralDeer(s.model)?'花鹿關節模型':'光鳳鷹關節模型');}const host=$('viewer'),g=await asset(s.model);if(!host.isConnected)return;const r=new T.WebGLRenderer({antialias:true,alpha:false});r.setPixelRatio(graphicsPixelRatio(graphicsQuality.preset));r.setSize(host.clientWidth,host.clientHeight);r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;host.append(r.domElement);const st=new T.Scene();st.background=new T.Color('#192c42');st.add(new T.HemisphereLight(0xd8eeff,0x7c7183,1.3));const l=new T.DirectionalLight(0xffe6ca,2);l.position.set(-3,5,4);st.add(l);const controller=g.create?.(),o=controller?controller.root:cloneSkin(g.scene);st.add(o);const box=controller?controllerBounds(s.model,controller):posedBounds(o),center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3()),cam=new T.PerspectiveCamera(36,host.clientWidth/host.clientHeight,.01,100),mix=new T.AnimationMixer(o),acts={};g.animations.forEach(c=>acts[c.name]=mix.clipAction(c));viewer={r,st,cam,o,mix,acts,controller,center,distance:Math.max(size.x,size.y,size.z)*2,yaw:.3,pitch:.15};viewerMotion('Idle');let last=null;host.onpointerdown=e=>{last=[e.clientX,e.clientY];host.setPointerCapture(e.pointerId)};host.onpointermove=e=>{if(last&&viewer){viewer.yaw-=(e.clientX-last[0])*.012;viewer.pitch=Math.max(-.35,Math.min(.8,viewer.pitch+(e.clientY-last[1])*.009));last=[e.clientX,e.clientY];}};host.onpointerup=()=>last=null;host.onwheel=e=>{e.preventDefault();viewer.distance*=e.deltaY>0?1.1:.9;},{passive:false};}
+async function showViewer(id){const s=byId[id];if(!s)return;openModal(s.name+' · 3D 模型','<div class="viewer" id="viewer"></div><p class="viewerNote">拖曳旋轉 · 滾輪縮放 · Blender 原創模型</p><div class="toolbar"><button data-vmotion="Idle">待機</button><button data-vmotion="Walk">行走</button><button data-vmotion="Attack">攻擊</button>'+(isBook(s)?'<button data-vmotion="PageFlutter">翻動書頁</button><button data-vmotion="React">回應</button>':s.family==='chest-spirit'?'<button data-vmotion="TongueWiggle">擺動舌頭</button><button data-vmotion="React">回應</button>':s.family==='sesame-spirit'?'<button data-vmotion="Hop">跳躍</button><button data-vmotion="InspectHat">摘帽檢查</button><button data-vmotion="React">回應</button>':s.family==='pepper-chick'?'<button data-vmotion="Eat">吃辣椒</button><button data-vmotion="Count">坐下數椒</button><button data-vmotion="React">回應</button>':'')+'<button data-detail="'+id+'">返回收藏卡</button></div>');if(NativeFamilies.has(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');if(toolbar){toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());for(const name of ['Idle','Walk','Sit','Takeoff','Fly','Landing']){const b=document.createElement('button');b.dataset.vmotion=name;b.textContent=NativeFamilies.labelsFor(s.model)[name];toolbar.prepend(b);}}const note=document.querySelector('.viewerNote');if(note)note.textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 關節模型';}if(isRobot(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());for(const [mode,label]of Object.entries(RobotSpirits.labels(s.model))){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.append(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 機器人關節模型';}if(isFireMonkey(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());const modes={Idle:'待機',Walk:'敏捷行走',Attack:fireMonkeyStage(s.model)===2?'三連耍棍':'丟出火球',React:'回應',Jump:'跳躍'};for(const [mode,label] of Object.entries(modes)){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.append(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 火猴關節模型';}if(isOutouman(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());for(const [mode,label] of Object.entries({Idle:'待機',Walk:'行走',Wave:'揮手',Beam:'光線姿勢',Roll:'翻滾',Jump:'跳躍'})){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.prepend(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 歐頭慢';}if(isXiaoshan(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());for(const [mode,label] of Object.entries({Idle:'待機',Walk:'四腳行走',Sleep:'打瞌睡',Wake:'醒來',Jump:'起跳',Scared:'驚恐',React:'回應'})){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.prepend(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 小山';}if(isRiceball(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());for(const [mode,label] of Object.entries({Idle:'待機',Roll:'橫向翻滾',Stuck:'卡住 >_<',Wave:'紫色光波'})){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.prepend(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js 小飯團';}if(isFloralDeer(s.model)||isLightPhoenix(s.model)){const toolbar=$('modalBody').querySelector('.toolbar');toolbar.querySelectorAll('[data-vmotion]').forEach(b=>b.remove());const modes=isFloralDeer(s.model)?{Idle:'待機',Walk:'行走',Run:'奔跑',Greet:'打招呼',Rest:'休息',Pulse:'花光脈衝'}:{Idle:'待機',Walk:'收翼行走',Takeoff:'起飛',Fly:'水平飛行',Land:'降落',WingBurst:'振翼光波',FeatherVolley:'羽芒齊射'};for(const [mode,label]of Object.entries(modes)){const b=document.createElement('button');b.dataset.vmotion=mode;b.textContent=label;toolbar.append(b);}document.querySelector('.viewerNote').textContent='拖曳旋轉 · 滾輪縮放 · 原生 Three.js '+(isFloralDeer(s.model)?'花鹿關節模型':'光鳳鷹關節模型');}const host=$('viewer'),g=await asset(s.model);if(!host.isConnected)return;const r=new T.WebGLRenderer({antialias:true,alpha:false});r.setPixelRatio(graphicsPixelRatio(graphicsQuality.preset));r.setSize(host.clientWidth,host.clientHeight);r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;host.append(r.domElement);const st=new T.Scene();st.background=new T.Color('#192c42');st.add(new T.HemisphereLight(0xd8eeff,0x7c7183,1.3));const l=new T.DirectionalLight(0xffe6ca,2);l.position.set(-3,5,4);st.add(l);const controller=g.create?.(),o=controller?controller.root:cloneSkin(g.scene);st.add(o);const box=controller?controllerBounds(s.model,controller):posedBounds(o),center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3()),cam=new T.PerspectiveCamera(36,host.clientWidth/host.clientHeight,.01,100),mix=new T.AnimationMixer(o),acts={};g.animations.forEach(c=>acts[c.name]=mix.clipAction(c));viewer={r,st,cam,o,mix,acts,controller,center,distance:Math.max(size.x,size.y,size.z)*2,yaw:.3,pitch:.15};viewerMotion('Idle');let last=null;host.onpointerdown=e=>{last=[e.clientX,e.clientY];host.setPointerCapture(e.pointerId)};host.onpointermove=e=>{if(last&&viewer){viewer.yaw-=(e.clientX-last[0])*.012;viewer.pitch=Math.max(-.35,Math.min(.8,viewer.pitch+(e.clientY-last[1])*.009));last=[e.clientX,e.clientY];}};host.onpointerup=()=>last=null;host.onwheel=e=>{e.preventDefault();viewer.distance*=e.deltaY>0?1.1:.9;},{passive:false};}
 function viewerMotion(n){if(!viewer)return;if(viewer.controller){viewer.controller.setMode(n);return;}const native=!!viewer.o.userData.nativeFamily;Object.values(viewer.acts).forEach(a=>native?a.fadeOut(.65):a.stop());const requested=['Attack','Hurt'].includes(n)&&!viewer.acts[n]&&viewer.acts.React?'React':n;const name=Object.keys(viewer.acts).find(k=>k.toLowerCase().includes(requested.toLowerCase()));if(name){const action=viewer.acts[name];action.reset().setLoop(n==='Landing'?T.LoopOnce:T.LoopRepeat,n==='Landing'?1:Infinity);action.clampWhenFinished=n==='Landing';if(native)action.fadeIn(.65);action.play();}}
 function stopViewer(){if(viewer){viewer.mix.stopAllAction();viewer.controller?.dispose();viewer.r.dispose();viewer.r.domElement.remove();viewer=null;}}
 function selectTarget(cycle=false){if(battle||throwing||modal||dialog)return;const nearby=captureCandidates().sort((a,b)=>a.root.position.distanceTo(S.player)-b.root.position.distanceTo(S.player));if(!nearby.length){clearTarget();if(cycle)toast(nearbyFlyingPhoenix()?'光鳳鷹還在飛行，請等待牠落地行走後再鎖定捕捉。':'目前沒有可締約的幻靈。');return;}if(!target||!nearby.includes(target))target=nearby[0];else if(cycle)target=nearby[(nearby.indexOf(target)+1)%nearby.length];if(cycle){locked=true;$('lockBtn').setAttribute('aria-pressed','true');$('lockBtn').setAttribute('aria-label','解除幻靈鎖定');$('lockBtn').title='解除鎖定';const dx=target.root.position.x-S.player.x,dz=target.root.position.z-S.player.z;hero.root.rotation.y=Math.atan2(dx,dz);cameraOrbit.yaw=Math.atan2(-dx,-dz);if(lockLabel)removeLabel(lockLabel);lockLabel=addLabel(target,'▼ '+target.species.name+' · 已鎖定','nameLabel targetLabel');showLockMarker(target);toast('已鎖定 '+target.species.name+(target.root.position.distanceTo(S.player)>12?'，請再靠近投擲。':''));}}
@@ -1421,7 +1235,7 @@ function outoumanSkillFx(from,to,skillName){
   done:()=>{geometry.dispose();for(const v of beams)v.material.dispose();}
  });
 }
-async function strike(attacker,defender,skill){if(!battle)return;if(statusTick(attacker)){attacker.actor.play('Hurt',true);battleLog(attacker.s.name+'受狀態影響，暫停一次行動。');await delay(600);return;}const phoenix=isLightPhoenix(attacker.actor.path),phoenixMode=/羽芒|鳳羽|FeatherVolley/i.test(skill.name||'')?'FeatherVolley':'WingBurst';attacker.actor.play(phoenix?phoenixMode:'Attack',true);const strong=(skill.cost||0)>=3,p=attacker.actor.root.position.clone(),to=defender.actor.root.position.clone().add(new T.Vector3(0,1,0)),dir=to.clone().sub(p).setY(0).normalize();battleLog(attacker.s.name+'使用'+skill.name+'！');if(attacker.s.id==='pikachu'&&['白色光波','彩虹光束'].includes(skill.name))outoumanSkillFx(p.clone().add(new T.Vector3(0,1,0)),to,skill.name);else combatFx(p.clone().add(new T.Vector3(0,1,0)),to,attacker.s.element,strong);if(strong)combatRing(defender.actor.root.position,1.7,attacker.s.element,.8);await new Promise(resolve=>effects.push({start:elapsed,duration:phoenix?(phoenixMode==='FeatherVolley'?2.7:2.4):.55,update:t=>attacker.actor.root.position.copy(p).addScaledVector(dir,Math.sin(t*Math.PI)*(phoenix?0:.5)),done:()=>{attacker.actor.root.position.copy(p);resolve();}}));const costumeBoost=battle?.kind==='arena'&&battle.allies.includes(attacker)?(S.state.costume==='electric'?1.2:1)*heroAttackBoost():1;
+async function strike(attacker,defender,skill){if(!battle)return;if(statusTick(attacker)){attacker.actor.play('Hurt',true);battleLog(attacker.s.name+'受狀態影響，暫停一次行動。');await delay(600);return;}const phoenix=isLightPhoenix(attacker.actor.path),phoenixMode=/羽芒|鳳羽|FeatherVolley/i.test(skill.name||'')?'FeatherVolley':'WingBurst';const robot=isRobot(attacker.actor.path),robotStrong=(skill.cost||0)>=3;attacker.actor.play(robot?RobotSpirits.attack(attacker.actor.path,robotStrong):phoenix?phoenixMode:'Attack',true);const strong=(skill.cost||0)>=3,p=attacker.actor.root.position.clone(),to=defender.actor.root.position.clone().add(new T.Vector3(0,1,0)),dir=to.clone().sub(p).setY(0).normalize();if(robot)attacker.actor.root.rotation.y=Math.atan2(dir.x,dir.z);battleLog(attacker.s.name+'使用'+skill.name+'！');if(attacker.s.id==='pikachu'&&['白色光波','彩虹光束'].includes(skill.name))outoumanSkillFx(p.clone().add(new T.Vector3(0,1,0)),to,skill.name);else if(!robot)combatFx(p.clone().add(new T.Vector3(0,1,0)),to,attacker.s.element,strong);if(strong&&!robot)combatRing(defender.actor.root.position,1.7,attacker.s.element,.8);await new Promise(resolve=>effects.push({start:elapsed,duration:robot?RobotSpirits.duration(attacker.actor.path,strong):phoenix?(phoenixMode==='FeatherVolley'?2.7:2.4):.55,update:t=>attacker.actor.root.position.copy(p).addScaledVector(dir,Math.sin(t*Math.PI)*(phoenix||robot?0:.5)),done:()=>{attacker.actor.root.position.copy(p);resolve();}}));const costumeBoost=battle?.kind==='arena'&&battle.allies.includes(attacker)?(S.state.costume==='electric'?1.2:1)*heroAttackBoost():1;
  const damage=Math.max(8,Math.round((skill.power||attacker.s.attack)*costumeBoost*(attacker.status?.attackUp?1.45:1)*(defender.status?.defDown?1.4:1)*(.88+Math.random()*.24)));defender.hp=Math.max(0,defender.hp-damage);defender.actor.play('Hurt',true);attacker.energy=Math.max(0,attacker.energy-(skill.cost||1));if(strong){const status=combatStatusFor[attacker.s.element]||'defDown';statusSet(['heal','attackUp'].includes(status)?attacker:defender,status,3);}updateHp(attacker);updateHp(defender);battleLog(defender.s.name+'受到 '+damage+' 點傷害。'+(strong?'共鳴狀態已發動！':''));await delay(600);attacker.actor.play('Idle');defender.actor.play('Idle');}
 function arenaCostumeHealing(b){
  if(!b||b.kind!=='arena'||S.state.costume!=='mist')return false;
@@ -1699,10 +1513,10 @@ function tickPepperBehavior(a){
 // Supplied native families: feet and flight body share the same collision-safe anchor.
 // All source motions recur; no teleport in world Y when switching to a flying pose.
 function tickNativeFamily(a,dt,speed){
- if(!NativeFamilies.has(a.path))return false;
+ if(!NativeFamilies.has(a.path)&&!isRobot(a.path))return false;
  const state=a.nativeActivity||={phase:'walk',remaining:4+Math.random()*3,cycle:0};
  state.remaining-=dt;
- if(state.remaining<=0){const order=['walk','takeoff','fly','landing','sit','stand'];state.phase=order[(order.indexOf(state.phase)+1)%order.length];state.remaining=({walk:6,takeoff:2,fly:7,landing:1.5,sit:4,stand:3})[state.phase];state.cycle++;}
+ if(state.remaining<=0){const order=isRobot(a.path)&&RobotSpirits.stage(a.path)===1?['walk','stand']:['walk','takeoff','fly','landing','sit','stand'];state.phase=order[(order.indexOf(state.phase)+1)%order.length];state.remaining=({walk:6,takeoff:2,fly:7,landing:1.5,sit:4,stand:3})[state.phase];state.cycle++;}
  let moving=false;
  if(state.phase==='walk'||state.phase==='fly'){
   a.timer-=dt;if(a.timer<=0){a.timer=2+Math.random()*3;const theta=Math.random()*Math.PI*2,r=1+Math.random()*3;a.goal.set(a.home.x+Math.cos(theta)*r,0,a.home.z+Math.sin(theta)*r);}
@@ -1915,7 +1729,7 @@ function warmBattleModels(){
  }
 }
 
-async function init(){try{const responses=await Promise.all(['data/spirits.json','data/world.json','data/npcs.json'].map(p=>fetch(p+'?v=20261019-size-dex-cmonkey-v1').then(r=>{if(!r.ok)throw Error(p+' 尚未就緒');return r.json()})));spirits=Array.isArray(responses[0])?responses[0]:responses[0].spirits;spirits.forEach(s=>{s.id=s.id||s.speciesId;s.name=s.name||s.displayName;byId[s.id]=s;});world=responses[1];npcData=Array.isArray(responses[2])?responses[2]:responses[2].npcs;const extraDataRequests=[(async()=>{try{const r=await fetch('data/bookshelf-interactions.json?v=20261016-books-v1');if(r.ok)bookshelfData=await r.json();}catch(e){S.errors.push('書櫃配置：'+e.message);}})(),(async()=>{try{const r=await fetch('data/model-size-overrides.json?v=20261019-floral-phoenix-v1');if(r.ok){const v=await r.json();modelSizeOverrides=v.overrides||v;}}catch(e){console.warn('尺寸設定尚未就緒',e);}})(),(async()=>{try{const r=await fetch('data/tower-monsters.json?v=20261014e');if(r.ok)towerMonsters=(await r.json()).monsters||[];}catch(e){console.warn('魔物卡牌尚未載入',e);}})(),(async()=>{try{const r=await fetch('data/card-art.json?v=20261019-floral-phoenix-v1');if(r.ok){const v=await r.json();cardArt=v.cards||v.art||v;}}catch(e){console.warn('卡圖清單尚未就緒',e);}})()];await Promise.all(extraDataRequests);S.state=loadSave();planChestEncounter();const newPlayerStart=!spirits.some(s=>owned(s.id))&&!labClaimed();const restoredBuilding=newPlayerStart?'dream_lab':S.state.buildingId,restoredPosition=newPlayerStart?null:S.state.position?.slice();S.state.team=S.state.team.filter(id=>byId[id]&&owned(id));if(!S.state.team.length)S.state.team=spirits.filter(s=>owned(s.id)).slice(0,3).map(s=>s.id);for(const g of gyms)if(S.state.gyms[g.id]?.cleared&&!S.state.unlockedCostumes.includes(g.costume))S.state.unlockedCostumes.push(g.costume);$('loadText').textContent='載入初光鎮與旅人…';const townAsset=await asset(world.worldModel||world.model);town=townAsset.scene.clone(true);townGroup.add(town);town.traverse(n=>{if(n.isMesh){n.receiveShadow=true;n.castShadow=true;}});hero=await actor('models/hero.glb',2.55);hero.restScene=(await asset('models/hero.glb')).scene;prepareHeroOutcomeActions();hero.root.rotation.y=Math.PI;S.player.fromArray(world.spawn||[0,0,4]);if(!newPlayerStart&&S.state.position?.length===2&&!blocked(...S.state.position))S.player.set(S.state.position[0],0,S.state.position[1]);hero.root.position.copy(S.player);setCostume(S.state.costume);$('loadText').textContent='準備鄰近居民與初始幻靈…';
+async function init(){try{const responses=await Promise.all(['data/spirits.json','data/world.json','data/npcs.json'].map(p=>fetch(p+'?v=20261019-robot-outfit-v1').then(r=>{if(!r.ok)throw Error(p+' 尚未就緒');return r.json()})));spirits=Array.isArray(responses[0])?responses[0]:responses[0].spirits;spirits.forEach(s=>{s.id=s.id||s.speciesId;s.name=s.name||s.displayName;byId[s.id]=s;});world=responses[1];npcData=Array.isArray(responses[2])?responses[2]:responses[2].npcs;const extraDataRequests=[(async()=>{try{const r=await fetch('data/bookshelf-interactions.json?v=20261016-books-v1');if(r.ok)bookshelfData=await r.json();}catch(e){S.errors.push('書櫃配置：'+e.message);}})(),(async()=>{try{const r=await fetch('data/model-size-overrides.json?v=20261019-robot-outfit-v1');if(r.ok){const v=await r.json();modelSizeOverrides=v.overrides||v;}}catch(e){console.warn('尺寸設定尚未就緒',e);}})(),(async()=>{try{const r=await fetch('data/tower-monsters.json?v=20261014e');if(r.ok)towerMonsters=(await r.json()).monsters||[];}catch(e){console.warn('魔物卡牌尚未載入',e);}})(),(async()=>{try{const r=await fetch('data/card-art.json?v=20261019-robot-outfit-v1');if(r.ok){const v=await r.json();cardArt=v.cards||v.art||v;}}catch(e){console.warn('卡圖清單尚未就緒',e);}})()];await Promise.all(extraDataRequests);S.state=loadSave();planChestEncounter();const newPlayerStart=!spirits.some(s=>owned(s.id))&&!labClaimed();const restoredBuilding=newPlayerStart?'dream_lab':S.state.buildingId,restoredPosition=newPlayerStart?null:S.state.position?.slice();S.state.team=S.state.team.filter(id=>byId[id]&&owned(id));if(!S.state.team.length)S.state.team=spirits.filter(s=>owned(s.id)).slice(0,3).map(s=>s.id);for(const g of gyms)if(S.state.gyms[g.id]?.cleared&&!S.state.unlockedCostumes.includes(g.costume))S.state.unlockedCostumes.push(g.costume);$('loadText').textContent='載入初光鎮與旅人…';const townAsset=await asset(world.worldModel||world.model);town=townAsset.scene.clone(true);townGroup.add(town);town.traverse(n=>{if(n.isMesh){n.receiveShadow=true;n.castShadow=true;}});hero=await actor('models/hero.glb',2.55);hero.restScene=(await asset('models/hero.glb')).scene;prepareHeroOutcomeActions();hero.root.rotation.y=Math.PI;S.player.fromArray(world.spawn||[0,0,4]);if(!newPlayerStart&&S.state.position?.length===2&&!blocked(...S.state.position))S.player.set(S.state.position[0],0,S.state.position[1]);hero.root.position.copy(S.player);setCostume(S.state.costume);$('loadText').textContent='準備鄰近居民與初始幻靈…';
 const nearestNpcs=[...npcData].sort((a,b)=>{
  const p=a.position||[0,0,0],q=b.position||[0,0,0],az=p.length===2?p[1]:p[2],bz=q.length===2?q[1]:q[2];
  return Math.hypot(p[0]-S.player.x,az-S.player.z)-Math.hypot(q[0]-S.player.x,bz-S.player.z);
