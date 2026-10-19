@@ -48,7 +48,7 @@ function nearbyFlyingPhoenix(){
  return !place&&wild.some(w=>w.species?.id==='blissey'&&!phoenixWildGrounded(w)&&
   w.root.visible&&w.root.parent===townGroup&&Math.hypot(w.root.position.x-S.player.x,w.root.position.z-S.player.z)<12);
 }
-function captureCandidates(){if(place){const e=chestEncounter,a=e?.actor,k=bookEncounter,r=k?.actor;return [...(e?.awakened&&elapsed>=(e.captureReadyAt||0)&&e.roomId===place.id&&a?.root.visible&&a.root.parent===insideGroup?[a]:[]),...(k?.roomId===place.id&&r?.root.visible&&r.root.parent===insideGroup?[r]:[])];}return wild.filter(w=>w.root.visible&&w.root.parent===townGroup&&eligible(w.species)&&phoenixWildGrounded(w));}
+function captureCandidates(){if(place){const e=chestEncounter,a=e?.actor,k=bookEncounter,r=k?.actor;return [...(e?.awakened&&elapsed>=(e.captureReadyAt||0)&&e.roomId===place.id&&a?.root.visible&&a.root.parent===insideGroup?[a]:[]),...(k?.roomId===place.id&&r?.root.visible&&r.root.parent===insideGroup?[r]:[])];}return wild.filter(w=>w.root.visible&&w.root.parent===townGroup&&(eligible(w.species)||authorizedGuardianActor(w))&&phoenixWildGrounded(w));}
 function tickChestEncounter(dt){if(!chestEncounter&&elapsed>=chestNextAt)planChestEncounter();const e=chestEncounter;if(!e||place?.id!==e.roomId||enterBusy||battle||modal||dialog)return;if(!e.actor){if(elapsed>=chestNextAt)void ensureChestActor();return;}const a=e.actor;if(a.capturing)return;if(!e.awakened){a.play('Idle');if(a.root.position.distanceTo(S.player)>4.6)return;e.awakened=true;e.captureReadyAt=elapsed+.4;chestSymbol(a,'！',1.6);playChestDing();a.timer=0;}a.timer-=dt;if(a.timer<=0){a.timer=.6+Math.random()*.9;const room=place,b=normalizeBounds(room.bounds);for(let i=0;i<24;i++){const x=b.minX+.9+Math.random()*(b.maxX-b.minX-1.8),z=b.minZ+.9+Math.random()*(b.maxZ-b.minZ-1.8);if(!roomBlocked(room,x,z,.85)){a.goal.set(x,0,z);break;}}}const d=a.goal.clone().sub(a.root.position);d.y=0;let moving=false;if(d.length()>.12){d.normalize();const nx=a.root.position.x+d.x*dt*2.15,nz=a.root.position.z+d.z*dt*2.15;if(!roomBlocked(place,nx,nz,.85)){a.root.position.set(nx,0,nz);a.root.rotation.y=Math.atan2(d.x,d.z);moving=true;}else a.timer=0;}a.play(moving?'Walk':'Idle');}
 const TOWER_KEY='phantom-starspire-tower-v1';const TOWER_PETS=[{id:'forest',card:'森棘龍卡片',name:'青螺幼靈',model:'bulbasaur',cost:3},{id:'ice',card:'霜牙獸卡片',name:'小芝麻',model:'squirtle',cost:3},{id:'fire',card:'熔冠翼龍卡片',name:'椒香小雞',model:'charmander',cost:3}];
 function towerProgress(){try{const v=JSON.parse(localStorage.getItem(TOWER_KEY)||'{}');return {...v,inventory:{...(v.inventory||{})},cards:{...(v.cards||{})},pets:{...(v.pets||{})}};}catch{return {inventory:{},cards:{},pets:{}};}}
@@ -190,7 +190,19 @@ function normalizeBounds(b){if(Array.isArray(b))return{minX:b[0],maxX:b[1],minZ:
 function blocked(x,z,margin=.42){const b=normalizeBounds(place?place.bounds:world.bounds);if(x<b.minX+margin||x>b.maxX-margin||z<b.minZ+margin||z>b.maxZ-margin)return true;return((place?place.collisions:world.collisions)||[]).some(c=>{const cx=c.x??c.position?.[0]??0,cz=c.z??c.position?.[2]??0,w=c.w??c.width??c.size?.[0]??0,d=c.d??c.depth??c.size?.[2]??0;return Math.abs(x-cx)<w/2+margin&&Math.abs(z-cz)<d/2+margin;});}
 function randomPoint(){for(let i=0;i<120;i++){const near=i<95,r=6+Math.random()*14,t=Math.random()*Math.PI*2,x=near?S.player.x+Math.cos(t)*r:(Math.random()-.5)*64,z=near?S.player.z+Math.sin(t)*r:(Math.random()-.5)*64;if(!blocked(x,z,1.5)&&!npcs.some(n=>n.root.position.distanceTo(new T.Vector3(x,0,z))<2))return new T.Vector3(x,0,z);}return new T.Vector3(9,0,5);}
 let gymScenePromise=null,appearanceSpawnBusy=false;const appearanceAudio={context:null,eventId:null,timer:null,nodes:[],unlocked:false};
-function specialEvents(){return Object.values(S.state?.specialAppearances||{}).filter(e=>e&&byId[e.speciesId]&&e.eventId);}
+// Gym guardians are one-off post-victory encounters, NEVER part of the random wild pool.
+function isGymGuardian(s){return !!s&&gyms.some(g=>g.spirit===s.id);}
+function guardianEncounterAuthorized(s,event){
+ if(!isGymGuardian(s)||!event?.eventId)return false;
+ const gym=gyms.find(g=>g.id===event.gymId&&g.spirit===s.id&&g.spirit===event.speciesId);
+ return !!gym&&!!S.state?.gyms?.[gym.id]?.cleared&&S.state?.specialAppearances?.[gym.id]?.eventId===event.eventId;
+}
+function specialEvents(){return Object.values(S.state?.specialAppearances||{}).filter(e=>guardianEncounterAuthorized(byId[e?.speciesId],e));}
+function authorizedGuardianActor(a){
+ if(!a?.specialEventId||!isGymGuardian(a.species))return false;
+ const gym=gyms.find(g=>g.spirit===a.species.id),event=S.state?.specialAppearances?.[gym?.id];
+ return !!event&&event.eventId===a.specialEventId&&guardianEncounterAuthorized(a.species,event);
+}
 async function gymSceneConfig(key){gymScenePromise||=fetch('data/gym-scenes.json?v=20261019-floral-phoenix-v1').then(r=>{if(!r.ok)throw Error('道館場景資料未就緒');return r.json();}).catch(e=>{gymScenePromise=null;throw e;});const config=(await gymScenePromise)[key];if(!config?.model)throw Error('道館場景未設定：'+key);return config;}
 function gymBoundsBlocked(x,z,margin=.5){const b=battle?.sceneConfig?.bounds||{minX:-14,maxX:14,minZ:-14,maxZ:14};return x<b.minX+margin||x>b.maxX-margin||z<b.minZ+margin||z>b.maxZ-margin;}
 function guardianPoint(){for(let i=0;i<24;i++){const angle=i/24*Math.PI*2,r=5.5+(i%3)*.7,x=S.player.x+Math.sin(angle)*r,z=S.player.z+Math.cos(angle)*r;if(!blocked(x,z,1.2))return new T.Vector3(x,0,z);}return randomPoint();}
@@ -207,7 +219,34 @@ function sizeGuardianAppearance(a,event){
  a.guardianSizeApplied=true;
 }
 function enqueueGuardianAppearance(gym){S.state.specialAppearances||={};const previous=S.state.specialAppearances[gym.id];if(previous){const old=wild.find(w=>w.specialEventId===previous.eventId);if(old){if(old===target)clearTarget();if(old.specialLabel)removeLabel(old.specialLabel);wild.splice(wild.indexOf(old),1);removeActor(old);}}const event={eventId:gym.id+'-'+Date.now()+'-'+Math.floor(Math.random()*100000),gymId:gym.id,speciesId:gym.spirit,nextIn:0};S.state.specialAppearances[gym.id]=event;save();return event;}
-async function ensureSpecialAppearances(){if(appearanceSpawnBusy||place||battle||!S.state)return;appearanceSpawnBusy=true;try{for(const event of specialEvents()){if(wild.some(w=>w.specialEventId===event.eventId))continue;let a=wild.find(w=>w.species.id===event.speciesId&&!w.specialEventId&&w!==target);if(!a){while(wild.length+spawnPending>=WILD_LIMIT){const old=wild.find(w=>!w.specialEventId&&w!==target)||wild.find(w=>!w.specialEventId);if(!old)break;if(old===target)clearTarget();wild.splice(wild.indexOf(old),1);removeActor(old);}if(wild.length+spawnPending>=WILD_LIMIT)continue;spawnPending++;try{a=await spawnWild(byId[event.speciesId],guardianPoint());}finally{spawnPending--;}}if(!Object.values(S.state.specialAppearances).some(e=>e.eventId===event.eventId)){wild.splice(wild.indexOf(a),1);removeActor(a);continue;}a.specialEventId=event.eventId;sizeGuardianAppearance(a,event);a.specialLabel=addLabel(a,'✦ 守護神獸 · '+a.species.name,'nameLabel guardianLabel');}}catch(e){S.errors.push(e.message);}finally{appearanceSpawnBusy=false;}}
+async function ensureSpecialAppearances(){
+ if(appearanceSpawnBusy||place||battle||!S.state)return;
+ appearanceSpawnBusy=true;
+ try{
+  for(const event of specialEvents()){
+   if(wild.some(w=>w.specialEventId===event.eventId))continue;
+   while(wild.length+spawnPending>=WILD_LIMIT){
+    const old=wild.find(w=>!w.specialEventId&&w!==target)||wild.find(w=>!w.specialEventId);
+    if(!old)break;
+    if(old===target)clearTarget();
+    wild.splice(wild.indexOf(old),1);removeActor(old);
+   }
+   if(wild.length+spawnPending>=WILD_LIMIT)continue;
+   spawnPending++;
+   let a;
+   try{a=await spawnWild(byId[event.speciesId],guardianPoint(),event);}
+   finally{spawnPending--;}
+   if(!a)continue;
+   if(!guardianEncounterAuthorized(a.species,event)){
+    wild.splice(wild.indexOf(a),1);removeActor(a);continue;
+   }
+   a.specialEventId=event.eventId;
+   sizeGuardianAppearance(a,event);
+   a.specialLabel=addLabel(a,'✦ 守護神獸 · '+a.species.name,'nameLabel guardianLabel');
+  }
+ }catch(e){S.errors.push(e.message);}
+ finally{appearanceSpawnBusy=false;}
+}
 function completeGuardianAppearance(who){if(!who.specialEventId)return;for(const [key,event]of Object.entries(S.state.specialAppearances||{}))if(event.eventId===who.specialEventId)delete S.state.specialAppearances[key];if(who.specialLabel){removeLabel(who.specialLabel);who.specialLabel=null;}stopAppearanceBgm();save();}
 function stopAppearanceBgm(){if(appearanceAudio.timer)clearInterval(appearanceAudio.timer);appearanceAudio.timer=null;appearanceAudio.eventId=null;for(const node of appearanceAudio.nodes){try{node.osc.stop();}catch(e){}node.osc.disconnect();node.gain.disconnect();}appearanceAudio.nodes=[];}
 function playAppearancePhrase(event){const ctx=appearanceAudio.context;if(!ctx||ctx.state!=='running')return;const s=byId[event.speciesId],base=({electric:392,psychic:261.63,fairy:329.63,normal:293.66})[s.element]||293.66,notes=({electric:[1,1.5,2,1.25,1.5,2],psychic:[1,1.25,1.5,2,1.5,1.25],fairy:[1,1.5,1.25,2,1.5,1.25],normal:[1,1.25,1.5,1.25,2,1.5]})[s.element]||[1,1.25,1.5,2,1.5,1.25],now=ctx.currentTime;for(const [i,note]of notes.entries()){const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type=s.element==='electric'?'triangle':'sine';osc.frequency.value=base*note;osc.connect(gain);gain.connect(ctx.destination);const at=now+i*.36;gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime(.025,at+.04);gain.gain.exponentialRampToValueAtTime(.0001,at+.62);osc.start(at);osc.stop(at+.65);const item={osc,gain};appearanceAudio.nodes.push(item);osc.onended=()=>{osc.disconnect();gain.disconnect();const j=appearanceAudio.nodes.indexOf(item);if(j>=0)appearanceAudio.nodes.splice(j,1);};}}
@@ -217,11 +256,11 @@ addEventListener('pointerdown',unlockAppearanceAudio,{passive:true});addEventLis
 function tickSpecialAppearances(dt){if(!S.state)return;const due=[];for(const event of specialEvents()){event.nextIn=Math.max(0,(Number.isFinite(event.nextIn)?event.nextIn:180)-dt);if(event.nextIn<=0&&!place&&!battle&&!modal&&!dialog&&wild.some(w=>w.specialEventId===event.eventId))due.push(event);}if(due.length){showWorldBroadcast('守護神獸「'+due.map(e=>byId[e.speciesId].name).join('、')+'」出現於場景中！'+(!appearanceAudio.unlocked?' 點一下畫面啟用牠們的旋律。':''));for(const event of due)event.nextIn=180;save();}if(!place&&!battle&&specialEvents().some(e=>!wild.some(w=>w.specialEventId===e.eventId)))ensureSpecialAppearances();syncAppearanceBgm();}
 async function showGymVictory(){const el=document.createElement('div');el.className='gymVictory';el.textContent='勝利!!';el.style.opacity='0';document.body.append(el);playHeroOutcome(true);try{await captureTween(.85,t=>{el.style.opacity=String(t);el.style.transform='scale('+(.94+t*.06)+')';});await captureTween(.8,()=>{});await captureTween(.35,t=>el.style.opacity=String(1-t));}finally{el.remove();}}
 function labLegendMilestoneReached(){return spirits.length>0&&spirits.filter(s=>owned(s.id)).length>=Math.ceil(spirits.length*.30);}
-function eligible(s){if(isBook(s))return false;
+function eligible(s){if(isBook(s)||isGymGuardian(s))return false;
  if(LAB_LEGENDS.some(e=>e.id===s.id)){
   if(!labClaimed())return false;
   if(s.id!==S.state.dreamLabLegendChoice)return labLegendMilestoneReached();
- }if(specialEvents().some(e=>e.speciesId===s.id))return true;if(['mewtwo','jigglypuff'].includes(s.id))return S.state.wins>0;const gym=gyms.find(g=>g.spirit===s.id);if(gym&&!S.state.gyms[gym.id]?.cleared)return false;if(s.id==='pikachu'&&gym)return true;if(['mew','wigglytuff'].includes(s.id))return true;if(s.id==='raichu'&&!(S.state.worldFlags.raichuSpawnUnlocked||S.state.items.thunderStone))return false;if(s.previous&&!owned(s.previous))return false;if(s.role==='legendary'||s.rarity==='傳說'){const list=spirits.filter(x=>(x.role==='legendary'||x.rarity==='傳說')&&!['mew','wigglytuff','pikachu'].includes(x.id)),index=list.indexOf(s),threshold=index<4?.25:index<8?.5:.75;return spirits.filter(x=>owned(x.id)).length/spirits.length>=threshold;}return true;}
+ }if(['mewtwo','jigglypuff'].includes(s.id))return S.state.wins>0;if(s.id==='raichu'&&!(S.state.worldFlags.raichuSpawnUnlocked||S.state.items.thunderStone))return false;if(s.previous&&!owned(s.previous))return false;if(s.role==='legendary'||s.rarity==='傳說'){const list=spirits.filter(x=>(x.role==='legendary'||x.rarity==='傳說')&&!['mew','wigglytuff','pikachu'].includes(x.id)),index=list.indexOf(s),threshold=index<4?.25:index<8?.5:.75;return spirits.filter(x=>owned(x.id)).length/spirits.length>=threshold;}return true;}
 function isAirborne(s){return /^(fly|flying|float|hover)$/.test(s.motionType||'')||/^(bird|owl|phoenix|manta|moth|dragonfly|serpent|griffin)$/.test(s.form||'');}
 function captureTween(duration,update){return new Promise(resolve=>effects.push({start:elapsed,duration,update,done:resolve}));}
 function disposeCaptureFx(root){detach(root);root.traverse(n=>{if(n.geometry)n.geometry.dispose();const materials=Array.isArray(n.material)?n.material:[n.material];materials.forEach(m=>{if(m)m.dispose();});});}
@@ -232,7 +271,12 @@ function updateFlight(a,dt){if(!a.airborne)return;a.flightRemaining-=dt;if(a.fli
 function collectPickup(a){const k=a.pickupKey,amount=k==='core'?5:k==='berry'?3:1;if(k==='core')S.state.pokeballs+=amount;else if(k==='great_core')S.state.greatBallCount+=amount;else if(k==='berry')S.state.berryCount+=amount;else{const item=k==='evolutionStone'?'thunderStone':'potion';S.state.items[item]=number(S.state.items[item])+amount;if(item==='thunderStone')S.state.worldFlags.raichuSpawnUnlocked=true;}a.root.visible=false;a.respawn=elapsed+90;a.root.position.copy(randomPoint());return({core:'靈核球',great_core:'高階靈核球',berry:'星露果',potion:'初光藥劑',evolutionStone:'雷光結晶'})[k]+' +'+amount;}
 function showWorldBroadcast(text){const el=$('broadcast');if(el){clearTimeout(el.dismissTimer);el.textContent=text;el.hidden=false;layoutWorldNotifications();el.dismissTimer=setTimeout(()=>{el.hidden=true;layoutWorldNotifications();},12000);}}
 function tickGuideBroadcast(){if(elapsed<guideBroadcastAt||place||battle||dialog||modal)return;const names={electric:'歐頭慢變身套裝',mist:'小飯團同行',sound:'小山蝴蝶套裝',healing:'光鳳鷹治癒套裝'},tips=['圖鑑收錄達 25%、50%、75% 時，傳說幻靈會分批開放。持續締約不同種類，探索更多夥伴。','挑戰四座道館可依序取得 '+gyms.map(g=>names[g.costume]).join('、')+'，在旅人手冊的冒險衣櫃換裝。','雷光結晶可透過居民委託與場上補給取得；取得後能解鎖 '+(byId.raichu?.name||'雷系進階幻靈')+' 的出現條件。','一般幻靈一階進二階需 5 份羈絆，二階進三階需 10 份；C囝仔需在參戰隊伍連續完成 3 場幻靈競技擂台（勝敗皆計），不需羈絆即可進化成 C老猴。','在 3 對 3 競技擂台取得勝利，會開放 '+[byId.mewtwo?.name,byId.jigglypuff?.name].filter(Boolean).join('、')+' 的出現條件。','找大夢博士領取冒險服；穿著後每 10 秒把場上可收集的補給與道具以飛行特效吸至身邊，成功吸收後才入袋；已收取的補給 90 秒後再生。'];const text='旅人攻略｜'+tips[guideBroadcastIndex++%tips.length];guideBroadcastAt=elapsed+300;showWorldBroadcast(text);}
-async function spawnWild(species,position){if(!species||isChest(species)||isBook(species))return null;const rule=sizeRule(species),height=Number(rule.desiredWorldHeight||rule.height)||1.275*Math.pow(1.3,Math.min(2,(species.stage||1)-1)),a=await actor(species.model,height);const dimensions=a.worldSize||posedBounds(a.object).getSize(new T.Vector3()),maxSpan=Math.min(6,Number(rule.maxSpan)||6),ratio=Math.min(1,maxSpan/Math.max(dimensions.x,dimensions.z,.001));if(ratio<1){a.object.scale.multiplyScalar(ratio);a.object.position.multiplyScalar(ratio);a.height*=ratio;a.worldSize.multiplyScalar(ratio);}
+async function spawnWild(species,position,guardianEvent=null){
+ if(!species||isChest(species)||isBook(species))return null;
+ if(isGymGuardian(species)&&!guardianEncounterAuthorized(species,guardianEvent))return null;
+ const rule=sizeRule(species),height=Number(rule.desiredWorldHeight||rule.height)||1.275*Math.pow(1.3,Math.min(2,(species.stage||1)-1)),a=await actor(species.model,height);
+ if(isGymGuardian(species)&&!guardianEncounterAuthorized(species,guardianEvent)){removeActor(a);return null;}
+ const dimensions=a.worldSize||posedBounds(a.object).getSize(new T.Vector3()),maxSpan=Math.min(6,Number(rule.maxSpan)||6),ratio=Math.min(1,maxSpan/Math.max(dimensions.x,dimensions.z,.001));if(ratio<1){a.object.scale.multiplyScalar(ratio);a.object.position.multiplyScalar(ratio);a.height*=ratio;a.worldSize.multiplyScalar(ratio);}
  // Outdoor capturable instances only; gym/arena/collection visuals keep their own sizes.
  const wildFactor=species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);a.root.position.copy(position||randomPoint());a.airborne=!isLightPhoenix(species.model)&&!isFloralDeer(species.model)&&!isFireMonkey(species.model)&&!isOutouman(species.model)&&!isRiceball(species.model)&&!NativeFamilies.has(species.model)&&isAirborne(species);a.flightState=a.airborne?'air':'ground';a.flightAltitude=1.8+Math.random()*1.2;a.flightRemaining=20+Math.random()*20;a.flightBase=a.airborne?a.flightAltitude:0;a.flightPhase=Math.random()*Math.PI*2;a.root.position.y=a.flightBase;a.home=a.root.position.clone();a.goal=a.home.clone();a.timer=Math.random()*3;a.berry=false;wild.push(a);return a;}
 let labWildSpawnBusy=false;
