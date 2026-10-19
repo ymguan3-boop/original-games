@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>匯出遊戲用 GLB</title></head>
+<body style="font:14px system-ui;padding:16px">
+<h1>幻靈奇旅主角匯出</h1>
+<p id="log">準備中…</p>
+<script src="kid-model.js"></script>
+<script src="props.js"></script>
+<script src="actions.baked.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+// 把網頁上的小男孩（含所有造型節點、表情、20 個動作）與四種武器匯出成遊戲用的 GLB。
+// 動作名稱對應遊戲既有的主角動畫名稱；武器動作另以 Weapon 開頭命名。
+import * as THREE from 'three';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { buildBird as buildModel, buildClips, DETAIL } from './builder.js';
+DETAIL.k = 0.36;   // 遊戲用：降低面數
+const { CHARACTER, ACTIONS, PROPS, PROP_MATERIALS } = window.KID_BLUEPRINT;
+const log = (t) => { document.getElementById('log').textContent = t; console.log(t); };
+
+// 遊戲套裝 id → 本模型的造型節點
+const COSTUME_NODES = {
+  healing: ['outfitHat', 'outfitCape', 'outfitCapeArmL', 'outfitCapeArmR'],   // 光鳳鷹治癒套裝 ← 冒險套裝（帽子＋披風）
+  electric: ['outfitUltraHead', 'outfitUltraBody'],                          // 歐頭慢變身套裝 ← 鹹蛋超人
+  adventure: ['outfitVest'],                                                  // 冒險服 ← 黃色探險背心＋後背包
+  mist: ['outfitScarf'],                                                      // 小飯團同行 ← 圍巾
+};
+// 遊戲動畫名稱 ← 本模型動作
+const CLIP_NAMES = {
+  Idle: 'idle', Walk: 'walk', Run: 'run', Wave: 'wave', Throw: 'throw', Attack: 'throw', Hurt: 'hurt', Roll: 'roll',
+  Celebrate: 'cheer2', JumpCelebrate: 'cheer1', Disappointed: 'sad1', GroundPoundDisappointed: 'sad2',
+  SwordReady: 'swordReady', SwordCombo: 'swordCombo', BladesReady: 'bladesReady', BladesCombo: 'bladesCombo',
+  GunsReady: 'gunsReady', GunsCombo: 'gunsCombo', KnifeReady: 'knifeReady', KnifeCombo: 'knifeCombo',
+};
+const IN_PLACE = ['roll'];   // 遊戲自己移動角色：翻滾的前進位移歸零
+
+// 遊戲用材質：不帶布紋貼圖；金屬度壓低（遊戲場景沒有環境貼圖，全金屬會變黑）
+function gameMaterial(m) {
+  m.roughnessMap = null; m.bumpMap = null;
+  if (m.metalness > 0.3) { m.metalness = 0.3; m.roughness = Math.max(m.roughness, 0.3); }
+}
+// 合併網格：同一個關節底下、同材質（且同為制服配件與否）的零件合成一個網格 → 手機繪製次數大幅減少。
+// 有名稱的節點（關節、表情、造型、掛點）都保留，動畫與換裝照常運作。
+function mergeByJoint(root) {
+  root.updateMatrixWorld(true);
+  const isJoint = (o) => o === root || !!o.name;
+  const groups = new Map();
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    let j = o.parent; while (!isJoint(j)) j = j.parent;
+    const key = o.material.uuid + '|' + (o.userData.part?.uo ? 1 : 0);
+    if (!groups.has(j)) groups.set(j, new Map());
+    const g = groups.get(j); if (!g.has(key)) g.set(key, []); g.get(key).push(o);
+  });
+  const inv = new THREE.Matrix4();
+  let before = 0, after = 0;
+  for (const [j, byKey] of groups) {
+    inv.copy(j.matrixWorld).invert();
+    for (const meshes of byKey.values()) {
+      before += meshes.length; after++;
+      const geos = meshes.map((m) => {
+        const g = m.geometry.clone();
+        for (const name of Object.keys(g.attributes)) if (!['position', 'normal'].includes(name)) g.deleteAttribute(name);   // 遊戲版沒有貼圖，不需要 UV
+        if (!g.attributes.normal) g.computeVertexNormals();
+        if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]);
+        g.morphAttributes = {};
+        g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld));
+        return g;
+      });
+      const merged = mergeGeometries(geos, false);
+      if (!merged) throw Error('合併失敗：' + j.name);
+      const mesh = new THREE.Mesh(merged, meshes[0].material);
+      mesh.userData.part = { ...meshes[0].userData.part };
+      meshes.forEach((m) => m.parent.remove(m));
+      j.add(mesh);
+    }
+  }
+  // 清掉合併後變空的無名群組
+  const prune = (o) => { [...o.children].forEach(prune); if (o !== root && !o.name && !o.isMesh && o.children.length === 0) o.parent.remove(o); };
+  prune(root);
+  return before + ' → ' + after;
+}
+function exportGLB(scene, animations) {
+  return new Promise((resolve, reject) => new GLTFExporter().parse(scene, resolve, reject, { binary: true, animations, onlyVisible: false }));
+}
+async function save(name, buf) {
+  const r = await fetch('/__save/game/' + name, { method: 'PUT', body: buf });
+  if (!r.ok) throw Error('save failed ' + name);
+}
+
+async function run() {
+  // ---- 主角
+  const model = buildModel(CHARACTER);
+  model.name = 'KidHero';
+  for (const [id, nodes] of Object.entries(COSTUME_NODES))
+    for (const n of nodes) { const o = model.getObjectByName(n); if (!o) throw Error('缺少造型節點 ' + n); o.userData.costume = id; o.visible = true; }
+  model.traverse((o) => {
+    if (o.isMesh) {
+      gameMaterial(o.material);
+      if (o.material.userData.key === undefined && o.userData.part?.m === 'outline') o.material.name = 'outline';
+      else o.material.name = o.material.userData.key || o.material.name;
+    }
+  });
+  const acts = [];
+  for (const [game, id] of Object.entries(CLIP_NAMES)) {
+    const a = ACTIONS.find((x) => x.id === id);
+    if (!a) throw Error('缺少動作 ' + id);
+    let src = a;
+    if (IN_PLACE.includes(id)) {
+      src = JSON.parse(JSON.stringify(a));
+      const p0 = src.tracks.hips.p[0][2];
+      src.tracks.hips.p = src.tracks.hips.p.map(([x, y]) => [x, y, p0]);
+    }
+    acts.push({ ...src, id: game });
+  }
+  const merged = mergeByJoint(model);
+  const clips = buildClips(acts, model);
+  const glb = await exportGLB(model, Object.values(clips));
+  await save('hero.glb', glb);
+  log('hero.glb ' + (glb.byteLength / 1024).toFixed(0) + ' KB，網格 ' + merged);
+
+  // ---- 武器（原點 = 握點，+Z = 刃／劍身方向，與角色 propR/propL 掛點相符）
+  const sizes = [];
+  for (const id of ['sword', 'blade', 'gun', 'knife', 'flash']) {
+    const g = buildModel({ id: 'kid-' + id, materials: PROP_MATERIALS, parts: PROPS[id].parts });
+    g.traverse((o) => { if (o.isMesh) { gameMaterial(o.material); o.material.name = o.material.userData.key || o.material.name; } });
+    mergeByJoint(g);
+    const buf = await exportGLB(g, []);
+    await save('kid-' + id + '.glb', buf);
+    sizes.push(id + ' ' + (buf.byteLength / 1024).toFixed(0) + ' KB');
+  }
+  log('完成：hero.glb ' + (glb.byteLength / 1024).toFixed(0) + ' KB（網格 ' + merged + '）；' + sizes.join('、'));
+  document.title = 'done';
+}
+run().catch((e) => { log('錯誤：' + e.message); document.title = 'error'; console.error(e); });
+</script>
+</body></html>

@@ -24,7 +24,7 @@
     },
     {
       "file": "models/hero.glb",
-      "bytes": 4263272,
+      "bytes": 3965428,
       "animations": [
         "Idle",
         "Walk",
@@ -35,9 +35,17 @@
         "Hurt",
         "Roll",
         "Celebrate",
-        "Disappointed",
         "JumpCelebrate",
-        "GroundPoundDisappointed"
+        "Disappointed",
+        "GroundPoundDisappointed",
+        "SwordReady",
+        "SwordCombo",
+        "BladesReady",
+        "BladesCombo",
+        "GunsReady",
+        "GunsCombo",
+        "KnifeReady",
+        "KnifeCombo"
       ]
     },
     {
@@ -618,11 +626,6 @@
       ]
     },
     {
-      "file": "models/tower/bow.glb",
-      "bytes": 85000,
-      "animations": []
-    },
-    {
       "file": "models/tower/collectible-card.glb",
       "bytes": 31756,
       "animations": []
@@ -633,18 +636,28 @@
       "animations": []
     },
     {
-      "file": "models/tower/dualblade.glb",
-      "bytes": 24204,
-      "animations": []
-    },
-    {
       "file": "models/tower/essence-vial.glb",
       "bytes": 29136,
       "animations": []
     },
     {
-      "file": "models/tower/greatsword.glb",
-      "bytes": 45520,
+      "file": "models/tower/kid-blade.glb",
+      "bytes": 42536,
+      "animations": []
+    },
+    {
+      "file": "models/tower/kid-flash.glb",
+      "bytes": 17492,
+      "animations": []
+    },
+    {
+      "file": "models/tower/kid-gun.glb",
+      "bytes": 64484,
+      "animations": []
+    },
+    {
+      "file": "models/tower/kid-sword.glb",
+      "bytes": 133580,
       "animations": []
     },
     {

@@ -1,0 +1,648 @@
+<title>小男孩 Three.js 角色</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 版面：角色設定板 — 左窄欄原畫、右大欄即時 3D；下方為道具掛點與動作庫 */
+:root {
+  --bg: #EBEEF2;
+  --panel: #F8FAFC;
+  --ink: #1E2833;
+  --muted: #5F6B78;
+  --line: #D3DAE2;
+  --stage: #E2E7ED;
+  --acc: #1D6FC4;
+  --font-display: "Zen Maru Gothic", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161B; --panel: #1A2027; --ink: #E8EDF2; --muted: #96A2AF; --line: #2B333D; --stage: #222932; --acc: #4C97E6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161B; --panel: #1A2027; --ink: #E8EDF2; --muted: #96A2AF; --line: #2B333D; --stage: #222932; --acc: #4C97E6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 22px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font: 12px var(--font-mono); letter-spacing: .14em; color: var(--muted); text-transform: uppercase; }
+h1 { font-family: var(--font-display); font-weight: 900; font-size: clamp(28px, 4vw, 42px); line-height: 1.15; margin: 0; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--acc); }
+.lede { margin: 0; max-width: 72ch; color: var(--muted); }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 21px; margin: 0; text-wrap: balance; }
+
+.controls { display: grid; gap: 10px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.ctl-label { font-family: var(--font-display); font-weight: 700; font-size: 15px; min-width: 4.2em; }
+.seg { display: inline-flex; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 3px; gap: 2px; }
+.seg button { font: 500 14px var(--font-body); color: var(--muted); background: transparent; border: 0; border-radius: 9px; padding: 5px 12px; cursor: pointer; }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--acc); color: #fff; }
+.seg button:focus-visible, .opt:focus-within { outline: 2px solid var(--acc); outline-offset: 2px; }
+.opt { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); font-size: 14px; border-radius: 6px; }
+.opt input { accent-color: var(--acc); }
+.opt output { font: 12px var(--font-mono); min-width: 3em; color: var(--ink); }
+
+.steps { display: flex; flex-wrap: wrap; gap: 6px; }
+.steps button { font: 500 13.5px var(--font-body); background: var(--panel); color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px 4px 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.steps button i { font: 600 11px var(--font-mono); font-style: normal; width: 20px; height: 20px; display: inline-grid; place-items: center; border-radius: 50%; background: var(--stage); color: var(--ink); }
+.steps button[aria-pressed="true"] { color: var(--ink); border-color: var(--acc); }
+.steps button.done i { background: var(--acc); color: #fff; }
+.steps button:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+.actions { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.act-group { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; display: grid; gap: 6px; min-width: 0; }
+.act-group h3 { margin: 0; font: 700 12px var(--font-mono); letter-spacing: .1em; color: var(--muted); }
+.act-group .btns { display: flex; flex-wrap: wrap; gap: 4px; }
+.act-group button { font: 500 13.5px var(--font-body); color: var(--ink); background: var(--stage); border: 1px solid transparent; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.act-group button:hover { border-color: var(--acc); }
+.act-group button[aria-pressed="true"] { background: var(--acc); color: #fff; }
+.act-group button:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.act-desc { margin: 0; color: var(--muted); font-size: 14px; }
+.act-desc b { color: var(--ink); font-family: var(--font-display); margin-right: 6px; }
+
+.stage { display: grid; grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.pane { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; min-width: 0; display: grid; }
+.pane-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.pane-head b { font-family: var(--font-display); font-size: 16px; }
+.pane-head span { font: 11px var(--font-mono); color: var(--muted); letter-spacing: .05em; }
+.view { aspect-ratio: 1 / 1; max-width: 100%; position: relative; background: var(--stage); }
+.view.ref { aspect-ratio: 0.425 / 1; background-color: #F7F7F7; background-repeat: no-repeat; background-size: 300% 100%; }
+.view canvas { width: 100% !important; height: 100% !important; display: block; touch-action: none; }
+.hint { position: absolute; left: 10px; bottom: 8px; font: 11px var(--font-mono); color: var(--muted); pointer-events: none; }
+.pane-foot { padding: 9px 14px; font: 12px var(--font-mono); color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; font-variant-numeric: tabular-nums; border-top: 1px solid var(--line); min-height: 40px; }
+.pane-foot b { color: var(--ink); font-weight: 600; }
+
+.section { display: grid; gap: 12px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 14px; }
+th, td { text-align: left; vertical-align: middle; padding: 9px 14px; border-bottom: 1px solid var(--line); }
+tr:last-child td, tr:last-child th { border-bottom: 0; }
+thead th { font-family: var(--font-display); font-size: 15px; background: var(--stage); }
+tbody th { font-weight: 500; white-space: nowrap; }
+td.num, code { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 13px; }
+select, .file { font: 14px var(--font-body); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; }
+.file { cursor: pointer; display: inline-block; }
+.file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.file:focus-within, select:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.muted { color: var(--muted); }
+pre { margin: 0; padding: 12px 14px; overflow-x: auto; font: 12.5px/1.6 var(--font-mono); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.note { margin: 0; color: var(--muted); font-size: 14px; max-width: 80ch; }
+footer { color: var(--muted); font-size: 13px; }
+
+@media (max-width: 760px) {
+  .stage { grid-template-columns: minmax(0, 1fr); }
+  .stage .pane:first-child { order: 2; }
+  .view.ref { aspect-ratio: 1 / 1; background-size: auto 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Three.js r170 · 可動關節 · 道具獨立掛點</div>
+    <h1>小男孩 3D：<em id="hl">站立</em></h1>
+    <p class="lede">依「頭部 → 上半身 → 下半身 → 四肢 → 五官」的順序建模，比例照原畫量測：頭身約 1 : 4，上衣下襬到臀下、短褲到膝上。肩、肘、腕、髖、膝、踝左右共 12 個關節可動。球、刀、劍、槍與槍口火光都是獨立模型，掛在手上的掛點，可以直接換成你自己的模型。</p>
+  </header>
+
+  <div class="controls">
+    <div class="row">
+      <span class="ctl-label">建模步驟</span>
+      <div class="steps" id="steps" role="group" aria-label="建模步驟"></div>
+    </div>
+    <div class="row">
+      <span class="ctl-label">服裝</span>
+      <div class="seg" id="outfitSeg" role="group" aria-label="服裝"></div>
+      <span class="ctl-label">視角</span>
+      <div class="seg" id="viewSeg" role="group" aria-label="視角"></div>
+      <label class="opt" for="speed">速度 <input type="range" id="speed" min="0.25" max="1.5" step="0.25" value="1"><output id="speedOut">1×</output></label>
+      <label class="opt" for="spin"><input type="checkbox" id="spin"> 自動旋轉</label>
+      <label class="opt" for="sound"><input type="checkbox" id="sound" checked> 音效</label>
+    </div>
+    <div class="actions" id="actions" role="group" aria-label="動作"></div>
+    <p class="act-desc" id="actDesc"></p>
+  </div>
+
+  <div class="stage">
+    <section class="pane" aria-label="原畫">
+      <div class="pane-head"><b>原畫</b><span>REF</span></div>
+      <div class="view ref" id="refView" role="img" aria-label="原畫"></div>
+      <div class="pane-foot" id="refFoot"></div>
+    </section>
+    <section class="pane" aria-label="Three.js 即時">
+      <div class="pane-head"><b>Three.js 即時模型</b><span>WEBGL</span></div>
+      <div class="view" id="threeView"><div class="hint">拖曳旋轉 · 滾輪縮放</div></div>
+      <div class="pane-foot" id="threeFoot">載入中…</div>
+    </section>
+  </div>
+
+  <section class="section">
+    <h2>道具掛點</h2>
+    <p class="note">手上的物品不屬於角色模型。每個動作預設會掛上需要的物品（例如雙槍動作掛手槍與槍口火光），也可以在這裡改掛別的物品，或載入自己的 .glb 測試。自製模型請以握點為原點：刀劍的刃朝 +Z、槍管朝 -Y、球以球心為原點。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">掛點</th><th scope="col">用途</th><th scope="col">目前掛著</th><th scope="col">改掛</th><th scope="col">自訂模型</th></tr></thead>
+        <tbody id="sockets"></tbody>
+      </table>
+    </div>
+    <pre><span class="muted">// 在程式裡替換：載入自己的模型，掛到右手（原點 = 握點、+Z = 劍身方向）</span>
+const gltf = await new GLTFLoader().loadAsync('my-sword.glb');
+attachProp('propR', gltf.scene);       <span class="muted">// 或改 props.js 的 PROPS.sword.parts</span></pre>
+  </section>
+
+  <section class="section">
+    <h2>動作庫</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">分類</th><th scope="col">動作</th><th scope="col">長度</th><th scope="col">內容</th><th scope="col">表情</th><th scope="col">預設物品</th></tr></thead>
+        <tbody id="actTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>檔案：<code>kid-model.js</code>（角色造型、骨架、掛點、冒險套裝、鹹蛋超人）· <code>props.js</code>（物品庫）· <code>actions.baked.js</code>（19 個動作，由 <code>kid-actions.js</code> 離線烘焙，含武器防穿透）· <code>builder.js</code>（Three.js 建模）</footer>
+</div>
+
+<script src="kid-model.js"></script>
+<script src="props.js"></script>
+<script src="actions.baked.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { buildBird as buildModel, buildClips, countTriangles } from './builder.js';
+
+const { CHARACTER, STAGES, SOCKETS, CAMERA, VIEWS, ACTIONS, PROPS, PROP_MATERIALS, OUTFITS } = window.KID_BLUEPRINT;
+const FULL = STAGES.length + 1; // 全部步驟完成 = 可播放動作
+const state = { act: 'idle', view: 0, outfit: 'uniform', step: FULL };
+try {
+  const s = JSON.parse(localStorage.getItem('kid3d-v2') || '{}');
+  if (ACTIONS.some((a) => a.id === s.act)) state.act = s.act;
+  if (s.view >= 0 && s.view < VIEWS.length) state.view = s.view;
+  if (OUTFITS.some((o) => o.id === s.outfit)) state.outfit = s.outfit;
+} catch (e) {}
+
+// ---------- 場景
+const host = document.getElementById('threeView');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+host.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envScene = new THREE.Scene();
+envScene.background = new THREE.Color('#ECEDEF');
+scene.environment = pmrem.fromScene(envScene).texture;
+scene.environmentIntensity = 0.95;
+const fov = THREE.MathUtils.radToDeg(2 * Math.atan(CAMERA.sensor / 2 / CAMERA.focal));
+const camera = new THREE.PerspectiveCamera(fov, 1, 0.1, 100);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.minDistance = 1.5;
+controls.maxDistance = 18;
+function resetCamera() { camera.position.fromArray(CAMERA.pos); controls.target.fromArray(CAMERA.target); controls.update(); }
+resetCamera();
+const key = new THREE.DirectionalLight(0xffffff, 2.5);
+key.position.set(-4.4, 6.4, 6.3);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.radius = 5;
+key.shadow.bias = -0.0004;
+Object.assign(key.shadow.camera, { left: -3, right: 3, top: 3.5, bottom: -1.5, near: 1, far: 22 });
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xffffff, 0.8);
+rim.position.set(-4, 5, -5);
+scene.add(rim);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: 0.2 }));
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// ---------- 角色
+const t0 = performance.now();
+const model = buildModel(CHARACTER);
+const buildMs = performance.now() - t0;
+scene.add(model);
+const tris = countTriangles(model);
+const mixer = new THREE.AnimationMixer(model);
+const clips = buildClips(ACTIONS, model);
+let current = null;
+function play(id) {
+  const next = mixer.clipAction(clips[id]);
+  if (current === next) return;
+  if (current) current.fadeOut(0.3);
+  next.reset().setEffectiveWeight(1).fadeIn(0.3).play();
+  current = next;
+}
+const meshes = [];
+model.traverse((o) => { if (o.isMesh) meshes.push(o); });
+// 換裝：每套服裝自己的節點、制服配件（uo）隱藏、材質替換（頭部以外的皮膚＝緊身衣）
+const outfitNodes = OUTFITS.flatMap((o) => o.nodes.map((n) => ({ o: o.id, node: model.getObjectByName(n) })));
+const matByKey = {};
+meshes.forEach((m) => {
+  m.userData.baseMat = m.material;
+  let p = m.parent, inHead = false;
+  for (; p; p = p.parent) if (p.name === 'head') { inHead = true; break; }
+  m.userData.inHead = inHead;
+  matByKey[m.material.userData.key + '|' + m.material.side] = m.material;
+});
+function swapMat(m, key) {
+  const side = m.userData.baseMat.side, k = key + '|' + side;
+  if (!matByKey[k]) { const base = matByKey[key + '|' + THREE.FrontSide] || Object.values(matByKey).find((x) => x.userData.key === key); matByKey[k] = Object.assign(base.clone(), { side }); }
+  return matByKey[k];
+}
+function applyOutfit(id, step) {
+  const o = OUTFITS.find((x) => x.id === id), on = step >= 6;
+  outfitNodes.forEach(({ o: oid, node }) => { node.visible = on && oid === id; });
+  meshes.forEach((m) => {
+    const key = m.userData.part?.m, sw = on && o.swap && o.swap[key] && !(key === 'skin' && m.userData.inHead);
+    m.material = sw ? swapMat(m, o.swap[key]) : m.userData.baseMat;
+    if (on && o.hideUniform && m.userData.part?.uo) m.visible = false;
+  });
+}
+
+// ---------- 道具：獨立模型，掛到掛點上
+const propFactory = {};
+function makeProp(id) {
+  if (!propFactory[id]) {
+    const g = buildModel({ materials: PROP_MATERIALS, parts: PROPS[id].parts });
+    g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+    propFactory[id] = g;
+  }
+  const c = propFactory[id].clone();
+  c.name = 'prop:' + id;
+  return c;
+}
+const sockets = Object.fromEntries(Object.keys(SOCKETS).map((k) => [k, model.getObjectByName(k)]));
+const custom = {};   // 掛點 → 'auto' | 物品 id | 'none' | 'file'
+const uploaded = {}; // 掛點 → 使用者載入的模型
+function attachProp(socket, object3d) {
+  const s = sockets[socket];
+  if (!s) throw new Error('沒有這個掛點：' + socket);
+  [...s.children].forEach((c) => s.remove(c));
+  if (object3d) s.add(object3d);
+}
+window.attachProp = (socket, obj) => { uploaded[socket] = obj; custom[socket] = 'file'; attachProp(socket, obj); renderSockets(); };
+function applyHold() {
+  const hold = state.step < FULL ? {} : (ACTIONS.find((a) => a.id === state.act).hold || {});
+  for (const k of Object.keys(SOCKETS)) {
+    const mode = custom[k] || 'auto';
+    let obj = null;
+    if (mode === 'file') obj = uploaded[k] || null;
+    else if (mode === 'none') obj = null;
+    else if (mode !== 'auto') obj = makeProp(mode);
+    else if (hold[k]) obj = makeProp(hold[k]);
+    attachProp(k, obj);
+  }
+  renderSockets();
+}
+
+function resize() { const w = host.clientWidth; renderer.setSize(w, w, false); }
+new ResizeObserver(resize).observe(host);
+resize();
+
+// ---------- 控制項
+const stepsEl = document.getElementById('steps');
+[...STAGES, { n: FULL, name: '完成（播放動作）' }].forEach((s) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.id = 'step-' + s.n;
+  b.innerHTML = `<i>${s.n}</i>${s.name}`;
+  b.onclick = () => { state.step = s.n; if (s.n === 6 && state.outfit === 'uniform') state.outfit = 'adventure'; refresh(); };
+  stepsEl.append(b);
+});
+function seg(el, items, onPick) {
+  items.forEach((it, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.id = `${el.id}-${it.id}`; b.textContent = it.name;
+    b.onclick = () => onPick(it, i);
+    el.append(b);
+  });
+}
+const outfitSeg = document.getElementById('outfitSeg');
+const viewSeg = document.getElementById('viewSeg');
+seg(outfitSeg, OUTFITS, (o) => { state.outfit = o.id; refresh(); });
+seg(viewSeg, VIEWS, (v, i) => { state.view = i; resetCamera(); refresh(); });
+const actionsEl = document.getElementById('actions');
+[...new Set(ACTIONS.map((a) => a.group))].forEach((g) => {
+  const box = document.createElement('div');
+  box.className = 'act-group';
+  box.innerHTML = `<h3>${g}</h3><div class="btns"></div>`;
+  ACTIONS.filter((a) => a.group === g).forEach((a) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.id = 'act-' + a.id; b.textContent = a.name;
+    b.onclick = () => { state.act = a.id; state.step = FULL; refresh(); };
+    box.querySelector('.btns').append(b);
+  });
+  actionsEl.append(box);
+});
+const spin = document.getElementById('spin');
+const speed = document.getElementById('speed');
+speed.addEventListener('input', () => { document.getElementById('speedOut').textContent = speed.value + '×'; });
+
+// 道具掛點表
+const socketsEl = document.getElementById('sockets');
+const OPTIONS = [['auto', '依動作自動'], ...Object.entries(PROPS).map(([k, p]) => [k, p.name]), ['none', '不掛'], ['file', '自訂模型']];
+socketsEl.innerHTML = Object.entries(SOCKETS).map(([k, desc]) => `<tr>
+  <th scope="row"><code>${k}</code></th><td>${desc}</td><td id="cur-${k}" class="muted">—</td>
+  <td><select id="sel-${k}" aria-label="${k} 改掛">${OPTIONS.map(([v, n]) => `<option value="${v}">${n}</option>`).join('')}</select></td>
+  <td><label class="file" for="file-${k}">載入 .glb<input type="file" id="file-${k}" accept=".glb,.gltf"></label></td></tr>`).join('');
+Object.keys(SOCKETS).forEach((k) => {
+  document.getElementById('sel-' + k).addEventListener('change', (e) => { custom[k] = e.target.value; applyHold(); });
+  document.getElementById('file-' + k).addEventListener('change', async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    try {
+      const gltf = await new GLTFLoader().parseAsync(await f.arrayBuffer(), '');
+      uploaded[k] = gltf.scene;
+      custom[k] = 'file';
+      applyHold();
+    } catch (err) {
+      document.getElementById('cur-' + k).textContent = '載入失敗：請確認是 .glb 檔';
+    }
+  });
+});
+function renderSockets() {
+  for (const k of Object.keys(SOCKETS)) {
+    const s = sockets[k], child = s.children[0];
+    const label = !child ? '（空）' : child.name.startsWith('prop:') ? PROPS[child.name.slice(5)].name : (custom[k] === 'file' ? '自訂模型' : child.name || '自訂模型');
+    const cur = document.getElementById('cur-' + k);
+    cur.textContent = label;
+    cur.className = child ? '' : 'muted';
+    document.getElementById('sel-' + k).value = custom[k] || 'auto';
+  }
+}
+
+const EXPR_OF = (a) => {
+  const t = a.tracks, on = (k) => t[k] && t[k].s.some((s) => s[0] > 0.5);
+  const ex = [];
+  if (on('eyeHappyR')) ex.push('瞇眼笑');
+  if (on('mouthGrin')) ex.push('開口笑');
+  if (on('eyeSadR') || on('mouthSad')) ex.push('難過');
+  if (on('eyeShutR') && on('mouthO')) ex.push('吃痛');
+  if (on('mouthLine')) ex.push('專注');
+  if (on('mouthO') && !on('eyeShutR')) ex.push('吶喊');
+  return ex.join('、') || '微笑';
+};
+document.getElementById('actTable').innerHTML = ACTIONS.map((a) =>
+  `<tr><th scope="row">${a.group}</th><td>${a.name}</td><td class="num">${(a.frames / a.fps).toFixed(2)} 秒</td><td>${a.desc}</td><td>${EXPR_OF(a)}</td><td>${Object.entries(a.hold).map(([s, p]) => `${PROPS[p].name}→<code>${s}</code>`).join('　') || '—'}</td></tr>`).join('');
+
+function refresh() {
+  const a = ACTIONS.find((x) => x.id === state.act), v = VIEWS[state.view];
+  const building = state.step < FULL;
+  try { localStorage.setItem('kid3d-v2', JSON.stringify({ act: state.act, view: state.view, outfit: state.outfit })); } catch (e) {}
+  document.getElementById('hl').textContent = building ? `建模步驟 ${state.step}：${STAGES[state.step - 1].name}` : a.name;
+  [...stepsEl.children].forEach((b, i) => { b.setAttribute('aria-pressed', i + 1 === state.step); b.classList.toggle('done', i + 1 <= state.step); });
+  [...outfitSeg.children].forEach((b) => b.setAttribute('aria-pressed', b.id === `outfitSeg-${state.outfit}`));
+  [...viewSeg.children].forEach((b, i) => b.setAttribute('aria-pressed', i === state.view));
+  actionsEl.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', !building && b.id === 'act-' + state.act));
+  document.getElementById('actDesc').innerHTML = building
+    ? `<b>建模步驟</b>依序加上：${STAGES.slice(0, state.step).map((s) => s.name).join(' → ')}${state.step < 5 ? '（臉上的五官在步驟 5 才加上）' : ''}`
+    : `<b>${a.name}</b>${a.desc}`;
+
+  meshes.forEach((m) => { m.visible = (m.userData.part?.stage ?? 1) <= state.step; });
+  applyOutfit(state.outfit, state.step);
+  if (building) { if (current) { current.fadeOut(0.2); current = null; } }
+  else play(state.act);
+  applyHold();
+  if (!spin.checked) model.rotation.y = v.rotY;
+
+  const ref = document.getElementById('refView');
+  ref.style.backgroundImage = 'none';
+  ref.style.backgroundPosition = `${{ front: 0, q: 50, side: 50, back: 100 }[v.id]}% 0`;
+  document.getElementById('refFoot').innerHTML = `<span>${v.id === 'q' ? '側面（原畫無斜側）' : v.name}</span>`;
+  threeStatic = `<span>三角面 <b>${tris.toLocaleString()}</b></span><span>建模 <b>${buildMs.toFixed(0)} ms</b></span><span>${building ? '設定姿勢' : (a.frames / a.fps).toFixed(2) + ' 秒循環'}</span>`;
+}
+
+// ---------- 武器特效與音效（頁面即時產生，不放進動作檔）
+//   刀光軌跡：單刀、雙刀揮動時，刀身掃過的區域留下漸淡的光帶
+//   槍口冒煙：槍口火光亮起的瞬間射擊音效＋煙霧往上飄散
+//   地震：大劍落地劈下（動作事件 quake）時畫面震動、地面衝擊波與塵土、低沉轟隆聲
+//   揮擊音效：武器尖端速度超過門檻就播一次揮空聲（大劍較低沉）
+const soundOn = document.getElementById('sound');
+let audio = null;
+const ac = () => {
+  if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+  if (audio.state === 'suspended') audio.resume();
+  return audio;
+};
+document.addEventListener('pointerdown', () => { if (soundOn.checked) ac(); });
+const canPlay = () => soundOn.checked && audio && audio.state === 'running';
+function noiseSrc(a, dur) {
+  const b = a.createBuffer(1, Math.ceil(a.sampleRate * dur), a.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const src = a.createBufferSource(); src.buffer = b; return src;
+}
+function env(a, t, peak, attack, dur) {
+  const g = a.createGain();
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  return g;
+}
+const SFX = {
+  swish(heavy) {                       // 揮空聲：帶通濾波的白噪音，頻率先升後降
+    const a = audio, t = a.currentTime, dur = heavy ? 0.45 : 0.26;
+    const n = noiseSrc(a, dur), f = a.createBiquadFilter();
+    f.type = 'bandpass'; f.Q.value = heavy ? 1.1 : 1.8;
+    f.frequency.setValueAtTime(heavy ? 220 : 650, t);
+    f.frequency.exponentialRampToValueAtTime(heavy ? 1300 : 3200, t + dur * 0.45);
+    f.frequency.exponentialRampToValueAtTime(heavy ? 260 : 900, t + dur);
+    n.connect(f).connect(env(a, t, heavy ? 0.9 : 0.55, dur * 0.4, dur)).connect(a.destination);
+    n.start(t); n.stop(t + dur);
+  },
+  shot() {                             // 槍聲：高頻爆音＋低頻悶響
+    const a = audio, t = a.currentTime;
+    const n = noiseSrc(a, 0.18), f = a.createBiquadFilter();
+    f.type = 'highpass'; f.frequency.value = 900;
+    n.connect(f).connect(env(a, t, 0.7, 0.003, 0.16)).connect(a.destination); n.start(t); n.stop(t + 0.18);
+    const o = a.createOscillator(); o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.16);
+    o.connect(env(a, t, 0.8, 0.004, 0.18)).connect(a.destination); o.start(t); o.stop(t + 0.2);
+  },
+  boom() {                             // 地震：極低頻轟隆＋低通噪音的碎石聲
+    const a = audio, t = a.currentTime;
+    const o = a.createOscillator(); o.frequency.setValueAtTime(75, t); o.frequency.exponentialRampToValueAtTime(26, t + 1.0);
+    o.connect(env(a, t, 1.0, 0.01, 1.1)).connect(a.destination); o.start(t); o.stop(t + 1.15);
+    const n = noiseSrc(a, 1.0), f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420;
+    n.connect(f).connect(env(a, t, 0.8, 0.01, 0.95)).connect(a.destination); n.start(t); n.stop(t + 1.0);
+  },
+};
+const sfx = (k, ...arg) => { if (canPlay()) SFX[k](...arg); };
+
+// 每種武器：尖端與刀根（物品座標）、揮擊速度門檻、是否顯示刀光與光的顏色
+const WEAPON = {
+  knife: { tip: [0, 0.054, 0.9], base: [0, 0.004, 0.12], thr: 4.5, heavy: false, trail: '#46B4FF' },
+  blade: { tip: [0, 0.007, 0.43], base: [0, 0.007, 0.07], thr: 3.5, heavy: false, trail: '#9A6BFF' },
+  sword: { tip: [0, 0, 1.56], base: [0, 0, 0.16], thr: 4.0, heavy: true },
+};
+class Trail {                          // 刀光：最近 N 個取樣的刀身線段連成光帶，越舊越透明
+  constructor(color) {
+    this.n = 28; this.samples = [];
+    const g = new THREE.BufferGeometry();
+    this.pos = new Float32Array(this.n * 2 * 3); this.col = new Float32Array(this.n * 2 * 4);
+    g.setAttribute('position', new THREE.BufferAttribute(this.pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(this.col, 4));
+    const idx = [];
+    for (let i = 0; i < this.n - 1; i++) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    g.setIndex(idx);
+    this.c = new THREE.Color(color);
+    this.mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide }));
+    this.mesh.frustumCulled = false;
+    scene.add(this.mesh);
+  }
+  push(tip, base, strength, now) { this.samples.unshift({ tip: tip.clone(), base: base.clone(), s: strength, t: now }); this.samples.length = Math.min(this.samples.length, this.n); }
+  update(now) {
+    for (let i = 0; i < this.n; i++) {
+      const sm = this.samples[i] || this.samples[this.samples.length - 1];
+      if (!sm) { this.mesh.visible = false; return; }
+      const age = Math.min(1, (now - sm.t) / 0.18), a = this.samples[i] ? Math.max(0, 1 - age) * sm.s : 0;
+      sm.tip.toArray(this.pos, i * 6); sm.base.toArray(this.pos, i * 6 + 3);
+      this.col.set([this.c.r, this.c.g, this.c.b, 0.85 * a, this.c.r, this.c.g, this.c.b, 0.15 * a], i * 8);
+    }
+    this.mesh.visible = true;
+    this.mesh.geometry.attributes.position.needsUpdate = true;
+    this.mesh.geometry.attributes.color.needsUpdate = true;
+  }
+  clear() { this.samples = []; this.mesh.visible = false; }
+}
+// 煙霧／塵土貼圖：柔邊圓形
+const puffTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 2, 32, 32, 31);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.55)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+})();
+const puffs = [];
+function puff(p, v, color, size0, size1, life, opacity) {
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: puffTex, color, transparent: true, depthWrite: false, opacity }));
+  sp.position.copy(p); sp.scale.setScalar(size0);
+  scene.add(sp);
+  puffs.push({ sp, v, size0, size1, life, age: 0, opacity });
+}
+const rings = [];
+function shockwave(p) {                // 地面衝擊波：兩圈往外擴散的環＋一圈塵土
+  for (const [delay, color] of [[0, '#8C7A66'], [0.12, '#B8A68E']]) {
+    const m = new THREE.Mesh(new THREE.RingGeometry(0.8, 1, 64), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+    m.rotation.x = -Math.PI / 2; m.position.set(p.x, 0.004, p.z);
+    scene.add(m); rings.push({ m, age: -delay });
+  }
+  for (let i = 0; i < 14; i++) {
+    const a = (i / 14) * Math.PI * 2 + Math.random() * 0.3, sp = 0.9 + Math.random() * 0.8;
+    puff(new THREE.Vector3(p.x, 0.05, p.z), new THREE.Vector3(Math.cos(a) * sp, 0.5 + Math.random() * 0.6, Math.sin(a) * sp), '#A89580', 0.12, 0.5, 0.9 + Math.random() * 0.4, 0.75);
+  }
+}
+let shake = 0;
+const shakeOff = new THREE.Vector3();
+const trails = {}, lastP = {}, cool = {};
+let prevU = null, prevAct = null;
+const tmpA = new THREE.Vector3(), tmpB = new THREE.Vector3();
+function updateFx(dt, now) {
+  model.updateMatrixWorld(true);
+  // 武器：揮擊音效＋刀光
+  for (const k of ['propR', 'propL']) {
+    const obj = sockets[k].children[0], id = obj && obj.name.startsWith('prop:') ? obj.name.slice(5) : null, w = WEAPON[id];
+    if (!w || state.step < FULL) { trails[k]?.clear(); lastP[k] = null; continue; }
+    tmpA.fromArray(w.tip).applyMatrix4(sockets[k].matrixWorld);
+    tmpB.fromArray(w.base).applyMatrix4(sockets[k].matrixWorld);
+    const v = lastP[k] && dt > 0 ? tmpA.distanceTo(lastP[k]) / dt : 0;
+    lastP[k] = (lastP[k] || new THREE.Vector3()).copy(tmpA);
+    cool[k] = Math.max(0, (cool[k] || 0) - dt);
+    if (v > w.thr && v < 60 && cool[k] === 0) { sfx('swish', w.heavy); cool[k] = w.heavy ? 0.4 : 0.22; }
+    if (w.trail) {
+      const tr = (trails[k] ||= new Trail(w.trail));
+      tr.push(tmpA, tmpB, Math.max(0, Math.min(1, (v - 1.5) / 5)), now);
+      tr.update(now);
+    } else trails[k]?.clear();
+  }
+  // 槍：火光亮起的那一格＝開槍
+  for (const k of ['fxR', 'fxL']) {
+    const on = sockets[k].scale.x > 0.5 && sockets[k].children.length > 0;
+    if (on && !lastP[k]) {
+      sfx('shot');
+      sockets[k].getWorldPosition(tmpA);
+      for (let i = 0; i < 5; i++)
+        puff(tmpA.clone(), new THREE.Vector3((Math.random() - 0.5) * 0.25, 0.25 + Math.random() * 0.25, (Math.random() - 0.5) * 0.25), '#9C9C9C', 0.05, 0.32 + Math.random() * 0.15, 1.1 + Math.random() * 0.6, 0.6);
+    }
+    lastP[k] = on;
+  }
+  // 動作事件（地震）
+  const a = ACTIONS.find((x) => x.id === state.act);
+  if (current && a && a.events && a.events.length && state.step >= FULL) {
+    const u = (current.time % current.getClip().duration) / current.getClip().duration;
+    if (prevAct === a.id && prevU !== null && u !== prevU) {
+      for (const [eu, type] of a.events) {
+        const crossed = prevU <= u ? prevU < eu && eu <= u : eu > prevU || eu <= u;
+        if (crossed && type === 'quake') {
+          sfx('boom'); shake = 0.6;
+          const obj = sockets.propR.children[0];
+          if (obj) tmpA.fromArray(WEAPON.sword.tip).applyMatrix4(sockets.propR.matrixWorld); else model.getWorldPosition(tmpA);
+          shockwave(tmpA.clone());
+        }
+      }
+    }
+    prevU = u; prevAct = a.id;
+  } else { prevU = null; prevAct = null; }
+  // 煙霧、塵土、衝擊波
+  for (let i = puffs.length - 1; i >= 0; i--) {
+    const p = puffs[i]; p.age += dt;
+    const t = p.age / p.life;
+    if (t >= 1) { scene.remove(p.sp); p.sp.material.dispose(); puffs.splice(i, 1); continue; }
+    p.sp.position.addScaledVector(p.v, dt); p.v.multiplyScalar(Math.pow(0.25, dt)); p.v.y += 0.05 * dt;
+    p.sp.scale.setScalar(p.size0 + (p.size1 - p.size0) * (1 - (1 - t) * (1 - t)));
+    p.sp.material.opacity = p.opacity * (1 - t);
+  }
+  for (let i = rings.length - 1; i >= 0; i--) {
+    const r = rings[i]; r.age += dt;
+    const t = r.age / 0.7;
+    if (t >= 1) { scene.remove(r.m); r.m.geometry.dispose(); r.m.material.dispose(); rings.splice(i, 1); continue; }
+    if (t < 0) continue;
+    r.m.scale.setScalar(0.15 + 1.7 * t); r.m.material.opacity = 0.8 * (1 - t);
+  }
+}
+
+// ---------- 迴圈
+let threeStatic = '', frames = 0, last = performance.now();
+const clock = new THREE.Clock();
+const foot = document.getElementById('threeFoot');
+renderer.setAnimationLoop((t) => {
+  const dt = Math.min(clock.getDelta(), 0.1);
+  mixer.update(dt * Number(speed.value));
+  if (spin.checked) model.rotation.y += 0.006;
+  controls.update();
+  updateFx(dt, t / 1000);
+  if (shake > 0) {                     // 地震：鏡頭隨機晃動，逐漸衰減
+    shake = Math.max(0, shake - dt);
+    const amp = 0.09 * (shake / 0.6) ** 1.5;
+    shakeOff.set((Math.random() - 0.5) * amp, (Math.random() - 0.5) * amp, 0);
+    camera.position.add(shakeOff);
+    renderer.render(scene, camera);
+    camera.position.sub(shakeOff);
+  } else renderer.render(scene, camera);
+  frames++;
+  if (t - last > 1000) {
+    foot.innerHTML = `${threeStatic}<span><b>${((frames * 1000) / (t - last)).toFixed(0)}</b> fps</span>`;
+    frames = 0; last = t;
+  }
+});
+spin.addEventListener('change', () => { if (!spin.checked) refresh(); });
+refresh();
+// 檢視用（開發者工具）
+window.__kid = { THREE, model, mixer, clips, camera, controls, renderer, scene, sockets, updateFx };
+</script>
