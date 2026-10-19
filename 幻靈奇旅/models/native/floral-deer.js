@@ -192,15 +192,15 @@ function create(options={}){
   const shape=new T.Shape(),outline=[];
   for(let petal=0;petal<5;petal++)for(let j=0;j<40;j++){const u=j/40,a=-Math.PI/2-Math.PI/5+(petal+u)*Math.PI*2/5,r=.43+.57*Math.pow(Math.sin(Math.PI*u),.72)-.115*Math.exp(-Math.pow((u-.5)/.047,2)),x=Math.cos(a)*r,y=Math.sin(a)*r;if(!petal&&!j)shape.moveTo(x,y);else shape.lineTo(x,y);outline.push(new T.Vector3(x,y,.071));}shape.closePath();
   const sakuraGeometry=geo(new T.ExtrudeGeometry(shape,{depth:.040,bevelEnabled:true,bevelSize:.012,bevelThickness:.009,bevelSegments:2,steps:1,curveSegments:24}));
-  const rose=mat('#f7b8cb',{roughness:.37,clearcoat:.65}),roseTip=mat('#ffe4ed',{roughness:.4}),roseGold=mat('#cc9674',{metalness:.7,roughness:.24}),silver=mat('#eef7ff',{metalness:1,roughness:.035,clearcoat:1,clearcoatRoughness:.025,envMapIntensity:1.2,side:T.DoubleSide});
+  const rose=mat('#f7b8cb',{roughness:.37,clearcoat:.65}),roseTip=mat('#ffe4ed',{roughness:.4}),roseGold=mat('#cc9674',{metalness:.7,roughness:.24}),pinkMirror=mat('#ffa9dc',{metalness:.72,roughness:.065,clearcoat:1,clearcoatRoughness:.022,envMapIntensity:1.35,emissive:linear('#ad427d'),emissiveIntensity:.10,side:T.DoubleSide});
   const mirrorFaceGeometry=royal?geo(new T.ShapeGeometry(shape,32)):null;
   const edgeGeometry=royal?geo(new T.TubeGeometry(new T.CatmullRomCurve3(outline,true),160,.020,6,true)):null;
   for(let i=0;i<(royal?2:8);i++){
    const o=group(orbitRoot,0,0,0,(royal?'SakuraMirror':'SakuraBlossom')+i),size=royal?.40:.145+(i%3)*.018;o.scale.setScalar(size);
    mesh(o,sakuraGeometry,royal?roseGold:rose);
    if(royal){
-    const front=mesh(o,mirrorFaceGeometry,silver);front.scale.set(.90,.90,1);front.position.z=.062;front.castShadow=false;
-    const back=mesh(o,mirrorFaceGeometry,silver);back.scale.set(.90,.90,1);back.rotation.y=Math.PI;back.position.z=-.024;back.castShadow=false;
+    const front=mesh(o,mirrorFaceGeometry,pinkMirror);front.scale.set(.90,.90,1);front.position.z=.062;front.castShadow=false;
+    const back=mesh(o,mirrorFaceGeometry,pinkMirror);back.scale.set(.90,.90,1);back.rotation.y=Math.PI;back.position.z=-.024;back.castShadow=false;
     mesh(o,edgeGeometry,roseGold);const rearRim=mesh(o,edgeGeometry,roseGold);rearRim.rotation.y=Math.PI;rearRim.position.z=.040;
    }else{
     ell(o,flowerGold,0,0,.059,.12,.12,.055);for(let n=0;n<5;n++){const a=n/5*Math.PI*2;ell(o,roseTip,Math.sin(a)*.18,Math.cos(a)*.18,.061,.022,.022,.012);}
