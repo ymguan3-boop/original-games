@@ -587,3 +587,45 @@ body.gym-active #battleActions .gymExitOnly{
  color:#fff;
  touch-action:manipulation;
 }
+/* 2026-10-19 · Gym trust-bar/head-relative symbols and top-wide narration. */
+body.gym-active #labels .gymTrustLabel{
+ width:clamp(126px,36vw,162px);
+ max-width:calc(100vw - 18px);
+ z-index:7;
+}
+body.gym-active #labels .phoenixSurprise,
+body.gym-active #labels .outoumanMiss,
+body.gym-active #labels .encounterSymbol{
+ z-index:8;
+ pointer-events:none;
+}
+body.gym-active #battleLog{
+ position:absolute;
+ top:calc(env(safe-area-inset-top) + 89px);
+ left:0;
+ right:0;
+ bottom:auto;
+ transform:none;
+ box-sizing:border-box;
+ width:100%;
+ max-width:none;
+ max-height:none;
+ margin:0;
+ padding:2px max(12px,env(safe-area-inset-left)) 4px max(12px,env(safe-area-inset-right));
+ display:block;
+ text-align:center;
+ white-space:normal;
+ overflow:visible;
+ overflow-wrap:anywhere;
+ -webkit-line-clamp:unset;
+ -webkit-box-orient:initial;
+ background:transparent;
+ border:0;
+ box-shadow:none;
+ color:#ffe46b;
+ font-size:clamp(13px,3.4vw,17px);
+ font-weight:800;
+ line-height:1.45;
+ text-shadow:0 1px 2px #07182f,0 0 6px #08182fd9;
+ pointer-events:none;
+}
