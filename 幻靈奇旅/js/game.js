@@ -1299,7 +1299,9 @@ function phoenixTrialState(b,a){
  }
  const borderMaterial=new T.MeshBasicMaterial({color:0xffc85c,transparent:true,opacity:.15,side:T.DoubleSide,depthWrite:false}),border=new T.Mesh(ringGeometry,borderMaterial);materials.push(borderMaterial);border.rotation.x=-Math.PI/2;border.position.y=.085;border.scale.setScalar(fieldRadius);group.add(border);
  const hitMaterial=new T.MeshBasicMaterial({color:0xffbe65,transparent:true,opacity:0,side:T.DoubleSide,depthWrite:false}),hitMarker=new T.Mesh(ringGeometry,hitMaterial);materials.push(hitMaterial);hitMarker.rotation.x=-Math.PI/2;hitMarker.visible=false;group.add(hitMarker);battleGroup.add(group);
- const marker={root:a.root,height:a.height+.8},surpriseLabel=addLabel(marker,'','phoenixSurprise');surpriseLabel.el.style.cssText='position:absolute;transform:translate(-50%,-100%);display:none;width:76px;height:76px;background:none;border:0;box-shadow:none;padding:0;pointer-events:none;';
+ // Anchor the surprise icon to the animated head, not the enlarged wings' overall bounds.
+ const headAnchor=a.object.getObjectByName('Head');
+ const marker={root:headAnchor||a.root,height:headAnchor?.64:a.height*.48},surpriseLabel=addLabel(marker,'','phoenixSurprise');surpriseLabel.el.style.cssText='position:absolute;transform:translate(-50%,-100%);display:none;width:76px;height:76px;background:none;border:0;box-shadow:none;padding:0;pointer-events:none;';
  const image=document.createElement('img');image.src='assets/encounter/surprise.webp';image.alt='光鳳鷹受到驚嚇，破綻中';image.style.cssText='width:100%;height:100%;object-fit:contain;';surpriseLabel.el.append(image);
  return b.phoenixTrial={phase:'intro',activeAt:elapsed,introUntil:elapsed+6,nextAttack:'WingBurst',attack:null,attackStartedAt:0,attackUntil:0,attackSerial:0,impactTimes:[],impactCursor:0,impacts:[],interrupts:0,interruptHistory:[],vulnerableUntil:0,invulnerableHits:0,successfulHits:0,attackHistory:[],anchor,fieldRadius,lastRollAt:-Infinity,lastImpactAt:-Infinity,hitFlashUntil:0,nextAttackAt:elapsed+6,group,ringGeometry,featherGeometry,materials,waves,border,borderMaterial,hitMarker,hitMaterial,surpriseLabel,disposed:false};
 }
