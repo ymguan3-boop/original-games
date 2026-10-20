@@ -199,6 +199,64 @@ function positionGymPlayerNarration(){
 
 function normalizeBounds(b){if(Array.isArray(b))return{minX:b[0],maxX:b[1],minZ:b[2],maxZ:b[3]};return b||{minX:-36,maxX:36,minZ:-36,maxZ:36};}
 function blocked(x,z,margin=.42){const b=normalizeBounds(place?place.bounds:world.bounds);if(x<b.minX+margin||x>b.maxX-margin||z<b.minZ+margin||z>b.maxZ-margin)return true;if(!place&&river?.blocked(x,z,margin))return true;return((place?place.collisions:world.collisions)||[]).some(c=>{const cx=c.x??c.position?.[0]??0,cz=c.z??c.position?.[2]??0,w=c.w??c.width??c.size?.[0]??0,d=c.d??c.depth??c.size?.[2]??0;return Math.abs(x-cx)<w/2+margin&&Math.abs(z-cz)<d/2+margin;});}
+// Water caterpillar is exclusive to the visible town pond (NOT the north river).
+// The pool is described by the public map config, so no coordinates are guessed
+// from the camera: world.landscape.lake.center/radii.
+function pondBounds(){const l=world?.landscape?.lake;if(!l?.center||!l?.radii)return null;return{cx:l.center[0],cz:l.center[1],rx:l.radii[0],rz:l.radii[1],surfaceY:Number.isFinite(l.surfaceY)?l.surfaceY:-.06};}
+function inPond(x,z,inset=.55){
+ const p=pondBounds();if(!p)return false;
+ const rx=Math.max(.3,p.rx-inset),rz=Math.max(.3,p.rz-inset);
+ return Math.pow((x-p.cx)/rx,2)+Math.pow((z-p.cz)/rz,2)<=1;
+}
+function pondPoint(){
+ const p=pondBounds();if(!p)return randomPoint();
+ const t=Math.random()*Math.PI*2,r=Math.sqrt(Math.random())*.72;
+ return new T.Vector3(p.cx+Math.cos(t)*r*(p.rx-.65),0,p.cz+Math.sin(t)*r*(p.rz-.65));
+}
+function swimPond(a,dt,speed){
+ const p=pondBounds();if(!p)return;
+ a.timer-=dt;
+ if(a.timer<=0||!a.goal||!inPond(a.goal.x,a.goal.z,.72)){a.timer=2+Math.random()*3;a.goal=pondPoint();}
+ const dx=a.goal.x-a.root.position.x,dz=a.goal.z-a.root.position.z,dist=Math.hypot(dx,dz);
+ if(dist>.12){
+  const step=Math.min(dist,dt*Math.max(.2,speed*.65));
+  const x=a.root.position.x+dx/dist*step,z=a.root.position.z+dz/dist*step;
+  if(inPond(x,z,.65)){a.root.position.x=x;a.root.position.z=z;a.root.rotation.y=Math.atan2(dx,dz);a.play('Walk');}
+  else {a.timer=0;a.goal=pondPoint();a.play('Idle');}
+ }else a.play('Idle');
+ // Feet are below the surface, upper half above; tiny surface bob feels alive.
+ a.root.position.y=p.surfaceY-a.height*.5+Math.sin(elapsed*2+a.pondSwim.phase)*.035;
+}
+// The bird's full world-space flight height increases with its scaled body size.
+// Each individual has a different base and a slow, non-repeating cruising wave.
+function wildFlightProfile(a,minimum=0){
+ if(!a.flightProfile){
+  const h=Math.max(.6,a.height||1.2);
+  a.flightProfile={
+   base:Math.max(minimum,1.35+h*1.28+(Math.random()-.5)*.65),
+   variance:.17+Math.min(.5,h*.14),
+   phase:Math.random()*Math.PI*2,cycle:23+Math.random()*14
+  };
+ }
+ return a.flightProfile;
+}
+function wildFlightTarget(a,minimum=0){
+ const f=wildFlightProfile(a,minimum);
+ return f.base+f.variance*Math.sin(elapsed*2*Math.PI/f.cycle+f.phase);
+}
+function updateNativeFlightLayer(a,dt,phase){
+ const bird=a.species?.form==='bird'||a.species?.form==='phoenix'||isAvian(a.path);
+ const robot=a.species?.id==='typhlosion';
+ if(!bird&&!robot)return;
+ const airborne=phase==='fly',takingOff=phase==='takeoff',landing=phase==='landing';
+ // Preserve each Blender/Three controller's native wing and takeoff animation.
+ // Only lift the wild-world anchor for extra clearance.
+ const baseline=Number(a.controller?.getMotionState?.()?.altitude??a.controller?.getState?.()?.altitude)||0;
+ const target=(airborne||takingOff)?Math.max(0,wildFlightTarget(a,robot?4.25:0)-Math.max(0,baseline)):0;
+ const smooth=1-Math.exp(-(landing?2.4:takingOff?1.25:airborne?1.5:5)*dt);
+ a.root.position.y+=(target-a.root.position.y)*smooth;
+ if(!airborne&&!takingOff&&!landing&&Math.abs(a.root.position.y)<.025)a.root.position.y=0;
+}
 function randomPoint(){for(let i=0;i<120;i++){const near=i<95,r=6+Math.random()*14,t=Math.random()*Math.PI*2,x=near?S.player.x+Math.cos(t)*r:(Math.random()-.5)*64,z=near?S.player.z+Math.sin(t)*r:(Math.random()-.5)*64;if(!blocked(x,z,1.5)&&!npcs.some(n=>n.root.position.distanceTo(new T.Vector3(x,0,z))<2))return new T.Vector3(x,0,z);}return new T.Vector3(9,0,5);}
 let gymScenePromise=null,appearanceSpawnBusy=false;const appearanceAudio={context:null,eventId:null,timer:null,nodes:[],unlocked:false};
 // Gym guardians are one-off post-victory encounters, NEVER part of the random wild pool.
@@ -286,10 +344,22 @@ async function transformEggEncounter(who){const state=AvianRules.nextFailure(who
  try{await playEvolutionSequence(who.species,next);}
  finally{document.body.classList.remove('evolution-playing');}
  const replacement=await actor(next.model,Number(sizeRule(next).desiredWorldHeight)||next.height,who.root.parent||townGroup);replacement.species=next;replacement.eggEncounter=state;replacement.root.position.copy(who.root.position);replacement.root.rotation.copy(who.root.rotation);replacement.root.scale.set(1,1,1);replacement.home=replacement.root.position.clone();replacement.goal=replacement.home.clone();replacement.timer=0;replacement.berry=false;const index=wild.indexOf(who),wasTarget=target===who,wasLocked=locked;if(index>=0)wild[index]=replacement;if(wasTarget)clearTarget();removeActor(who);if(wasTarget){target=replacement;locked=wasLocked;if(locked)showLockMarker(replacement);}captureBurst(replacement.root.position.clone().add(new T.Vector3(0,replacement.height*.5,0)),0xffe0ac,false);toast('同次遭遇第 '+state.failures+' 次掙脫！三色蛋變為'+next.name+'。');return replacement;}
-function showLockMarker(who){const group=new T.Group(),ring=new T.Mesh(new T.RingGeometry(.7,.86,48),new T.MeshBasicMaterial({color:0xffe36c,side:T.DoubleSide,transparent:true,opacity:.95,depthTest:false,depthWrite:false})),arrow=new T.Mesh(new T.ConeGeometry(.22,.5,3),new T.MeshBasicMaterial({color:0xffed95,depthTest:false,depthWrite:false}));ring.rotation.x=-Math.PI/2;arrow.rotation.z=Math.PI;group.add(ring,arrow);scene.add(group);const e={object:group,start:elapsed,duration:1e8,update:()=>{if(target!==who||!locked||!who.root.parent){e.duration=0;group.visible=false;return;}group.visible=!who.capturing;group.position.copy(who.root.position);ring.position.y=(who.riverSwim&&river?river.config.surfaceY-who.root.position.y:0)+.04;ring.rotation.z=elapsed*.8;ring.scale.setScalar(1+Math.sin(elapsed*4)*.08);arrow.position.y=who.height+.65+Math.sin(elapsed*4)*.12;},done:()=>disposeCaptureFx(group)};effects.push(e);}
+function showLockMarker(who){const group=new T.Group(),ring=new T.Mesh(new T.RingGeometry(.7,.86,48),new T.MeshBasicMaterial({color:0xffe36c,side:T.DoubleSide,transparent:true,opacity:.95,depthTest:false,depthWrite:false})),arrow=new T.Mesh(new T.ConeGeometry(.22,.5,3),new T.MeshBasicMaterial({color:0xffed95,depthTest:false,depthWrite:false}));ring.rotation.x=-Math.PI/2;arrow.rotation.z=Math.PI;group.add(ring,arrow);scene.add(group);const e={object:group,start:elapsed,duration:1e8,update:()=>{if(target!==who||!locked||!who.root.parent){e.duration=0;group.visible=false;return;}group.visible=!who.capturing;group.position.copy(who.root.position);ring.position.y=(who.pondSwim&&pondBounds()?pondBounds().surfaceY-who.root.position.y:who.riverSwim&&river?river.config.surfaceY-who.root.position.y:0)+.04;ring.rotation.z=elapsed*.8;ring.scale.setScalar(1+Math.sin(elapsed*4)*.08);arrow.position.y=who.height+.65+Math.sin(elapsed*4)*.12;},done:()=>disposeCaptureFx(group)};effects.push(e);}
 function captureBurst(position,color,success){const group=new T.Group(),ring=new T.Mesh(new T.RingGeometry(.48,.56,48),new T.MeshBasicMaterial({color,side:T.DoubleSide,transparent:true,opacity:1,depthWrite:false}));ring.rotation.x=-Math.PI/2;group.position.copy(position);group.add(ring);const stars=[];for(let i=0;i<(success?20:10);i++){const star=new T.Mesh(new T.OctahedronGeometry(success?.105:.065),new T.MeshBasicMaterial({color,transparent:true,opacity:1,depthWrite:false}));star.userData.direction=new T.Vector3(Math.cos(i*2.4),.2+Math.sin(i*1.7)*.6,Math.sin(i*2.4));group.add(star);stars.push(star);}scene.add(group);effects.push({object:group,start:elapsed,duration:success?1.25:.6,update:t=>{ring.scale.setScalar(.5+t*(success?5:2));ring.material.opacity=1-t;stars.forEach((s,i)=>{s.position.copy(s.userData.direction).multiplyScalar(t*(success?2.3:1.1));s.rotation.set(t*8,i+t*6,t*4);s.material.opacity=Math.sin(Math.PI*t);});},done:()=>disposeCaptureFx(group)});}
 function sizeRule(species){const rule=modelSizeOverrides[species.id]||modelSizeOverrides[species.model]||{};return typeof rule==='number'?{desiredWorldHeight:rule}:rule;}
-function updateFlight(a,dt){if(!a.airborne)return;a.flightRemaining-=dt;if(a.flightRemaining<=0){a.flightState=a.flightState==='air'?'ground':'air';a.flightRemaining=a.flightState==='air'?20+Math.random()*20:6+Math.random()*6;if(a.flightState==='air')a.flightAltitude=1.8+Math.random()*1.2;}a.flightBase=a.flightState==='air'?a.flightAltitude:0;const targetHeight=a.flightBase+(a.flightBase?Math.sin(elapsed*2.1+a.flightPhase)*.10:0);a.root.position.y+=(targetHeight-a.root.position.y)*(1-Math.exp(-3.8*dt));if(!a.flightBase&&a.root.position.y<.025)a.root.position.y=0;}
+function updateFlight(a,dt){
+ if(!a.airborne)return;
+ a.flightRemaining-=dt;
+ if(a.flightRemaining<=0){
+  a.flightState=a.flightState==='air'?'ground':'air';
+  a.flightRemaining=a.flightState==='air'?20+Math.random()*20:6+Math.random()*6;
+  if(a.flightState==='air')a.flightProfile=null; // different altitude each new flight
+ }
+ const height=a.flightState==='air'?wildFlightTarget(a):0;
+ a.flightBase=height;
+ a.root.position.y+=(height-a.root.position.y)*(1-Math.exp(-1.8*dt));
+ if(!height&&a.root.position.y<.025)a.root.position.y=0;
+}
 function collectPickup(a){const k=a.pickupKey,amount=k==='core'?5:k==='berry'?3:1;if(k==='core')S.state.pokeballs+=amount;else if(k==='great_core')S.state.greatBallCount+=amount;else if(k==='berry')S.state.berryCount+=amount;else S.state.items.potion=number(S.state.items.potion)+amount;a.root.visible=false;a.respawn=elapsed+90;a.root.position.copy(randomPoint());return({core:'靈核球',great_core:'高階靈核球',berry:'星露果',potion:'初光藥劑',evolutionStone:'雷光結晶'})[k]+' +'+amount;}
 function showWorldBroadcast(text){const el=$('broadcast');if(el){clearTimeout(el.dismissTimer);el.textContent=text;el.hidden=false;layoutWorldNotifications();el.dismissTimer=setTimeout(()=>{el.hidden=true;layoutWorldNotifications();},12000);}}
 function tickGuideBroadcast(){if(elapsed<guideBroadcastAt||place||battle||dialog||modal)return;const names={electric:'鹹蛋超人變身套裝',mist:'小飯團同行',sound:'小山蝴蝶套裝',healing:'冒險套裝'},tips=['圖鑑收錄達 25%、50%、75% 時，傳說幻靈會分批開放。持續締約不同種類，探索更多夥伴。','挑戰四座道館可依序取得 '+gyms.map(g=>names[g.costume]).join('、')+'，在旅人手冊的冒險衣櫃換裝。','在河畔釣魚 3 對 3 擊敗金魚小隊，河道會出現 2～3 隻小金魚；把金魚國王與金魚皇后卡片各 3 張交給橋邊的釣魚郎換取魚飼料，就能在河邊召喚水蛟龍王。','一般幻靈一階進二階需 5 份羈絆，二階進三階需 10 份；C囝仔、水毛蟲需在參戰隊伍連續完成 3 場幻靈競技擂台（勝敗皆計），不需羈絆即可進化成 C老猴、水仙子；小金魚集滿 3 張卡片會隨機進化成金魚國王或金魚皇后。','在 3 對 3 競技擂台取得勝利，會開放 '+(byId.jigglypuff?.name||'獎勵幻靈')+' 的出現條件。','找大夢博士領取冒險服；穿著後每 10 秒把場上可收集的補給與道具以飛行特效吸至身邊，成功吸收後才入袋；已收取的補給 90 秒後再生。'];const text='旅人攻略｜'+tips[guideBroadcastIndex++%tips.length];guideBroadcastAt=elapsed+300;showWorldBroadcast(text);}
@@ -300,7 +370,22 @@ async function spawnWild(species,position,guardianEvent=null){
  if(isGymGuardian(species)&&!guardianEncounterAuthorized(species,guardianEvent)){removeActor(a);return null;}
  const dimensions=a.worldSize||posedBounds(a.object).getSize(new T.Vector3()),maxSpan=Math.min(6,Number(rule.maxSpan)||6),ratio=Math.min(1,maxSpan/Math.max(dimensions.x,dimensions.z,.001));if(ratio<1){a.object.scale.multiplyScalar(ratio);a.object.position.multiplyScalar(ratio);a.height*=ratio;a.worldSize.multiplyScalar(ratio);}
  // Outdoor capturable instances only; gym/arena/collection visuals keep their own sizes.
- const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?1/3:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;if(species.id==='jigglypuff')a.eggEncounter={origin:'jigglypuff',failures:0};if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);a.root.position.copy(position||randomPoint());a.airborne=!isAvian(species.model)&&!isFrog(species.model)&&!isRobot(species.model)&&!isLightPhoenix(species.model)&&!isFloralDeer(species.model)&&!isFireMonkey(species.model)&&!isOutouman(species.model)&&!isRiceball(species.model)&&!NativeFamilies.has(species.model)&&isAirborne(species);a.flightState=a.airborne?'air':'ground';a.flightAltitude=1.8+Math.random()*1.2;a.flightRemaining=20+Math.random()*20;a.flightBase=a.airborne?a.flightAltitude:0;a.flightPhase=Math.random()*Math.PI*2;a.root.position.y=a.flightBase;a.home=a.root.position.clone();a.goal=a.home.clone();a.timer=Math.random()*3;a.berry=false;wild.push(a);return a;}
+ const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?1/3:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;
+ if(species.id==='jigglypuff')a.eggEncounter={origin:'jigglypuff',failures:0};
+ if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);
+ // Every wild water caterpillar, including a lab milestone spawn, belongs to
+ // the pond. Never select a terrain point outside the water collider.
+ const spawnPosition=species.id==='entei'&&pondBounds()
+  ?(position&&inPond(position.x,position.z,.8)?position:pondPoint())
+  :(position||randomPoint());
+ a.root.position.copy(spawnPosition);a.airborne=!isAvian(species.model)&&!isFrog(species.model)&&!isRobot(species.model)&&!isLightPhoenix(species.model)&&!isFloralDeer(species.model)&&!isFireMonkey(species.model)&&!isOutouman(species.model)&&!isRiceball(species.model)&&!NativeFamilies.has(species.model)&&isAirborne(species);a.flightState=a.airborne?'air':'ground';a.flightAltitude=1.8+Math.random()*1.2;a.flightRemaining=20+Math.random()*20;a.flightBase=a.airborne?a.flightAltitude:0;a.flightPhase=Math.random()*Math.PI*2;a.root.position.y=a.flightBase;a.home=a.root.position.clone();a.goal=a.home.clone();a.timer=Math.random()*3;a.berry=false;
+ if(species.id==='entei'&&pondBounds()){
+  a.pondSwim={phase:Math.random()*Math.PI*2};
+  a.airborne=false;a.flightState='ground';a.flightBase=0;
+  a.root.position.y=pondBounds().surfaceY-a.height*.5;
+  a.home=a.root.position.clone();a.goal=pondPoint();
+ }
+ wild.push(a);return a;}
 // ---- 河道水系幻靈：只在 river.waterSpiritZone 內游動，身體約 2/3 露出水面
 function riverSurfaceY(a){return river.config.surfaceY-a.height*(a.riverSwim.sink??1/3);}
 // 河道上的點，但避開橋下（side：-1 橋西、1 橋東；不給就隨機）
@@ -373,8 +458,37 @@ async function ensureLabLegendWilds(){
  }catch(error){S.errors.push('大夢研究所傳說幻靈出現：'+error.message);}
  finally{labWildSpawnBusy=false;}
 }
-async function populate(){await ensureSpecialAppearances();while(wild.length+spawnPending<WILD_LIMIT){const s=chooseWild();if(!s)break;await spawnWild(s);}}
-async function replenish(){if(!S.ready)return;await ensureSpecialAppearances();await ensureLabLegendWilds();if(wild.length+spawnPending>=WILD_LIMIT)return;spawnPending++;try{const s=chooseWild();if(s)await spawnWild(s);}catch(e){S.errors.push(e.message);}finally{spawnPending--;}}
+let pondSpawnBusy=false;
+async function ensurePondCaterpillar(){
+ if(pondSpawnBusy||!S.ready||place||battle||!pondBounds()||!byId.entei||!eligible(byId.entei)||wild.some(a=>a.species.id==='entei'))return;
+ pondSpawnBusy=true;
+ try{
+  while(wild.length+spawnPending>=WILD_LIMIT){
+   const old=wild.find(w=>!w.specialEventId&&!w.riverSwim&&!w.pondSwim&&w!==target);
+   if(!old)break;wild.splice(wild.indexOf(old),1);removeActor(old);
+  }
+  if(wild.length+spawnPending<WILD_LIMIT){
+   spawnPending++;
+   try{await spawnWild(byId.entei,pondPoint());}
+   finally{spawnPending--;}
+  }
+ }catch(e){S.errors.push('水池水毛蟲：'+e.message);}
+ finally{pondSpawnBusy=false;}
+}
+async function populate(){
+ await ensureSpecialAppearances();
+ await ensurePondCaterpillar();
+ while(wild.length+spawnPending<WILD_LIMIT){const s=chooseWild();if(!s)break;await spawnWild(s);}
+}
+async function replenish(){
+ if(!S.ready)return;
+ await ensureSpecialAppearances();await ensureLabLegendWilds();await ensurePondCaterpillar();
+ if(wild.length+spawnPending>=WILD_LIMIT)return;
+ spawnPending++;
+ try{const s=chooseWild();if(s)await spawnWild(s);}
+ catch(e){S.errors.push(e.message);}
+ finally{spawnPending--;}
+}
 async function spawnSupplies(){const keys=['core','great_core','berry','potion'],colors={core:0xe3ac18,great_core:0x13d8e0,berry:0xf04eab,potion:0x51e478,evolutionStone:0xc27cff};await Promise.all(keys.map(async(key,i)=>{if(!world.props?.[key])return;const a=await actor(world.props[key],.55),clones=new Map();a.object.traverse(n=>{if(!n.isMesh)return;const list=(Array.isArray(n.material)?n.material:[n.material]).map(original=>{if(!clones.has(original)){const m=original.clone();const hsl={};m.color?.getHSL(hsl);if(m.color)m.color.setHSL(hsl.h,Math.max(.7,hsl.s),Math.max(.3,Math.min(.72,hsl.l)));m.emissive?.setHex(colors[key]);m.emissiveIntensity=.4;if(m.roughness!==undefined)m.roughness=.28;clones.set(original,m);}return clones.get(original)});n.material=Array.isArray(n.material)?list:list[0];});const halo=new T.Mesh(new T.RingGeometry(.31,.43,32),new T.MeshBasicMaterial({color:colors[key],transparent:true,opacity:.62,side:T.DoubleSide,depthWrite:false}));halo.rotation.x=-Math.PI/2;halo.position.y=-.22;a.root.add(halo);a.pickupHalo=halo;a.pickupKey=key;a.root.position.copy(randomPoint());a.root.position.y=.35;a.home=a.root.position.clone();a.respawn=0;pickups.push(a);}));}
 // Pickup objects remain in the world until the absorption animation arrives
 // at the traveler. Ordinary proximity pickup still works without a delay.
@@ -1598,7 +1712,9 @@ function tickNativeFamily(a,dt,speed){
   }
  }
  const motion=({walk:moving?'Walk':'Idle',takeoff:'Takeoff',fly:'Fly',landing:isAvian(a.path)?'Land':'Landing',sit:isAvian(a.path)?'Rest':'Sit',stand:'Idle'})[state.phase];
- if(a.mode!==motion)a.play(motion,motion==='Landing');return true;
+ if(a.mode!==motion)a.play(motion,motion==='Landing');
+ updateNativeFlightLayer(a,dt,state.phase);
+ return true;
 }
 
 // Wild light phoenix: frequent safe landings make capture possible, with taller flight
@@ -1635,6 +1751,10 @@ function walkPhoenix(a,dt,speed){
  a.motionSpeed=q.phase==='fly'?Math.max(.6,speed*1.55):moving?speed:0;
  const mode=({walk:moving?'Walk':'Idle',takeoff:'Takeoff',fly:'Fly',land:'Land',rest:'Idle'})[q.phase];
  if(a.mode!==mode)a.play(mode);
+ // No fixed 4.6-unit rail: larger birds naturally cruise higher, with
+ // individual height bands and gentle changes over the course of a flight.
+ if(q.phase==='takeoff'&&q.remaining>1.9)a.flightProfile=null;
+ if(q.phase==='fly'||q.phase==='takeoff')a.controller?.setFlightHeight?.(Math.min(5.95,Math.max(3.5,wildFlightTarget(a,4))));
  // A previously locked bird must not remain a valid target once it takes off.
  if(target===a&&!a.capturing&&!phoenixWildGrounded(a))clearTarget();
  return true;
@@ -1652,7 +1772,7 @@ function walkRiceball(a,dt,speed){
   else{a.timer=0;q.stuckUntil=elapsed+1.6;a.motionSpeed=0;a.play('Stuck');}
  }else{a.motionSpeed=0;a.play('Idle');}
 }
-function walkActor(a,dt,speed=.6){if(a.capturing)return;if(a.species?.stationary){a.play('Idle');return;}if(a.riverSwim)return swimRiver(a,dt);if(isFireMonkey(a.path)&&a.controller?.getState().specialActive){a.motionSpeed=0;return;}if(isLightPhoenix(a.path))return walkPhoenix(a,dt,speed);if(isRiceball(a.path))return walkRiceball(a,dt,speed);if(tickNativeFamily(a,dt,speed))return;if(tickPepperBehavior(a))return;updateFlight(a,dt);a.timer-=dt;if(a.timer<0){a.timer=3+Math.random()*4;const theta=Math.random()*Math.PI*2,r=Math.random()*(a.data?1.4:4);a.goal.set(a.home.x+Math.cos(theta)*r,0,a.home.z+Math.sin(theta)*r);}const d=a.goal.clone().sub(a.root.position);d.y=0;let moving=false;if(d.length()>.15){d.normalize();const nx=a.root.position.x+d.x*speed*dt,nz=a.root.position.z+d.z*speed*dt;if(!blocked(nx,nz,.3)){a.root.position.x=nx;a.root.position.z=nz;a.root.rotation.y=Math.atan2(d.x,d.z);moving=true;}else a.timer=0;}const hasFly=Object.keys(a.actions).some(k=>k.toLowerCase()==='fly'),flying=a.airborne&&(a.flightState==='air'||a.root.position.y>.15);a.play(flying?(hasFly?'Fly':'Walk'):moving?'Walk':isXiaoshan(a.path)?'Sleep':'Idle');}
+function walkActor(a,dt,speed=.6){if(a.capturing)return;if(a.pondSwim)return swimPond(a,dt,speed);if(a.species?.stationary){a.play('Idle');return;}if(a.riverSwim)return swimRiver(a,dt);if(isFireMonkey(a.path)&&a.controller?.getState().specialActive){a.motionSpeed=0;return;}if(isLightPhoenix(a.path))return walkPhoenix(a,dt,speed);if(isRiceball(a.path))return walkRiceball(a,dt,speed);if(tickNativeFamily(a,dt,speed))return;if(tickPepperBehavior(a))return;updateFlight(a,dt);a.timer-=dt;if(a.timer<0){a.timer=3+Math.random()*4;const theta=Math.random()*Math.PI*2,r=Math.random()*(a.data?1.4:4);a.goal.set(a.home.x+Math.cos(theta)*r,0,a.home.z+Math.sin(theta)*r);}const d=a.goal.clone().sub(a.root.position);d.y=0;let moving=false;if(d.length()>.15){d.normalize();const nx=a.root.position.x+d.x*speed*dt,nz=a.root.position.z+d.z*speed*dt;if(!blocked(nx,nz,.3)){a.root.position.x=nx;a.root.position.z=nz;a.root.rotation.y=Math.atan2(d.x,d.z);moving=true;}else a.timer=0;}const hasFly=Object.keys(a.actions).some(k=>k.toLowerCase()==='fly'),flying=a.airborne&&(a.flightState==='air'||a.root.position.y>.15);a.play(flying?(hasFly?'Fly':'Walk'):moving?'Walk':isXiaoshan(a.path)?'Sleep':'Idle');}
 function beginRoll(){if(!hero||roll||modal||dialog||battle&&!battle.gym||throwing||battle?.heroStatus?.freeze>elapsed||battle?.heroStatus?.stun>elapsed)return;cancelNavigation();let x=S.stick.x+(S.keys.KeyD||S.keys.ArrowRight?1:0)-(S.keys.KeyA||S.keys.ArrowLeft?1:0),z=S.stick.y+(S.keys.KeyS||S.keys.ArrowDown?1:0)-(S.keys.KeyW||S.keys.ArrowUp?1:0);const len=Math.hypot(x,z);if(len<.08){x=Math.sin(hero.root.rotation.y);z=Math.cos(hero.root.rotation.y);}else{const yaw=battle?.gym?0:cameraOrbit.yaw;[x,z]=[(x*Math.cos(yaw)+z*Math.sin(yaw))/len,(-x*Math.sin(yaw)+z*Math.cos(yaw))/len];}hero.root.rotation.y=Math.atan2(x,z);roll={x,z,start:elapsed,duration:.42};hero.play('Roll',true);if(hero.actions.Roll)hero.actions.Roll.setEffectiveTimeScale(hero.actions.Roll.getClip().duration/.42);if(battle?.gym?.spirit==='blissey')phoenixRollPressed(battle,elapsed);}
 function updateRoll(dt){const button=$('rollBtn');if(button){button.disabled=!!roll;button.textContent='滾';}if(!roll)return;const t=(elapsed-roll.start)/roll.duration;if(t>=1){roll=null;hero.play('Idle');return;}const speed=10.12*Math.sin(Math.PI*Math.max(.08,t)),nx=S.player.x+roll.x*speed*dt,nz=S.player.z+roll.z*speed*dt;if(!(battle?.gym?gymBoundsBlocked(nx,nz):blocked(nx,nz,.5))){S.player.x=nx;S.player.z=nz;}hero.root.position.copy(S.player);}
 const helloState={still:0,next:0,until:0};
@@ -1810,7 +1930,7 @@ await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);
 window.PhantomGame={get river(){return river},startFishing,eligible,spawnWeight,chooseWild,beginNavigation,cancelNavigation,get navigation(){return navigation},cameraOrbit,clearTarget,showGuide,showReset,resetGame,grantSupply,tickBroadcast,get cardArt(){return cardArt},get elapsed(){return elapsed},broadcastNow(){broadcastAt=elapsed;tickBroadcast()},endBattle,playerTurn,tickGym,state:S,scene,camera,renderer,actors,wild,npcs,asset,cloneSkin,showDex,showTeam,showGyms,showViewer,startBattle,enterBuilding,leaveBuilding,grant,save,showMenu,throwBall,useBerry,selectTarget,get spirits(){return spirits},get world(){return world},get hero(){return hero},get battle(){return battle},get place(){return place},captureCandidates,readBookshelf,nearbyBookshelf,validBookTeam,get bookshelfData(){return bookshelfData},get bookEncounter(){return bookEncounter},get chestEncounter(){return chestEncounter},get chestNextAt(){return chestNextAt},get viewer(){return viewer},get labels(){return labels},get target(){return target},beginRoll,get roll(){return roll},blocked,teleport(x,z){S.player.set(x,0,z);hero.root.position.copy(S.player);},setCostume};
 
 function spawnWeight(s){return 1/Math.pow(1+number(S.state.captureCounts[s.id]),1.6)/(1+wild.filter(w=>w.species.id===s.id).length*3);}
-function chooseWild(){const list=spirits.filter(s=>!isChest(s)&&!isBook(s)&&eligible(s)&&!specialEvents().some(e=>e.speciesId===s.id));let r=Math.random()*list.reduce((n,s)=>n+spawnWeight(s),0);return list.find(s=>(r-=spawnWeight(s))<=0)||list[list.length-1];}
+function chooseWild(){const list=spirits.filter(s=>s.id!=='entei'&&!isChest(s)&&!isBook(s)&&eligible(s)&&!specialEvents().some(e=>e.speciesId===s.id));let r=Math.random()*list.reduce((n,s)=>n+spawnWeight(s),0);return list.find(s=>(r-=spawnWeight(s))<=0)||list[list.length-1];}
 function clearTarget(){locked=false;$('lockBtn').setAttribute('aria-pressed','false');$('lockBtn').setAttribute('aria-label','鎖定可締約幻靈');$('lockBtn').title='鎖定可締約幻靈';target=null;if(lockLabel){removeLabel(lockLabel);lockLabel=null;}$('target').textContent='';}
 function showReset(final=false){openModal('重置遊戲 · '+(final?'最後確認':'第一次確認'),`<p>${final?'這是最後一次確認。':'重置將清除本瀏覽器的幻靈、道具、衣櫃、道館、挑戰塔素材及位置紀錄。'}操作後無法復原。</p><div class="toolbar"><button data-menu="help">取消</button><button class="danger" data-reset="${final?'final':'first'}">${final?'確定清除並重新開始':'繼續確認重置'}</button></div>`);}
 function resetGame(){localStorage.removeItem('phantom-starspire-tower-v1');S.state=migrate();S.player.fromArray(world.spawn||[0,0,4]);navigation=null;save();location.reload();}
