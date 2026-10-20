@@ -9,8 +9,30 @@
   "bounds": {
     "minX": -36,
     "maxX": 36,
-    "minZ": -36,
+    "minZ": -56,
     "maxZ": 36
+  },
+  "river": {
+    "note": "北側河道、橋梁與山洞；waterSpiritZone 為未來水系（潮）幻靈限定出現範圍，waterSpiritExclusive 開啟後才生效。",
+    "minX": -52,
+    "maxX": 52,
+    "nearBankZ": -40.6,
+    "farBankZ": -51.4,
+    "cliffZ": -52.4,
+    "surfaceY": -0.34,
+    "bedY": -1.35,
+    "bridgeX": 0,
+    "bridgeHalfWidth": 1.75,
+    "tunnelZ": -55,
+    "flowSpeed": 1,
+    "pathStartZ": -31.9,
+    "waterSpiritZone": {
+      "minX": -36,
+      "maxX": 36,
+      "minZ": -50.6,
+      "maxZ": -41.4
+    },
+    "waterSpiritExclusive": false
   },
   "collisions": [
     {
