@@ -274,6 +274,34 @@
         1
       ],
       "roamRadius": 1.3
+    },
+    {
+      "id": "fisher_lang",
+      "name": "釣魚郎",
+      "buildingId": null,
+      "role": "釣魚郎",
+      "model": "models/npcs/fisher_lang.glb",
+      "height": 2.2,
+      "dialogue": [
+        "河裡的金魚可聰明了，先在欄杆邊釣魚，打贏牠們的金魚小隊，小金魚才會浮上河道。",
+        "金魚國王和金魚皇后的卡片各給我 3 張，我就把特製魚飼料分你一份。帶著魚飼料靠近河邊，說不定能見到傳說中的水蛟龍王！"
+      ],
+      "functions": [
+        "fishTrade",
+        "tips"
+      ],
+      "portraits": {
+        "normal": "portraits/fisher_lang-normal.webp",
+        "happy": "portraits/fisher_lang-normal.webp",
+        "serious": "portraits/fisher_lang-normal.webp"
+      },
+      "position": [
+        3.4,
+        0,
+        -38.9
+      ],
+      "interiorPosition": null,
+      "roamRadius": 0
     }
   ]
 }

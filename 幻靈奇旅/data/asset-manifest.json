@@ -65,6 +65,16 @@
       ]
     },
     {
+      "file": "models/npcs/fisher_lang.glb",
+      "bytes": 440448,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Wave"
+      ]
+    },
+    {
       "file": "models/npcs/gym_master.glb",
       "bytes": 352052,
       "animations": [
@@ -269,17 +279,6 @@
       ]
     },
     {
-      "file": "models/spirits/entei.glb",
-      "bytes": 203832,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
-    },
-    {
       "file": "models/spirits/giratina.glb",
       "bytes": 205224,
       "animations": [
@@ -290,18 +289,47 @@
       ]
     },
     {
-      "file": "models/spirits/grotle.glb",
-      "bytes": 256960,
+      "file": "models/spirits/goldfish-1.glb",
+      "bytes": 400316,
       "animations": [
         "Idle",
         "Walk",
+        "Run",
         "Attack",
-        "Hurt"
+        "Ultimate",
+        "Hurt",
+        "React"
       ]
     },
     {
-      "file": "models/spirits/groudon.glb",
-      "bytes": 247776,
+      "file": "models/spirits/goldfish-king.glb",
+      "bytes": 466584,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Attack",
+        "Ultimate",
+        "Hurt",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/goldfish-queen.glb",
+      "bytes": 492216,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Attack",
+        "Ultimate",
+        "Hurt",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/grotle.glb",
+      "bytes": 256960,
       "animations": [
         "Idle",
         "Walk",
@@ -340,29 +368,8 @@
       ]
     },
     {
-      "file": "models/spirits/kyogre.glb",
-      "bytes": 130744,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
-    },
-    {
       "file": "models/spirits/marshtomp.glb",
       "bytes": 176416,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/mewtwo.glb",
-      "bytes": 184256,
       "animations": [
         "Idle",
         "Walk",
@@ -455,16 +462,6 @@
       ]
     },
     {
-      "file": "models/spirits/rayquaza.glb",
-      "bytes": 110396,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/sceptile.glb",
       "bytes": 157008,
       "animations": [
@@ -535,16 +532,6 @@
       ]
     },
     {
-      "file": "models/spirits/suicune.glb",
-      "bytes": 183912,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/swampert.glb",
       "bytes": 187440,
       "animations": [
@@ -593,6 +580,45 @@
         "Walk",
         "Attack",
         "Hurt"
+      ]
+    },
+    {
+      "file": "models/spirits/water-caterpillar.glb",
+      "bytes": 487036,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Attack",
+        "Ultimate",
+        "Hurt",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/water-dragon-king.glb",
+      "bytes": 2181616,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Attack",
+        "Ultimate",
+        "Hurt",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/water-fairy.glb",
+      "bytes": 1101364,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Attack",
+        "Ultimate",
+        "Hurt",
+        "React"
       ]
     },
     {

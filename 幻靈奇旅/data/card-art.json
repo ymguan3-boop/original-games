@@ -360,54 +360,44 @@
     "generatedAt": "2026-10-18"
   },
   "entei": {
-    "image": "cards/art/entei.webp",
-    "name": "熔岩獅鷲",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/entei.glb",
-    "group": 10,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/water-caterpillar.webp",
+    "name": "水毛蟲",
+    "source": "threejs-model-render",
+    "referenceModel": "models/spirits/water-caterpillar.glb",
+    "style": "threejs-3d-portrait",
+    "generatedAt": "2026-10-20"
   },
   "suicune": {
-    "image": "cards/art/suicune.webp",
-    "name": "澄夢長頸鹿",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/suicune.glb",
-    "group": 10,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/water-fairy.webp",
+    "name": "水仙子",
+    "source": "threejs-model-render",
+    "referenceModel": "models/spirits/water-fairy.glb",
+    "style": "threejs-3d-portrait",
+    "generatedAt": "2026-10-20"
   },
   "kyogre": {
-    "image": "cards/art/kyogre.webp",
-    "name": "星潮空鯨",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/kyogre.glb",
-    "group": 10,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/goldfish-1.webp",
+    "name": "小金魚",
+    "source": "threejs-model-render",
+    "referenceModel": "models/spirits/goldfish-1.glb",
+    "style": "threejs-3d-portrait",
+    "generatedAt": "2026-10-20"
   },
   "groudon": {
-    "image": "cards/art/groudon.webp",
-    "name": "大地晶甲龜",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/groudon.glb",
-    "group": 10,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/goldfish-king.webp",
+    "name": "金魚國王",
+    "source": "threejs-model-render",
+    "referenceModel": "models/spirits/goldfish-king.glb",
+    "style": "threejs-3d-portrait",
+    "generatedAt": "2026-10-20"
   },
   "rayquaza": {
-    "image": "cards/art/rayquaza.webp",
-    "name": "風環遊龍",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/rayquaza.glb",
-    "group": 11,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/goldfish-queen.webp",
+    "name": "金魚皇后",
+    "source": "threejs-model-render",
+    "referenceModel": "models/spirits/goldfish-queen.glb",
+    "style": "threejs-3d-portrait",
+    "generatedAt": "2026-10-20"
   },
   "dialga": {
     "image": "cards/art/dialga.webp",
@@ -538,14 +528,12 @@
     "generatedAt": "2026-10-16"
   },
   "mewtwo": {
-    "image": "cards/art/mewtwo.webp",
-    "name": "紫晶念王",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/mewtwo.glb",
-    "group": 14,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/water-dragon-king.webp",
+    "name": "水蛟龍王",
+    "source": "threejs-model-render",
+    "referenceModel": "models/spirits/water-dragon-king.glb",
+    "style": "threejs-3d-portrait",
+    "generatedAt": "2026-10-20"
   },
   "jigglypuff": {
     "image": "cards/art/jigglypuff.webp",

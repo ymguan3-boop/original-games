@@ -40,20 +40,23 @@
   },
   {
     "id": "mewtwo",
-    "name": "紫晶念王",
-    "vertices": 2720,
-    "triangles": 5308,
-    "materials": 5,
-    "bones": 8,
-    "height": 2.15475,
+    "name": "水蛟龍王",
+    "vertices": 42561,
+    "triangles": 64236,
+    "materials": 19,
+    "bones": 25,
+    "height": 3.2,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "Hurt",
+      "React"
     ],
-    "fileBytes": 184256,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 2181616,
+    "source": "Three.js procedural model baked to glTF (water-spirits/export-game.html)"
   },
   {
     "id": "bulbasaur",
@@ -771,90 +774,103 @@
   },
   {
     "id": "entei",
-    "name": "熔岩獅鷲",
-    "vertices": 2824,
-    "triangles": 5372,
-    "materials": 5,
-    "bones": 10,
-    "height": 2.15475,
+    "name": "水毛蟲",
+    "vertices": 8816,
+    "triangles": 13596,
+    "materials": 11,
+    "bones": 9,
+    "height": 1.25,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
       "Attack",
+      "Ultimate",
       "Hurt",
-      "Fly"
+      "React"
     ],
-    "fileBytes": 203832,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 487036,
+    "source": "Three.js procedural model baked to glTF (water-spirits/export-game.html)"
   },
   {
     "id": "suicune",
-    "name": "澄夢長頸鹿",
-    "vertices": 2768,
-    "triangles": 5376,
-    "materials": 5,
-    "bones": 8,
-    "height": 2.15475,
+    "name": "水仙子",
+    "vertices": 17244,
+    "triangles": 26048,
+    "materials": 20,
+    "bones": 21,
+    "height": 2.1,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "Hurt",
+      "React"
     ],
-    "fileBytes": 183912,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1101364,
+    "source": "Three.js procedural model baked to glTF (water-spirits/export-game.html)"
   },
   {
     "id": "kyogre",
-    "name": "星潮空鯨",
-    "vertices": 1686,
-    "triangles": 3264,
-    "materials": 5,
+    "name": "小金魚",
+    "vertices": 7764,
+    "triangles": 12324,
+    "materials": 11,
     "bones": 6,
-    "height": 2.15475,
+    "height": 1.2,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
       "Attack",
+      "Ultimate",
       "Hurt",
-      "Fly"
+      "React"
     ],
-    "fileBytes": 130744,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 400316,
+    "source": "Three.js procedural model baked to glTF (water-spirits/export-game.html)"
   },
   {
     "id": "groudon",
-    "name": "大地晶甲龜",
-    "vertices": 3912,
-    "triangles": 7632,
-    "materials": 5,
-    "bones": 8,
-    "height": 2.15475,
+    "name": "金魚國王",
+    "vertices": 9309,
+    "triangles": 14580,
+    "materials": 13,
+    "bones": 6,
+    "height": 1.6,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "Hurt",
+      "React"
     ],
-    "fileBytes": 247776,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 466584,
+    "source": "Three.js procedural model baked to glTF (water-spirits/export-game.html)"
   },
   {
     "id": "rayquaza",
-    "name": "風環遊龍",
-    "vertices": 1556,
-    "triangles": 3012,
-    "materials": 5,
-    "bones": 4,
-    "height": 2.15475,
+    "name": "金魚皇后",
+    "vertices": 10092,
+    "triangles": 15572,
+    "materials": 14,
+    "bones": 6,
+    "height": 1.6,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "Hurt",
+      "React"
     ],
-    "fileBytes": 110396,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 492216,
+    "source": "Three.js procedural model baked to glTF (water-spirits/export-game.html)"
   },
   {
     "id": "dialga",

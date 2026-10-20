@@ -240,34 +240,34 @@
     "maxSpan": 5.8
   },
   "entei": {
-    "desiredWorldHeight": 3.6,
-    "stage": 3,
-    "form": "griffin",
-    "maxSpan": 5.8
+    "desiredWorldHeight": 1.3,
+    "stage": 1,
+    "form": "caterpillar",
+    "maxSpan": 3
   },
   "suicune": {
-    "desiredWorldHeight": 4.15,
-    "stage": 3,
-    "form": "longdeer",
-    "maxSpan": 5.8
+    "desiredWorldHeight": 2.2,
+    "stage": 2,
+    "form": "fairy",
+    "maxSpan": 3.2
   },
   "kyogre": {
-    "desiredWorldHeight": 3.2,
-    "stage": 3,
-    "form": "whale",
-    "maxSpan": 5.8
+    "desiredWorldHeight": 1.25,
+    "stage": 1,
+    "form": "goldfish",
+    "maxSpan": 2.6
   },
   "groudon": {
-    "desiredWorldHeight": 3.85,
-    "stage": 3,
-    "form": "turtle",
-    "maxSpan": 5.8
+    "desiredWorldHeight": 1.6,
+    "stage": 2,
+    "form": "goldfish",
+    "maxSpan": 3
   },
   "rayquaza": {
-    "desiredWorldHeight": 4.35,
-    "stage": 3,
-    "form": "serpent",
-    "maxSpan": 5.8
+    "desiredWorldHeight": 1.6,
+    "stage": 2,
+    "form": "goldfish",
+    "maxSpan": 3
   },
   "dialga": {
     "desiredWorldHeight": 4.4,
@@ -354,10 +354,10 @@
     "maxSpan": 4.5
   },
   "mewtwo": {
-    "desiredWorldHeight": 2.535,
+    "desiredWorldHeight": 3.2,
     "stage": 3,
-    "form": "oracle",
-    "maxSpan": 4.394000000000001
+    "form": "waterdragon",
+    "maxSpan": 6
   },
   "jigglypuff": {
     "desiredWorldHeight": 1.08,
