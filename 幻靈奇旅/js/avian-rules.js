@@ -1,8 +1,8 @@
 /* Encounter-local egg changes and turn-based non-damaging skills. No save mutation. */
 (()=>{'use strict';
  const line=['jigglypuff','treecko','grovyle','sceptile'];
- function captureChance(actor,type,normal){return actor.species?.id==='jigglypuff'?(type==='master'?1:.05):normal;}
- function nextFailure(encounter){const failures=(Number(encounter?.failures)||0)+1;return{origin:'jigglypuff',failures,speciesId:line[Math.min(3,failures)]};}
+ function captureChance(actor,type,normal){return actor.species?.id==='jigglypuff'?.30:normal;}
+ function nextFailure(encounter){const failures=(Number(encounter?.failures)||0)+1;const options=line.slice(1);return{origin:'jigglypuff',failures,speciesId:options[Math.floor(Math.random()*options.length)]};}
  const isRecover=skill=>skill?.effect==='eggRecover';
  function evolutionCost(spirit){return spirit?.id==='sceptile'?3:['jigglypuff','treecko','grovyle'].includes(spirit?.id)?Infinity:null;}
  function canUse(entry,skill,turn){return !isRecover(skill)||(Number(turn)||1)>=(entry.eggRecoverReadyTurn||0);}
