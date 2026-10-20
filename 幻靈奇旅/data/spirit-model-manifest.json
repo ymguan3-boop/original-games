@@ -398,54 +398,60 @@
   },
   {
     "id": "treecko",
-    "name": "苔點蜥",
-    "vertices": 2084,
-    "triangles": 4060,
-    "materials": 5,
-    "bones": 8,
-    "height": 1.275,
+    "name": "小麻",
+    "height": 1.08,
     "animations": [
       "Idle",
+      "Rest",
       "Walk",
+      "Takeoff",
+      "Fly",
+      "Glide",
+      "Land",
       "Attack",
-      "Hurt"
+      "Ultimate"
     ],
-    "fileBytes": 145984,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "Authored native Three.js articulated avian source",
+    "runtime": "native-threejs",
+    "model": "avian://treecko"
   },
   {
     "id": "grovyle",
-    "name": "蕨帆蜥",
-    "vertices": 2102,
-    "triangles": 4084,
-    "materials": 5,
-    "bones": 8,
-    "height": 1.6575,
+    "name": "咕咕",
+    "height": 1.5,
     "animations": [
       "Idle",
+      "Rest",
       "Walk",
+      "Takeoff",
+      "Fly",
+      "Glide",
+      "Land",
       "Attack",
-      "Hurt"
+      "Ultimate"
     ],
-    "fileBytes": 146736,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "Authored native Three.js articulated avian source",
+    "runtime": "native-threejs",
+    "model": "avian://grovyle"
   },
   {
     "id": "sceptile",
-    "name": "翠環森蜥",
-    "vertices": 2288,
-    "triangles": 4428,
-    "materials": 5,
-    "bones": 8,
-    "height": 2.15475,
+    "name": "小鷹",
+    "height": 1.85,
     "animations": [
       "Idle",
+      "Rest",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Takeoff",
+      "Fly",
+      "Glide",
+      "Land",
+      "Peck",
+      "WingPounce"
     ],
-    "fileBytes": 157008,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "Authored native Three.js articulated avian source",
+    "runtime": "native-threejs",
+    "model": "avian://sceptile"
   },
   {
     "id": "torchic",
@@ -897,20 +903,22 @@
   },
   {
     "id": "palkia",
-    "name": "月瀾海馬",
-    "vertices": 1496,
-    "triangles": 2900,
-    "materials": 5,
-    "bones": 4,
-    "height": 2.15475,
+    "name": "大朋",
+    "height": 2.55,
     "animations": [
       "Idle",
+      "Rest",
       "Walk",
-      "Attack",
-      "Hurt"
+      "Takeoff",
+      "Fly",
+      "Glide",
+      "Land",
+      "PowerFlap",
+      "SkyRam"
     ],
-    "fileBytes": 107080,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "Authored native Three.js articulated avian source",
+    "runtime": "native-threejs",
+    "model": "avian://palkia"
   },
   {
     "id": "giratina",
@@ -1134,19 +1142,15 @@
   },
   {
     "id": "jigglypuff",
-    "name": "夢鈴絨球",
-    "vertices": 3264,
-    "triangles": 6408,
-    "materials": 5,
-    "bones": 7,
-    "height": 1.275,
+    "name": "三色蛋",
+    "height": 1.3,
     "animations": [
       "Idle",
-      "Walk",
-      "Attack",
-      "Hurt"
+      "Armor",
+      "Restore"
     ],
-    "fileBytes": 210288,
-    "source": "Blender native authored mesh and skeletal animation"
+    "source": "Authored native Three.js articulated avian source",
+    "runtime": "native-threejs",
+    "model": "avian://jigglypuff"
   }
 ]

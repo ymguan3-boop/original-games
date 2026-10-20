@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "numberingPolicy": "Frozen 001–061; future new species append after 061. Sorting uses explicit order, never translated names.",
+  "numberingPolicy": "001–061 unique display numbers; revised avian family kept together without changing save IDs.",
   "groupingPolicy": "Connected components of previous/next/evolvesTo; stages ascend, equal-stage branches keep original order. Unmodified legacy links group one-sided connections too.",
   "entries": [
     {
@@ -556,102 +556,164 @@
       ]
     },
     {
-      "id": "treecko",
+      "id": "jigglypuff",
       "number": "019",
       "order": 19,
-      "group": "treecko",
-      "name": "苔點蜥",
+      "group": "avian-evolution",
+      "name": "三色蛋",
       "skills": [
         {
           "index": 0,
-          "name": "森光輕擊",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "武裝",
+          "animation": "Armor",
+          "mode": "Armor",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 2.8,
+          "source": "models/native/tricolor-egg.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
         },
         {
           "index": 1,
-          "name": "苔點共鳴",
+          "name": "回滿",
+          "animation": "Restore",
+          "mode": "Restore",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 3.2,
+          "source": "models/native/tricolor-egg.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        }
+      ]
+    },
+    {
+      "id": "treecko",
+      "number": "020",
+      "order": 20,
+      "group": "avian-evolution",
+      "name": "小麻",
+      "skills": [
+        {
+          "index": 0,
+          "name": "好奇啄擊",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 1.7,
+          "source": "models/native/small-birds.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        },
+        {
+          "index": 1,
+          "name": "絨羽小旋風",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 4.2,
+          "source": "models/native/small-birds.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
         }
       ]
     },
     {
       "id": "grovyle",
-      "number": "020",
-      "order": 20,
-      "group": "treecko",
-      "name": "蕨帆蜥",
+      "number": "021",
+      "order": 21,
+      "group": "avian-evolution",
+      "name": "咕咕",
       "skills": [
         {
           "index": 0,
-          "name": "森光輕擊",
+          "name": "雞冠衝撞",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 2.3,
+          "source": "models/native/small-birds.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
         },
         {
           "index": 1,
-          "name": "蕨帆共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "晨曦啼鳴",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 4.4,
+          "source": "models/native/small-birds.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
         }
       ]
     },
     {
       "id": "sceptile",
-      "number": "021",
-      "order": 21,
-      "group": "treecko",
-      "name": "翠環森蜥",
+      "number": "022",
+      "order": 22,
+      "group": "avian-evolution",
+      "name": "小鷹",
       "skills": [
         {
           "index": 0,
-          "name": "森光輕擊",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "銳喙啄擊",
+          "animation": "Peck",
+          "mode": "Peck",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 1.7,
+          "source": "models/native/little-eagle.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
         },
         {
           "index": 1,
-          "name": "翠環共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "幼鷹撲擊",
+          "animation": "WingPounce",
+          "mode": "WingPounce",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 3.4,
+          "source": "models/native/little-eagle.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        }
+      ]
+    },
+    {
+      "id": "palkia",
+      "number": "023",
+      "order": 23,
+      "group": "avian-evolution",
+      "name": "大朋",
+      "skills": [
+        {
+          "index": 0,
+          "name": "強力拍翼",
+          "animation": "PowerFlap",
+          "mode": "PowerFlap",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 5.4,
+          "source": "models/native/dapeng.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        },
+        {
+          "index": 1,
+          "name": "高空衝撞",
+          "animation": "SkyRam",
+          "mode": "SkyRam",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 5.6,
+          "source": "models/native/dapeng.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
         }
       ]
     },
     {
       "id": "torchic",
-      "number": "022",
-      "order": 22,
+      "number": "024",
+      "order": 24,
       "group": "torchic",
       "name": "燈茸雀",
       "skills": [
@@ -681,8 +743,8 @@
     },
     {
       "id": "combusken",
-      "number": "023",
-      "order": 23,
+      "number": "025",
+      "order": 25,
       "group": "torchic",
       "name": "霞羽鶴",
       "skills": [
@@ -712,8 +774,8 @@
     },
     {
       "id": "blaziken",
-      "number": "024",
-      "order": 24,
+      "number": "026",
+      "order": 26,
       "group": "torchic",
       "name": "曦焰長羽",
       "skills": [
@@ -743,8 +805,8 @@
     },
     {
       "id": "mudkip",
-      "number": "025",
-      "order": 25,
+      "number": "027",
+      "order": 27,
       "group": "mudkip",
       "name": "泡泡蛙",
       "skills": [
@@ -774,8 +836,8 @@
     },
     {
       "id": "marshtomp",
-      "number": "026",
-      "order": 26,
+      "number": "028",
+      "order": 28,
       "group": "mudkip",
       "name": "荷盞蛙",
       "skills": [
@@ -805,8 +867,8 @@
     },
     {
       "id": "swampert",
-      "number": "027",
-      "order": 27,
+      "number": "029",
+      "order": 29,
       "group": "mudkip",
       "name": "滄瀾角蛙",
       "skills": [
@@ -836,8 +898,8 @@
     },
     {
       "id": "turtwig",
-      "number": "028",
-      "order": 28,
+      "number": "030",
+      "order": 30,
       "group": "turtwig",
       "name": "籽背鼴",
       "skills": [
@@ -867,8 +929,8 @@
     },
     {
       "id": "grotle",
-      "number": "029",
-      "order": 29,
+      "number": "031",
+      "order": 31,
       "group": "turtwig",
       "name": "石芽獾",
       "skills": [
@@ -898,8 +960,8 @@
     },
     {
       "id": "torterra",
-      "number": "030",
-      "order": 30,
+      "number": "032",
+      "order": 32,
       "group": "turtwig",
       "name": "嶺苔山獾",
       "skills": [
@@ -929,8 +991,8 @@
     },
     {
       "id": "chimchar",
-      "number": "031",
-      "order": 31,
+      "number": "033",
+      "order": 33,
       "group": "chimchar",
       "name": "星火猿",
       "skills": [
@@ -960,8 +1022,8 @@
     },
     {
       "id": "monferno",
-      "number": "032",
-      "order": 32,
+      "number": "034",
+      "order": 34,
       "group": "chimchar",
       "name": "銅爐猿",
       "skills": [
@@ -991,8 +1053,8 @@
     },
     {
       "id": "infernape",
-      "number": "033",
-      "order": 33,
+      "number": "035",
+      "order": 35,
       "group": "chimchar",
       "name": "彗拳巨猿",
       "skills": [
@@ -1022,8 +1084,8 @@
     },
     {
       "id": "piplup",
-      "number": "034",
-      "order": 34,
+      "number": "036",
+      "order": 36,
       "group": "piplup",
       "name": "雛鳥",
       "skills": [
@@ -1053,8 +1115,8 @@
     },
     {
       "id": "prinplup",
-      "number": "035",
-      "order": 35,
+      "number": "037",
+      "order": 37,
       "group": "piplup",
       "name": "青羽鳥",
       "skills": [
@@ -1084,8 +1146,8 @@
     },
     {
       "id": "empoleon",
-      "number": "036",
-      "order": 36,
+      "number": "038",
+      "order": 38,
       "group": "piplup",
       "name": "天翼王",
       "skills": [
@@ -1115,8 +1177,8 @@
     },
     {
       "id": "articuno",
-      "number": "037",
-      "order": 37,
+      "number": "039",
+      "order": 39,
       "group": "articuno",
       "name": "大眼蛙",
       "skills": [
@@ -1155,8 +1217,8 @@
     },
     {
       "id": "moltres",
-      "number": "038",
-      "order": 38,
+      "number": "040",
+      "order": 40,
       "group": "articuno",
       "name": "冒險蛙",
       "skills": [
@@ -1195,8 +1257,8 @@
     },
     {
       "id": "raikou",
-      "number": "039",
-      "order": 39,
+      "number": "041",
+      "order": 41,
       "group": "zapdos",
       "name": "C囝仔",
       "skills": [
@@ -1224,8 +1286,8 @@
     },
     {
       "id": "zapdos",
-      "number": "040",
-      "order": 40,
+      "number": "042",
+      "order": 42,
       "group": "zapdos",
       "name": "C老猴",
       "skills": [
@@ -1253,8 +1315,8 @@
     },
     {
       "id": "entei",
-      "number": "041",
-      "order": 41,
+      "number": "043",
+      "order": 43,
       "group": "entei",
       "name": "水毛蟲",
       "skills": [
@@ -1282,8 +1344,8 @@
     },
     {
       "id": "suicune",
-      "number": "042",
-      "order": 42,
+      "number": "044",
+      "order": 44,
       "group": "entei",
       "name": "水仙子",
       "skills": [
@@ -1311,8 +1373,8 @@
     },
     {
       "id": "kyogre",
-      "number": "043",
-      "order": 43,
+      "number": "045",
+      "order": 45,
       "group": "kyogre",
       "name": "小金魚",
       "skills": [
@@ -1340,8 +1402,8 @@
     },
     {
       "id": "groudon",
-      "number": "044",
-      "order": 44,
+      "number": "046",
+      "order": 46,
       "group": "kyogre",
       "name": "金魚國王",
       "skills": [
@@ -1369,8 +1431,8 @@
     },
     {
       "id": "rayquaza",
-      "number": "045",
-      "order": 45,
+      "number": "047",
+      "order": 47,
       "group": "kyogre",
       "name": "金魚皇后",
       "skills": [
@@ -1398,8 +1460,8 @@
     },
     {
       "id": "dialga",
-      "number": "046",
-      "order": 46,
+      "number": "048",
+      "order": 48,
       "group": "dialga",
       "name": "時砂巨象",
       "skills": [
@@ -1428,40 +1490,9 @@
       ]
     },
     {
-      "id": "palkia",
-      "number": "047",
-      "order": 47,
-      "group": "palkia",
-      "name": "月瀾海馬",
-      "skills": [
-        {
-          "index": 0,
-          "name": "潮光輕擊",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
-        },
-        {
-          "index": 1,
-          "name": "月瀾共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
-        }
-      ]
-    },
-    {
       "id": "giratina",
-      "number": "048",
-      "order": 48,
+      "number": "049",
+      "order": 49,
       "group": "giratina",
       "name": "暮影六翼鹿",
       "skills": [
@@ -1491,8 +1522,8 @@
     },
     {
       "id": "pikachu",
-      "number": "049",
-      "order": 49,
+      "number": "050",
+      "order": 50,
       "group": "pikachu",
       "name": "歐頭慢",
       "skills": [
@@ -1524,8 +1555,8 @@
     },
     {
       "id": "raichu",
-      "number": "050",
-      "order": 50,
+      "number": "051",
+      "order": 51,
       "group": "pikachu",
       "name": "霆冠躍兔",
       "skills": [
@@ -1555,8 +1586,8 @@
     },
     {
       "id": "mew",
-      "number": "051",
-      "order": 51,
+      "number": "052",
+      "order": 52,
       "group": "mew",
       "name": "小飯團",
       "skills": [
@@ -1585,8 +1616,8 @@
     },
     {
       "id": "wigglytuff",
-      "number": "052",
-      "order": 52,
+      "number": "053",
+      "order": 53,
       "group": "wigglytuff",
       "name": "小山",
       "skills": [
@@ -1618,8 +1649,8 @@
     },
     {
       "id": "blissey",
-      "number": "053",
-      "order": 53,
+      "number": "054",
+      "order": 54,
       "group": "blissey",
       "name": "光鳳鷹",
       "skills": [
@@ -1647,8 +1678,8 @@
     },
     {
       "id": "caterpie",
-      "number": "054",
-      "order": 54,
+      "number": "055",
+      "order": 55,
       "group": "caterpie",
       "name": "銅寶箱",
       "skills": [
@@ -1678,8 +1709,8 @@
     },
     {
       "id": "metapod",
-      "number": "055",
-      "order": 55,
+      "number": "056",
+      "order": 56,
       "group": "caterpie",
       "name": "銀寶箱",
       "skills": [
@@ -1709,8 +1740,8 @@
     },
     {
       "id": "butterfree",
-      "number": "056",
-      "order": 56,
+      "number": "057",
+      "order": 57,
       "group": "caterpie",
       "name": "金寶箱",
       "skills": [
@@ -1740,8 +1771,8 @@
     },
     {
       "id": "weedle",
-      "number": "057",
-      "order": 57,
+      "number": "058",
+      "order": 58,
       "group": "weedle",
       "name": "破書",
       "skills": [
@@ -1771,8 +1802,8 @@
     },
     {
       "id": "kakuna",
-      "number": "058",
-      "order": 58,
+      "number": "059",
+      "order": 59,
       "group": "weedle",
       "name": "論語",
       "skills": [
@@ -1802,8 +1833,8 @@
     },
     {
       "id": "beedrill",
-      "number": "059",
-      "order": 59,
+      "number": "060",
+      "order": 60,
       "group": "weedle",
       "name": "辭海",
       "skills": [
@@ -1833,8 +1864,8 @@
     },
     {
       "id": "mewtwo",
-      "number": "060",
-      "order": 60,
+      "number": "061",
+      "order": 61,
       "group": "mewtwo",
       "name": "水蛟龍王",
       "skills": [
@@ -1857,37 +1888,6 @@
           "fallback": false,
           "duration": 5.8,
           "source": "authoring/water-spirits/spirits.js"
-        }
-      ]
-    },
-    {
-      "id": "jigglypuff",
-      "number": "061",
-      "order": 61,
-      "group": "jigglypuff",
-      "name": "夢鈴絨球",
-      "skills": [
-        {
-          "index": 0,
-          "name": "夢光輕擊",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
-        },
-        {
-          "index": 1,
-          "name": "夢鈴共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
         }
       ]
     }
@@ -1939,14 +1939,6 @@
         "totodile",
         "croconaw",
         "feraligatr"
-      ]
-    },
-    {
-      "id": "treecko",
-      "ids": [
-        "treecko",
-        "grovyle",
-        "sceptile"
       ]
     },
     {
@@ -2025,12 +2017,6 @@
       ]
     },
     {
-      "id": "palkia",
-      "ids": [
-        "palkia"
-      ]
-    },
-    {
       "id": "giratina",
       "ids": [
         "giratina"
@@ -2084,9 +2070,13 @@
       ]
     },
     {
-      "id": "jigglypuff",
+      "id": "avian-evolution",
       "ids": [
-        "jigglypuff"
+        "jigglypuff",
+        "treecko",
+        "grovyle",
+        "sceptile",
+        "palkia"
       ]
     }
   ],

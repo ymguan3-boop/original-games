@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-21",
+  "upstreamBase": "ac77cde",
+  "source": "local authored Three.js",
+  "gameIds": {
+    "jigglypuff": "三色蛋",
+    "treecko": "小麻",
+    "grovyle": "咕咕",
+    "sceptile": "小鷹",
+    "palkia": "大朋"
+  },
+  "portraits": [
+    "cards/art/avian-egg.webp",
+    "cards/art/avian-xiaoma.webp",
+    "cards/art/avian-gugu.webp",
+    "cards/art/avian-little-eagle.webp",
+    "cards/art/avian-dapeng.webp"
+  ],
+  "profile": "game realtime",
+  "technicalStatus": "two rule samples PASS; model-room loaded",
+  "artStatus": "dapeng user-approved; additions pending manual review",
+  "evidenceScript": "authoring/check-avian-rules.cjs",
+  "deliveryFiles": "Only runtime JS, configuration, compressed portraits and audit metadata; references and revision folders remain local."
+}

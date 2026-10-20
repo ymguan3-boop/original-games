@@ -110,20 +110,20 @@
   "treecko": {
     "desiredWorldHeight": 1.08,
     "stage": 1,
-    "form": "lizard",
-    "maxSpan": 2.6
+    "form": "bird",
+    "maxSpan": 3.2
   },
   "grovyle": {
-    "desiredWorldHeight": 1.404,
+    "desiredWorldHeight": 1.5,
     "stage": 2,
-    "form": "lizard",
-    "maxSpan": 3.3800000000000003
+    "form": "bird",
+    "maxSpan": 3.2
   },
   "sceptile": {
-    "desiredWorldHeight": 1.825,
+    "desiredWorldHeight": 1.85,
     "stage": 3,
-    "form": "lizard",
-    "maxSpan": 4.394000000000001
+    "form": "bird",
+    "maxSpan": 3.2
   },
   "torchic": {
     "desiredWorldHeight": 0.96,
@@ -276,10 +276,10 @@
     "maxSpan": 5.8
   },
   "palkia": {
-    "desiredWorldHeight": 3.5,
-    "stage": 3,
-    "form": "seahorse",
-    "maxSpan": 5.8
+    "desiredWorldHeight": 2.55,
+    "stage": 4,
+    "form": "bird",
+    "maxSpan": 4.8
   },
   "giratina": {
     "desiredWorldHeight": 4.1,
@@ -360,9 +360,9 @@
     "maxSpan": 6
   },
   "jigglypuff": {
-    "desiredWorldHeight": 1.08,
+    "desiredWorldHeight": 1.3,
     "stage": 1,
-    "form": "fluff",
-    "maxSpan": 2.6
+    "form": "egg",
+    "maxSpan": 3.2
   }
 }

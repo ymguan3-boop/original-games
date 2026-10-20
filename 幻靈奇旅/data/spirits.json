@@ -617,104 +617,113 @@
   {
     "id": "treecko",
     "speciesId": "treecko",
-    "name": "苔點蜥",
-    "element": "grass",
-    "type": "森",
+    "name": "小麻",
+    "element": "normal",
+    "type": "特殊",
     "stage": 1,
-    "family": "fern-gecko",
-    "form": "lizard",
+    "family": "avian-evolution",
+    "form": "bird",
     "color": 5020791,
-    "role": "starter",
-    "previous": null,
+    "role": "special",
+    "previous": "jigglypuff",
     "next": "grovyle",
-    "model": "models/spirits/treecko.glb",
-    "height": 1.275,
+    "model": "avian://treecko",
+    "height": 1.08,
     "hp": 90,
     "attack": 26,
-    "evolvesTo": "grovyle",
-    "rarity": "普通",
+    "evolvesTo": null,
+    "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "好奇啄擊",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "苔點共鳴",
+        "name": "絨羽小旋風",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "苔點蜥是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "三色蛋在同一次遭遇捕捉失敗 1 次後變成小麻。灰紫色短翼快速振翅，平時收翼踱步，好奇地啄擊，並以絨羽旋風自我保護。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "captureEvolutionOnly": true
   },
   {
     "id": "grovyle",
     "speciesId": "grovyle",
-    "name": "蕨帆蜥",
-    "element": "grass",
-    "type": "森",
+    "name": "咕咕",
+    "element": "normal",
+    "type": "特殊",
     "stage": 2,
-    "family": "fern-gecko",
-    "form": "lizard",
+    "family": "avian-evolution",
+    "form": "bird",
     "color": 5020791,
-    "role": "starter",
+    "role": "special",
     "previous": "treecko",
     "next": "sceptile",
-    "model": "models/spirits/grovyle.glb",
-    "height": 1.6575,
+    "model": "avian://grovyle",
+    "height": 1.5,
     "hp": 125,
     "attack": 40,
-    "evolvesTo": "sceptile",
-    "rarity": "進階",
+    "evolvesTo": null,
+    "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "雞冠衝撞",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "蕨帆共鳴",
+        "name": "晨曦啼鳴",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "蕨帆蜥是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "同一次三色蛋遭遇累計捕捉失敗 2 次後，變成咕咕。紅雞冠與大鐮尾昂然挺立，短程撲飛、雞冠衝撞，以晨曦啼鳴送出聲波。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "captureEvolutionOnly": true
   },
   {
     "id": "sceptile",
     "speciesId": "sceptile",
-    "name": "翠環森蜥",
-    "element": "grass",
-    "type": "森",
+    "name": "小鷹",
+    "element": "normal",
+    "type": "特殊",
     "stage": 3,
-    "family": "fern-gecko",
-    "form": "lizard",
+    "family": "avian-evolution",
+    "form": "bird",
     "color": 5020791,
-    "role": "starter",
+    "role": "special",
     "previous": "grovyle",
-    "next": null,
-    "model": "models/spirits/sceptile.glb",
-    "height": 2.15475,
+    "next": "palkia",
+    "model": "avian://sceptile",
+    "height": 1.85,
     "hp": 160,
     "attack": 54,
-    "evolvesTo": null,
-    "rarity": "珍稀",
+    "evolvesTo": "palkia",
+    "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "銳喙啄擊",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "翠環共鳴",
+        "name": "幼鷹撲擊",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "翠環森蜥是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "同一次三色蛋遭遇累計捕捉失敗 3 次後，變成小鷹。需持有 3 張小鷹卡才能進階成大朋；抬頭收爪飛行，以銳喙啄擊或拍翼撲擊。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "captureEvolutionOnly": true
   },
   {
     "id": "torchic",
@@ -1591,36 +1600,39 @@
   {
     "id": "palkia",
     "speciesId": "palkia",
-    "name": "月瀾海馬",
-    "element": "water",
-    "type": "潮",
-    "stage": 3,
-    "family": "palkia",
-    "form": "seahorse",
+    "name": "大朋",
+    "element": "normal",
+    "type": "特殊",
+    "stage": 4,
+    "family": "avian-evolution",
+    "form": "bird",
     "color": 11963323,
-    "role": "legendary",
-    "previous": null,
+    "role": "special",
+    "previous": "sceptile",
     "next": null,
-    "model": "models/spirits/palkia.glb",
-    "height": 2.15475,
+    "model": "avian://palkia",
+    "height": 2.55,
     "hp": 210,
     "attack": 54,
     "evolvesTo": null,
-    "rarity": "傳說",
-    "motionType": "float",
+    "rarity": "稀有",
+    "motionType": "walk",
     "skills": [
       {
-        "name": "潮光輕擊",
-        "power": 54,
+        "name": "強力拍翼",
+        "power": 58,
         "cost": 1
       },
       {
-        "name": "月瀾共鳴",
-        "power": 108,
+        "name": "高空衝撞",
+        "power": 116,
         "cost": 3
       }
     ],
-    "description": "月瀾海馬是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "由 3 張小鷹卡進階而來的稀有特殊幻靈。行走收翼，強力拍翼時先蹲低直立起飛，邊前拍射羽邊後退；大絕招升至高空，再向前俯衝撞擊。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "evolutionOnly": true
   },
   {
     "id": "giratina",
@@ -2077,35 +2089,47 @@
   {
     "id": "jigglypuff",
     "speciesId": "jigglypuff",
-    "name": "夢鈴絨球",
-    "element": "fairy",
-    "type": "夢",
+    "name": "三色蛋",
+    "element": "normal",
+    "type": "特殊",
     "stage": 1,
-    "family": "jigglypuff",
-    "form": "fluff",
+    "family": "avian-evolution",
+    "form": "egg",
     "color": 14921146,
     "role": "reward",
     "previous": null,
-    "next": null,
-    "model": "models/spirits/jigglypuff.glb",
-    "height": 1.275,
+    "next": "treecko",
+    "model": "avian://jigglypuff",
+    "height": 1.3,
     "hp": 90,
     "attack": 26,
     "evolvesTo": null,
-    "rarity": "稀有",
-    "motionType": "walk",
+    "rarity": "傳說",
+    "motionType": "stationary",
     "skills": [
       {
-        "name": "夢光輕擊",
-        "power": 26,
-        "cost": 1
+        "name": "武裝",
+        "power": 0,
+        "cost": 1,
+        "effect": "eggArmour"
       },
       {
-        "name": "夢鈴共鳴",
-        "power": 52,
-        "cost": 3
+        "name": "回滿",
+        "power": 0,
+        "cost": 3,
+        "effect": "eggRecover",
+        "cooldownTurns": 2
       }
     ],
-    "description": "夢鈴絨球是初光之境的夢屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "靜止不移動的傳說三色蛋，固定基礎捕捉率 5%（星耀球依既有保證締約）。同一次遭遇捕捉失敗第 1、2、3 次，會依序變為小麻、咕咕、小鷹。武裝使對手本場攻擊減半，回滿恢復最大 HP 的 90%，每 2 回合可用 1 次。",
+    "stageLabel": "特殊基礎",
+    "cardFrame": "red",
+    "captureRate": 0.05,
+    "stationary": true,
+    "captureEvolution": [
+      "treecko",
+      "grovyle",
+      "sceptile"
+    ]
   }
 ]

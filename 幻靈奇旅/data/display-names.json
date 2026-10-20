@@ -18,9 +18,9 @@
     "totodile": "小肥象",
     "croconaw": "小飛",
     "feraligatr": "阿拉肥",
-    "treecko": "苔點蜥",
-    "grovyle": "蕨帆蜥",
-    "sceptile": "翠環森蜥",
+    "treecko": "小麻",
+    "grovyle": "咕咕",
+    "sceptile": "小鷹",
     "torchic": "燈茸雀",
     "combusken": "霞羽鶴",
     "blaziken": "曦焰長羽",
@@ -46,7 +46,7 @@
     "groudon": "金魚國王",
     "rayquaza": "金魚皇后",
     "dialga": "時砂巨象",
-    "palkia": "月瀾海馬",
+    "palkia": "大朋",
     "giratina": "暮影六翼鹿",
     "pikachu": "歐頭慢",
     "mew": "小飯團",
@@ -60,7 +60,7 @@
     "kakuna": "論語",
     "beedrill": "辭海",
     "mewtwo": "水蛟龍王",
-    "jigglypuff": "夢鈴絨球"
+    "jigglypuff": "三色蛋"
   },
   "buildingNameMap": {
     "care_center": "幻靈照護所",

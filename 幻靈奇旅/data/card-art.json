@@ -150,34 +150,28 @@
     "generatedAt": "2026-10-16"
   },
   "treecko": {
-    "image": "cards/art/treecko.webp",
-    "name": "苔點蜥",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/treecko.glb",
-    "group": 4,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/avian-xiaoma.webp",
+    "name": "小麻",
+    "source": "native-threejs-model-portrait",
+    "referenceModel": "avian://treecko",
+    "style": "reference-matched-3d-character",
+    "generatedAt": "2026-10-20"
   },
   "grovyle": {
-    "image": "cards/art/grovyle.webp",
-    "name": "蕨帆蜥",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/grovyle.glb",
-    "group": 4,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/avian-gugu.webp",
+    "name": "咕咕",
+    "source": "native-threejs-model-portrait",
+    "referenceModel": "avian://grovyle",
+    "style": "reference-matched-3d-character",
+    "generatedAt": "2026-10-20"
   },
   "sceptile": {
-    "image": "cards/art/sceptile.webp",
-    "name": "翠環森蜥",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/sceptile.glb",
-    "group": 5,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/avian-little-eagle.webp",
+    "name": "小鷹",
+    "source": "native-threejs-model-portrait",
+    "referenceModel": "avian://sceptile",
+    "style": "reference-matched-3d-character",
+    "generatedAt": "2026-10-20"
   },
   "torchic": {
     "image": "cards/art/torchic.webp",
@@ -421,14 +415,12 @@
     "generatedAt": "2026-10-12"
   },
   "palkia": {
-    "image": "cards/art/palkia.webp",
-    "name": "月瀾海馬",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/palkia.glb",
-    "group": 11,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/avian-dapeng.webp",
+    "name": "大朋",
+    "source": "native-threejs-model-portrait",
+    "referenceModel": "avian://palkia",
+    "style": "reference-matched-3d-character",
+    "generatedAt": "2026-10-20"
   },
   "giratina": {
     "image": "cards/art/giratina.webp",
@@ -550,13 +542,11 @@
     "revision": 2
   },
   "jigglypuff": {
-    "image": "cards/art/jigglypuff.webp",
-    "name": "夢鈴絨球",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/jigglypuff.glb",
-    "group": 15,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/avian-egg.webp",
+    "name": "三色蛋",
+    "source": "native-threejs-model-portrait",
+    "referenceModel": "avian://jigglypuff",
+    "style": "reference-matched-3d-character",
+    "generatedAt": "2026-10-20"
   }
 }
