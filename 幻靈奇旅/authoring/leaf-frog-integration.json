@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-20",
+  "scope": "Approved V4 frog integration onto latest GitHub main; authorized Git push",
+  "upstreamCommit": "d633caa66e50ebbafcfdbab5e1e71f397a4e08ab",
+  "replacements": [
+    {
+      "id": "articuno",
+      "name": "大眼蛙",
+      "model": "leaf-frog://articuno",
+      "portrait": "cards/art/leaf-frog-1.webp"
+    },
+    {
+      "id": "moltres",
+      "name": "冒險蛙",
+      "model": "leaf-frog://moltres",
+      "portrait": "cards/art/leaf-frog-2.webp"
+    }
+  ],
+  "classification": {
+    "rarity": "稀有",
+    "stageLabel": "守護者",
+    "cardFrame": "purple",
+    "numericStages": [
+      1,
+      2
+    ]
+  },
+  "evolution": "大眼蛙加入隊伍，連續完成3場擂台，勝敗皆計。未參戰、中止、未結算重新載入歸零。達標不需羈絆；進階成功歸零。",
+  "compatibility": "Existing IDs, ownership, teams and combat elements preserved",
+  "acceptance": [
+    {
+      "feature": "Model and portrait replacement with classification",
+      "method": "One integrated browser model-room inspection of two replacement entries",
+      "status": "PASS",
+      "evidence": [
+        "artifacts/leaf-frogs/game-integration-frog-1.png",
+        "artifacts/leaf-frogs/game-integration-frog-2.png"
+      ]
+    },
+    {
+      "feature": "Consecutive arena participation evolution",
+      "method": "One actual-function rule test in VM with DOM/cinematic substituted; not three manual full arena matches",
+      "status": "PASS",
+      "evidence": "artifacts/leaf-frogs/check-evolution-rules.cjs"
+    }
+  ],
+  "removedGeneratedAssets": [
+    {
+      "file": "models/spirits/articuno.glb",
+      "bytes": 178536
+    },
+    {
+      "file": "models/spirits/moltres.glb",
+      "bytes": 128692
+    },
+    {
+      "file": "cards/art/articuno.webp",
+      "bytes": 82698
+    },
+    {
+      "file": "cards/art/moltres.webp",
+      "bytes": 99044
+    }
+  ],
+  "notes": "Two compressed WebP portraits and one shared V4 native source plus adapter; no historical model-room bundles or screenshots deployed. User reference originals preserved. No full performance benchmark.",
+  "currentRevision": "4.0.0",
+  "corrections": {
+    "shape": "Smaller head lowered onto half-height neck; longer spread limbs and digits; two larger leaves per side; sharp eyes; conformed raised blush; visible chest brooch; external goggles; dark brown boomerang",
+    "ordinaryAttacks": {
+      "articuno": {
+        "mode": "Bump",
+        "duration": 1.45
+      },
+      "moltres": {
+        "mode": "Kick",
+        "style": "Side kick with body pivot and head facing target",
+        "duration": 1.9
+      }
+    },
+    "retainedSkills": [
+      "Bubbles",
+      "Boomerang"
+    ],
+    "technicalEvidence": "artifacts/leaf-frogs/revisions/v2/runtime-validation.json",
+    "artStatus": "SUPERSEDED_BY_V4_APPROVED"
+  },
+  "correctionsV3": {
+    "hand": "Spread free fingers; curled fingers and opposing thumb enclose wooden grip",
+    "kick": "Higher side kick; ankle height 2.317 native units; torso counterbalance",
+    "wave": "Empty left hand",
+    "movement": "Stage2 Hop replaced with looping NinjaRun",
+    "mouth": "Natural opening/closing with curved first-stage smile silhouette",
+    "technicalEvidence": "artifacts/leaf-frogs/revisions/v3/runtime-validation.json",
+    "artStatus": "SUPERSEDED_BY_V4_APPROVED"
+  },
+  "correctionsV4": {
+    "hands": "Correct left/right palm chirality and opposing grip thumb",
+    "ninjaRun": "Arms spread; cloak folds rearward, sampled forearm surface clearance positive",
+    "evidence": "artifacts/leaf-frogs/revisions/v4/runtime-validation.json",
+    "artStatus": "USER_APPROVED"
+  },
+  "userApproval": "V4 models approved by user on 2026-10-20; integrate and push requested",
+  "integration": {
+    "upstreamFeaturesRetained": [
+      "North river, bridge and fishing 3v3",
+      "Water spirits and fisherman NPC",
+      "Water caterpillar arena evolution and random goldfish evolution",
+      "Fish food and water dragon summon"
+    ],
+    "streakIntegration": "Shared ARENA_EVOLVERS includes fire monkey, water caterpillar and frog; existing rules preserved",
+    "approvedModelSource": "V4 unchanged",
+    "displayNames": "大眼蛙 (user also calls 泡泡蛙), 冒險蛙; stable IDs articuno/moltres",
+    "technicalReview": "PASS: model-room replacement and portraits inspected once; arena evolution rules including upstream water/goldfish evaluated once; no full matches or device benchmark",
+    "runtimeAssets": {
+      "addedBytes": 246841,
+      "removedBytes": 488970,
+      "netReductionBytes": 242129
+    }
+  }
+}

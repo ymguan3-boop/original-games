@@ -1229,36 +1229,43 @@
   {
     "id": "articuno",
     "speciesId": "articuno",
-    "name": "霜鏡天鰩",
+    "name": "大眼蛙",
     "element": "ice",
     "type": "霜",
-    "stage": 3,
-    "family": "articuno",
-    "form": "manta",
-    "color": 8505822,
+    "stage": 1,
+    "family": "leaf-frog",
+    "form": "frog",
+    "color": 10211141,
     "role": "legendary",
     "previous": null,
-    "next": null,
-    "model": "models/spirits/articuno.glb",
-    "height": 2.15475,
+    "next": "moltres",
+    "model": "leaf-frog://articuno",
+    "height": 1.85,
     "hp": 210,
     "attack": 54,
-    "evolvesTo": null,
-    "rarity": "傳說",
-    "motionType": "fly",
+    "evolvesTo": "moltres",
+    "rarity": "稀有",
+    "motionType": "walk",
     "skills": [
       {
-        "name": "霜光輕擊",
+        "name": "普通撞擊",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "霜鏡共鳴",
+        "name": "泡泡吐息",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "泡泡連彈",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "霜鏡天鰩是初光之境的霜屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "戴著放大圓眼鏡的葉芽守護者，普通攻擊會蓄力前衝撞擊，並能吐出晶亮泡泡。加入隊伍連續完成 3 場幻靈競技擂台戰鬥後，可進階為冒險蛙（勝敗皆計；未參戰或中途離開會中斷）。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
   },
   {
     "id": "zapdos",
@@ -1299,36 +1306,43 @@
   {
     "id": "moltres",
     "speciesId": "moltres",
-    "name": "赤曜雙翼",
+    "name": "冒險蛙",
     "element": "fire",
     "type": "焰",
-    "stage": 3,
-    "family": "moltres",
-    "form": "phoenix",
-    "color": 14910805,
+    "stage": 2,
+    "family": "leaf-frog",
+    "form": "frog",
+    "color": 10211141,
     "role": "legendary",
-    "previous": null,
+    "previous": "articuno",
     "next": null,
-    "model": "models/spirits/moltres.glb",
-    "height": 2.15475,
+    "model": "leaf-frog://moltres",
+    "height": 2.65,
     "hp": 210,
     "attack": 54,
     "evolvesTo": null,
-    "rarity": "傳說",
-    "motionType": "fly",
+    "rarity": "稀有",
+    "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "普通側踢",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "赤曜共鳴",
+        "name": "葉鏢投擲",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "迴旋葉風",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "赤曜雙翼是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "擁有雙葉耳飾與銳利眼神的冒險守護者。右手握住深咖啡色回力鏢，左手能揮手招呼；擅長前傾忍者跑步，以及腰身配合平衡的高側踢。由大眼蛙連續擂台參戰 3 場進階而來。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
   },
   {
     "id": "raikou",

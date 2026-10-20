@@ -696,21 +696,24 @@
   },
   {
     "id": "articuno",
-    "name": "霜鏡天鰩",
-    "vertices": 2536,
-    "triangles": 4968,
-    "materials": 5,
-    "bones": 6,
-    "height": 2.15475,
+    "name": "大眼蛙",
+    "height": 1.85,
+    "triangles": 79648,
+    "meshes": 160,
+    "bones": 58,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt",
-      "Fly"
+      "Hop",
+      "Wave",
+      "Bump",
+      "Bubbles"
     ],
-    "fileBytes": 178536,
-    "source": "Blender native authored mesh and skeletal animation"
+    "runtime": "native-threejs",
+    "source": "User-approved native Three.js articulated frog; pooled attack effects; stable save ID retained",
+    "model": "leaf-frog://articuno",
+    "sourceBlueprint": "models/native/leaf-frogs.js",
+    "fileBytes": 40865
   },
   {
     "id": "zapdos",
@@ -735,21 +738,24 @@
   },
   {
     "id": "moltres",
-    "name": "赤曜雙翼",
-    "vertices": 1576,
-    "triangles": 2948,
-    "materials": 5,
-    "bones": 8,
-    "height": 2.15475,
+    "name": "冒險蛙",
+    "height": 2.65,
+    "triangles": 79680,
+    "meshes": 163,
+    "bones": 87,
     "animations": [
       "Idle",
       "Walk",
-      "Attack",
-      "Hurt",
-      "Fly"
+      "NinjaRun",
+      "Wave",
+      "Kick",
+      "Boomerang"
     ],
-    "fileBytes": 128692,
-    "source": "Blender native authored mesh and skeletal animation"
+    "runtime": "native-threejs",
+    "source": "User-approved native Three.js articulated frog; pooled attack effects; stable save ID retained",
+    "model": "leaf-frog://moltres",
+    "sourceBlueprint": "models/native/leaf-frogs.js",
+    "fileBytes": 40865
   },
   {
     "id": "raikou",

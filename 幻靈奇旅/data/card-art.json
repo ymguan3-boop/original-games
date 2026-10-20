@@ -324,14 +324,12 @@
     "generatedAt": "2026-10-16"
   },
   "articuno": {
-    "image": "cards/art/articuno.webp",
-    "name": "霜鏡天鰩",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/articuno.glb",
-    "group": 9,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/leaf-frog-1.webp",
+    "name": "大眼蛙",
+    "source": "imagegen-user-approved-frog-reference",
+    "referenceModel": "leaf-frog://articuno",
+    "style": "stylized-3d-fantasy-portrait",
+    "generatedAt": "2026-10-20"
   },
   "zapdos": {
     "image": "cards/art/fire-monkey-c-elder.webp",
@@ -342,14 +340,12 @@
     "generatedAt": "2026-10-18"
   },
   "moltres": {
-    "image": "cards/art/moltres.webp",
-    "name": "赤曜雙翼",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/moltres.glb",
-    "group": 9,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/leaf-frog-2.webp",
+    "name": "冒險蛙",
+    "source": "imagegen-user-approved-frog-reference",
+    "referenceModel": "leaf-frog://moltres",
+    "style": "stylized-3d-fantasy-portrait",
+    "generatedAt": "2026-10-20"
   },
   "raikou": {
     "image": "cards/art/fire-monkey-c-kid.webp",
@@ -360,44 +356,54 @@
     "generatedAt": "2026-10-18"
   },
   "entei": {
-    "image": "cards/art/water-caterpillar.webp",
+    "image": "cards/art/water-caterpillar-portrait.webp",
     "name": "水毛蟲",
-    "source": "threejs-model-render",
+    "source": "imagegen-model-reference",
     "referenceModel": "models/spirits/water-caterpillar.glb",
-    "style": "threejs-3d-portrait",
-    "generatedAt": "2026-10-20"
+    "style": "stylized-3d-fantasy-water-portrait",
+    "generatedAt": "2026-10-20",
+    "width": 768,
+    "height": 768
   },
   "suicune": {
-    "image": "cards/art/water-fairy.webp",
+    "image": "cards/art/water-fairy-portrait.webp",
     "name": "水仙子",
-    "source": "threejs-model-render",
+    "source": "imagegen-model-reference",
     "referenceModel": "models/spirits/water-fairy.glb",
-    "style": "threejs-3d-portrait",
-    "generatedAt": "2026-10-20"
+    "style": "stylized-3d-fantasy-water-portrait",
+    "generatedAt": "2026-10-20",
+    "width": 768,
+    "height": 768
   },
   "kyogre": {
-    "image": "cards/art/goldfish-1.webp",
+    "image": "cards/art/goldfish-1-portrait.webp",
     "name": "小金魚",
-    "source": "threejs-model-render",
+    "source": "imagegen-model-reference",
     "referenceModel": "models/spirits/goldfish-1.glb",
-    "style": "threejs-3d-portrait",
-    "generatedAt": "2026-10-20"
+    "style": "stylized-3d-fantasy-water-portrait",
+    "generatedAt": "2026-10-20",
+    "width": 768,
+    "height": 768
   },
   "groudon": {
-    "image": "cards/art/goldfish-king.webp",
+    "image": "cards/art/goldfish-king-portrait.webp",
     "name": "金魚國王",
-    "source": "threejs-model-render",
+    "source": "imagegen-model-reference",
     "referenceModel": "models/spirits/goldfish-king.glb",
-    "style": "threejs-3d-portrait",
-    "generatedAt": "2026-10-20"
+    "style": "stylized-3d-fantasy-water-portrait",
+    "generatedAt": "2026-10-20",
+    "width": 768,
+    "height": 768
   },
   "rayquaza": {
-    "image": "cards/art/goldfish-queen.webp",
+    "image": "cards/art/goldfish-queen-portrait.webp",
     "name": "金魚皇后",
-    "source": "threejs-model-render",
+    "source": "imagegen-model-reference",
     "referenceModel": "models/spirits/goldfish-queen.glb",
-    "style": "threejs-3d-portrait",
-    "generatedAt": "2026-10-20"
+    "style": "stylized-3d-fantasy-water-portrait",
+    "generatedAt": "2026-10-20",
+    "width": 768,
+    "height": 768
   },
   "dialga": {
     "image": "cards/art/dialga.webp",
@@ -528,12 +534,14 @@
     "generatedAt": "2026-10-16"
   },
   "mewtwo": {
-    "image": "cards/art/water-dragon-king.webp",
+    "image": "cards/art/water-dragon-king-portrait.webp",
     "name": "水蛟龍王",
-    "source": "threejs-model-render",
+    "source": "imagegen-model-reference",
     "referenceModel": "models/spirits/water-dragon-king.glb",
-    "style": "threejs-3d-portrait",
-    "generatedAt": "2026-10-20"
+    "style": "stylized-3d-fantasy-water-portrait",
+    "generatedAt": "2026-10-20",
+    "width": 768,
+    "height": 768
   },
   "jigglypuff": {
     "image": "cards/art/jigglypuff.webp",

@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 81,
+  "modelCount": 80,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -164,17 +164,6 @@
       "file": "models/props/short-grass.glb",
       "bytes": 56908,
       "animations": []
-    },
-    {
-      "file": "models/spirits/articuno.glb",
-      "bytes": 178536,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
     },
     {
       "file": "models/spirits/blaziken.glb",
@@ -375,17 +364,6 @@
         "Walk",
         "Attack",
         "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/moltres.glb",
-      "bytes": 128692,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
       ]
     },
     {
@@ -707,7 +685,7 @@
       "animations": []
     }
   ],
-  "nativeModelCount": 18,
+  "nativeModelCount": 20,
   "nativeModels": [
     {
       "id": "piplup",
@@ -988,6 +966,38 @@
         "PalmNova"
       ],
       "controller": "RobotEvolution"
+    },
+    {
+      "id": "articuno",
+      "key": "leaf-frog://articuno",
+      "runtime": "three-r128",
+      "triangles": 79648,
+      "meshes": 160,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Hop",
+        "Wave",
+        "Bump",
+        "Bubbles"
+      ],
+      "controller": "LeafFrogs"
+    },
+    {
+      "id": "moltres",
+      "key": "leaf-frog://moltres",
+      "runtime": "three-r128",
+      "triangles": 79680,
+      "meshes": 163,
+      "animations": [
+        "Idle",
+        "Walk",
+        "NinjaRun",
+        "Wave",
+        "Kick",
+        "Boomerang"
+      ],
+      "controller": "LeafFrogs"
     }
   ],
   "nativeSources": [
@@ -1045,6 +1055,16 @@
       "file": "models/native/robot-spirits.js",
       "bytes": 1381,
       "sha256": "80ba0afa319746aa16370109429c404fe970b2d1ab8177d300d1d476522a0dfe"
+    },
+    {
+      "file": "models/native/leaf-frogs.js",
+      "bytes": 40865,
+      "sha256": "28e62e45b8c62a3434263ac7c5bc9f639d423bbcfa402d177554245ee0ac3e4c"
+    },
+    {
+      "file": "models/native/frog-spirits.js",
+      "bytes": 1580,
+      "sha256": "8a709f5b23479a30f2d841ce148c13cb9c2686a4d2c102a2184eb0028a9eb47a"
     }
   ]
 }

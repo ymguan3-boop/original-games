@@ -216,10 +216,10 @@
     "maxSpan": 4.5
   },
   "articuno": {
-    "desiredWorldHeight": 2.75,
-    "stage": 3,
-    "form": "manta",
-    "maxSpan": 5.8
+    "desiredWorldHeight": 1.85,
+    "stage": 1,
+    "form": "frog",
+    "maxSpan": 3.8
   },
   "zapdos": {
     "desiredWorldHeight": 2.65,
@@ -228,10 +228,10 @@
     "maxSpan": 5.8
   },
   "moltres": {
-    "desiredWorldHeight": 3.3,
-    "stage": 3,
-    "form": "phoenix",
-    "maxSpan": 5.8
+    "desiredWorldHeight": 2.65,
+    "stage": 2,
+    "form": "frog",
+    "maxSpan": 3.8
   },
   "raikou": {
     "desiredWorldHeight": 1.85,

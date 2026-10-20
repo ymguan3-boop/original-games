@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-20",
+  "tool": "built-in image_gen",
+  "promptManifest": "Local artifacts/water-portraits/prompts.json; master PNGs retained locally",
+  "portraits": [
+    {
+      "id": "entei",
+      "name": "水毛蟲",
+      "file": "cards/art/water-caterpillar-portrait.webp",
+      "width": 768,
+      "height": 768,
+      "bytes": 103158
+    },
+    {
+      "id": "suicune",
+      "name": "水仙子",
+      "file": "cards/art/water-fairy-portrait.webp",
+      "width": 768,
+      "height": 768,
+      "bytes": 97162
+    },
+    {
+      "id": "kyogre",
+      "name": "小金魚",
+      "file": "cards/art/goldfish-1-portrait.webp",
+      "width": 768,
+      "height": 768,
+      "bytes": 72226
+    },
+    {
+      "id": "groudon",
+      "name": "金魚國王",
+      "file": "cards/art/goldfish-king-portrait.webp",
+      "width": 768,
+      "height": 768,
+      "bytes": 80804
+    },
+    {
+      "id": "rayquaza",
+      "name": "金魚皇后",
+      "file": "cards/art/goldfish-queen-portrait.webp",
+      "width": 768,
+      "height": 768,
+      "bytes": 82248
+    },
+    {
+      "id": "mewtwo",
+      "name": "水蛟龍王",
+      "file": "cards/art/water-dragon-king-portrait.webp",
+      "width": 768,
+      "height": 768,
+      "bytes": 131126
+    }
+  ],
+  "modelRoom": "Shared card-art.json; Chinese labels for all seven water GLB animation clips",
+  "riverCaptureFix": "Authorize only spawned river event actors within the water zone; keep eligible() false for event-only random spawning",
+  "validation": {
+    "modelRoom": "PASS: shared new portrait displayed; seven water motions labeled in Chinese",
+    "riverVM": "PASS: actual candidate/lock/berry/throwBall functions; fish and summoned dragon; no land unlock",
+    "riverBrowser": "PASS: one isolated-save small-goldfish capture after actual fishing victory event settlement; card +1, star ball -1, scene actor removed; zero game state errors",
+    "limits": "Victory checkpoint used; no full fishing match replay, no device performance benchmark",
+    "localEvidence": [
+      "artifacts/water-portraits/model-room-water-dragon.png",
+      "artifacts/water-portraits/river-capture-pass.png"
+    ]
+  }
+}
