@@ -1,55 +1,55 @@
 {
   "date": "2026-10-20",
   "tool": "built-in image_gen",
-  "promptManifest": "Local artifacts/water-portraits/prompts.json; master PNGs retained locally",
+  "promptManifest": "Local artifacts/water-portraits/revisions/v2/prompts.json",
   "portraits": [
     {
       "id": "entei",
       "name": "水毛蟲",
-      "file": "cards/art/water-caterpillar-portrait.webp",
+      "file": "cards/art/water-caterpillar-portrait-v2.webp",
+      "bytes": 90800,
       "width": 768,
-      "height": 768,
-      "bytes": 103158
+      "height": 768
     },
     {
       "id": "suicune",
       "name": "水仙子",
-      "file": "cards/art/water-fairy-portrait.webp",
+      "file": "cards/art/water-fairy-portrait-v2.webp",
+      "bytes": 87444,
       "width": 768,
-      "height": 768,
-      "bytes": 97162
+      "height": 768
     },
     {
       "id": "kyogre",
       "name": "小金魚",
-      "file": "cards/art/goldfish-1-portrait.webp",
+      "file": "cards/art/goldfish-1-portrait-v2.webp",
+      "bytes": 72712,
       "width": 768,
-      "height": 768,
-      "bytes": 72226
+      "height": 768
     },
     {
       "id": "groudon",
       "name": "金魚國王",
-      "file": "cards/art/goldfish-king-portrait.webp",
+      "file": "cards/art/goldfish-king-portrait-v2.webp",
+      "bytes": 75670,
       "width": 768,
-      "height": 768,
-      "bytes": 80804
+      "height": 768
     },
     {
       "id": "rayquaza",
       "name": "金魚皇后",
-      "file": "cards/art/goldfish-queen-portrait.webp",
+      "file": "cards/art/goldfish-queen-portrait-v2.webp",
+      "bytes": 73950,
       "width": 768,
-      "height": 768,
-      "bytes": 82248
+      "height": 768
     },
     {
       "id": "mewtwo",
       "name": "水蛟龍王",
-      "file": "cards/art/water-dragon-king-portrait.webp",
+      "file": "cards/art/water-dragon-king-portrait-v2.webp",
+      "bytes": 123280,
       "width": 768,
-      "height": 768,
-      "bytes": 131126
+      "height": 768
     }
   ],
   "modelRoom": "Shared card-art.json; Chinese labels for all seven water GLB animation clips",
@@ -63,5 +63,9 @@
       "artifacts/water-portraits/model-room-water-dragon.png",
       "artifacts/water-portraits/river-capture-pass.png"
     ]
-  }
+  },
+  "revision": 2,
+  "styleReference": "C:/Users/ymguan/Downloads/GLB/ChatGPT 圖像 2026年10月18日 下午08_06_40-1.png",
+  "style": "User reference: rounded chibi shapes, sculpted face and gradient oval eyes; keep water backgrounds",
+  "artReview": "V1 rejected by user; V2 generated to supplied reference, subject to user review"
 }

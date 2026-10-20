@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-20",
+  "baseCommit": "d634d22f2445cffdac6478cf7eead8ec99220daf",
+  "changes": {
+    "fishing": "Strict water pool for all opponent selections, including fallback",
+    "arenaGoldfishScale": 0.5,
+    "outdoorScale": {
+      "totodile": 1.2,
+      "croconaw": 1.2,
+      "typhlosion": 1.2,
+      "prinplup": 1.2,
+      "empoleon": 1.2
+    },
+    "portraitStyle": "Six regenerated V2 portraits using user-provided water caterpillar sheet; only WebP deployed",
+    "catalog": "001-061 adjacent evolution families; T001-T003 separate tower series; 14 evidence-based skill name corrections",
+    "attacks": "Use authored skill animation/mode, actual GLB clip duration, native pooled FX when present; explicit fallback when missing"
+  },
+  "validation": {
+    "contracts": "SPIRIT_COMBAT_CONTRACT_PASS",
+    "sample1": "DEX_BROWSER_PASS: 61 unique numbers and adjacent families, once",
+    "sample2": "FISHING_BROWSER_PASS and ATTACK_BROWSER_PASS: one fishing battle, water squad, goldfish half scale, one complete 3.8-second Ultimate",
+    "saves": "Isolated acceptance key only; production save IDs and progression unchanged",
+    "limits": "No full match, no per-creature visual motion sweep or device performance benchmark; V2 artwork awaits user aesthetic review"
+  },
+  "localEvidence": [
+    "artifacts/catalog-combat-20261020/catalog-numbering.png",
+    "artifacts/catalog-combat-20261020/fishing-attack-pass.png",
+    "artifacts/water-portraits/revisions/v2/six-water-portraits.png"
+  ]
+}
