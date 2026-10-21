@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-21",
+  "upstreamBase": "8395d6a",
+  "tool": "built-in image_gen.imagegen (no CLI)",
+  "styleReference": "cards/art/floral-deer-chikorita.webp",
+  "portraits": [
+    {
+      "id": "dialga",
+      "name": "綠眼蝙怪",
+      "prompt": "Use case: stylized-concept. Create ONE square collectible fantasy creature portrait for this game. Input 1 is a STYLE REFERENCE ONLY: match its polished sculpted stylized 3D fantasy illustration, tactile soft surfaces, expressive glossy eyes, cinematic natural lighting and rich atmospheric forest depth. Input 2 is the CHARACTER IDENTITY reference: reproduce that character, not the deer. Full immersive environment, one centered readable creature. No lettering, no frame, no logo, no watermark, no model-sheet panels, no studio backdrop. Character: a round spherical green cyclops bat monster with lime/olive spots, a single large emerald eye FLUSH on its face, separate open U mouth with two small ivory fangs, two large upper bat membrane wings and two smaller lower wings, little curved leaf-tail. Playful but powerful expression. Hovering over a mossy forest ruin at dusk, green hypnotic rings and subtle violet electric poison sparks encircle an orb beneath it. Keep all four wings visible and clear.",
+      "output": "cards/art/green-eye-bat.webp",
+      "width": 896,
+      "height": 896,
+      "bytes": 148756
+    },
+    {
+      "id": "giratina",
+      "name": "小黃",
+      "prompt": "Use case: stylized-concept. Create ONE square collectible fantasy creature portrait for this game. Input 1 is a STYLE REFERENCE ONLY: match its polished sculpted stylized 3D fantasy illustration, tactile soft surfaces, expressive glossy eyes, cinematic natural lighting and rich atmospheric forest depth. Input 2 is the CHARACTER IDENTITY reference: reproduce that character, not the deer. Full immersive environment, one centered readable creature. No lettering, no frame, no logo, no watermark, no model-sheet panels, no studio backdrop. Character: 小黃, a golden-yellow small chubby LOP-EARED baby rabbit, long drooping pink-lined ears, ivory cheek muzzle and belly, large brown eyes, tiny pink triangular nose, two front teeth, small yellow crown tuft, white cotton tail, broad yellow feet. No clothes or guitar. A cheerful crouch-to-hop pose, holding one substantial orange carrot with green tops, sunny flower-rich woodland meadow and soft luminous motes. Thumb sits toward inner edge of each paw.",
+      "output": "cards/art/yellow-rabbit.webp",
+      "width": 896,
+      "height": 896,
+      "bytes": 117174
+    },
+    {
+      "id": "raichu",
+      "name": "龐克兔",
+      "prompt": "Use case: stylized-concept. Create ONE square collectible fantasy creature portrait for this game. Input 1 is a STYLE REFERENCE ONLY: match its polished sculpted stylized 3D fantasy illustration, tactile soft surfaces, expressive glossy eyes, cinematic natural lighting and rich atmospheric forest depth. Input 2 is the CHARACTER IDENTITY reference: reproduce that character, not the deer. Full immersive environment, one centered readable creature. No lettering, no frame, no logo, no watermark, no model-sheet panels, no studio backdrop. Character: 龐克兔, golden-yellow confident punk rabbit, upright large pink-lined ears, smaller balanced head, expressive glossy brown eyes with confident angled brows, ivory cheeks/belly, tiny pink nose/two front teeth, black sleeveless leather vest, fitted diagonal dark guitar strap, black silver-studded wristbands. A RED Flying-V electric guitar with ivory lightning marks is gripped by its neck with one paw along body side, not crossing through body. Heroic low stance, broad toe-out feet. Enchanted forest clearing stage of natural rocks at golden dusk, a few blue electric musical notes and amber motes, detailed atmospheric scenic backdrop. No clothes beyond those specified.",
+      "output": "cards/art/punk-rabbit.webp",
+      "width": 896,
+      "height": 896,
+      "bytes": 154020
+    }
+  ],
+  "runtimePolicy": "Only three 896px compressed WebP assets ship; generated master PNGs and reference sheets remain outside repository"
+}

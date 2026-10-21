@@ -411,14 +411,16 @@
     "revision": 2
   },
   "dialga": {
-    "image": "cards/art/dialga.webp",
-    "name": "時砂巨象",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/dialga.glb",
-    "group": 11,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/green-eye-bat.webp",
+    "path": "cards/art/green-eye-bat.webp",
+    "name": "綠眼蝙怪",
+    "referenceModel": "green-eye-bat://dialga",
+    "source": "built-in image_gen; original character reference and floral-deer card style reference",
+    "style": "polished-stylized-3d-fantasy-forest-portrait",
+    "generatedAt": "2026-10-21",
+    "width": 896,
+    "height": 896,
+    "bytes": 148756
   },
   "palkia": {
     "image": "cards/art/avian-dapeng.webp?v=20261021-illustrated-v2",
@@ -431,14 +433,16 @@
     "styleReference": "cards/art/floral-deer-chikorita.webp"
   },
   "giratina": {
-    "image": "cards/art/giratina.webp",
-    "name": "暮影六翼鹿",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/giratina.glb",
-    "group": 11,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/yellow-rabbit.webp",
+    "path": "cards/art/yellow-rabbit.webp",
+    "name": "小黃",
+    "referenceModel": "rabbit-evolution://giratina",
+    "source": "built-in image_gen; original character reference and floral-deer card style reference",
+    "style": "polished-stylized-3d-fantasy-forest-portrait",
+    "generatedAt": "2026-10-21",
+    "width": 896,
+    "height": 896,
+    "bytes": 117174
   },
   "pikachu": {
     "image": "cards/art/outouman-spirit.webp",
@@ -475,14 +479,16 @@
     "generatedAt": "2026-10-19"
   },
   "raichu": {
-    "image": "cards/art/raichu.webp",
-    "name": "霆冠躍兔",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/raichu.glb",
-    "group": 13,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/punk-rabbit.webp",
+    "path": "cards/art/punk-rabbit.webp",
+    "name": "龐克兔",
+    "referenceModel": "rabbit-evolution://raichu",
+    "source": "built-in image_gen; original character reference and floral-deer card style reference",
+    "style": "polished-stylized-3d-fantasy-forest-portrait",
+    "generatedAt": "2026-10-21",
+    "width": 896,
+    "height": 896,
+    "bytes": 154020
   },
   "caterpie": {
     "image": "cards/art/chest-spirit-1.webp",

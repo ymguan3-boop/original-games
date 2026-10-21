@@ -1,0 +1,82 @@
+{
+  "status": "PASS",
+  "upstreamBase": "8395d6a",
+  "groups": [
+    {
+      "item": "Replacement cards, native skills and full model-room data coverage",
+      "coverage": 61,
+      "missing": [],
+      "models": [
+        {
+          "id": "dialga",
+          "name": "綠眼蝙怪",
+          "frame": "red",
+          "triangles": 72122,
+          "joints": 41,
+          "modes": [
+            "Hover",
+            "Rest",
+            "Fly",
+            "Dash",
+            "HypnoWave",
+            "ToxicThunder",
+            "Hurt"
+          ]
+        },
+        {
+          "id": "giratina",
+          "name": "小黃",
+          "frame": "purple",
+          "triangles": 65610,
+          "joints": 40,
+          "modes": [
+            "Idle",
+            "Move",
+            "Wave",
+            "CarrotThrow",
+            "Special",
+            "Hurt"
+          ]
+        },
+        {
+          "id": "raichu",
+          "name": "龐克兔",
+          "frame": "purple",
+          "triangles": 78824,
+          "joints": 42,
+          "modes": [
+            "Idle",
+            "Move",
+            "Wave",
+            "CarrotThrow",
+            "Special",
+            "Hurt"
+          ]
+        }
+      ],
+      "batToxicHits": 1,
+      "guitarHits": 2
+    },
+    {
+      "item": "Actual arena participation wiring and poison refresh",
+      "participationCounts": [
+        1,
+        1,
+        1,
+        2,
+        3
+      ],
+      "readyAt": 3,
+      "requiresConsecutive": false,
+      "abortCounts": false,
+      "legacyIdsPreserved": true,
+      "poisonTicks": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "stacking": false
+    }
+  ]
+}

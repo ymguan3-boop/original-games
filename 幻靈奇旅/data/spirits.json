@@ -1569,36 +1569,44 @@
   {
     "id": "dialga",
     "speciesId": "dialga",
-    "name": "時砂巨象",
-    "element": "metal",
-    "type": "鋼",
-    "stage": 3,
-    "family": "dialga",
-    "form": "elephant",
-    "color": 8035235,
-    "role": "legendary",
+    "name": "綠眼蝙怪",
+    "element": "psychic",
+    "type": "念",
+    "stage": 1,
+    "family": "green-eye-bat",
+    "form": "bat",
+    "color": 9093191,
+    "role": "special",
     "previous": null,
     "next": null,
-    "model": "models/spirits/dialga.glb",
-    "height": 2.15475,
+    "model": "green-eye-bat://dialga",
+    "height": 2.1,
     "hp": 210,
     "attack": 54,
     "evolvesTo": null,
     "rarity": "傳說",
-    "motionType": "walk",
+    "motionType": "hover",
     "skills": [
       {
-        "name": "鋼光輕擊",
+        "name": "迷幻光波",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "時砂共鳴",
+        "name": "毒光雷彈",
         "power": 108,
-        "cost": 3
+        "cost": 3,
+        "status": {
+          "type": "poison",
+          "turns": 3,
+          "damageRatio": 0.04,
+          "stacking": "refresh"
+        }
       }
     ],
-    "description": "時砂巨象是初光之境的鋼屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "四片蝠翼環繞圓潤綠色獨眼身軀的特殊基礎幻靈。迷幻光波向前擴散；毒光雷彈纏繞電光，命中附加中毒：持續 3 回合，每回合扣除最大 HP 4%，重複命中刷新時間、不疊加。",
+    "stageLabel": "特殊基礎",
+    "cardFrame": "red"
   },
   {
     "id": "palkia",
@@ -1640,36 +1648,44 @@
   {
     "id": "giratina",
     "speciesId": "giratina",
-    "name": "暮影六翼鹿",
-    "element": "shadow",
-    "type": "影",
-    "stage": 3,
-    "family": "giratina",
-    "form": "shadowdeer",
-    "color": 8550551,
-    "role": "legendary",
+    "name": "小黃",
+    "element": "normal",
+    "type": "一般",
+    "stage": 1,
+    "family": "rabbit-evolution",
+    "form": "rabbit",
+    "color": 15712085,
+    "role": "special",
     "previous": null,
-    "next": null,
-    "model": "models/spirits/giratina.glb",
-    "height": 2.15475,
+    "next": "raichu",
+    "model": "rabbit-evolution://giratina",
+    "height": 1.65,
     "hp": 210,
     "attack": 54,
-    "evolvesTo": null,
-    "rarity": "傳說",
-    "motionType": "walk",
+    "evolvesTo": "raichu",
+    "rarity": "稀有",
+    "motionType": "hop",
     "skills": [
       {
-        "name": "影光輕擊",
+        "name": "投擲胡蘿蔔",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "暮影共鳴",
+        "name": "跳撞",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "暮影六翼鹿是初光之境的影屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "垂耳小黃兔先蹲低再向前蹦跳，從背後取出胡蘿蔔投擲，也能蓄力跳撞。加入隊伍完成累計 3 場幻靈競技擂台戰鬥後進階為龐克兔；勝敗皆計，不需連續參賽，未參戰或中途離開不計次。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "evolutionCondition": {
+      "type": "arena-participation",
+      "required": 3,
+      "consecutive": false,
+      "requiresWin": false
+    }
   },
   {
     "id": "pikachu",
@@ -1818,36 +1834,39 @@
   {
     "id": "raichu",
     "speciesId": "raichu",
-    "name": "霆冠躍兔",
+    "name": "龐克兔",
     "element": "electric",
     "type": "雷",
     "stage": 2,
-    "family": "pikachu",
+    "family": "rabbit-evolution",
     "form": "rabbit",
     "color": 12625488,
-    "role": "wild",
-    "previous": "pikachu",
+    "role": "special",
+    "previous": "giratina",
     "next": null,
-    "model": "models/spirits/raichu.glb",
-    "height": 1.6575,
+    "model": "rabbit-evolution://raichu",
+    "height": 2.05,
     "hp": 125,
     "attack": 40,
     "evolvesTo": null,
-    "rarity": "進階",
-    "motionType": "walk",
+    "rarity": "稀有",
+    "motionType": "run",
     "skills": [
       {
-        "name": "雷光輕擊",
+        "name": "投擲胡蘿蔔",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "霆冠共鳴",
+        "name": "電吉他二連擊",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "霆冠躍兔是初光之境的雷屬性幻靈。雙耳間的晶角儲存雷光，奔跑時留下明亮足跡。"
+    "description": "小黃累計擂台參戰 3 場後的進階型態。黑色鉚釘背心搭配紅色電吉他，跑步時向外擺臂；從背後抓住琴柄沿身體外側取出，先前刺再橫掃，迸出音符電光。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "evolutionOnly": true
   },
   {
     "id": "caterpie",

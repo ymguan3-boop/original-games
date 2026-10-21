@@ -886,20 +886,25 @@
   },
   {
     "id": "dialga",
-    "name": "時砂巨象",
-    "vertices": 2844,
-    "triangles": 5572,
-    "materials": 5,
-    "bones": 7,
-    "height": 2.15475,
+    "name": "綠眼蝙怪",
+    "triangles": 72122,
+    "bones": 41,
+    "height": 2.1,
     "animations": [
-      "Idle",
-      "Walk",
-      "Attack",
+      "Hover",
+      "Rest",
+      "Fly",
+      "Dash",
+      "HypnoWave",
+      "ToxicThunder",
       "Hurt"
     ],
-    "fileBytes": 184348,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 26435,
+    "source": "User-approved authored Three.js model; stable save ID retained",
+    "model": "green-eye-bat://dialga",
+    "meshes": 64,
+    "runtime": "native-threejs",
+    "sourceBlueprint": "models/native/green-eye-bat.js"
   },
   {
     "id": "palkia",
@@ -922,20 +927,24 @@
   },
   {
     "id": "giratina",
-    "name": "暮影六翼鹿",
-    "vertices": 3016,
-    "triangles": 5824,
-    "materials": 5,
-    "bones": 10,
-    "height": 2.15475,
+    "name": "小黃",
+    "triangles": 65610,
+    "bones": 40,
+    "height": 1.65,
     "animations": [
       "Idle",
-      "Walk",
-      "Attack",
+      "Move",
+      "Wave",
+      "CarrotThrow",
+      "Special",
       "Hurt"
     ],
-    "fileBytes": 205224,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 35490,
+    "source": "User-approved authored Three.js model; stable save ID retained",
+    "model": "rabbit-evolution://giratina",
+    "meshes": 64,
+    "runtime": "native-threejs",
+    "sourceBlueprint": "models/native/rabbits.js"
   },
   {
     "id": "pikachu",
@@ -1017,20 +1026,24 @@
   },
   {
     "id": "raichu",
-    "name": "霆冠躍兔",
-    "vertices": 2402,
-    "triangles": 4688,
-    "materials": 5,
-    "bones": 7,
-    "height": 1.6575,
+    "name": "龐克兔",
+    "triangles": 78824,
+    "bones": 42,
+    "height": 2.05,
     "animations": [
       "Idle",
-      "Walk",
-      "Attack",
+      "Move",
+      "Wave",
+      "CarrotThrow",
+      "Special",
       "Hurt"
     ],
-    "fileBytes": 162264,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 35490,
+    "source": "User-approved authored Three.js model; stable save ID retained",
+    "model": "rabbit-evolution://raichu",
+    "meshes": 134,
+    "runtime": "native-threejs",
+    "sourceBlueprint": "models/native/rabbits.js"
   },
   {
     "id": "caterpie",

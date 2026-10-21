@@ -13,7 +13,7 @@
  function attackPlan(species,actor,skill={},configured={}){
   const strong=(skill.cost||0)>=3,path=actor.path||species.model||'',available=Object.keys(actor.actions||{});
   let mode=configured.animation||configured.mode,duration=Number(configured.duration)||0,nativeFx=false;
-  if(window.AvianSpirits?.has(path)){mode=AvianSpirits.attack(path,strong);duration=AvianSpirits.duration(path,strong);nativeFx=true;}else if(path.startsWith('leaf-frog://')){mode=window.FrogSpirits.attack(path,strong,skill);duration=window.FrogSpirits.duration(path,strong,skill);nativeFx=true;}
+  if(window.ReplacementSpirits?.has(path)){mode=ReplacementSpirits.attack(path,strong);duration=ReplacementSpirits.duration(path,strong);nativeFx=true;}else if(window.AvianSpirits?.has(path)){mode=AvianSpirits.attack(path,strong);duration=AvianSpirits.duration(path,strong);nativeFx=true;}else if(path.startsWith('leaf-frog://')){mode=window.FrogSpirits.attack(path,strong,skill);duration=window.FrogSpirits.duration(path,strong,skill);nativeFx=true;}
   else if(path.startsWith('robot-evolution://')){mode=window.RobotSpirits.attack(path,strong);duration=window.RobotSpirits.duration(path,strong);nativeFx=true;}
   else if(path.startsWith('fire-monkey://')){mode=path.endsWith('zapdos')?'StaffCombo':'Fireball';duration=mode==='StaffCombo'?2.25:1.9;nativeFx=true;}
   else if(path.startsWith('light-phoenix://')){mode=/羽|Feather/i.test(skill.name||'')?'FeatherVolley':'WingBurst';duration=mode==='FeatherVolley'?2.7:2.4;nativeFx=true;}

@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 80,
+  "modelCount": 77,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -258,26 +258,6 @@
       ]
     },
     {
-      "file": "models/spirits/dialga.glb",
-      "bytes": 184348,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/giratina.glb",
-      "bytes": 205224,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/goldfish-1.glb",
       "bytes": 400316,
       "animations": [
@@ -427,16 +407,6 @@
         "Eat",
         "Count",
         "React"
-      ]
-    },
-    {
-      "file": "models/spirits/raichu.glb",
-      "bytes": 162264,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
       ]
     },
     {
@@ -685,7 +655,7 @@
       "animations": []
     }
   ],
-  "nativeModelCount": 20,
+  "nativeModelCount": 23,
   "nativeModels": [
     {
       "id": "piplup",
@@ -998,13 +968,72 @@
         "Boomerang"
       ],
       "controller": "LeafFrogs"
+    },
+    {
+      "id": "dialga",
+      "key": "green-eye-bat://dialga",
+      "runtime": "three-r128",
+      "triangles": 72122,
+      "meshes": 64,
+      "animations": [
+        "Hover",
+        "Rest",
+        "Fly",
+        "Dash",
+        "HypnoWave",
+        "ToxicThunder",
+        "Hurt"
+      ],
+      "controller": "GreenEyeBat"
+    },
+    {
+      "id": "giratina",
+      "key": "rabbit-evolution://giratina",
+      "runtime": "three-r128",
+      "triangles": 65610,
+      "meshes": 64,
+      "animations": [
+        "Idle",
+        "Move",
+        "Wave",
+        "CarrotThrow",
+        "Special",
+        "Hurt"
+      ],
+      "controller": "RabbitEvolution"
+    },
+    {
+      "id": "raichu",
+      "key": "rabbit-evolution://raichu",
+      "runtime": "three-r128",
+      "triangles": 78824,
+      "meshes": 134,
+      "animations": [
+        "Idle",
+        "Move",
+        "Wave",
+        "CarrotThrow",
+        "Special",
+        "Hurt"
+      ],
+      "controller": "RabbitEvolution"
     }
   ],
   "nativeSources": [
     {
+      "file": "models/native/avian-spirits.js",
+      "bytes": 3925,
+      "sha256": "ef419720d77ab301425b53b6d237c7085d7b888c3f556b13e682d07edfc92eef"
+    },
+    {
       "file": "models/native/birds-blueprint.js",
       "bytes": 20195,
       "sha256": "02b64360bf51a9dc2b896967be8703c749d5e1d03b8ba4de005e23046e125200"
+    },
+    {
+      "file": "models/native/dapeng.js",
+      "bytes": 35940,
+      "sha256": "cac59578a82648ac33d61b5a17f5a5e3964d9325acb740f730d111689f83f09f"
     },
     {
       "file": "models/native/elephants-blueprint.js",
@@ -1017,14 +1046,39 @@
       "sha256": "c317f7b2315d56fcfd10a44154d3e1a711a57c412f853398d039760d236c5aea"
     },
     {
-      "file": "models/native/riceball.js",
-      "bytes": 13030,
-      "sha256": "c4b12b6c8c6aa8eeed43293f330f6c6fd89402f952a1248741259de029864fec"
+      "file": "models/native/fire-monkey.js",
+      "bytes": 18634,
+      "sha256": "fd02ab17225f8ddd21549f9fa7cdc461747de3e2b3eddcccd8da20e1c903d8f2"
     },
     {
-      "file": "models/native/xiaoshan.js",
-      "bytes": 10402,
-      "sha256": "469958b15aeb98cbea372cb2403d1e5fb8364d31d7a771e067c208351e3f2416"
+      "file": "models/native/floral-deer.js",
+      "bytes": 31151,
+      "sha256": "c831925ac9ad59adfd3d5845a072a88876913795bf0f1740912c306e6335be95"
+    },
+    {
+      "file": "models/native/frog-spirits.js",
+      "bytes": 1593,
+      "sha256": "aa751b24473d9147c14d1fbe96cb41fd7fac07d493da6a075afd315d34727938"
+    },
+    {
+      "file": "models/native/green-eye-bat.js",
+      "bytes": 26445,
+      "sha256": "8075b3ec3cfec93ac36c25f09cb3ade0fa8297dd4fa28652caade0dad7fcdfc8"
+    },
+    {
+      "file": "models/native/leaf-frogs.js",
+      "bytes": 41036,
+      "sha256": "41319e65ad20428fdddb5e1caef5cc29171e9e2ca45b0e626b12aafc919f0d0b"
+    },
+    {
+      "file": "models/native/light-phoenix.js",
+      "bytes": 33001,
+      "sha256": "0cf376966bb0848ab36f4fdf3303b78ef227cc74885eb4e436736ba461912f1e"
+    },
+    {
+      "file": "models/native/little-eagle.js",
+      "bytes": 29802,
+      "sha256": "75616355adcdb56068510c76869910361940cb9f72b47545f664228da49ded97"
     },
     {
       "file": "models/native/outouman.js",
@@ -1032,19 +1086,19 @@
       "sha256": "fb46d1036f7195884232247d54ee2bc8a97b51bb5c5fdbd911f058a7bc954b6c"
     },
     {
-      "file": "models/native/fire-monkey.js",
-      "bytes": 18634,
-      "sha256": "fd02ab17225f8ddd21549f9fa7cdc461747de3e2b3eddcccd8da20e1c903d8f2"
+      "file": "models/native/rabbits.js",
+      "bytes": 35490,
+      "sha256": "71c4744c40d1aeb1662683ea4ff53a39c6f5e7a44df7aeb8a6e128b29ec11f7a"
     },
     {
-      "file": "models/native/floral-deer.js",
-      "bytes": 31087,
-      "sha256": "e899a13a3ff81a43a9fc75fd92f5f22faa6c2d7accd1ac65bdff3d4a66f6bcef"
+      "file": "models/native/replacement-spirits.js",
+      "bytes": 2688,
+      "sha256": "4a56648ecefcc179246887c75b8050237271f27377252b3de978cb0947b7ac8e"
     },
     {
-      "file": "models/native/light-phoenix.js",
-      "bytes": 32805,
-      "sha256": "25f68d41df05ff75cb41c756bffe9a77e3a14ba3ff2b5523c04a2a5432cf5c5b"
+      "file": "models/native/riceball.js",
+      "bytes": 13030,
+      "sha256": "c4b12b6c8c6aa8eeed43293f330f6c6fd89402f952a1248741259de029864fec"
     },
     {
       "file": "models/native/robot-evolution.js",
@@ -1057,14 +1111,19 @@
       "sha256": "80ba0afa319746aa16370109429c404fe970b2d1ab8177d300d1d476522a0dfe"
     },
     {
-      "file": "models/native/leaf-frogs.js",
-      "bytes": 40865,
-      "sha256": "28e62e45b8c62a3434263ac7c5bc9f639d423bbcfa402d177554245ee0ac3e4c"
+      "file": "models/native/small-birds.js",
+      "bytes": 22549,
+      "sha256": "c156695dbfa98b7624c820a585bcf7fb097b12cdd4dffc57f47b348c49544882"
     },
     {
-      "file": "models/native/frog-spirits.js",
-      "bytes": 1580,
-      "sha256": "8a709f5b23479a30f2d841ce148c13cb9c2686a4d2c102a2184eb0028a9eb47a"
+      "file": "models/native/tricolor-egg.js",
+      "bytes": 12857,
+      "sha256": "2f32028d66c8aadf54ac1507b18b8be1c3cd25677b492ffb570f45e9761cc57c"
+    },
+    {
+      "file": "models/native/xiaoshan.js",
+      "bytes": 10402,
+      "sha256": "469958b15aeb98cbea372cb2403d1e5fb8364d31d7a771e067c208351e3f2416"
     }
   ]
 }

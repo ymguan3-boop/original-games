@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": "20261021-bat-rabbits-v1",
   "numberingPolicy": "001–061 unique display numbers; revised avian family kept together without changing save IDs.",
   "groupingPolicy": "Connected components of previous/next/evolvesTo; stages ascend, equal-stage branches keep original order. Unmodified legacy links group one-sided connections too.",
   "entries": [
@@ -1462,30 +1462,34 @@
       "id": "dialga",
       "number": "048",
       "order": 48,
-      "group": "dialga",
-      "name": "時砂巨象",
+      "group": "green-eye-bat",
+      "name": "綠眼蝙怪",
       "skills": [
         {
           "index": 0,
-          "name": "鋼光輕擊",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "迷幻光波",
+          "animation": "HypnoWave",
+          "mode": "HypnoWave",
+          "duration": 3,
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "models/native/green-eye-bat.js"
         },
         {
           "index": 1,
-          "name": "時砂共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "毒光雷彈",
+          "animation": "ToxicThunder",
+          "mode": "ToxicThunder",
+          "duration": 4.4,
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "models/native/green-eye-bat.js",
+          "status": {
+            "type": "poison",
+            "turns": 3,
+            "damageRatio": 0.04,
+            "stacking": "refresh"
+          }
         }
       ]
     },
@@ -1493,37 +1497,64 @@
       "id": "giratina",
       "number": "049",
       "order": 49,
-      "group": "giratina",
-      "name": "暮影六翼鹿",
+      "group": "rabbit-evolution",
+      "name": "小黃",
       "skills": [
         {
           "index": 0,
-          "name": "影光輕擊",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "投擲胡蘿蔔",
+          "animation": "CarrotThrow",
+          "mode": "CarrotThrow",
+          "duration": 1.9285714285714288,
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "models/native/rabbits.js"
         },
         {
           "index": 1,
-          "name": "暮影共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "跳撞",
+          "animation": "Special",
+          "mode": "Special",
+          "duration": 2.65,
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "models/native/rabbits.js"
+        }
+      ]
+    },
+    {
+      "id": "raichu",
+      "number": "050",
+      "order": 50,
+      "group": "rabbit-evolution",
+      "name": "龐克兔",
+      "skills": [
+        {
+          "index": 0,
+          "name": "投擲胡蘿蔔",
+          "animation": "CarrotThrow",
+          "mode": "CarrotThrow",
+          "duration": 1.9285714285714288,
+          "nativeAttack": true,
+          "fallback": false,
+          "source": "models/native/rabbits.js"
+        },
+        {
+          "index": 1,
+          "name": "電吉他二連擊",
+          "animation": "Special",
+          "mode": "Special",
+          "duration": 2.9166666666666665,
+          "nativeAttack": true,
+          "fallback": false,
+          "source": "models/native/rabbits.js"
         }
       ]
     },
     {
       "id": "pikachu",
-      "number": "050",
-      "order": 50,
+      "number": "051",
+      "order": 51,
       "group": "pikachu",
       "name": "歐頭慢",
       "skills": [
@@ -1550,37 +1581,6 @@
           "source": "models/native/outouman.js",
           "note": "模型擺光束姿勢；白色／彩虹光束由遊戲既有特效繪製。",
           "requiresExternalMotionOrFx": true
-        }
-      ]
-    },
-    {
-      "id": "raichu",
-      "number": "051",
-      "order": 51,
-      "group": "pikachu",
-      "name": "霆冠躍兔",
-      "skills": [
-        {
-          "index": 0,
-          "name": "雷光輕擊",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
-        },
-        {
-          "index": 1,
-          "name": "霆冠共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
         }
       ]
     },
@@ -1942,6 +1942,16 @@
       ]
     },
     {
+      "id": "avian-evolution",
+      "ids": [
+        "jigglypuff",
+        "treecko",
+        "grovyle",
+        "sceptile",
+        "palkia"
+      ]
+    },
+    {
       "id": "torchic",
       "ids": [
         "torchic",
@@ -2011,22 +2021,22 @@
       ]
     },
     {
-      "id": "dialga",
+      "id": "green-eye-bat",
       "ids": [
         "dialga"
       ]
     },
     {
-      "id": "giratina",
+      "id": "rabbit-evolution",
       "ids": [
-        "giratina"
+        "giratina",
+        "raichu"
       ]
     },
     {
       "id": "pikachu",
       "ids": [
-        "pikachu",
-        "raichu"
+        "pikachu"
       ]
     },
     {
@@ -2067,16 +2077,6 @@
       "id": "mewtwo",
       "ids": [
         "mewtwo"
-      ]
-    },
-    {
-      "id": "avian-evolution",
-      "ids": [
-        "jigglypuff",
-        "treecko",
-        "grovyle",
-        "sceptile",
-        "palkia"
       ]
     }
   ],
@@ -2288,19 +2288,7 @@
       "reason": "來源只有生活／移動動作；借用既有拍翼／拍耳 Fly，並非新製作的攻擊動畫。"
     },
     {
-      "id": "dialga",
-      "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
-    },
-    {
       "id": "palkia",
-      "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
-    },
-    {
-      "id": "giratina",
-      "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
-    },
-    {
-      "id": "raichu",
       "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
     },
     {

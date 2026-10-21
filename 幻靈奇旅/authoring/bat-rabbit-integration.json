@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-21",
+  "upstreamBase": "8395d6a",
+  "source": "User-requested native Three.js replacements; game derivatives of approved local models",
+  "ids": {
+    "dialga": {
+      "name": "綠眼蝙怪",
+      "model": "green-eye-bat://dialga",
+      "rarity": "傳說",
+      "cardFrame": "red",
+      "stageLabel": "特殊基礎"
+    },
+    "giratina": {
+      "name": "小黃",
+      "model": "rabbit-evolution://giratina",
+      "rarity": "稀有",
+      "cardFrame": "purple",
+      "stageLabel": "特殊"
+    },
+    "raichu": {
+      "name": "龐克兔",
+      "model": "rabbit-evolution://raichu",
+      "rarity": "稀有",
+      "cardFrame": "purple",
+      "stageLabel": "特殊"
+    }
+  },
+  "rabbitEvolution": {
+    "from": "giratina",
+    "to": "raichu",
+    "required": 3,
+    "type": "completed arena participations while in team",
+    "requiresWin": false,
+    "consecutive": false,
+    "aborts": "do not count; preserve existing progress"
+  },
+  "poison": {
+    "turns": 3,
+    "maxHpRatio": 0.04,
+    "timing": "after both actions in an arena round",
+    "stacking": "refresh, no stack"
+  },
+  "runtimeAdaptations": [
+    "Lazy cached family sources",
+    "Game-facing setMotionSpeed interface",
+    "Target distance derived from current opponent separation and model scale",
+    "Preserve forward leap in ultimate while normal hopping stays in place",
+    "Approach target for guitar stab and sweep; return to initial position"
+  ],
+  "cleanup": {
+    "removed": [
+      "models/spirits/dialga.glb",
+      "models/spirits/giratina.glb",
+      "models/spirits/raichu.glb",
+      "cards/art/dialga.webp",
+      "cards/art/giratina.webp",
+      "cards/art/raichu.webp"
+    ],
+    "removedBytes": 882136,
+    "newRuntimeAndPortraitBytes": 485717,
+    "netRuntimeBytesSaved": 396419,
+    "generatedMasters": "kept outside Git repository"
+  },
+  "validation": {
+    "script": "authoring/check-bat-rabbit-integration.cjs",
+    "result": "authoring/bat-rabbit-integration-qa.json",
+    "coverage": 61,
+    "browser": "Game startup, model room and new portraits verified locally; no console errors",
+    "scope": "Two grouped integration samples; no full playthrough or mobile device FPS benchmark"
+  },
+  "portraitPrompts": "authoring/bat-rabbit-portraits.json"
+}
