@@ -45,7 +45,8 @@
     "Game-facing setMotionSpeed interface",
     "Target distance derived from current opponent separation and model scale",
     "Preserve forward leap in ultimate while normal hopping stays in place",
-    "Approach target for guitar stab and sweep; return to initial position"
+    "Approach target for guitar stab and sweep; return to initial position",
+    "Outdoor yellow rabbit advances only during hop-air; crouch and landing stay in place"
   ],
   "cleanup": {
     "removed": [
@@ -57,8 +58,8 @@
       "cards/art/raichu.webp"
     ],
     "removedBytes": 882136,
-    "newRuntimeAndPortraitBytes": 485717,
-    "netRuntimeBytesSaved": 396419,
+    "newRuntimeAndPortraitBytes": 485832,
+    "netRuntimeBytesSaved": 396304,
     "generatedMasters": "kept outside Git repository"
   },
   "validation": {

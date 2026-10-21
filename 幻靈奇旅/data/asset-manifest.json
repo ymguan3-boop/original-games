@@ -1092,8 +1092,8 @@
     },
     {
       "file": "models/native/replacement-spirits.js",
-      "bytes": 2688,
-      "sha256": "4a56648ecefcc179246887c75b8050237271f27377252b3de978cb0947b7ac8e"
+      "bytes": 2803,
+      "sha256": "4e8635780764d9d6911ca08369e8c2526e23c895acfd71b43a12b9166c417024"
     },
     {
       "file": "models/native/riceball.js",

@@ -4,9 +4,10 @@ const definitions={dialga:{family:'green-eye-bat',source:'green-eye-bat.js',glob
 const id=p=>String(p).split('://')[1],definition=p=>definitions[id(p)],has=p=>!!definition(p)&&String(p).startsWith(definition(p).family+'://');
 function script(file){if(jobs.has(file))return jobs.get(file);const promise=new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=new URL(file+'?v='+revision,base).href;el.onload=resolve;el.onerror=()=>{jobs.delete(file);el.remove();reject(Error('角色程式載入失敗：'+file));};document.head.append(el);});jobs.set(file,promise);return promise;}
 function motion(p,name){if(definition(p)?.family==='green-eye-bat')return ({Idle:'Hover',Walk:'Fly',Run:'Fly',Move:'Fly',Attack:'HypnoWave',Throw:'HypnoWave',Special:'ToxicThunder',Ultimate:'ToxicThunder',React:'Rest',Wave:'Rest',Sit:'Rest',Sleep:'Rest',Celebrate:'Dash'})[name]||name;return ({Walk:'Move',Run:'Move',Attack:'CarrotThrow',Throw:'CarrotThrow',Ultimate:'Special',React:'Wave',Jump:'Move',Sit:'Idle',Sleep:'Idle',Celebrate:'Wave'})[name]||name;}
+function worldMoveFactor(p,state){return id(p)==='giratina'?(state?.phase==='hop-air'?1/.54:0):1;}
 function create(p){const d=definition(p);if(!d||!window[d.global])throw Error('角色程式尚未載入：'+p);const controller=window[d.global].create({stage:d.stage,inPlace:true,targetDistance:7});controller.setMotionSpeed=()=>{};return controller;}
 async function load(p){if(!has(p))throw Error('未知角色：'+p);await script(definition(p).source);return {create:()=>create(p),animations:[]};}
 function attack(p,strong){return definition(p)?.family==='green-eye-bat'?(strong?'ToxicThunder':'HypnoWave'):(strong?'Special':'CarrotThrow');}
 function duration(p,strong){return definition(p)?.family==='green-eye-bat'?(strong?4.4:3):(strong?(definition(p).stage===2?5.25/1.8:2.65):2.7/1.4);}
 function labels(p){return definition(p)?.family==='green-eye-bat'?{Hover:'懸浮待機',Rest:'收翼休息',Fly:'拍翼移動',Dash:'快速飛行',HypnoWave:'迷幻光波',ToxicThunder:'毒光雷彈',Hurt:'受擊'}:{Idle:'待機',Move:definition(p)?.stage===2?'跑步':'蹲低前跳',Wave:'揮手',CarrotThrow:'背後取出・投擲胡蘿蔔',Special:definition(p)?.stage===2?'電吉他二連擊':'跳撞',Hurt:'痛苦表情・半蹲'};}
-window.ReplacementSpirits={has,definition,motion,create,load,attack,duration,labels,revision};})();
+window.ReplacementSpirits={has,definition,motion,worldMoveFactor,create,load,attack,duration,labels,revision};})();
