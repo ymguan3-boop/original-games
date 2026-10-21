@@ -55,11 +55,11 @@ function nearbyFlyingPhoenix(){
 // Event-only species stay out of random spawning; actual river encounters are capturable.
 function authorizedRiverActor(w){return !!(river&&w?.riverSwim&&SpiritCombat.isWater(w.species)&&WATER_EVENT_ONLY.includes(w.species?.id)&&river.inWaterZone(w.root.position.x,w.root.position.z));}
 // Habitat authorization belongs to a real outdoor encounter, never to an entire rarity.
-function authorizedPondActor(w){return !!(w?.pondSwim&&w.species?.id==='entei'&&SpiritCombat.isWater(w.species)&&w.root.parent===townGroup&&wild.includes(w)&&inPond(w.root.position.x,w.root.position.z,0));}
+function authorizedPondActor(w){return !!((w?.pondSwim&&w.species?.id==='entei'||w?.pondJump&&w.species?.id==='mudkip')&&SpiritCombat.isWater(w.species)&&w.root.parent===townGroup&&wild.includes(w)&&inPond(w.root.position.x,w.root.position.z,0));}
 function waterCaptureSurface(w){return authorizedPondActor(w)?pondBounds().surfaceY:authorizedRiverActor(w)?river.config.surfaceY:null;}
 function captureDistance(w){return waterCaptureSurface(w)!==null?Math.hypot(w.root.position.x-S.player.x,w.root.position.z-S.player.z):w.root.position.distanceTo(S.player);}
 function captureAim(w,position){const aim=position.clone().add(new T.Vector3(0,w.height*.5,0)),surface=waterCaptureSurface(w);if(surface!==null)aim.y=Math.max(aim.y,surface+Math.min(.3,w.height*.2));return aim;}
-function captureCandidates(){if(place){const e=chestEncounter,a=e?.actor,k=bookEncounter,r=k?.actor;return [...(e?.awakened&&elapsed>=(e.captureReadyAt||0)&&e.roomId===place.id&&a?.root.visible&&a.root.parent===insideGroup?[a]:[]),...(k?.roomId===place.id&&r?.root.visible&&r.root.parent===insideGroup?[r]:[])];}return wild.filter(w=>w.root.visible&&w.root.parent===townGroup&&((w.pondSwim||w.riverSwim)?authorizedPondActor(w)||authorizedRiverActor(w):w.eggEncounter||eligible(w.species)||authorizedGuardianActor(w))&&phoenixWildGrounded(w));}
+function captureCandidates(){if(place){const e=chestEncounter,a=e?.actor,k=bookEncounter,r=k?.actor;return [...(e?.awakened&&elapsed>=(e.captureReadyAt||0)&&e.roomId===place.id&&a?.root.visible&&a.root.parent===insideGroup?[a]:[]),...(k?.roomId===place.id&&r?.root.visible&&r.root.parent===insideGroup?[r]:[])];}return wild.filter(w=>w.root.visible&&w.root.parent===townGroup&&((w.pondSwim||w.pondJump||w.riverSwim)?authorizedPondActor(w)||authorizedRiverActor(w):w.eggEncounter||eligible(w.species)||authorizedGuardianActor(w))&&phoenixWildGrounded(w));}
 function tickChestEncounter(dt){if(!chestEncounter&&elapsed>=chestNextAt)planChestEncounter();const e=chestEncounter;if(!e||place?.id!==e.roomId||enterBusy||battle||modal||dialog)return;if(!e.actor){if(elapsed>=chestNextAt)void ensureChestActor();return;}const a=e.actor;if(a.capturing)return;if(!e.awakened){a.play('Idle');if(a.root.position.distanceTo(S.player)>4.6)return;e.awakened=true;e.captureReadyAt=elapsed+.4;chestSymbol(a,'！',1.6);playChestDing();a.timer=0;}a.timer-=dt;if(a.timer<=0){a.timer=.6+Math.random()*.9;const room=place,b=normalizeBounds(room.bounds);for(let i=0;i<24;i++){const x=b.minX+.9+Math.random()*(b.maxX-b.minX-1.8),z=b.minZ+.9+Math.random()*(b.maxZ-b.minZ-1.8);if(!roomBlocked(room,x,z,.85)){a.goal.set(x,0,z);break;}}}const d=a.goal.clone().sub(a.root.position);d.y=0;let moving=false;if(d.length()>.12){d.normalize();const nx=a.root.position.x+d.x*dt*2.15,nz=a.root.position.z+d.z*dt*2.15;if(!roomBlocked(place,nx,nz,.85)){a.root.position.set(nx,0,nz);a.root.rotation.y=Math.atan2(d.x,d.z);moving=true;}else a.timer=0;}a.play(moving?'Walk':'Idle');}
 const TOWER_KEY='phantom-starspire-tower-v1';const TOWER_PETS=[{id:'forest',card:'森棘龍卡片',name:'青螺幼靈',model:'bulbasaur',cost:3},{id:'ice',card:'霜牙獸卡片',name:'小芝麻',model:'squirtle',cost:3},{id:'fire',card:'熔冠翼龍卡片',name:'椒香小雞',model:'charmander',cost:3}];
 function towerProgress(){try{const v=JSON.parse(localStorage.getItem(TOWER_KEY)||'{}');return {...v,inventory:{...(v.inventory||{})},cards:{...(v.cards||{})},pets:{...(v.pets||{})}};}catch{return {inventory:{},cards:{},pets:{}};}}
@@ -233,6 +233,91 @@ function swimPond(a,dt,speed){
  // Only the lower third is submerged. Bobbing is upward, so at least 2/3 stays visible.
  a.root.position.y=pondSurfaceY(a);
 }
+
+// Bubble Frog (mudkip) owns a separate pond-hopping routine. It never swims,
+// glides or walks on land. At rest, exactly 10% of its model height is submerged.
+function pondFrogRestY(a){
+ const p=pondBounds();
+ return p?p.surfaceY-Math.max(.001,a.height)*.10:0;
+}
+function emitPondFrogBubbles(a){
+ if(!a?.root.parent||a.capturing)return;
+ const group=new T.Group(),forward=a.root.rotation.y,scale=Math.max(.45,Math.min(1.6,a.height));
+ group.position.copy(a.root.position);
+ group.position.x+=Math.sin(forward)*scale*.26;
+ group.position.z+=Math.cos(forward)*scale*.26;
+ group.position.y+=a.height*.65;
+ const droplets=[];
+ const count=4+Math.floor(Math.random()*3);
+ for(let i=0;i<count;i++){
+  const radius=(.055+Math.random()*.045)*scale;
+  const material=new T.MeshBasicMaterial({
+   color:i%2?0xb9f8ff:0xe5fdff,transparent:true,opacity:.42,
+   depthWrite:false,side:T.DoubleSide
+  });
+  const mesh=new T.Mesh(new T.SphereGeometry(radius,9,7),material);
+  const angle=Math.random()*Math.PI*2,drift=.07+Math.random()*.23;
+  mesh.position.set(Math.cos(angle)*drift,Math.random()*.12,Math.sin(angle)*drift);
+  mesh.userData.origin=mesh.position.clone();
+  mesh.userData.drift=new T.Vector3(Math.cos(angle)*(.14+Math.random()*.23),0,Math.sin(angle)*(.14+Math.random()*.23));
+  droplets.push(mesh);
+  group.add(mesh);
+ }
+ scene.add(group);
+ effects.push({object:group,start:elapsed,duration:1.35,update:t=>{
+  for(let i=0;i<droplets.length;i++){
+   const m=droplets[i],rise=(.75+i*.11)*t;
+   m.position.copy(m.userData.origin).addScaledVector(m.userData.drift,t);
+   m.position.y+=rise;
+   m.material.opacity=.42*(1-t);
+   m.scale.setScalar(1+.25*t);
+  }
+ },done:()=>disposeCaptureFx(group)});
+}
+function hopPondFrog(a,dt){
+ const p=pondBounds();if(!p)return;
+ const q=a.pondJump,base=pondFrogRestY(a);
+ if(elapsed>=q.bubbleNextAt){
+  q.bubbleNextAt=elapsed+5+Math.random()*7;
+  if(!q.active)emitPondFrogBubbles(a);
+ }
+ if(!q.active){
+  a.root.position.y=base;
+  a.motionSpeed=0;
+  a.play('Idle');
+  q.wait-=dt;
+  if(q.wait>0)return;
+  // Only choose targets inside the pool's inset shoreline.
+  let destination=pondPoint();
+  if(!inPond(destination.x,destination.z,.72))destination=pondPoint();
+  q.start=a.root.position.clone();
+  q.end=destination;
+  q.duration=.84+Math.random()*.31;
+  q.duration=Math.max(.55,q.duration);
+  q.peak=Math.max(1.1,a.height*(1.5+Math.random()*.65));
+  q.time=0;
+  q.active=true;
+  const dx=q.end.x-q.start.x,dz=q.end.z-q.start.z;
+  if(Math.hypot(dx,dz)>.02)a.root.rotation.y=Math.atan2(dx,dz);
+  // Native Jump clip is optional; the parabolic world motion is authoritative.
+  if(Object.keys(a.actions||{}).some(k=>/jump|hop/i.test(k)))a.play('Jump',true);
+  return;
+ }
+ q.time+=dt;
+ const t=Math.min(1,q.time/q.duration),e=t*t*(3-2*t);
+ const x=q.start.x+(q.end.x-q.start.x)*e,z=q.start.z+(q.end.z-q.start.z)*e;
+ // Constrain every interpolated waypoint to the inner elliptical pond.
+ if(inPond(x,z,.55)){a.root.position.x=x;a.root.position.z=z;}
+ a.root.position.y=base+q.peak*Math.sin(Math.PI*t);
+ a.motionSpeed=Math.hypot(q.end.x-q.start.x,q.end.z-q.start.z)/q.duration;
+ if(t>=1){
+  a.root.position.set(q.end.x,base,q.end.z);
+  q.active=false;
+  q.wait=1+Math.random()*2.1;
+  a.motionSpeed=0;
+  a.play('Idle');
+ }
+}
 // The bird's full world-space flight height increases with its scaled body size.
 // Each individual has a different base and a slow, non-repeating cruising wave.
 function wildFlightProfile(a,minimum=0){
@@ -381,7 +466,7 @@ async function spawnWild(species,position,guardianEvent=null){
  if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);
  // Every wild water caterpillar, including a lab milestone spawn, belongs to
  // the pond. Never select a terrain point outside the water collider.
- const spawnPosition=species.id==='entei'&&pondBounds()
+ const spawnPosition=(species.id==='entei'||species.id==='mudkip')&&pondBounds()
   ?(position&&inPond(position.x,position.z,.8)?position:pondPoint())
   :(position||randomPoint());
  a.root.position.copy(spawnPosition);a.airborne=!isAvian(species.model)&&!isFrog(species.model)&&!isRobot(species.model)&&!isLightPhoenix(species.model)&&!isFloralDeer(species.model)&&!isFireMonkey(species.model)&&!isOutouman(species.model)&&!isRiceball(species.model)&&!NativeFamilies.has(species.model)&&isAirborne(species);a.flightState=a.airborne?'air':'ground';a.flightAltitude=1.8+Math.random()*1.2;a.flightRemaining=20+Math.random()*20;a.flightBase=a.airborne?a.flightAltitude:0;a.flightPhase=Math.random()*Math.PI*2;a.root.position.y=a.flightBase;a.home=a.root.position.clone();a.goal=a.home.clone();a.timer=Math.random()*3;a.berry=false;
@@ -389,6 +474,12 @@ async function spawnWild(species,position,guardianEvent=null){
   a.pondSwim={phase:Math.random()*Math.PI*2};
   a.airborne=false;a.flightState='ground';a.flightBase=0;
   a.root.position.y=pondSurfaceY(a);
+  a.home=a.root.position.clone();a.goal=pondPoint();
+ }
+ if(species.id==='mudkip'&&pondBounds()){
+  a.pondJump={active:false,wait:1+Math.random()*1.8,bubbleNextAt:elapsed+3+Math.random()*6};
+  a.airborne=false;a.flightState='ground';a.flightBase=0;
+  a.root.position.y=pondFrogRestY(a);
   a.home=a.root.position.clone();a.goal=pondPoint();
  }
  wild.push(a);return a;}
@@ -446,7 +537,7 @@ async function ensureLabLegendWilds(){
    if(entry.id===S.state.dreamLabLegendChoice||S.state.worldFlags?.labLegendWildCaught?.[entry.id]||wild.some(w=>w.species.id===entry.id))continue;
    if(place||battle)break;
    if(wild.length>=WILD_LIMIT){
-    const victim=wild.find(w=>w!==target&&!w.specialEventId&&!w.labLegendStarter&&!w.pondSwim);
+    const victim=wild.find(w=>w!==target&&!w.specialEventId&&!w.labLegendStarter&&!w.pondSwim&&!w.pondJump);
     if(!victim)break;
     wild.splice(wild.indexOf(victim),1);removeActor(victim);
    }
@@ -464,7 +555,7 @@ async function ensureLabLegendWilds(){
  }catch(error){S.errors.push('大夢研究所傳說幻靈出現：'+error.message);}
  finally{labWildSpawnBusy=false;}
 }
-let pondSpawnBusy=false;
+let pondSpawnBusy=false,pondFrogSpawnBusy=false;
 function pondCaterpillarAvailable(){return !!byId.entei&&(eligible(byId.entei)||owned('entei'));}
 async function ensurePondCaterpillar(){
  if(pondSpawnBusy||!S.ready||place||battle||!pondBounds()||!pondCaterpillarAvailable()||wild.some(a=>a.species.id==='entei'))return;
@@ -482,14 +573,32 @@ async function ensurePondCaterpillar(){
  }catch(e){S.errors.push('水池水毛蟲：'+e.message);}
  finally{pondSpawnBusy=false;}
 }
+async function ensurePondFrog(){
+ if(pondFrogSpawnBusy||!S.ready||place||battle||!pondBounds()||!byId.mudkip||!eligible(byId.mudkip)||wild.some(a=>a.species.id==='mudkip'))return;
+ pondFrogSpawnBusy=true;
+ try{
+  while(wild.length+spawnPending>=WILD_LIMIT){
+   const old=wild.find(w=>!w.specialEventId&&!w.labLegendStarter&&!w.riverSwim&&!w.pondSwim&&!w.pondJump&&w!==target);
+   if(!old)break;
+   wild.splice(wild.indexOf(old),1);removeActor(old);
+  }
+  if(wild.length+spawnPending<WILD_LIMIT){
+   spawnPending++;
+   try{await spawnWild(byId.mudkip,pondPoint());}
+   finally{spawnPending--;}
+  }
+ }catch(e){S.errors.push('水池泡泡蛙：'+e.message);}
+ finally{pondFrogSpawnBusy=false;}
+}
 async function populate(){
  await ensureSpecialAppearances();
  await ensurePondCaterpillar();
+ await ensurePondFrog();
  while(wild.length+spawnPending<WILD_LIMIT){const s=chooseWild();if(!s)break;await spawnWild(s);}
 }
 async function replenish(){
  if(!S.ready)return;
- await ensureSpecialAppearances();await ensureLabLegendWilds();await ensurePondCaterpillar();
+ await ensureSpecialAppearances();await ensureLabLegendWilds();await ensurePondCaterpillar();await ensurePondFrog();
  if(wild.length+spawnPending>=WILD_LIMIT)return;
  spawnPending++;
  try{const s=chooseWild();if(s)await spawnWild(s);}
@@ -1779,7 +1888,7 @@ function walkRiceball(a,dt,speed){
   else{a.timer=0;q.stuckUntil=elapsed+1.6;a.motionSpeed=0;a.play('Stuck');}
  }else{a.motionSpeed=0;a.play('Idle');}
 }
-function walkActor(a,dt,speed=.6){if(a.capturing)return;if(a.pondSwim)return swimPond(a,dt,speed);if(a.species?.stationary){a.play('Idle');return;}if(a.riverSwim)return swimRiver(a,dt);if(isFireMonkey(a.path)&&a.controller?.getState().specialActive){a.motionSpeed=0;return;}if(isLightPhoenix(a.path))return walkPhoenix(a,dt,speed);if(isRiceball(a.path))return walkRiceball(a,dt,speed);if(tickNativeFamily(a,dt,speed))return;if(tickPepperBehavior(a))return;updateFlight(a,dt);a.timer-=dt;if(a.timer<0){a.timer=3+Math.random()*4;const theta=Math.random()*Math.PI*2,r=Math.random()*(a.data?1.4:4);a.goal.set(a.home.x+Math.cos(theta)*r,0,a.home.z+Math.sin(theta)*r);}const d=a.goal.clone().sub(a.root.position);d.y=0;let moving=false;if(d.length()>.15){d.normalize();const nx=a.root.position.x+d.x*speed*dt,nz=a.root.position.z+d.z*speed*dt;if(!blocked(nx,nz,.3)){a.root.position.x=nx;a.root.position.z=nz;a.root.rotation.y=Math.atan2(d.x,d.z);moving=true;}else a.timer=0;}const hasFly=Object.keys(a.actions).some(k=>k.toLowerCase()==='fly'),flying=a.airborne&&(a.flightState==='air'||a.root.position.y>.15);a.play(flying?(hasFly?'Fly':'Walk'):moving?'Walk':isXiaoshan(a.path)?'Sleep':'Idle');}
+function walkActor(a,dt,speed=.6){if(a.capturing)return;if(a.pondJump)return hopPondFrog(a,dt);if(a.pondSwim)return swimPond(a,dt,speed);if(a.species?.stationary){a.play('Idle');return;}if(a.riverSwim)return swimRiver(a,dt);if(isFireMonkey(a.path)&&a.controller?.getState().specialActive){a.motionSpeed=0;return;}if(isLightPhoenix(a.path))return walkPhoenix(a,dt,speed);if(isRiceball(a.path))return walkRiceball(a,dt,speed);if(tickNativeFamily(a,dt,speed))return;if(tickPepperBehavior(a))return;updateFlight(a,dt);a.timer-=dt;if(a.timer<0){a.timer=3+Math.random()*4;const theta=Math.random()*Math.PI*2,r=Math.random()*(a.data?1.4:4);a.goal.set(a.home.x+Math.cos(theta)*r,0,a.home.z+Math.sin(theta)*r);}const d=a.goal.clone().sub(a.root.position);d.y=0;let moving=false;if(d.length()>.15){d.normalize();const nx=a.root.position.x+d.x*speed*dt,nz=a.root.position.z+d.z*speed*dt;if(!blocked(nx,nz,.3)){a.root.position.x=nx;a.root.position.z=nz;a.root.rotation.y=Math.atan2(d.x,d.z);moving=true;}else a.timer=0;}const hasFly=Object.keys(a.actions).some(k=>k.toLowerCase()==='fly'),flying=a.airborne&&(a.flightState==='air'||a.root.position.y>.15);a.play(flying?(hasFly?'Fly':'Walk'):moving?'Walk':isXiaoshan(a.path)?'Sleep':'Idle');}
 function beginRoll(){if(!hero||roll||modal||dialog||battle&&!battle.gym||throwing||battle?.heroStatus?.freeze>elapsed||battle?.heroStatus?.stun>elapsed)return;cancelNavigation();let x=S.stick.x+(S.keys.KeyD||S.keys.ArrowRight?1:0)-(S.keys.KeyA||S.keys.ArrowLeft?1:0),z=S.stick.y+(S.keys.KeyS||S.keys.ArrowDown?1:0)-(S.keys.KeyW||S.keys.ArrowUp?1:0);const len=Math.hypot(x,z);if(len<.08){x=Math.sin(hero.root.rotation.y);z=Math.cos(hero.root.rotation.y);}else{const yaw=battle?.gym?0:cameraOrbit.yaw;[x,z]=[(x*Math.cos(yaw)+z*Math.sin(yaw))/len,(-x*Math.sin(yaw)+z*Math.cos(yaw))/len];}hero.root.rotation.y=Math.atan2(x,z);roll={x,z,start:elapsed,duration:.42};hero.play('Roll',true);if(hero.actions.Roll)hero.actions.Roll.setEffectiveTimeScale(hero.actions.Roll.getClip().duration/.42);if(battle?.gym?.spirit==='blissey')phoenixRollPressed(battle,elapsed);}
 function updateRoll(dt){const button=$('rollBtn');if(button){button.disabled=!!roll;button.textContent='滾';}if(!roll)return;const t=(elapsed-roll.start)/roll.duration;if(t>=1){roll=null;hero.play('Idle');return;}const speed=10.12*Math.sin(Math.PI*Math.max(.08,t)),nx=S.player.x+roll.x*speed*dt,nz=S.player.z+roll.z*speed*dt;if(!(battle?.gym?gymBoundsBlocked(nx,nz):blocked(nx,nz,.5))){S.player.x=nx;S.player.z=nz;}hero.root.position.copy(S.player);}
 const helloState={still:0,next:0,until:0};
@@ -1817,7 +1926,7 @@ function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.
    }
   }
   return;
- }tickBookEncounter();tickBroadcast();if(river&&!place&&!battle)river.tick(dt);if(elapsed>=(tick.specialCheckAt||0)){tickSpecialAppearances(elapsed-(tick.specialCheckedAt||elapsed));tick.specialCheckedAt=elapsed;tick.specialCheckAt=elapsed+.2;}if(elapsed>=(tick.pondCheckAt||0)){tick.pondCheckAt=elapsed+12;void ensurePondCaterpillar();}if(elapsed>=(tick.labLegendCheckAt||0)){tick.labLegendCheckAt=elapsed+3;void ensureLabLegendWilds();}if(battle?.gym)tickGym(dt);for(const a of actors)if(a.root.visible&&a.root.parent?.visible!==false){a.mixer.update(dt);if(a.controller&&!a.capturing&&!a.nativePaused){a.controller.setMotionSpeed(isAvian(a.path)?1:Math.min(6,Math.max(0,(Number.isFinite(a.motionSpeed)?a.motionSpeed:0)/Math.max(.35,a.object.scale.x))));try{a.controller.update(dt);}catch(error){a.controller.setMode('Idle');a.controller.setMotionSpeed(0);if(!a.controllerErrorLogged){a.controllerErrorLogged=true;S.errors.push('角色動畫已安全暫停：'+error.message);}}}}updateRoll(dt);movement(dt);tickLabEvent(dt);tickChestEncounter(dt);updateSoundCostume(dt);collectSupplies();if(!battle&&!modal&&!dialog){if(!place){for(const w of wild)if(w!==target||!throwing)walkActor(w,dt,.45+(w.species.stage||1)*.1);if(target&&!wild.includes(target))clearTarget();}for(const n of npcs)if(n.root.visible){if(n.data?.id==='prof_daydream'&&place?.id==='dream_lab'){n.play('Idle');continue;}const d=n.root.position.distanceTo(S.player);if(d>3)n.contactLock=false;if(d>2.5)walkActor(n,dt,.45);else n.play('Idle');if(d<1.6&&!n.contactLock&&elapsed>n.cooldown&&(!navigation||navigation.kind==='npc'&&navigation.id===n.data.id)){talk(n);break;}}}try{tickPetFollower(dt);}catch(error){if(!tick.petErrorReported){tick.petErrorReported=true;console.warn('寵物互動暫停，保護遊戲主迴圈',error);}if(petFollower){const face=hero.root.rotation.y;petFollower.root.position.lerp(new T.Vector3(S.player.x-Math.sin(face)*1.13,0,S.player.z-Math.cos(face)*1.13),Math.min(1,dt*7));}}if(companion){companion.root.visible=S.state.costume==='mist'&&!battle&&!place;if(companion.root.visible){const face=hero.root.rotation.y,goal=new T.Vector3(S.player.x-Math.sin(face)*1.25,0,S.player.z-Math.cos(face)*1.25),d=goal.sub(companion.root.position),dist=d.length(),moving=dist>.08;if(moving){const step=Math.min(dist,dt*Math.max(1.8,dist*4));companion.root.position.addScaledVector(d,step/Math.max(dist,.001));companion.root.rotation.y=Math.atan2(-d.z,d.x);companion.motionSpeed=step/dt;companion.play('Walk');companion.idleSince=elapsed;}else{companion.motionSpeed=0;const q=(elapsed-(companion.idleSince||elapsed))%9;companion.play(q>4.5&&q<6.2?'Stuck':q>6.2?'Wave':'Idle');}}}for(let i=effects.length-1;i>=0;i--){const e=effects[i],t=Math.min(1,(elapsed-e.start)/e.duration);e.update(t);if(t===1){if(e.object)detach(e.object);effects.splice(i,1);e.done?.();}}const portrait=innerWidth<600;if(battle?.gym){gymCamera();}else if(battle){camera.position.lerp(new T.Vector3(0,portrait?11.3:9.9,portrait?23.5:18),Math.min(1,dt*6));camera.lookAt(0,portrait?-.8:-.2,0);}else{const distance=(place?12.2:portrait?17.3:19.6)*cameraOrbit.zoom,desired=S.player.clone().add(new T.Vector3(Math.sin(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch),distance*Math.sin(cameraOrbit.pitch),Math.cos(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch)));camera.position.lerp(desired,Math.min(1,dt*7));camera.lookAt(S.player.x,1.1,S.player.z);light.position.set(S.player.x-12,25,S.player.z+15);light.target.position.copy(S.player);light.target.updateMatrixWorld();}const targetText=target&&!battle&&captureCandidates().includes(target)?`${target.species.name} · ${target.species.stageLabel||'第 '+target.species.stage+' 階段'}${target.berry?' · 已餵果':''}`:'';if($('target').textContent!==targetText)$('target').textContent=targetText;portalCheck();if(elapsed>=(tick.nextLabelsAt||0)){updateLabels();tick.nextLabelsAt=elapsed+(mobileGraphics?.05:.035);}if(Math.floor(elapsed*6)!==tick.radarFrame){tick.radarFrame=Math.floor(elapsed*6);radar();}window.PhantomOcclusion?.update(place?insideGroup:townGroup,camera,hero.root,dt,!battle);if(!mobileGraphics||elapsed-(tick.lastWorldRenderAt||0)>=.028){renderer.render(scene,camera);tick.lastWorldRenderAt=elapsed;}}
+ }tickBookEncounter();tickBroadcast();if(river&&!place&&!battle)river.tick(dt);if(elapsed>=(tick.specialCheckAt||0)){tickSpecialAppearances(elapsed-(tick.specialCheckedAt||elapsed));tick.specialCheckedAt=elapsed;tick.specialCheckAt=elapsed+.2;}if(elapsed>=(tick.pondCheckAt||0)){tick.pondCheckAt=elapsed+12;void (async()=>{await ensurePondCaterpillar();await ensurePondFrog();})();}if(elapsed>=(tick.labLegendCheckAt||0)){tick.labLegendCheckAt=elapsed+3;void ensureLabLegendWilds();}if(battle?.gym)tickGym(dt);for(const a of actors)if(a.root.visible&&a.root.parent?.visible!==false){a.mixer.update(dt);if(a.controller&&!a.capturing&&!a.nativePaused){a.controller.setMotionSpeed(isAvian(a.path)?1:Math.min(6,Math.max(0,(Number.isFinite(a.motionSpeed)?a.motionSpeed:0)/Math.max(.35,a.object.scale.x))));try{a.controller.update(dt);}catch(error){a.controller.setMode('Idle');a.controller.setMotionSpeed(0);if(!a.controllerErrorLogged){a.controllerErrorLogged=true;S.errors.push('角色動畫已安全暫停：'+error.message);}}}}updateRoll(dt);movement(dt);tickLabEvent(dt);tickChestEncounter(dt);updateSoundCostume(dt);collectSupplies();if(!battle&&!modal&&!dialog){if(!place){for(const w of wild)if(w!==target||!throwing)walkActor(w,dt,.45+(w.species.stage||1)*.1);if(target&&!wild.includes(target))clearTarget();}for(const n of npcs)if(n.root.visible){if(n.data?.id==='prof_daydream'&&place?.id==='dream_lab'){n.play('Idle');continue;}const d=n.root.position.distanceTo(S.player);if(d>3)n.contactLock=false;if(d>2.5)walkActor(n,dt,.45);else n.play('Idle');if(d<1.6&&!n.contactLock&&elapsed>n.cooldown&&(!navigation||navigation.kind==='npc'&&navigation.id===n.data.id)){talk(n);break;}}}try{tickPetFollower(dt);}catch(error){if(!tick.petErrorReported){tick.petErrorReported=true;console.warn('寵物互動暫停，保護遊戲主迴圈',error);}if(petFollower){const face=hero.root.rotation.y;petFollower.root.position.lerp(new T.Vector3(S.player.x-Math.sin(face)*1.13,0,S.player.z-Math.cos(face)*1.13),Math.min(1,dt*7));}}if(companion){companion.root.visible=S.state.costume==='mist'&&!battle&&!place;if(companion.root.visible){const face=hero.root.rotation.y,goal=new T.Vector3(S.player.x-Math.sin(face)*1.25,0,S.player.z-Math.cos(face)*1.25),d=goal.sub(companion.root.position),dist=d.length(),moving=dist>.08;if(moving){const step=Math.min(dist,dt*Math.max(1.8,dist*4));companion.root.position.addScaledVector(d,step/Math.max(dist,.001));companion.root.rotation.y=Math.atan2(-d.z,d.x);companion.motionSpeed=step/dt;companion.play('Walk');companion.idleSince=elapsed;}else{companion.motionSpeed=0;const q=(elapsed-(companion.idleSince||elapsed))%9;companion.play(q>4.5&&q<6.2?'Stuck':q>6.2?'Wave':'Idle');}}}for(let i=effects.length-1;i>=0;i--){const e=effects[i],t=Math.min(1,(elapsed-e.start)/e.duration);e.update(t);if(t===1){if(e.object)detach(e.object);effects.splice(i,1);e.done?.();}}const portrait=innerWidth<600;if(battle?.gym){gymCamera();}else if(battle){camera.position.lerp(new T.Vector3(0,portrait?11.3:9.9,portrait?23.5:18),Math.min(1,dt*6));camera.lookAt(0,portrait?-.8:-.2,0);}else{const distance=(place?12.2:portrait?17.3:19.6)*cameraOrbit.zoom,desired=S.player.clone().add(new T.Vector3(Math.sin(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch),distance*Math.sin(cameraOrbit.pitch),Math.cos(cameraOrbit.yaw)*distance*Math.cos(cameraOrbit.pitch)));camera.position.lerp(desired,Math.min(1,dt*7));camera.lookAt(S.player.x,1.1,S.player.z);light.position.set(S.player.x-12,25,S.player.z+15);light.target.position.copy(S.player);light.target.updateMatrixWorld();}const targetText=target&&!battle&&captureCandidates().includes(target)?`${target.species.name} · ${target.species.stageLabel||'第 '+target.species.stage+' 階段'}${target.berry?' · 已餵果':''}`:'';if($('target').textContent!==targetText)$('target').textContent=targetText;portalCheck();if(elapsed>=(tick.nextLabelsAt||0)){updateLabels();tick.nextLabelsAt=elapsed+(mobileGraphics?.05:.035);}if(Math.floor(elapsed*6)!==tick.radarFrame){tick.radarFrame=Math.floor(elapsed*6);radar();}window.PhantomOcclusion?.update(place?insideGroup:townGroup,camera,hero.root,dt,!battle);if(!mobileGraphics||elapsed-(tick.lastWorldRenderAt||0)>=.028){renderer.render(scene,camera);tick.lastWorldRenderAt=elapsed;}}
 // Preserve the selected render quality; never automatically blur high quality.
 function adjustGraphics(dt){graphicsQuality.smoothed=graphicsQuality.smoothed*.96+dt*.04;}
 function setGraphicsPreset(preset){
@@ -1933,11 +2042,11 @@ const nearestNpcs=[...npcData].sort((a,b)=>{
  const p=a.position||[0,0,0],q=b.position||[0,0,0],az=p.length===2?p[1]:p[2],bz=q.length===2?q[1]:q[2];
  return Math.hypot(p[0]-S.player.x,az-S.player.z)-Math.hypot(q[0]-S.player.x,bz-S.player.z);
 }).slice(0,2);
-await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);if(byId.mew){companion=await actor(byId.mew.model,.55);companion.root.visible=false;companion.root.position.copy(S.player);companion.idleSince=elapsed;}camera.position.copy(S.player).add(new T.Vector3(0,8.6,10.7));setNpcPlace();if(S.state.petActive)void equipPet(S.state.petActive);if(restoredBuilding){const b=world.buildings.find(x=>x.id===restoredBuilding);if(b){await enterBuilding(b);if(newPlayerStart){if(!blocked(LAB_START_POSITION.x,LAB_START_POSITION.z,.45)){S.player.copy(LAB_START_POSITION);hero.root.position.copy(S.player);}save();}else if(restoredPosition&&!blocked(...restoredPosition)){S.player.set(restoredPosition[0],0,restoredPosition[1]);hero.root.position.copy(S.player);}}}bindUi();hud();S.ready=true;if(new URLSearchParams(location.search).get('monsterDex')==='1')showMonsterDex();$('load').hidden=true;document.body.dataset.ready='true';setTimeout(()=>void loadDeferredTown(nearestNpcs),mobileGraphics?900:350);setTimeout(()=>warmBattleModels(),mobileGraphics?8000:2300);setInterval(save,15000);addEventListener('pagehide',e=>{save();if(!e.persisted&&battle){disposeXiaoshanTrial(battle);disposePhoenixTrial(battle);}else if(battle?.xiaoshanTrial?.utterance)window.speechSynthesis?.cancel();});document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});setInterval(()=>{if(!place&&!battle&&!modal){const far=wild.find(w=>w!==target&&!w.specialEventId&&!w.labLegendStarter&&!w.pondSwim&&w.root.position.distanceTo(S.player)>24);if(far){wild.splice(wild.indexOf(far),1);removeActor(far);replenish();}}},45000);toast(newPlayerStart?'歡迎來到大夢研究所！請向桌上的幻靈球前進，選擇第一位幻靈。':S.state.migratedFrom?'歡迎回來！你的舊版進度已接續。':'歡迎來到初光鎮！靠近幻靈，投出靈核球締約。');updateLabGuide();}catch(e){S.errors.push(e.message);$('loadText').textContent=e.message+'。請重新整理，或確認資產是否完整。';console.error(e);}}
+await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);if(byId.mew){companion=await actor(byId.mew.model,.55);companion.root.visible=false;companion.root.position.copy(S.player);companion.idleSince=elapsed;}camera.position.copy(S.player).add(new T.Vector3(0,8.6,10.7));setNpcPlace();if(S.state.petActive)void equipPet(S.state.petActive);if(restoredBuilding){const b=world.buildings.find(x=>x.id===restoredBuilding);if(b){await enterBuilding(b);if(newPlayerStart){if(!blocked(LAB_START_POSITION.x,LAB_START_POSITION.z,.45)){S.player.copy(LAB_START_POSITION);hero.root.position.copy(S.player);}save();}else if(restoredPosition&&!blocked(...restoredPosition)){S.player.set(restoredPosition[0],0,restoredPosition[1]);hero.root.position.copy(S.player);}}}bindUi();hud();S.ready=true;if(new URLSearchParams(location.search).get('monsterDex')==='1')showMonsterDex();$('load').hidden=true;document.body.dataset.ready='true';setTimeout(()=>void loadDeferredTown(nearestNpcs),mobileGraphics?900:350);setTimeout(()=>warmBattleModels(),mobileGraphics?8000:2300);setInterval(save,15000);addEventListener('pagehide',e=>{save();if(!e.persisted&&battle){disposeXiaoshanTrial(battle);disposePhoenixTrial(battle);}else if(battle?.xiaoshanTrial?.utterance)window.speechSynthesis?.cancel();});document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});setInterval(()=>{if(!place&&!battle&&!modal){const far=wild.find(w=>w!==target&&!w.specialEventId&&!w.labLegendStarter&&!w.pondSwim&&!w.pondJump&&w.root.position.distanceTo(S.player)>24);if(far){wild.splice(wild.indexOf(far),1);removeActor(far);replenish();}}},45000);toast(newPlayerStart?'歡迎來到大夢研究所！請向桌上的幻靈球前進，選擇第一位幻靈。':S.state.migratedFrom?'歡迎回來！你的舊版進度已接續。':'歡迎來到初光鎮！靠近幻靈，投出靈核球締約。');updateLabGuide();}catch(e){S.errors.push(e.message);$('loadText').textContent=e.message+'。請重新整理，或確認資產是否完整。';console.error(e);}}
 window.PhantomGame={get river(){return river},startFishing,eligible,spawnWeight,chooseWild,beginNavigation,cancelNavigation,get navigation(){return navigation},cameraOrbit,clearTarget,showGuide,showReset,resetGame,grantSupply,tickBroadcast,get cardArt(){return cardArt},get elapsed(){return elapsed},broadcastNow(){broadcastAt=elapsed;tickBroadcast()},endBattle,playerTurn,tickGym,state:S,scene,camera,renderer,actors,wild,npcs,asset,cloneSkin,showDex,showTeam,showGyms,showViewer,startBattle,enterBuilding,leaveBuilding,grant,save,showMenu,throwBall,useBerry,selectTarget,get spirits(){return spirits},get world(){return world},get hero(){return hero},get battle(){return battle},get place(){return place},captureCandidates,readBookshelf,nearbyBookshelf,validBookTeam,get bookshelfData(){return bookshelfData},get bookEncounter(){return bookEncounter},get chestEncounter(){return chestEncounter},get chestNextAt(){return chestNextAt},get viewer(){return viewer},get labels(){return labels},get target(){return target},beginRoll,get roll(){return roll},blocked,teleport(x,z){S.player.set(x,0,z);hero.root.position.copy(S.player);},setCostume};
 
 function spawnWeight(s){return 1/Math.pow(1+number(S.state.captureCounts[s.id]),1.6)/(1+wild.filter(w=>w.species.id===s.id).length*3);}
-function chooseWild(){const list=spirits.filter(s=>s.id!=='entei'&&!isChest(s)&&!isBook(s)&&eligible(s)&&!specialEvents().some(e=>e.speciesId===s.id));let r=Math.random()*list.reduce((n,s)=>n+spawnWeight(s),0);return list.find(s=>(r-=spawnWeight(s))<=0)||list[list.length-1];}
+function chooseWild(){const list=spirits.filter(s=>!['entei','mudkip'].includes(s.id)&&!isChest(s)&&!isBook(s)&&eligible(s)&&!specialEvents().some(e=>e.speciesId===s.id));let r=Math.random()*list.reduce((n,s)=>n+spawnWeight(s),0);return list.find(s=>(r-=spawnWeight(s))<=0)||list[list.length-1];}
 function clearTarget(){locked=false;$('lockBtn').setAttribute('aria-pressed','false');$('lockBtn').setAttribute('aria-label','鎖定可締約幻靈');$('lockBtn').title='鎖定可締約幻靈';target=null;if(lockLabel){removeLabel(lockLabel);lockLabel=null;}$('target').textContent='';}
 function showReset(final=false){openModal('重置遊戲 · '+(final?'最後確認':'第一次確認'),`<p>${final?'這是最後一次確認。':'重置將清除本瀏覽器的幻靈、道具、衣櫃、道館、挑戰塔素材及位置紀錄。'}操作後無法復原。</p><div class="toolbar"><button data-menu="help">取消</button><button class="danger" data-reset="${final?'final':'first'}">${final?'確定清除並重新開始':'繼續確認重置'}</button></div>`);}
 function resetGame(){localStorage.removeItem('phantom-starspire-tower-v1');S.state=migrate();S.player.fromArray(world.spawn||[0,0,4]);navigation=null;save();location.reload();}
