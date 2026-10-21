@@ -55,7 +55,7 @@ function nearbyFlyingPhoenix(){
 // Event-only species stay out of random spawning; actual river encounters are capturable.
 function authorizedRiverActor(w){return !!(river&&w?.riverSwim&&SpiritCombat.isWater(w.species)&&WATER_EVENT_ONLY.includes(w.species?.id)&&river.inWaterZone(w.root.position.x,w.root.position.z));}
 // Habitat authorization belongs to a real outdoor encounter, never to an entire rarity.
-function authorizedPondActor(w){return !!((w?.pondSwim&&w.species?.id==='entei'||w?.pondJump&&w.species?.id==='mudkip')&&SpiritCombat.isWater(w.species)&&w.root.parent===townGroup&&wild.includes(w)&&inPond(w.root.position.x,w.root.position.z,0));}
+function authorizedPondActor(w){return !!(((w?.pondSwim&&w.species?.id==='entei'&&SpiritCombat.isWater(w.species))||(w?.pondJump&&w.species?.id==='articuno'))&&w.root.parent===townGroup&&wild.includes(w)&&inPond(w.root.position.x,w.root.position.z,0));}
 function waterCaptureSurface(w){return authorizedPondActor(w)?pondBounds().surfaceY:authorizedRiverActor(w)?river.config.surfaceY:null;}
 function captureDistance(w){return waterCaptureSurface(w)!==null?Math.hypot(w.root.position.x-S.player.x,w.root.position.z-S.player.z):w.root.position.distanceTo(S.player);}
 function captureAim(w,position){const aim=position.clone().add(new T.Vector3(0,w.height*.5,0)),surface=waterCaptureSurface(w);if(surface!==null)aim.y=Math.max(aim.y,surface+Math.min(.3,w.height*.2));return aim;}
@@ -218,7 +218,7 @@ function pondPoint(){
  const t=Math.random()*Math.PI*2,r=Math.sqrt(Math.random())*.72;
  return new T.Vector3(p.cx+Math.cos(t)*r*(p.rx-.65),0,p.cz+Math.sin(t)*r*(p.rz-.65));
 }
-function pondSurfaceY(a){const p=pondBounds(),height=Math.max(.001,a.height||a.worldSize?.y||1);return p.surfaceY-height/3+(1+Math.sin(elapsed*2+(a.pondSwim?.phase||0)))*Math.min(.0175,height*.015);}
+function pondSurfaceY(a){const p=pondBounds(),height=Math.max(.001,a.height||a.worldSize?.y||1);return p.surfaceY-height/5+(1+Math.sin(elapsed*2+(a.pondSwim?.phase||0)))*Math.min(.0175,height*.015);}
 function swimPond(a,dt,speed){
  const p=pondBounds();if(!p)return;
  a.timer-=dt;
@@ -230,11 +230,11 @@ function swimPond(a,dt,speed){
   if(inPond(x,z,.65)){a.root.position.x=x;a.root.position.z=z;a.root.rotation.y=Math.atan2(dx,dz);a.play('Walk');}
   else {a.timer=0;a.goal=pondPoint();a.play('Idle');}
  }else a.play('Idle');
- // Only the lower third is submerged. Bobbing is upward, so at least 2/3 stays visible.
+ // Only the lower fifth is submerged. Bobbing stays gentle so 4/5 of its body is visible.
  a.root.position.y=pondSurfaceY(a);
 }
 
-// Bubble Frog (mudkip) owns a separate pond-hopping routine. It never swims,
+// Big-Eyed Frog (articuno) owns a separate pond-hopping routine. It never swims,
 // glides or walks on land. At rest, exactly 10% of its model height is submerged.
 function pondFrogRestY(a){
  const p=pondBounds();
@@ -466,7 +466,7 @@ async function spawnWild(species,position,guardianEvent=null){
  if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);
  // Every wild water caterpillar, including a lab milestone spawn, belongs to
  // the pond. Never select a terrain point outside the water collider.
- const spawnPosition=(species.id==='entei'||species.id==='mudkip')&&pondBounds()
+ const spawnPosition=(species.id==='entei'||species.id==='articuno')&&pondBounds()
   ?(position&&inPond(position.x,position.z,.8)?position:pondPoint())
   :(position||randomPoint());
  a.root.position.copy(spawnPosition);a.airborne=!isAvian(species.model)&&!isFrog(species.model)&&!isRobot(species.model)&&!isLightPhoenix(species.model)&&!isFloralDeer(species.model)&&!isFireMonkey(species.model)&&!isOutouman(species.model)&&!isRiceball(species.model)&&!NativeFamilies.has(species.model)&&isAirborne(species);a.flightState=a.airborne?'air':'ground';a.flightAltitude=1.8+Math.random()*1.2;a.flightRemaining=20+Math.random()*20;a.flightBase=a.airborne?a.flightAltitude:0;a.flightPhase=Math.random()*Math.PI*2;a.root.position.y=a.flightBase;a.home=a.root.position.clone();a.goal=a.home.clone();a.timer=Math.random()*3;a.berry=false;
@@ -476,7 +476,7 @@ async function spawnWild(species,position,guardianEvent=null){
   a.root.position.y=pondSurfaceY(a);
   a.home=a.root.position.clone();a.goal=pondPoint();
  }
- if(species.id==='mudkip'&&pondBounds()){
+ if(species.id==='articuno'&&pondBounds()){
   a.pondJump={active:false,wait:1+Math.random()*1.8,bubbleNextAt:elapsed+3+Math.random()*6};
   a.airborne=false;a.flightState='ground';a.flightBase=0;
   a.root.position.y=pondFrogRestY(a);
@@ -574,7 +574,7 @@ async function ensurePondCaterpillar(){
  finally{pondSpawnBusy=false;}
 }
 async function ensurePondFrog(){
- if(pondFrogSpawnBusy||!S.ready||place||battle||!pondBounds()||!byId.mudkip||!eligible(byId.mudkip)||wild.some(a=>a.species.id==='mudkip'))return;
+ if(pondFrogSpawnBusy||!S.ready||place||battle||!pondBounds()||!byId.articuno||!eligible(byId.articuno)||wild.some(a=>a.species.id==='articuno'))return;
  pondFrogSpawnBusy=true;
  try{
   while(wild.length+spawnPending>=WILD_LIMIT){
@@ -584,10 +584,10 @@ async function ensurePondFrog(){
   }
   if(wild.length+spawnPending<WILD_LIMIT){
    spawnPending++;
-   try{await spawnWild(byId.mudkip,pondPoint());}
+   try{await spawnWild(byId.articuno,pondPoint());}
    finally{spawnPending--;}
   }
- }catch(e){S.errors.push('水池泡泡蛙：'+e.message);}
+ }catch(e){S.errors.push('水池大眼蛙：'+e.message);}
  finally{pondFrogSpawnBusy=false;}
 }
 async function populate(){
@@ -2046,7 +2046,7 @@ await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);
 window.PhantomGame={get river(){return river},startFishing,eligible,spawnWeight,chooseWild,beginNavigation,cancelNavigation,get navigation(){return navigation},cameraOrbit,clearTarget,showGuide,showReset,resetGame,grantSupply,tickBroadcast,get cardArt(){return cardArt},get elapsed(){return elapsed},broadcastNow(){broadcastAt=elapsed;tickBroadcast()},endBattle,playerTurn,tickGym,state:S,scene,camera,renderer,actors,wild,npcs,asset,cloneSkin,showDex,showTeam,showGyms,showViewer,startBattle,enterBuilding,leaveBuilding,grant,save,showMenu,throwBall,useBerry,selectTarget,get spirits(){return spirits},get world(){return world},get hero(){return hero},get battle(){return battle},get place(){return place},captureCandidates,readBookshelf,nearbyBookshelf,validBookTeam,get bookshelfData(){return bookshelfData},get bookEncounter(){return bookEncounter},get chestEncounter(){return chestEncounter},get chestNextAt(){return chestNextAt},get viewer(){return viewer},get labels(){return labels},get target(){return target},beginRoll,get roll(){return roll},blocked,teleport(x,z){S.player.set(x,0,z);hero.root.position.copy(S.player);},setCostume};
 
 function spawnWeight(s){return 1/Math.pow(1+number(S.state.captureCounts[s.id]),1.6)/(1+wild.filter(w=>w.species.id===s.id).length*3);}
-function chooseWild(){const list=spirits.filter(s=>!['entei','mudkip'].includes(s.id)&&!isChest(s)&&!isBook(s)&&eligible(s)&&!specialEvents().some(e=>e.speciesId===s.id));let r=Math.random()*list.reduce((n,s)=>n+spawnWeight(s),0);return list.find(s=>(r-=spawnWeight(s))<=0)||list[list.length-1];}
+function chooseWild(){const list=spirits.filter(s=>!['entei','articuno'].includes(s.id)&&!isChest(s)&&!isBook(s)&&eligible(s)&&!specialEvents().some(e=>e.speciesId===s.id));let r=Math.random()*list.reduce((n,s)=>n+spawnWeight(s),0);return list.find(s=>(r-=spawnWeight(s))<=0)||list[list.length-1];}
 function clearTarget(){locked=false;$('lockBtn').setAttribute('aria-pressed','false');$('lockBtn').setAttribute('aria-label','鎖定可締約幻靈');$('lockBtn').title='鎖定可締約幻靈';target=null;if(lockLabel){removeLabel(lockLabel);lockLabel=null;}$('target').textContent='';}
 function showReset(final=false){openModal('重置遊戲 · '+(final?'最後確認':'第一次確認'),`<p>${final?'這是最後一次確認。':'重置將清除本瀏覽器的幻靈、道具、衣櫃、道館、挑戰塔素材及位置紀錄。'}操作後無法復原。</p><div class="toolbar"><button data-menu="help">取消</button><button class="danger" data-reset="${final?'final':'first'}">${final?'確定清除並重新開始':'繼續確認重置'}</button></div>`);}
 function resetGame(){localStorage.removeItem('phantom-starspire-tower-v1');S.state=migrate();S.player.fromArray(world.spawn||[0,0,4]);navigation=null;save();location.reload();}
