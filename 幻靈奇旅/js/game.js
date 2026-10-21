@@ -218,7 +218,8 @@ function pondPoint(){
  const t=Math.random()*Math.PI*2,r=Math.sqrt(Math.random())*.72;
  return new T.Vector3(p.cx+Math.cos(t)*r*(p.rx-.65),0,p.cz+Math.sin(t)*r*(p.rz-.65));
 }
-function pondSurfaceY(a){const p=pondBounds(),height=Math.max(.001,a.height||a.worldSize?.y||1);return p.surfaceY-height/5+(1+Math.sin(elapsed*2+(a.pondSwim?.phase||0)))*Math.min(.0175,height*.015);}
+// Keep the pond caterpillar entirely above water; foot/base remains at or above the surface.
+function pondSurfaceY(a){const p=pondBounds(),height=Math.max(.001,a.height||a.worldSize?.y||1);return p.surfaceY+.012+(1+Math.sin(elapsed*2+(a.pondSwim?.phase||0)))*Math.min(.013,height*.012);}
 function swimPond(a,dt,speed){
  const p=pondBounds();if(!p)return;
  a.timer-=dt;
@@ -230,15 +231,15 @@ function swimPond(a,dt,speed){
   if(inPond(x,z,.65)){a.root.position.x=x;a.root.position.z=z;a.root.rotation.y=Math.atan2(dx,dz);a.play('Walk');}
   else {a.timer=0;a.goal=pondPoint();a.play('Idle');}
  }else a.play('Idle');
- // Only the lower fifth is submerged. Bobbing stays gentle so 4/5 of its body is visible.
+ // The full caterpillar body stays above the pond; gentle bobbing never dips below the surface.
  a.root.position.y=pondSurfaceY(a);
 }
 
 // Big-Eyed Frog (articuno) owns a separate pond-hopping routine. It never swims,
-// glides or walks on land. At rest, exactly 10% of its model height is submerged.
+// glides or walks on land. At rest its whole body stays at or above the water.
 function pondFrogRestY(a){
  const p=pondBounds();
- return p?p.surfaceY-Math.max(.001,a.height)*.10:0;
+ return p?p.surfaceY+.015:0;
 }
 function emitPondFrogBubbles(a){
  if(!a?.root.parent||a.capturing)return;
@@ -461,7 +462,7 @@ async function spawnWild(species,position,guardianEvent=null){
  if(isGymGuardian(species)&&!guardianEncounterAuthorized(species,guardianEvent)){removeActor(a);return null;}
  const dimensions=a.worldSize||posedBounds(a.object).getSize(new T.Vector3()),maxSpan=Math.min(6,Number(rule.maxSpan)||6),ratio=Math.min(1,maxSpan/Math.max(dimensions.x,dimensions.z,.001));if(ratio<1){a.object.scale.multiplyScalar(ratio);a.object.position.multiplyScalar(ratio);a.height*=ratio;a.worldSize.multiplyScalar(ratio);}
  // Outdoor capturable instances only; gym/arena/collection visuals keep their own sizes.
- const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?1/3:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;
+ const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?1/2:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;
  if(species.id==='jigglypuff')a.eggEncounter={origin:'jigglypuff',failures:0};
  if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);
  // Every wild water caterpillar, including a lab milestone spawn, belongs to
