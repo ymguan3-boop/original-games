@@ -150,28 +150,34 @@
     "generatedAt": "2026-10-16"
   },
   "treecko": {
-    "image": "cards/art/avian-xiaoma.webp",
+    "image": "cards/art/avian-xiaoma.webp?v=20261021-illustrated-v2",
     "name": "小麻",
-    "source": "native-threejs-model-portrait",
+    "source": "imagegen-reference-matched-illustration",
     "referenceModel": "avian://treecko",
-    "style": "reference-matched-3d-character",
-    "generatedAt": "2026-10-20"
+    "style": "polished-stylized-3d-fantasy-illustration-with-environment",
+    "generatedAt": "2026-10-21",
+    "path": "cards/art/avian-xiaoma.webp?v=20261021-illustrated-v2",
+    "styleReference": "cards/art/floral-deer-chikorita.webp"
   },
   "grovyle": {
-    "image": "cards/art/avian-gugu.webp",
+    "image": "cards/art/avian-gugu.webp?v=20261021-illustrated-v2",
     "name": "咕咕",
-    "source": "native-threejs-model-portrait",
+    "source": "imagegen-reference-matched-illustration",
     "referenceModel": "avian://grovyle",
-    "style": "reference-matched-3d-character",
-    "generatedAt": "2026-10-20"
+    "style": "polished-stylized-3d-fantasy-illustration-with-environment",
+    "generatedAt": "2026-10-21",
+    "path": "cards/art/avian-gugu.webp?v=20261021-illustrated-v2",
+    "styleReference": "cards/art/floral-deer-chikorita.webp"
   },
   "sceptile": {
-    "image": "cards/art/avian-little-eagle.webp",
+    "image": "cards/art/avian-little-eagle.webp?v=20261021-illustrated-v2",
     "name": "小鷹",
-    "source": "native-threejs-model-portrait",
+    "source": "imagegen-reference-matched-illustration",
     "referenceModel": "avian://sceptile",
-    "style": "reference-matched-3d-character",
-    "generatedAt": "2026-10-20"
+    "style": "polished-stylized-3d-fantasy-illustration-with-environment",
+    "generatedAt": "2026-10-21",
+    "path": "cards/art/avian-little-eagle.webp?v=20261021-illustrated-v2",
+    "styleReference": "cards/art/floral-deer-chikorita.webp"
   },
   "torchic": {
     "image": "cards/art/torchic.webp",
@@ -415,12 +421,14 @@
     "generatedAt": "2026-10-12"
   },
   "palkia": {
-    "image": "cards/art/avian-dapeng.webp",
+    "image": "cards/art/avian-dapeng.webp?v=20261021-illustrated-v2",
     "name": "大朋",
-    "source": "native-threejs-model-portrait",
+    "source": "imagegen-reference-matched-illustration",
     "referenceModel": "avian://palkia",
-    "style": "reference-matched-3d-character",
-    "generatedAt": "2026-10-20"
+    "style": "polished-stylized-3d-fantasy-illustration-with-environment",
+    "generatedAt": "2026-10-21",
+    "path": "cards/art/avian-dapeng.webp?v=20261021-illustrated-v2",
+    "styleReference": "cards/art/floral-deer-chikorita.webp"
   },
   "giratina": {
     "image": "cards/art/giratina.webp",
@@ -542,11 +550,13 @@
     "revision": 2
   },
   "jigglypuff": {
-    "image": "cards/art/avian-egg.webp",
+    "image": "cards/art/avian-egg.webp?v=20261021-illustrated-v2",
     "name": "三色蛋",
-    "source": "native-threejs-model-portrait",
+    "source": "imagegen-reference-matched-illustration",
     "referenceModel": "avian://jigglypuff",
-    "style": "reference-matched-3d-character",
-    "generatedAt": "2026-10-20"
+    "style": "polished-stylized-3d-fantasy-illustration-with-environment",
+    "generatedAt": "2026-10-21",
+    "path": "cards/art/avian-egg.webp?v=20261021-illustrated-v2",
+    "styleReference": "cards/art/floral-deer-chikorita.webp"
   }
 }

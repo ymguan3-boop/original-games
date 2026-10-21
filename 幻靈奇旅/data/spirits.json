@@ -646,10 +646,11 @@
         "cost": 3
       }
     ],
-    "description": "三色蛋在同一次遭遇捕捉失敗 1 次後變成小麻。灰紫色短翼快速振翅，平時收翼踱步，好奇地啄擊，並以絨羽旋風自我保護。",
+    "description": "三色蛋捕捉失敗時可能隨機變成小麻。灰紫色短翼快速振翅，平時收翼踱步，好奇地啄擊，並以絨羽旋風自我保護。",
     "stageLabel": "特殊",
     "cardFrame": "purple",
-    "captureEvolutionOnly": true
+    "captureEvolutionOnly": true,
+    "captureEvolutionSource": "jigglypuff"
   },
   {
     "id": "grovyle",
@@ -683,10 +684,11 @@
         "cost": 3
       }
     ],
-    "description": "同一次三色蛋遭遇累計捕捉失敗 2 次後，變成咕咕。紅雞冠與大鐮尾昂然挺立，短程撲飛、雞冠衝撞，以晨曦啼鳴送出聲波。",
+    "description": "三色蛋捕捉失敗時可能隨機變成咕咕。紅雞冠與大鐮尾昂然挺立，短程撲飛、雞冠衝撞，以晨曦啼鳴送出聲波。",
     "stageLabel": "特殊",
     "cardFrame": "purple",
-    "captureEvolutionOnly": true
+    "captureEvolutionOnly": true,
+    "captureEvolutionSource": "jigglypuff"
   },
   {
     "id": "sceptile",
@@ -720,10 +722,11 @@
         "cost": 3
       }
     ],
-    "description": "同一次三色蛋遭遇累計捕捉失敗 3 次後，變成小鷹。需持有 3 張小鷹卡才能進階成大朋；抬頭收爪飛行，以銳喙啄擊或拍翼撲擊。",
+    "description": "三色蛋捕捉失敗時可能隨機變成小鷹。需持有 3 張小鷹卡才能進階成大朋；抬頭收爪飛行，以銳喙啄擊或拍翼撲擊。",
     "stageLabel": "特殊",
     "cardFrame": "purple",
-    "captureEvolutionOnly": true
+    "captureEvolutionOnly": true,
+    "captureEvolutionSource": "jigglypuff"
   },
   {
     "id": "torchic",
@@ -2121,15 +2124,16 @@
         "cooldownTurns": 2
       }
     ],
-    "description": "靜止不移動的傳說三色蛋，固定基礎捕捉率 5%（星耀球依既有保證締約）。同一次遭遇捕捉失敗第 1、2、3 次，會依序變為小麻、咕咕、小鷹。武裝使對手本場攻擊減半，回滿恢復最大 HP 的 90%，每 2 回合可用 1 次。",
+    "description": "靜止不移動的傳說三色蛋，依最新版固定捕捉率 30%。每次捕捉失敗時，會隨機當場變為小麻、咕咕或小鷹。武裝使對手本場攻擊減半，回滿恢復最大 HP 的 90%，每 2 回合可用 1 次。",
     "stageLabel": "特殊基礎",
     "cardFrame": "red",
-    "captureRate": 0.05,
+    "captureRate": 0.3,
     "stationary": true,
     "captureEvolution": [
       "treecko",
       "grovyle",
       "sceptile"
-    ]
+    ],
+    "captureEvolutionMethod": "random-on-failure"
   }
 ]

@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-21",
+  "tool": "built-in image_gen.imagegen (no CLI)",
+  "upstreamBase": "c90e1ff",
+  "assetType": "square collectible fantasy creature portrait",
+  "styleReference": "cards/art/floral-deer-chikorita.webp",
+  "commonPrompt": "Create one finished square fantasy creature card portrait. Match existing polished stylized 3D fantasy illustration: sculpted soft detailed forms, expressive eyes, rich natural colors, warm cinematic sunlight, delicate materials and atmospheric scenic depth of field. Use supplied design only for creature identity. Complete immersive fantasy environment; no low-poly model screenshot, transparent cutout, studio background, text, border, logo or watermark. Keep one creature centered and readable.",
+  "portraits": [
+    {
+      "key": "egg",
+      "id": "jigglypuff",
+      "prompt": "Upright motionless egg entirely covered in overlapping thick rounded feather plates: dark brown base, ochre/brown middle, russet red layer, long ivory upper feathers, light lavender crown and multicolor feather tuft. No face or limbs. Resting on moss in a luminous forest glade with warm motes and distant flowers.",
+      "output": "cards/art/avian-egg.webp",
+      "width": 896,
+      "height": 896,
+      "bytes": 116804
+    },
+    {
+      "key": "xiaoma",
+      "id": "treecko",
+      "prompt": "Plump lavender gray baby pigeon, ivory heart face/belly, shiny brown eyes, rosy cheeks, tiny gray-purple beak, two crest feathers, short lavender/ivory wings and pink-brown toes. Curious tiny wing raised, flower-covered mossy ledge, bright fantasy forest and distant floating mountains. No accessories.",
+      "output": "cards/art/avian-xiaoma.webp",
+      "width": 896,
+      "height": 896,
+      "bytes": 126480
+    },
+    {
+      "key": "gugu",
+      "id": "grovyle",
+      "prompt": "Round ivory rooster, brown eyes/blush, red comb and wattles, ivory forehead curl, golden pointed short beak, warm brown wings, large swept red/dark brown rooster tail and very short gold feet. Proud cheerful singing pose on mossy rock in sunlit fantasy orchard meadow.",
+      "output": "cards/art/avian-gugu.webp",
+      "width": 896,
+      "height": 896,
+      "bytes": 139718
+    },
+    {
+      "key": "little-eagle",
+      "id": "sceptile",
+      "prompt": "Compact juvenile eagle, ivory head/chest, round amber eyes with confident brows, gold hooked beak with dark pointed tip and no extra mouth, short thick neck, brown layered short wings, ivory-brown fan tail and thick gold feet with dark talons. Brave youthful expression, partly spread wings on sunlit rocky forest overlook. No jewelry/crystal/flames.",
+      "output": "cards/art/avian-little-eagle.webp",
+      "width": 896,
+      "height": 896,
+      "bytes": 119628
+    },
+    {
+      "key": "dapeng",
+      "id": "palkia",
+      "prompt": "Majestic adult brown/ivory eagle, small head and longer feathered neck, keen amber eyes, gold hooked beak with dark tip, broad warm brown continuous curved wings with large layered ivory inner feathers and brown/tan primaries. Proud heroic cliff stance at dawn among fantasy mountain peaks, full feet, no armor/crystal/flames.",
+      "output": "cards/art/avian-dapeng.webp",
+      "width": 896,
+      "height": 896,
+      "bytes": 124836
+    }
+  ],
+  "runtimePolicy": "Overwrite the previous five rendered portraits; do not ship high-resolution generated masters, references, temporary renders or duplicate image sets.",
+  "review": "Inspected all five generated artworks for identity, background, style, clean framing and absent text; game integration browser check follows."
+}
