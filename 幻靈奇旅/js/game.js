@@ -278,36 +278,47 @@ function emitPondFrogBubbles(a){
 function hopPondFrog(a,dt){
  const p=pondBounds();if(!p)return;
  const q=a.pondJump,base=pondFrogRestY(a);
- if(elapsed>=q.bubbleNextAt){
-  q.bubbleNextAt=elapsed+5+Math.random()*7;
-  if(!q.active)emitPondFrogBubbles(a);
- }
  if(!q.active){
   a.root.position.y=base;
   a.motionSpeed=0;
   a.play('Idle');
+  // Finish the entire bubble-blowing pose while stationary. Never start the
+  // next leap until the bubbles have appeared and the pose has ended.
+  if(q.bubblingUntil){
+   if(elapsed<q.bubblingUntil)return;
+   q.bubblingUntil=0;
+   q.bubbleNextAt=elapsed+5+Math.random()*7;
+   q.wait=.35+Math.random()*.55;
+   return;
+  }
+  // If the bubble timer expires mid-leap, wait until the frog has landed.
+  if(elapsed>=q.bubbleNextAt){
+   q.bubblingUntil=elapsed+1.45;
+   q.wait=0;
+   emitPondFrogBubbles(a);
+   return;
+  }
   q.wait-=dt;
   if(q.wait>0)return;
-  // Only choose targets inside the pool's inset shoreline.
+  // Choose a fresh destination strictly inside the pool at every leap.
   let destination=pondPoint();
   if(!inPond(destination.x,destination.z,.72))destination=pondPoint();
   q.start=a.root.position.clone();
   q.end=destination;
-  q.duration=.84+Math.random()*.31;
-  q.duration=Math.max(.55,q.duration);
-  q.peak=Math.max(1.1,a.height*(1.5+Math.random()*.65));
+  // Wide per-leap height variation: small, medium and very high jumps,
+  // measured relative to the newly enlarged wild model.
+  q.peak=a.height*(.9+Math.random()*1.8);
+  q.duration=.7+.4*(q.peak/Math.max(.001,a.height)/2.7);
   q.time=0;
   q.active=true;
   const dx=q.end.x-q.start.x,dz=q.end.z-q.start.z;
   if(Math.hypot(dx,dz)>.02)a.root.rotation.y=Math.atan2(dx,dz);
-  // Native Jump clip is optional; the parabolic world motion is authoritative.
   if(Object.keys(a.actions||{}).some(k=>/jump|hop/i.test(k)))a.play('Jump',true);
   return;
  }
  q.time+=dt;
  const t=Math.min(1,q.time/q.duration),e=t*t*(3-2*t);
  const x=q.start.x+(q.end.x-q.start.x)*e,z=q.start.z+(q.end.z-q.start.z)*e;
- // Constrain every interpolated waypoint to the inner elliptical pond.
  if(inPond(x,z,.55)){a.root.position.x=x;a.root.position.z=z;}
  a.root.position.y=base+q.peak*Math.sin(Math.PI*t);
  a.motionSpeed=Math.hypot(q.end.x-q.start.x,q.end.z-q.start.z)/q.duration;
@@ -462,7 +473,7 @@ async function spawnWild(species,position,guardianEvent=null){
  if(isGymGuardian(species)&&!guardianEncounterAuthorized(species,guardianEvent)){removeActor(a);return null;}
  const dimensions=a.worldSize||posedBounds(a.object).getSize(new T.Vector3()),maxSpan=Math.min(6,Number(rule.maxSpan)||6),ratio=Math.min(1,maxSpan/Math.max(dimensions.x,dimensions.z,.001));if(ratio<1){a.object.scale.multiplyScalar(ratio);a.object.position.multiplyScalar(ratio);a.height*=ratio;a.worldSize.multiplyScalar(ratio);}
  // Outdoor capturable instances only; gym/arena/collection visuals keep their own sizes.
- const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?1/2:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;
+ const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?3/4:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;
  if(species.id==='jigglypuff')a.eggEncounter={origin:'jigglypuff',failures:0};
  if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);
  // Every wild water caterpillar, including a lab milestone spawn, belongs to
