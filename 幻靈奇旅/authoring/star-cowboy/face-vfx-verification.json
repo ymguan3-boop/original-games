@@ -1,0 +1,110 @@
+{
+  "results": [
+    {
+      "id": "ahong-cowboy",
+      "bytes": 2958188,
+      "clips": [
+        {
+          "name": "Idle",
+          "eyeRange": 0.730303293286183,
+          "mouthRange": 0.9993910044431686
+        },
+        {
+          "name": "Walk",
+          "eyeRange": 0.8030299888420147,
+          "mouthRange": 0.9962017983198166
+        },
+        {
+          "name": "Run",
+          "eyeRange": 0.609091303746147,
+          "mouthRange": 1.3746486603146957
+        },
+        {
+          "name": "Attack",
+          "eyeRange": 0.7918142849354575,
+          "mouthRange": 1.4411949347319801
+        },
+        {
+          "name": "Ultimate",
+          "eyeRange": 0.8289715874923012,
+          "mouthRange": 1.4521816994648755
+        },
+        {
+          "name": "Hurt",
+          "eyeRange": 0.8959574511499414,
+          "mouthRange": 2.2806989266468376
+        },
+        {
+          "name": "Wave",
+          "eyeRange": 0.8362487802902862,
+          "mouthRange": 1.3118790636459987
+        },
+        {
+          "name": "React",
+          "eyeRange": 0.853398303940375,
+          "mouthRange": 1.3102606528119758
+        },
+        {
+          "name": "Jump",
+          "eyeRange": 0.8532117829993754,
+          "mouthRange": 1.5916615575551987
+        }
+      ],
+      "targetApi": true,
+      "ultimateMeshCount": 2
+    },
+    {
+      "id": "starlight-mage",
+      "bytes": 3124148,
+      "clips": [
+        {
+          "name": "Idle",
+          "eyeRange": 0.7303032972598473,
+          "mouthRange": 0.9993910044431686
+        },
+        {
+          "name": "Walk",
+          "eyeRange": 0.8030300097036367,
+          "mouthRange": 0.9962017983198166
+        },
+        {
+          "name": "Run",
+          "eyeRange": 0.6090913037460935,
+          "mouthRange": 1.3746488440957336
+        },
+        {
+          "name": "Attack",
+          "eyeRange": 0.8505450958287166,
+          "mouthRange": 1.4497919455550194
+        },
+        {
+          "name": "Ultimate",
+          "eyeRange": 0.8371986302926231,
+          "mouthRange": 1.453432529510152
+        },
+        {
+          "name": "Hurt",
+          "eyeRange": 0.8959574511499414,
+          "mouthRange": 2.2806989266468376
+        },
+        {
+          "name": "Wave",
+          "eyeRange": 0.8362487802902862,
+          "mouthRange": 1.3118791431188583
+        },
+        {
+          "name": "React",
+          "eyeRange": 0.8533982930128674,
+          "mouthRange": 1.3102606528119758
+        },
+        {
+          "name": "Jump",
+          "eyeRange": 0.8532117829993754,
+          "mouthRange": 1.5916616171598434
+        }
+      ],
+      "targetApi": true,
+      "ultimateMeshCount": 36
+    }
+  ]
+}

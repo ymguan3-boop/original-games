@@ -1,0 +1,36 @@
+{
+  "revision": "20261023-starspire-v1",
+  "summary": "Independent bosses, model and portrait refresh, targeted arena effects and runtime reduction",
+  "modelRuntime": [
+    {
+      "id": "chimchar",
+      "beforeBytes": 8115468,
+      "afterBytes": 2958188,
+      "triangles": 78320,
+      "parseMedianBeforeMs": 22.3,
+      "parseMedianAfterMs": 7.7
+    },
+    {
+      "id": "monferno",
+      "beforeBytes": 7476664,
+      "afterBytes": 3124148,
+      "triangles": 78204,
+      "parseMedianBeforeMs": 17.7,
+      "parseMedianAfterMs": 8.9
+    },
+    {
+      "id": "infernape",
+      "beforeBytes": 14519384,
+      "afterBytes": 3803716,
+      "triangles": 63218,
+      "parseMedianBeforeMs": 29.2,
+      "parseMedianAfterMs": 9.1
+    }
+  ],
+  "validation": {
+    "targeting": "122 skills x 4 target situations = 488 cases, self support excluded; 476 impact cleanup cases passed",
+    "tower": "VM rewards, persistence, recipes, weapon effects passed; cowboy stage browser sampled once",
+    "arena": "3-member team entry sampled once, 559.7ms, no console/page/game errors"
+  },
+  "limits": "Local Chromium measurements, not mobile device certification. First entry still includes long tasks; no zero-lag claim."
+}

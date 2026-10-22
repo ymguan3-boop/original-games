@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-10-23",
+  "generator": "built-in imagegen",
+  "identity": "authoritative current GLB model reference renders",
+  "items": [
+    {
+      "id": "chimchar",
+      "image": "cards/art/ahong-cowboy.webp",
+      "requirements": "hero-like black straight hairline, narrow dark eyes, no chin mole, dual revolvers"
+    },
+    {
+      "id": "suicune",
+      "image": "cards/art/water-fairy-portrait-v2.webp",
+      "requirements": "humanoid white-blue fairy, curled updo and long ponytail, two antennae, four bubble wings, petal skirt and blue boots"
+    }
+  ]
+}

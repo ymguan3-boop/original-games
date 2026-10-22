@@ -1,5 +1,5 @@
 {
-  "version": "20261022-duo-v1",
+  "version": "20261023-independent-bosses-v1",
   "numberingPolicy": "001–061：同物種進化線相鄰（階段由低到高），進化線依 黃卡（標準）→ 紫卡 → 紅卡 排序；存檔 ID 不變。",
   "groupingPolicy": "Connected components of previous/next/evolvesTo; stages ascend, equal-stage branches keep original order. Unmodified legacy links group one-sided connections too.",
   "entries": [
@@ -1600,7 +1600,7 @@
       "id": "monferno",
       "number": "054",
       "order": 54,
-      "group": "chimchar",
+      "group": "monferno",
       "name": "藍金星輝法師",
       "skills": [
         {
@@ -1631,7 +1631,7 @@
       "id": "infernape",
       "number": "055",
       "order": 55,
-      "group": "chimchar",
+      "group": "infernape",
       "name": "官胖",
       "skills": [
         {
@@ -1994,8 +1994,18 @@
     {
       "id": "chimchar",
       "ids": [
-        "chimchar",
-        "monferno",
+        "chimchar"
+      ]
+    },
+    {
+      "id": "monferno",
+      "ids": [
+        "monferno"
+      ]
+    },
+    {
+      "id": "infernape",
+      "ids": [
         "infernape"
       ]
     },

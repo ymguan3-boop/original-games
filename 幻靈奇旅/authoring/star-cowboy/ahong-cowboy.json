@@ -3,7 +3,7 @@
   "model": "models\\spirits\\ahong-cowboy.glb",
   "height": 1.7,
   "bones": 23,
-  "triangles": 231048,
+  "triangles": 78320,
   "animations": {
     "Idle": 3,
     "Walk": 1.2,
@@ -15,5 +15,5 @@
     "React": 1.5,
     "Jump": 1.2
   },
-  "bytes": 8115468
+  "bytes": 2958188
 }

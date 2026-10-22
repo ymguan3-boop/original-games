@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "triangles": 63218,
+  "drawPrimitives": 23,
+  "clips": {
+    "Ultimate": {
+      "channels": 63,
+      "facialBones": [
+        "browL",
+        "browR",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ]
+    },
+    "Attack": {
+      "channels": 63,
+      "facialBones": [
+        "browL",
+        "browR",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ]
+    },
+    "Jump": {
+      "channels": 63,
+      "facialBones": [
+        "browL",
+        "browR",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ]
+    },
+    "Wave": {
+      "channels": 63,
+      "facialBones": [
+        "browL",
+        "browR",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ]
+    },
+    "React": {
+      "channels": 63,
+      "facialBones": [
+        "browL",
+        "browR",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ]
+    },
+    "Hurt": {
+      "channels": 63,
+      "facialBones": [
+        "browL",
+        "browR",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ]
+    },
+    "Run": {
+      "channels": 63,
+      "facialBones": [
+        "browL",
+        "browR",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ]
+    },
+    "Walk": {
+      "channels": 63,
+      "facialBones": [
+        "browL",
+        "browR",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ]
+    },
+    "Idle": {
+      "channels": 63,
+      "facialBones": [
+        "browL",
+        "browR",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ]
+    }
+  },
+  "checks": [
+    "finite float accessors",
+    "valid indices",
+    "preserved skin attributes",
+    "21 bones",
+    "nine named clips",
+    "facial channels in every clip",
+    "positive monotonic animation timelines"
+  ]
+}

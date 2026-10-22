@@ -115,7 +115,7 @@
       for(const p of support){const d1=p[2]*s+p[3]*c,d2=p[4]*s+p[5]*c,d3=p[6]*s+p[7]*c;h=Math.max(h,-p[0]*s-p[1]*c+Math.sqrt(d1*d1+d2*d2+d3*d3));}heights[k]=h;
     }
     function height(a){const f=((a/(2*Math.PI)%1)+1)%1*L,k=Math.floor(f);return heights[k]+(heights[k+1]-heights[k])*(f-k);}
-    const waveRoot=new T.Group();root.add(waveRoot);
+    const waveRoot=new T.Group();waveRoot.name='Effects';waveRoot.userData.isEffect=true;root.add(waveRoot);
     const ringGeo=geometry(new T.TorusGeometry(.42,.018,6,64));
     const waves=Array.from({length:6},()=>{const m=material(new T.MeshBasicMaterial({color:0xb66aff,transparent:true,opacity:0,depthWrite:false}));const o=mesh(ringGeo,m,waveRoot);o.castShadow=false;o.visible=false;return {o,age:99};});
     // Two short signal arcs also animate freely above the crown, matching the model sheet.

@@ -23,8 +23,8 @@ def finish(o,name,m,bone,smooth=True):
     for f in o.data.polygons:f.use_smooth=smooth
     o.vertex_groups.new(name=bone).add(list(range(len(o.data.vertices))),1,'REPLACE')
     parts.append(o);return o
-def ell(name,p,s,m,b='chest',rot=(0,0,0),seg=40):
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=seg,ring_count=24,location=p)
+def ell(name,p,s,m,b='chest',rot=(0,0,0),seg=18):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=seg,ring_count=12,location=p)
     o=bpy.context.object;o.scale=s;o.rotation_euler=rot;return finish(o,name,m,b)
 def box(name,p,s,m,b='chest',r=.025):
     bpy.ops.mesh.primitive_cube_add(size=1,location=p);o=bpy.context.object;o.scale=s
@@ -32,7 +32,7 @@ def box(name,p,s,m,b='chest',r=.025):
     mod=o.modifiers.new('Tailored round edges','BEVEL');mod.width=r;mod.segments=3
     bpy.ops.object.modifier_apply(modifier=mod.name);return finish(o,name,m,b)
 def tube(name,pts,r,m,b='chest'):
-    c=bpy.data.curves.new(name,'CURVE');c.dimensions='3D';c.bevel_depth=r;c.bevel_resolution=3
+    c=bpy.data.curves.new(name,'CURVE');c.dimensions='3D';c.bevel_depth=r;c.bevel_resolution=2
     sp=c.splines.new('POLY');sp.points.add(len(pts)-1)
     for v,p in zip(sp.points,pts):v.co=(*p,1)
     o=bpy.data.objects.new(name,c);bpy.context.collection.objects.link(o)
@@ -67,22 +67,34 @@ def face(z,rx,ry,rz,female):
         ell('Ear'+sd,(s*rx*.97,.005,z-.015),(.065,.055,.105),skin,'head')
         ell('Ear inner'+sd,(s*rx*1.025,-.037,z-.015),(.031,.018,.064),blush,'head')
         x=s*rx*.43;ez=z+.015;y=-ry*.90
-        ell('Eye white'+sd,(x,y,ez),(rx*.265,.035,rz*.18),white,'eye'+sd)
-        ell('Amber iris'+sd,(x,y-.03,ez),(.043,.012,.057),iris,'eye'+sd)
-        ell('Pupil'+sd,(x,y-.039,ez),(.024,.008,.039),black,'eye'+sd)
-        ell('Catch light'+sd,(x-.012,y-.046,ez+.023),(.012,.006,.016),white,'eye'+sd)
-        tube('Upper eyelash'+sd,[(x+(j-6)*rx*.045,y-.028,ez+.035+.029*sin(j*pi/12)) for j in range(13)],.008 if female else .006,hair,'eye'+sd)
+        ell('Eye white'+sd,(x,y,ez),(rx*.265 if female else .044,.035 if female else .017,rz*.18 if female else .027),white,'eye'+sd)
+        ell('Amber iris'+sd,(x,y-(.03 if female else .014),ez),(.043,.012,.057) if female else (.035,.012,.026),iris,'eye'+sd)
+        ell('Pupil'+sd,(x,y-(.039 if female else .021),ez),(.024,.008,.039) if female else (.026,.008,.023),black,'eye'+sd)
+        ell('Catch light'+sd,(x-.012,y-(.046 if female else .028),ez+(.023 if female else .009)),(.012,.006,.016) if female else (.008,.006,.008),white,'eye'+sd)
+        tube('Upper eyelash'+sd,[(x+(j-6)*rx*(.045 if female else .025),y-.028,ez+(.035+.029*sin(j*pi/12) if female else .019+.010*sin(j*pi/12))) for j in range(13)],.008 if female else .006,hair,'eye'+sd)
         tube('Eyebrow'+sd,[(x+(j-5)*rx*.046,y+.018,ez+.105+.025*sin(j*pi/10)) for j in range(11)],.011,hair,'brow'+sd)
         ell('Cheek blush'+sd,(s*rx*.61,-ry*.82,z-.085),(.061,.012,.025),blush,'head')
-    ell('Nose bridge',(0,-ry*.97,z-.035),(.033,.045,.071),skin,'head')
-    ell('Nose tip',(0,-ry*1.09,z-.072),(.043,.038,.028),skin,'head')
-    ell('Smile opening',(0,-ry*1.06,z-rz*.42),(.067 if female else .10,.008,.018 if female else .042),mouth,'mouth')
-    ell('Smile teeth',(0,-ry*1.095,z-rz*.40),(.049 if female else .075,.006,.008 if female else .012),white,'mouth')
-    # Back cap and overlapping sculpted locks keep forehead, glasses and eyes unobscured.
-    ell('Hair back',(0,.075,z+.115),(rx*1.04,ry*.92,rz*.90),hair,'head')
-    for i in range(11):
-        x=(i-5)*rx*.18
-        ell('Swept fringe',(x,-ry*.46,z+rz*.65-abs(i-5)*.013),(rx*.23,.10,rz*(.33 if female else .25)),hair2 if i%3==0 else hair,'head',rot=(0,-.35+(i-5)*.10,-.18))
+    ell('Nose bridge',(0,-ry*.97,z-.035),(.033,.045,.071) if female else (.030,.023,.026),skin,'head')
+    ell('Nose tip',(0,-ry*1.09,z-.072),(.043,.038,.028) if female else (.025,.022,.021),skin,'head')
+    ell('Smile opening',(0,-ry*1.06,z-rz*.42),(.067 if female else .065,.008,.018 if female else .026),mouth,'mouth')
+    ell('Smile teeth',(0,-ry*1.095,z-rz*.40),(.049 if female else .052,.006,.008 if female else .012),white,'mouth')
+    if not female:
+        vs=[];fs=[];N=80;R=20
+        for j in range(R+1):
+            for i in range(N):
+                a=i*2*pi/N
+                cutoff=math.acos(.145/rz)+.80*max(0,(.25-cos(a))/1.25)
+                th=cutoff*j/R
+                vs.append(((rx+.012)*sin(th)*sin(a),-(ry+.012)*sin(th)*cos(a),z+(rz+.008)*cos(th)))
+        for j in range(R):
+            for i in range(N):
+                n=j*N+i;k=j*N+(i+1)%N;fs.append((n,k,k+N,n+N))
+        mesh('Hero fitted short black haircut',vs,fs,hair,'head',.008)
+    else:
+        ell('Hair back',(0,.075,z+.115),(rx*1.04,ry*.92,rz*.90),hair,'head')
+        for i in range(11):
+            x=(i-5)*rx*.15
+            ell('Swept fringe',(x,-ry*.46,z+rz*.65-abs(i-5)*.013),(rx*.23,.10,rz*.33),hair2 if i%3==0 else hair,'head',rot=(0,-.35+(i-5)*.10,-.18))
     if female:
         for s in [-1,1]:
             ring('Fine gold spectacles',(s*rx*.43,-ry-.044,z+.015),rx*.34,rz*.225,gold)
@@ -115,8 +127,8 @@ def build(kind):
     bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
     for a in list(bpy.data.actions):bpy.data.actions.remove(a)
     parts=[];mage=kind=='starlight-mage';height=2.332 if mage else 1.7
-    skin=material('Warm porcelain','edba91');blush=material('Rosy cheeks','d98e76');white=material('Warm ivory','fff2d9');iris=material('Amber iris','86502c');black=material('Pupil','16121b');mouth=material('Smile','7c3436')
-    hair=material('Chestnut hair','39251e');hair2=material('Hair highlights','60402b');gold=material('Antique gold','dfb55b',.75,.25);blue=material('Sapphire','187eea',.45,.2,.25)
+    skin=material('Warm porcelain','edba91' if mage else 'f4d2b8');blush=material('Rosy cheeks','d98e76');white=material('Warm ivory','fff2d9');iris=material('Amber iris','86502c');black=material('Pupil','16121b');mouth=material('Smile','7c3436')
+    hair=material('Chestnut hair','39251e' if mage else '110e0c');hair2=material('Hair highlights','60402b' if mage else '2b2724');gold=material('Antique gold','dfb55b',.75,.25);blue=material('Sapphire','187eea',.45,.2,.25)
     navy=material('Midnight blue silk','172747',.1,.35);ivory=material('Ivory satin','eee3d3',.05,.47);brown=material('Saddle leather','80502c');light=material('Leather raised seams','bb8551');denim=material('Indigo denim','31577a');red=material('Crimson scarf','b72f28');steel=material('Revolver steel','45505a',.8,.23)
     hip=1.58 if mage else .91;chest=2.02 if mage else 1.22;shoulder=2.52 if mage else 1.52
     hz=2.96 if mage else 1.94;hw=.255 if mage else .32
@@ -150,7 +162,7 @@ def build(kind):
     bpy.ops.object.select_all(action='DESELECT')
     for o in facial:o.select_set(True);parts.remove(o)
     bpy.context.view_layer.objects.active=facial[0];bpy.ops.object.join();o=bpy.context.object
-    o.data.remesh_voxel_size=.008;bpy.ops.object.voxel_remesh()
+    o.data.remesh_voxel_size=.012;bpy.ops.object.voxel_remesh()
     smooth=o.modifiers.new('Soft facial transitions','SMOOTH');smooth.factor=.7;smooth.iterations=6;bpy.ops.object.modifier_apply(modifier=smooth.name)
     o.vertex_groups.clear();o.vertex_groups.new(name='head').add(list(range(len(o.data.vertices))),1,'REPLACE')
     for f in o.data.polygons:f.use_smooth=True
@@ -317,7 +329,10 @@ def build(kind):
                     rot('upperArmL',-1.15*envelope,0,-.25*envelope);rot('forearmL',-.35*envelope);rot('handL',-.35*envelope)
                     rot('upperArmR',-.12*envelope,0,-.08*envelope);rot('forearmR',-.08*envelope)
                     rot('chest',-.045*envelope,0,.10*envelope);rot('head',.04*envelope)
-                    if ultimate:air=.22*sin(pi*u)**2;rot('cape',-.16*envelope);rot('skirt',-.035*envelope)
+                    if ultimate:
+                        air=.42*sin(pi*u)**2;rot('cape',-.40*envelope);rot('skirt',-.09*envelope)
+                        rot('upperArmL',-2.35*envelope,0,-.42*envelope);rot('forearmL',-.55*envelope)
+                        rot('upperArmR',-.48*envelope,0,.60*envelope);rot('chest',-.15*envelope,0,.18*envelope)
                 else:
                     # Hero gunsReady / gunsCombo: both arms aim forward, alternate R/L,
                     # then simultaneous fire with a controlled backward hop for the ultimate.
@@ -354,11 +369,12 @@ def build(kind):
             focus=e if action in ['Attack','Ultimate'] else (.45 if action=='Run' else 0)
             pain=e if action=='Hurt' else 0
             happy=e if action in ['Wave','React','Jump'] else 0
-            blink=max(0,1-abs(u-.78)/.025) if action=='Idle' else 0
+            blink=max(0,1-abs(u-.72)/.055)
+            speech=.5-.5*cos(phase*(2 if action in ['Wave','React','Attack','Ultimate'] else 1))
             for s,sd in [(1,'L'),(-1,'R')]:
                 rot('brow'+sd,0,s*(.30*focus-.38*pain-.12*happy),0)
                 rig.pose.bones['eye'+sd].scale=(1,max(.10,1-.24*focus-.84*pain-.28*happy-.90*blink),1)
-            rig.pose.bones['mouth'].scale=(1+.10*happy,1+.85*focus+1.30*pain+.60*happy,1)
+            rig.pose.bones['mouth'].scale=(1+.10*happy,.14+(1+.85*focus+1.30*pain+.60*happy)*speech,1)
             rot('mouth',0,.07*pain*sin(phase*4),0)
             bpy.context.view_layer.update();ev=body.evaluated_get(bpy.context.evaluated_depsgraph_get())
             minz=min(ev.data.vertices[i].co.z for i in footids)

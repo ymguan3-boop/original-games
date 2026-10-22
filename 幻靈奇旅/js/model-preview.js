@@ -138,7 +138,7 @@ function cameraUpdate(){
  let distance=1;for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){const v=new T.Vector3(x,y,z).sub(center),depth=v.dot(out);distance=Math.max(distance,depth+Math.abs(v.dot(right))/(tan*camera.aspect),depth+Math.abs(v.dot(up))/tan);}
  camera.position.copy(target).addScaledVector(out,distance*zoom*1.14);camera.lookAt(target);
 }
-function scope(value){single=value;if(family)$('lede').textContent=single?'單隻特寫：點選家族成員切換角色，按招式可對前方木頭人出手。':'同一進化線一起展示（依實際體型比例）；前方木頭人是招式目標。';$('show-single').setAttribute('aria-pressed',String(single));$('show-family').setAttribute('aria-pressed',String(!single));layout();}
+function scope(value){single=value;if(family)$('lede').textContent=single?'單隻特寫：按招式可對前方木頭人出手。':family.ids.length>1?'同一進化線一起展示（依實際體型比例）；前方木頭人是招式目標。':'獨立幻靈展示；前方木頭人是招式目標。';$('show-single').setAttribute('aria-pressed',String(single));$('show-family').setAttribute('aria-pressed',String(!single));layout();}
 $('show-single').onclick=()=>scope(true);$('show-family').onclick=()=>scope(false);
 
 function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();cameraUpdate();}new ResizeObserver(resize).observe(host);
@@ -213,7 +213,7 @@ try{const [data,def,art]=await Promise.all(['data/spirits.json','data/spirit-cat
  families=[{id:'hero',ids:['hero'],label:'主角 · 初光旅人'}];
  for(const g of groups){const chunks=g.ids.length>3?[g.ids.slice(0,Math.ceil(g.ids.length/2)),g.ids.slice(Math.ceil(g.ids.length/2))]:[g.ids];chunks.forEach((ids,i)=>families.push({id:chunks.length>1?g.id+'-'+i:g.id,ids,label:ids.map(id=>byId[id].name).join(' → ')}));}
  for(const f of families){const o=document.createElement('option');o.value=f.id;const nums=f.ids.filter(id=>byId[id]).map(id=>catalog.number(id));o.textContent=(nums.length?'No.'+nums[0]+(nums.length>1?'–'+nums[nums.length-1]:'')+' ':'')+f.label;o.dataset.search=[o.textContent,...f.ids.map(id=>[byId[id]?.type,byId[id]?.rarity].join(' '))].join(' ').toLowerCase();$('subject').append(o);}
- $('coverage').textContent='主角 ＋ '+spirits.length+' 種幻靈 · '+(families.length-1)+' 個家族 · 依圖鑑編號排序';
+ $('coverage').textContent='主角 ＋ '+spirits.length+' 種幻靈 · '+(families.length-1)+' 個家族／獨立角色 · 依圖鑑編號排序';
  const q=new URLSearchParams(location.search).get('subject');const fam=families.find(f=>f.id===q)||families.find(f=>f.ids.includes(q))||families[1]||families[0];
  resize();buttons();await select(fam.id,false);
 }catch(e){error(e);}

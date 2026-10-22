@@ -638,8 +638,8 @@
   {
     "id": "chimchar",
     "name": "阿宏牛仔",
-    "vertices": 125824,
-    "triangles": 231048,
+    "vertices": 44242,
+    "triangles": 78320,
     "materials": 15,
     "bones": 23,
     "height": 1.7,
@@ -654,15 +654,15 @@
       "React",
       "Jump"
     ],
-    "fileBytes": 8115468,
+    "fileBytes": 2958188,
     "source": "authoring/star-cowboy/build.py",
     "model": "models/spirits/ahong-cowboy.glb"
   },
   {
     "id": "monferno",
     "name": "藍金星輝法師",
-    "vertices": 116056,
-    "triangles": 207880,
+    "vertices": 47262,
+    "triangles": 78204,
     "materials": 12,
     "bones": 24,
     "height": 2.332,
@@ -677,15 +677,15 @@
       "React",
       "Jump"
     ],
-    "fileBytes": 7476664,
+    "fileBytes": 3124148,
     "source": "authoring/star-cowboy/build.py",
     "model": "models/spirits/starlight-mage.glb"
   },
   {
     "id": "infernape",
     "name": "官胖",
-    "vertices": 232592,
-    "triangles": 371878,
+    "vertices": 62143,
+    "triangles": 63218,
     "materials": 18,
     "bones": 21,
     "height": 2.7,
@@ -700,8 +700,8 @@
       "Attack",
       "Ultimate"
     ],
-    "fileBytes": 14519384,
-    "source": "Blender independent Guanpang model, armature and animated facial expressions",
+    "fileBytes": 3803716,
+    "source": "authoring/guanpang/optimize-runtime.py; source master models/spirits/guanpang.glb",
     "model": "models/spirits/guanpang.glb"
   },
   {

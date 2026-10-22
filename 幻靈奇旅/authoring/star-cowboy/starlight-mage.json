@@ -3,7 +3,7 @@
   "model": "models\\spirits\\starlight-mage.glb",
   "height": 2.332,
   "bones": 24,
-  "triangles": 207880,
+  "triangles": 78204,
   "animations": {
     "Idle": 3,
     "Walk": 1.2,
@@ -15,5 +15,5 @@
     "React": 1.5,
     "Jump": 1.2
   },
-  "bytes": 7476664
+  "bytes": 3124148
 }

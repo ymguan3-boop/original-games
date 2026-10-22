@@ -29,10 +29,11 @@ function evolution(s,byId){
  if(s.id==='giratina')return '取得：圖鑑進度達 50% 時出現在初光鎮（捕捉後不再出現；圖鑑 100% 後解鎖、可不限次數出現）。進階：加入隊伍累計完成擂台 3 場 → '+name('raichu')+'（勝敗皆計、不要求連續參戰；中途離開不計次）。';
  if(s.id==='dialga')return '取得：圖鑑進度達 70% 時出現在初光鎮（捕捉後不再出現；圖鑑 100% 後解鎖、可不限次數出現）。目前無後續進階。';
  if(s.id==='kyogre')return '小金魚卡片 3 張 → 隨機金魚國王或金魚皇后。';
+ if(s.acquisition==='tower')return s.acquisitionText||('於星穹挑戰塔擊敗'+s.name+'取得卡牌；獨立幻靈，無進階關係。');
  const next=s.evolvesTo||s.next;
  if(!next)return s.id==='mewtwo'?'將國王與皇后各 3 張交給釣魚郎換取魚飼料，再於河畔召喚。':'目前無後續進階。';
  if(['raikou','entei','articuno'].includes(s.id))return '連續擂台參戰 3 場 → '+name(next);
  return (Number(s.stage)===1?5:10)+' 份羈絆 → '+name(next);
 }
-window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261022-room-v2'};
+window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261023-independent-bosses-v1'};
 })();
