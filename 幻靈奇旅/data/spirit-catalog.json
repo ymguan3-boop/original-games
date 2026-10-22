@@ -941,7 +941,7 @@
       "skills": [
         {
           "index": 0,
-          "name": "水彈",
+          "name": "水球",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
@@ -951,7 +951,7 @@
         },
         {
           "index": 1,
-          "name": "翻身金色粗水柱",
+          "name": "金色水光束砲",
           "animation": "Ultimate",
           "mode": "Ultimate",
           "nativeAttack": true,
@@ -970,7 +970,7 @@
       "skills": [
         {
           "index": 0,
-          "name": "水彈",
+          "name": "水球",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
@@ -980,7 +980,7 @@
         },
         {
           "index": 1,
-          "name": "翻身珍珠粗水柱",
+          "name": "珍珠水光束砲",
           "animation": "Ultimate",
           "mode": "Ultimate",
           "nativeAttack": true,
