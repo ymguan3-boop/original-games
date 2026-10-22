@@ -180,118 +180,130 @@
     "styleReference": "cards/art/floral-deer-chikorita.webp"
   },
   "torchic": {
-    "image": "cards/art/water-dog-1-portrait.webp",
+    "image": "cards/art/water-dog-1-portrait.webp?v=20261022-portraits-v3",
     "name": "汪汪犬",
-    "source": "model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/water-dog-1.glb",
-    "style": "three-js-model-render-water-backdrop",
+    "style": "polished-stylized-3d-fantasy-illustration",
     "generatedAt": "2026-10-22",
     "width": 768,
-    "height": 768
+    "height": 768,
+    "path": "cards/art/water-dog-1-portrait.webp?v=20261022-portraits-v3"
   },
   "combusken": {
-    "image": "cards/art/water-dog-2-portrait.webp",
+    "image": "cards/art/water-dog-2-portrait.webp?v=20261022-portraits-v3",
     "name": "浪鳴犬",
-    "source": "model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/water-dog-2.glb",
-    "style": "three-js-model-render-water-backdrop",
+    "style": "polished-stylized-3d-fantasy-illustration",
     "generatedAt": "2026-10-22",
     "width": 768,
-    "height": 768
+    "height": 768,
+    "path": "cards/art/water-dog-2-portrait.webp?v=20261022-portraits-v3"
   },
   "blaziken": {
-    "image": "cards/art/water-dog-3-portrait.webp",
+    "image": "cards/art/water-dog-3-portrait.webp?v=20261022-portraits-v3",
     "name": "三瀾犬",
-    "source": "model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/water-dog-3.glb",
-    "style": "three-js-model-render-water-backdrop",
+    "style": "polished-stylized-3d-fantasy-illustration",
     "generatedAt": "2026-10-22",
     "width": 768,
-    "height": 768
+    "height": 768,
+    "path": "cards/art/water-dog-3-portrait.webp?v=20261022-portraits-v3"
   },
   "mudkip": {
-    "image": "cards/art/fire-bear-1-portrait.webp",
+    "image": "cards/art/fire-bear-1-portrait.webp?v=20261022-portraits-v3",
     "name": "小熊",
-    "source": "threejs-model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/fire-bear-1.glb",
-    "style": "threejs-3d-portrait",
+    "style": "polished-stylized-3d-fantasy-illustration",
     "generatedAt": "2026-10-22",
     "width": 768,
-    "height": 768
+    "height": 768,
+    "path": "cards/art/fire-bear-1-portrait.webp?v=20261022-portraits-v3"
   },
   "marshtomp": {
-    "image": "cards/art/fire-bear-2-portrait.webp",
+    "image": "cards/art/fire-bear-2-portrait.webp?v=20261022-portraits-v3",
     "name": "壯熊",
-    "source": "threejs-model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/fire-bear-2.glb",
-    "style": "threejs-3d-portrait",
+    "style": "polished-stylized-3d-fantasy-illustration",
     "generatedAt": "2026-10-22",
     "width": 768,
-    "height": 768
+    "height": 768,
+    "path": "cards/art/fire-bear-2-portrait.webp?v=20261022-portraits-v3"
   },
   "swampert": {
-    "image": "cards/art/fire-bear-3-portrait.webp",
+    "image": "cards/art/fire-bear-3-portrait.webp?v=20261022-portraits-v3",
     "name": "大熊",
-    "source": "threejs-model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/fire-bear-3.glb",
-    "style": "threejs-3d-portrait",
+    "style": "polished-stylized-3d-fantasy-illustration",
     "generatedAt": "2026-10-22",
     "width": 768,
-    "height": 768
+    "height": 768,
+    "path": "cards/art/fire-bear-3-portrait.webp?v=20261022-portraits-v3"
   },
   "turtwig": {
-    "image": "cards/art/cat-girl-1-portrait.webp",
+    "image": "cards/art/cat-girl-1-portrait.webp?v=20261022-portraits-v3",
     "name": "小貓娘",
-    "source": "threejs-model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/cat-girl-1.glb",
-    "style": "threejs-3d-portrait",
+    "style": "polished-stylized-3d-fantasy-illustration",
     "generatedAt": "2026-10-22",
     "width": 768,
-    "height": 768
+    "height": 768,
+    "path": "cards/art/cat-girl-1-portrait.webp?v=20261022-portraits-v3"
   },
   "grotle": {
-    "image": "cards/art/cat-girl-2-portrait.webp",
+    "image": "cards/art/cat-girl-2-portrait.webp?v=20261022-portraits-v3",
     "name": "靈貓姬",
-    "source": "threejs-model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/cat-girl-2.glb",
-    "style": "threejs-3d-portrait",
+    "style": "polished-stylized-3d-fantasy-illustration",
     "generatedAt": "2026-10-22",
     "width": 768,
-    "height": 768
+    "height": 768,
+    "path": "cards/art/cat-girl-2-portrait.webp?v=20261022-portraits-v3"
   },
   "torterra": {
-    "image": "cards/art/cat-girl-3-portrait.webp",
+    "image": "cards/art/cat-girl-3-portrait.webp?v=20261022-portraits-v3",
     "name": "雙刃貓女",
-    "source": "threejs-model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/cat-girl-3.glb",
-    "style": "threejs-3d-portrait",
+    "style": "polished-stylized-3d-fantasy-illustration",
     "generatedAt": "2026-10-22",
     "width": 768,
-    "height": 768
+    "height": 768,
+    "path": "cards/art/cat-girl-3-portrait.webp?v=20261022-portraits-v3"
   },
   "chimchar": {
-    "image": "cards/art/ahong-cowboy.webp",
+    "image": "cards/art/ahong-cowboy.webp?v=20261022-portraits-v3",
     "name": "阿宏牛仔",
-    "source": "blender-model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/ahong-cowboy.glb",
-    "style": "fantasy-3d-character-portrait",
-    "generatedAt": "2026-10-22"
+    "style": "polished-stylized-3d-fantasy-illustration",
+    "generatedAt": "2026-10-22",
+    "path": "cards/art/ahong-cowboy.webp?v=20261022-portraits-v3"
   },
   "monferno": {
-    "image": "cards/art/starlight-mage.webp",
+    "image": "cards/art/starlight-mage.webp?v=20261022-portraits-v3",
     "name": "藍金星輝法師",
-    "source": "blender-model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/starlight-mage.glb",
-    "style": "fantasy-3d-character-portrait",
-    "generatedAt": "2026-10-22"
+    "style": "polished-stylized-3d-fantasy-illustration",
+    "generatedAt": "2026-10-22",
+    "path": "cards/art/starlight-mage.webp?v=20261022-portraits-v3"
   },
   "infernape": {
-    "image": "cards/art/guanpang.webp",
+    "image": "cards/art/guanpang.webp?v=20261022-portraits-v3",
     "name": "官胖",
-    "source": "blender-model-render",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/guanpang.glb",
-    "style": "fantasy-3d-character-portrait",
-    "generatedAt": "2026-10-22"
+    "style": "polished-stylized-3d-fantasy-illustration",
+    "generatedAt": "2026-10-22",
+    "path": "cards/art/guanpang.webp?v=20261022-portraits-v3"
   },
   "piplup": {
     "image": "cards/art/bird-family-1.webp",
@@ -361,15 +373,16 @@
     "revision": 2
   },
   "suicune": {
-    "image": "cards/art/water-fairy-portrait-v2.webp",
+    "image": "cards/art/water-fairy-portrait-v2.webp?v=20261022-portraits-v3",
     "name": "水仙子",
-    "source": "imagegen-model-reference",
+    "source": "built-in imagegen character-reference refresh",
     "referenceModel": "models/spirits/water-fairy.glb",
-    "style": "reference-sheet-soft-rounded-chibi-water-3d",
-    "generatedAt": "2026-10-20",
+    "style": "polished-stylized-3d-fantasy-illustration",
+    "generatedAt": "2026-10-22",
     "width": 768,
     "height": 768,
-    "revision": 2
+    "revision": 2,
+    "path": "cards/art/water-fairy-portrait-v2.webp?v=20261022-portraits-v3"
   },
   "kyogre": {
     "image": "cards/art/goldfish-1-portrait-v2.webp",

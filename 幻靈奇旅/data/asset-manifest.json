@@ -272,12 +272,17 @@
     },
     {
       "file": "models/spirits/ahong-cowboy.glb",
-      "bytes": 8103092,
+      "bytes": 8115468,
       "animations": [
         "Idle",
         "Walk",
+        "Run",
         "Attack",
-        "Hurt"
+        "Ultimate",
+        "Hurt",
+        "Wave",
+        "React",
+        "Jump"
       ]
     },
     {
@@ -427,12 +432,17 @@
     },
     {
       "file": "models/spirits/starlight-mage.glb",
-      "bytes": 7465472,
+      "bytes": 7476664,
       "animations": [
         "Idle",
         "Walk",
+        "Run",
         "Attack",
-        "Hurt"
+        "Ultimate",
+        "Hurt",
+        "Wave",
+        "React",
+        "Jump"
       ]
     },
     {

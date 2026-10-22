@@ -13,6 +13,8 @@ const ground=new T.Mesh(new T.PlaneGeometry(80,80),new T.ShadowMaterial({opacity
 const loader=new T.GLTFLoader(),scriptCache=new Map(),byId={};
 let fitW=6,fitH=4,catalog,spirits=[],portraitMap={},families=[],packs=[],family=null,selected=null,motion='Idle',paused=false,serial=0,dead=false,last=performance.now(),angle=.28,pitch=.2,zoom=1,span=6,suit='trainer',heroCostumes=null;
 const target=new T.Vector3(0,1.2,0);
+let single=matchMedia('(max-width:540px)').matches;
+const activePacks=()=>single&&selected?[selected]:packs;
 try{const saved=JSON.parse(localStorage.getItem('phantom_journey_v1')||'null');if(C.suits[saved?.costume])suit=saved.costume;}catch{}
 const MOTIONS=[['Idle','待機'],['Walk','移動'],['Run','跑步'],['Greet','特殊 · 打招呼'],['Cheer','開心 · 歡呼'],['Hurt','受擊']],MOVES=[['Attack','普攻'],['Ultimate','絕招']];
 const DESC={Idle:'站著呼吸、眨眼的待機動作。',Walk:'原地行走（遊戲中邊走邊移動）。',Run:'原地跑步；沒有跑步動作的幻靈以加速行走補上。',Greet:'打招呼：有手臂或翅膀的幻靈由肩膀帶動舉手揮動；沒有專屬動作的以左右搖擺小跳補上。',Cheer:'開心歡呼：跳躍、舉手或旋身。',Hurt:'受擊後退與抖動。',Attack:'普攻，對前方的木頭人出手。',Ultimate:'絕招，對前方的木頭人出手。'};
@@ -120,13 +122,25 @@ function stepDummy(dt){dummy.t+=dt;const k=Math.exp(-3*dummy.t),w=Math.cos(17*du
 
 /* ---------- 版面配置：家族並排、木頭人在前 ---------- */
 function layout(){
- const widths=packs.map(p=>Math.max(.8,p.size.x));const gap=.7,total=widths.reduce((a,b)=>a+b,0)+gap*(packs.length-1);let x=-total/2;
- packs.forEach((p,i)=>{x+=widths[i]/2;p.base.set(x,0,0);p.display.position.copy(p.base);x+=widths[i]/2+gap;});
- const depth=Math.max(...packs.map(p=>p.size.z)),tall=Math.max(...packs.map(p=>p.height));
+ const shown=activePacks();packs.forEach(p=>p.display.visible=shown.includes(p));
+ const widths=shown.map(p=>Math.max(.8,p.size.x));const gap=.7,total=widths.reduce((a,b)=>a+b,0)+gap*(shown.length-1);let x=-total/2;
+ shown.forEach((p,i)=>{x+=widths[i]/2;p.base.set(x,0,0);p.display.position.copy(p.base);x+=widths[i]/2+gap;});
+ const depth=Math.max(...shown.map(p=>p.size.z)),tall=Math.max(...shown.map(p=>p.height));
  dummy.g.position.set(total*.5+1.1,0,Math.max(1.8,depth*.5+1.3));dummy.g.rotation.y=Math.atan2(-dummy.g.position.x,-dummy.g.position.z)+Math.PI;
  fitW=Math.max(total+2.6,3.4);fitH=Math.max(tall*1.25,2.6);span=Math.max(fitW,fitH);target.set(.45,Math.min(tall*.45,1.6),dummy.g.position.z*.3);
  key.target.position.copy(target);key.shadow.camera.left=-span;key.shadow.camera.right=span;key.shadow.camera.top=span;key.shadow.camera.updateProjectionMatrix();cameraUpdate();}
-function cameraUpdate(){const tn=2*Math.tan(camera.fov*Math.PI/360),d=Math.max(fitH/tn,fitW/(tn*camera.aspect))*zoom*1.08+(dummy.g.position.z*.3),cp=Math.cos(pitch);camera.position.set(target.x+Math.sin(angle)*d*cp,target.y+Math.sin(pitch)*d,target.z+Math.cos(angle)*d*cp);camera.lookAt(target);}
+function cameraUpdate(){
+ const shown=activePacks();if(!shown.length)return;
+ // Fit all eight corners in the chosen camera basis, including the target.
+ const box=new T.Box3();for(const p of shown){box.expandByPoint(p.base.clone().add(new T.Vector3(-p.size.x/2,0,-p.size.z/2)));box.expandByPoint(p.base.clone().add(new T.Vector3(p.size.x/2,p.height,p.size.z/2)));}
+ box.expandByPoint(dummy.g.position.clone().add(new T.Vector3(-.65,0,-.45)));box.expandByPoint(dummy.g.position.clone().add(new T.Vector3(.65,2.4,.45)));
+ const center=box.getCenter(new T.Vector3()),out=new T.Vector3(Math.sin(angle)*Math.cos(pitch),Math.sin(pitch),Math.cos(angle)*Math.cos(pitch)),right=new T.Vector3(Math.cos(angle),0,-Math.sin(angle)),up=new T.Vector3().crossVectors(out,right),tan=Math.tan(camera.fov*Math.PI/360);target.copy(center);
+ let distance=1;for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){const v=new T.Vector3(x,y,z).sub(center),depth=v.dot(out);distance=Math.max(distance,depth+Math.abs(v.dot(right))/(tan*camera.aspect),depth+Math.abs(v.dot(up))/tan);}
+ camera.position.copy(target).addScaledVector(out,distance*zoom*1.14);camera.lookAt(target);
+}
+function scope(value){single=value;if(family)$('lede').textContent=single?'單隻特寫：點選家族成員切換角色，按招式可對前方木頭人出手。':'同一進化線一起展示（依實際體型比例）；前方木頭人是招式目標。';$('show-single').setAttribute('aria-pressed',String(single));$('show-family').setAttribute('aria-pressed',String(!single));layout();}
+$('show-single').onclick=()=>scope(true);$('show-family').onclick=()=>scope(false);
+
 function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();cameraUpdate();}new ResizeObserver(resize).observe(host);
 
 /* ---------- 介面 ---------- */
@@ -141,7 +155,7 @@ function buttons(){
 }
 function pressed(){document.querySelectorAll('[data-motion]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.motion===motion)));const label=[...MOTIONS,...MOVES].find(m=>m[0]===motion)?.[1]||motion;const fills=packs.filter(p=>p.plan?.proc).map(p=>p.s?.name||'主角');$('now').textContent=label;$('desc').textContent=DESC[motion]+(fills.length&&!['Attack','Ultimate'].includes(motion)?'（'+fills.join('、')+' 以程序動作補上）':'');$('pause').textContent=paused?'繼續':'暫停';$('pause').setAttribute('aria-pressed',String(paused));}
 function play(canon){motion=canon;paused=false;fxClear();for(const p of packs)start(p,canon);pressed();}
-function info(p){selected=p;document.querySelectorAll('#members button').forEach(b=>b.classList.toggle('active',b.dataset.id===p.id));const s=p.s;
+function info(p){selected=p;if(packs.length)scope(single);document.querySelectorAll('#members button').forEach(b=>{const active=b.dataset.id===p.id;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));});const s=p.s;
  if(!s){$('card-name').textContent='初光旅人';$('card-tag').textContent='主角 · 六種造型';$('element').textContent='—';$('matchup').textContent='—';$('stats').textContent='—';$('skill0').textContent='Attack';$('skill1').textContent='Throw';$('evolution').textContent=C.evolution(null,byId);$('description').textContent='沿用遊戲目前造型；在這裡試穿不會改動存檔。';$('cardPortrait').hidden=true;buttons();return;}
  $('card-name').textContent=s.name;$('card-tag').textContent='No.'+catalog.number(s)+' · '+(s.type||'')+' · '+(s.stageLabel||'第 '+s.stage+' 階段')+' · '+(s.rarity||'普通');
  $('element').textContent=s.type;$('matchup').textContent='剋制 '+(BEATS[s.type]||'—')+'・被 '+(Object.keys(BEATS).find(k=>BEATS[k]===s.type)||'—')+' 剋制';
@@ -153,10 +167,10 @@ function info(p){selected=p;document.querySelectorAll('#members button').forEach
 async function select(fid,write=true){
  const fam=families.find(f=>f.id===fid)||families[0];const token=++serial;$('error').hidden=true;$('status').textContent='載入 '+fam.label+'…';
  try{const built=[];for(const id of fam.ids)built.push(await build(id));if(token!==serial||dead){built.forEach(release);return;}
-  packs.forEach(release);packs=built;family=fam;
+  packs.forEach(release);packs=built;family=fam;selected=packs[packs.length-1];
   for(const p of packs){scene.add(p.display);p.display.updateMatrixWorld(true);const b=bounds(p.display),h=p.hero?2.55:(p.s.height||1.3),k=h/Math.max(.01,b.max.y-b.min.y);p.root.scale.multiplyScalar(k);p.k0=p.root.scale.clone();p.display.updateMatrixWorld(true);const b2=bounds(p.display),c=b2.getCenter(new T.Vector3());p.root.position.x-=c.x;p.root.position.z-=c.z;p.root.position.y-=b2.min.y;p.size=b2.getSize(new T.Vector3());p.height=p.size.y;p.scale=k;}
   layout();
-  $('members').replaceChildren(...packs.map(p=>{const b=document.createElement('button');b.dataset.id=p.id;b.textContent=p.s?p.s.name:'主角';b.onclick=()=>info(p);return b;}));
+  $('members').replaceChildren(...packs.map(p=>{const b=document.createElement('button');b.dataset.id=p.id;b.setAttribute('role','tab');b.textContent=p.s?p.s.name:'主角';b.onclick=()=>info(p);return b;}));
   $('model-title').textContent=fam.label;$('lede').textContent=fam.ids.length>1?'同一進化線一起展示（依實際體型比例）；前方的木頭人是招式目標，按招式可看到出手與受擊。':'前方的木頭人是招式目標，按招式可看到出手與受擊。';
   $('subject').value=fam.id;info(packs[packs.length-1]);play(motion);
   $('status').textContent=packs.map(p=>(p.s?.name||'主角')+'：'+(p.controller?'原生 Three.js':'GLB')).join('｜');
@@ -177,7 +191,7 @@ $('snapshot').onclick=()=>{renderer.render(scene,camera);const a=document.create
 
 /* ---------- 主迴圈 ---------- */
 function frame(now){requestAnimationFrame(frame);const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;if(dead)return;
- try{if(!paused)for(const p of packs){p.time+=dt;const t=p.time,u=(t%p.dur)/p.dur;
+ try{if(!paused)for(const p of activePacks()){p.time+=dt;const t=p.time,u=(t%p.dur)/p.dur;
    if(p.controller){let left=dt;while(left>1e-8){const s=Math.min(1/60,left);p.controller.update(s);left-=s;}
     if(!LOOP.has(p.plan.mode)&&t>=p.dur){p.time=0;p.hitDone=false;nativeSeek(p,p.plan.mode,0);}}
    else p.mixer.update(dt);
@@ -186,7 +200,7 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.max(0,Math.min(.0
    proc(p,u,t);fxStep(p,dt);}
   fxTick(paused?0:dt);stepDummy(dt);renderer.render(scene,camera);}catch(e){paused=true;pressed();error(e);}}
 requestAnimationFrame(frame);
-window.HeroReview={get packs(){return packs;},renderer,scene,camera,play,select,getState:()=>({family:family?.id,motion,members:packs.map(p=>({id:p.id,mode:p.plan?.mode,proc:p.plan?.proc||null,modes:p.modes}))})};
+window.HeroReview={get packs(){return packs;},renderer,scene,camera,play,select,getState:()=>({family:family?.id,motion,single,coverage:spirits.length,families:families.length,membersVisible:activePacks().map(p=>p.id),members:packs.map(p=>({id:p.id,mode:p.plan?.mode,proc:p.plan?.proc||null,modes:p.modes}))})};
 addEventListener('pagehide',()=>{dead=true;++serial;packs.forEach(release);packs=[];renderer.dispose();});
 
 /* ---------- 讀取圖鑑，依家族建立選單 ---------- */

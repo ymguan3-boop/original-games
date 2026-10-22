@@ -654,7 +654,7 @@
       "React",
       "Jump"
     ],
-    "fileBytes": 8103092,
+    "fileBytes": 8115468,
     "source": "authoring/star-cowboy/build.py",
     "model": "models/spirits/ahong-cowboy.glb"
   },
@@ -677,7 +677,7 @@
       "React",
       "Jump"
     ],
-    "fileBytes": 7465472,
+    "fileBytes": 7476664,
     "source": "authoring/star-cowboy/build.py",
     "model": "models/spirits/starlight-mage.glb"
   },

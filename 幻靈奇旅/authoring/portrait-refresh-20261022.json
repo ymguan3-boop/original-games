@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-22",
+  "base": "6c6c9fe",
+  "tool": "built-in image_gen.imagegen",
+  "styleReference": "cards/art/spiral-snail-1.webp",
+  "sharedPrompt": "One square fantasy encyclopedia portrait; polished stylized 3D animated-film illustration, tactile sculpted forms, expressive eyes, cinematic rimlight, detailed natural habitat bokeh; character large and centered, exact reference anatomy, no text, frames, collage, extra limbs or characters.",
+  "portraits": [
+    {
+      "id": "torchic",
+      "name": "汪汪犬",
+      "path": "cards/art/water-dog-1-portrait.webp?v=20261022-portraits-v3",
+      "characterPrompt": "汪汪犬: tiny happy single-headed white water puppy with blue drooping ears, blue forehead crest and neck ruff, blue paws, flowing translucent curled water tail. Exactly one head.",
+      "characterReference": "cards/art/water-dog-1-portrait.webp",
+      "bytes": 122664
+    },
+    {
+      "id": "combusken",
+      "name": "浪鳴犬",
+      "path": "cards/art/water-dog-2-portrait.webp?v=20261022-portraits-v3",
+      "characterPrompt": "浪鳴犬: athletic TWO-headed white and cobalt water canine with layered blue and cream mane, sharp blue ear fins, water tail. Exactly TWO heads on ONE four-legged body.",
+      "characterReference": "cards/art/water-dog-2-portrait.webp",
+      "bytes": 153240
+    },
+    {
+      "id": "blaziken",
+      "name": "三瀾犬",
+      "path": "cards/art/water-dog-3-portrait.webp?v=20261022-portraits-v3",
+      "characterPrompt": "三瀾犬: majestic THREE-headed white and cobalt water wolf, high central head and two outward lower heads, layered blue neck ruff, water tail. Exactly THREE heads on ONE four-legged body.",
+      "characterReference": "cards/art/water-dog-3-portrait.webp",
+      "bytes": 141688
+    },
+    {
+      "id": "mudkip",
+      "name": "小熊",
+      "path": "cards/art/fire-bear-1-portrait.webp?v=20261022-portraits-v3",
+      "characterPrompt": "小熊: small adorable cub, mostly quadruped, waving one dark paw, orange brown fur, cream muzzle belly, tiny fire crest and flame tail. Only LEFT stage.",
+      "characterReference": "authoring/beasts/ref/bears.webp",
+      "bytes": 127592
+    },
+    {
+      "id": "marshtomp",
+      "name": "壯熊",
+      "path": "cards/art/fire-bear-2-portrait.webp?v=20261022-portraits-v3",
+      "characterPrompt": "壯熊: sturdy quadrupedal adolescent bear, orange brown fur cream muzzle chest, flame crest fiery neck ruff dark forepaws orange claws, no weapon. Only MIDDLE stage.",
+      "characterReference": "authoring/beasts/ref/bears.webp",
+      "bytes": 117316
+    },
+    {
+      "id": "swampert",
+      "name": "大熊",
+      "path": "cards/art/fire-bear-3-portrait.webp?v=20261022-portraits-v3",
+      "characterPrompt": "大熊: powerful upright broad brown fire bear, cream muzzle belly, fiery crest and shoulder ruff, leather diagonal belt and giant molten sword on back. Only RIGHT stage.",
+      "characterReference": "authoring/beasts/ref/bears.webp",
+      "bytes": 138360
+    },
+    {
+      "id": "turtwig",
+      "name": "小貓娘",
+      "path": "cards/art/cat-girl-1-portrait.webp?v=20261022-portraits-v3",
+      "characterPrompt": "小貓娘: cute chibi cat adventurer, cream short hair dark brown streak and dark cat ears tail, amber eyes, red scarf gold bell, cream adventurer shirt brown shorts paw gloves boots. Only LEFT stage.",
+      "characterReference": "authoring/beasts/ref/cats.webp",
+      "bytes": 113598
+    },
+    {
+      "id": "grotle",
+      "name": "靈貓姬",
+      "path": "cards/art/cat-girl-2-portrait.webp?v=20261022-portraits-v3",
+      "characterPrompt": "靈貓姬: agile cat adventurer, cream ponytail brown streak cat ears tail amber eyes red scarf gold bell, dark practical adventure outfit, one curved short sword. Only MIDDLE stage.",
+      "characterReference": "authoring/beasts/ref/cats.webp",
+      "bytes": 149002
+    },
+    {
+      "id": "torterra",
+      "name": "雙刃貓女",
+      "path": "cards/art/cat-girl-3-portrait.webp?v=20261022-portraits-v3",
+      "characterPrompt": "雙刃貓女: confident adult cat warrior woman, cream long ponytail dark streak, brown cat ears tail, amber eyes, black and gold battle outfit with red scarf and sashes, two curved swords. Tasteful adventure character, nonsexual. Only RIGHT stage.",
+      "characterReference": "authoring/beasts/ref/cats.webp",
+      "bytes": 148280
+    },
+    {
+      "id": "suicune",
+      "name": "水仙子",
+      "path": "cards/art/water-fairy-portrait-v2.webp?v=20261022-portraits-v3",
+      "characterPrompt": "水仙子: cute tiny water fairy with cyan translucent long flowing hair, two liquid antennae, forehead water drop, blue eyes white petal dress and four transparent aqua wings, floating over a sparkling forest pond. Use SINGLE main fairy from reference.",
+      "characterReference": "authoring/beasts/ref/fairy.webp",
+      "bytes": 135352
+    },
+    {
+      "id": "chimchar",
+      "name": "阿宏牛仔",
+      "path": "cards/art/ahong-cowboy.webp?v=20261022-portraits-v3",
+      "characterPrompt": "阿宏牛仔: friendly stylized brown curly-haired cowboy man, brown wide brim hat gold sheriff star, white short-sleeved shirt brown vest red bandana, blue jeans brown boots and holsters, holding TWO small stylized black-gold revolvers in safe fantasy action pose. Preserve reference identity.",
+      "characterReference": "cards/art/ahong-cowboy.webp",
+      "bytes": 127516
+    },
+    {
+      "id": "monferno",
+      "name": "藍金星輝法師",
+      "path": "cards/art/starlight-mage.webp?v=20261022-portraits-v3",
+      "characterPrompt": "藍金星輝法師: elegant friendly brown-haired adult woman, bun hair gold-rim round glasses blue crystal earrings, white navy and gold star-trimmed mage dress and cape, ornate gold circular blue crystal star staff. Preserve reference identity.",
+      "characterReference": "cards/art/starlight-mage.webp",
+      "bytes": 139508
+    },
+    {
+      "id": "infernape",
+      "name": "官胖",
+      "path": "cards/art/guanpang.webp?v=20261022-portraits-v3",
+      "characterPrompt": "官胖: stout friendly powerful adult man with black short hair rectangular black glasses, bulky silver gunmetal fantasy armor, purple glowing diamond runes shoulder spikes, purple tabard and large rune battle axe. Preserve reference identity. No display platform.",
+      "characterReference": "cards/art/guanpang.webp",
+      "bytes": 162326
+    }
+  ],
+  "shipping": "Only 13 compressed 896px WebP images ship. PNG originals remain outside repository."
+}

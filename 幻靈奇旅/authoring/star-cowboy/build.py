@@ -302,10 +302,12 @@ def build(kind):
             rot('chest',.018*sin(phase));rot('head',-.012*sin(phase))
             if mage:rot('cape',.018*sin(phase),.025*sin(phase));rot('hairTail',.035*sin(phase+.3))
             if action in ['Walk','Run']:
-                run=action=='Run';amp=(.60 if mage else .82) if run else .36
+                run=action=='Run';amp=(.92 if mage else 1.02) if run else .36
                 air=(.085 if mage else .13)*sin(phase)**2 if run else 0
                 for s,sd in [(1,'L'),(-1,'R')]:
-                    p=phase+(0 if s==1 else pi);rot('thigh'+sd,-amp*sin(p));rot('shin'+sd,(.8 if run else .4)*max(0,-sin(p)));rot('foot'+sd,-.18*max(0,-sin(p)))
+                    p=phase+(0 if s==1 else pi)
+                    thigh=-amp*sin(p);knee=(.32+1.20*max(0,sin(p))) if run else .40*max(0,sin(p))
+                    rot('thigh'+sd,thigh);rot('shin'+sd,knee);rot('foot'+sd,-.72*(thigh+knee))
                     rot('upperArm'+sd,(.09 if mage and sd=='R' else amp*.48)*sin(p));rot('forearm'+sd,-(.24 if run else .08))
                 rot('hips',.04,0,.05*sin(phase));rot('chest',.12 if run else .03,0,-.07*sin(phase));rot('head',-.07 if run else 0)
                 if mage:rot('skirt',-.06,0,.025*sin(phase));rot('cape',-.10 if run else -.04,.035*sin(phase))
@@ -317,13 +319,26 @@ def build(kind):
                     rot('chest',-.045*envelope,0,.10*envelope);rot('head',.04*envelope)
                     if ultimate:air=.22*sin(pi*u)**2;rot('cape',-.16*envelope);rot('skirt',-.035*envelope)
                 else:
-                    # Quick alternating hip-fire, then six-shot fan. Arms remain outside torso/hat.
-                    aim=min(1,u/.16,(1-u)/.18);aim=max(0,aim)
-                    for s,sd in [(1,'L'),(-1,'R')]:
-                        kick=max(0,1-abs(t-(.34 if sd=='R' else .54))/.08)
-                        if ultimate:kick=max(max(0,1-abs(t-at)/.07) for at in ([.48,.92,1.36] if sd=='R' else [.70,1.14,1.58]))
-                        rot('upperArm'+sd,-.22*aim+.09*kick,0,-s*.10*aim);rot('forearm'+sd,-.16*aim-.12*kick)
-                    rot('hips',.03,0,.07*sin(phase));rot('chest',-.06*envelope,0,-.09*sin(phase));rot('thighL',-.12*envelope,0,-.10*envelope);rot('thighR',-.12*envelope,0,.10*envelope);rot('shinL',.24*envelope);rot('shinR',.24*envelope)
+                    # Hero gunsReady / gunsCombo: both arms aim forward, alternate R/L,
+                    # then simultaneous fire with a controlled backward hop for the ultimate.
+                    aim=max(0,min(1,u/.12,(1-u)/.14))
+                    shots=([.24,1.44] if ultimate else [.24])
+                    leftshots=([.84,1.44] if ultimate else [.54])
+                    kickR=max(max(0,1-abs(t-at)/.10) for at in shots)
+                    kickL=max(max(0,1-abs(t-at)/.10) for at in leftshots)
+                    for s,sd,kick in [(1,'L',kickL),(-1,'R',kickR)]:
+                        rot('upperArm'+sd,-1.40*aim-.18*kick,0,-s*.15*aim)
+                        rot('forearm'+sd,-.05*aim);rot('hand'+sd,1.45*aim-.18*kick)
+                    rot('hips',.025*aim,0,.035*(kickL-kickR))
+                    rot('chest',.05*aim-.10*max(kickR,kickL),0,.12*(kickL-kickR))
+                    rot('head',-.035*aim)
+                    rot('thighL',-.16*envelope,0,-.10*envelope);rot('thighR',-.16*envelope,0,.10*envelope)
+                    rot('shinL',.32*envelope);rot('shinR',.32*envelope)
+                    if ultimate:
+                        hop=sin(pi*(u-.60)/.20) if .60<u<.80 else 0
+                        air=.15*hop
+                        retreat=max(0,min(1,(u-.60)/.15))*min(1,(1-u)/.15)
+                        rig.pose.bones['hips'].location=rest['hips'].inverted()@Vector((0,.18*retreat,0))
             elif action=='Hurt':
                 e=sin(pi*u)**2;rot('chest',-.20*e);rot('head',-.10*e);rot('upperArmL',.15*e);rot('upperArmR',.10*e)
             elif action in ['Wave','React']:
@@ -333,11 +348,18 @@ def build(kind):
                 if not mage:rig.pose.bones['weaponL'].scale=(.001,.001,.001)
             elif action=='Jump':
                 air=.55*sin(pi*u)**2;rot('thighL',-.20*sin(pi*u));rot('thighR',-.20*sin(pi*u));rot('shinL',.40*sin(pi*u));rot('shinR',.40*sin(pi*u))
-            angry=sin(pi*u)**2 if action in ['Attack','Ultimate','Hurt'] else 0
+            # Facial bones have local Y along world Z. Brows tilt in the face X/Z
+            # plane (world Y), not around world Z, which only pulled them off the face.
+            e=sin(pi*u)**2
+            focus=e if action in ['Attack','Ultimate'] else (.45 if action=='Run' else 0)
+            pain=e if action=='Hurt' else 0
+            happy=e if action in ['Wave','React','Jump'] else 0
+            blink=max(0,1-abs(u-.78)/.025) if action=='Idle' else 0
             for s,sd in [(1,'L'),(-1,'R')]:
-                rot('brow'+sd,0,0,s*.18*angry)
-                rig.pose.bones['eye'+sd].scale=(1,1-.5*angry-.85*max(0,1-abs(u-.78)/.025) if action=='Idle' else 1-.4*angry,1)
-            rig.pose.bones['mouth'].scale=(1,1+.65*angry,1)
+                rot('brow'+sd,0,s*(.30*focus-.38*pain-.12*happy),0)
+                rig.pose.bones['eye'+sd].scale=(1,max(.10,1-.24*focus-.84*pain-.28*happy-.90*blink),1)
+            rig.pose.bones['mouth'].scale=(1+.10*happy,1+.85*focus+1.30*pain+.60*happy,1)
+            rot('mouth',0,.07*pain*sin(phase*4),0)
             bpy.context.view_layer.update();ev=body.evaluated_get(bpy.context.evaluated_depsgraph_get())
             minz=min(ev.data.vertices[i].co.z for i in footids)
             # Root's rest local Y axis is world Z.

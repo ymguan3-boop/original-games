@@ -46,3 +46,27 @@ aside{display:grid;gap:12px;min-width:0}
 .foot{font-size:12px;color:var(--muted);margin:0}
 @media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}aside{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.members{grid-column:1/-1}.stage{aspect-ratio:1/1}}
 @media (max-width:540px){aside{grid-template-columns:minmax(0,1fr)}.row h3{min-width:0;width:100%}}
+
+/* 直立手機：優先看清單隻，家族仍可手動切換；所有內容保留正常捲動。 */
+html{overflow-wrap:anywhere}
+header>*{min-width:0}
+.picker>*{min-width:0}
+.btns{min-width:0;max-width:100%}
+button{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.card dl{grid-template-columns:auto minmax(0,1fr)}
+.now{max-width:calc(100% - 28px);font-size:clamp(14px,3.6vw,18px)}
+@media(max-width:540px){
+ .wrap{padding:12px max(12px,env(safe-area-inset-left)) 24px;gap:12px}
+ header{grid-template-columns:minmax(0,1fr)}
+ header .back{grid-row:2;justify-self:start}
+ header .lede{grid-row:3}
+ .picker input,.picker select{flex:1 1 100%;width:100%;max-width:100%;min-height:44px}
+ .picker small{flex-basis:100%}
+ .stage{aspect-ratio:4/5;max-height:70svh;min-height:260px}
+ .row{gap:6px}.btns{width:100%;gap:6px}.btns button{flex:1 1 auto}
+ .members button{flex:1 1 40%}
+ .hint{font-size:11px;left:10px;bottom:8px}
+ #error{inset:auto 8px 30px;max-width:none}
+ .ref{width:min(100%,360px);justify-self:center}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
