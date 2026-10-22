@@ -1,5 +1,5 @@
 {
-  "version": "20261022-beasts-v1",
+  "version": "20261022-guanpang-v1",
   "numberingPolicy": "001–061 unique display numbers; revised avian family kept together without changing save IDs.",
   "groupingPolicy": "Connected components of previous/next/evolvesTo; stages ascend, equal-stage branches keep original order. Unmodified legacy links group one-sided connections too.",
   "entries": [
@@ -1044,29 +1044,29 @@
       "number": "035",
       "order": 35,
       "group": "chimchar",
-      "name": "彗拳巨猿",
+      "name": "官胖",
       "skills": [
         {
           "index": 0,
-          "name": "焰光輕擊",
+          "name": "震地斧擊",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 1.100000024,
+          "source": "authoring/guanpang/build-blender.py",
+          "note": "官胖 Blender 專屬骨架與表情動畫；以對應動作時間觸發紫色符紋特效。"
         },
         {
           "index": 1,
-          "name": "彗拳共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "天墜裂地",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 2.733333349,
+          "source": "authoring/guanpang/build-blender.py",
+          "note": "官胖 Blender 專屬骨架與表情動畫；以對應動作時間觸發紫色符紋特效。"
         }
       ]
     },
@@ -2269,10 +2269,6 @@
     },
     {
       "id": "monferno",
-      "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
-    },
-    {
-      "id": "infernape",
       "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
     },
     {

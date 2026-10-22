@@ -290,14 +290,12 @@
     "generatedAt": "2026-10-12"
   },
   "infernape": {
-    "image": "cards/art/infernape.webp",
-    "name": "彗拳巨猿",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/infernape.glb",
-    "group": 8,
-    "quadrant": 0,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/guanpang.webp",
+    "name": "官胖",
+    "source": "blender-model-render",
+    "referenceModel": "models/spirits/guanpang.glb",
+    "style": "fantasy-3d-character-portrait",
+    "generatedAt": "2026-10-22"
   },
   "piplup": {
     "image": "cards/art/bird-family-1.webp",

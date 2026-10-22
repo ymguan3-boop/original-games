@@ -671,20 +671,26 @@
   },
   {
     "id": "infernape",
-    "name": "彗拳巨猿",
-    "vertices": 3234,
-    "triangles": 6340,
-    "materials": 5,
-    "bones": 8,
-    "height": 2.15475,
+    "name": "官胖",
+    "vertices": 232592,
+    "triangles": 371878,
+    "materials": 18,
+    "bones": 21,
+    "height": 2.7,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
+      "Hurt",
+      "React",
+      "Wave",
+      "Jump",
       "Attack",
-      "Hurt"
+      "Ultimate"
     ],
-    "fileBytes": 211188,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 14519384,
+    "source": "Blender independent Guanpang model, armature and animated facial expressions",
+    "model": "models/spirits/guanpang.glb"
   },
   {
     "id": "prinplup",

@@ -192,10 +192,10 @@
     "maxSpan": 3.3800000000000003
   },
   "infernape": {
-    "desiredWorldHeight": 2.197,
+    "desiredWorldHeight": 2.7,
     "stage": 3,
-    "form": "monkey",
-    "maxSpan": 4.394000000000001
+    "form": "armored-warrior",
+    "maxSpan": 4
   },
   "piplup": {
     "desiredWorldHeight": 1.09,

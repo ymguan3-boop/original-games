@@ -15,6 +15,7 @@
   let mode=configured.animation||configured.mode,duration=Number(configured.duration)||0,nativeFx=false;
   if(window.ReplacementSpirits?.has(path)){mode=ReplacementSpirits.attack(path,strong);duration=ReplacementSpirits.duration(path,strong);nativeFx=true;}else if(window.AvianSpirits?.has(path)){mode=AvianSpirits.attack(path,strong);duration=AvianSpirits.duration(path,strong);nativeFx=true;}else if(path.startsWith('leaf-frog://')){mode=window.FrogSpirits.attack(path,strong,skill);duration=window.FrogSpirits.duration(path,strong,skill);nativeFx=true;}
   else if(path.startsWith('robot-evolution://')){mode=window.RobotSpirits.attack(path,strong);duration=window.RobotSpirits.duration(path,strong);nativeFx=true;}
+  else if(/guanpang\.glb$/.test(path))nativeFx=!!actor.guanpangFx;
   else if(/fire-monkey-elder\.glb$/.test(path))nativeFx=true;
   else if(/fire-bear-3\.glb$/.test(path)&&!strong)nativeFx=true;   // 大熊的霸體是自身增益，不射出投射物   // C老猴：金箍棒近身打擊，不另外射出投射物（C囝仔的火球出手由遊戲火系投射物接手）
   else if(path.startsWith('light-phoenix://')){mode=/羽|Feather/i.test(skill.name||'')?'FeatherVolley':'WingBurst';duration=mode==='FeatherVolley'?2.7:2.4;nativeFx=true;}
@@ -26,7 +27,7 @@
    mode=candidates.map(name=>find(available,name)).find(Boolean)||available[0]||'Idle';
    const action=actor.actions?.[mode],clip=action?.getClip?.();duration=clip?.duration?clip.duration/Math.max(.01,Math.abs(action.getEffectiveTimeScale?.()||1)):duration;
   }
-  return{mode:mode||'Attack',duration:Math.max(.1,duration||.65),nativeFx,releaseFraction:.48};
+  return{mode:mode||'Attack',duration:Math.max(.1,duration||.65),nativeFx,releaseFraction:/guanpang\.glb$/.test(path)?(strong?.655:.50):.48};
  }
  window.SpiritCombat={isWater:water,fishingOpponents,outdoorScale:species=>outdoorMultipliers[species.id]||1,arenaScale:species=>species.id==='kyogre'?.5:1,attackPlan};
 })();

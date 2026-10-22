@@ -1110,36 +1110,38 @@
   {
     "id": "infernape",
     "speciesId": "infernape",
-    "name": "彗拳巨猿",
-    "element": "fire",
-    "type": "焰",
+    "name": "官胖",
+    "element": "psychic",
+    "type": "念",
     "stage": 3,
     "family": "comet-ape",
-    "form": "monkey",
-    "color": 13532505,
-    "role": "starter",
+    "form": "armored-warrior",
+    "color": 9902335,
+    "role": "legendary",
     "previous": "monferno",
     "next": null,
-    "model": "models/spirits/infernape.glb",
-    "height": 2.15475,
+    "model": "models/spirits/guanpang.glb",
+    "height": 2.7,
     "hp": 160,
     "attack": 54,
     "evolvesTo": null,
-    "rarity": "珍稀",
+    "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "震地斧擊",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "彗拳共鳴",
+        "name": "天墜裂地",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "彗拳巨猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "官胖是身披紫紋尖刺重甲的念屬性傳說魔王。以震地斧擊迅速砸地；天墜裂地則雙手持斧、開腿深蹲後高跳前劈，落地釋放紫色震波。",
+    "stageLabel": "魔王",
+    "cardFrame": "red"
   },
   {
     "id": "piplup",

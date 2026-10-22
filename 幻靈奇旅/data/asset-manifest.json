@@ -423,13 +423,18 @@
       ]
     },
     {
-      "file": "models/spirits/infernape.glb",
-      "bytes": 211188,
+      "file": "models/spirits/guanpang.glb",
+      "bytes": 14519384,
       "animations": [
         "Idle",
         "Walk",
+        "Run",
+        "Hurt",
+        "React",
+        "Wave",
+        "Jump",
         "Attack",
-        "Hurt"
+        "Ultimate"
       ]
     },
     {
