@@ -1527,12 +1527,12 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "水彈",
+        "name": "水球",
         "power": 47,
         "cost": 1
       },
       {
-        "name": "翻身金色粗水柱",
+        "name": "金色水光束砲",
         "power": 94,
         "cost": 3
       }
@@ -1561,12 +1561,12 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "水彈",
+        "name": "水球",
         "power": 47,
         "cost": 1
       },
       {
-        "name": "翻身珍珠粗水柱",
+        "name": "珍珠水光束砲",
         "power": 94,
         "cost": 3
       }
