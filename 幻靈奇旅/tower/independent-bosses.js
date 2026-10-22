@@ -56,10 +56,55 @@ globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,Worl
  World.prototype.bossImpact=function(pattern,m,hazards){if(!LEVELS[this.level].id)return oldImpact.call(this,pattern,m,hazards);const color=this.level===3?0xffd36b:this.level===4?0x75bbff:0xffda62;for(const hz of hazards){this.fxRing(hz.x,hz.z,color,hz.radius,.5,.8);this.fxBurst(hz.x,hz.z,color,pattern==='meteor'?18:9,5);}if(this.level===3){this.fxBurst(m.x,m.z,0xffce65,16,7);for(const hz of hazards)this.fxShard(hz.x,hz.z,0xffe9a1,{arrow:true});}else if(this.level===4){this.fxRing(m.x,m.z,0x9582ff,5.5,1,.8);this.fxBurst(m.x,m.z,0xb0e9ff,24,9);}else{this.fxRing(m.x,m.z,0xffd170,8,.8,.8);this.shake=Math.max(this.shake,.55);}};
  World.prototype.makeMonster=function(level){const l=LEVELS[level];if(!l.id)return oldMake.call(this,level);const g=this.group(this.root);g.body=this.group(g);g.head=this.group(g);g.tail=this.group(g);g.legs=[];g.wings=[];g.userData.modelSource='models/spirits/'+l.model+'.glb';this.bossLoading=true;
   const token=this.bossToken=(this.bossToken||0)+1;
-  new T.GLTFLoader().load('../'+g.userData.modelSource+'?v=independent-tower-v1',asset=>{if(token!==this.bossToken)return;const o=asset.scene;o.updateMatrixWorld(true);const box=new T.Box3().setFromObject(o),s=(level===5?5.1:3.4)/(box.max.y-box.min.y);o.scale.multiplyScalar(s);o.position.y-=box.min.y*s;g.add(o);g.nativeMixer=new T.AnimationMixer(o);g.nativeActions={};for(const c of asset.animations)g.nativeActions[c.name]=g.nativeMixer.clipAction(c);g.playNative=name=>{const options=name==='Run'?['Run','Running','Sprint','Jog','Walk','Move','Idle']:name==='Hurt'?['Hurt','Hit','Death','Idle']:[name,'Idle'];const actual=options.find(k=>g.nativeActions[k]);if(!actual||g.nativeMotion===actual)return;const anim=g.nativeActions[actual];Object.values(g.nativeActions).forEach(v=>v.fadeOut(.12));anim.reset().fadeIn(.12).play();anim.setEffectiveTimeScale(name==='Run'&&actual!=='Run'?1.55:1);g.nativeMotion=actual;};this.bossLoading=false;},undefined,e=>{if(token!==this.bossToken)return;this.bossLoading=false;g.userData.loadError=true;console.error('挑戰者模型載入失敗',e);document.getElementById('objectiveHint').textContent='模型載入失敗，請返回選關重新載入。';});return g;};
+  new T.GLTFLoader().load('../'+g.userData.modelSource+'?v=independent-tower-v1',asset=>{if(token!==this.bossToken)return;const o=asset.scene;o.updateMatrixWorld(true);const box=new T.Box3().setFromObject(o),s=(level===5?5.1:3.4)/(box.max.y-box.min.y);o.scale.multiplyScalar(s);o.position.y-=box.min.y*s;g.add(o);g.nativeMixer=new T.AnimationMixer(o);g.nativeActions={};for(const c of asset.animations)g.nativeActions[c.name]=g.nativeMixer.clipAction(c);// Match actions provided by each GLB at runtime; avoid relying on invented clip names.
+ const nativeNames=Object.keys(g.nativeActions);
+ const exact=names=>names.map(n=>nativeNames.find(k=>k.toLowerCase()===n.toLowerCase())).find(Boolean);
+ const roleClip=role=>{
+  const aliases={
+   Idle:['Idle','Idle_01','Stand','Breath','Rest'],
+   Run:['Run','Running','Sprint','Jog','RunCycle','Walk','Walking','Move'],
+   Attack:['Attack','Attack_01','NormalAttack','BasicAttack','Attack1','Shoot','Fire','Punch','Slash','普攻'],
+   Ultimate:['Ultimate','UltimateAttack','Special','SpecialAttack','Skill','SkillAttack','Finisher','Burst','大絕'],
+   Hurt:['Hurt','Hit','HitReact','Damage','TakeDamage','Injured','受擊'],
+   Death:['Death','Die','Dying','Defeat','Fall','死亡']
+  };
+  const pattern={Idle:/idle|stand|rest|breath/i,Run:/run|sprint|jog|walk|move|跑|走/i,Attack:/attack|shoot|fire|slash|punch|normal|basic|普攻|攻擊/i,Ultimate:/ultimate|special|skill|burst|finisher|大絕|必殺/i,Hurt:/hurt|hit|damage|react|受擊/i,Death:/death|dying|defeat|fall|死亡/i}[role];
+  return exact(aliases[role]||[role])||nativeNames.find(name=>pattern?.test(name))||(role==='Run'?roleClip('Idle'):role==='Ultimate'?roleClip('Attack'):role==='Death'?roleClip('Hurt'):role==='Hurt'?roleClip('Idle'):nativeNames[0]);
+ };
+ g.nativeClipFor=role=>roleClip(role);
+ g.userData.nativeClips=nativeNames.slice();
+ g.playNative=(role,{duration,force=false}={})=>{
+  const chosen=roleClip(role);
+  if(!chosen||(!force&&g.nativeMotion===chosen))return;
+  const action=g.nativeActions[chosen],single=['Attack','Ultimate','Hurt','Death'].includes(role);
+  Object.values(g.nativeActions).forEach(other=>{if(other!==action)other.fadeOut(.12);});
+  action.reset().fadeIn(.12);
+  action.setLoop(single?T.LoopOnce:T.LoopRepeat,single?1:Infinity);
+  action.clampWhenFinished=single;
+  const clipTime=action.getClip()?.duration||1;
+  const rate=duration&&single?Math.max(.55,Math.min(2.2,clipTime/Math.max(.3,duration))):role==='Run'&&/walk|move/i.test(chosen)?1.65:1;
+  action.setEffectiveTimeScale(rate).play();
+  g.nativeMotion=chosen;
+ };this.bossLoading=false;},undefined,e=>{if(token!==this.bossToken)return;this.bossLoading=false;g.userData.loadError=true;console.error('挑戰者模型載入失敗',e);document.getElementById('objectiveHint').textContent='模型載入失敗，請返回選關重新載入。';});return g;};
  World.prototype.load=function(level){this.bossToken=(this.bossToken||0)+1;this.bossLoading=false;oldLoad.call(this,level);if(level<3)return;const color=[0xa56f3d,0x3b659d,0x8f783b][level-3];for(let i=0;i<12;i++){const a=i*Math.PI/6,r=24,x=Math.sin(a)*r,z=Math.cos(a)*r;if(level===3){this.part(this.root,'box',0x70482d,x,1.3,z,1,2.6,.3,0,-a);this.part(this.root,'box',0xb78551,x,2.7,z,2.6,.3,.7,0,-a);}else{this.part(this.root,'cyl',color,x,2.5,z,.6,5,.6);this.part(this.root,'ball',level===4?0x69baff:0xffd471,x,5.2,z,.7,.7,.7);}}
   const ring=this.disc(15,level===4?0x64b7ff:0xffce71,.38);ring.position.y=.06;
  };
- World.prototype.render=function(h,time,...rest){oldRender.call(this,h,time,...rest);const b=this.beast;if(!LEVELS[h.level].id)return;if(b.userData.loadError){h.paused=true;return;}if(!b.nativeMixer)return;const m=h.monster,dead=h.mode!=='battle'||m.state==='dead';if(dead){b.playNative('Idle');b.nativeLastTime=time;return;}const px=b.userData.previousX??m.x,pz=b.userData.previousZ??m.z,moving=Math.hypot(m.x-px,m.z-pz)>.008;b.userData.previousX=m.x;b.userData.previousZ=m.z;const name=m.flash>0?'Hurt':m.state==='windup'||m.state==='recover'&&m.timer>1.6?(m.phase%2?'Attack':'Ultimate'):moving?'Run':'Idle';b.playNative(name);const dt=Math.max(0,Math.min(.05,time-(b.nativeLastTime??time)));b.nativeLastTime=time;if(!h.paused)b.nativeMixer.update(dt);};
+ World.prototype.render=function(h,time,...rest){oldRender.call(this,h,time,...rest);const b=this.beast;if(!LEVELS[h.level].id)return;if(b.userData.loadError){h.paused=true;return;}if(!b.nativeMixer)return;const m=h.monster,dead=h.mode!=='battle'||m.state==='dead';
+ const dt=Math.max(0,Math.min(.05,time-(b.nativeLastTime??time)));
+ b.nativeLastTime=time;
+ if(dead){
+  if(!b.userData.deathStarted){
+   b.userData.deathStarted=time||.001;
+   b.playNative('Death',{duration:.8,force:true});
+  }
+  if(time-b.userData.deathStarted<.8&&!h.paused)b.nativeMixer.update(dt);
+  return;
+ }
+ b.userData.deathStarted=null;
+ const px=b.userData.previousX??m.x,pz=b.userData.previousZ??m.z,moving=Math.hypot(m.x-px,m.z-pz)>.008;
+ b.userData.previousX=m.x;b.userData.previousZ=m.z;
+ const role=m.flash>0?'Hurt':m.state==='windup'?(m.phase%2?'Attack':'Ultimate'):moving?'Run':'Idle';
+ b.playNative(role,{duration:role==='Attack'||role==='Ultimate'?m.timer+.25:undefined});
+ if(!h.paused)b.nativeMixer.update(dt);};
  return defs;
 };
