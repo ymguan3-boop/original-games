@@ -270,24 +270,20 @@
     "height": 768
   },
   "chimchar": {
-    "image": "cards/art/chimchar.webp",
+    "image": "cards/art/ahong-cowboy.webp",
     "name": "阿宏牛仔",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/chimchar.glb",
-    "group": 7,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "source": "blender-model-render",
+    "referenceModel": "models/spirits/ahong-cowboy.glb",
+    "style": "fantasy-3d-character-portrait",
+    "generatedAt": "2026-10-22"
   },
   "monferno": {
-    "image": "cards/art/monferno.webp",
+    "image": "cards/art/starlight-mage.webp",
     "name": "藍金星輝法師",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/monferno.glb",
-    "group": 7,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "source": "blender-model-render",
+    "referenceModel": "models/spirits/starlight-mage.glb",
+    "style": "fantasy-3d-character-portrait",
+    "generatedAt": "2026-10-22"
   },
   "infernape": {
     "image": "cards/art/guanpang.webp",

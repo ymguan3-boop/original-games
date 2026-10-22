@@ -34,5 +34,5 @@ function evolution(s,byId){
  if(['raikou','entei','articuno'].includes(s.id))return '連續擂台參戰 3 場 → '+name(next);
  return (Number(s.stage)===1?5:10)+' 份羈絆 → '+name(next);
 }
-window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261022-six-elements-v1'};
+window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261022-duo-v1'};
 })();

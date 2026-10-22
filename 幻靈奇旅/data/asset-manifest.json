@@ -271,8 +271,8 @@
       ]
     },
     {
-      "file": "models/spirits/chimchar.glb",
-      "bytes": 193480,
+      "file": "models/spirits/ahong-cowboy.glb",
+      "bytes": 8103092,
       "animations": [
         "Idle",
         "Walk",
@@ -426,8 +426,8 @@
       ]
     },
     {
-      "file": "models/spirits/monferno.glb",
-      "bytes": 209544,
+      "file": "models/spirits/starlight-mage.glb",
+      "bytes": 7465472,
       "animations": [
         "Idle",
         "Walk",

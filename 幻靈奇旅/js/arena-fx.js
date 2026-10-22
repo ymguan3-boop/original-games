@@ -4,7 +4,8 @@
    使用：SpiritVfx.script({path,strong,attacker,defender,group,add,now,sound,T}) → {approach(sec),update(sec),total} */
 (()=>{'use strict';
 const KEY=/(pepper-chick-[123]|water-dog-[123]|water-fairy|fire-bear-[123]|cat-girl-[123])\.glb$/;
-const keyOf=p=>(KEY.exec(p||'')||[])[1]||null;
+const ORB_FAMILY=/(spiral-snail-[123]|sesame-spirit-[123]|chest-spirit-[123]|book-spirit-[123])\.glb$|^floral-deer:\/\/|^native:\/\/(totodile|croconaw|feraligatr|piplup|prinplup|empoleon)$/;
+const keyOf=p=>(KEY.exec(p||'')||[])[1]||(ORB_FAMILY.test(p||'')?'orb':null);
 const has=p=>!!keyOf(p);
 const ease=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -18,7 +19,7 @@ const CHICK_THROWS={
  'pepper-chick-2':Array.from({length:6},(_,k)=>({at:.5+k*.3,side:k%2?'R':'L'})),
  'pepper-chick-3':[...Array.from({length:12},(_,k)=>({at:.75+k*.13,side:k%2?'R':'L',fan:true})),{at:3.06,side:'G',big:true}],
 };
-const TOTAL={'pepper-chick-1':2.3,'pepper-chick-2':2.5,'pepper-chick-3':4,'water-dog-1':2.1,'water-dog-2':3.27,'water-dog-3':5.07,'water-fairy':3.42,'fire-bear-1':[1.3,2.6],'fire-bear-2':[1.5,3],'fire-bear-3':[2.21,3.21],'cat-girl-1':[1.08,2.58],'cat-girl-2':[1.21,1.67],'cat-girl-3':[1.29,1.67]};
+const TOTAL={'pepper-chick-1':2.3,'pepper-chick-2':2.5,'pepper-chick-3':4,'water-dog-1':2.1,'water-dog-2':3.27,'water-dog-3':5.07,'water-fairy':3.42,'fire-bear-1':[1.3,2.6],'fire-bear-2':[1.5,3],'fire-bear-3':[2.21,3.21],'cat-girl-1':[1.08,2.58],'cat-girl-2':[1.21,1.67],'cat-girl-3':[1.29,1.67],orb:[.55,1.15]};
 
 function script(o){
  const T=o.T,key=keyOf(o.path),strong=!!o.strong,att=o.attacker,def=o.defender,group=o.group;
@@ -143,7 +144,7 @@ function script(o){
  const quake=pos=>{ring(V(pos.x,.05,pos.z),.3,1.6,.7,0x8c7a66);for(let i=0;i<16;i++)spawn({pos:V(pos.x+rand(-.8,.8)*S,.1,pos.z+rand(-.8,.8)*S),vel:V(rand(-1.5,1.5),1+Math.random()*2,rand(-1.5,1.5)),color:i%2?0xff9a2a:0xa89580,size:rand(.15,.5),life:.7,grow:2,g:3});};
  /* ----- 腳本 ----- */
  const at=(sec,fn)=>events.push({at:sec,fn});
- const tot=TOTAL[key],total=Array.isArray(tot)?tot[strong?1:0]:tot;let approach=()=>0;
+ const tot=TOTAL[key],total=Array.isArray(tot)?tot[strong?1:0]:tot;let approach=()=>0,runtime_pose=null;
  if(key.startsWith('pepper-chick')){
   if(!strong){
    approach=s=>Math.min(ease(s/.28),1-ease((s-.55)/.3));
@@ -177,6 +178,22 @@ function script(o){
    for(let t=1.78;t<3.08;t+=.06)at(t,()=>{for(let i=0;i<4;i++){const a=Math.random()*Math.PI*2,d=Math.sqrt(Math.random())*2.6*S,c=att.root.position;spawn({pos:V(c.x+Math.sin(a)*d,att.worldSize.y*1.6+Math.random()*.8*S,c.z+Math.cos(a)*d),vel:V(0,-3.5-Math.random()*1.5,0),color:[0xf2fbff,0xb6e6fa,0x7ccbf3][i%3],size:.08,life:.9});}});
   }
  }
+ else if(key==='orb'){
+  const col=new T.Color(o.color||0x8ac4ff),H=Math.max(1,att.worldSize.y),cH=col.getHex(),lH=col.clone().lerp(new T.Color(0xffffff),.5).getHex(),cs=[cH,lH,0xffffff],mid=()=>att.root.position.clone().add(V(0,H*.5,0));
+  const orb=r=>{const g=new T.Group(),m1=basic(cH,.96,false),m2=basic(lH,.98,false),m3=basic(lH,.4,false),gs=[new T.SphereGeometry(1,16,12),new T.SphereGeometry(.55,12,8),new T.SphereGeometry(1.45,16,12)];g.add(new T.Mesh(gs[2],m3),new T.Mesh(gs[0],m1),new T.Mesh(gs[1],m2));g.scale.setScalar(r);track(g,()=>{gs.forEach(x=>x.dispose());m1.dispose();m2.dispose();m3.dispose();});return g;};
+  const pop=(pos,pw)=>{spawn({pos,vel:V(),color:lH,size:.55*pw*H,life:.22,grow:1.2,op:.8,abs:true});for(let i=0;i<Math.round(14*pw);i++){const d=V(rand(-1,1),rand(.2,1.4),rand(-1,1)).normalize().multiplyScalar(rand(1.5,3.8)*Math.sqrt(pw)*H*.5);spawn({pos,vel:d,color:cs[i%3],size:rand(.12,.3)*Math.sqrt(pw)*H*.4,life:rand(.4,.7),grow:.6,g:2*H,drag:.2,abs:true});}ring(pos,.2,(.9*pw+.4)*H/S,.45+.1*pw,cH);};
+  const launch=(from,r,Tm,pw)=>{const m=orb(r),to=target();fly(m,from,to,Tm,.04*H,{x:0,y:0,z:0},p=>{if(Math.random()<.7)spawn({pos:p.clone(),vel:V(rand(-.3,.3),rand(-.3,.3),rand(-.3,.3)),color:Math.random()<.5?cH:lH,size:r*.9,life:.28,abs:true});},p=>pop(p,pw),null);o.sound?.(o.element||'normal',pw>2);};
+  if(!strong){
+   approach=s=>Math.min(ease(s/.2),1-ease((s-.3)/.22));
+   runtime_pose=s=>{const k=Math.min(1,s/.2);return{y:s<.25?.1*H*Math.sin(k*Math.PI):0,sq:s<.2?.14*Math.sin(k*Math.PI):0};};
+   at(.04,()=>launch(mid().add(faceDir().multiplyScalar(.45*H)),.2*H,.16,1));
+  }else{
+   runtime_pose=s=>({y:.3*H*Math.sin(Math.min(1,Math.max(0,(s-.45)/.4))*Math.PI),sq:s<.42?.22*ease(s/.4):.22*(1-ease((s-.42)/.12))});
+   let charge=null;
+   at(0,()=>{charge=orb(.02*H);o.add(.46,(t,age)=>{charge.position.copy(att.root.position).add(V(0,H*(1.05+.08*Math.sin(age*20)),0));charge.scale.setScalar((.05+.4*ease(t))*H);if(Math.random()<.9){const a=Math.random()*Math.PI*2,r=rand(.6,1.1)*H;spawn({pos:charge.position.clone().add(V(Math.cos(a)*r,rand(-.4,.4)*H,Math.sin(a)*r)),vel:V(-Math.cos(a)*H*2.2,-rand(-.3,.3)*H,-Math.sin(a)*H*2.2),color:Math.random()<.5?cH:lH,size:.14*H,life:.3,abs:true});}},()=>{});});
+   at(.5,()=>{if(charge)charge.visible=false;launch(att.root.position.clone().add(V(0,H*1.2,0)),.42*H,.28,3.2);});
+  }
+ }
  else{   // 火熊／貓娘
   const D=()=>faceDir(),chest=()=>wp('chest'),dist=()=>def.root.position.clone().sub(att.root.position).setY(0).length();
   const dash=(a,b,c)=>s=>Math.min(ease((s-a)/(b-a)),1-ease((s-c)/.3));   // a→b 衝到對手面前，到 c 後退回
@@ -204,7 +221,7 @@ function script(o){
  }
  events.sort((a,b)=>a.at-b.at);
  const runtime={
-  total,approach,
+  total,approach,pose:s=>runtime_pose?runtime_pose(s):null,
   update(sec){while(fired<events.length&&events[fired].at<=sec)events[fired++].fn();},
  };
  // 粒子與光束統一更新，結束後釋放

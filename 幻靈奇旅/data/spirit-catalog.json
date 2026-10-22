@@ -1,5 +1,5 @@
 {
-  "version": "20261022-six-elements-v1",
+  "version": "20261022-duo-v1",
   "numberingPolicy": "001–061：同物種進化線相鄰（階段由低到高），進化線依 黃卡（標準）→ 紫卡 → 紅卡 排序；存檔 ID 不變。",
   "groupingPolicy": "Connected components of previous/next/evolvesTo; stages ascend, equal-stage branches keep original order. Unmodified legacy links group one-sided connections too.",
   "entries": [
@@ -1574,25 +1574,25 @@
       "skills": [
         {
           "index": 0,
-          "name": "焰光輕擊",
+          "name": "雙槍快射",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 1.0333333015441895,
+          "source": "authoring/star-cowboy/build.py",
+          "note": "Blender 專屬骨架動畫及同步手部特效"
         },
         {
           "index": 1,
-          "name": "星火共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "六芒追星連射",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 2.433333396911621,
+          "source": "authoring/star-cowboy/build.py",
+          "note": "Blender 專屬骨架動畫及同步手部特效"
         }
       ]
     },
@@ -1605,25 +1605,25 @@
       "skills": [
         {
           "index": 0,
-          "name": "焰光輕擊",
+          "name": "星芒矢",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 1.2333333492279053,
+          "source": "authoring/star-cowboy/build.py",
+          "note": "Blender 專屬骨架動畫及同步手部特效"
         },
         {
           "index": 1,
-          "name": "銅爐共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "天穹星陣",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "duration": 3.0333333015441895,
+          "source": "authoring/star-cowboy/build.py",
+          "note": "Blender 專屬骨架動畫及同步手部特效"
         }
       ]
     },
@@ -2205,14 +2205,6 @@
     },
     {
       "id": "torterra",
-      "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
-    },
-    {
-      "id": "chimchar",
-      "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
-    },
-    {
-      "id": "monferno",
       "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
     },
     {

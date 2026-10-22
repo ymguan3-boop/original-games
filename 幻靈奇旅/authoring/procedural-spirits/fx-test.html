@@ -9,7 +9,7 @@
 const T=THREE,renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(innerWidth,innerHeight);document.body.append(renderer.domElement);
 const scene=new T.Scene();scene.background=new T.Color(0x536a79);
 scene.add(new T.HemisphereLight(0xffffff,0x8899aa,1.1));const sun=new T.DirectionalLight(0xffffff,1.1);sun.position.set(4,9,6);scene.add(sun);
-const floor=new T.Mesh(new T.PlaneGeometry(40,40),new T.MeshStandardMaterial({color:0xe9e5da}));floor.rotation.x=-Math.PI/2;scene.add(floor);
+const floor=new T.Mesh(new T.PlaneGeometry(40,40),new T.MeshStandardMaterial({color:0x5aa646}));floor.rotation.x=-Math.PI/2;scene.add(floor);
 const group=new T.Group();scene.add(group);
 const cam=new T.PerspectiveCamera(36,innerWidth/innerHeight,.1,100);cam.position.set(0,9.9,18);cam.lookAt(0,-.2,0);
 const loader=new T.GLTFLoader();let effects=[],elapsed=0,A,D,script,mixerClips;
@@ -23,14 +23,14 @@ window.__fx={
   A=await actor('../../models/spirits/'+model+'.glb',height,0,5.5,Math.PI);D=await actor('../../models/spirits/'+defender+'.glb',dh,0,-5.5,0);window.__A=A;return Object.keys(A.actions).join(',');
  },
  // 重新從 0 秒開始並推進到 sec（每格 1/30 秒）
- run(strong,sec){
+ run(strong,sec,color){
   group.clear();effects=[];elapsed=0;A.mixer.stopAllAction();A.root.position.set(0,0,5.5);
-  const mode=strong?'Ultimate':'Attack',act=A.actions[mode].reset();act.setLoop(T.LoopOnce,1);act.clampWhenFinished=true;act.play();
-  const dur=A.actions[mode].getClip().duration;
-  script=SpiritVfx.script({T,path:A.path,strong,attacker:A,defender:D,group,now:()=>elapsed,add:(d,fn,done)=>effects.push({start:elapsed,duration:d,update:t=>fn(t,t*d),done}),sound:()=>{}});
+  const mode=strong?'Ultimate':'Attack',clip=A.actions[mode];if(clip){clip.reset().setLoop(T.LoopOnce,1);clip.clampWhenFinished=true;clip.play();}
+  const orb=SpiritVfx.keyOf(A.path)==='orb',dur=orb?(strong?1.15:.55):clip.getClip().duration;const base=A.object.scale.clone();
+  script=SpiritVfx.script({T,path:A.path,strong,attacker:A,defender:D,group,now:()=>elapsed,add:(d,fn,done)=>effects.push({start:elapsed,duration:d,update:t=>fn(t,t*d),done}),sound:()=>{},color:color||0x8ac4ff,element:'water'});
   const p=new T.Vector3(0,0,5.5),dir=new T.Vector3(0,0,-1),gap=Math.max(1.2,Math.min(3.2,.3*A.worldSize.y+.35*D.worldSize.y+.6));
   const dt=1/30;for(let t=0;t<sec;t+=dt){elapsed+=dt;A.mixer.update(dt);const ts=Math.min(t,dur);script.update(ts);
-   const ap=Math.max(0,p.distanceTo(D.root.position)-gap)*script.approach(ts);A.root.position.copy(p).addScaledVector(dir,ap);
+   const ap=Math.max(0,p.distanceTo(D.root.position)-gap)*script.approach(ts);A.root.position.copy(p).addScaledVector(dir,ap);const ps=script.pose?.(ts);A.root.position.y=ps?ps.y:0;if(ps)A.object.scale.set(base.x*(1+ps.sq),base.y*(1-ps.sq),base.z*(1+ps.sq));else A.object.scale.copy(base);
    for(let i=effects.length-1;i>=0;i--){const e=effects[i],u=Math.min(1,(elapsed-e.start)/e.duration);e.update(u);if(u>=1){e.done?.();effects.splice(i,1);}}}
   renderer.render(scene,cam);document.getElementById('info').textContent=A.path.split('/').pop()+' '+mode+' t='+sec.toFixed(2)+'/'+dur.toFixed(2)+'  effects='+effects.length+' group='+group.children.length;
   return{dur,effects:effects.length,children:group.children.length};

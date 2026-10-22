@@ -637,37 +637,49 @@
   },
   {
     "id": "chimchar",
-    "name": "星火猿",
-    "vertices": 2882,
-    "triangles": 5652,
-    "materials": 5,
-    "bones": 8,
-    "height": 1.275,
+    "name": "阿宏牛仔",
+    "vertices": 125824,
+    "triangles": 231048,
+    "materials": 15,
+    "bones": 23,
+    "height": 1.7,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "Hurt",
+      "Wave",
+      "React",
+      "Jump"
     ],
-    "fileBytes": 193480,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 8103092,
+    "source": "authoring/star-cowboy/build.py",
+    "model": "models/spirits/ahong-cowboy.glb"
   },
   {
     "id": "monferno",
-    "name": "銅爐猿",
-    "vertices": 3204,
-    "triangles": 6284,
-    "materials": 5,
-    "bones": 8,
-    "height": 1.6575,
+    "name": "藍金星輝法師",
+    "vertices": 116056,
+    "triangles": 207880,
+    "materials": 12,
+    "bones": 24,
+    "height": 2.332,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "Hurt",
+      "Wave",
+      "React",
+      "Jump"
     ],
-    "fileBytes": 209544,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 7465472,
+    "source": "authoring/star-cowboy/build.py",
+    "model": "models/spirits/starlight-mage.glb"
   },
   {
     "id": "infernape",

@@ -1,0 +1,168 @@
+{
+  "rooms": [
+    {
+      "name": "阿宏牛仔",
+      "tags": "No.053 · 雷 · 魔王 · 傳說",
+      "portrait": "cards/art/ahong-cowboy.webp",
+      "state": {
+        "family": "chimchar",
+        "motion": "Idle",
+        "members": [
+          {
+            "id": "chimchar",
+            "mode": "Idle",
+            "proc": null,
+            "modes": [
+              "Idle",
+              "Walk",
+              "Run",
+              "Attack",
+              "Ultimate",
+              "Hurt",
+              "Wave",
+              "React",
+              "Jump"
+            ]
+          },
+          {
+            "id": "monferno",
+            "mode": "Idle",
+            "proc": null,
+            "modes": [
+              "Idle",
+              "Walk",
+              "Run",
+              "Attack",
+              "Ultimate",
+              "Hurt",
+              "Wave",
+              "React",
+              "Jump"
+            ]
+          },
+          {
+            "id": "infernape",
+            "mode": "Idle",
+            "proc": null,
+            "modes": [
+              "Idle",
+              "Walk",
+              "Run",
+              "Hurt",
+              "React",
+              "Wave",
+              "Jump",
+              "Attack",
+              "Ultimate"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "藍金星輝法師",
+      "tags": "No.054 · 念 · 魔王 · 傳說",
+      "portrait": "cards/art/starlight-mage.webp",
+      "state": {
+        "family": "chimchar",
+        "motion": "Idle",
+        "members": [
+          {
+            "id": "chimchar",
+            "mode": "Idle",
+            "proc": null,
+            "modes": [
+              "Idle",
+              "Walk",
+              "Run",
+              "Attack",
+              "Ultimate",
+              "Hurt",
+              "Wave",
+              "React",
+              "Jump"
+            ]
+          },
+          {
+            "id": "monferno",
+            "mode": "Idle",
+            "proc": null,
+            "modes": [
+              "Idle",
+              "Walk",
+              "Run",
+              "Attack",
+              "Ultimate",
+              "Hurt",
+              "Wave",
+              "React",
+              "Jump"
+            ]
+          },
+          {
+            "id": "infernape",
+            "mode": "Idle",
+            "proc": null,
+            "modes": [
+              "Idle",
+              "Walk",
+              "Run",
+              "Hurt",
+              "React",
+              "Wave",
+              "Jump",
+              "Attack",
+              "Ultimate"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "battle": [
+    {
+      "id": "chimchar",
+      "hp": 135,
+      "height": 2.05,
+      "model": "models/spirits/ahong-cowboy.glb",
+      "fx": true,
+      "plans": [
+        {
+          "mode": "Attack",
+          "duration": 1.0333333015441895,
+          "nativeFx": true,
+          "releaseFraction": 0.48
+        },
+        {
+          "mode": "Ultimate",
+          "duration": 2.433333396911621,
+          "nativeFx": true,
+          "releaseFraction": 0.48
+        }
+      ]
+    },
+    {
+      "id": "monferno",
+      "hp": 145,
+      "height": 2.05,
+      "model": "models/spirits/starlight-mage.glb",
+      "fx": true,
+      "plans": [
+        {
+          "mode": "Attack",
+          "duration": 1.2333333492279053,
+          "nativeFx": true,
+          "releaseFraction": 0.48
+        },
+        {
+          "mode": "Ultimate",
+          "duration": 3.0333333015441895,
+          "nativeFx": true,
+          "releaseFraction": 0.48
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "gameErrors": []
+}

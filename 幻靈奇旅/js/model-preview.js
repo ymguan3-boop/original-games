@@ -23,7 +23,7 @@ addEventListener('unhandledrejection',e=>error(e.reason));
 function script(path){if(scriptCache.has(path))return scriptCache.get(path);const p=new Promise((res,rej)=>{const n=document.createElement('script');n.src=path+'?v='+C.revision;n.onload=res;n.onerror=()=>{scriptCache.delete(path);n.remove();rej(Error('程式載入失敗：'+path));};document.head.append(n);});scriptCache.set(path,p);return p;}
 async function scripts(paths){for(const p of paths)await script(p);}
 function owned(root){const r=new Set();root.traverse(n=>{if(n.geometry)r.add(n.geometry);if(n.skeleton?.boneTexture)r.add(n.skeleton.boneTexture);for(const m of Array.isArray(n.material)?n.material:n.material?[n.material]:[]){r.add(m);for(const v of Object.values(m))if(v?.isTexture)r.add(v);}});return r;}
-function release(p){if(!p)return;p.guanpangFx?.dispose();p.mixer?.stopAllAction();p.mixer?.uncacheRoot(p.root);if(p.hero&&heroCostumes)heroCostumes.dispose(p.root);try{p.controller?.dispose?.();}catch{}for(const r of p.resources||[])r.dispose?.();p.display?.parent?.remove(p.display);}
+function release(p){if(!p)return;p.guanpangFx?.dispose();p.duoFx?.dispose();p.mixer?.stopAllAction();p.mixer?.uncacheRoot(p.root);if(p.hero&&heroCostumes)heroCostumes.dispose(p.root);try{p.controller?.dispose?.();}catch{}for(const r of p.resources||[])r.dispose?.();p.display?.parent?.remove(p.display);}
 function excluded(n,root){for(let x=n;x;x=x.parent){if(!x.visible||x.userData?.isEffect||x.userData?.effect||/^(Effects|ReusableEffects|ReusableLightEffects|CombatEffects|ReusableFireball)$/.test(x.name))return true;if(x===root)break;}return false;}
 function bounds(root){const box=new T.Box3(),temp=new T.Box3();root.updateMatrixWorld(true);root.traverse(n=>{if(!n.isMesh||!n.geometry||excluded(n,root))return;const ms=Array.isArray(n.material)?n.material:[n.material];if(ms.every(m=>m?.isMeshBasicMaterial&&m.transparent&&m.depthWrite===false))return;const g=n.geometry;if(!g.boundingBox)g.computeBoundingBox();if(g.boundingBox)box.union(temp.copy(g.boundingBox).applyMatrix4(n.matrixWorld));});if(box.isEmpty())throw Error('模型沒有可見幾何');return box;}
 async function build(id){
@@ -34,9 +34,10 @@ async function build(id){
  const resources=owned(root);if(!controller)mixer=new T.AnimationMixer(root);
  root.traverse(n=>{if(n.isMesh){n.castShadow=true;n.receiveShadow=true;}});
  const display=new T.Group();display.add(root);
+ const duoFx=/(ahong-cowboy|starlight-mage)\.glb$/.test(path)?createDuoCombatVFX(T,display,root,path):null;
  const guanpangFx=/guanpang\.glb$/.test(path)?createGuanpangCombatVFX(T,display,root,clips):null;
  const state=controller?.getState?.()||{},modes=controller?(Array.isArray(state.modes)?state.modes:route?.modes||[]).slice():clips.map(c=>c.name);
- const p={id,s,path,root,display,controller,mixer,clips,resources,route,modes,guanpangFx,hero:id==='hero',durations:Object.assign({},typeof route?.durations==='function'?route.durations():route?.durations,state.durations),base:new T.Vector3(),scale:1,current:null,time:0,plan:null};
+ const p={id,s,path,root,display,controller,mixer,clips,resources,route,modes,duoFx,guanpangFx,hero:id==='hero',durations:Object.assign({},typeof route?.durations==='function'?route.durations():route?.durations,state.durations),base:new T.Vector3(),scale:1,current:null,time:0,plan:null};
  if(p.hero){heroCostumes??=HeroCostumes.create(T);heroCostumes.apply(root,suit);}
  return p;
 }
@@ -53,7 +54,7 @@ function resolve(p,canon){
   const i=canon==='Attack'?0:1,skill=p.s.skills?.[i]||{cost:i?3:1};let plan;
   try{plan=SpiritCombat.attackPlan(p.s,{path:p.path,actions:Object.fromEntries(names.map(n=>[n,null])),controller:p.controller},skill,catalog.skill(p.s.id,i)||{});}catch{plan=null;}
   const mode=find(names,plan?.mode)||catalog.attack(p.s,i,names)?.mode||find(names,canon)||names[0];
-  return{mode,release:plan?.releaseFraction??.48,attack:i};
+  return{mode,release:plan?.procedural?.4:(plan?.releaseFraction??.48),attack:i,vfx:!!window.SpiritVfx?.has(p.path),procedural:!!plan?.procedural};
  }
  const mapped=nativeMap(p,GAME[canon]);
  if(mapped&&find(names,mapped)&&(canon==='Idle'||mapped.toLowerCase()!=='idle')&&!(canon==='Run'&&/walk/i.test(mapped)))return{mode:find(names,mapped)};
@@ -68,13 +69,30 @@ const LOOP=new Set(['Idle','Walk','Run']);
 function duration(p,mode){const clip=p.clips.find(c=>c.name===mode);if(clip)return clip.duration;return p.durations[mode]||catalog?.get(p.s)?.skills?.find(k=>k.animation===mode)?.duration||2.4;}
 function nativeSeek(p,mode,t){const c=p.controller;if(p.path==='avian://jigglypuff'){c.setMode(mode);c.seek(t);}else if(typeof c.seek==='function')c.seek(mode,t);else c.setMode(mode);}
 function start(p,canon){
- const plan=resolve(p,canon);p.plan=plan;p.canon=canon;p.time=0;p.hitDone=false;p.dur=Math.max(.4,duration(p,plan.mode)/(plan.speed||1));
+ const plan=resolve(p,canon);p.plan=plan;p.canon=canon;p.time=0;p.hitDone=false;p.dur=Math.max(.4,duration(p,plan.mode)/(plan.speed||1));if(p.k0)p.root.scale.copy(p.k0);p.fx=null;p.fxT=0;if(plan.procedural)p.dur=canon==='Ultimate'?1.15:.55;
  if(plan.proc==='greet'||plan.proc==='cheer')p.dur=1.8;if(plan.proc==='hurt')p.dur=.9;
  if(p.controller){p.controller.setMode(plan.mode);nativeSeek(p,plan.mode,0);return;}
  p.mixer.stopAllAction();const clip=p.clips.find(c=>c.name===plan.mode);if(!clip)return;
  const a=p.mixer.clipAction(clip);a.reset().setLoop(T.LoopRepeat,Infinity).setEffectiveTimeScale(plan.speed||1).play();p.current=a;p.mixer.update(0);
 }
 // 程序補位動作：疊在模型的 display 群組上
+/* ---------- 擂台特效（與遊戲擂台共用 arena-fx.js） ---------- */
+const fxGroup=new T.Group();scene.add(fxGroup);let fxEffects=[],fxClock=0;
+let dummyActor=null;
+function fxClear(){fxGroup.clear();fxEffects=[];}
+function fxTick(dt){fxClock+=dt;for(let i=fxEffects.length-1;i>=0;i--){const e=fxEffects[i],u=Math.min(1,(fxClock-e.start)/e.duration);e.update(u);if(u>=1){e.done?.();fxEffects.splice(i,1);}}}
+function fxStep(p,dt){
+ if(!p.plan?.vfx||!window.SpiritVfx)return;
+ dummyActor??={root:dummy.g,object:dummy.g,worldSize:new T.Vector3(.9,2.3,.9),path:'dummy'};
+ if(!p.fx){p.fxT=0;p.fx=SpiritVfx.script({T,path:p.path,strong:p.canon==='Ultimate',attacker:{root:p.display,object:p.root,worldSize:p.size,path:p.path,actions:{},height:p.height},defender:dummyActor,group:fxGroup,now:()=>fxClock,add:(d,fn,done)=>fxEffects.push({start:fxClock,duration:d,update:t=>fn(t,t*d),done}),sound:()=>{},color:p.s?.color,element:p.s?.element});}
+ p.fxT+=dt;p.fx.update(Math.min(p.fxT,p.fx.total));
+ const dir=dummy.g.position.clone().sub(p.base).setY(0),dist=dir.length();if(dist>1e-3)dir.divideScalar(dist);
+ const gap=Math.max(1.2,Math.min(3.2,.3*p.height+.35*2.3+.6));
+ p.display.rotation.y=Math.atan2(dir.x,dir.z);
+ p.display.position.addScaledVector(dir,Math.max(0,dist-gap)*p.fx.approach(p.fxT));
+ const ps=p.fx.pose?.(p.fxT);if(ps&&p.k0){p.display.position.y+=ps.y;p.root.scale.set(p.k0.x*(1+ps.sq),p.k0.y*(1-ps.sq),p.k0.z*(1+ps.sq));}else if(p.k0)p.root.scale.copy(p.k0);
+ if(p.fxT>=p.fx.total+.35)p.fx=null;
+}
 function proc(p,u,t){const d=p.display,k=p.scale,h=p.height;d.position.copy(p.base);d.rotation.set(0,0,0);
  switch(p.plan?.proc){
   case 'run':d.position.y+=Math.abs(Math.sin(t*14))*.08*h;d.rotation.x=.12;break;
@@ -122,7 +140,7 @@ function buttons(){
  $('outfit-row').hidden=!packs.some(p=>p.hero);
 }
 function pressed(){document.querySelectorAll('[data-motion]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.motion===motion)));const label=[...MOTIONS,...MOVES].find(m=>m[0]===motion)?.[1]||motion;const fills=packs.filter(p=>p.plan?.proc).map(p=>p.s?.name||'主角');$('now').textContent=label;$('desc').textContent=DESC[motion]+(fills.length&&!['Attack','Ultimate'].includes(motion)?'（'+fills.join('、')+' 以程序動作補上）':'');$('pause').textContent=paused?'繼續':'暫停';$('pause').setAttribute('aria-pressed',String(paused));}
-function play(canon){motion=canon;paused=false;for(const p of packs)start(p,canon);pressed();}
+function play(canon){motion=canon;paused=false;fxClear();for(const p of packs)start(p,canon);pressed();}
 function info(p){selected=p;document.querySelectorAll('#members button').forEach(b=>b.classList.toggle('active',b.dataset.id===p.id));const s=p.s;
  if(!s){$('card-name').textContent='初光旅人';$('card-tag').textContent='主角 · 六種造型';$('element').textContent='—';$('matchup').textContent='—';$('stats').textContent='—';$('skill0').textContent='Attack';$('skill1').textContent='Throw';$('evolution').textContent=C.evolution(null,byId);$('description').textContent='沿用遊戲目前造型；在這裡試穿不會改動存檔。';$('cardPortrait').hidden=true;buttons();return;}
  $('card-name').textContent=s.name;$('card-tag').textContent='No.'+catalog.number(s)+' · '+(s.type||'')+' · '+(s.stageLabel||'第 '+s.stage+' 階段')+' · '+(s.rarity||'普通');
@@ -136,7 +154,7 @@ async function select(fid,write=true){
  const fam=families.find(f=>f.id===fid)||families[0];const token=++serial;$('error').hidden=true;$('status').textContent='載入 '+fam.label+'…';
  try{const built=[];for(const id of fam.ids)built.push(await build(id));if(token!==serial||dead){built.forEach(release);return;}
   packs.forEach(release);packs=built;family=fam;
-  for(const p of packs){scene.add(p.display);p.display.updateMatrixWorld(true);const b=bounds(p.display),h=p.hero?2.55:(p.s.height||1.3),k=h/Math.max(.01,b.max.y-b.min.y);p.root.scale.multiplyScalar(k);p.display.updateMatrixWorld(true);const b2=bounds(p.display),c=b2.getCenter(new T.Vector3());p.root.position.x-=c.x;p.root.position.z-=c.z;p.root.position.y-=b2.min.y;p.size=b2.getSize(new T.Vector3());p.height=p.size.y;p.scale=k;}
+  for(const p of packs){scene.add(p.display);p.display.updateMatrixWorld(true);const b=bounds(p.display),h=p.hero?2.55:(p.s.height||1.3),k=h/Math.max(.01,b.max.y-b.min.y);p.root.scale.multiplyScalar(k);p.k0=p.root.scale.clone();p.display.updateMatrixWorld(true);const b2=bounds(p.display),c=b2.getCenter(new T.Vector3());p.root.position.x-=c.x;p.root.position.z-=c.z;p.root.position.y-=b2.min.y;p.size=b2.getSize(new T.Vector3());p.height=p.size.y;p.scale=k;}
   layout();
   $('members').replaceChildren(...packs.map(p=>{const b=document.createElement('button');b.dataset.id=p.id;b.textContent=p.s?p.s.name:'主角';b.onclick=()=>info(p);return b;}));
   $('model-title').textContent=fam.label;$('lede').textContent=fam.ids.length>1?'同一進化線一起展示（依實際體型比例）；前方的木頭人是招式目標，按招式可看到出手與受擊。':'前方的木頭人是招式目標，按招式可看到出手與受擊。';
@@ -164,9 +182,9 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.max(0,Math.min(.0
     if(!LOOP.has(p.plan.mode)&&t>=p.dur){p.time=0;p.hitDone=false;nativeSeek(p,p.plan.mode,0);}}
    else p.mixer.update(dt);
    if(p.plan.attack!=null){if(u<.05)p.hitDone=false;if(!p.hitDone&&u>=p.plan.release){p.hitDone=true;hitDummy(p);}}
-   p.guanpangFx?.update(p.plan.mode,p.current?.time||0);if(p.hero)heroCostumes.update(p.root,dt);
-   proc(p,u,t);}
-  stepDummy(dt);renderer.render(scene,camera);}catch(e){paused=true;pressed();error(e);}}
+   p.guanpangFx?.update(p.plan.mode,p.current?.time||0);p.duoFx?.update(p.plan.mode,p.current?.time||0);if(p.hero)heroCostumes.update(p.root,dt);
+   proc(p,u,t);fxStep(p,dt);}
+  fxTick(paused?0:dt);stepDummy(dt);renderer.render(scene,camera);}catch(e){paused=true;pressed();error(e);}}
 requestAnimationFrame(frame);
 window.HeroReview={get packs(){return packs;},renderer,scene,camera,play,select,getState:()=>({family:family?.id,motion,members:packs.map(p=>({id:p.id,mode:p.plan?.mode,proc:p.plan?.proc||null,modes:p.modes}))})};
 addEventListener('pagehide',()=>{dead=true;++serial;packs.forEach(release);packs=[];renderer.dispose();});

@@ -1047,31 +1047,31 @@
     "type": "雷",
     "stage": 1,
     "family": "comet-ape",
-    "form": "monkey",
+    "form": "cowboy",
     "color": 13532505,
     "role": "starter",
     "previous": null,
     "next": "monferno",
-    "model": "models/spirits/chimchar.glb",
-    "height": 1.275,
-    "hp": 90,
-    "attack": 26,
+    "model": "models/spirits/ahong-cowboy.glb",
+    "height": 1.7,
+    "hp": 135,
+    "attack": 46,
     "evolvesTo": "monferno",
     "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
-        "power": 26,
+        "name": "雙槍快射",
+        "power": 46,
         "cost": 1
       },
       {
-        "name": "星火共鳴",
-        "power": 52,
+        "name": "六芒追星連射",
+        "power": 100,
         "cost": 3
       }
     ],
-    "description": "星火猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。",
+    "description": "靈巧的雷屬性雙槍牛仔。雙槍快射交替開火；六芒追星連射以六發星光彈壓制對手。",
     "stageLabel": "魔王",
     "cardFrame": "red"
   },
@@ -1083,31 +1083,31 @@
     "type": "念",
     "stage": 2,
     "family": "comet-ape",
-    "form": "monkey",
+    "form": "starlight-mage",
     "color": 13532505,
     "role": "starter",
     "previous": "chimchar",
     "next": "infernape",
-    "model": "models/spirits/monferno.glb",
-    "height": 1.6575,
-    "hp": 125,
-    "attack": 40,
+    "model": "models/spirits/starlight-mage.glb",
+    "height": 2.332,
+    "hp": 145,
+    "attack": 50,
     "evolvesTo": "infernape",
     "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
-        "power": 40,
+        "name": "星芒矢",
+        "power": 50,
         "cost": 1
       },
       {
-        "name": "銅爐共鳴",
-        "power": 80,
+        "name": "天穹星陣",
+        "power": 112,
         "cost": 3
       }
     ],
-    "description": "銅爐猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。",
+    "description": "戴著金框眼鏡的念屬性星輝法師。右手持星辰法杖、左手凝聚星芒矢；天穹星陣展開星環，連續射出藍金星束。",
     "stageLabel": "魔王",
     "cardFrame": "red"
   },

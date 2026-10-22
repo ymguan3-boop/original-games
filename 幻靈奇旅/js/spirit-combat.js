@@ -12,10 +12,13 @@
  const find=(available,name)=>name&&available.find(k=>k.toLowerCase()===name.toLowerCase());
  function attackPlan(species,actor,skill={},configured={}){
   const strong=(skill.cost||0)>=3,path=actor.path||species.model||'',available=Object.keys(actor.actions||{});
+  // 沒有專屬攻擊動作的家族：撞擊＋同色光球（普攻約 0.55 秒）／大光球（絕招約 1.15 秒），動作由 arena-fx.js 以程序方式演出
+  if(window.SpiritVfx?.keyOf?.(path)==='orb')return{mode:'Idle',duration:strong?1.15:.55,nativeFx:true,procedural:true,releaseFraction:2};
   let mode=configured.animation||configured.mode,duration=Number(configured.duration)||0,nativeFx=false;
   if(window.ReplacementSpirits?.has(path)){mode=ReplacementSpirits.attack(path,strong);duration=ReplacementSpirits.duration(path,strong);nativeFx=true;}else if(window.AvianSpirits?.has(path)){mode=AvianSpirits.attack(path,strong);duration=AvianSpirits.duration(path,strong);nativeFx=true;}else if(path.startsWith('leaf-frog://')){mode=window.FrogSpirits.attack(path,strong,skill);duration=window.FrogSpirits.duration(path,strong,skill);nativeFx=true;}
   else if(window.SpiritVfx?.has(path)){mode=strong?'Ultimate':'Attack';nativeFx=true;}
   else if(path.startsWith('robot-evolution://')){mode=window.RobotSpirits.attack(path,strong);duration=window.RobotSpirits.duration(path,strong);nativeFx=true;}
+  else if(/(ahong-cowboy|starlight-mage)\.glb$/.test(path))nativeFx=!!actor.duoFx;
   else if(/guanpang\.glb$/.test(path))nativeFx=!!actor.guanpangFx;
   else if(/fire-monkey-elder\.glb$/.test(path))nativeFx=true;
   else if(/fire-bear-3\.glb$/.test(path)&&!strong)nativeFx=true;   // 大熊的霸體是自身增益，不射出投射物   // C老猴：金箍棒近身打擊，不另外射出投射物（C囝仔的火球出手由遊戲火系投射物接手）
