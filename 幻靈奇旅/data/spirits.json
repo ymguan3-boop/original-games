@@ -123,12 +123,12 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "椒香啄擊",
+        "name": "啄擊",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "暖椒共鳴",
+        "name": "辣椒投擲",
         "power": 52,
         "cost": 3
       }
@@ -158,12 +158,12 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "雙椒連啄",
+        "name": "啄擊",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "雙椒熱舞",
+        "name": "雙翼連投",
         "power": 80,
         "cost": 3
       }
@@ -193,12 +193,12 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "豐椒旋翼",
+        "name": "啄擊",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "百椒暖焰",
+        "name": "烈焰辣椒雨",
         "power": 108,
         "cost": 3
       }
@@ -414,8 +414,8 @@
     "id": "cyndaquil",
     "speciesId": "cyndaquil",
     "name": "A1",
-    "element": "fire",
-    "type": "焰",
+    "element": "electric",
+    "type": "雷",
     "stage": 1,
     "family": "robot-evolution",
     "form": "robot",
@@ -448,8 +448,8 @@
     "id": "quilava",
     "speciesId": "quilava",
     "name": "A傑特",
-    "element": "fire",
-    "type": "焰",
+    "element": "electric",
+    "type": "雷",
     "stage": 2,
     "family": "robot-evolution",
     "form": "robot",
@@ -482,8 +482,8 @@
     "id": "typhlosion",
     "speciesId": "typhlosion",
     "name": "假維斯",
-    "element": "fire",
-    "type": "焰",
+    "element": "electric",
+    "type": "雷",
     "stage": 3,
     "family": "robot-evolution",
     "form": "robot",
@@ -618,8 +618,8 @@
     "id": "treecko",
     "speciesId": "treecko",
     "name": "小麻",
-    "element": "normal",
-    "type": "特殊",
+    "element": "fairy",
+    "type": "光",
     "stage": 1,
     "family": "avian-evolution",
     "form": "bird",
@@ -629,20 +629,20 @@
     "next": "grovyle",
     "model": "avian://treecko",
     "height": 1.08,
-    "hp": 90,
-    "attack": 26,
+    "hp": 108,
+    "attack": 33,
     "evolvesTo": null,
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "好奇啄擊",
-        "power": 26,
+        "power": 33,
         "cost": 1
       },
       {
         "name": "絨羽小旋風",
-        "power": 52,
+        "power": 66,
         "cost": 3
       }
     ],
@@ -656,8 +656,8 @@
     "id": "grovyle",
     "speciesId": "grovyle",
     "name": "咕咕",
-    "element": "normal",
-    "type": "特殊",
+    "element": "fairy",
+    "type": "光",
     "stage": 2,
     "family": "avian-evolution",
     "form": "bird",
@@ -667,20 +667,20 @@
     "next": "sceptile",
     "model": "avian://grovyle",
     "height": 1.5,
-    "hp": 125,
-    "attack": 40,
+    "hp": 143,
+    "attack": 47,
     "evolvesTo": null,
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "雞冠衝撞",
-        "power": 40,
+        "power": 47,
         "cost": 1
       },
       {
         "name": "晨曦啼鳴",
-        "power": 80,
+        "power": 94,
         "cost": 3
       }
     ],
@@ -694,8 +694,8 @@
     "id": "sceptile",
     "speciesId": "sceptile",
     "name": "小鷹",
-    "element": "normal",
-    "type": "特殊",
+    "element": "fairy",
+    "type": "光",
     "stage": 3,
     "family": "avian-evolution",
     "form": "bird",
@@ -705,20 +705,20 @@
     "next": "palkia",
     "model": "avian://sceptile",
     "height": 1.85,
-    "hp": 160,
-    "attack": 54,
+    "hp": 178,
+    "attack": 61,
     "evolvesTo": "palkia",
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "銳喙啄擊",
-        "power": 54,
+        "power": 61,
         "cost": 1
       },
       {
         "name": "幼鷹撲擊",
-        "power": 108,
+        "power": 122,
         "cost": 3
       }
     ],
@@ -731,18 +731,18 @@
   {
     "id": "torchic",
     "speciesId": "torchic",
-    "name": "燈茸雀",
-    "element": "fire",
-    "type": "焰",
+    "name": "汪汪犬",
+    "element": "water",
+    "type": "潮",
     "stage": 1,
-    "family": "lantern-bird",
-    "form": "bird",
-    "color": 14324047,
+    "family": "water-dog",
+    "form": "dog",
+    "color": 3439064,
     "role": "starter",
     "previous": null,
     "next": "combusken",
-    "model": "models/spirits/torchic.glb",
-    "height": 1.275,
+    "model": "models/spirits/water-dog-1.glb",
+    "height": 1.2,
     "hp": 90,
     "attack": 26,
     "evolvesTo": "combusken",
@@ -750,33 +750,33 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "撲咬",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "燈茸共鳴",
+        "name": "汪汪水彈",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "燈茸雀是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "大頭垂耳的水系幼犬，頭頂三根藍呆毛、尾巴是一道捲起的水流。開心時會仰頭汪汪叫，吐出一顆顆水彈。"
   },
   {
     "id": "combusken",
     "speciesId": "combusken",
-    "name": "霞羽鶴",
-    "element": "fire",
-    "type": "焰",
+    "name": "浪鳴犬",
+    "element": "water",
+    "type": "潮",
     "stage": 2,
-    "family": "lantern-bird",
-    "form": "bird",
-    "color": 14324047,
+    "family": "water-dog",
+    "form": "dog",
+    "color": 3439064,
     "role": "starter",
     "previous": "torchic",
     "next": "blaziken",
-    "model": "models/spirits/combusken.glb",
-    "height": 1.6575,
+    "model": "models/spirits/water-dog-2.glb",
+    "height": 1.75,
     "hp": 125,
     "attack": 40,
     "evolvesTo": "blaziken",
@@ -784,58 +784,58 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "雙頭連咬",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "霞羽共鳴",
+        "name": "雙頭激流",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "霞羽鶴是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "兩顆狼頭的水系犬，一顆沉著、一顆好鬥。兩頭同時噴出水柱交叉掃射，甩尾還能劈出弧形水刃。"
   },
   {
     "id": "blaziken",
     "speciesId": "blaziken",
-    "name": "曦焰長羽",
-    "element": "fire",
-    "type": "焰",
+    "name": "三瀾犬",
+    "element": "water",
+    "type": "潮",
     "stage": 3,
-    "family": "lantern-bird",
-    "form": "bird",
-    "color": 14324047,
+    "family": "water-dog",
+    "form": "dog",
+    "color": 3439064,
     "role": "starter",
     "previous": "combusken",
     "next": null,
-    "model": "models/spirits/blaziken.glb",
-    "height": 2.15475,
+    "model": "models/spirits/water-dog-3.glb",
+    "height": 2.8,
     "hp": 160,
     "attack": 54,
     "evolvesTo": null,
     "rarity": "珍稀",
-    "motionType": "fly",
+    "motionType": "walk",
     "skills": [
       {
-        "name": "焰光輕擊",
+        "name": "三頭連咬",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "曦焰共鳴",
+        "name": "三瀾海嘯",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "曦焰長羽是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "三頭的水系守護犬，胸前淺藍鬃毛會發光。蹲低蓄力後人立長嚎，喚來捲起的海嘯，三顆頭再各喚一道水柱。"
   },
   {
     "id": "mudkip",
     "speciesId": "mudkip",
     "name": "小熊",
     "element": "fire",
-    "type": "火",
+    "type": "焰",
     "stage": 1,
     "family": "fire-bear",
     "form": "bear",
@@ -869,7 +869,7 @@
     "speciesId": "marshtomp",
     "name": "壯熊",
     "element": "fire",
-    "type": "火",
+    "type": "焰",
     "stage": 2,
     "family": "fire-bear",
     "form": "bear",
@@ -903,7 +903,7 @@
     "speciesId": "swampert",
     "name": "大熊",
     "element": "fire",
-    "type": "火",
+    "type": "焰",
     "stage": 3,
     "family": "fire-bear",
     "form": "bear",
@@ -921,13 +921,13 @@
     "skills": [
       {
         "name": "霸體",
-        "power": 27,
-        "cost": 1,
         "buff": {
           "atk": 0.3,
           "def": 0.3,
           "turns": 2
-        }
+        },
+        "power": 27,
+        "cost": 1
       },
       {
         "name": "熔岩大劍",
@@ -1042,9 +1042,9 @@
   {
     "id": "chimchar",
     "speciesId": "chimchar",
-    "name": "星火猿",
-    "element": "fire",
-    "type": "焰",
+    "name": "阿宏牛仔",
+    "element": "electric",
+    "type": "雷",
     "stage": 1,
     "family": "comet-ape",
     "form": "monkey",
@@ -1057,7 +1057,7 @@
     "hp": 90,
     "attack": 26,
     "evolvesTo": "monferno",
-    "rarity": "普通",
+    "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
@@ -1071,14 +1071,16 @@
         "cost": 3
       }
     ],
-    "description": "星火猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "星火猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。",
+    "stageLabel": "魔王",
+    "cardFrame": "red"
   },
   {
     "id": "monferno",
     "speciesId": "monferno",
-    "name": "銅爐猿",
-    "element": "fire",
-    "type": "焰",
+    "name": "藍金星輝法師",
+    "element": "psychic",
+    "type": "念",
     "stage": 2,
     "family": "comet-ape",
     "form": "monkey",
@@ -1091,7 +1093,7 @@
     "hp": 125,
     "attack": 40,
     "evolvesTo": "infernape",
-    "rarity": "進階",
+    "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
@@ -1105,7 +1107,9 @@
         "cost": 3
       }
     ],
-    "description": "銅爐猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "銅爐猿是初光之境的焰屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。",
+    "stageLabel": "魔王",
+    "cardFrame": "red"
   },
   {
     "id": "infernape",
@@ -1122,20 +1126,20 @@
     "next": null,
     "model": "models/spirits/guanpang.glb",
     "height": 2.7,
-    "hp": 160,
-    "attack": 54,
+    "hp": 195,
+    "attack": 68,
     "evolvesTo": null,
     "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
         "name": "震地斧擊",
-        "power": 54,
+        "power": 68,
         "cost": 1
       },
       {
         "name": "天墜裂地",
-        "power": 108,
+        "power": 136,
         "cost": 3
       }
     ],
@@ -1147,8 +1151,8 @@
     "id": "piplup",
     "speciesId": "piplup",
     "name": "雛鳥",
-    "element": "water",
-    "type": "潮",
+    "element": "fairy",
+    "type": "光",
     "stage": 1,
     "family": "moon-owl",
     "form": "bird",
@@ -1181,8 +1185,8 @@
     "id": "prinplup",
     "speciesId": "prinplup",
     "name": "青羽鳥",
-    "element": "water",
-    "type": "潮",
+    "element": "fairy",
+    "type": "光",
     "stage": 2,
     "family": "moon-owl",
     "form": "bird",
@@ -1215,8 +1219,8 @@
     "id": "empoleon",
     "speciesId": "empoleon",
     "name": "天翼王",
-    "element": "water",
-    "type": "潮",
+    "element": "fairy",
+    "type": "光",
     "stage": 3,
     "family": "moon-owl",
     "form": "bird",
@@ -1249,8 +1253,8 @@
     "id": "articuno",
     "speciesId": "articuno",
     "name": "大眼蛙",
-    "element": "ice",
-    "type": "霜",
+    "element": "water",
+    "type": "潮",
     "stage": 1,
     "family": "leaf-frog",
     "form": "frog",
@@ -1260,25 +1264,20 @@
     "next": "moltres",
     "model": "leaf-frog://articuno",
     "height": 1.85,
-    "hp": 210,
-    "attack": 54,
+    "hp": 108,
+    "attack": 33,
     "evolvesTo": "moltres",
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "普通撞擊",
-        "power": 54,
-        "cost": 1
-      },
-      {
-        "name": "泡泡吐息",
-        "power": 54,
+        "power": 33,
         "cost": 1
       },
       {
         "name": "泡泡連彈",
-        "power": 108,
+        "power": 66,
         "cost": 3
       }
     ],
@@ -1291,7 +1290,7 @@
     "speciesId": "zapdos",
     "name": "C老猴",
     "element": "fire",
-    "type": "火",
+    "type": "焰",
     "stage": 2,
     "family": "fire-monkey",
     "form": "monkey",
@@ -1301,20 +1300,20 @@
     "next": null,
     "model": "models/spirits/fire-monkey-elder.glb",
     "height": 2.65,
-    "hp": 210,
-    "attack": 54,
+    "hp": 143,
+    "attack": 47,
     "evolvesTo": null,
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "伸棍打",
-        "power": 54,
+        "power": 47,
         "cost": 1
       },
       {
         "name": "三連棍",
-        "power": 108,
+        "power": 94,
         "cost": 3
       }
     ],
@@ -1326,8 +1325,8 @@
     "id": "moltres",
     "speciesId": "moltres",
     "name": "冒險蛙",
-    "element": "fire",
-    "type": "焰",
+    "element": "grass",
+    "type": "森",
     "stage": 2,
     "family": "leaf-frog",
     "form": "frog",
@@ -1337,25 +1336,20 @@
     "next": null,
     "model": "leaf-frog://moltres",
     "height": 2.65,
-    "hp": 210,
-    "attack": 54,
+    "hp": 143,
+    "attack": 47,
     "evolvesTo": null,
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "普通側踢",
-        "power": 54,
-        "cost": 1
-      },
-      {
-        "name": "葉鏢投擲",
-        "power": 54,
+        "power": 47,
         "cost": 1
       },
       {
         "name": "迴旋葉風",
-        "power": 108,
+        "power": 94,
         "cost": 3
       }
     ],
@@ -1368,7 +1362,7 @@
     "speciesId": "raikou",
     "name": "C囝仔",
     "element": "fire",
-    "type": "火",
+    "type": "焰",
     "stage": 1,
     "family": "fire-monkey",
     "form": "monkey",
@@ -1378,20 +1372,20 @@
     "next": "zapdos",
     "model": "models/spirits/fire-monkey-kid.glb",
     "height": 1.85,
-    "hp": 210,
-    "attack": 54,
+    "hp": 108,
+    "attack": 33,
     "evolvesTo": "zapdos",
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "小火球",
-        "power": 54,
+        "power": 33,
         "cost": 1
       },
       {
         "name": "大火球",
-        "power": 108,
+        "power": 66,
         "cost": 3
       }
     ],
@@ -1414,20 +1408,20 @@
     "next": "suicune",
     "model": "models/spirits/water-caterpillar.glb",
     "height": 1.25,
-    "hp": 210,
-    "attack": 54,
+    "hp": 108,
+    "attack": 33,
     "evolvesTo": "suicune",
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "頭槌水彈",
-        "power": 54,
+        "power": 33,
         "cost": 1
       },
       {
         "name": "吐絲結網",
-        "power": 108,
+        "power": 66,
         "cost": 3
       }
     ],
@@ -1450,24 +1444,24 @@
     "next": null,
     "model": "models/spirits/water-fairy.glb",
     "height": 2.1,
-    "hp": 210,
-    "attack": 54,
+    "hp": 143,
+    "attack": 47,
     "evolvesTo": null,
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
-        "name": "水球推擊",
-        "power": 54,
+        "name": "泡泡彈",
+        "power": 47,
         "cost": 1
       },
       {
-        "name": "水之花綻",
-        "power": 108,
+        "name": "潮汐花綻",
+        "power": 94,
         "cost": 3
       }
     ],
-    "description": "水毛蟲蛻變而成的水之精靈，頂著水滴觸角與半透明長髮，四片水翼輕輕拍動。大絕招會綻放水蓮花並降下水雨。",
+    "description": "以人形骨架重製的水仙子：鳳眼、捲捲鬢角與馬尾，水滴形透明翅膀，全程在半空飛行、身邊有水球環繞。普攻捧出水泡推向對手，大絕旋身衝上高空，水波如花綻放並喚出水柱。",
     "stageLabel": "守護者",
     "cardFrame": "purple"
   },
@@ -1520,20 +1514,20 @@
     "next": null,
     "model": "models/spirits/goldfish-king.glb",
     "height": 1.6,
-    "hp": 125,
-    "attack": 40,
+    "hp": 143,
+    "attack": 47,
     "evolvesTo": null,
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "水彈",
-        "power": 40,
+        "power": 47,
         "cost": 1
       },
       {
         "name": "翻身金色粗水柱",
-        "power": 80,
+        "power": 94,
         "cost": 3
       }
     ],
@@ -1554,20 +1548,20 @@
     "next": null,
     "model": "models/spirits/goldfish-queen.glb",
     "height": 1.6,
-    "hp": 125,
-    "attack": 40,
+    "hp": 143,
+    "attack": 47,
     "evolvesTo": null,
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "水彈",
-        "power": 40,
+        "power": 47,
         "cost": 1
       },
       {
         "name": "翻身珍珠粗水柱",
-        "power": 80,
+        "power": 94,
         "cost": 3
       }
     ],
@@ -1588,27 +1582,27 @@
     "next": null,
     "model": "green-eye-bat://dialga",
     "height": 2.1,
-    "hp": 210,
-    "attack": 54,
+    "hp": 178,
+    "attack": 61,
     "evolvesTo": null,
     "rarity": "傳說",
     "motionType": "hover",
     "skills": [
       {
         "name": "迷幻光波",
-        "power": 54,
+        "power": 61,
         "cost": 1
       },
       {
         "name": "毒光雷彈",
-        "power": 108,
-        "cost": 3,
         "status": {
           "type": "poison",
           "turns": 3,
           "damageRatio": 0.04,
           "stacking": "refresh"
-        }
+        },
+        "power": 122,
+        "cost": 3
       }
     ],
     "description": "四片蝠翼環繞圓潤綠色獨眼身軀的特殊基礎幻靈。迷幻光波向前擴散；毒光雷彈纏繞電光，命中附加中毒：持續 3 回合，每回合扣除最大 HP 4%，重複命中刷新時間、不疊加。",
@@ -1619,8 +1613,8 @@
     "id": "palkia",
     "speciesId": "palkia",
     "name": "大朋",
-    "element": "normal",
-    "type": "特殊",
+    "element": "fairy",
+    "type": "光",
     "stage": 4,
     "family": "avian-evolution",
     "form": "bird",
@@ -1630,20 +1624,20 @@
     "next": null,
     "model": "avian://palkia",
     "height": 2.55,
-    "hp": 210,
-    "attack": 54,
+    "hp": 195,
+    "attack": 68,
     "evolvesTo": null,
     "rarity": "稀有",
     "motionType": "walk",
     "skills": [
       {
         "name": "強力拍翼",
-        "power": 58,
+        "power": 68,
         "cost": 1
       },
       {
         "name": "高空衝撞",
-        "power": 116,
+        "power": 136,
         "cost": 3
       }
     ],
@@ -1656,8 +1650,8 @@
     "id": "giratina",
     "speciesId": "giratina",
     "name": "小黃",
-    "element": "normal",
-    "type": "一般",
+    "element": "electric",
+    "type": "雷",
     "stage": 1,
     "family": "rabbit-evolution",
     "form": "rabbit",
@@ -1667,20 +1661,20 @@
     "next": "raichu",
     "model": "rabbit-evolution://giratina",
     "height": 1.65,
-    "hp": 210,
-    "attack": 54,
+    "hp": 108,
+    "attack": 33,
     "evolvesTo": "raichu",
     "rarity": "稀有",
     "motionType": "hop",
     "skills": [
       {
         "name": "投擲胡蘿蔔",
-        "power": 54,
+        "power": 33,
         "cost": 1
       },
       {
         "name": "跳撞",
-        "power": 108,
+        "power": 66,
         "cost": 3
       }
     ],
@@ -1709,21 +1703,21 @@
     "next": null,
     "model": "outouman://pikachu",
     "height": 1.275,
-    "hp": 90,
-    "attack": 54,
+    "hp": 178,
+    "attack": 61,
     "evolvesTo": null,
     "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
         "name": "白色光波",
-        "power": 60,
+        "power": 61,
         "cost": 1
       },
       {
         "name": "彩虹光束",
-        "power": 120,
-        "cost": 4
+        "power": 122,
+        "cost": 3
       }
     ],
     "description": "歐頭慢是身穿銀紅裝甲的雷屬性傳說守護者，胸前藍燈閃爍。白色光波能震盪對手，彩虹光束凝聚七彩能量攻擊；遭遇投球時會向前翻滾閃避。",
@@ -1735,7 +1729,7 @@
     "speciesId": "mew",
     "name": "小飯團",
     "element": "psychic",
-    "type": "星",
+    "type": "念",
     "stage": 1,
     "family": "riceball-spirit",
     "form": "riceball",
@@ -1745,20 +1739,20 @@
     "next": null,
     "model": "riceball://mew",
     "height": 1.275,
-    "hp": 90,
-    "attack": 26,
+    "hp": 178,
+    "attack": 61,
     "evolvesTo": null,
     "rarity": "傳說",
     "motionType": "roll",
     "skills": [
       {
         "name": "飯團滾擊",
-        "power": 26,
+        "power": 61,
         "cost": 1
       },
       {
         "name": "紫波連環",
-        "power": 52,
+        "power": 122,
         "cost": 3
       }
     ],
@@ -1771,7 +1765,7 @@
     "speciesId": "wigglytuff",
     "name": "小山",
     "element": "fairy",
-    "type": "夢",
+    "type": "光",
     "stage": 1,
     "family": "xiaoshan-spirit",
     "form": "mountain",
@@ -1781,20 +1775,20 @@
     "next": null,
     "model": "xiaoshan://wigglytuff",
     "height": 1.275,
-    "hp": 90,
-    "attack": 26,
+    "hp": 178,
+    "attack": 61,
     "evolvesTo": null,
     "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
         "name": "木頭人驚跳",
-        "power": 26,
+        "power": 61,
         "cost": 1
       },
       {
         "name": "小山震地",
-        "power": 52,
+        "power": 122,
         "cost": 3
       }
     ],
@@ -1807,7 +1801,7 @@
     "speciesId": "blissey",
     "name": "光鳳鷹",
     "element": "fairy",
-    "type": "夢",
+    "type": "光",
     "stage": 1,
     "family": "light-phoenix",
     "form": "phoenix",
@@ -1817,20 +1811,20 @@
     "next": null,
     "model": "light-phoenix://blissey",
     "height": 3.8,
-    "hp": 90,
-    "attack": 26,
+    "hp": 178,
+    "attack": 61,
     "evolvesTo": null,
     "rarity": "傳說",
     "motionType": "fly",
     "skills": [
       {
         "name": "振翼光波",
-        "power": 26,
+        "power": 61,
         "cost": 1
       },
       {
         "name": "鳳羽連射",
-        "power": 52,
+        "power": 122,
         "cost": 3
       }
     ],
@@ -1853,20 +1847,20 @@
     "next": null,
     "model": "rabbit-evolution://raichu",
     "height": 2.05,
-    "hp": 125,
-    "attack": 40,
+    "hp": 143,
+    "attack": 47,
     "evolvesTo": null,
     "rarity": "稀有",
     "motionType": "run",
     "skills": [
       {
         "name": "投擲胡蘿蔔",
-        "power": 40,
+        "power": 47,
         "cost": 1
       },
       {
         "name": "電吉他二連擊",
-        "power": 80,
+        "power": 94,
         "cost": 3
       }
     ],
@@ -1879,8 +1873,8 @@
     "id": "caterpie",
     "speciesId": "caterpie",
     "name": "銅寶箱",
-    "element": "grass",
-    "type": "森",
+    "element": "fairy",
+    "type": "光",
     "stage": 1,
     "family": "chest-spirit",
     "form": "chest",
@@ -1913,8 +1907,8 @@
     "id": "metapod",
     "speciesId": "metapod",
     "name": "銀寶箱",
-    "element": "grass",
-    "type": "森",
+    "element": "fairy",
+    "type": "光",
     "stage": 2,
     "family": "chest-spirit",
     "form": "chest",
@@ -1947,8 +1941,8 @@
     "id": "butterfree",
     "speciesId": "butterfree",
     "name": "金寶箱",
-    "element": "grass",
-    "type": "森",
+    "element": "fairy",
+    "type": "光",
     "stage": 3,
     "family": "chest-spirit",
     "form": "chest",
@@ -1981,8 +1975,8 @@
     "id": "weedle",
     "speciesId": "weedle",
     "name": "破書",
-    "element": "earth",
-    "type": "岩",
+    "element": "psychic",
+    "type": "念",
     "stage": 1,
     "family": "book-spirit",
     "form": "book",
@@ -2015,8 +2009,8 @@
     "id": "kakuna",
     "speciesId": "kakuna",
     "name": "論語",
-    "element": "earth",
-    "type": "岩",
+    "element": "psychic",
+    "type": "念",
     "stage": 2,
     "family": "book-spirit",
     "form": "book",
@@ -2049,8 +2043,8 @@
     "id": "beedrill",
     "speciesId": "beedrill",
     "name": "辭海",
-    "element": "earth",
-    "type": "岩",
+    "element": "psychic",
+    "type": "念",
     "stage": 3,
     "family": "book-spirit",
     "form": "book",
@@ -2094,20 +2088,20 @@
     "next": null,
     "model": "models/spirits/water-dragon-king.glb",
     "height": 3.2,
-    "hp": 240,
-    "attack": 62,
+    "hp": 195,
+    "attack": 68,
     "evolvesTo": null,
     "rarity": "傳說",
     "motionType": "walk",
     "skills": [
       {
         "name": "龍咬水彈",
-        "power": 62,
+        "power": 68,
         "cost": 1
       },
       {
         "name": "盤旋怒濤龍息",
-        "power": 124,
+        "power": 136,
         "cost": 3
       }
     ],
@@ -2119,8 +2113,8 @@
     "id": "jigglypuff",
     "speciesId": "jigglypuff",
     "name": "三色蛋",
-    "element": "normal",
-    "type": "特殊",
+    "element": "fairy",
+    "type": "光",
     "stage": 1,
     "family": "avian-evolution",
     "form": "egg",
@@ -2130,24 +2124,24 @@
     "next": "treecko",
     "model": "avian://jigglypuff",
     "height": 1.3,
-    "hp": 90,
-    "attack": 26,
+    "hp": 178,
+    "attack": 61,
     "evolvesTo": null,
     "rarity": "傳說",
     "motionType": "stationary",
     "skills": [
       {
         "name": "武裝",
+        "effect": "eggArmour",
         "power": 0,
-        "cost": 1,
-        "effect": "eggArmour"
+        "cost": 1
       },
       {
         "name": "回滿",
-        "power": 0,
-        "cost": 3,
         "effect": "eggRecover",
-        "cooldownTurns": 2
+        "cooldownTurns": 2,
+        "power": 0,
+        "cost": 3
       }
     ],
     "description": "靜止不移動的傳說三色蛋，依最新版固定捕捉率 30%。每次捕捉失敗時，會隨機當場變為小麻、咕咕或小鷹。武裝使對手本場攻擊減半，回滿恢復最大 HP 的 90%，每 2 回合可用 1 次。",

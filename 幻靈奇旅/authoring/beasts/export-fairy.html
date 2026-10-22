@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>匯出水仙子</title></head>
+<body style="font:14px system-ui;padding:16px">
+<h1>幻靈奇旅 水仙子匯出（GLB）</h1>
+<p id="log">準備中…</p>
+<div id="thumbs" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+<script src="../kid-hero/kid-model.js"></script>
+<script src="../kid-hero/props.js"></script>
+<script src="../kid-hero/actions.baked.js"></script>
+<script src="beasts-model.js"></script>
+<script src="beasts-actions.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+// 六隻（小熊／壯熊／大熊、小貓娘／靈貓姬／雙刃貓女）匯出成遊戲用 GLB，並依模型算出卡片肖像。
+// 動作名稱對應遊戲既有動畫：Idle / Walk / Run / Attack（普攻）/ Ultimate（大絕）/ Hurt / React / Wave / Jump。
+// 尾巴擺動、火焰跳動烘焙在動作裡；貓女的刀是模型的一部分（掛在手上）；大熊的大劍背在背上、大絕時拔到手上（以縮放切換）。
+import * as THREE from 'three';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { buildBird as buildModel, buildClips, DETAIL } from '../kid-hero/builder.js';
+const BE = window.BEASTS, BA = window.BEAST_ACTIONS;
+const log = (t) => { document.getElementById('log').textContent = t; console.log(t); };
+const FILE = { fairy: 'water-fairy', bear1: 'fire-bear-1', bear2: 'fire-bear-2', bear3: 'fire-bear-3', cat1: 'cat-girl-1', cat2: 'cat-girl-2', cat3: 'cat-girl-3' };
+// 肖像取景（朝向 dir、取模型上半部 frac、zoom 越大越遠）與背景漸層
+const SHOT = {
+  bear1: { frac: 1.0, zoom: 1.2, dir: [0.7, 0.28, 1], pose: ['Idle', 1.0] },
+  bear2: { frac: 1.0, zoom: 1.2, dir: [0.7, 0.26, 1], pose: ['Idle', 1.0] },
+  bear3: { frac: 0.78, zoom: 1.15, dir: [0.55, 0.2, 1], pose: ['Idle', 0.5] },
+  cat1: { frac: 0.82, zoom: 1.12, dir: [0.4, 0.15, 1], pose: ['Idle', 0.5], halfW: 0.3 },
+  cat2: { frac: 0.55, zoom: 1.15, dir: [0.4, 0.15, 1], pose: ['Idle', 0.5], halfW: 0.35 },
+  cat3: { frac: 0.45, zoom: 1.15, dir: [0.35, 0.12, 1], pose: ['Idle', 0.5], halfW: 0.35 },
+};
+const BG = { bear: ['#FFE9CC', '#F2B27E'], cat: ['#F9D3DA', '#E49CAC'] };
+const OFF = [0.0001, 0.0001, 0.0001];
+
+function gameMaterial(m) {
+  m.roughnessMap = null; m.bumpMap = null;
+  if (m.metalness > 0.3) { m.metalness = 0.3; m.roughness = Math.max(m.roughness, 0.3); }
+}
+function mergeByJoint(root) {
+  root.updateMatrixWorld(true);
+  const isJoint = (o) => o === root || !!o.name;
+  const groups = new Map();
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    let j = o.parent; while (!isJoint(j)) j = j.parent;
+    if (!groups.has(j)) groups.set(j, new Map());
+    const g = groups.get(j); if (!g.has(o.material.uuid)) g.set(o.material.uuid, []); g.get(o.material.uuid).push(o);
+  });
+  const inv = new THREE.Matrix4();
+  let before = 0, after = 0;
+  for (const [j, byKey] of groups) {
+    inv.copy(j.matrixWorld).invert();
+    for (const meshes of byKey.values()) {
+      before += meshes.length; after++;
+      const geos = meshes.map((m) => {
+        const g = m.geometry.clone();
+        for (const name of Object.keys(g.attributes)) if (!['position', 'normal'].includes(name)) g.deleteAttribute(name);
+        if (!g.attributes.normal) g.computeVertexNormals();
+        if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]);
+        g.morphAttributes = {};
+        g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld));
+        return g;
+      });
+      const merged = mergeGeometries(geos, false);
+      if (!merged) throw Error('合併失敗：' + j.name);
+      const mesh = new THREE.Mesh(merged, meshes[0].material);
+      mesh.userData.part = { ...meshes[0].userData.part };
+      meshes.forEach((m) => m.parent.remove(m));
+      j.add(mesh);
+    }
+  }
+  const prune = (o) => { [...o.children].forEach(prune); if (o !== root && !o.name && !o.isMesh && o.children.length === 0) o.parent.remove(o); };
+  prune(root);
+  return before + ' → ' + after;
+}
+const exportGLB = (scene, animations) => new Promise((resolve, reject) => new GLTFExporter().parse(scene, resolve, reject, { binary: true, animations, onlyVisible: false }));
+async function save(name, buf) {
+  const r = await fetch('/__save/game/' + name, { method: 'PUT', body: buf });
+  if (!r.ok) throw Error('save failed ' + name);
+}
+
+// 低面數標記：火焰與細管（遠看的零件）
+function markLow(parts) { (function mark(n) { if ((n.t === 'ell' && /^flame/.test(n.m)) || (n.t === 'torus' && n.tube <= 0.02)) n.low = 1; (n.c || []).forEach(mark); })({ c: parts }); }
+function buildChar(who) {
+  const ch = BE.CHARACTERS[who];
+  const model = buildModel(ch);
+  model.name = FILE[who];
+  for (const [socket, pid] of Object.entries(ch.hold || {})) {
+    const p = buildModel({ id: pid, materials: BE.MATERIALS, parts: BE.PROPS[pid].parts }); p.name = 'prop_' + pid;
+    model.getObjectByName(socket).add(p);
+  }
+  model.traverse((o) => { if (o.isMesh) { gameMaterial(o.material); o.material.name = o.material.name || o.material.userData.key || 'mat'; } });
+  return { ch, model };
+}
+// 遊戲動作清單：名稱 → 動作
+function actionList(who) {
+  const ch = BE.CHARACTERS[who], A = BA[who], by = (id) => A.basics.find((b) => b.id === id);
+  const list = [['Idle', by('idle')], ['Walk', by('walk')], ['Run', by('run')], ['Hurt', by('hurt')], ['Attack', A.moves[0]], ['Ultimate', A.moves[1]]];
+  if (ch.rig === 'quad') list.push(['React', by('react')]);
+  else { list.push(['React', by('wave')], ['Wave', by('wave')], ['Jump', by('cheer1')], ['Celebrate', by('cheer1')]); }
+  return list.map(([name, a]) => { if (!a) throw Error('缺少動作 ' + who + ' ' + name); return { ...JSON.parse(JSON.stringify(a)), id: name }; });
+}
+// 尾巴擺動＋火焰跳動（每個動作整圈循環）
+function addIdleMotion(acts, model, who) {
+  const tail = Array.from({ length: BE.TAIL_JOINTS }, (_, i) => model.getObjectByName('tail' + i)).filter(Boolean);
+  const flame = model.getObjectByName('tailFlame');
+  for (const a of acts) {
+    const n = a.frames, dur = n / a.fps, cycles = Math.max(1, Math.round(dur / 2.6));
+    tail.forEach((_, i) => { const r = []; for (let f = 0; f <= n; f++) { const ph = 2 * Math.PI * cycles * (f / n) - i * 0.55; r.push([0.07 * Math.sin(ph + 1), 0.12 * Math.sin(ph), 0.08 * Math.sin(ph * 0.8)]); } a.tracks['tail' + i] = { r }; });
+    if (flame) {
+      const s = [], fc = Math.max(2, Math.round(dur * 2.5));
+      for (let f = 0; f <= n; f++) { const v = 1 + 0.12 * Math.sin(2 * Math.PI * fc * (f / n)) + 0.06 * Math.sin(2 * Math.PI * fc * 1.6 * (f / n)); s.push([1 / Math.sqrt(v), v, 1 / Math.sqrt(v)]); }
+      (a.tracks.tailFlame ||= {}).s = s;
+    }
+  }
+}
+
+async function build(who) {
+  DETAIL.k = 0.32;
+  markLow(BE.CHARACTERS[who].parts);
+  const { ch, model } = buildChar(who);
+  const acts = actionList(who);
+  addIdleMotion(acts, model, who);
+  const merged = mergeByJoint(model);
+  const clips = buildClips(acts, model);
+  const glb = await exportGLB(model, Object.values(clips));
+  await save('models/' + FILE[who] + '.glb', glb);
+  const meta = acts.map((a) => a.id + ':' + (a.frames / a.fps).toFixed(2)).join(' ');
+  return { who, bytes: glb.byteLength, merged, meta };
+}
+
+// ---- 肖像
+const R = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+R.setSize(768, 768, false); R.toneMapping = THREE.NeutralToneMapping; R.toneMappingExposure = 1.0;
+const envTex = new THREE.PMREMGenerator(R).fromScene(new RoomEnvironment(), 0.04).texture;
+function bgTexture(top, bottom) {
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, top); gr.addColorStop(1, bottom); g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+async function portrait(who) {
+  DETAIL.k = 0.9;
+  markLow([]);
+  const { ch, model } = buildChar(who);
+  const acts = actionList(who), clips = buildClips(acts, model), shot = SHOT[who];
+  const mixer = new THREE.AnimationMixer(model);
+  mixer.clipAction(clips[shot.pose[0]]).play(); mixer.setTime(shot.pose[1] * clips[shot.pose[0]].duration);
+  model.rotation.y = 0;
+  const scene = new THREE.Scene(), bg = BG[ch.family];
+  scene.background = bgTexture(bg[0], bg[1]); scene.environment = envTex; scene.environmentIntensity = ch.family === 'cat' ? 0.3 : 0.55;
+  const sun = new THREE.DirectionalLight(0xFFF3E4, ch.family === 'cat' ? 2.0 : 2.4); sun.position.set(-3, 6, 7); scene.add(sun, new THREE.HemisphereLight(0xFFF0E0, 0xd8b8a8, ch.family === 'cat' ? 0.5 : 1.0));
+  R.toneMappingExposure = 1.0;
+  scene.add(model); model.updateMatrixWorld(true);
+  const box = new THREE.Box3();
+  model.traverse((o) => { if (!o.isMesh) return; for (let p = o.parent; p; p = p.parent) if (/^prop_|sword|fireBall|^tail/i.test(p.name)) return; box.expandByObject(o); });   // 取景只看身體（不含武器、尾巴）
+  const full = box.clone(); box.min.y = full.max.y - (full.max.y - full.min.y) * shot.frac;
+  if (shot.halfW) { box.min.x = -shot.halfW; box.max.x = shot.halfW; }
+  const c = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3());
+  const cam = new THREE.PerspectiveCamera(30, 1, 0.05, 100), dir = new THREE.Vector3(...shot.dir).normalize();
+  const dist = (Math.max(size.x, size.y, size.z * 0.5) * shot.zoom) / (2 * Math.tan((15 * Math.PI) / 180));
+  cam.position.copy(c).addScaledVector(dir, dist); cam.lookAt(c);
+  R.render(scene, cam);
+  const blob = await new Promise((r) => R.domElement.toBlob(r, 'image/webp', 0.9));
+  await save('cards/' + FILE[who] + '-portrait.webp', blob);
+  const img = new Image(); img.src = URL.createObjectURL(blob); img.width = 200; document.getElementById('thumbs').append(img);
+}
+
+async function run() {
+  const out = [];
+  // 水仙子：只輸出 GLB，肖像沿用 cards/art/water-fairy-portrait-v2.webp
+  for (const who of ['fairy']) { const r = await build(who); out.push(r); log(out.map((o) => o.who + ' ' + (o.bytes / 1024).toFixed(0) + ' KB').join('；')); }
+  window.__result = out;
+  log('完成：' + out.map((o) => o.who + ' ' + (o.bytes / 1024).toFixed(0) + ' KB（網格 ' + o.merged + '）').join('；'));
+  document.title = 'done';
+}
+run().catch((e) => { log('錯誤：' + e.message); document.title = 'error'; console.error(e); });
+</script>
+</body></html>

@@ -131,7 +131,7 @@
   }
   // 主角骨架組裝：rk = 整隻縮放、hk = 頭部縮放（以脖子為中心）、armDx = 肩膀往外移
   // legK：整條腿（含膝、踝關節）以髖關節為中心等比例縮放，關節轉動照常；身體整體上下移 0.6×(legK−1) 讓腳底貼地。legDx：兩腿往外分開
-  function assemble({ head, upper, lower, armL, legL, extraHips = [], hk = 1, rk = 1, armDx = 0, legK = 1, legDx = 0, armK = 1 }) {
+  function assemble({ head, upper, lower, armL, legL, extraHips = [], hk = 1, rk = 1, armDx = 0, legK = 1, legDx = 0, armK = 1, extraChest = [], shinK = 1 }) {
     STAGE = 7;
     const g = GRIP_L;
     const ballSocket = joint('ball', [-g[0] - armDx, g[1] + DY_ARM - 0.01, 0.08], [], OFF);
@@ -139,11 +139,12 @@
     const headN = shift(joint('head', hp, [G(hp, [G([-hp[0], -hp[1], -hp[2]], head)], { s: [hk, hk, hk] })]), DY_HEAD);
     const arm = shift(armL, DY_ARM, armDx);
     arm.s = [armK, armK, armK];
-    const chest = joint('chest', SK0.chest, [upper, arm, mirror(arm), headN]);
+    const chest = joint('chest', SK0.chest, [upper, arm, mirror(arm), headN, extraChest]);
     legL.s = [legK, legK, legK]; legL.p = [legL.p[0] + legDx, legL.p[1], legL.p[2]];
+    if (shinK !== 1) (function f(n) { if (n.id === 'shinL') n.s = [shinK, shinK, shinK]; (n.c || []).forEach(f); })(legL);   // 小腿相對大腿再縮放
     const hips = joint('hips', SK0.hips, [lower, legL, mirror(legL), chest, extraHips]);
     const rootN = joint('root', SK0.root, [hips, ballSocket], [rk, rk, rk]);
-    rootN.p = [0, LEG_DROP(legK) * rk, 0];
+    rootN.p = [0, LEG_DROP((legK * (0.28 + 0.32 * shinK)) / 0.6) * rk, 0];   // 等效腿長 = 大腿 0.28 + 小腿含腳 0.32 的縮放後長度 ÷ 0.6
     return [rootN];
   }
   function heroArm(upperParts, foreParts, handParts, handExtra = []) {
@@ -610,6 +611,25 @@
     stone: { c: '#7C7A7A', rough: 0.7 },
     stoneDark: { c: '#4E4B4C', rough: 0.6 },
     lava: { c: '#FF8A2A', rough: 0.4, emit: 0.9 },
+    // 水仙子：半透明水凝膠
+    skinPale: { c: '#FFF1EA', rough: 0.5, sss: 0.5 },
+    hairBlue: { c: '#8FD3F5', rough: 0.15, coat: 1, opacity: 0.92 },
+    hairBlueLight: { c: '#C6EAFB', rough: 0.15, coat: 1, opacity: 0.9 },
+    hairBlueDeep: { c: '#5BB4E8', rough: 0.15, coat: 1, opacity: 0.92 },
+    gelBlue: { c: '#86CDF2', rough: 0.1, coat: 1, opacity: 0.8 },
+    gelLight: { c: '#CDEBFB', rough: 0.1, coat: 1, opacity: 0.72 },
+    petal: { c: '#EDF8FF', rough: 0.15, coat: 1, opacity: 0.8 },
+    wingBlue: { c: '#8CCBF3', rough: 0.1, coat: 1, opacity: 0.62 },
+    wingLight: { c: '#D3EDFF', rough: 0.1, coat: 1, opacity: 0.6 },
+    bubble: { c: '#E6F6FF', rough: 0.05, coat: 1, opacity: 0.5 },
+    dropBlue: { c: '#6DC0F2', rough: 0.08, coat: 1, opacity: 0.9 },
+    shine: { c: '#FFFFFF', rough: 0.2, emit: 0.7 },
+    shoeBlue: { c: '#58B1EE', rough: 0.15, coat: 1 },
+    shortsPetal: { c: '#E3F3FF', fabric: 1 },
+    irisBlue: { c: '#2F86DA', rough: 0.2, coat: 1 },
+    irisNavy: { c: '#143C8A', rough: 0.2, coat: 1 },
+    lashBlue: { c: '#1E4F9C', rough: 0.6 },
+    browBlue: { c: '#5BA6D8', rough: 0.7 },
     gemFire: { c: '#FF7A1E', rough: 0.1, coat: 1, emit: 0.7 },
   };
 
@@ -638,12 +658,165 @@
     ], tip: [0, 0.07, 0.77], base: [0, 0.01, 0.1], trail: '#FF3B4A' },
   };
 
+
+  // ======================================================================================
+  // 水仙子（2 階）：以「雙刃貓女」的人形樣版重建 —— 同樣的骨架縮放（root 0.82、頭 0.7/rk、腿 ×2.85、手臂 ×1.6）、
+  // 細腰、翹臀、長腿；換成水凝膠頭髮、水滴觸角、四片透明翅膀（可拍動關節 wingUL/UR/LL/LR）、花瓣裙、水藍小尖鞋。
+  // ======================================================================================
+  const bub = (p, r) => G(p, [E([0, 0, 0], [r, r, r], 0, 'bubble'), E([-r * 0.3, r * 0.34, r * 0.5], [r * 0.3, r * 0.2, r * 0.12], [0, 0, 0.5], 'shine')]);
+  const drop = (p, r, tilt = 0) => G(p, [E([0, 0, 0], [r, r * 1.15, r], 0, 'dropBlue'), C([0, r * 1.2, 0], 0, r * 0.6, r * 1.2, 'dropBlue', { seg: 10 }), E([-r * 0.3, r * 0.15, r * 0.7], [r * 0.25, r * 0.3, r * 0.15], 0, 'shine')], { r: [0, 0, tilt] });
+  function fairyHead() {
+    STAGE = 1;
+    const FZ = { eye: 0.246, mouth: 0.208, blush: 0.185, brow: 0.222 };
+    // 觸角：往上再往外彎、尖端一顆水珠（半透明水凝膠）
+    const aPts = [[0.075, 2.3, 0.02], [0.1, 2.46, 0.03], [0.17, 2.58, 0.03], [0.27, 2.6, 0.03], [0.34, 2.54, 0.03]];
+    const antenna = [];
+    for (let i = 0; i < aPts.length - 1; i++) { const r0 = 0.03 + i * 0.004, r1 = 0.034 + i * 0.004; antenna.push(seg(aPts[i], aPts[i + 1], r0, r1, 'gelBlue'), E(aPts[i + 1], [r1, r1, r1], 0, 'gelBlue')); }
+    antenna.push(E([0.345, 2.5, 0.03], [0.062, 0.078, 0.05], [0, 0, -0.35], 'gelBlue'), E([0.335, 2.53, 0.062], [0.02, 0.028, 0.008], [0, 0, -0.35], 'shine'));
+    const bangs = [];
+    [[-0.2, 0.17, 0.3, 'hairBlue'], [-0.14, 0.19, 0.18, 'hairBlueLight'], [-0.075, 0.21, 0.06, 'hairBlue'], [-0.01, 0.22, -0.05, 'hairBlueLight'], [0.055, 0.21, -0.12, 'hairBlue'], [0.12, 0.19, -0.22, 'hairBlueLight'], [0.185, 0.17, -0.32, 'hairBlue']].forEach(([x, h, rz, m]) => {
+      const z = 0.247 - x * x * 1.6, y = 2.2 - Math.abs(x) * 0.25;
+      bangs.push(C([x, y - h / 2, z], 0.044, 0.006, h, m, { r: [-0.32, 0, rz], s: [1, 1, 0.4], seg: 10 }));
+    });
+    // 捲捲的鬢角：臉頰兩側各一束螺旋小捲（三個疊起來的圈、尾端一顆小水珠），整束在臉頰外側、不碰肩膀
+    const curl = (k) => G([k * 0.27, 1.96, 0.1], [
+      T([0, 0, 0], 0.036, 0.017, 'hairBlue', { r: [0, 0.25 * k, 0] }),
+      T([k * 0.006, -0.055, 0.012], 0.032, 0.016, 'hairBlueLight', { r: [0, 0.25 * k, 0] }),
+      T([k * 0.002, -0.104, 0.022], 0.026, 0.015, 'hairBlue', { r: [0, 0.25 * k, 0] }),
+      E([k * 0.012, -0.146, 0.03], [0.02, 0.026, 0.02], 0, 'hairBlueDeep'),
+      bub([k * 0.03, -0.12, 0.04], 0.015),
+    ]);
+    // 可愛的馬尾：高高綁在腦後、往後再往上翹、尾端自然下垂＋泡泡；整條掛在頭上（關節 tail0…），位置在翅膀上方、不會和身體重合
+    const ptsP = [[0, 2.3, -0.22], [0, 2.52, -0.5], [0, 2.62, -0.88], [0, 2.5, -1.22], [0, 2.26, -1.36], [0, 2.02, -1.26], [0, 1.9, -1.04], [0, 1.96, -0.86]];
+    const pony = tailChain(ptsP, 0.16, 0.07, (i) => (i % 2 ? 'hairBlueLight' : 'hairBlue'), (p) => bub(p, 0.11));
+    const base = [
+      E([0, 1.99, 0], [0.252, 0.265, 0.25], 0, 'skinPale'),
+      L([0, 0, 0.03], [[0.001, 1.75], [0.055, 1.757], [0.105, 1.78], [0.148, 1.818], [0.186, 1.866], [0.218, 1.92], [0.24, 1.97], [0.248, 2.02]], 'skinPale', { s: [1, 1, 0.98] }),
+      E([0, 2.12, -0.05], [0.3, 0.26, 0.3], 0, 'hairBlue'),
+      E([0, 1.98, -0.17], [0.27, 0.22, 0.2], 0, 'hairBlue'),                                          // 後腦（到髮際，不往下披）
+      ...bangs, curl(1), curl(-1), ...sym(G([0, 0, 0], antenna)), pony,
+      T([0, 2.27, -0.2], 0.11, 0.03, 'gelBlue', { r: [0, PI / 2, 0] }),                                // 髮圈
+      drop([0, 2.27, -0.33], 0.028, PI),
+      drop([0, 2.13, 0.262], 0.021),                                                                    // 額頭水滴
+      ...[[0.29, 2.08, 0.02, 0.028], [0.27, 2.2, -0.04, 0.022]].flatMap(([x, y, z, r]) => [bub([x, y, z], r), bub([-x, y, z], r)]),
+    ];
+    // 五官：鳳眼（細長、眼尾上揚）、開口笑
+    STAGE = 5;
+    const eyeAt = [0.093, 1.975, FZ.eye - 0.004], ry = 0.33;
+    const open = [
+      E([0, 0, 0], [0.064, 0.078, 0.02], 0, 'white'),
+      E([-0.003, -0.004, 0.008], [0.052, 0.066, 0.016], 0, 'irisBlue'),
+      E([-0.003, -0.016, 0.013], [0.036, 0.044, 0.012], 0, 'irisNavy'),
+      E([-0.003, 0, 0.018], [0.014, 0.022, 0.008], 0, 'pupil'),
+      E([0.015, 0.026, 0.022], [0.016, 0.016, 0.006], 0, 'white'),
+      E([-0.018, -0.03, 0.021], [0.008, 0.008, 0.004], 0, 'white'),
+      T([0, 0.014, 0.006], 0.064, 0.008, 'lashBlue', { arc: PI * 0.8, r: [0, 0, 0.12] }),
+      E([0.07, 0.03, 0.004], [0.034, 0.006, 0.006], [0, 0, 0.55], 'lashBlue'),                          // 眼尾上挑的睫毛
+    ];
+    const phoenix = [G([0, 0, 0], open, { s: [1.2, 0.68, 0.5], r: [0, 0, 0.3] })];                       // 拉長、壓扁、眼尾上揚 17°
+    const mAt = [0, 1.84, FZ.mouth - 0.001];
+    const smile = [E(add(mAt, [0, 0.0, 0]), [0.03, 0.02, 0.008], 0, 'mouthDark'), E(add(mAt, [0, -0.008, 0.002]), [0.018, 0.009, 0.007], 0, 'tongue'), E(add(mAt, [0, 0.014, 0.003]), [0.034, 0.008, 0.007], 0, 'skinPale')];
+    const grin = [E(add(mAt, [0, -0.006, 0]), [0.042, 0.034, 0.008], 0, 'mouthDark'), E(add(mAt, [0, -0.02, 0.002]), [0.026, 0.014, 0.007], 0, 'tongue'), E(add(mAt, [0, 0.018, 0.003]), [0.04, 0.009, 0.007], 0, 'white')];
+    const face = [
+      eyeSet(eyeAt, ry, phoenix, 'lashBlue'), eyeSet(eyeAt, ry, phoenix, 'lashBlue').map(mirror),
+      sym(brow([0.1, 2.08, FZ.brow + 0.004], [0.045, 0.007, 0.006], [0, ry, 0.32], 'browBlue')),
+      E([0, 1.9, 0.242], [0.009, 0.006, 0.005], 0, 'blush'),
+      sym(E([0.145, 1.89, FZ.blush], [0.042, 0.024, 0.008], [0, 0.6, 0], 'blush')),
+      mouths(mAt, smile, grin, 'lashBlue', 0.8),
+    ];
+    return [...base, ...face];
+  }
+  // 水滴形翅膀：根部尖、外側圓潤飽滿（旋轉體壓扁）；靜止朝向寫在內層群組，關節本身的旋轉是拍動量
+  function fairyWing(id, pivot, o) {
+    const prof = (len, wid) => {
+      const pts = [];
+      for (let i = 0; i <= 24; i++) {
+        const t = i / 24, r = t <= 0.62 ? wid * Math.pow(t / 0.62, 1.15) : wid * Math.sqrt(Math.max(0, 1 - ((t - 0.62) / 0.38) ** 2));
+        pts.push([+r.toFixed(4), +(len * t).toFixed(4)]);
+      }
+      return pts;
+    };
+    const lobe = (len, wid, m, dz = 0, dx = 0) => L([dx, 0, dz], prof(len, wid), m, { r: [0, 0, -PI / 2], s: [1, 1, 0.16] });
+    const g = [
+      lobe(o.len, o.wid, 'wingBlue'),
+      lobe(o.len * 0.78, o.wid * 0.7, 'wingLight', 0.004, o.len * 0.06),
+      E([o.len * 0.72, o.wid * 0.38, 0.03], [o.len * 0.11, o.wid * 0.15, 0.006], [0, 0, 0.7], 'shine'),                     // 高光
+      E([o.len * 0.6, o.wid * 0.1, 0.03], [o.len * 0.035, o.wid * 0.05, 0.006], 0, 'shine'),
+    ];
+    return joint(id, pivot, [G(pivot, g, { r: o.rest })]);
+  }
+  function buildFairy() {
+    const rk = 0.82, W = 1 / rk, LEGK = 2.85, TK = LEGK * 2 / 3, SHK = 2, ARMK = 1.6, AW = 1.12 / ARMK;   // 大腿 = 原本 2/3、小腿（含腳）= 原本 4/3
+    const LWt = 1.3 / TK, LWs = 1.3 / (TK * SHK);
+    STAGE = 2;
+    const petalRing = (y, R, n, len, wid, m, tilt, off = 0, dropEvery = 0) => Array.from({ length: n }, (_, i) => {
+      const a = off + (i / n) * 2 * PI;
+      const inner = [E([0, -len / 2, 0], [wid, len / 2, 0.022], 0, m)];
+      if (dropEvery && i % dropEvery === 0) inner.push(drop([0, -len - 0.02, 0.01], 0.022, PI));
+      return G([0, y, 0], [G([0, 0, R], inner, { r: [-tilt, 0, 0] })], { r: [0, a, 0] });
+    });
+    const upper = fat([
+      C([0, 1.4, 0], 0.046, 0.052, 0.12, 'skinPale'),
+      L([0, 0, 0], FEM.map(([r, y]) => [y < 0.85 ? r * 1.06 : y < 1.06 ? r * 0.74 : r, y]), 'skinPale', { s: [1, 1, 0.75] }),
+      L([0, 0, 0], slice(FEM, 1.12, 1.27, 0.012), 'petal', { s: [1, 1, 0.75] }),
+      ...petalRing(1.27, 0.2, 7, 0.13, 0.06, 'gelLight', -0.5, 0.2),
+      T([0, 1.12, 0], 0.212, 0.008, 'gelBlue', { r: [PI / 2, 0, 0], s: [1, 0.76, 1] }),
+      drop([0, 1.2, 0.17], 0.02, PI),
+      T([0, 1.38, 0], 0.075, 0.012, 'gelBlue', { r: [PI / 2 + 0.2, 0, 0] }),
+      drop([0, 1.31, 0.098], 0.014, PI),
+    ], W);
+    STAGE = 3;
+    const lower = fat([
+      L([0, 0, 0], [[0.23, 0.52], [0.28, 0.58], [0.285, 0.66], [0.24, 0.76], [0.19, 0.83]], 'shortsPetal', { s: [1, 1, 0.86] }),
+      sym(E([0.11, 0.6, -0.1], [0.17, 0.17, 0.16], 0, 'shortsPetal')),
+      sym(E([0.16, 0.55, -0.02], [0.12, 0.09, 0.13], 0, 'skinPale')),
+      E([0, 0.6, 0], [0.17, 0.06, 0.13], 0, 'shortsPetal'),
+      ...petalRing(0.79, 0.19, 12, 0.2, 0.085, 'petal', 0.55, 0, 3),
+      ...petalRing(0.76, 0.2, 12, 0.27, 0.09, 'gelLight', 0.8, PI / 12, 0),
+      T([0, 0.8, 0], 0.222, 0.012, 'gelBlue', { r: [PI / 2, 0, 0], s: [1, 0.8, 1] }),
+    ], W);
+    STAGE = 4;
+    const hand = [
+      E(fistAt(), [0.05, 0.056, 0.018], 0, 'skinPale'),
+      ...[-1.5, -0.5, 0.5, 1.5].map((i) => C(add(fistAt(), [i * 0.021 + 0.004, -0.06, 0.0]), 0.011, 0.009, 0.075, 'skinPale', { r: [0, 0, -i * 0.1], seg: 8 })),
+      C(add(fistAt(), [-0.04, -0.03, 0.02]), 0.011, 0.009, 0.06, 'skinPale', { r: [0.3, 0, 0.8], seg: 8 }),
+    ];
+    const armL = heroArm(
+      [E([0.29, 1.53, 0], [0.056 / ARMK * 1.25, 0.056 / ARMK * 1.25, 0.056 / ARMK * 1.25], 0, 'skinPale'), fat([seg([0.3, 1.5, 0], ELB, 0.043, 0.038, 'skinPale'), T([0.325, 1.42, 0], 0.046, 0.007, 'gelBlue', { r: [PI / 2, 0, -0.2] })], W * AW, 0.32, 0)],
+      [fat([seg(add(ELB, [0, 0.03, 0]), WRI, 0.04, 0.034, 'skinPale'), T(add(WRI, [-0.006, 0.07, 0]), 0.042, 0.011, 'gelBlue', { r: [PI / 2, 0, -0.05] }), drop(add(WRI, [0.03, 0.065, 0.02]), 0.014, PI)], W * AW, 0.352, 0.005)],
+      [grow(hand, fistAt(), 1.05 / ARMK)],
+    );
+    // 腿：大腿縮成 2/3、小腿（含鞋）拉長 1/3；鞋是水藍色尖頭小鞋（高度壓到 0.75，因為小腿縮放比以前大）
+    const legL = heroLeg(
+      [fat([seg([LX, 0.62, 0], [LX, 0.32, 0], 0.088, 0.058, 'skinPale'), E([LX, 0.6, 0], [0.085, 0.05, 0.08], 0, 'skinPale'), E([LX, 0.32, 0.01], [0.058, 0.058, 0.055], 0, 'skinPale')], W * LWt * 1.3, LX, 0)],
+      // 小腿（粗細為上一版的 2/3）：一路收細到腳踝關節，腳踝是一顆球、剛好落在鞋口中心（腳掌轉動時也不會脫開）
+      [fat([seg([LX, 0.32, 0], [LX, 0.11, 0], 0.075, 0.042, 'skinPale'), E([LX, 0.26, -0.008], [0.07, 0.085, 0.07], 0, 'skinPale'),
+        E([LX, 0.11, 0], [0.042, 0.042, 0.042], 0, 'skinPale'), T([LX, 0.14, 0], 0.046, 0.009, 'gelBlue', { r: [PI / 2, 0, 0] })], W * LWs * 1.0, LX, 0)],
+      // 水藍色尖頭鞋：鞋口包住腳踝球（以腳踝關節為中心）、腳背斜斜往前下到尖頭、薄鞋底、小鞋跟
+      [fat([E([LX, 0.11, 0], [0.048, 0.026, 0.048], 0, 'shoeBlue'), seg([LX, 0.105, 0.0], [LX, 0.03, 0.09], 0.044, 0.034, 'shoeBlue'),
+        E([LX, 0.028, 0.09], [0.036, 0.026, 0.05], 0, 'shoeBlue'), C([LX, 0.024, 0.16], 0, 0.03, 0.09, 'shoeBlue', { r: [PI / 2, 0, 0], seg: 12 }),
+        E([LX, 0.009, 0.07], [0.038, 0.009, 0.115], 0, 'shoeBlue'), C([LX, 0.04, -0.028], 0.014, 0.009, 0.05, 'shoeBlue', { seg: 10 })], W * LWs * 1.0, LX, 0.02)],
+    );
+    STAGE = 6;
+    const wings = [
+      fairyWing('wingUL', [0.07, 1.22, -0.14], { len: 0.95, wid: 0.42, rest: [0, 0.4, 0.38] }),
+      fairyWing('wingLL', [0.07, 1.02, -0.14], { len: 0.7, wid: 0.32, rest: [0, 0.45, -0.5] }),
+    ];
+    wings.push(mirror(wings[0]), mirror(wings[1]));
+    // 環繞全身的水球：一圈高低錯落的大水泡，關節 bubbleOrbit 繞身體中心轉（動作檔烘焙旋轉）
+    const orbit = joint('bubbleOrbit', [0, 1.15, 0], Array.from({ length: 9 }, (_, i) => {
+      const ang = (i / 9) * 2 * PI, y = 0.15 + ((i * 0.53) % 1) * 2.2, Rr = 1.18 + 0.12 * Math.sin(i * 2.1), r = 0.085 + 0.03 * ((i * 3) % 4) / 3;
+      return bub([Rr * Math.sin(ang), y, Rr * Math.cos(ang)], r);
+    }));
+    return assemble({ head: fairyHead(), upper, lower, armL, legL, extraHips: [orbit], hk: 0.74 / rk, rk, legK: TK, shinK: SHK, armK: ARMK, legDx: 0.045, extraChest: wings });
+  }
   const CHARACTERS = {
     bear1: { id: 'bear1', name: '小熊', family: 'bear', stage: 1, rig: 'quad', materials: MATERIALS, parts: bearCub(), height: 1.2 },
     bear2: { id: 'bear2', name: '壯熊', family: 'bear', stage: 2, rig: 'quad', materials: MATERIALS, parts: bearMid(), height: 1.75 },
     bear3: { id: 'bear3', name: '大熊', family: 'bear', stage: 3, rig: 'hero', materials: MATERIALS, parts: buildBearBig(), height: 2.55, legK: 0.74, crouch: [-0.45, 0.85] },
     cat1: { id: 'cat1', name: '小貓娘', family: 'cat', stage: 1, rig: 'hero', materials: MATERIALS, parts: buildCatKid(), height: 1.75 },
     cat2: { id: 'cat2', name: '靈貓姬', family: 'cat', stage: 2, rig: 'hero', materials: MATERIALS, parts: buildCatTeen(), height: 2.05, legK: 1.22, hold: { propR: 'catDagger' } },
+    fairy: { id: 'fairy', name: '水仙子', family: 'water', stage: 2, rig: 'hero', materials: MATERIALS, parts: buildFairy(), height: 3.05, legK: 2.85 * 2 / 3, shinK: 2, flies: true },
     cat3: { id: 'cat3', name: '雙刃貓女', family: 'cat', stage: 3, rig: 'hero', materials: MATERIALS, parts: buildCatAdult(), height: 3.05, legK: 2.85, hold: { propR: 'catBlade', propL: 'catBlade' } },
   };
   // 骨架資訊：各關節樞紐（世界座標，未含 root 縮放）與父節點（四足動作烘焙用）

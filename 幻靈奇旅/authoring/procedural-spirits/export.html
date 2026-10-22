@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>匯出程序幻靈</title></head>
+<body style="font:14px system-ui;padding:16px">
+<h1>幻靈奇旅：剝皮辣椒雞／汪汪犬匯出（GLB＋肖像）</h1>
+<p id="log">準備中…</p>
+<div id="thumbs" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+// 以 30fps 取樣每個動作的姿勢，烘焙成節點 TRS 軌，輸出遊戲用 GLB；並由模型算出肖像（汪汪犬三張）。
+// 需搭配本機開發伺服器的 PUT /__save/<path>。網址參數 ?only=chick1,dog3 可只匯出部分。
+import * as THREE from 'three';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { DETAIL } from './common.js';
+import { createChick } from './chicks.js';
+import { createDog } from './dogs.js';
+
+const log = (t) => { document.getElementById('log').textContent = t; console.log(t); };
+const JOBS = [
+  { key: 'chick1', make: () => createChick(1), file: 'pepper-chick-1' },
+  { key: 'chick2', make: () => createChick(2), file: 'pepper-chick-2' },
+  { key: 'chick3', make: () => createChick(3), file: 'pepper-chick-3' },
+  { key: 'dog1', make: () => createDog(1), file: 'water-dog-1', portrait: true },
+  { key: 'dog2', make: () => createDog(2), file: 'water-dog-2', portrait: true },
+  { key: 'dog3', make: () => createDog(3), file: 'water-dog-3', portrait: true },
+];
+const FPS = 30;
+
+// glTF 不支援 bump；遊戲端也不需要
+function gameMaterials(root) { root.traverse(o => { if (o.isMesh) { o.material.bumpMap = null; o.material.needsUpdate = true; } }); }
+// 同一個具名節點底下、同材質的網格合併，減少繪製呼叫
+function mergeByNode(root) {
+  root.updateMatrixWorld(true);
+  const groups = new Map(); let before = 0, after = 0;
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    let j = o.parent; while (j !== root && !j.name) j = j.parent;
+    if (!groups.has(j)) groups.set(j, new Map());
+    const g = groups.get(j); if (!g.has(o.material.uuid)) g.set(o.material.uuid, []); g.get(o.material.uuid).push(o);
+  });
+  const inv = new THREE.Matrix4();
+  for (const [j, byMat] of groups) {
+    inv.copy(j.matrixWorld).invert();
+    for (const meshes of byMat.values()) {
+      before += meshes.length; after++;
+      const vc = !!meshes[0].material.vertexColors;
+      const geos = meshes.map(m => {
+        const g = m.geometry.clone();
+        for (const n of Object.keys(g.attributes)) if (!['position', 'normal', ...(vc ? ['color'] : [])].includes(n)) g.deleteAttribute(n);
+        if (!g.attributes.normal) g.computeVertexNormals();
+        if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]);
+        g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld));
+        return g;
+      });
+      const merged = mergeGeometries(geos, false); if (!merged) throw Error('合併失敗：' + j.name);
+      const mesh = new THREE.Mesh(merged, meshes[0].material); mesh.castShadow = mesh.receiveShadow = true;
+      meshes.forEach(m => m.parent.remove(m)); j.add(mesh);
+    }
+  }
+  const prune = o => { [...o.children].forEach(prune); if (o !== root && !o.name && !o.isMesh && !o.children.length) o.parent.remove(o); };
+  prune(root);
+  return before + '→' + after;
+}
+// 取樣：只為有變化的節點建立軌
+function bake(c) {
+  const named = []; c.root.traverse(o => { if (o.name && o !== c.root) named.push(o); });
+  const clips = [];
+  for (const [name, a] of Object.entries(c.actions)) {
+    const n = Math.max(2, Math.round(a.dur * FPS)), times = [];
+    const data = named.map(() => ({ p: [], q: [], s: [] }));
+    for (let f = 0; f <= n; f++) {
+      const t = a.loop && f === n ? 0 : f / FPS;   // 循環動作最後一格＝第一格
+      c.pose(name, a.loop ? t : Math.min(a.dur, f / FPS)); times.push(f / FPS);
+      named.forEach((o, i) => { data[i].p.push(...o.position.toArray()); data[i].q.push(...o.quaternion.toArray()); data[i].s.push(...o.scale.toArray()); });
+    }
+    const tracks = [];
+    const varies = (arr, k) => { for (let i = k; i < arr.length; i++) if (Math.abs(arr[i] - arr[i % k]) > 1e-5) return true; return false; };
+    named.forEach((o, i) => {
+      const d = data[i];
+      if (varies(d.p, 3)) tracks.push(new THREE.VectorKeyframeTrack(o.name + '.position', times, d.p));
+      if (varies(d.q, 4)) tracks.push(new THREE.QuaternionKeyframeTrack(o.name + '.quaternion', times, d.q));
+      if (varies(d.s, 3)) tracks.push(new THREE.VectorKeyframeTrack(o.name + '.scale', times, d.s));
+    });
+    clips.push(new THREE.AnimationClip(name, n / FPS, tracks));
+  }
+  c.pose('Idle', 0);
+  return clips;
+}
+const exportGLB = (scene, animations) => new Promise((res, rej) => new GLTFExporter().parse(scene, res, rej, { binary: true, animations, onlyVisible: false }));
+async function save(path, buf) { const r = await fetch('/__save/' + path, { method: 'PUT', body: buf }); if (!r.ok) throw Error('存檔失敗 ' + path); }
+
+// ---- 肖像（768 WebP，水藍漸層背景）
+const R = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+R.setSize(768, 768, false); R.toneMapping = THREE.NeutralToneMapping;
+const envTex = new THREE.PMREMGenerator(R).fromScene(new RoomEnvironment(), 0.04).texture;
+function bg(top, bottom) {
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, top); gr.addColorStop(1, bottom); g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+async function portrait(job) {
+  DETAIL.k = 1;
+  const c = job.make(); c.pose('Wave', 1.0);
+  const scene = new THREE.Scene(); scene.background = bg('#E4F2FF', '#7DB8EE'); scene.environment = envTex; scene.environmentIntensity = .45;
+  const sun = new THREE.DirectionalLight(0xffffff, 2.4); sun.position.set(-3, 6, 7);
+  scene.add(sun, new THREE.HemisphereLight(0xf2f8ff, 0xa9c3e0, .9), c.root);
+  // 地面水波
+  const water = new THREE.Mesh(new THREE.CircleGeometry(6, 64), new THREE.MeshPhysicalMaterial({ color: 0x8cc8f5, roughness: .15, clearcoat: 1, transparent: true, opacity: .55 }));
+  water.rotation.x = -Math.PI / 2; scene.add(water);
+  c.root.updateMatrixWorld(true);
+  const box = new THREE.Box3(); c.root.traverse(o => { if (o.isMesh && !/^(drop|tail)/.test(o.parent?.name || '')) box.expandByObject(o); });
+  const ctr = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3());
+  const cam = new THREE.PerspectiveCamera(30, 1, .05, 100), dir = new THREE.Vector3(.55, .3, 1).normalize();
+  const dist = Math.max(size.x, size.y, size.z * .7) * 1.15 / (2 * Math.tan(15 * Math.PI / 180));
+  cam.position.copy(ctr).addScaledVector(dir, dist); cam.lookAt(ctr);
+  R.render(scene, cam);
+  const blob = await new Promise(r => R.domElement.toBlob(r, 'image/webp', .9));
+  await save('cards/' + job.file + '-portrait.webp', blob);
+  const img = new Image(); img.src = URL.createObjectURL(blob); img.width = 200; document.getElementById('thumbs').append(img);
+}
+async function run() {
+  const only = new URLSearchParams(location.search).get('only')?.split(','), out = [];
+  for (const job of JOBS.filter(j => !only || only.includes(j.key))) {
+    DETAIL.k = .55;
+    const c = job.make(); gameMaterials(c.root);
+    const clips = bake(c);
+    const merged = mergeByNode(c.root);
+    const glb = await exportGLB(c.root, clips);
+    await save('models/' + job.file + '.glb', glb);
+    out.push({ key: job.key, kb: Math.round(glb.byteLength / 1024), merged, clips: clips.map(k => k.name + ':' + k.duration.toFixed(2)).join(' ') });
+    log(out.map(o => o.key + ' ' + o.kb + 'KB').join('；'));
+    if (job.portrait) await portrait(job);
+  }
+  window.__result = out; log('完成：' + JSON.stringify(out)); document.title = 'done';
+}
+run().catch(e => { log('錯誤：' + e.message); document.title = 'error'; console.error(e); });
+</script>
+</body></html>

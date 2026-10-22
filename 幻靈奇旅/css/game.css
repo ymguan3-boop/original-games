@@ -665,3 +665,9 @@ body.gym-active.gym-player-narration #battleLog{
  pointer-events:none;
  z-index:8;
 }
+
+/* 圖鑑 3D 檢視：四個動作按鈕 */
+.viewerMoves{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.viewerMoves button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.viewerMoves button.active{background:#263960;color:#fff4d6;border-color:#263960}
+@media (max-width:420px){.viewerMoves{grid-template-columns:repeat(2,minmax(0,1fr))}}

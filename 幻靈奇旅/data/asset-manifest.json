@@ -166,17 +166,6 @@
       "animations": []
     },
     {
-      "file": "models/spirits/blaziken.glb",
-      "bytes": 119748,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
-    },
-    {
       "file": "models/spirits/book-spirit-1.glb",
       "bytes": 3085968,
       "animations": [
@@ -289,17 +278,6 @@
         "Walk",
         "Attack",
         "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/combusken.glb",
-      "bytes": 115384,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
       ]
     },
     {
@@ -469,35 +447,44 @@
     },
     {
       "file": "models/spirits/pepper-chick-1.glb",
-      "bytes": 1387648,
+      "bytes": 421940,
       "animations": [
         "Idle",
         "Walk",
-        "Eat",
-        "Count",
-        "React"
+        "Run",
+        "Wave",
+        "Celebrate",
+        "Hurt",
+        "Attack",
+        "Ultimate"
       ]
     },
     {
       "file": "models/spirits/pepper-chick-2.glb",
-      "bytes": 1823608,
+      "bytes": 703716,
       "animations": [
         "Idle",
         "Walk",
-        "Eat",
-        "Count",
-        "React"
+        "Run",
+        "Wave",
+        "Celebrate",
+        "Hurt",
+        "Attack",
+        "Ultimate"
       ]
     },
     {
       "file": "models/spirits/pepper-chick-3.glb",
-      "bytes": 2804184,
+      "bytes": 1131112,
       "animations": [
         "Idle",
         "Walk",
-        "Eat",
-        "Count",
-        "React"
+        "Run",
+        "Wave",
+        "Celebrate",
+        "Hurt",
+        "Attack",
+        "Ultimate"
       ]
     },
     {
@@ -571,17 +558,6 @@
       ]
     },
     {
-      "file": "models/spirits/torchic.glb",
-      "bytes": 112548,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt",
-        "Fly"
-      ]
-    },
-    {
       "file": "models/spirits/treecko.glb",
       "bytes": 145984,
       "animations": [
@@ -605,6 +581,48 @@
       ]
     },
     {
+      "file": "models/spirits/water-dog-1.glb",
+      "bytes": 1116492,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Wave",
+        "Celebrate",
+        "Hurt",
+        "Attack",
+        "Ultimate"
+      ]
+    },
+    {
+      "file": "models/spirits/water-dog-2.glb",
+      "bytes": 1942664,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Wave",
+        "Celebrate",
+        "Hurt",
+        "Attack",
+        "Ultimate"
+      ]
+    },
+    {
+      "file": "models/spirits/water-dog-3.glb",
+      "bytes": 2819696,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Wave",
+        "Celebrate",
+        "Hurt",
+        "Attack",
+        "Ultimate"
+      ]
+    },
+    {
       "file": "models/spirits/water-dragon-king.glb",
       "bytes": 2181616,
       "animations": [
@@ -619,15 +637,18 @@
     },
     {
       "file": "models/spirits/water-fairy.glb",
-      "bytes": 1101364,
+      "bytes": 1992604,
       "animations": [
         "Idle",
         "Walk",
         "Run",
+        "Hurt",
         "Attack",
         "Ultimate",
-        "Hurt",
-        "React"
+        "React",
+        "Wave",
+        "Jump",
+        "Celebrate"
       ]
     },
     {

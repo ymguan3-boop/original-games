@@ -1,6 +1,6 @@
 {
-  "version": "20261022-guanpang-v1",
-  "numberingPolicy": "001–061 unique display numbers; revised avian family kept together without changing save IDs.",
+  "version": "20261022-six-elements-v1",
+  "numberingPolicy": "001–061：同物種進化線相鄰（階段由低到高），進化線依 黃卡（標準）→ 紫卡 → 紅卡 排序；存檔 ID 不變。",
   "groupingPolicy": "Connected components of previous/next/evolvesTo; stages ascend, equal-stage branches keep original order. Unmodified legacy links group one-sided connections too.",
   "entries": [
     {
@@ -105,25 +105,23 @@
       "skills": [
         {
           "index": 0,
-          "name": "椒香啄擊",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
+          "name": "啄擊",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
           "duration": null,
-          "source": "authoring/pepper-chick.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+          "source": "authoring/procedural-spirits/chicks.js"
         },
         {
           "index": 1,
-          "name": "暖椒共鳴",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
+          "name": "辣椒投擲",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
           "duration": null,
-          "source": "authoring/pepper-chick.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+          "source": "authoring/procedural-spirits/chicks.js"
         }
       ]
     },
@@ -136,25 +134,23 @@
       "skills": [
         {
           "index": 0,
-          "name": "雙椒連啄",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
+          "name": "啄擊",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
           "duration": null,
-          "source": "authoring/pepper-chick.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+          "source": "authoring/procedural-spirits/chicks.js"
         },
         {
           "index": 1,
-          "name": "雙椒熱舞",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
+          "name": "雙翼連投",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
           "duration": null,
-          "source": "authoring/pepper-chick.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+          "source": "authoring/procedural-spirits/chicks.js"
         }
       ]
     },
@@ -167,25 +163,23 @@
       "skills": [
         {
           "index": 0,
-          "name": "豐椒旋翼",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
+          "name": "啄擊",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
           "duration": null,
-          "source": "authoring/pepper-chick.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+          "source": "authoring/procedural-spirits/chicks.js"
         },
         {
           "index": 1,
-          "name": "百椒暖焰",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
+          "name": "烈焰辣椒雨",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
           "duration": null,
-          "source": "authoring/pepper-chick.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+          "source": "authoring/procedural-spirits/chicks.js"
         }
       ]
     },
@@ -556,257 +550,96 @@
       ]
     },
     {
-      "id": "jigglypuff",
+      "id": "torchic",
       "number": "019",
       "order": 19,
-      "group": "avian-evolution",
-      "name": "三色蛋",
-      "skills": [
-        {
-          "index": 0,
-          "name": "武裝",
-          "animation": "Armor",
-          "mode": "Armor",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 2.8,
-          "source": "models/native/tricolor-egg.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        },
-        {
-          "index": 1,
-          "name": "回滿",
-          "animation": "Restore",
-          "mode": "Restore",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 3.2,
-          "source": "models/native/tricolor-egg.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        }
-      ]
-    },
-    {
-      "id": "treecko",
-      "number": "020",
-      "order": 20,
-      "group": "avian-evolution",
-      "name": "小麻",
-      "skills": [
-        {
-          "index": 0,
-          "name": "好奇啄擊",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 1.7,
-          "source": "models/native/small-birds.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        },
-        {
-          "index": 1,
-          "name": "絨羽小旋風",
-          "animation": "Ultimate",
-          "mode": "Ultimate",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 4.2,
-          "source": "models/native/small-birds.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        }
-      ]
-    },
-    {
-      "id": "grovyle",
-      "number": "021",
-      "order": 21,
-      "group": "avian-evolution",
-      "name": "咕咕",
-      "skills": [
-        {
-          "index": 0,
-          "name": "雞冠衝撞",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 2.3,
-          "source": "models/native/small-birds.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        },
-        {
-          "index": 1,
-          "name": "晨曦啼鳴",
-          "animation": "Ultimate",
-          "mode": "Ultimate",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 4.4,
-          "source": "models/native/small-birds.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        }
-      ]
-    },
-    {
-      "id": "sceptile",
-      "number": "022",
-      "order": 22,
-      "group": "avian-evolution",
-      "name": "小鷹",
-      "skills": [
-        {
-          "index": 0,
-          "name": "銳喙啄擊",
-          "animation": "Peck",
-          "mode": "Peck",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 1.7,
-          "source": "models/native/little-eagle.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        },
-        {
-          "index": 1,
-          "name": "幼鷹撲擊",
-          "animation": "WingPounce",
-          "mode": "WingPounce",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 3.4,
-          "source": "models/native/little-eagle.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        }
-      ]
-    },
-    {
-      "id": "palkia",
-      "number": "023",
-      "order": 23,
-      "group": "avian-evolution",
-      "name": "大朋",
-      "skills": [
-        {
-          "index": 0,
-          "name": "強力拍翼",
-          "animation": "PowerFlap",
-          "mode": "PowerFlap",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 5.4,
-          "source": "models/native/dapeng.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        },
-        {
-          "index": 1,
-          "name": "高空衝撞",
-          "animation": "SkyRam",
-          "mode": "SkyRam",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 5.6,
-          "source": "models/native/dapeng.js",
-          "note": "原生 Three.js 角色專屬動作與重用特效"
-        }
-      ]
-    },
-    {
-      "id": "torchic",
-      "number": "024",
-      "order": 24,
       "group": "torchic",
-      "name": "燈茸雀",
+      "name": "汪汪犬",
       "skills": [
         {
           "index": 0,
-          "name": "焰光輕擊",
+          "name": "撲咬",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
           "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "authoring/procedural-spirits/dogs.js"
         },
         {
           "index": 1,
-          "name": "燈茸共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "汪汪水彈",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
           "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "authoring/procedural-spirits/dogs.js"
         }
       ]
     },
     {
       "id": "combusken",
-      "number": "025",
-      "order": 25,
+      "number": "020",
+      "order": 20,
       "group": "torchic",
-      "name": "霞羽鶴",
+      "name": "浪鳴犬",
       "skills": [
         {
           "index": 0,
-          "name": "焰光輕擊",
+          "name": "雙頭連咬",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
           "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "authoring/procedural-spirits/dogs.js"
         },
         {
           "index": 1,
-          "name": "霞羽共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "雙頭激流",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
           "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "authoring/procedural-spirits/dogs.js"
         }
       ]
     },
     {
       "id": "blaziken",
-      "number": "026",
-      "order": 26,
+      "number": "021",
+      "order": 21,
       "group": "torchic",
-      "name": "曦焰長羽",
+      "name": "三瀾犬",
       "skills": [
         {
           "index": 0,
-          "name": "焰光輕擊",
+          "name": "三頭連咬",
           "animation": "Attack",
           "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
           "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "authoring/procedural-spirits/dogs.js"
         },
         {
           "index": 1,
-          "name": "曦焰共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
+          "name": "三瀾海嘯",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
           "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+          "source": "authoring/procedural-spirits/dogs.js"
         }
       ]
     },
     {
       "id": "mudkip",
-      "number": "027",
-      "order": 27,
+      "number": "022",
+      "order": 22,
       "group": "mudkip",
       "name": "小熊",
       "skills": [
@@ -834,8 +667,8 @@
     },
     {
       "id": "marshtomp",
-      "number": "028",
-      "order": 28,
+      "number": "023",
+      "order": 23,
       "group": "mudkip",
       "name": "壯熊",
       "skills": [
@@ -863,8 +696,8 @@
     },
     {
       "id": "swampert",
-      "number": "029",
-      "order": 29,
+      "number": "024",
+      "order": 24,
       "group": "mudkip",
       "name": "大熊",
       "skills": [
@@ -892,8 +725,8 @@
     },
     {
       "id": "turtwig",
-      "number": "030",
-      "order": 30,
+      "number": "025",
+      "order": 25,
       "group": "turtwig",
       "name": "小貓娘",
       "skills": [
@@ -921,8 +754,8 @@
     },
     {
       "id": "grotle",
-      "number": "031",
-      "order": 31,
+      "number": "026",
+      "order": 26,
       "group": "turtwig",
       "name": "靈貓姬",
       "skills": [
@@ -950,8 +783,8 @@
     },
     {
       "id": "torterra",
-      "number": "032",
-      "order": 32,
+      "number": "027",
+      "order": 27,
       "group": "turtwig",
       "name": "雙刃貓女",
       "skills": [
@@ -978,102 +811,9 @@
       ]
     },
     {
-      "id": "chimchar",
-      "number": "033",
-      "order": 33,
-      "group": "chimchar",
-      "name": "星火猿",
-      "skills": [
-        {
-          "index": 0,
-          "name": "焰光輕擊",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
-        },
-        {
-          "index": 1,
-          "name": "星火共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
-        }
-      ]
-    },
-    {
-      "id": "monferno",
-      "number": "034",
-      "order": 34,
-      "group": "chimchar",
-      "name": "銅爐猿",
-      "skills": [
-        {
-          "index": 0,
-          "name": "焰光輕擊",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
-        },
-        {
-          "index": 1,
-          "name": "銅爐共鳴",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": null,
-          "source": "authoring/spirits.py",
-          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
-        }
-      ]
-    },
-    {
-      "id": "infernape",
-      "number": "035",
-      "order": 35,
-      "group": "chimchar",
-      "name": "官胖",
-      "skills": [
-        {
-          "index": 0,
-          "name": "震地斧擊",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 1.100000024,
-          "source": "authoring/guanpang/build-blender.py",
-          "note": "官胖 Blender 專屬骨架與表情動畫；以對應動作時間觸發紫色符紋特效。"
-        },
-        {
-          "index": 1,
-          "name": "天墜裂地",
-          "animation": "Ultimate",
-          "mode": "Ultimate",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 2.733333349,
-          "source": "authoring/guanpang/build-blender.py",
-          "note": "官胖 Blender 專屬骨架與表情動畫；以對應動作時間觸發紫色符紋特效。"
-        }
-      ]
-    },
-    {
       "id": "piplup",
-      "number": "036",
-      "order": 36,
+      "number": "028",
+      "order": 28,
       "group": "piplup",
       "name": "雛鳥",
       "skills": [
@@ -1103,8 +843,8 @@
     },
     {
       "id": "prinplup",
-      "number": "037",
-      "order": 37,
+      "number": "029",
+      "order": 29,
       "group": "piplup",
       "name": "青羽鳥",
       "skills": [
@@ -1134,8 +874,8 @@
     },
     {
       "id": "empoleon",
-      "number": "038",
-      "order": 38,
+      "number": "030",
+      "order": 30,
       "group": "piplup",
       "name": "天翼王",
       "skills": [
@@ -1164,205 +904,9 @@
       ]
     },
     {
-      "id": "articuno",
-      "number": "039",
-      "order": 39,
-      "group": "articuno",
-      "name": "大眼蛙",
-      "skills": [
-        {
-          "index": 0,
-          "name": "普通撞擊",
-          "animation": "Bump",
-          "mode": "Bump",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 1.45,
-          "source": "models/native/frog-spirits.js"
-        },
-        {
-          "index": 1,
-          "name": "泡泡吐息",
-          "animation": "Bubbles",
-          "mode": "Bubbles",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 4.8,
-          "source": "models/native/frog-spirits.js"
-        },
-        {
-          "index": 2,
-          "name": "泡泡連彈",
-          "animation": "Bubbles",
-          "mode": "Bubbles",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 4.8,
-          "source": "models/native/frog-spirits.js",
-          "note": "同一技能動作有不同 power/cost；未另外聲稱製作大小招的第二段動畫。"
-        }
-      ]
-    },
-    {
-      "id": "moltres",
-      "number": "040",
-      "order": 40,
-      "group": "articuno",
-      "name": "冒險蛙",
-      "skills": [
-        {
-          "index": 0,
-          "name": "普通側踢",
-          "animation": "Kick",
-          "mode": "Kick",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 1.9,
-          "source": "models/native/frog-spirits.js"
-        },
-        {
-          "index": 1,
-          "name": "葉鏢投擲",
-          "animation": "Boomerang",
-          "mode": "Boomerang",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 6.6,
-          "source": "models/native/frog-spirits.js"
-        },
-        {
-          "index": 2,
-          "name": "迴旋葉風",
-          "animation": "Boomerang",
-          "mode": "Boomerang",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 6.6,
-          "source": "models/native/frog-spirits.js",
-          "note": "同一技能動作有不同 power/cost；未另外聲稱製作大小招的第二段動畫。"
-        }
-      ]
-    },
-    {
-      "id": "raikou",
-      "number": "041",
-      "order": 41,
-      "group": "zapdos",
-      "name": "C囝仔",
-      "skills": [
-        {
-          "index": 0,
-          "name": "小火球",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 1.417,
-          "source": "authoring/fire-monkey/monkey-actions.js"
-        },
-        {
-          "index": 1,
-          "name": "大火球",
-          "animation": "Ultimate",
-          "mode": "Ultimate",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 2.417,
-          "source": "authoring/fire-monkey/monkey-actions.js"
-        }
-      ]
-    },
-    {
-      "id": "zapdos",
-      "number": "042",
-      "order": 42,
-      "group": "zapdos",
-      "name": "C老猴",
-      "skills": [
-        {
-          "index": 0,
-          "name": "伸棍打",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 1.5,
-          "source": "authoring/fire-monkey/monkey-actions.js"
-        },
-        {
-          "index": 1,
-          "name": "三連棍",
-          "animation": "Ultimate",
-          "mode": "Ultimate",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 3,
-          "source": "authoring/fire-monkey/monkey-actions.js"
-        }
-      ]
-    },
-    {
-      "id": "entei",
-      "number": "043",
-      "order": 43,
-      "group": "entei",
-      "name": "水毛蟲",
-      "skills": [
-        {
-          "index": 0,
-          "name": "頭槌水彈",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 1.6,
-          "source": "authoring/water-spirits/spirits.js"
-        },
-        {
-          "index": 1,
-          "name": "吐絲結網",
-          "animation": "Ultimate",
-          "mode": "Ultimate",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 4,
-          "source": "authoring/water-spirits/spirits.js"
-        }
-      ]
-    },
-    {
-      "id": "suicune",
-      "number": "044",
-      "order": 44,
-      "group": "entei",
-      "name": "水仙子",
-      "skills": [
-        {
-          "index": 0,
-          "name": "水球推擊",
-          "animation": "Attack",
-          "mode": "Attack",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 1.6,
-          "source": "authoring/water-spirits/spirits.js"
-        },
-        {
-          "index": 1,
-          "name": "水之花綻",
-          "animation": "Ultimate",
-          "mode": "Ultimate",
-          "nativeAttack": true,
-          "fallback": false,
-          "duration": 4.2,
-          "source": "authoring/water-spirits/spirits.js"
-        }
-      ]
-    },
-    {
       "id": "kyogre",
-      "number": "045",
-      "order": 45,
+      "number": "031",
+      "order": 31,
       "group": "kyogre",
       "name": "小金魚",
       "skills": [
@@ -1390,8 +934,8 @@
     },
     {
       "id": "groudon",
-      "number": "046",
-      "order": 46,
+      "number": "032",
+      "order": 32,
       "group": "kyogre",
       "name": "金魚國王",
       "skills": [
@@ -1419,8 +963,8 @@
     },
     {
       "id": "rayquaza",
-      "number": "047",
-      "order": 47,
+      "number": "033",
+      "order": 33,
       "group": "kyogre",
       "name": "金魚皇后",
       "skills": [
@@ -1447,10 +991,678 @@
       ]
     },
     {
-      "id": "dialga",
+      "id": "caterpie",
+      "number": "034",
+      "order": 34,
+      "group": "caterpie",
+      "name": "銅寶箱",
+      "skills": [
+        {
+          "index": 0,
+          "name": "銅箱輕撞",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/chest-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        },
+        {
+          "index": 1,
+          "name": "銅寶共鳴",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/chest-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        }
+      ]
+    },
+    {
+      "id": "metapod",
+      "number": "035",
+      "order": 35,
+      "group": "caterpie",
+      "name": "銀寶箱",
+      "skills": [
+        {
+          "index": 0,
+          "name": "銀箱震擊",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/chest-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        },
+        {
+          "index": 1,
+          "name": "銀寶共鳴",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/chest-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        }
+      ]
+    },
+    {
+      "id": "butterfree",
+      "number": "036",
+      "order": 36,
+      "group": "caterpie",
+      "name": "金寶箱",
+      "skills": [
+        {
+          "index": 0,
+          "name": "金箱猛撞",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/chest-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        },
+        {
+          "index": 1,
+          "name": "金寶共鳴",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/chest-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        }
+      ]
+    },
+    {
+      "id": "weedle",
+      "number": "037",
+      "order": 37,
+      "group": "weedle",
+      "name": "破書",
+      "skills": [
+        {
+          "index": 0,
+          "name": "書角輕撞",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/book-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        },
+        {
+          "index": 1,
+          "name": "破書共鳴",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/book-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        }
+      ]
+    },
+    {
+      "id": "kakuna",
+      "number": "038",
+      "order": 38,
+      "group": "weedle",
+      "name": "論語",
+      "skills": [
+        {
+          "index": 0,
+          "name": "書卷震擊",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/book-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        },
+        {
+          "index": 1,
+          "name": "論語共鳴",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/book-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        }
+      ]
+    },
+    {
+      "id": "beedrill",
+      "number": "039",
+      "order": 39,
+      "group": "weedle",
+      "name": "辭海",
+      "skills": [
+        {
+          "index": 0,
+          "name": "辭海重擊",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/book-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        },
+        {
+          "index": 1,
+          "name": "辭海共鳴",
+          "animation": "React",
+          "mode": "React",
+          "nativeAttack": false,
+          "fallback": true,
+          "duration": null,
+          "source": "authoring/book-spirit.py",
+          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
+        }
+      ]
+    },
+    {
+      "id": "jigglypuff",
+      "number": "040",
+      "order": 40,
+      "group": "jigglypuff",
+      "name": "三色蛋",
+      "skills": [
+        {
+          "index": 0,
+          "name": "武裝",
+          "animation": "Armor",
+          "mode": "Armor",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 2.8,
+          "source": "models/native/tricolor-egg.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        },
+        {
+          "index": 1,
+          "name": "回滿",
+          "animation": "Restore",
+          "mode": "Restore",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 3.2,
+          "source": "models/native/tricolor-egg.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        }
+      ]
+    },
+    {
+      "id": "treecko",
+      "number": "041",
+      "order": 41,
+      "group": "jigglypuff",
+      "name": "小麻",
+      "skills": [
+        {
+          "index": 0,
+          "name": "好奇啄擊",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.7,
+          "source": "models/native/small-birds.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        },
+        {
+          "index": 1,
+          "name": "絨羽小旋風",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 4.2,
+          "source": "models/native/small-birds.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        }
+      ]
+    },
+    {
+      "id": "grovyle",
+      "number": "042",
+      "order": 42,
+      "group": "jigglypuff",
+      "name": "咕咕",
+      "skills": [
+        {
+          "index": 0,
+          "name": "雞冠衝撞",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 2.3,
+          "source": "models/native/small-birds.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        },
+        {
+          "index": 1,
+          "name": "晨曦啼鳴",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 4.4,
+          "source": "models/native/small-birds.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        }
+      ]
+    },
+    {
+      "id": "sceptile",
+      "number": "043",
+      "order": 43,
+      "group": "jigglypuff",
+      "name": "小鷹",
+      "skills": [
+        {
+          "index": 0,
+          "name": "銳喙啄擊",
+          "animation": "Peck",
+          "mode": "Peck",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.7,
+          "source": "models/native/little-eagle.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        },
+        {
+          "index": 1,
+          "name": "幼鷹撲擊",
+          "animation": "WingPounce",
+          "mode": "WingPounce",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 3.4,
+          "source": "models/native/little-eagle.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        }
+      ]
+    },
+    {
+      "id": "palkia",
+      "number": "044",
+      "order": 44,
+      "group": "jigglypuff",
+      "name": "大朋",
+      "skills": [
+        {
+          "index": 0,
+          "name": "強力拍翼",
+          "animation": "PowerFlap",
+          "mode": "PowerFlap",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 5.4,
+          "source": "models/native/dapeng.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        },
+        {
+          "index": 1,
+          "name": "高空衝撞",
+          "animation": "SkyRam",
+          "mode": "SkyRam",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 5.6,
+          "source": "models/native/dapeng.js",
+          "note": "原生 Three.js 角色專屬動作與重用特效"
+        }
+      ]
+    },
+    {
+      "id": "articuno",
+      "number": "045",
+      "order": 45,
+      "group": "articuno",
+      "name": "大眼蛙",
+      "skills": [
+        {
+          "index": 0,
+          "name": "普通撞擊",
+          "animation": "Bump",
+          "mode": "Bump",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.45,
+          "source": "models/native/frog-spirits.js"
+        },
+        {
+          "index": 1,
+          "name": "泡泡連彈",
+          "animation": "Bubbles",
+          "mode": "Bubbles",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 4.8,
+          "source": "models/native/frog-spirits.js",
+          "note": "同一技能動作有不同 power/cost；未另外聲稱製作大小招的第二段動畫。"
+        }
+      ]
+    },
+    {
+      "id": "moltres",
+      "number": "046",
+      "order": 46,
+      "group": "articuno",
+      "name": "冒險蛙",
+      "skills": [
+        {
+          "index": 0,
+          "name": "普通側踢",
+          "animation": "Kick",
+          "mode": "Kick",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.9,
+          "source": "models/native/frog-spirits.js"
+        },
+        {
+          "index": 1,
+          "name": "迴旋葉風",
+          "animation": "Boomerang",
+          "mode": "Boomerang",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 6.6,
+          "source": "models/native/frog-spirits.js",
+          "note": "同一技能動作有不同 power/cost；未另外聲稱製作大小招的第二段動畫。"
+        }
+      ]
+    },
+    {
+      "id": "raikou",
+      "number": "047",
+      "order": 47,
+      "group": "raikou",
+      "name": "C囝仔",
+      "skills": [
+        {
+          "index": 0,
+          "name": "小火球",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.417,
+          "source": "authoring/fire-monkey/monkey-actions.js"
+        },
+        {
+          "index": 1,
+          "name": "大火球",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 2.417,
+          "source": "authoring/fire-monkey/monkey-actions.js"
+        }
+      ]
+    },
+    {
+      "id": "zapdos",
       "number": "048",
       "order": 48,
-      "group": "green-eye-bat",
+      "group": "raikou",
+      "name": "C老猴",
+      "skills": [
+        {
+          "index": 0,
+          "name": "伸棍打",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.5,
+          "source": "authoring/fire-monkey/monkey-actions.js"
+        },
+        {
+          "index": 1,
+          "name": "三連棍",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 3,
+          "source": "authoring/fire-monkey/monkey-actions.js"
+        }
+      ]
+    },
+    {
+      "id": "entei",
+      "number": "049",
+      "order": 49,
+      "group": "entei",
+      "name": "水毛蟲",
+      "skills": [
+        {
+          "index": 0,
+          "name": "頭槌水彈",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.6,
+          "source": "authoring/water-spirits/spirits.js"
+        },
+        {
+          "index": 1,
+          "name": "吐絲結網",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 4,
+          "source": "authoring/water-spirits/spirits.js"
+        }
+      ]
+    },
+    {
+      "id": "suicune",
+      "number": "050",
+      "order": 50,
+      "group": "entei",
+      "name": "水仙子",
+      "skills": [
+        {
+          "index": 0,
+          "name": "泡泡彈",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": null,
+          "source": "authoring/beasts/beasts-actions.js"
+        },
+        {
+          "index": 1,
+          "name": "潮汐花綻",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": null,
+          "source": "authoring/beasts/beasts-actions.js"
+        }
+      ]
+    },
+    {
+      "id": "giratina",
+      "number": "051",
+      "order": 51,
+      "group": "giratina",
+      "name": "小黃",
+      "skills": [
+        {
+          "index": 0,
+          "name": "投擲胡蘿蔔",
+          "animation": "CarrotThrow",
+          "mode": "CarrotThrow",
+          "duration": 1.9285714285714288,
+          "nativeAttack": true,
+          "fallback": false,
+          "source": "models/native/rabbits.js"
+        },
+        {
+          "index": 1,
+          "name": "跳撞",
+          "animation": "Special",
+          "mode": "Special",
+          "duration": 2.65,
+          "nativeAttack": true,
+          "fallback": false,
+          "source": "models/native/rabbits.js"
+        }
+      ]
+    },
+    {
+      "id": "raichu",
+      "number": "052",
+      "order": 52,
+      "group": "giratina",
+      "name": "龐克兔",
+      "skills": [
+        {
+          "index": 0,
+          "name": "投擲胡蘿蔔",
+          "animation": "CarrotThrow",
+          "mode": "CarrotThrow",
+          "duration": 1.9285714285714288,
+          "nativeAttack": true,
+          "fallback": false,
+          "source": "models/native/rabbits.js"
+        },
+        {
+          "index": 1,
+          "name": "電吉他二連擊",
+          "animation": "Special",
+          "mode": "Special",
+          "duration": 2.9166666666666665,
+          "nativeAttack": true,
+          "fallback": false,
+          "source": "models/native/rabbits.js"
+        }
+      ]
+    },
+    {
+      "id": "chimchar",
+      "number": "053",
+      "order": 53,
+      "group": "chimchar",
+      "name": "阿宏牛仔",
+      "skills": [
+        {
+          "index": 0,
+          "name": "焰光輕擊",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": null,
+          "source": "authoring/spirits.py",
+          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+        },
+        {
+          "index": 1,
+          "name": "星火共鳴",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": null,
+          "source": "authoring/spirits.py",
+          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+        }
+      ]
+    },
+    {
+      "id": "monferno",
+      "number": "054",
+      "order": 54,
+      "group": "chimchar",
+      "name": "藍金星輝法師",
+      "skills": [
+        {
+          "index": 0,
+          "name": "焰光輕擊",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": null,
+          "source": "authoring/spirits.py",
+          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+        },
+        {
+          "index": 1,
+          "name": "銅爐共鳴",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": null,
+          "source": "authoring/spirits.py",
+          "note": "現有 GLB 只有通用 Attack；保留既有技能名與數值，未宣稱大小招有不同專屬動畫。"
+        }
+      ]
+    },
+    {
+      "id": "infernape",
+      "number": "055",
+      "order": 55,
+      "group": "chimchar",
+      "name": "官胖",
+      "skills": [
+        {
+          "index": 0,
+          "name": "震地斧擊",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.100000024,
+          "source": "authoring/guanpang/build-blender.py",
+          "note": "官胖 Blender 專屬骨架與表情動畫；以對應動作時間觸發紫色符紋特效。"
+        },
+        {
+          "index": 1,
+          "name": "天墜裂地",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 2.733333349,
+          "source": "authoring/guanpang/build-blender.py",
+          "note": "官胖 Blender 專屬骨架與表情動畫；以對應動作時間觸發紫色符紋特效。"
+        }
+      ]
+    },
+    {
+      "id": "dialga",
+      "number": "056",
+      "order": 56,
+      "group": "dialga",
       "name": "綠眼蝙怪",
       "skills": [
         {
@@ -1482,67 +1694,9 @@
       ]
     },
     {
-      "id": "giratina",
-      "number": "049",
-      "order": 49,
-      "group": "rabbit-evolution",
-      "name": "小黃",
-      "skills": [
-        {
-          "index": 0,
-          "name": "投擲胡蘿蔔",
-          "animation": "CarrotThrow",
-          "mode": "CarrotThrow",
-          "duration": 1.9285714285714288,
-          "nativeAttack": true,
-          "fallback": false,
-          "source": "models/native/rabbits.js"
-        },
-        {
-          "index": 1,
-          "name": "跳撞",
-          "animation": "Special",
-          "mode": "Special",
-          "duration": 2.65,
-          "nativeAttack": true,
-          "fallback": false,
-          "source": "models/native/rabbits.js"
-        }
-      ]
-    },
-    {
-      "id": "raichu",
-      "number": "050",
-      "order": 50,
-      "group": "rabbit-evolution",
-      "name": "龐克兔",
-      "skills": [
-        {
-          "index": 0,
-          "name": "投擲胡蘿蔔",
-          "animation": "CarrotThrow",
-          "mode": "CarrotThrow",
-          "duration": 1.9285714285714288,
-          "nativeAttack": true,
-          "fallback": false,
-          "source": "models/native/rabbits.js"
-        },
-        {
-          "index": 1,
-          "name": "電吉他二連擊",
-          "animation": "Special",
-          "mode": "Special",
-          "duration": 2.9166666666666665,
-          "nativeAttack": true,
-          "fallback": false,
-          "source": "models/native/rabbits.js"
-        }
-      ]
-    },
-    {
       "id": "pikachu",
-      "number": "051",
-      "order": 51,
+      "number": "057",
+      "order": 57,
       "group": "pikachu",
       "name": "歐頭慢",
       "skills": [
@@ -1574,8 +1728,8 @@
     },
     {
       "id": "mew",
-      "number": "052",
-      "order": 52,
+      "number": "058",
+      "order": 58,
       "group": "mew",
       "name": "小飯團",
       "skills": [
@@ -1604,8 +1758,8 @@
     },
     {
       "id": "wigglytuff",
-      "number": "053",
-      "order": 53,
+      "number": "059",
+      "order": 59,
       "group": "wigglytuff",
       "name": "小山",
       "skills": [
@@ -1637,8 +1791,8 @@
     },
     {
       "id": "blissey",
-      "number": "054",
-      "order": 54,
+      "number": "060",
+      "order": 60,
       "group": "blissey",
       "name": "光鳳鷹",
       "skills": [
@@ -1661,192 +1815,6 @@
           "fallback": false,
           "duration": 2.7,
           "source": "models/native/light-phoenix.js"
-        }
-      ]
-    },
-    {
-      "id": "caterpie",
-      "number": "055",
-      "order": 55,
-      "group": "caterpie",
-      "name": "銅寶箱",
-      "skills": [
-        {
-          "index": 0,
-          "name": "銅箱輕撞",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/chest-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        },
-        {
-          "index": 1,
-          "name": "銅寶共鳴",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/chest-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        }
-      ]
-    },
-    {
-      "id": "metapod",
-      "number": "056",
-      "order": 56,
-      "group": "caterpie",
-      "name": "銀寶箱",
-      "skills": [
-        {
-          "index": 0,
-          "name": "銀箱震擊",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/chest-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        },
-        {
-          "index": 1,
-          "name": "銀寶共鳴",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/chest-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        }
-      ]
-    },
-    {
-      "id": "butterfree",
-      "number": "057",
-      "order": 57,
-      "group": "caterpie",
-      "name": "金寶箱",
-      "skills": [
-        {
-          "index": 0,
-          "name": "金箱猛撞",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/chest-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        },
-        {
-          "index": 1,
-          "name": "金寶共鳴",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/chest-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        }
-      ]
-    },
-    {
-      "id": "weedle",
-      "number": "058",
-      "order": 58,
-      "group": "weedle",
-      "name": "破書",
-      "skills": [
-        {
-          "index": 0,
-          "name": "書角輕撞",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/book-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        },
-        {
-          "index": 1,
-          "name": "破書共鳴",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/book-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        }
-      ]
-    },
-    {
-      "id": "kakuna",
-      "number": "059",
-      "order": 59,
-      "group": "weedle",
-      "name": "論語",
-      "skills": [
-        {
-          "index": 0,
-          "name": "書卷震擊",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/book-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        },
-        {
-          "index": 1,
-          "name": "論語共鳴",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/book-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        }
-      ]
-    },
-    {
-      "id": "beedrill",
-      "number": "060",
-      "order": 60,
-      "group": "weedle",
-      "name": "辭海",
-      "skills": [
-        {
-          "index": 0,
-          "name": "辭海重擊",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/book-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-        },
-        {
-          "index": 1,
-          "name": "辭海共鳴",
-          "animation": "React",
-          "mode": "React",
-          "nativeAttack": false,
-          "fallback": true,
-          "duration": null,
-          "source": "authoring/book-spirit.py",
-          "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
       ]
     },
@@ -1930,16 +1898,6 @@
       ]
     },
     {
-      "id": "avian-evolution",
-      "ids": [
-        "jigglypuff",
-        "treecko",
-        "grovyle",
-        "sceptile",
-        "palkia"
-      ]
-    },
-    {
       "id": "torchic",
       "ids": [
         "torchic",
@@ -1964,19 +1922,45 @@
       ]
     },
     {
-      "id": "chimchar",
-      "ids": [
-        "chimchar",
-        "monferno",
-        "infernape"
-      ]
-    },
-    {
       "id": "piplup",
       "ids": [
         "piplup",
         "prinplup",
         "empoleon"
+      ]
+    },
+    {
+      "id": "kyogre",
+      "ids": [
+        "kyogre",
+        "groudon",
+        "rayquaza"
+      ]
+    },
+    {
+      "id": "caterpie",
+      "ids": [
+        "caterpie",
+        "metapod",
+        "butterfree"
+      ]
+    },
+    {
+      "id": "weedle",
+      "ids": [
+        "weedle",
+        "kakuna",
+        "beedrill"
+      ]
+    },
+    {
+      "id": "jigglypuff",
+      "ids": [
+        "jigglypuff",
+        "treecko",
+        "grovyle",
+        "sceptile",
+        "palkia"
       ]
     },
     {
@@ -1987,7 +1971,7 @@
       ]
     },
     {
-      "id": "zapdos",
+      "id": "raikou",
       "ids": [
         "raikou",
         "zapdos"
@@ -2001,24 +1985,24 @@
       ]
     },
     {
-      "id": "kyogre",
-      "ids": [
-        "kyogre",
-        "groudon",
-        "rayquaza"
-      ]
-    },
-    {
-      "id": "green-eye-bat",
-      "ids": [
-        "dialga"
-      ]
-    },
-    {
-      "id": "rabbit-evolution",
+      "id": "giratina",
       "ids": [
         "giratina",
         "raichu"
+      ]
+    },
+    {
+      "id": "chimchar",
+      "ids": [
+        "chimchar",
+        "monferno",
+        "infernape"
+      ]
+    },
+    {
+      "id": "dialga",
+      "ids": [
+        "dialga"
       ]
     },
     {
@@ -2043,22 +2027,6 @@
       "id": "blissey",
       "ids": [
         "blissey"
-      ]
-    },
-    {
-      "id": "caterpie",
-      "ids": [
-        "caterpie",
-        "metapod",
-        "butterfree"
-      ]
-    },
-    {
-      "id": "weedle",
-      "ids": [
-        "weedle",
-        "kakuna",
-        "beedrill"
       ]
     },
     {
@@ -2180,18 +2148,6 @@
       "reason": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
     },
     {
-      "id": "charmander",
-      "reason": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-    },
-    {
-      "id": "charmeleon",
-      "reason": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-    },
-    {
-      "id": "charizard",
-      "reason": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
-    },
-    {
       "id": "squirtle",
       "reason": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
     },
@@ -2225,18 +2181,6 @@
     },
     {
       "id": "sceptile",
-      "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
-    },
-    {
-      "id": "torchic",
-      "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
-    },
-    {
-      "id": "combusken",
-      "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
-    },
-    {
-      "id": "blaziken",
       "reason": "只存在通用 Attack，技能名並非可由單一動畫證明的獨立招式。"
     },
     {

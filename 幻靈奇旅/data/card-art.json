@@ -180,34 +180,34 @@
     "styleReference": "cards/art/floral-deer-chikorita.webp"
   },
   "torchic": {
-    "image": "cards/art/torchic.webp",
-    "name": "燈茸雀",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/torchic.glb",
-    "group": 5,
-    "quadrant": 1,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/water-dog-1-portrait.webp",
+    "name": "汪汪犬",
+    "source": "model-render",
+    "referenceModel": "models/spirits/water-dog-1.glb",
+    "style": "three-js-model-render-water-backdrop",
+    "generatedAt": "2026-10-22",
+    "width": 768,
+    "height": 768
   },
   "combusken": {
-    "image": "cards/art/combusken.webp",
-    "name": "霞羽鶴",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/combusken.glb",
-    "group": 5,
-    "quadrant": 2,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/water-dog-2-portrait.webp",
+    "name": "浪鳴犬",
+    "source": "model-render",
+    "referenceModel": "models/spirits/water-dog-2.glb",
+    "style": "three-js-model-render-water-backdrop",
+    "generatedAt": "2026-10-22",
+    "width": 768,
+    "height": 768
   },
   "blaziken": {
-    "image": "cards/art/blaziken.webp",
-    "name": "曦焰長羽",
-    "source": "imagegen-original-model-reference",
-    "referenceModel": "models/spirits/blaziken.glb",
-    "group": 5,
-    "quadrant": 3,
-    "style": "original-cute-2d-action-illustration",
-    "generatedAt": "2026-10-12"
+    "image": "cards/art/water-dog-3-portrait.webp",
+    "name": "三瀾犬",
+    "source": "model-render",
+    "referenceModel": "models/spirits/water-dog-3.glb",
+    "style": "three-js-model-render-water-backdrop",
+    "generatedAt": "2026-10-22",
+    "width": 768,
+    "height": 768
   },
   "mudkip": {
     "image": "cards/art/fire-bear-1-portrait.webp",
@@ -271,7 +271,7 @@
   },
   "chimchar": {
     "image": "cards/art/chimchar.webp",
-    "name": "星火猿",
+    "name": "阿宏牛仔",
     "source": "imagegen-original-model-reference",
     "referenceModel": "models/spirits/chimchar.glb",
     "group": 7,
@@ -281,7 +281,7 @@
   },
   "monferno": {
     "image": "cards/art/monferno.webp",
-    "name": "銅爐猿",
+    "name": "藍金星輝法師",
     "source": "imagegen-original-model-reference",
     "referenceModel": "models/spirits/monferno.glb",
     "group": 7,

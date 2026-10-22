@@ -20,7 +20,7 @@
     const j = {};
     for (const n of names) { const va = a.j[n] || rest(n), vb = b.j[n] || rest(n); j[n] = va.map((v, k) => lerp(v, vb[k], t)); }
     const num = (k) => lerp(a[k] || 0, b[k] || 0, t);
-    return { j, air: num('air'), hz: num('hz'), face: t < 0.5 || !b.face ? a.face || 'normal' : b.face };
+    return { j, air: num('air'), hz: num('hz'), toe: num('toe'), face: t < 0.5 || !b.face ? a.face || 'normal' : b.face };
   }
   function retimeDef(def) {
     if (!def.retime) return def;
@@ -51,27 +51,33 @@
     o.browR = { p: [LOCALP.browR[0], LOCALP.browR[1] + e.by, LOCALP.browR[2]], r: [e.brow[0], -e.brow[1], -e.brow[2]] };
     return o;
   }
-  function footPoint(pose, sd, pt, legK = 1) {
+  function footPoint(pose, sd, pt, legK = 1, shinK = 1) {
     let v = pt.slice();
     for (const j of ['foot' + sd, 'shin' + sd, 'thigh' + sd, 'hips']) {
-      const at = HAT[j], p = j === 'hips' ? pose.hips.p : at, k = j.startsWith('thigh') ? legK : 1;   // 整條腿在髖關節縮放
+      const at = HAT[j], p = j === 'hips' ? pose.hips.p : at, k = j.startsWith('thigh') ? legK : j.startsWith('shin') ? shinK : 1;   // 大腿在髖關節縮放、小腿再在膝關節縮放
       v = rot(pose[j].r, [(v[0] - at[0]) * k, (v[1] - at[1]) * k, (v[2] - at[2]) * k]);
       v = [v[0] + p[0], v[1] + p[1], v[2] + p[2]];
     }
     return v;
   }
-  function bakeHero(def0, legK = 1, crouch = null) {
+  function bakeHero(def0, legK = 1, crouch = null, shinK = 1) {
+    const legEff = (legK * (0.28 + 0.32 * shinK)) / 0.6;   // 整條腿的等效縮放（root 依此整體上移）
+    let restMin = null;
     const def = retimeDef(def0), { dur, fps = 24 } = def, frames = Math.round(dur * fps), tracks = {};
     for (let i = 0; i <= frames; i++) {
       const u = (i % frames) / frames, s0 = def.pose ? def.pose(u) : sampleKeys(def.keys, u, HJ, hrest), pose = {};
       const s = { air: 0, hz: 0, face: 'normal', ...s0, j: Object.fromEntries(HJ.map((n) => [n, (s0.j[n] || hrest(n)).slice()])) };
       if (crouch) for (const sd of ['L', 'R']) { s.j['thigh' + sd][0] += crouch[0]; s.j['shin' + sd][0] += crouch[1]; }
       for (const n of HJ) pose[n] = { r: s.j[n] };
-      for (const sd of ['L', 'R']) pose['foot' + sd].r = [-(pose.hips.r[0] + pose['thigh' + sd].r[0] + pose['shin' + sd].r[0]), 0, 0];
+      for (const sd of ['L', 'R']) pose['foot' + sd].r = [-(pose.hips.r[0] + pose['thigh' + sd].r[0] + pose['shin' + sd].r[0]) + (s.toe || 0), 0, 0];   // toe > 0：腳尖朝下（飛行）
       pose.hips.p = [0, HAT.hips[1], s.hz];
       let minY = Infinity;
-      for (const sd of ['L', 'R']) for (const p of HFOOT[sd]) minY = Math.min(minY, footPoint(pose, sd, p, legK)[1]);
-      pose.hips.p[1] += -minY - 0.6 * (legK - 1) + s.air;   // root 已整體上下移 0.6×(legK−1)
+      for (const sd of ['L', 'R']) for (const p of HFOOT[sd]) minY = Math.min(minY, footPoint(pose, sd, p, legK, shinK)[1]);
+      if (def.flying) {   // 飛行：身體高度只由 air 決定（以雙腿伸直站立時的落地高度為基準），腿弓起來不會讓身體掉下來
+        if (restMin === null) { const rp = {}; for (const n of HJ) rp[n] = { r: hrest(n).slice() }; rp.hips.p = [0, HAT.hips[1], 0]; restMin = Infinity; for (const sd of ['L', 'R']) for (const p of HFOOT[sd]) restMin = Math.min(restMin, footPoint(rp, sd, p, legK, shinK)[1]); }
+        minY = restMin;
+      }
+      pose.hips.p[1] += -minY - 0.6 * (legEff - 1) + s.air;   // root 已整體上下移 0.6×(legEff−1)
       for (const n of HJ) { if (n === 'hips') push(tracks, n, 'p', pose.hips.p); push(tracks, n, 'r', pose[n].r); }
       for (const [n, tr] of Object.entries(face(s.face))) for (const k of ['p', 'r', 's']) if (tr[k]) push(tracks, n, k, tr[k]);
       push(tracks, 'fxR', 's', OFF); push(tracks, 'fxL', 's', OFF); push(tracks, 'ball', 'p', HAT.ball); push(tracks, 'ball', 's', OFF);
@@ -305,6 +311,83 @@
     return out;
   }
   const useMove = (m, legK) => reground({ ...JSON.parse(JSON.stringify(KA().find((x) => x.id === m.use))), id: m.use, name: m.name, desc: m.desc, group: m.group }, legK);
+  // ================= 水仙子（飛行） =================
+  const HOVER = 0.75, TOE = 0.85;   // 飄浮高度（骨架單位）、腳尖朝下角度
+  // 翅膀拍動（關節旋轉 = 拍動量）＋環繞的水球整圈旋轉（每個動作整數圈，循環不跳）
+  function wingPose(u, amp, cyc, flare = 0) {
+    const f = TAU * cyc * u, a1 = amp * Math.sin(f), b1 = amp * 0.8 * Math.sin(f + 1.4);
+    return {
+      wingUL: { r: [0, a1 - flare, 0.1 * a1] }, wingUR: { r: [0, -(a1 - flare), -0.1 * a1] },
+      wingLL: { r: [0, b1 - flare * 0.8, -0.1 * b1] }, wingLR: { r: [0, -(b1 - flare * 0.8), 0.1 * b1] },
+    };
+  }
+  const orbit = (u, dur) => ({ bubbleOrbit: { r: [0, TAU * Math.max(1, Math.round(dur * 0.35)) * u, 0] } });
+  const fly = (dur, amp, cyc, flare) => (u) => ({ ...wingPose(u, amp, cyc, typeof flare === 'function' ? flare(u) : flare), ...orbit(u, dur) });
+  // 垂下的雙腿（腳尖朝下）：左腳略前、右腳略後，膝蓋微彎
+  const DANGLE = { thighL: [-0.2, 0, 0.05], shinL: [0.55, 0, 0], thighR: [0.1, 0, -0.05], shinR: [0.8, 0, 0] };
+  const TUCK = { thighL: [-0.95, 0, 0.12], shinL: [1.55, 0, 0], thighR: [-0.7, 0, -0.12], shinR: [1.75, 0, 0] };   // 招式時整條腿弓起來
+  const withLegs = (keys, base = DANGLE) => keys.map((k) => ({ toe: TOE, ...k, air: (k.air || 0) + HOVER, j: { ...base, ...k.j } }));
+  const OPEN_ARMS = { upperArmL: [0.05, 0, 0.72], forearmL: [-0.3, 0, 0], handL: [0.3, 0, 0], upperArmR: [0.05, 0, -0.72], forearmR: [-0.3, 0, 0], handR: [0.3, 0, 0] };
+  const FAIRY_BASIC = [
+    { id: 'idle', name: '站立（飄浮）', group: '基本', dur: 4, desc: '輕輕飄在半空、腳尖朝下，雙臂微開、掌心向前，身體隨呼吸上下起伏，翅膀緩緩拍動、水球環繞全身、馬尾輕擺',
+      extra: fly(4, 0.22, 3, 0.1),
+      pose: (u) => { const f = TAU * u, s = Math.sin(f); return { face: 'normal', toe: TOE, air: HOVER + 0.045 * Math.sin(2 * f), j: {
+        ...DANGLE, hips: [0, 0.07 * s, 0.03 * s], chest: [0.02 * Math.sin(2 * f), -0.05 * s, 0], head: [-0.03, 0.14 * s, 0.06 * s],
+        thighL: [-0.2 + 0.05 * s, 0, 0.05], thighR: [0.1 - 0.05 * s, 0, -0.05],
+        ...OPEN_ARMS, upperArmL: [0.05, 0, 0.72 + 0.05 * s], upperArmR: [0.05, 0, -0.72 - 0.05 * s] } }; } },
+    { id: 'walk', name: '行走（飛行前進）', group: '基本', dur: 1.3, desc: '身體微微前傾、貼著半空向前滑行，雙腿輕輕後曳，雙臂微開隨著拍翅擺動，水球繞著身體轉',
+      extra: fly(1.3, 0.3, 4, 0.1),
+      pose: (u) => { const f = TAU * u, sw = Math.sin(f); return { face: 'normal', toe: TOE, air: HOVER + 0.05 * Math.sin(2 * f), j: {
+        hips: [0.1, -0.06 * sw, 0.03 * sw], chest: [0.16, 0.08 * sw, -0.02 * sw], head: [-0.12, -0.04 * sw, 0.02 * sw],
+        thighL: [0.18 + 0.14 * sw, 0, 0.04], shinL: [0.6, 0, 0], thighR: [0.18 - 0.14 * sw, 0, -0.04], shinR: [0.65, 0, 0],
+        upperArmL: [-0.15 * sw, 0, 0.62], forearmL: [-0.3, 0, 0], handL: [0.3, 0, 0], upperArmR: [0.15 * sw, 0, -0.62], forearmR: [-0.3, 0, 0], handR: [0.3, 0, 0] } }; } },
+    { id: 'run', name: '跑步（快速飛行）', group: '基本', dur: 0.66, desc: '身體大幅前傾、像箭一樣向前飛，雙腿往後伸直、雙臂往後張開，翅膀快速拍動',
+      extra: fly(0.66, 0.38, 8, 0.3),
+      pose: (u) => { const f = TAU * u, sw = Math.sin(f); return { face: 'excited', toe: TOE, air: HOVER + 0.1 + 0.03 * Math.sin(2 * f), j: {
+        hips: [0.3, -0.05 * sw, 0.02 * sw], chest: [0.35, 0.06 * sw, 0], head: [-0.35, -0.04 * sw, 0],
+        thighL: [0.5 + 0.12 * sw, 0, 0.04], shinL: [0.45, 0, 0], thighR: [0.5 - 0.12 * sw, 0, -0.04], shinR: [0.5, 0, 0],
+        upperArmL: [0.75, 0, 0.45], forearmL: [-0.25, 0, 0], upperArmR: [0.75, 0, -0.45], forearmR: [-0.25, 0, 0] } }; } },
+    // 打招呼：右臂從前方往上舉、由肩膀帶動左右揮（與貓女修正後的版本相同的做法），掌心朝前
+    { id: 'wave', name: '打招呼', group: '基本', dur: 1.6, desc: '飄在半空，右臂從前方往上抬起、以肩膀為軸左右揮，手肘往頭的方向彎，頭微歪、開心笑',
+      extra: fly(1.6, 0.25, 3, 0.1),
+      pose: (u) => { const f = TAU * u * 2, k = Math.sin(f); return { face: 'happy', toe: TOE, air: HOVER + 0.03 * Math.sin(f), j: {
+        ...DANGLE, chest: [0, -0.08, 0.04 * k], head: [0, 0.1, 0.12],
+        upperArmR: [-2.55, 0, -0.35 + 0.22 * k], forearmR: [-0.45 - 0.12 * k, 0, 0], handR: [0, 0, 0],
+        upperArmL: [0.05, 0, 0.5], forearmL: [-0.3, 0, 0], handL: [0.3, 0, 0] } }; } },
+    { id: 'cheer1', name: '歡呼（旋轉）', group: '基本', dur: 1.4, desc: '雙手高舉、在空中轉一圈，翅膀大大展開，開心大笑',
+      extra: fly(1.4, 0.4, 5, (u) => 0.5 * Math.sin(Math.PI * u)),
+      pose: (u) => { const e = Math.sin(Math.PI * u); return { face: 'happy', toe: TOE, air: HOVER + 0.35 * e, j: {
+        ...DANGLE, root: [0, -TAU * u, 0], chest: [-0.1 * e, 0, 0], head: [-0.2 * e, 0, 0],
+        upperArmL: [-2.6 * e, 0, 0.5 * e + 0.3], forearmL: [-0.2, 0, 0], upperArmR: [-2.6 * e, 0, -0.5 * e - 0.3], forearmR: [-0.2, 0, 0] } }; } },
+    { id: 'hurt', name: '受擊', group: '受擊', dur: 1.2, desc: '被擊中整個人往後仰、雙臂甩開、在空中晃一下，再穩住身形',
+      extra: fly(1.2, 0.5, 5, -0.2),
+      keys: withLegs([{ u: 0, j: {}, face: 'normal' },
+        { u: 0.15, j: { chest: [-0.35, 0, 0.18], head: [-0.4, 0.2, 0.1], upperArmL: [-0.4, 0, 1.1], upperArmR: [-0.4, 0, -1.1], forearmL: [-0.5, 0, 0], forearmR: [-0.5, 0, 0], thighL: [-0.5, 0, 0.1], thighR: [-0.3, 0, -0.1], shinL: [0.3, 0, 0], shinR: [0.3, 0, 0] }, face: 'shout', hz: -0.3, air: 0.1 },
+        { u: 0.5, j: { chest: [-0.15, 0, -0.1], head: [-0.15, -0.1, 0], upperArmL: [0, 0, 0.9], upperArmR: [0, 0, -0.9] }, face: 'shout', hz: -0.15, air: 0.04 },
+        { u: 1, j: {}, face: 'normal' }]) },
+  ];
+  const FAIRY_MOVES = [
+    { id: 'attack', name: '泡泡彈（普攻）', group: '招式', dur: 1.5, desc: '飄在半空雙手捧出一顆越吹越大的水泡 → 雙掌往前推，水泡彈飛向木頭人、「啵」地炸開成水花',
+      extra: (u) => ({ ...wingPose(u, 0.3, 4, u < 0.5 ? 0.15 : 0.45), ...orbit(u, 1.5) }),
+      fx: { kind: 'bubble', from: 0.12, release: 0.48, r: 0.3 }, events: [[0.48, 'bubbleShot']],
+      keys: withLegs([{ u: 0, j: {}, face: 'normal' },
+        { u: 0.22, j: { chest: [0.08, -0.15, 0], head: [0, 0.1, 0], upperArmR: [-0.95, 0, -0.3], forearmR: [-1.25, 0, 0], handR: [0.3, 0, 0], upperArmL: [-0.95, 0, 0.3], forearmL: [-1.25, 0, 0], handL: [0.3, 0, 0] }, face: 'excited' },
+        { u: 0.48, j: { chest: [0.25, 0, 0], head: [-0.1, 0, 0], upperArmR: [-1.5, 0, -0.14], forearmR: [-0.08, 0, 0], handR: [0.9, 0, 0], upperArmL: [-1.5, 0, 0.14], forearmL: [-0.08, 0, 0], handL: [0.9, 0, 0], }, face: 'shout', hz: 0.25 },
+        { u: 0.7, j: { chest: [0.2, 0, 0], head: [-0.08, 0, 0], upperArmR: [-1.35, 0, -0.18], forearmR: [-0.1, 0, 0], handR: [0.8, 0, 0], upperArmL: [-1.35, 0, 0.18], forearmL: [-0.1, 0, 0], handL: [0.8, 0, 0] }, face: 'happy', hz: 0.22 },
+        { u: 1, j: {}, face: 'normal' }], TUCK) },
+    { id: 'ultimate', name: '潮汐花綻（大絕）', group: '招式', dur: 3.4, desc: '蜷身雙臂交叉聚水 → 旋身衝上高空、翅膀完全展開 → 張開雙臂，水波如花瓣綻放、一圈水柱沖天、擊飛周圍的木頭人 → 水花像雨一樣灑落，輕輕飄回原位',
+      extra: (u) => { const fl = u < 0.1 ? -0.25 : u < 0.4 ? -0.25 + ((u - 0.1) / 0.3) * 0.95 : u < 0.85 ? 0.7 : 0.7 - ((u - 0.85) / 0.15) * 0.95; return { ...wingPose(u, 0.3, 7, fl), ...orbit(u, 3.4) }; },
+      fx: { kind: 'rain', from: 0.52, to: 0.9 }, events: [[0.44, 'bloom'], [0.56, 'jets']],
+      keys: withLegs([{ u: 0, j: {}, face: 'normal' },
+        { u: 0.1, j: { chest: [0.35, 0, 0], head: [0.1, 0, 0], upperArmR: [-0.7, 0, -0.5], forearmR: [-1.6, 0, 0], handR: [0.4, 0, 0], upperArmL: [-0.7, 0, 0.5], forearmL: [-1.6, 0, 0], handL: [0.4, 0, 0], thighL: [-0.9, 0, 0.1], thighR: [-0.9, 0, -0.1], shinL: [1.4, 0, 0], shinR: [1.4, 0, 0] }, face: 'determined', air: -0.25 },
+        { u: 0.26, j: { root: [0, -0.7, 0], chest: [-0.1, 0, 0], head: [-0.2, 0, 0], upperArmR: [-2.8, 0, -0.5], forearmR: [-0.2, 0, 0], upperArmL: [-2.8, 0, 0.5], forearmL: [-0.2, 0, 0], }, face: 'excited', air: 0.55 },
+        { u: 0.44, j: { root: [0, -TAU, 0], chest: [-0.15, 0, 0], head: [-0.25, 0, 0], upperArmR: [-2.6, 0, -0.95], forearmR: [-0.15, 0, 0], handR: [-0.3, 0, 0], upperArmL: [-2.6, 0, 0.95], forearmL: [-0.15, 0, 0], handL: [-0.3, 0, 0], thighL: [-1.05, 0, 0.12], thighR: [-0.85, 0, -0.12], shinL: [1.7, 0, 0], shinR: [1.85, 0, 0] }, face: 'shout', air: 1.15 },
+        { u: 0.56, j: { root: [0, -TAU, 0], chest: [0.2, 0, 0], head: [0.1, 0, 0], upperArmR: [-0.2, 0, -1.35], forearmR: [0, 0, 0], handR: [-0.5, 0, 0], upperArmL: [-0.2, 0, 1.35], forearmL: [0, 0, 0], handL: [-0.5, 0, 0], thighL: [-1.0, 0, 0.12], thighR: [-0.8, 0, -0.12], shinL: [1.65, 0, 0], shinR: [1.8, 0, 0] }, face: 'shout', air: 1.0 },
+        { u: 0.74, j: { root: [0, -TAU, 0], chest: [0.1, 0, 0], upperArmR: [-0.3, 0, -1.1], forearmR: [-0.2, 0, 0], upperArmL: [-0.3, 0, 1.1], forearmL: [-0.2, 0, 0] }, face: 'happy', air: 0.5 },
+        { u: 0.9, j: { root: [0, -TAU, 0], chest: [0.15, 0, 0], upperArmR: [0, 0, -0.7], forearmR: [-0.3, 0, 0], upperArmL: [0, 0, 0.7], forearmL: [-0.3, 0, 0] }, face: 'happy', air: 0.05 },
+        { u: 1, j: { root: [0, -TAU, 0] }, face: 'normal' }], TUCK) },
+  ];
+  [...FAIRY_BASIC, ...FAIRY_MOVES].forEach((d) => { d.flying = true; });
   const OUT = {};
   for (const id of BE.ORDER) {
     const ch = BE.CHARACTERS[id];
@@ -317,6 +400,10 @@
     if (ch.crouch) basics = heroBasics(Object.keys(HERO_BASIC)).map((b) => crouchClip(b, ch.crouch, ch.legK || 1));
     OUT[id] = { moves, basics };
   }
+  OUT.fairy = (() => {
+    const ch = BE.CHARACTERS.fairy, k = ch.legK, sk = ch.shinK;
+    return { moves: FAIRY_MOVES.map((m) => bakeHero(m, k, null, sk)), basics: FAIRY_BASIC.map((m) => bakeHero(m, k, null, sk)) };   // 飛行動作：腿的樣子由動作決定
+  })();
   if (typeof module !== 'undefined' && module.exports) module.exports = OUT;
   else root.BEAST_ACTIONS = OUT;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
