@@ -671,3 +671,18 @@ body.gym-active.gym-player-narration #battleLog{
 .viewerMoves button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .viewerMoves button.active{background:#263960;color:#fff4d6;border-color:#263960}
 @media (max-width:420px){.viewerMoves{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 2026-10-22: arena life cards align with the two red-arrow target areas. */
+body.battle-active:not(.gym-active) #labels .arenaEnemyHp{
+ transform:translate(-50%,0)!important;
+ width:clamp(112px,33vw,148px)!important;
+ max-width:calc(48vw - 8px)!important;
+ z-index:8;
+ pointer-events:none;
+}
+body.battle-active:not(.gym-active) #labels .arenaAllyHp{
+ transform:translate(-50%,0)!important;
+ width:clamp(122px,37vw,154px)!important;
+ max-width:calc(48vw - 8px)!important;
+ z-index:8;
+ pointer-events:none;
+}
