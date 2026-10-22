@@ -207,6 +207,51 @@
       ]
     },
     {
+      "file": "models/spirits/cat-girl-1.glb",
+      "bytes": 1179696,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Hurt",
+        "Attack",
+        "Ultimate",
+        "React",
+        "Wave",
+        "Jump"
+      ]
+    },
+    {
+      "file": "models/spirits/cat-girl-2.glb",
+      "bytes": 1688208,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Hurt",
+        "Attack",
+        "Ultimate",
+        "React",
+        "Wave",
+        "Jump"
+      ]
+    },
+    {
+      "file": "models/spirits/cat-girl-3.glb",
+      "bytes": 2073612,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Hurt",
+        "Attack",
+        "Ultimate",
+        "React",
+        "Wave",
+        "Jump"
+      ]
+    },
+    {
       "file": "models/spirits/chest-spirit-1.glb",
       "bytes": 1018620,
       "animations": [
@@ -255,6 +300,47 @@
         "Attack",
         "Hurt",
         "Fly"
+      ]
+    },
+    {
+      "file": "models/spirits/fire-bear-1.glb",
+      "bytes": 994268,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Hurt",
+        "Attack",
+        "Ultimate",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/fire-bear-2.glb",
+      "bytes": 1005064,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Hurt",
+        "Attack",
+        "Ultimate",
+        "React"
+      ]
+    },
+    {
+      "file": "models/spirits/fire-bear-3.glb",
+      "bytes": 2149924,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Hurt",
+        "Attack",
+        "Ultimate",
+        "React",
+        "Wave",
+        "Jump"
       ]
     },
     {
@@ -327,16 +413,6 @@
       ]
     },
     {
-      "file": "models/spirits/grotle.glb",
-      "bytes": 256960,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/grovyle.glb",
       "bytes": 146736,
       "animations": [
@@ -367,28 +443,8 @@
       ]
     },
     {
-      "file": "models/spirits/marshtomp.glb",
-      "bytes": 176416,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/monferno.glb",
       "bytes": 209544,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/mudkip.glb",
-      "bytes": 175964,
       "animations": [
         "Idle",
         "Walk",
@@ -510,16 +566,6 @@
       ]
     },
     {
-      "file": "models/spirits/swampert.glb",
-      "bytes": 187440,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/torchic.glb",
       "bytes": 112548,
       "animations": [
@@ -531,28 +577,8 @@
       ]
     },
     {
-      "file": "models/spirits/torterra.glb",
-      "bytes": 276400,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
       "file": "models/spirits/treecko.glb",
       "bytes": 145984,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Attack",
-        "Hurt"
-      ]
-    },
-    {
-      "file": "models/spirits/turtwig.glb",
-      "bytes": 242596,
       "animations": [
         "Idle",
         "Walk",

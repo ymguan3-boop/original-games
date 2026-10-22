@@ -1,0 +1,511 @@
+<title>火熊與貓娘</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* 版面：上方兩族六階切換 → 左邊即時舞台＋招式按鈕、右邊原畫與角色卡；手機時上下堆疊。配色：炭灰底、火熊的焰橘、貓娘的紅圍巾 */
+:root {
+  --bg: #ECEDEF;
+  --surface: #FFFFFF;
+  --stage: radial-gradient(120% 90% at 50% 20%, #FFFFFF 0%, #E2E4E8 72%);
+  --fg: #1F2328;
+  --muted: #5D6570;
+  --line: #D4D7DD;
+  --bear: #D2561E;
+  --cat: #B8242C;
+  --accent-fg: #FFFFFF;
+  --chip: #F4F5F7;
+  --display: 'Noto Serif TC', 'Songti TC', 'PMingLiU', serif;
+  --body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15171B; --surface: #1D2026; --stage: radial-gradient(120% 90% at 50% 20%, #2A2E36 0%, #17191E 72%);
+  --fg: #ECEAE6; --muted: #A2A8B2; --line: #30343C; --bear: #F07A3A; --cat: #E5535B; --accent-fg: #FFFFFF; --chip: #24282F; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #15171B; --surface: #1D2026; --stage: radial-gradient(120% 90% at 50% 20%, #2A2E36 0%, #17191E 72%);
+  --fg: #ECEAE6; --muted: #A2A8B2; --line: #30343C; --bear: #F07A3A; --cat: #E5535B; --accent-fg: #FFFFFF; --chip: #24282F; color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--fg); }
+body { font-family: var(--body); line-height: 1.6; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+h1 { font-family: var(--display); font-weight: 900; font-size: clamp(28px, 4vw, 40px); margin: 0; letter-spacing: 0.04em; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 64ch; }
+.fams { display: flex; flex-wrap: wrap; gap: 10px 22px; }
+.fam { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.fam h2 { margin: 0 4px 0 0; font-size: 12px; letter-spacing: 0.14em; color: var(--muted); font-weight: 500; }
+.fam button { font: 700 15px var(--body); padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; display: inline-flex; gap: 6px; align-items: baseline; }
+.fam button small { font-weight: 500; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+.fam.bear button[aria-pressed="true"] { background: var(--bear); border-color: var(--bear); color: var(--accent-fg); }
+.fam.cat button[aria-pressed="true"] { background: var(--cat); border-color: var(--cat); color: var(--accent-fg); }
+.fam button[aria-pressed="true"] small { color: var(--accent-fg); opacity: 0.85; }
+.fam .arrow { color: var(--muted); font-size: 12px; }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+.acts { display: grid; gap: 10px; min-width: 0; }
+.stage { position: relative; background: var(--stage); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; aspect-ratio: 4 / 3; max-width: 100%; }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.hint { position: absolute; left: 12px; bottom: 10px; font-size: 12px; color: var(--muted); pointer-events: none; }
+.buff { position: absolute; right: 12px; top: 12px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, #F2A82A 88%, transparent); color: #3A2200; font-weight: 700; font-size: 13px; letter-spacing: 0.04em; pointer-events: none; box-shadow: 0 0 0 2px #FFE08A, 0 0 18px #F2A82A; }
+.now { position: absolute; left: 14px; top: 12px; font-family: var(--display); font-weight: 700; font-size: 18px; pointer-events: none; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.row h3 { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); margin: 0 6px 0 0; font-weight: 500; min-width: 4.5em; }
+.row button { font: 500 14px var(--body); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--chip); color: var(--fg); cursor: pointer; }
+.row.moves button { border-color: color-mix(in srgb, var(--tone, var(--bear)) 50%, var(--line)); }
+.row button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+button:focus-visible { outline: 2px solid var(--tone, var(--bear)); outline-offset: 2px; }
+.desc { margin: 0; color: var(--muted); font-size: 14px; min-height: 3.2em; }
+aside { display: grid; gap: 14px; min-width: 0; }
+.ref { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.ref div { aspect-ratio: 1 / 1; background-repeat: no-repeat; background-size: 300% auto; }
+.ref figcaption { font-size: 12px; color: var(--muted); padding: 8px 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 8px; }
+.card h4 { margin: 0; font-family: var(--display); font-size: 22px; display: flex; gap: 10px; align-items: baseline; }
+.card h4 span { font-family: var(--body); font-size: 12px; font-weight: 700; color: var(--tone, var(--bear)); letter-spacing: 0.1em; }
+.card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; }
+.card dt { color: var(--muted); }
+.card dd { margin: 0; }
+.foot { font-size: 12px; color: var(--muted); margin: 0; }
+@media (max-width: 860px) { .main { grid-template-columns: minmax(0, 1fr); } aside { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .stage { aspect-ratio: 1 / 1; } }
+@media (max-width: 520px) { aside { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<div class="wrap" id="wrap">
+  <header>
+    <h1>火熊與貓娘</h1>
+    <p class="lede">兩個家族、各三階的 Three.js 即時模型。貓娘三階與大熊以主角小男孩的骨架建模，可直接套用主角的動作；小熊與壯熊四足站立，另有自己的步態。每一隻都有自己的普攻與大絕。</p>
+  </header>
+  <div class="fams">
+    <div class="fam bear" role="group" aria-label="火熊"><h2>火熊</h2>
+      <button type="button" id="who-bear1" data-who="bear1">小熊 <small>1 階</small></button><span class="arrow" aria-hidden="true">›</span>
+      <button type="button" id="who-bear2" data-who="bear2">壯熊 <small>2 階</small></button><span class="arrow" aria-hidden="true">›</span>
+      <button type="button" id="who-bear3" data-who="bear3">大熊 <small>3 階</small></button>
+    </div>
+    <div class="fam cat" role="group" aria-label="貓娘"><h2>貓娘</h2>
+      <button type="button" id="who-cat1" data-who="cat1">小貓娘 <small>1 階</small></button><span class="arrow" aria-hidden="true">›</span>
+      <button type="button" id="who-cat2" data-who="cat2">靈貓姬 <small>2 階</small></button><span class="arrow" aria-hidden="true">›</span>
+      <button type="button" id="who-cat3" data-who="cat3">雙刃貓女 <small>3 階</small></button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="acts">
+      <div class="stage" id="stage"><div class="now" id="now"></div><div class="buff" id="buff" hidden></div><div class="hint">拖曳旋轉 · 滾輪或雙指縮放</div></div>
+      <div class="row moves" role="group" aria-label="招式"><h3>招式</h3><div class="row" id="g-moves"></div></div>
+      <div class="row" role="group" aria-label="基本動作"><h3>基本動作</h3><div class="row" id="g-basic"></div></div>
+      <p class="desc" id="desc"></p>
+    </div>
+    <aside>
+      <figure class="ref"><div id="refImg" role="img" aria-label="原畫"></div><figcaption id="refCap"></figcaption></figure>
+      <div class="card">
+        <h4 id="cardName">小熊 <span>1 階</span></h4>
+        <dl id="cardStats"></dl>
+      </div>
+      <p class="foot">招式附即時特效：火球、噴火、火焰氣場、火柱、爪痕、肉球印、刀光與地面震動；尾巴與火焰會持續擺動。</p>
+    </aside>
+  </div>
+</div>
+
+<script src="../kid-hero/kid-model.js"></script>
+<script src="../kid-hero/props.js"></script>
+<script src="../kid-hero/actions.baked.js"></script>
+<script src="beasts-model.js"></script>
+<script src="beasts-actions.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { buildBird as buildModel, buildClips } from '../kid-hero/builder.js';
+
+const KB = window.KID_BLUEPRINT, BE = window.BEASTS, BA = window.BEAST_ACTIONS;
+const HERO_BASIC = { idle: '站立', walk: '行走', run: '跑步', wave: '打招呼', cheer1: '歡呼', hurt: '受擊' };
+const REF = { bear1: ['bears', '0%'], bear2: ['bears', '50%'], bear3: ['bears', '100%'], cat1: ['cats', '0%'], cat2: ['cats', '50%'], cat3: ['cats', '100%'] };
+
+// ---------- 場景
+const host = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+host.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envScene = new THREE.Scene(); envScene.background = new THREE.Color('#ECEDEF');
+scene.environment = pmrem.fromScene(envScene).texture;
+scene.environmentIntensity = 0.95;
+const camera = new THREE.PerspectiveCamera(30, 4 / 3, 0.1, 100);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.minDistance = 1.5; controls.maxDistance = 18;
+const key = new THREE.DirectionalLight(0xffffff, 2.5);
+key.position.set(-4.4, 6.4, 6.3); key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 5; key.shadow.bias = -0.0004;
+Object.assign(key.shadow.camera, { left: -4, right: 4, top: 4.5, bottom: -1.5, near: 1, far: 24 });
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xffffff, 0.8); rim.position.set(-4, 5, -5); scene.add(rim);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: 0.2 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+function resize() { const r = host.getBoundingClientRect(); renderer.setSize(r.width, r.height, false); camera.aspect = r.width / r.height; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(host);
+
+// ---------- 道具
+const propFactory = {};
+function makeProp(id) {
+  if (!propFactory[id]) {
+    const g = buildModel({ materials: BE.MATERIALS, parts: BE.PROPS[id].parts });
+    g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+    propFactory[id] = g;
+  }
+  const c = propFactory[id].clone(); c.name = 'prop:' + id; return c;
+}
+
+// ---------- 六隻角色（第一次選到時才建）
+const chars = {};
+function getChar(who) {
+  if (chars[who]) return chars[who];
+  const ch = BE.CHARACTERS[who], model = buildModel(ch);
+  model.visible = false; scene.add(model);
+  const acts = BA[who];
+  const moves = acts.moves.map((m) => (m.use ? { ...KB.ACTIONS.find((a) => a.id === m.use), id: m.use, name: m.name, desc: m.desc, group: '招式' } : m));
+  const basics = acts.basics || KB.ACTIONS.filter((a) => HERO_BASIC[a.id]).map((a) => ({ ...a, name: HERO_BASIC[a.id] }));
+  const all = [...moves, ...basics];
+  const mixer = new THREE.AnimationMixer(model), clips = buildClips(all, model);
+  const props = [];
+  for (const [socket, pid] of Object.entries(ch.hold || {})) {
+    const s = model.getObjectByName(socket), p = makeProp(pid); s.add(p);
+    props.push({ socket: s, spec: BE.PROPS[pid], trail: null, last: null });
+  }
+  chars[who] = { ch, model, mixer, clips, moves, basics, all, props, current: null,
+    tail: Array.from({ length: BE.TAIL_JOINTS }, (_, i) => model.getObjectByName('tail' + i)).filter(Boolean),
+    flame: model.getObjectByName('tailFlame'), node: (n) => model.getObjectByName(n) };
+  return chars[who];
+}
+let who = 'bear1', act = null;
+const C = () => chars[who];
+const A = () => C().all.find((a) => a.id === act);
+
+function play(id) {
+  const c = C(); act = id;
+  const next = c.mixer.clipAction(c.clips[id]);
+  if (c.current !== next) { if (c.current) c.current.fadeOut(0.25); next.reset().setEffectiveWeight(1).fadeIn(0.25).play(); c.current = next; }
+  const a = A();
+  document.getElementById('now').textContent = a.name;
+  document.getElementById('desc').textContent = a.desc;
+  document.querySelectorAll('#g-moves button, #g-basic button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === id));
+  prevU = null;
+}
+function buttons(box, list) {
+  box.replaceChildren(...list.map((a) => { const b = document.createElement('button'); b.type = 'button'; b.id = 'act-' + a.id; b.dataset.id = a.id; b.textContent = a.name; b.onclick = () => play(a.id); return b; }));
+}
+function setWho(w) {
+  who = w;
+  const c = getChar(w), ch = c.ch;
+  for (const k in chars) chars[k].model.visible = k === w;
+  document.querySelectorAll('.fam button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.who === w));
+  document.getElementById('wrap').style.setProperty('--tone', ch.family === 'bear' ? 'var(--bear)' : 'var(--cat)');
+  const [img, x] = REF[w];
+  const ref = document.getElementById('refImg');
+  ref.style.backgroundImage = `url(ref/${img}.webp)`; ref.style.backgroundPosition = `${x} 12%`;
+  document.getElementById('refCap').textContent = '原畫：' + ch.name;
+  document.getElementById('cardName').innerHTML = `${ch.name} <span>${ch.family === 'bear' ? '火熊' : '貓娘'} · ${ch.stage} 階</span>`;
+  const [atk, ult] = c.moves;
+  document.getElementById('cardStats').innerHTML = [['骨架', ch.rig === 'quad' ? '四足骨架（自訂步態）' : '主角骨架（可套用主角動作）'], ['普攻', atk.name.replace(/（.*）/, '')], ['大絕', ult.name.replace(/（.*）/, '')], ['手持', ch.hold ? Object.values(ch.hold).map((p) => BE.PROPS[p].name).filter((v, i, a) => a.indexOf(v) === i).join('、') : (w === 'bear3' ? '背上大劍（大絕時拔出）' : '—')]]
+    .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  buttons(document.getElementById('g-moves'), c.moves);
+  buttons(document.getElementById('g-basic'), c.basics);
+  c.current = null; c.mixer.stopAllAction(); if (c.armorUntil) setGlow(c, 0); c.armorUntil = 0; document.getElementById('buff').hidden = true;
+  play(c.moves[0].id);
+  const h = ch.height;
+  camera.position.set(h * 0.9 + 1.2, h * 0.75 + 0.3, h * 2.3 + 3.2); controls.target.set(0, h * 0.48, 0); controls.update();
+  try { localStorage.setItem('beasts-who', w); } catch (e) {}
+}
+document.querySelectorAll('.fam button').forEach((b) => { b.onclick = () => setWho(b.dataset.who); });
+
+// ---------- 特效
+const puffTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.5)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+})();
+const puffs = [], rings = [], decals = [], emitters = [];
+let shake = 0;
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const rnd = (a = 1) => (Math.random() - 0.5) * a;
+const FIRE = ['#FFD35A', '#FF9A2A', '#F2541E', '#E5341C'];
+function puff(p, v, color, size0, size1, life, opacity, additive = false) {
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: puffTex, color, transparent: true, depthWrite: false, opacity, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending }));
+  sp.position.copy(p); sp.scale.setScalar(size0); scene.add(sp);
+  puffs.push({ sp, v, size0, size1, life, age: 0, opacity });
+}
+const firePuff = (p, v, s0, s1, life) => puff(p, v, FIRE[(Math.random() * FIRE.length) | 0], s0, s1, life, 0.85, false);   // 一般混色：淺色背景上也看得清楚
+function shockwave(p, r = 1, color = '#8C7A66') {
+  for (const [delay, c] of [[0, color], [0.12, '#B8A68E']]) {
+    const m = new THREE.Mesh(new THREE.RingGeometry(0.8, 1, 64), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+    m.rotation.x = -Math.PI / 2; m.position.set(p.x, 0.006, p.z); scene.add(m); rings.push({ m, age: -delay, r });
+  }
+  for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2, s = (0.9 + Math.random() * 0.8) * r; puff(V(p.x, 0.05, p.z), V(Math.cos(a) * s, 0.5 + Math.random() * 0.6, Math.sin(a) * s), '#A89580', 0.12 * r, 0.5 * r, 0.9 + Math.random() * 0.4, 0.75); }
+}
+// 弧形刀光／爪痕：平面朝角色正前方，tilt = 斜度
+function arc(p, fwdDir, radius, width, color, tilt, life = 0.35, start = -0.9, len = 1.8) {
+  const m = new THREE.Mesh(new THREE.RingGeometry(radius - width, radius, 40, 1, start, len), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+  m.position.copy(p); m.lookAt(p.clone().add(fwdDir)); m.rotateZ(tilt); scene.add(m);
+  decals.push({ m, age: 0, life, grow: 0.35 });
+}
+// 水平刀光：一道平躺在胸口高度、繞角色前方的弧（yaw = 角色朝向）
+function flatArc(center, yaw, R, width, color, life = 0.35, len = 2.6, tilt = 0.12) {
+  const g = new THREE.Group(); g.position.copy(center); g.rotation.set(tilt, yaw, 0, 'YXZ');
+  const m = new THREE.Mesh(new THREE.RingGeometry(R - width, R, 48, 1, -Math.PI / 2 - len / 2, len), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2; g.add(m); scene.add(g);
+  decals.push({ m: g, age: 0, life, grow: 0.25, mats: [m.material] });
+}
+// 直線刀痕：大半徑的短弧（接近直線），中心通過 p；angle = 在正面平面上的傾斜角（± 45° 疊成 X）
+function stroke(p, fwdDir, R, width, len, color, angle, life = 0.4) {
+  const geo = new THREE.RingGeometry(R - width, R, 24, 1, -len / 2, len); geo.translate(-R + width / 2, 0, 0);
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false }));
+  m.position.copy(p); m.lookAt(p.clone().add(fwdDir)); m.rotateZ(angle); scene.add(m);
+  decals.push({ m, age: 0, life, grow: 0.15, mats: [m.material] });
+}
+// 肉球印：一顆大肉墊＋四顆小趾頭
+function pawPrint(p, normal, size, color, life = 0.6, flat = false) {
+  const g = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false });
+  const pad = new THREE.Mesh(new THREE.CircleGeometry(0.42, 28), mat); pad.scale.set(1.2, 0.95, 1); pad.position.y = -0.18; g.add(pad);
+  [[-0.5, 0.28], [-0.18, 0.5], [0.18, 0.5], [0.5, 0.28]].forEach(([x, y]) => { const t = new THREE.Mesh(new THREE.CircleGeometry(0.17, 20), mat); t.position.set(x, y, 0); g.add(t); });
+  g.position.copy(p);
+  if (flat) g.rotation.x = -Math.PI / 2; else g.lookAt(p.clone().add(normal));
+  g.scale.setScalar(size * 0.3); scene.add(g);
+  decals.push({ m: g, age: 0, life, grow: 1.1, size, mats: [mat] });
+}
+function pillar(p, delay, h = 1, life = 0.9) { emitters.push({ kind: 'pillar', p: p.clone(), age: -delay, life, h }); }
+
+const tA = new THREE.Vector3(), tB = new THREE.Vector3(), fwd = new THREE.Vector3(), qTmp = new THREE.Quaternion();
+const fwdOf = (obj) => V(0, 0, 1).applyQuaternion(obj.getWorldQuaternion(qTmp)).normalize();
+const worldOf = (obj, local = [0, 0, 0]) => obj.localToWorld(V(...local));
+
+// 火球（蓄力 → 飛出 → 爆炸）
+const fireMats = {};
+const fireMat = (c, o) => (fireMats[c + o] ||= new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: o, blending: THREE.AdditiveBlending, depthWrite: false }));
+const ballGeo = new THREE.SphereGeometry(1, 24, 16);
+function makeFireball() {
+  const g = new THREE.Group();
+  const core = new THREE.Mesh(ballGeo, new THREE.MeshBasicMaterial({ color: '#FFE38A' }));
+  const mid = new THREE.Mesh(ballGeo, fireMat('#FF8A1E', 0.7)); mid.scale.setScalar(1.3);
+  const out = new THREE.Mesh(ballGeo, fireMat('#E8341C', 0.35)); out.scale.setScalar(1.7);
+  const light = new THREE.PointLight('#FF8A2A', 0, 4);
+  g.add(core, mid, out, light); g.userData = { mid, out, light }; g.visible = false; scene.add(g);
+  return g;
+}
+function setBall(b, r, t) {
+  b.scale.setScalar(Math.max(r, 0.001));
+  const f = 1 + 0.08 * Math.sin(t * 31) + 0.05 * Math.sin(t * 17);
+  b.userData.mid.scale.setScalar(1.3 * f); b.userData.out.scale.setScalar(1.7 * (2 - f)); b.userData.light.intensity = 6 * r;
+}
+const heldBall = makeFireball(), flying = [];
+function cur() {
+  const c = C(), a = A();
+  if (!c || !c.current || !a) return null;
+  const d = c.current.getClip().duration;
+  return { a, u: (c.current.time % d) / d };
+}
+function onEvent(type) {
+  const c = C(), m = c.model; m.updateMatrixWorld(true);
+  const f = fwdOf(m), sc = c.ch.height / 2;
+  const chestP = () => worldOf(c.node(c.ch.rig === 'quad' ? 'head' : 'chest'), c.ch.rig === 'quad' ? [0, 0, 0] : [0, 0.3, 0]);
+  if (type === 'fireSmall') {
+    const b = makeFireball(); b.position.copy(heldBall.position); b.visible = true;
+    flying.push({ b, v: f.clone().multiplyScalar(6).add(V(0, 0.5, 0)), r: heldBall.scale.x, age: 0 });
+    heldBall.visible = false;
+  } else if (type === 'clawFire') {
+    const p = worldOf(c.node('pawFR')).add(f.clone().multiplyScalar(0.35)).add(V(0, 0.25, 0));
+    [-0.12, 0, 0.12].forEach((o, i) => arc(p.clone().add(V(0, o, 0)), f, 0.45, 0.05, i === 1 ? '#FFC24A' : '#FF6A1E', -0.6, 0.4));
+    for (let i = 0; i < 14; i++) firePuff(p.clone().add(V(rnd(0.5), rnd(0.4), rnd(0.3))), V(rnd(1), 0.6, rnd(1)).add(f.clone().multiplyScalar(1.2)), 0.08, 0.35, 0.5);
+  } else if (type === 'claw') {
+    const p = chestP().add(f.clone().multiplyScalar(0.45)), k = (c.clawN = (c.clawN || 0) + 1) % 2 ? 1 : -1;
+    [-0.08, 0, 0.08].forEach((o) => { arc(p.clone().add(V(o, o * 0.4, 0)), f, 0.32, 0.034, '#FF6F92', k * 0.9, 0.32); arc(p.clone().add(V(o, o * 0.4, 0)), f, 0.31, 0.012, '#FFFFFF', k * 0.9, 0.26); });
+  } else if (type === 'paw') {
+    const p = worldOf(c.node('propR')).add(f.clone().multiplyScalar(0.25));
+    pawPrint(p, f, 1.1, '#FF8FA6', 0.55);
+    for (let i = 0; i < 8; i++) puff(p.clone(), V(rnd(1.6), rnd(1.6), rnd(1.6)), '#FFC4D2', 0.05, 0.22, 0.45, 0.9);
+  } else if (type === 'pounce') {
+    const p = m.position.clone().add(f.clone().multiplyScalar(0.9)); p.y = 0.02;
+    pawPrint(p, V(0, 1, 0), 2.6, '#FF8FA6', 0.9, true);
+    shockwave(p, 0.6, '#E8A8B8');
+  } else if (type === 'slashBig') {
+    const p = chestP(), yaw = Math.atan2(f.x, f.z);
+    flatArc(p, yaw, 1.45, 0.18, '#FF3B4A', 0.45, 2.9); flatArc(p.clone().add(V(0, 0.01, 0)), yaw, 1.38, 0.05, '#FFFFFF', 0.36, 2.7);
+  } else if (type === 'slash') {
+    const p = chestP(), yaw = Math.atan2(f.x, f.z);
+    flatArc(p, yaw, 0.95, 0.12, '#FF3B4A', 0.4); flatArc(p.clone().add(V(0, 0.01, 0)), yaw, 0.9, 0.035, '#FFFFFF', 0.32, 2.4);
+  } else if (type === 'xslash') {
+    const p = chestP().add(f.clone().multiplyScalar(0.6));
+    [Math.PI / 4, -Math.PI / 4].forEach((t) => { stroke(p, f, 3, 0.11, 0.42, '#FF3B4A', t, 0.5); stroke(p.clone().add(f.clone().multiplyScalar(0.01)), f, 3, 0.035, 0.38, '#FFFFFF', t, 0.4); });
+  } else if (type === 'impact') {
+    const p = worldOf(c.node('head')).add(f.clone().multiplyScalar(0.5 * sc));
+    for (let i = 0; i < 24; i++) firePuff(p.clone(), V(rnd(3), Math.random() * 1.5, rnd(3)).add(f.clone().multiplyScalar(1.5)), 0.15, 0.7, 0.55);
+    shockwave(V(p.x, 0, p.z), 0.8 * sc); shake = 0.35;
+  } else if (type === 'quake') {
+    let p;
+    const sw = c.node('swordHandR');
+    if (sw && sw.scale.x > 0.5) p = worldOf(sw, [0, 0, 1.6]); else p = m.position.clone().add(f.clone().multiplyScalar(1.0 * sc));
+    shockwave(V(p.x, 0, p.z), 1.3 * sc); shake = 0.6;
+    for (let i = 0; i < 20; i++) firePuff(V(p.x + rnd(0.8), 0.1, p.z + rnd(0.8)), V(rnd(1.5), 1 + Math.random() * 2, rnd(1.5)), 0.15, 0.6, 0.7);
+  } else if (type === 'pillars') {
+    for (let i = 0; i < 7; i++) { const a = (i / 7) * Math.PI * 2; pillar(m.position.clone().add(V(Math.sin(a) * 1.8 * sc, 0, Math.cos(a) * 1.8 * sc)), i * 0.05, 1.6 * sc); }
+  } else if (type === 'armor') {
+    // 霸體：金色氣場罩住全身＋金色衝擊波＋往上竄的金色火花；右上角顯示增益
+    const a = A();
+    c.armorUntil = clockNow + 3.4; c.armorStart = clockNow;
+    const p = worldOf(c.node('chest'), [0, 0.3, 0]);
+    for (let i = 0; i < 12; i++) puff(p.clone().add(V(rnd(0.8), rnd(0.8), rnd(0.5))), V(rnd(1), 0.6 + Math.random(), rnd(1)), i % 2 ? '#FFD45A' : '#FFF1B0', 0.05, 0.2, 0.6, 0.9);
+    const bf = a.buff || { atk: 0.3, def: 0.3, turns: 2 }, el = document.getElementById('buff');
+    el.textContent = `霸體｜攻擊 +${Math.round(bf.atk * 100)}%・防禦 +${Math.round(bf.def * 100)}%（${bf.turns} 回合）`; el.hidden = false;
+  } else if (type === 'flameWave') {
+    for (let i = 0; i < 6; i++) pillar(m.position.clone().add(f.clone().multiplyScalar((1.6 + i * 0.7) * sc * 0.75)), i * 0.09, 1.3 + i * 0.1);
+  }
+}
+let prevU = null, clockNow = 0;
+// 發光：把角色每個材質的自發光往暖金色推（記住原值，結束時還原）
+const GLOW = new THREE.Color('#FFB347'), tmpGlow = new THREE.Color();
+function setGlow(c, k) {
+  if (!c.glowMats) { c.glowMats = []; const seen = new Set(); c.model.traverse((o) => { if (o.isMesh && o.material.emissive && !seen.has(o.material)) { seen.add(o.material); c.glowMats.push({ m: o.material, e: o.material.emissive.clone(), i: o.material.emissiveIntensity }); } }); }
+  for (const g of c.glowMats) { g.m.emissive.copy(g.e).add(tmpGlow.copy(GLOW).multiplyScalar(0.16 * k / Math.max(0.2, g.i))); g.m.emissiveIntensity = g.i; }   // 只亮一點點
+}
+function fxStep(dt, now) {
+  clockNow = now;
+  const c = C(); if (!c) return;
+  // 霸體：身體本身微微發光、顏色變亮（不加外罩光圈），偶爾冒出幾點金色光點
+  const armorOn = c.armorUntil && now < c.armorUntil && now >= c.armorStart;
+  if (armorOn) {
+    const t = (now - c.armorStart) / (c.armorUntil - c.armorStart), fade = Math.min(1, t * 6) * Math.min(1, (1 - t) * 4);
+    setGlow(c, fade * (0.75 + 0.25 * Math.sin(now * 7)));
+    if (Math.random() < dt * 6) { const q = worldOf(c.node('chest'), [rnd(0.7), 0.1 + Math.random() * 0.6, rnd(0.5)]); puff(q, V(0, 0.6, 0), '#FFE08A', 0.03, 0.09, 0.6, 0.9); }
+  } else if (c.armorUntil && now >= c.armorUntil) { c.armorUntil = 0; setGlow(c, 0); document.getElementById('buff').hidden = true; }
+  const s = cur(), m = c.model;
+  m.updateMatrixWorld(true);
+  if (s && s.a.events && s.a.events.length) {
+    if (prevU !== null && s.u !== prevU) for (const [eu, type] of s.a.events) {
+      const crossed = prevU <= s.u ? prevU < eu && eu <= s.u : eu > prevU || eu <= s.u;
+      if (crossed) onEvent(type);
+    }
+    prevU = s.u;
+  }
+  const fx = s && s.a.fx;
+  heldBall.visible = false;
+  if (fx && fx.kind === 'small' && s.u >= fx.from && s.u < fx.release) {
+    const r = Math.min(1, (s.u - fx.from) / 0.1) * (fx.r || 0.1);
+    heldBall.position.copy(worldOf(c.node(fx.at || 'propR')).add(V(0, r * 0.6, 0))); heldBall.visible = true; setBall(heldBall, r, now);
+    if (Math.random() < dt * 14) firePuff(heldBall.position.clone(), V(rnd(0.3), 0.6, rnd(0.3)), r * 0.6, r * 1.6, 0.5);
+  }
+  if (fx && fx.kind === 'breath' && s.u >= fx.from && s.u < fx.to) {
+    const jaw = c.node('jaw'), head = c.node('head'), p = worldOf(jaw, [0, 0, 0]), d = fwdOf(head);
+    p.add(d.clone().multiplyScalar(0.3)); d.y -= 0.12; d.normalize();
+    for (let i = 0; i < Math.ceil(dt * 90); i++) firePuff(p.clone(), d.clone().multiplyScalar(4 + Math.random() * 1.5).add(V(rnd(0.8), rnd(0.5), rnd(0.8))), 0.08, 0.75, 0.55);
+  }
+  if (fx && fx.kind === 'aura' && s.u >= fx.from && s.u < fx.to) {
+    const b = c.node('body') ? worldOf(c.node('body')) : worldOf(c.node('chest'), [0, 0.3, 0]);
+    for (let i = 0; i < Math.ceil(dt * 50); i++) firePuff(b.clone().add(V(rnd(1.2), rnd(0.6) + 0.2, rnd(1.4))), V(rnd(0.3), 1.0 + Math.random(), rnd(0.3)), 0.1, 0.4, 0.5);
+  }
+  // 火熊身上飄浮的小火焰
+  if (c.ch.family === 'bear' && Math.random() < dt * 9) {
+    const n = c.node(Math.random() < 0.5 ? 'head' : (c.ch.rig === 'quad' ? 'body' : 'chest'));
+    const p = worldOf(n, c.ch.rig === 'quad' ? [rnd(0.6), 0.25 + Math.random() * 0.2, rnd(0.5)] : [rnd(0.9), 0.3 + Math.random() * 0.5, rnd(0.6)]);
+    firePuff(p, V(rnd(0.15), 0.5 + Math.random() * 0.3, rnd(0.15)), 0.05, 0.16, 0.7);
+  }
+  for (let i = flying.length - 1; i >= 0; i--) {
+    const f = flying[i]; f.age += dt; f.v.y -= 1.0 * dt;
+    f.b.position.addScaledVector(f.v, dt); setBall(f.b, f.r, now);
+    if (Math.random() < dt * 40) firePuff(f.b.position.clone(), V(0, 0.3, 0), f.r * 0.7, f.r * 1.5, 0.4);
+    if (f.age > 0.95 || f.b.position.y < f.r * 0.5) {
+      for (let k = 0; k < 18; k++) firePuff(f.b.position.clone(), V(rnd(2.4), Math.random() * 1.6, rnd(2.4)), 0.12, 0.6, 0.6);
+      scene.remove(f.b); flying.splice(i, 1);
+    }
+  }
+  // 武器刀光
+  for (const pr of c.props) {
+    const tip = worldOf(pr.socket, pr.spec.tip), base = worldOf(pr.socket, pr.spec.base);
+    const v = pr.last && dt > 0 ? tip.distanceTo(pr.last) / dt : 0; pr.last = tip.clone();
+    (pr.trail ||= new Trail(pr.spec.trail)).push(tip, base, s && s.a.noTrail ? 0 : Math.max(0, Math.min(1, (v - 2) / 5)), now);   // 普攻只留斬光、不畫刀影
+    pr.trail.update(now);
+  }
+  // 尾巴、尾巴火焰
+  c.tail.forEach((n, i) => { const ph = now * 2.4 - i * 0.55; n.rotation.set(0.07 * Math.sin(ph + 1), 0.12 * Math.sin(ph), 0.08 * Math.sin(ph * 0.8)); });
+  if (c.flame) { const f = 1 + 0.12 * Math.sin(now * 13) + 0.06 * Math.sin(now * 21); c.flame.scale.set(1 / Math.sqrt(f), f, 1 / Math.sqrt(f)); }
+  // 火柱
+  for (let i = emitters.length - 1; i >= 0; i--) {
+    const e = emitters[i]; e.age += dt;
+    if (e.age >= e.life) { emitters.splice(i, 1); continue; }
+    if (e.age < 0) continue;
+    for (let k = 0; k < Math.ceil(dt * 70); k++) firePuff(e.p.clone().add(V(rnd(0.3), 0.05, rnd(0.3))), V(rnd(0.3), (2.5 + Math.random() * 1.5) * e.h, rnd(0.3)), 0.18, 0.55, 0.55);
+    if (e.age < dt * 1.5) shockwave(e.p, 0.35, '#E8743A');
+  }
+  // 煙霧、衝擊波、刀光、肉球印
+  for (let i = puffs.length - 1; i >= 0; i--) {
+    const p = puffs[i]; p.age += dt; const t = p.age / p.life;
+    if (t >= 1) { scene.remove(p.sp); p.sp.material.dispose(); puffs.splice(i, 1); continue; }
+    p.sp.position.addScaledVector(p.v, dt); p.v.multiplyScalar(Math.pow(0.3, dt)); p.v.y += 0.05 * dt;
+    p.sp.scale.setScalar(p.size0 + (p.size1 - p.size0) * (1 - (1 - t) * (1 - t))); p.sp.material.opacity = p.opacity * (1 - t);
+  }
+  for (let i = rings.length - 1; i >= 0; i--) {
+    const r = rings[i]; r.age += dt; const t = r.age / 0.7;
+    if (t >= 1) { scene.remove(r.m); r.m.geometry.dispose(); r.m.material.dispose(); rings.splice(i, 1); continue; }
+    if (t < 0) continue;
+    r.m.scale.setScalar((0.15 + 1.7 * t) * r.r); r.m.material.opacity = 0.8 * (1 - t);
+  }
+  for (let i = decals.length - 1; i >= 0; i--) {
+    const d = decals[i]; d.age += dt; const t = d.age / d.life;
+    if (t >= 1) { scene.remove(d.m); decals.splice(i, 1); continue; }
+    const k = 1 + d.grow * t;
+    if (d.size) d.m.scale.setScalar(d.size * 0.3 * (0.6 + 0.6 * Math.min(1, t * 4)) * (1 + 0.15 * t)); else d.m.scale.setScalar(k);
+    (d.mats || [d.m.material]).forEach((mt) => { mt.opacity = 0.95 * (1 - t * t); });
+  }
+}
+class Trail {
+  constructor(color) {
+    this.n = 24; this.s = [];
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(this.n * 6), 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(this.n * 8), 4));   // RGBA：用透明度淡出（畫布是透明背景，不能用相加混色）
+    const idx = []; for (let i = 0; i < this.n - 1; i++) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); } g.setIndex(idx);
+    this.mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+    this.mesh.frustumCulled = false; this.color = new THREE.Color(color); scene.add(this.mesh);
+  }
+  push(tip, base, w, now) { this.s.unshift({ tip: tip.clone(), base: base.clone(), w, t: now }); if (this.s.length > this.n) this.s.pop(); }
+  update(now) {
+    const pos = this.mesh.geometry.attributes.position, col = this.mesh.geometry.attributes.color;
+    for (let i = 0; i < this.n; i++) {
+      const s = this.s[Math.min(i, this.s.length - 1)];
+      if (!s) { pos.setXYZ(i * 2, 0, -9, 0); pos.setXYZ(i * 2 + 1, 0, -9, 0); col.setXYZW(i * 2, 0, 0, 0, 0); col.setXYZW(i * 2 + 1, 0, 0, 0, 0); continue; }
+      const a = Math.max(0, 1 - (now - s.t) / 0.22) * s.w * (1 - i / this.n);
+      pos.setXYZ(i * 2, s.tip.x, s.tip.y, s.tip.z); pos.setXYZ(i * 2 + 1, s.base.x, s.base.y, s.base.z);
+      col.setXYZW(i * 2, 1, 1, 1, a * 0.9); col.setXYZW(i * 2 + 1, this.color.r, this.color.g, this.color.b, a * 0.25);
+    }
+    pos.needsUpdate = true; col.needsUpdate = true;
+  }
+}
+
+// ---------- 迴圈
+const clock = new THREE.Clock(), shakeOff = new THREE.Vector3();
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function step(dt, now) {
+  const c = C(); if (c) c.mixer.update(dt);
+  controls.update();
+  fxStep(dt, now);
+  if (shake > 0 && !reduce) {
+    shake = Math.max(0, shake - dt);
+    const amp = 0.1 * (shake / 0.6) ** 1.5;
+    shakeOff.set(rnd(amp), rnd(amp), 0);
+    camera.position.add(shakeOff); renderer.render(scene, camera); camera.position.sub(shakeOff);
+  } else renderer.render(scene, camera);
+}
+renderer.setAnimationLoop((t) => step(Math.min(clock.getDelta(), 0.1), t / 1000));
+window.__show = { step, chars, setWho, play, renderer, camera, scene, controls };
+let start = 'bear1';
+try { const s = localStorage.getItem('beasts-who'); if (BE.CHARACTERS[s]) start = s; } catch (e) {}
+resize();
+setWho(start);
+</script>

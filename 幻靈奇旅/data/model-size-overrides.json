@@ -146,37 +146,37 @@
   "mudkip": {
     "desiredWorldHeight": 1.06,
     "stage": 1,
-    "form": "frog",
+    "form": "bear",
     "maxSpan": 2.6
   },
   "marshtomp": {
     "desiredWorldHeight": 1.378,
     "stage": 2,
-    "form": "frog",
+    "form": "bear",
     "maxSpan": 3.3800000000000003
   },
   "swampert": {
     "desiredWorldHeight": 1.791,
     "stage": 3,
-    "form": "frog",
+    "form": "bear",
     "maxSpan": 4.394000000000001
   },
   "turtwig": {
     "desiredWorldHeight": 1.38,
     "stage": 1,
-    "form": "badger",
+    "form": "catgirl",
     "maxSpan": 2.6
   },
   "grotle": {
     "desiredWorldHeight": 1.794,
     "stage": 2,
-    "form": "badger",
+    "form": "catgirl",
     "maxSpan": 3.3800000000000003
   },
   "torterra": {
     "desiredWorldHeight": 2.332,
     "stage": 3,
-    "form": "badger",
+    "form": "catgirl",
     "maxSpan": 4.394000000000001
   },
   "chimchar": {

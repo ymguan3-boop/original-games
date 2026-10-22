@@ -833,17 +833,17 @@
   {
     "id": "mudkip",
     "speciesId": "mudkip",
-    "name": "泡泡蛙",
-    "element": "water",
-    "type": "潮",
+    "name": "小熊",
+    "element": "fire",
+    "type": "火",
     "stage": 1,
-    "family": "lotus-frog",
-    "form": "frog",
+    "family": "fire-bear",
+    "form": "bear",
     "color": 7058851,
     "role": "starter",
     "previous": null,
     "next": "marshtomp",
-    "model": "models/spirits/mudkip.glb",
+    "model": "models/spirits/fire-bear-1.glb",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -852,32 +852,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "潮光輕擊",
+        "name": "火爪拍",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "泡泡共鳴",
+        "name": "烈焰咆哮",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "泡泡蛙是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "頭頂龐克火焰頭的小火熊，拍擊時爪子會燃起火焰；大絕招後仰吸氣，朝前方噴出一道烈焰。"
   },
   {
     "id": "marshtomp",
     "speciesId": "marshtomp",
-    "name": "荷盞蛙",
-    "element": "water",
-    "type": "潮",
+    "name": "壯熊",
+    "element": "fire",
+    "type": "火",
     "stage": 2,
-    "family": "lotus-frog",
-    "form": "frog",
+    "family": "fire-bear",
+    "form": "bear",
     "color": 7058851,
     "role": "starter",
     "previous": "mudkip",
     "next": "swampert",
-    "model": "models/spirits/marshtomp.glb",
+    "model": "models/spirits/fire-bear-2.glb",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
@@ -886,32 +886,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "潮光輕擊",
+        "name": "火焰衝撞",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "荷盞共鳴",
+        "name": "熔岩震地",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "荷盞蛙是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "四肢粗壯、背上與頸邊都燒著火焰的壯熊；會壓低身體蓄力後猛烈衝撞，大絕招立起雙掌怒吼再重重拍地，震出一圈火柱。"
   },
   {
     "id": "swampert",
     "speciesId": "swampert",
-    "name": "滄瀾角蛙",
-    "element": "water",
-    "type": "潮",
+    "name": "大熊",
+    "element": "fire",
+    "type": "火",
     "stage": 3,
-    "family": "lotus-frog",
-    "form": "frog",
+    "family": "fire-bear",
+    "form": "bear",
     "color": 7058851,
     "role": "starter",
     "previous": "marshtomp",
     "next": null,
-    "model": "models/spirits/swampert.glb",
+    "model": "models/spirits/fire-bear-3.glb",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
@@ -920,32 +920,37 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "潮光輕擊",
-        "power": 54,
-        "cost": 1
+        "name": "霸體",
+        "power": 27,
+        "cost": 1,
+        "buff": {
+          "atk": 0.3,
+          "def": 0.3,
+          "turns": 2
+        }
       },
       {
-        "name": "滄瀾共鳴",
+        "name": "熔岩大劍",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "滄瀾角蛙是初光之境的潮屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "微蹲著身子、背著熔岩大劍的火焰巨熊。普通攻擊「霸體」會讓全身發光，攻擊與防禦各提升 30%，持續 2 回合；大絕招拔出大劍躍起劈下，震出一排火柱。"
   },
   {
     "id": "turtwig",
     "speciesId": "turtwig",
-    "name": "籽背鼴",
+    "name": "小貓娘",
     "element": "grass",
     "type": "森",
     "stage": 1,
-    "family": "mountain-badger",
-    "form": "badger",
+    "family": "cat-girl",
+    "form": "catgirl",
     "color": 9473636,
     "role": "starter",
     "previous": null,
     "next": "grotle",
-    "model": "models/spirits/turtwig.glb",
+    "model": "models/spirits/cat-girl-1.glb",
     "height": 1.275,
     "hp": 90,
     "attack": 26,
@@ -954,32 +959,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "貓貓拳",
         "power": 26,
         "cost": 1
       },
       {
-        "name": "籽背共鳴",
+        "name": "貓爪亂舞",
         "power": 52,
         "cost": 3
       }
     ],
-    "description": "籽背鼴是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "戴著小鈴鐺領巾、頭髮蓬鬆的小貓娘。普通攻擊是蓋下一個肉球印的貓貓拳；大絕招連抓四下後撲向前方，拍出大肉球印。"
   },
   {
     "id": "grotle",
     "speciesId": "grotle",
-    "name": "石芽獾",
+    "name": "靈貓姬",
     "element": "grass",
     "type": "森",
     "stage": 2,
-    "family": "mountain-badger",
-    "form": "badger",
+    "family": "cat-girl",
+    "form": "catgirl",
     "color": 9473636,
     "role": "starter",
     "previous": "turtwig",
     "next": "torterra",
-    "model": "models/spirits/grotle.glb",
+    "model": "models/spirits/cat-girl-2.glb",
     "height": 1.6575,
     "hp": 125,
     "attack": 40,
@@ -988,32 +993,32 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "疾風斬",
         "power": 40,
         "cost": 1
       },
       {
-        "name": "石芽共鳴",
+        "name": "月牙三連斬",
         "power": 80,
         "cost": 3
       }
     ],
-    "description": "石芽獾是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "高馬尾、手持彎刀的貓娘劍士。普通攻擊由右往左橫斬；大絕招是橫斬、反手回斬、弓步突刺的月牙三連斬。"
   },
   {
     "id": "torterra",
     "speciesId": "torterra",
-    "name": "嶺苔山獾",
+    "name": "雙刃貓女",
     "element": "grass",
     "type": "森",
     "stage": 3,
-    "family": "mountain-badger",
-    "form": "badger",
+    "family": "cat-girl",
+    "form": "catgirl",
     "color": 9473636,
     "role": "starter",
     "previous": "grotle",
     "next": null,
-    "model": "models/spirits/torterra.glb",
+    "model": "models/spirits/cat-girl-3.glb",
     "height": 2.15475,
     "hp": 160,
     "attack": 54,
@@ -1022,17 +1027,17 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "森光輕擊",
+        "name": "雙刃橫斬",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "嶺苔共鳴",
+        "name": "影刃旋風",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "嶺苔山獾是初光之境的森屬性幻靈。牠具有獨特的輪廓與棲地習性，願意與真誠的旅人成為夥伴。"
+    "description": "身形高挑、腿長腰細的雙刀貓女。普通攻擊雙刀一起水平橫掃；大絕招是旋身一圈、雙刀交叉斬的影刃旋風。"
   },
   {
     "id": "chimchar",

@@ -42,12 +42,12 @@
 | 022 | torchic | 燈茸雀 | 焰光輕擊 → Attack；燈茸共鳴 → Attack | 通用 Attack |
 | 023 | combusken | 霞羽鶴 | 焰光輕擊 → Attack；霞羽共鳴 → Attack | 通用 Attack |
 | 024 | blaziken | 曦焰長羽 | 焰光輕擊 → Attack；曦焰共鳴 → Attack | 通用 Attack |
-| 025 | mudkip | 泡泡蛙 | 潮光輕擊 → Attack；泡泡共鳴 → Attack | 通用 Attack |
-| 026 | marshtomp | 荷盞蛙 | 潮光輕擊 → Attack；荷盞共鳴 → Attack | 通用 Attack |
-| 027 | swampert | 滄瀾角蛙 | 潮光輕擊 → Attack；滄瀾共鳴 → Attack | 通用 Attack |
-| 028 | turtwig | 籽背鼴 | 森光輕擊 → Attack；籽背共鳴 → Attack | 通用 Attack |
-| 029 | grotle | 石芽獾 | 森光輕擊 → Attack；石芽共鳴 → Attack | 通用 Attack |
-| 030 | torterra | 嶺苔山獾 | 森光輕擊 → Attack；嶺苔共鳴 → Attack | 通用 Attack |
+| 025 | mudkip | 小熊 | 火爪拍 → Attack；烈焰咆哮 → Ultimate | 既有專屬動作 |
+| 026 | marshtomp | 壯熊 | 火焰衝撞 → Attack；熔岩震地 → Ultimate | 既有專屬動作 |
+| 027 | swampert | 大熊 | 霸體 → Attack；熔岩大劍 → Ultimate | 既有專屬動作 |
+| 028 | turtwig | 小貓娘 | 貓貓拳 → Attack；貓爪亂舞 → Ultimate | 既有專屬動作 |
+| 029 | grotle | 靈貓姬 | 疾風斬 → Attack；月牙三連斬 → Ultimate | 既有專屬動作 |
+| 030 | torterra | 雙刃貓女 | 雙刃橫斬 → Attack；影刃旋風 → Ultimate | 既有專屬動作 |
 | 031 | chimchar | 星火猿 | 焰光輕擊 → Attack；星火共鳴 → Attack | 通用 Attack |
 | 032 | monferno | 銅爐猿 | 焰光輕擊 → Attack；銅爐共鳴 → Attack | 通用 Attack |
 | 033 | infernape | 彗拳巨猿 | 焰光輕擊 → Attack；彗拳共鳴 → Attack | 通用 Attack |

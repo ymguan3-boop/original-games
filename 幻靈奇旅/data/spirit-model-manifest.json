@@ -509,105 +509,131 @@
   },
   {
     "id": "mudkip",
-    "name": "泡泡蛙",
-    "vertices": 2638,
-    "triangles": 5172,
-    "materials": 4,
-    "bones": 8,
+    "name": "小熊",
+    "vertices": 23310,
+    "triangles": 33300,
+    "materials": 14,
+    "bones": 0,
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
+      "Hurt",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "React"
     ],
-    "fileBytes": 175964,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 994268,
+    "source": "Three.js procedural model baked to glTF (authoring/beasts/export-beasts.html)"
   },
   {
     "id": "marshtomp",
-    "name": "荷盞蛙",
-    "vertices": 2650,
-    "triangles": 5188,
-    "materials": 4,
-    "bones": 8,
+    "name": "壯熊",
+    "vertices": 23436,
+    "triangles": 32976,
+    "materials": 14,
+    "bones": 0,
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
+      "Hurt",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "React"
     ],
-    "fileBytes": 176416,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1005064,
+    "source": "Three.js procedural model baked to glTF (authoring/beasts/export-beasts.html)"
   },
   {
     "id": "swampert",
-    "name": "滄瀾角蛙",
-    "vertices": 2830,
-    "triangles": 5524,
-    "materials": 5,
-    "bones": 8,
+    "name": "大熊",
+    "vertices": 56565,
+    "triangles": 44568,
+    "materials": 22,
+    "bones": 0,
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
+      "Hurt",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "React",
+      "Wave",
+      "Jump"
     ],
-    "fileBytes": 187440,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 2149924,
+    "source": "Three.js procedural model baked to glTF (authoring/beasts/export-beasts.html)"
   },
   {
     "id": "turtwig",
-    "name": "籽背鼴",
-    "vertices": 3818,
-    "triangles": 7472,
-    "materials": 5,
-    "bones": 8,
+    "name": "小貓娘",
+    "vertices": 19820,
+    "triangles": 24542,
+    "materials": 27,
+    "bones": 0,
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
+      "Hurt",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "React",
+      "Wave",
+      "Jump"
     ],
-    "fileBytes": 242596,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1179696,
+    "source": "Three.js procedural model baked to glTF (authoring/beasts/export-beasts.html)"
   },
   {
     "id": "grotle",
-    "name": "石芽獾",
-    "vertices": 4076,
-    "triangles": 7976,
-    "materials": 5,
-    "bones": 8,
+    "name": "靈貓姬",
+    "vertices": 38256,
+    "triangles": 29956,
+    "materials": 29,
+    "bones": 0,
     "height": 1.6575,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
+      "Hurt",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "React",
+      "Wave",
+      "Jump"
     ],
-    "fileBytes": 256960,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 1688208,
+    "source": "Three.js procedural model baked to glTF (authoring/beasts/export-beasts.html)"
   },
   {
     "id": "torterra",
-    "name": "嶺苔山獾",
-    "vertices": 4424,
-    "triangles": 8648,
-    "materials": 5,
-    "bones": 8,
+    "name": "雙刃貓女",
+    "vertices": 51791,
+    "triangles": 35468,
+    "materials": 33,
+    "bones": 0,
     "height": 2.15475,
     "animations": [
       "Idle",
       "Walk",
+      "Run",
+      "Hurt",
       "Attack",
-      "Hurt"
+      "Ultimate",
+      "React",
+      "Wave",
+      "Jump"
     ],
-    "fileBytes": 276400,
-    "source": "Blender native authored mesh and skeletal animation"
+    "fileBytes": 2073612,
+    "source": "Three.js procedural model baked to glTF (authoring/beasts/export-beasts.html)"
   },
   {
     "id": "chimchar",
