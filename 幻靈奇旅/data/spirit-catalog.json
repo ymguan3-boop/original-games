@@ -1,5 +1,5 @@
 {
-  "version": "20261021-bat-rabbits-v1",
+  "version": "20261022-fire-monkey-v1",
   "numberingPolicy": "001–061 unique display numbers; revised avian family kept together without changing save IDs.",
   "groupingPolicy": "Connected components of previous/next/evolvesTo; stages ascend, equal-stage branches keep original order. Unmodified legacy links group one-sided connections too.",
   "entries": [
@@ -1264,23 +1264,23 @@
       "skills": [
         {
           "index": 0,
-          "name": "調皮火球",
-          "animation": "Fireball",
-          "mode": "Fireball",
+          "name": "小火球",
+          "animation": "Attack",
+          "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
-          "duration": 1.9,
-          "source": "models/native/fire-monkey.js"
+          "duration": 1.417,
+          "source": "authoring/fire-monkey/monkey-actions.js"
         },
         {
           "index": 1,
-          "name": "調皮火球",
-          "animation": "Fireball",
-          "mode": "Fireball",
+          "name": "大火球",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
-          "duration": 1.9,
-          "source": "models/native/fire-monkey.js"
+          "duration": 2.417,
+          "source": "authoring/fire-monkey/monkey-actions.js"
         }
       ]
     },
@@ -1293,23 +1293,23 @@
       "skills": [
         {
           "index": 0,
-          "name": "金棍三連",
-          "animation": "StaffCombo",
-          "mode": "StaffCombo",
+          "name": "伸棍打",
+          "animation": "Attack",
+          "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
-          "duration": 2.25,
-          "source": "models/native/fire-monkey.js"
+          "duration": 1.5,
+          "source": "authoring/fire-monkey/monkey-actions.js"
         },
         {
           "index": 1,
-          "name": "金棍三連",
-          "animation": "StaffCombo",
-          "mode": "StaffCombo",
+          "name": "三連棍",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
-          "duration": 2.25,
-          "source": "models/native/fire-monkey.js"
+          "duration": 3,
+          "source": "authoring/fire-monkey/monkey-actions.js"
         }
       ]
     },
@@ -2157,13 +2157,25 @@
       "id": "zapdos",
       "index": 1,
       "before": "烈焰棍舞",
-      "after": "金棍三連"
+      "after": "三連棍"
     },
     {
       "id": "raikou",
       "index": 1,
       "before": "赤焰連爪",
-      "after": "調皮火球"
+      "after": "大火球"
+    },
+    {
+      "id": "zapdos",
+      "index": 0,
+      "before": "金棍三連",
+      "after": "伸棍打"
+    },
+    {
+      "id": "raikou",
+      "index": 0,
+      "before": "調皮火球",
+      "after": "小火球"
     }
   ],
   "uncertainties": [

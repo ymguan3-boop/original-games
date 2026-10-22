@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>匯出火猴 GLB</title></head>
+<body style="font:14px system-ui;padding:16px">
+<h1>幻靈奇旅 火猴匯出（C囝仔、C老猴）</h1>
+<p id="log">準備中…</p>
+<script src="../kid-hero/kid-model.js"></script>
+<script src="../kid-hero/props.js"></script>
+<script src="../kid-hero/actions.baked.js"></script>
+<script src="monkey-model.js"></script>
+<script src="monkey-actions.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+// 把兩隻火猴（含全部表情節點、尾巴、金箍棒）與動作匯出成遊戲用 GLB。
+// 動作名稱對應遊戲既有的動畫名稱：Idle / Walk / Run / Attack（普攻）/ Ultimate（大絕）/ Hurt / React / Wave / Jump。
+// 尾巴擺動、火焰跳動、金箍棒伸長、手上火球蓄力都烘焙在動作裡；火球出手後由遊戲自己的火系投射物接手（出手時間 = 招式 48%）。
+import * as THREE from 'three';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { buildBird as buildModel, buildClips, DETAIL } from '../kid-hero/builder.js';
+DETAIL.k = 0.32;   // 遊戲用：降低面數（與水系幻靈同級）
+const KB = window.KID_BLUEPRINT, MB = window.MONKEY_BLUEPRINT, MA = window.MONKEY_ACTIONS;
+const log = (t) => { document.getElementById('log').textContent = t; console.log(t); };
+const FILE = { kid: 'fire-monkey-kid', elder: 'fire-monkey-elder' };
+// 遊戲動畫名稱 ← 動作 id（Attack / Ultimate 取各階自己的招式）
+const COMMON = { Idle: 'idle', Walk: 'walk', Run: 'run', Wave: 'wave', React: 'wave', Hurt: 'hurt', Jump: 'cheer1' };
+const OFF = [0.0001, 0.0001, 0.0001];
+
+function gameMaterial(m) {
+  m.roughnessMap = null; m.bumpMap = null;
+  if (m.metalness > 0.3) { m.metalness = 0.3; m.roughness = Math.max(m.roughness, 0.3); }
+}
+function mergeByJoint(root) {
+  root.updateMatrixWorld(true);
+  const isJoint = (o) => o === root || !!o.name;
+  const groups = new Map();
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    let j = o.parent; while (!isJoint(j)) j = j.parent;
+    const key = o.material.uuid;
+    if (!groups.has(j)) groups.set(j, new Map());
+    const g = groups.get(j); if (!g.has(key)) g.set(key, []); g.get(key).push(o);
+  });
+  const inv = new THREE.Matrix4();
+  let before = 0, after = 0;
+  for (const [j, byKey] of groups) {
+    inv.copy(j.matrixWorld).invert();
+    for (const meshes of byKey.values()) {
+      before += meshes.length; after++;
+      const geos = meshes.map((m) => {
+        const g = m.geometry.clone();
+        for (const name of Object.keys(g.attributes)) if (!['position', 'normal'].includes(name)) g.deleteAttribute(name);
+        if (!g.attributes.normal) g.computeVertexNormals();
+        if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]);
+        g.morphAttributes = {};
+        g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld));
+        return g;
+      });
+      const merged = mergeGeometries(geos, false);
+      if (!merged) throw Error('合併失敗：' + j.name);
+      const mesh = new THREE.Mesh(merged, meshes[0].material);
+      mesh.userData.part = { ...meshes[0].userData.part };
+      meshes.forEach((m) => m.parent.remove(m));
+      j.add(mesh);
+    }
+  }
+  const prune = (o) => { [...o.children].forEach(prune); if (o !== root && !o.name && !o.isMesh && o.children.length === 0) o.parent.remove(o); };
+  prune(root);
+  return before + ' → ' + after;
+}
+const exportGLB = (scene, animations) => new Promise((resolve, reject) => new GLTFExporter().parse(scene, resolve, reject, { binary: true, animations, onlyVisible: false }));
+async function save(name, buf) {
+  const r = await fetch('/__save/game/' + name, { method: 'PUT', body: buf });
+  if (!r.ok) throw Error('save failed ' + name);
+}
+
+// 手上火球（只做「出手前」的蓄力；出手後由遊戲的火系投射物接手）：三層球，內亮外暗，全部不受光（unlit）
+function makeFireball() {
+  const g = new THREE.Group(); g.name = 'fireBall'; g.scale.set(...OFF);
+  const mk = (name, color, opacity, s) => {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), new THREE.MeshBasicMaterial({ color, transparent: opacity < 1, opacity, depthWrite: opacity >= 1 }));
+    m.material.name = name; m.scale.setScalar(s); g.add(m);
+  };
+  mk('fireCore', '#FFE38A', 1, 1); mk('fireMid', '#FF8A1E', 0.5, 1.22); mk('fireOut', '#E8341C', 0.2, 1.45);
+  return g;
+}
+
+async function build(who) {
+  const ch = MB.CHARACTERS[who];
+  (function mark(n) { if ((n.t === 'ell' && /^flame/.test(n.m)) || (n.t === 'torus' && n.tube <= 0.02)) n.low = 1; (n.c || []).forEach(mark); })({ c: ch.parts });   // 火焰與細管：低面數
+  const model = buildModel(ch);
+  model.name = who === 'kid' ? 'FireMonkeyKid' : 'FireMonkeyElder';
+  if (who === 'elder') {
+    const staff = buildModel({ id: 'staff', materials: MB.STAFF_MATERIALS, parts: MB.STAFF.parts });
+    staff.name = 'staff'; model.getObjectByName('propR').add(staff);
+  }
+  const ball = who === 'kid' ? makeFireball() : null;
+  if (ball) model.add(ball);
+  model.traverse((o) => { if (o.isMesh) { gameMaterial(o.material); o.material.name = o.material.name || o.material.userData.key || 'mat'; } });
+
+  // ---- 動作清單：共用動作＋自己的普攻／大絕
+  const acts = [];
+  for (const [game, id] of Object.entries(COMMON)) {
+    const a = KB.ACTIONS.find((x) => x.id === id);
+    if (!a) throw Error('缺少動作 ' + id);
+    acts.push({ ...JSON.parse(JSON.stringify(a)), id: game });
+  }
+  const mine = MA[who];
+  acts.push({ ...JSON.parse(JSON.stringify(mine[0])), id: 'Attack' });
+  acts.push({ ...JSON.parse(JSON.stringify(mine[1])), id: 'Ultimate' });
+  const spec = {};   // 遊戲動作名稱 → 原始動作（取 fx / ext）
+  acts.forEach((a) => { spec[a.id] = a; });
+
+  // ---- 尾巴擺動、火焰跳動（每個動作整圈循環，接縫不跳）、金箍棒伸長
+  for (const a of acts) {
+    const n = a.frames, dur = n / a.fps, cycles = Math.max(1, Math.round(dur / 2.6));
+    for (let i = 0; i < MB.TAIL.joints; i++) {
+      const r = [];
+      for (let f = 0; f <= n; f++) { const ph = 2 * Math.PI * cycles * (f / n) - i * 0.55; r.push([0.06 * Math.sin(ph + 1), 0.1 * Math.sin(ph), 0.07 * Math.sin(ph * 0.8)]); }
+      a.tracks['tail' + i] = { r };
+    }
+    const fl = [], fc = Math.max(2, Math.round(dur * 2.5));
+    for (let f = 0; f <= n; f++) { const v = 1 + 0.12 * Math.sin(2 * Math.PI * fc * (f / n)) + 0.06 * Math.sin(2 * Math.PI * fc * 1.6 * (f / n)); fl.push([1 / Math.sqrt(v), v, 1 / Math.sqrt(v)]); }
+    a.tracks.tailFlame = { s: fl };
+    if (who === 'elder' && a.ext) {
+      a.tracks.staffShaft = { s: a.ext.map((e) => [1, 1, (1.6 + e) / 1.6]) };
+      a.tracks.staffFront = { p: a.ext.map((e) => [0, 0, e]) };
+    }
+  }
+
+  // ---- 火球：依動作逐格取右手（小）／頭頂（大）的位置，烘焙位置與蓄力大小
+  if (ball) {
+    const mixer = new THREE.AnimationMixer(model);
+    const probe = buildClips(acts, model);
+    const head = model.getObjectByName('head'), hand = model.getObjectByName('propR');
+    const tmp = new THREE.Vector3(), tmp2 = new THREE.Vector3();
+    for (const a of acts) {
+      if (!a.fx) continue;
+      const fx = a.fx, pos = [], scl = [];
+      mixer.stopAllAction(); mixer.uncacheAction(probe[a.id]);
+      const act = mixer.clipAction(probe[a.id]); act.play();
+      for (let f = 0; f <= a.frames; f++) {
+        const u = f / a.frames;
+        mixer.setTime(f / a.fps); model.updateMatrixWorld(true);
+        let r = 0;
+        if (u >= fx.from && u < fx.release) r = fx.kind === 'small' ? Math.min(1, (u - fx.from) / 0.08) * 0.1 : 0.05 + 0.31 * Math.min(1, (u - fx.from) / (fx.full - fx.from));
+        if (fx.kind === 'small') hand.getWorldPosition(tmp).add(tmp2.set(0, 0.1, 0));
+        else { head.getWorldPosition(tmp); tmp.set(tmp.x, tmp.y + 1.0 + r, tmp.z); }
+        pos.push(tmp.toArray()); scl.push(r > 0 ? [r, r, r] : OFF);
+      }
+      a.tracks.fireBall = { p: pos, s: scl };
+      act.stop();
+    }
+    mixer.stopAllAction();
+    model.traverse((o) => { if (o.isObject3D) o.updateMatrixWorld(true); });
+  }
+  const merged = mergeByJoint(model);
+  const clips = buildClips(acts, model);
+  const glb = await exportGLB(model, Object.values(clips));
+  await save(FILE[who] + '.glb', glb);
+  return { who, bytes: glb.byteLength, merged, clips: Object.keys(clips) };
+}
+
+async function run() {
+  const out = [];
+  for (const who of ['kid', 'elder']) { const r = await build(who); out.push(r); log(out.map((o) => o.who + ' ' + (o.bytes / 1024).toFixed(0) + ' KB（網格 ' + o.merged + '）').join('；')); }
+  window.__result = out;
+  document.title = 'done';
+}
+run().catch((e) => { log('錯誤：' + e.message); document.title = 'error'; console.error(e); });
+</script>
+</body></html>

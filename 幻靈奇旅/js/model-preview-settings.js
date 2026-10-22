@@ -8,7 +8,6 @@ const routes=[
  {kind:'robot',test:p=>p.startsWith('robot-evolution://'),scripts:[N+'robot-evolution.js',N+'robot-spirits.js'],create:p=>RobotSpirits.create(p),labels:p=>RobotSpirits.labels(p),durations:{Takeoff:2,Land:2,Wave:2.5,Punch:1.65,PunchNova:3,ChestBeam:3.1,ChestNova:4.2,PalmBeam:3.1,PalmNova:4.2}},
  {kind:'deer',test:p=>p.startsWith('floral-deer://'),scripts:[N+'floral-deer.js'],create:p=>FloralDeer.create({stage:p.endsWith('meganium')?3:p.endsWith('bayleef')?2:1,inPlace:true}),labels:()=>({Greet:'點頭招呼',Pulse:'花光共鳴'})},
  {kind:'phoenix',test:p=>p==='light-phoenix://blissey',scripts:[N+'light-phoenix.js'],create:()=>LightPhoenix.create({inPlace:true}),labels:()=>({Idle:'展翼待機',Walk:'收翼行走',WingBurst:'振翼光波',FeatherVolley:'鳳羽連射'}),durations:{Takeoff:2.1,Land:2.1,WingBurst:2.4,FeatherVolley:2.7}},
- {kind:'monkey',test:p=>p.startsWith('fire-monkey://'),scripts:[N+'fire-monkey.js'],create:p=>FireMonkeySpirit.create({stage:p.endsWith('zapdos')?2:1,inPlace:true}),modes:['Idle','Walk','Fireball','StaffCombo','React','Hurt','Jump'],labels:()=>({Fireball:'丟出火球',StaffCombo:'連續三下耍棍'}),durations:{Fireball:1.9,StaffCombo:2.25}},
  {kind:'outouman',test:p=>p==='outouman://pikachu',scripts:[N+'outouman.js'],create:()=>OutoumanSpirit.create({inPlace:true}),modes:['Idle','Walk','Wave','Beam','BeamPose','Roll','Throw','Hurt','Jump'],labels:()=>({Beam:'彩虹光束',BeamPose:'光束投球姿勢',Throw:'發射幻靈球'}),durations:{Beam:2,BeamPose:2,Roll:1,Throw:1.5,Jump:1.6}},
  {kind:'xiaoshan',test:p=>p==='xiaoshan://wigglytuff',scripts:[N+'xiaoshan.js'],create:()=>XiaoshanSpirit.create({inPlace:true}),modes:['Idle','Walk','Sleep','Wake','Jump','Scared','React'],labels:()=>({Sleep:'打瞌睡',Wake:'醒來',Scared:'驚恐表情'}),durations:{Wake:1.2,Jump:2.2,Scared:3}},
  {kind:'riceball',test:p=>p==='riceball://mew',scripts:[N+'riceball.js'],create:()=>RiceballSpirit.create({inPlace:true}),modes:['Auto','Idle','Roll','Stuck','Wave'],labels:()=>({Auto:'自動翻滾與卡住',Roll:'橫向翻滾',Stuck:'卡住 >_<',Wave:'紫色光波'})},
@@ -34,5 +33,5 @@ function evolution(s,byId){
  if(['raikou','entei','articuno'].includes(s.id))return '連續擂台參戰 3 場 → '+name(next);
  return (Number(s.stage)===1?5:10)+' 份羈絆 → '+name(next);
 }
-window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261021-bat-rabbits-v1'};
+window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261022-fire-monkey-v1'};
 })();

@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 77,
+  "modelCount": 79,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -255,6 +255,36 @@
         "Attack",
         "Hurt",
         "Fly"
+      ]
+    },
+    {
+      "file": "models/spirits/fire-monkey-elder.glb",
+      "bytes": 1973556,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Wave",
+        "React",
+        "Hurt",
+        "Jump",
+        "Attack",
+        "Ultimate"
+      ]
+    },
+    {
+      "file": "models/spirits/fire-monkey-kid.glb",
+      "bytes": 1136532,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Wave",
+        "React",
+        "Hurt",
+        "Jump",
+        "Attack",
+        "Ultimate"
       ]
     },
     {
@@ -655,7 +685,7 @@
       "animations": []
     }
   ],
-  "nativeModelCount": 23,
+  "nativeModelCount": 21,
   "nativeModels": [
     {
       "id": "piplup",
@@ -789,36 +819,6 @@
         "Roll",
         "Jump",
         "Hurt"
-      ]
-    },
-    {
-      "id": "raikou",
-      "key": "fire-monkey://raikou",
-      "runtime": "three-r128",
-      "triangles": 31704,
-      "meshes": 61,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Fireball",
-        "React",
-        "Hurt",
-        "Jump"
-      ]
-    },
-    {
-      "id": "zapdos",
-      "key": "fire-monkey://zapdos",
-      "runtime": "three-r128",
-      "triangles": 38060,
-      "meshes": 82,
-      "animations": [
-        "Idle",
-        "Walk",
-        "StaffCombo",
-        "React",
-        "Hurt",
-        "Jump"
       ]
     },
     {
@@ -1044,11 +1044,6 @@
       "file": "models/native/families.js",
       "bytes": 13077,
       "sha256": "c317f7b2315d56fcfd10a44154d3e1a711a57c412f853398d039760d236c5aea"
-    },
-    {
-      "file": "models/native/fire-monkey.js",
-      "bytes": 18634,
-      "sha256": "fd02ab17225f8ddd21549f9fa7cdc461747de3e2b3eddcccd8da20e1c903d8f2"
     },
     {
       "file": "models/native/floral-deer.js",

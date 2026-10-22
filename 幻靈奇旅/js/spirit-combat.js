@@ -15,7 +15,7 @@
   let mode=configured.animation||configured.mode,duration=Number(configured.duration)||0,nativeFx=false;
   if(window.ReplacementSpirits?.has(path)){mode=ReplacementSpirits.attack(path,strong);duration=ReplacementSpirits.duration(path,strong);nativeFx=true;}else if(window.AvianSpirits?.has(path)){mode=AvianSpirits.attack(path,strong);duration=AvianSpirits.duration(path,strong);nativeFx=true;}else if(path.startsWith('leaf-frog://')){mode=window.FrogSpirits.attack(path,strong,skill);duration=window.FrogSpirits.duration(path,strong,skill);nativeFx=true;}
   else if(path.startsWith('robot-evolution://')){mode=window.RobotSpirits.attack(path,strong);duration=window.RobotSpirits.duration(path,strong);nativeFx=true;}
-  else if(path.startsWith('fire-monkey://')){mode=path.endsWith('zapdos')?'StaffCombo':'Fireball';duration=mode==='StaffCombo'?2.25:1.9;nativeFx=true;}
+  else if(/fire-monkey-elder\.glb$/.test(path))nativeFx=true;   // C老猴：金箍棒近身打擊，不另外射出投射物（C囝仔的火球出手由遊戲火系投射物接手）
   else if(path.startsWith('light-phoenix://')){mode=/羽|Feather/i.test(skill.name||'')?'FeatherVolley':'WingBurst';duration=mode==='FeatherVolley'?2.7:2.4;nativeFx=true;}
   else if(path.startsWith('floral-deer://')){mode='Pulse';duration=duration||2.4;nativeFx=true;}
   else if(path.startsWith('outouman://')){mode='BeamPose';duration=duration||2.0;}

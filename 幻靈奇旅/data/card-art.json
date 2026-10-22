@@ -335,7 +335,7 @@
     "image": "cards/art/fire-monkey-c-elder.webp",
     "name": "C老猴",
     "source": "imagegen-reference",
-    "referenceModel": "fire-monkey://zapdos",
+    "referenceModel": "models/spirits/fire-monkey-elder.glb",
     "style": "stylized-3d-fantasy-portrait",
     "generatedAt": "2026-10-18"
   },
@@ -351,7 +351,7 @@
     "image": "cards/art/fire-monkey-c-kid.webp",
     "name": "C囝仔",
     "source": "imagegen-reference",
-    "referenceModel": "fire-monkey://raikou",
+    "referenceModel": "models/spirits/fire-monkey-kid.glb",
     "style": "stylized-3d-fantasy-portrait",
     "generatedAt": "2026-10-18"
   },

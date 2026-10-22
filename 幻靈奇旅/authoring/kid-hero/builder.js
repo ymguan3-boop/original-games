@@ -245,14 +245,14 @@ function clipByPlane(src, { n: nv, d }) {
 function geometryFor(n) {
   // 小零件（縫線、斑點、珍珠）用低面數球體，大零件用高面數
   const small = n.t === 'ell' && Math.max(...n.s) < 0.07;
-  const key = n.t === 'ell' ? (small ? 'ellS' : 'ell') : JSON.stringify(n, (k, v) => (['p', 'r', 's', 'm'].includes(k) ? undefined : v));
+  const key = n.t === 'ell' ? (n.low ? 'ellL' : small ? 'ellS' : 'ell') : JSON.stringify(n, (k, v) => (['p', 'r', 's', 'm'].includes(k) ? undefined : v));
   if (geoCache.has(key)) return geoCache.get(key);
   let g;
   switch (n.t) {
-    case 'ell': g = small ? new THREE.SphereGeometry(1, seg(14, 8), seg(10, 6)) : new THREE.SphereGeometry(1, seg(48, 18), seg(32, 12)); break;
+    case 'ell': g = n.low ? new THREE.SphereGeometry(1, 10, 8) : small ? new THREE.SphereGeometry(1, seg(14, 8), seg(10, 6)) : new THREE.SphereGeometry(1, seg(48, 18), seg(32, 12)); break;   // low：遊戲匯出時火焰這類遠看的零件用低面數
     case 'torus': {
       const full = n.arc >= Math.PI * 2 - 1e-6;
-      g = new THREE.TorusGeometry(n.R, n.tube, seg(24, 8), seg(96, 32), n.arc);
+      g = n.low ? new THREE.TorusGeometry(n.R, n.tube, 4, 18, n.arc) : new THREE.TorusGeometry(n.R, n.tube, seg(24, 8), seg(96, 32), n.arc);   // low：細管（眼線、環紋）用低面數
       if (!full) g.rotateZ(Math.PI / 2 - n.arc / 2); // 弧形置中對稱於 +Y
       break;
     }

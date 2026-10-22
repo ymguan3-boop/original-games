@@ -56,8 +56,8 @@
 | 036 | empoleon | 天翼王 | 振翅拍動 → Fly；振翅飛翔 → Fly | 既有生活動作備援 |
 | 037 | articuno | 大眼蛙 | 普通撞擊 → Bump；泡泡吐息 → Bubbles；泡泡連彈 → Bubbles | 既有專屬動作 |
 | 038 | moltres | 冒險蛙 | 普通側踢 → Kick；葉鏢投擲 → Boomerang；迴旋葉風 → Boomerang | 既有專屬動作 |
-| 039 | raikou | C囝仔 | 調皮火球 → Fireball；調皮火球 → Fireball | 既有專屬動作 |
-| 040 | zapdos | C老猴 | 金棍三連 → StaffCombo；金棍三連 → StaffCombo | 既有專屬動作 |
+| 039 | raikou | C囝仔 | 小火球 → Attack；大火球 → Ultimate | 既有專屬動作 |
+| 040 | zapdos | C老猴 | 伸棍打 → Attack；三連棍 → Ultimate | 既有專屬動作 |
 | 041 | entei | 水毛蟲 | 頭槌水彈 → Attack；吐絲結網 → Ultimate | 既有專屬動作 |
 | 042 | suicune | 水仙子 | 水球推擊 → Attack；水之花綻 → Ultimate | 既有專屬動作 |
 | 043 | kyogre | 小金魚 | 水彈 → Attack；翻身細水柱 → Ultimate | 既有專屬動作 |
@@ -98,8 +98,10 @@
 | prinplup [1] | 雪幕共鳴 | 振翅飛翔 |
 | empoleon [0] | 潮光輕擊 | 振翅拍動 |
 | empoleon [1] | 月輪共鳴 | 振翅飛翔 |
-| zapdos [1] | 烈焰棍舞 | 金棍三連 |
-| raikou [1] | 赤焰連爪 | 調皮火球 |
+| zapdos [0] | 金棍三連 | 伸棍打 |
+| zapdos [1] | 烈焰棍舞 | 三連棍 |
+| raikou [0] | 調皮火球 | 小火球 |
+| raikou [1] | 赤焰連爪 | 大火球 |
 
 ## 限制
 

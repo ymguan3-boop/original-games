@@ -1292,7 +1292,7 @@
     "role": "legendary",
     "previous": "raikou",
     "next": null,
-    "model": "fire-monkey://zapdos",
+    "model": "models/spirits/fire-monkey-elder.glb",
     "height": 2.65,
     "hp": 210,
     "attack": 54,
@@ -1301,17 +1301,17 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "金棍三連",
+        "name": "伸棍打",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "金棍三連",
+        "name": "三連棍",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "歷練成長的火猴守護者，戴著金箍、披著赤紅長巾，手持金箍棍。擅長靈敏步法與連續三下的耍棍動作。",
+    "description": "歷練成長的火猴守護者，戴著金箍、披著赤紅領巾，手持金箍棒。普通攻擊會過肩劈下並讓金箍棒伸長；大絕招是旋身橫掃、躍起劈地、伸棍突刺的三連棍。",
     "stageLabel": "守護者",
     "cardFrame": "purple"
   },
@@ -1369,7 +1369,7 @@
     "role": "legendary",
     "previous": null,
     "next": "zapdos",
-    "model": "fire-monkey://raikou",
+    "model": "models/spirits/fire-monkey-kid.glb",
     "height": 1.85,
     "hp": 210,
     "attack": 54,
@@ -1378,17 +1378,17 @@
     "motionType": "walk",
     "skills": [
       {
-        "name": "調皮火球",
+        "name": "小火球",
         "power": 54,
         "cost": 1
       },
       {
-        "name": "調皮火球",
+        "name": "大火球",
         "power": 108,
         "cost": 3
       }
     ],
-    "description": "調皮靈敏的小火猴，缺一顆門牙的壞笑是牠的招牌。閒下來時偶爾朝前方丟出火球，尾尖火焰隨動作搖曳。",
+    "description": "調皮靈敏的小火猴，缺一顆門牙的壞笑是牠的招牌。普通攻擊從手上丟出小火球；大絕招先蹲下集氣，把大火球聚在頭頂，再雙手奮力擲出。尾尖火焰隨動作搖曳。",
     "stageLabel": "守護者",
     "cardFrame": "purple"
   },
