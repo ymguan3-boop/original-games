@@ -1,5 +1,5 @@
 /* Shared lazy adapters: stable save IDs, one cached source per family. */
-(()=>{'use strict';const revision='20261021-bat-rabbits-v1',base=new URL('.',document.currentScript.src),jobs=new Map();
+(()=>{'use strict';const revision='20261022-yellow-jump-v1',base=new URL('.',document.currentScript.src),jobs=new Map();
 const definitions={dialga:{family:'green-eye-bat',source:'green-eye-bat.js',global:'GreenEyeBat'},giratina:{family:'rabbit-evolution',source:'rabbits.js',global:'RabbitEvolution',stage:1},raichu:{family:'rabbit-evolution',source:'rabbits.js',global:'RabbitEvolution',stage:2}};
 const id=p=>String(p).split('://')[1],definition=p=>definitions[id(p)],has=p=>!!definition(p)&&String(p).startsWith(definition(p).family+'://');
 function script(file){if(jobs.has(file))return jobs.get(file);const promise=new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=new URL(file+'?v='+revision,base).href;el.onload=resolve;el.onerror=()=>{jobs.delete(file);el.remove();reject(Error('角色程式載入失敗：'+file));};document.head.append(el);});jobs.set(file,promise);return promise;}
