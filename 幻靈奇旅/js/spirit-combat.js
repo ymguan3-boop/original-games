@@ -38,7 +38,9 @@
  function presentationKind(species,skill={},plan={}){
   const n=[skill.name,plan.mode].join(' ');
   if(/回滿|治癒|回血|霸體|武裝|Armor|Restore/i.test(n))return 'self';
-  if(/踢|撞|啄|斧|吉他|棍|撲|衝鋒|SkyRam|WingPounce|Peck|Guitar|Kick|Ram/i.test(n))return 'melee';
+  // All physical attacks by Guanpang, C老猴 and the three cat-women use close combat.
+  if(['infernape','zapdos','turtwig','grotle','torterra'].includes(species?.id))return 'melee';
+  if(/拳|爪|斬|刃|踢|撞|啄|斧|棍|撲|衝鋒|SkyRam|WingPounce|Peck|Guitar|Kick|Ram/i.test(n)&&!/遠程|射擊|飛刃|光束|火球|射線/i.test(n))return 'melee';
   if(/胡蘿蔔|Carrot/i.test(n))return 'carrot';
   if(/回力|迴旋|Boomerang/i.test(n))return 'boomerang';
   if(/羽|Feather|PowerFlap/i.test(n))return 'feather';
