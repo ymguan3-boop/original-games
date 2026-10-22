@@ -124,7 +124,7 @@ function owned(id){return !!(S.state.pokedexUnlocks[id]||S.state.captureCounts[i
 function grant(id,count=1){
  S.state.captureCounts[id]=number(S.state.captureCounts[id])+count;
  S.state.pokedexUnlocks[id]=true;
- if(labClaimed()&&id!==S.state.dreamLabLegendChoice&&LAB_LEGENDS.some(x=>x.id===id)&&labLegendMilestoneReached()){
+ if(MILESTONE_SPECIALS.some(x=>x.id===id)&&dexReached(MILESTONE_SPECIALS.find(x=>x.id===id).percent)||labClaimed()&&id!==S.state.dreamLabLegendChoice&&LAB_LEGENDS.some(x=>x.id===id)&&labLegendMilestoneReached()){
   S.state.worldFlags.labLegendWildCaught||={};
   S.state.worldFlags.labLegendWildCaught[id]=true;
  }
@@ -460,8 +460,19 @@ function unlockAppearanceAudio(){try{if(!appearanceAudio.context){const Construc
 addEventListener('pointerdown',unlockAppearanceAudio,{passive:true});addEventListener('keydown',unlockAppearanceAudio);addEventListener('pagehide',stopAppearanceBgm);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopAppearanceBgm();});
 function tickSpecialAppearances(dt){if(!S.state)return;const due=[];for(const event of specialEvents()){event.nextIn=Math.max(0,(Number.isFinite(event.nextIn)?event.nextIn:180)-dt);if(event.nextIn<=0&&!place&&!battle&&!modal&&!dialog&&wild.some(w=>w.specialEventId===event.eventId))due.push(event);}if(due.length){showWorldBroadcast('守護神獸「'+due.map(e=>byId[e.speciesId].name).join('、')+'」出現於場景中！'+(!appearanceAudio.unlocked?' 點一下畫面啟用牠們的旋律。':''));for(const event of due)event.nextIn=180;save();}if(!place&&!battle&&specialEvents().some(e=>!wild.some(w=>w.specialEventId===e.eventId)))ensureSpecialAppearances();syncAppearanceBgm();}
 async function showGymVictory(){const el=document.createElement('div');el.className='gymVictory';el.textContent='勝利!!';el.style.opacity='0';document.body.append(el);playHeroOutcome(true);try{await captureTween(.85,t=>{el.style.opacity=String(t);el.style.transform='scale('+(.94+t*.06)+')';});await captureTween(.8,()=>{});await captureTween(.35,t=>el.style.opacity=String(1-t));}finally{el.remove();}}
+// 圖鑑進度特殊幻靈：30% 研究所未選的兩隻傳說、50% 小黃、70% 綠眼蝙怪；捕捉後不再出現，圖鑑 100% 時全部解鎖、不限出現次數
+const MILESTONE_SPECIALS=[{id:'giratina',percent:.5},{id:'dialga',percent:.7}];
+function dexReached(percent){return spirits.length>0&&spirits.filter(s=>owned(s.id)).length>=Math.ceil(spirits.length*percent);}
+function dexComplete(){return spirits.length>0&&spirits.every(s=>owned(s.id));}
+function milestoneTargets(){
+ if(dexComplete())return [];
+ const caught=S.state.worldFlags?.labLegendWildCaught||{},list=[];
+ if(labClaimed()&&labLegendMilestoneReached())for(const e of LAB_LEGENDS)if(e.id!==S.state.dreamLabLegendChoice&&!caught[e.id])list.push({id:e.id,percent:.3});
+ for(const e of MILESTONE_SPECIALS)if(dexReached(e.percent)&&!caught[e.id]&&!owned(e.id))list.push(e);
+ return list;
+}
 function labLegendMilestoneReached(){return spirits.length>0&&spirits.filter(s=>owned(s.id)).length>=Math.ceil(spirits.length*.30);}
-function eligible(s){if(s.captureEvolutionOnly||s.evolutionOnly)return false;if(isBook(s)||isGymGuardian(s))return false;
+function eligible(s){if(s.captureEvolutionOnly||s.evolutionOnly)return false;if(MILESTONE_SPECIALS.some(e=>e.id===s.id))return dexComplete();if(isBook(s)||isGymGuardian(s))return false;
  if(LAB_LEGENDS.some(e=>e.id===s.id)){
   if(!labClaimed())return false;
   if(s.id!==S.state.dreamLabLegendChoice)return labLegendMilestoneReached();
@@ -574,12 +585,13 @@ function labLegendWildPoint(){
  return randomPoint();
 }
 async function ensureLabLegendWilds(){
- if(labWildSpawnBusy||!S.ready||place||battle||!labClaimed()||!labLegendMilestoneReached())return;
+ if(labWildSpawnBusy||!S.ready||place||battle)return;
+ const targets=milestoneTargets();if(!targets.length)return;
  labWildSpawnBusy=true;
  const appeared=[];
  try{
-  for(const entry of LAB_LEGENDS){
-   if(entry.id===S.state.dreamLabLegendChoice||S.state.worldFlags?.labLegendWildCaught?.[entry.id]||wild.some(w=>w.species.id===entry.id))continue;
+  for(const entry of targets){
+   if(wild.some(w=>w.species.id===entry.id))continue;
    if(place||battle)break;
    if(wild.length>=WILD_LIMIT){
     const victim=wild.find(w=>w!==target&&!w.specialEventId&&!w.labLegendStarter&&!w.pondSwim&&!w.pondJump);
@@ -591,13 +603,15 @@ async function ensureLabLegendWilds(){
    if(!w)continue;
    if(place||battle){wild.splice(wild.indexOf(w),1);removeActor(w);break;}
    w.labLegendStarter=true;
-   appeared.push(spirit.name);
+   appeared.push({name:spirit.name,percent:entry.percent});
   }
-  if(appeared.length){
-   showWorldBroadcast('大夢研究所傳說幻靈出現了！'+appeared.join('、')+'，快去締約！');
-   toast('圖鑑達 30%｜'+appeared.join('、')+'已出現在初光鎮！');
+  for(const percent of [.3,.5,.7]){
+   const names=appeared.filter(a=>a.percent===percent).map(a=>a.name);if(!names.length)continue;
+   const label='圖鑑達 '+Math.round(percent*100)+'%';
+   showWorldBroadcast((percent===.3?'大夢研究所傳說幻靈出現了！':'特殊幻靈出現了！')+names.join('、')+'，快去締約！');
+   toast(label+'｜'+names.join('、')+'已出現在初光鎮！');
   }
- }catch(error){S.errors.push('大夢研究所傳說幻靈出現：'+error.message);}
+ }catch(error){S.errors.push('圖鑑進度特殊幻靈出現：'+error.message);}
  finally{labWildSpawnBusy=false;}
 }
 let pondSpawnBusy=false,pondFrogSpawnBusy=false;
@@ -1580,7 +1594,7 @@ function outoumanSkillFx(from,to,skillName){
 // 六屬性相剋：光 > 焰 > 森 > 潮 > 雷 > 念 > 光；剋制 ×1.5、被剋 ×0.75
 const TYPE_BEATS={光:'焰',焰:'森',森:'潮',潮:'雷',雷:'念',念:'光'};
 function typeMultiplier(attackType,defendType){return TYPE_BEATS[attackType]===defendType?1.5:TYPE_BEATS[defendType]===attackType?.75:1;}
-async function strike(attacker,defender,skill){if(!battle)return;const activeBattle=battle;if(statusTick(attacker)){attacker.actor.play('Hurt',true);battleLog(attacker.s.name+'受狀態影響，暫停一次行動。');await delay(600);return;}const strong=(skill.cost||0)>=3,binding=spiritCatalog.skill(attacker.s.id,skill),plan=SpiritCombat.attackPlan(attacker.s,attacker.actor,skill,binding||{}),p=attacker.actor.root.position.clone(),to=defender.actor.root.position.clone().add(new T.Vector3(0,1,0)),dir=to.clone().sub(p).setY(0).normalize();attacker.actor.root.rotation.y=Math.atan2(dir.x,dir.z);if(isReplacement(attacker.s.model))attacker.actor.controller?.setTargetDistance?.(p.distanceTo(defender.actor.root.position)/Math.max(.001,attacker.actor.object.scale.x));attacker.actor.play(plan.mode,true);battleLog(attacker.s.name+'使用'+skill.name+'！');let fxReleased=false;const releaseFx=()=>{if(fxReleased)return;fxReleased=true;if(attacker.s.id==='pikachu'&&['白色光波','彩虹光束'].includes(skill.name))outoumanSkillFx(p.clone().add(new T.Vector3(0,1,0)),to,skill.name);else if(!plan.nativeFx)combatFx(p.clone().add(new T.Vector3(0,1,0)),to,attacker.s.element,strong);if(strong&&!plan.nativeFx)combatRing(defender.actor.root.position,1.7,attacker.s.element,.8);};await new Promise(resolve=>effects.push({start:elapsed,duration:plan.duration,update:t=>{if(t>=plan.releaseFraction)releaseFx();const approach=isReplacement(attacker.s.model)&&attacker.s.id==='raichu'&&strong?Math.max(0,p.distanceTo(defender.actor.root.position)-1.52*attacker.actor.object.scale.x):0;const ease=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);};attacker.actor.root.position.copy(p).addScaledVector(dir,approach?approach*ease(t/.32)*(1-ease((t-.68)/.32)):Math.sin(t*Math.PI)*(binding?.nativeAttack===false?.35:0));},done:()=>{attacker.actor.root.position.copy(p);resolve();}}));if(battle!==activeBattle)return;const eggResult=AvianRules.apply(attacker,defender,skill,battle.turn);if(eggResult){eggSkillFx(eggResult.kind,attacker,defender);attacker.energy=Math.max(0,attacker.energy-(skill.cost||1));updateHp(attacker);updateHp(defender);battleLog(eggResult.text);await delay(1600);attacker.actor.play('Idle');return;}const costumeBoost=battle?.kind==='arena'&&battle.allies.includes(attacker)?(S.state.costume==='electric'?1.2:1)*heroAttackBoost():1;
+async function strike(attacker,defender,skill){if(!battle)return;const activeBattle=battle;if(statusTick(attacker)){attacker.actor.play('Hurt',true);battleLog(attacker.s.name+'受狀態影響，暫停一次行動。');await delay(600);return;}const strong=(skill.cost||0)>=3,binding=spiritCatalog.skill(attacker.s.id,skill),plan=SpiritCombat.attackPlan(attacker.s,attacker.actor,skill,binding||{}),p=attacker.actor.root.position.clone(),to=defender.actor.root.position.clone().add(new T.Vector3(0,1,0)),dir=to.clone().sub(p).setY(0).normalize();attacker.actor.root.rotation.y=Math.atan2(dir.x,dir.z);if(isReplacement(attacker.s.model))attacker.actor.controller?.setTargetDistance?.(p.distanceTo(defender.actor.root.position)/Math.max(.001,attacker.actor.object.scale.x));attacker.actor.play(plan.mode,true);battleLog(attacker.s.name+'使用'+skill.name+'！');const script=plan.nativeFx&&window.SpiritVfx?.has(attacker.actor.path||attacker.s.model)?SpiritVfx.script({T,path:attacker.actor.path||attacker.s.model,strong,attacker:attacker.actor,defender:defender.actor,group:battleGroup,now:()=>elapsed,add:(dur,fn,done)=>effects.push({start:elapsed,duration:dur,update:t=>fn(t,t*dur),done}),sound:(el,big)=>combatSound(el,big)}):null;let fxReleased=false;const releaseFx=()=>{if(fxReleased)return;fxReleased=true;if(attacker.s.id==='pikachu'&&['白色光波','彩虹光束'].includes(skill.name))outoumanSkillFx(p.clone().add(new T.Vector3(0,1,0)),to,skill.name);else if(!plan.nativeFx)combatFx(p.clone().add(new T.Vector3(0,1,0)),to,attacker.s.element,strong);if(strong&&!plan.nativeFx)combatRing(defender.actor.root.position,1.7,attacker.s.element,.8);};await new Promise(resolve=>effects.push({start:elapsed,duration:plan.duration,update:t=>{if(script)script.update(t*plan.duration);if(t>=plan.releaseFraction)releaseFx();const gap=Math.max(1.2,Math.min(3.2,.3*attacker.actor.worldSize.y+.35*defender.actor.worldSize.y+.6)),approach=script?Math.max(0,p.distanceTo(defender.actor.root.position)-gap)*script.approach(t*plan.duration):isReplacement(attacker.s.model)&&attacker.s.id==='raichu'&&strong?Math.max(0,p.distanceTo(defender.actor.root.position)-1.52*attacker.actor.object.scale.x):0;const ease=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);};attacker.actor.root.position.copy(p).addScaledVector(dir,script?approach:approach?approach*ease(t/.32)*(1-ease((t-.68)/.32)):Math.sin(t*Math.PI)*(binding?.nativeAttack===false?.35:0));},done:()=>{attacker.actor.root.position.copy(p);resolve();}}));if(battle!==activeBattle)return;const eggResult=AvianRules.apply(attacker,defender,skill,battle.turn);if(eggResult){eggSkillFx(eggResult.kind,attacker,defender);attacker.energy=Math.max(0,attacker.energy-(skill.cost||1));updateHp(attacker);updateHp(defender);battleLog(eggResult.text);await delay(1600);attacker.actor.play('Idle');return;}const costumeBoost=battle?.kind==='arena'&&battle.allies.includes(attacker)?(S.state.costume==='electric'?1.2:1)*heroAttackBoost():1;
  const damage=Math.max(8,Math.round((skill.power||attacker.s.attack)*(attacker.attackMultiplier??1)*costumeBoost*(attacker.status?.attackUp?1.45:1)*(defender.status?.defDown?1.4:1)*(attacker.status?.armor?1.3:1)/(defender.status?.armor?1.3:1)*typeMultiplier(attacker.s.type,defender.s.type)*(.88+Math.random()*.24)));const typeNote=({1.5:'屬性剋制，效果絕佳！',0.75:'屬性被剋，效果減弱。'})[typeMultiplier(attacker.s.type,defender.s.type)]||'';defender.hp=Math.max(0,defender.hp-damage);defender.actor.play('Hurt',true);attacker.energy=Math.max(0,attacker.energy-(skill.cost||1));if(SpiritReplacementRules.poison(defender,skill))updateHp(defender);else if(strong){const status=combatStatusFor[attacker.s.element]||'defDown';statusSet(['heal','attackUp'].includes(status)?attacker:defender,status,3);}updateHp(attacker);updateHp(defender);if(skill.buff)applyBuff(attacker,skill.buff);battleLog(defender.s.name+'受到 '+damage+' 點傷害。'+typeNote+(strong?'絕招效果已發動！':''));await delay(600);attacker.actor.play('Idle');defender.actor.play('Idle');}
 function arenaCostumeHealing(b){
  if(!b||b.kind!=='arena'||S.state.costume!=='mist')return false;
@@ -2085,7 +2099,7 @@ const nearestNpcs=[...npcData].sort((a,b)=>{
  return Math.hypot(p[0]-S.player.x,az-S.player.z)-Math.hypot(q[0]-S.player.x,bz-S.player.z);
 }).slice(0,2);
 await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);if(byId.mew){companion=await actor(byId.mew.model,.55);companion.root.visible=false;companion.root.position.copy(S.player);companion.idleSince=elapsed;}camera.position.copy(S.player).add(new T.Vector3(0,8.6,10.7));setNpcPlace();if(S.state.petActive)void equipPet(S.state.petActive);if(restoredBuilding){const b=world.buildings.find(x=>x.id===restoredBuilding);if(b){await enterBuilding(b);if(newPlayerStart){if(!blocked(LAB_START_POSITION.x,LAB_START_POSITION.z,.45)){S.player.copy(LAB_START_POSITION);hero.root.position.copy(S.player);}save();}else if(restoredPosition&&!blocked(...restoredPosition)){S.player.set(restoredPosition[0],0,restoredPosition[1]);hero.root.position.copy(S.player);}}}bindUi();hud();S.ready=true;if(new URLSearchParams(location.search).get('monsterDex')==='1')showMonsterDex();$('load').hidden=true;document.body.dataset.ready='true';setTimeout(()=>void loadDeferredTown(nearestNpcs),mobileGraphics?900:350);setTimeout(()=>warmBattleModels(),mobileGraphics?8000:2300);setInterval(save,15000);addEventListener('pagehide',e=>{save();if(!e.persisted&&battle){disposeXiaoshanTrial(battle);disposePhoenixTrial(battle);}else if(battle?.xiaoshanTrial?.utterance)window.speechSynthesis?.cancel();});document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});setInterval(()=>{if(!place&&!battle&&!modal){const far=wild.find(w=>w!==target&&!w.specialEventId&&!w.labLegendStarter&&!w.pondSwim&&!w.pondJump&&w.root.position.distanceTo(S.player)>24);if(far){wild.splice(wild.indexOf(far),1);removeActor(far);replenish();}}},45000);toast(newPlayerStart?'歡迎來到大夢研究所！請向桌上的幻靈球前進，選擇第一位幻靈。':S.state.migratedFrom?'歡迎回來！你的舊版進度已接續。':'歡迎來到初光鎮！靠近幻靈，投出靈核球締約。');updateLabGuide();}catch(e){S.errors.push(e.message);$('loadText').textContent=e.message+'。請重新整理，或確認資產是否完整。';console.error(e);}}
-window.PhantomGame={get river(){return river},startFishing,eligible,spawnWeight,chooseWild,beginNavigation,cancelNavigation,get navigation(){return navigation},cameraOrbit,clearTarget,showGuide,showReset,resetGame,grantSupply,tickBroadcast,get cardArt(){return cardArt},get elapsed(){return elapsed},broadcastNow(){broadcastAt=elapsed;tickBroadcast()},endBattle,playerTurn,tickGym,state:S,scene,camera,renderer,actors,wild,npcs,asset,cloneSkin,showDex,showTeam,showGyms,showViewer,startBattle,enterBuilding,leaveBuilding,grant,save,showMenu,throwBall,useBerry,selectTarget,get spirits(){return spirits},get world(){return world},get hero(){return hero},get battle(){return battle},get place(){return place},captureCandidates,readBookshelf,nearbyBookshelf,validBookTeam,get bookshelfData(){return bookshelfData},get bookEncounter(){return bookEncounter},get chestEncounter(){return chestEncounter},get chestNextAt(){return chestNextAt},get viewer(){return viewer},get labels(){return labels},get target(){return target},beginRoll,get roll(){return roll},blocked,teleport(x,z){S.player.set(x,0,z);hero.root.position.copy(S.player);},setCostume};
+window.PhantomGame={milestoneTargets,dexComplete,get river(){return river},startFishing,eligible,spawnWeight,chooseWild,beginNavigation,cancelNavigation,get navigation(){return navigation},cameraOrbit,clearTarget,showGuide,showReset,resetGame,grantSupply,tickBroadcast,get cardArt(){return cardArt},get elapsed(){return elapsed},broadcastNow(){broadcastAt=elapsed;tickBroadcast()},endBattle,playerTurn,tickGym,state:S,scene,camera,renderer,actors,wild,npcs,asset,cloneSkin,showDex,showTeam,showGyms,showViewer,startBattle,enterBuilding,leaveBuilding,grant,save,showMenu,throwBall,useBerry,selectTarget,get spirits(){return spirits},get world(){return world},get hero(){return hero},get battle(){return battle},get place(){return place},captureCandidates,readBookshelf,nearbyBookshelf,validBookTeam,get bookshelfData(){return bookshelfData},get bookEncounter(){return bookEncounter},get chestEncounter(){return chestEncounter},get chestNextAt(){return chestNextAt},get viewer(){return viewer},get labels(){return labels},get target(){return target},beginRoll,get roll(){return roll},blocked,teleport(x,z){S.player.set(x,0,z);hero.root.position.copy(S.player);},setCostume};
 
 function spawnWeight(s){return 1/Math.pow(1+number(S.state.captureCounts[s.id]),1.6)/(1+wild.filter(w=>w.species.id===s.id).length*3);}
 function chooseWild(){const list=spirits.filter(s=>!['entei','articuno'].includes(s.id)&&!isChest(s)&&!isBook(s)&&eligible(s)&&!specialEvents().some(e=>e.speciesId===s.id));let r=Math.random()*list.reduce((n,s)=>n+spawnWeight(s),0);return list.find(s=>(r-=spawnWeight(s))<=0)||list[list.length-1];}

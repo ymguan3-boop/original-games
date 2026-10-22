@@ -26,7 +26,8 @@ function evolution(s,byId){
  if(['treecko','grovyle'].includes(s.id))return '三色蛋同次遭遇捕捉失敗時的變化型態；不以羈絆卡片進階。';
  if(s.id==='sceptile')return '小鷹卡片累積 3 張 → '+name('palkia');
  if(s.id==='palkia')return '由 3 張小鷹卡進階取得；目前無後續進階。';
- if(s.id==='giratina')return '加入隊伍累計完成擂台 3 場 → '+name('raichu')+'（勝敗皆計、不要求連續參戰；中途離開不計次）。';
+ if(s.id==='giratina')return '取得：圖鑑進度達 50% 時出現在初光鎮（捕捉後不再出現；圖鑑 100% 後解鎖、可不限次數出現）。進階：加入隊伍累計完成擂台 3 場 → '+name('raichu')+'（勝敗皆計、不要求連續參戰；中途離開不計次）。';
+ if(s.id==='dialga')return '取得：圖鑑進度達 70% 時出現在初光鎮（捕捉後不再出現；圖鑑 100% 後解鎖、可不限次數出現）。目前無後續進階。';
  if(s.id==='kyogre')return '小金魚卡片 3 張 → 隨機金魚國王或金魚皇后。';
  const next=s.evolvesTo||s.next;
  if(!next)return s.id==='mewtwo'?'將國王與皇后各 3 張交給釣魚郎換取魚飼料，再於河畔召喚。':'目前無後續進階。';
