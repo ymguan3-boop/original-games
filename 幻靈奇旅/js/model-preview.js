@@ -28,6 +28,7 @@ function owned(root){const r=new Set();root.traverse(n=>{if(n.geometry)r.add(n.g
 function release(p){if(!p)return;p.guanpangFx?.dispose();p.duoFx?.dispose();p.mixer?.stopAllAction();p.mixer?.uncacheRoot(p.root);if(p.hero&&heroCostumes)heroCostumes.dispose(p.root);try{p.controller?.dispose?.();}catch{}for(const r of p.resources||[])r.dispose?.();p.display?.parent?.remove(p.display);}
 function excluded(n,root){for(let x=n;x;x=x.parent){if(!x.visible||x.userData?.isEffect||x.userData?.effect||/^(Effects|ReusableEffects|ReusableLightEffects|CombatEffects|ReusableFireball)$/.test(x.name))return true;if(x===root)break;}return false;}
 function bounds(root){const box=new T.Box3(),temp=new T.Box3();root.updateMatrixWorld(true);root.traverse(n=>{if(!n.isMesh||!n.geometry||excluded(n,root))return;const ms=Array.isArray(n.material)?n.material:[n.material];if(ms.every(m=>m?.isMeshBasicMaterial&&m.transparent&&m.depthWrite===false))return;const g=n.geometry;if(!g.boundingBox)g.computeBoundingBox();if(g.boundingBox)box.union(temp.copy(g.boundingBox).applyMatrix4(n.matrixWorld));});if(box.isEmpty())throw Error('模型沒有可見幾何');return box;}
+const cardNumber=value=>catalog.number(value)!=='—'?catalog.number(value):catalog.towerNumber(typeof value==='string'?value:value?.id);
 async function build(id){
  const s=byId[id],path=id==='hero'?'models/hero.glb':s?.model;if(!path)throw Error('找不到模型：'+id);
  const route=C.route(path);let root,controller,mixer,clips=[];
@@ -52,6 +53,7 @@ const find=(names,n)=>names.find(x=>x.toLowerCase()===String(n).toLowerCase());
 function resolve(p,canon){
  const names=p.modes;
  if(canon==='Attack'||canon==='Ultimate'){
+  if(p.route?.kind==='tower')return{mode:canon,release:.48,attack:canon==='Ultimate'?1:0};
   if(p.hero)return{mode:find(names,canon==='Attack'?'Attack':'Throw')||'Idle'};
   const i=canon==='Attack'?0:1,skill=p.s.skills?.[i]||{cost:i?3:1};let plan;
   try{plan=SpiritCombat.attackPlan(p.s,{path:p.path,actions:Object.fromEntries(names.map(n=>[n,null])),controller:p.controller},skill,catalog.skill(p.s.id,i)||{});}catch{plan=null;}
@@ -157,12 +159,12 @@ function pressed(){document.querySelectorAll('[data-motion]').forEach(b=>b.setAt
 function play(canon){motion=canon;paused=false;fxClear();for(const p of packs)start(p,canon);pressed();}
 function info(p){selected=p;if(packs.length)scope(single);document.querySelectorAll('#members button').forEach(b=>{const active=b.dataset.id===p.id;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));});const s=p.s;
  if(!s){$('card-name').textContent='初光旅人';$('card-tag').textContent='主角 · 六種造型';$('element').textContent='—';$('matchup').textContent='—';$('stats').textContent='—';$('skill0').textContent='Attack';$('skill1').textContent='Throw';$('evolution').textContent=C.evolution(null,byId);$('description').textContent='沿用遊戲目前造型；在這裡試穿不會改動存檔。';$('cardPortrait').hidden=true;buttons();return;}
- $('card-name').textContent=s.name;$('card-tag').textContent='No.'+catalog.number(s)+' · '+(s.type||'')+' · '+(s.stageLabel||'第 '+s.stage+' 階段')+' · '+(s.rarity||'普通');
+ $('card-name').textContent=s.name;$('card-tag').textContent='No.'+cardNumber(s)+' · '+(s.category==='tower'?'星穹挑戰塔魔物':'幻靈')+' · '+(s.type||'')+' · '+(s.stageLabel||'第 '+s.stage+' 階段')+' · '+(s.rarity||'普通');
  $('element').textContent=s.type;$('matchup').textContent='剋制 '+(BEATS[s.type]||'—')+'・被 '+(Object.keys(BEATS).find(k=>BEATS[k]===s.type)||'—')+' 剋制';
  $('stats').textContent='HP '+s.hp+'・攻擊 '+s.attack;
  const sk=i=>{const k=s.skills?.[i];return k?k.name+'（'+(k.effect==='eggArmour'?'對手攻擊減半':k.effect==='eggRecover'?'回復 90% HP':'威力 '+k.power)+'・'+(k.cost||1)+' 能量）':'—';};$('skill0').textContent=sk(0);$('skill1').textContent=sk(1);
  $('evolution').textContent=C.evolution(s,byId);$('description').textContent=s.description||'';
- const art=portraitMap[s.id],fig=$('cardPortrait');fig.dataset.frame=s.cardFrame||'default';fig.hidden=!art?.image;if(art?.image){fig.querySelector('img').src=art.image;fig.querySelector('img').alt=s.name+'圖鑑肖像';$('portrait-caption').textContent='No.'+catalog.number(s)+' · '+s.name;}
+ const art=portraitMap[s.id],fig=$('cardPortrait');fig.dataset.frame=s.cardFrame||'default';fig.hidden=!art?.image;if(art?.image){fig.querySelector('img').src=art.image;fig.querySelector('img').alt=s.name+'圖鑑肖像';$('portrait-caption').textContent='No.'+cardNumber(s)+' · '+s.name;}
  buttons();pressed();}
 async function select(fid,write=true){
  const fam=families.find(f=>f.id===fid)||families[0];const token=++serial;$('error').hidden=true;$('status').textContent='載入 '+fam.label+'…';
@@ -204,16 +206,17 @@ window.HeroReview={get packs(){return packs;},renderer,scene,camera,play,select,
 addEventListener('pagehide',()=>{dead=true;++serial;packs.forEach(release);packs=[];renderer.dispose();});
 
 /* ---------- 讀取圖鑑，依家族建立選單 ---------- */
-try{const [data,def,art]=await Promise.all(['data/spirits.json','data/spirit-catalog.json','data/card-art.json'].map(p=>fetch(p+'?v='+C.revision,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(p+'：HTTP '+r.status);return r.json();})));
- spirits=data.spirits||data;catalog=SpiritCatalog.create(def);portraitMap=art.cards||art.art||art;for(const s of spirits)byId[s.id]=s;
+try{const [data,def,art,tower]=await Promise.all(['data/spirits.json','data/spirit-catalog.json','data/card-art.json','data/tower-monsters.json'].map(p=>fetch(p+'?v='+C.revision,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(p+'：HTTP '+r.status);return r.json();})));
+ spirits=data.spirits||data;catalog=SpiritCatalog.create(def);portraitMap=art.cards||art.art||art;for(const s of spirits)byId[s.id]=s;for(const m of tower.monsters||[]){if(byId[m.id]){byId[m.id].category='tower';continue;}const item={...m,type:m.type||m.element,category:'tower',stage:1,acquisition:'tower',acquisitionText:'於星穹挑戰塔擊敗'+m.name+'後取得卡牌。'};spirits.push(item);byId[item.id]=item;portraitMap[item.id]={image:m.portrait};}
  const groups=(def.groups||[]).map(g=>({id:g.id,ids:catalog.sort(g.ids.filter(id=>byId[id]))})).filter(g=>g.ids.length);
  const seen=new Set(groups.flatMap(g=>g.ids));for(const s of catalog.sort(spirits))if(!seen.has(s.id))groups.push({id:s.id,ids:[s.id]});
- groups.sort((a,b)=>(catalog.get(a.ids[0])?.order||999)-(catalog.get(b.ids[0])?.order||999));
+ groups.sort((a,b)=>Number(cardNumber(a.ids[0]))-Number(cardNumber(b.ids[0])));
  // 家族成員超過 3 隻時（三色蛋＋鳥族）拆成兩組，避免舞台太擠
  families=[{id:'hero',ids:['hero'],label:'主角 · 初光旅人'}];
  for(const g of groups){const chunks=g.ids.length>3?[g.ids.slice(0,Math.ceil(g.ids.length/2)),g.ids.slice(Math.ceil(g.ids.length/2))]:[g.ids];chunks.forEach((ids,i)=>families.push({id:chunks.length>1?g.id+'-'+i:g.id,ids,label:ids.map(id=>byId[id].name).join(' → ')}));}
- for(const f of families){const o=document.createElement('option');o.value=f.id;const nums=f.ids.filter(id=>byId[id]).map(id=>catalog.number(id));o.textContent=(nums.length?'No.'+nums[0]+(nums.length>1?'–'+nums[nums.length-1]:'')+' ':'')+f.label;o.dataset.search=[o.textContent,...f.ids.map(id=>[byId[id]?.type,byId[id]?.rarity].join(' '))].join(' ').toLowerCase();$('subject').append(o);}
- $('coverage').textContent='主角 ＋ '+spirits.length+' 種幻靈 · '+(families.length-1)+' 個家族／獨立角色 · 依圖鑑編號排序';
+ const regularOptions=document.createElement('optgroup'),towerOptions=document.createElement('optgroup');regularOptions.label='幻靈 · 001–058';towerOptions.label='星穹挑戰塔魔物 · 059–064';$('subject').append(regularOptions,towerOptions);
+ for(const f of families){const o=document.createElement('option');o.value=f.id;const nums=f.ids.filter(id=>byId[id]).map(id=>cardNumber(id));o.textContent=(nums.length?'No.'+nums[0]+(nums.length>1?'–'+nums[nums.length-1]:'')+' ':'')+f.label;o.dataset.search=[o.textContent,...f.ids.map(id=>[byId[id]?.type,byId[id]?.rarity].join(' '))].join(' ').toLowerCase();(byId[f.ids[0]]?.category==='tower'?towerOptions:regularOptions).append(o);}
+ $('coverage').textContent='主角 ＋ 58 種幻靈 ＋ 6 種塔魔物 · 共 64 張卡牌 · 依圖鑑編號排序';
  const q=new URLSearchParams(location.search).get('subject');const fam=families.find(f=>f.id===q)||families.find(f=>f.ids.includes(q))||families[1]||families[0];
  resize();buttons();await select(fam.id,false);
 }catch(e){error(e);}

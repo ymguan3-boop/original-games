@@ -1,0 +1,45 @@
+{
+  "module": "js/overworld-mounts.js",
+  "axes": "+Y up, +Z forward",
+  "mounts": [
+    "bicycle",
+    "mirror-deer"
+  ],
+  "bicycleTriangles": 1732,
+  "seatHeights": {
+    "bicycle": 1.13,
+    "mirror-deer": 2.15
+  },
+  "updateOrder": "hero mixer -> mount update -> scene render / ball hand origin sample",
+  "speedMultiplier": 1.5,
+  "restrictions": "Host owns allowed flag, purchase and saved selection. Disallowed hides mount and restores hero while keeping selected mount.",
+  "deer": "Uses existing approved stage 3 FloralDeer and native Walk / Idle without editing source.",
+  "validation": "Isolated preview loaded existing hero GLB, posed both mounts, measured 1732 bicycle triangles, checked throwing arm unchanged and object transform restored on dismount. Screenshots and JSON under artifacts/ride-catalog-20261023 outside repo. No real game save touched.",
+  "costumeAnchorCompensation": "After animation and pose, actual hip world Y is aligned to saddle; compensates existing sound costume hover wrapper without editing costume transforms.",
+  "gameValidation": {
+    "isolatedContext": true,
+    "costumes": [
+      "adventure",
+      "sound"
+    ],
+    "realCaptureThrow": true,
+    "throwBallHandDistanceApprox": 0.13,
+    "deerHipWorldY": 2.15,
+    "deerSeatWorldY": 2.15,
+    "insideSuspends": true,
+    "battleSuspends": true,
+    "exitResumes": true,
+    "dismountObjectPosition": [
+      0,
+      0.007546235137035509,
+      0
+    ],
+    "walkSpeed": 4.73,
+    "mountSpeed": 7.095,
+    "ratio": 1.5,
+    "pageErrors": []
+  },
+  "profile": "low-poly game runtime; bicycle budget < 8000 triangles",
+  "approvedBaseline": "Existing hero.glb and approved stage-3 FloralDeer; no master mesh or original character appearance edited.",
+  "integration": "Actual game test: adventure suit bicycle throw; sound suit deer with hips aligned to saddle. Speed 4.73 -> 7.095. Indoor/arena suspension and original transform restore PASS."
+}

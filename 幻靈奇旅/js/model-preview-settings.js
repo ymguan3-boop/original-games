@@ -2,6 +2,7 @@
 (()=>{'use strict';
 const N='models/native/';
 const routes=[
+ {kind:'tower',test:p=>p.startsWith('tower://'),scripts:[N+'tower-models.js'],create:p=>TowerModels.create(p)},
  {kind:'replacement',test:p=>/^(green-eye-bat|rabbit-evolution):\/\//.test(p),scripts:[N+'replacement-spirits.js'],create:async p=>(await ReplacementSpirits.load(p)).create(),labels:p=>ReplacementSpirits.labels(p)},
  {kind:'avian',test:p=>p.startsWith('avian://'),scripts:[N+'avian-spirits.js'],create:async p=>(await AvianSpirits.load(p)).create(),labels:p=>AvianSpirits.labels(p)},
  {kind:'frog',test:p=>p.startsWith('leaf-frog://'),scripts:[N+'leaf-frogs.js',N+'frog-spirits.js'],create:p=>FrogSpirits.create(p),labels:p=>FrogSpirits.labels(p),durations:()=>LeafFrogs.durations},
@@ -35,5 +36,5 @@ function evolution(s,byId){
  if(['raikou','entei','articuno'].includes(s.id))return '連續擂台參戰 3 場 → '+name(next);
  return (Number(s.stage)===1?5:10)+' 份羈絆 → '+name(next);
 }
-window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261023-independent-bosses-v1'};
+window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261023-rides-v1'};
 })();

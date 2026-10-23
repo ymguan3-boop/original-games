@@ -1,6 +1,6 @@
 {
-  "version": "20261023-independent-bosses-v1",
-  "numberingPolicy": "001–061：同物種進化線相鄰（階段由低到高），進化線依 黃卡（標準）→ 紫卡 → 紅卡 排序；存檔 ID 不變。",
+  "version": "20261023-separated-tower-cards",
+  "numberingPolicy": "001–058：幻靈；059–064：星穹挑戰塔魔物。保留物種與存檔 ID，塔魔物中的三位獨立首領仍可加入競技擂台。",
   "groupingPolicy": "Connected components of previous/next/evolvesTo; stages ascend, equal-stage branches keep original order. Unmodified legacy links group one-sided connections too.",
   "entries": [
     {
@@ -32,7 +32,8 @@
           "source": "authoring/spiral-snail.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "ivysaur",
@@ -63,7 +64,8 @@
           "source": "authoring/spiral-snail.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "venusaur",
@@ -94,7 +96,8 @@
           "source": "authoring/spiral-snail.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "charmander",
@@ -123,7 +126,8 @@
           "duration": null,
           "source": "authoring/procedural-spirits/chicks.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "charmeleon",
@@ -152,7 +156,8 @@
           "duration": null,
           "source": "authoring/procedural-spirits/chicks.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "charizard",
@@ -181,7 +186,8 @@
           "duration": null,
           "source": "authoring/procedural-spirits/chicks.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "squirtle",
@@ -212,7 +218,8 @@
           "source": "authoring/sesame-spirit.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "wartortle",
@@ -243,7 +250,8 @@
           "source": "authoring/sesame-spirit.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "blastoise",
@@ -274,7 +282,8 @@
           "source": "authoring/sesame-spirit.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "chikorita",
@@ -305,7 +314,8 @@
           "source": "models/native/floral-deer.js",
           "note": "大小招共用既有 Pulse 光環及花粉動作，非兩套不同的專屬動作。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "bayleef",
@@ -336,7 +346,8 @@
           "source": "models/native/floral-deer.js",
           "note": "大小招共用既有 Pulse 光環及花粉動作，非兩套不同的專屬動作。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "meganium",
@@ -367,7 +378,8 @@
           "source": "models/native/floral-deer.js",
           "note": "大小招共用既有 Pulse 光環及花粉動作，非兩套不同的專屬動作。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "cyndaquil",
@@ -396,7 +408,8 @@
           "duration": 3,
           "source": "models/native/robot-spirits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "quilava",
@@ -425,7 +438,8 @@
           "duration": 3.15,
           "source": "models/native/robot-spirits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "typhlosion",
@@ -454,7 +468,8 @@
           "duration": 3.15,
           "source": "models/native/robot-spirits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "totodile",
@@ -485,7 +500,8 @@
           "source": "models/native/families.js",
           "note": "來源只有生活／移動動作；借用既有拍翼／拍耳 Fly，並非新製作的攻擊動畫。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "croconaw",
@@ -516,7 +532,8 @@
           "source": "models/native/families.js",
           "note": "來源只有生活／移動動作；借用既有拍翼／拍耳 Fly，並非新製作的攻擊動畫。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "feraligatr",
@@ -547,7 +564,8 @@
           "source": "models/native/families.js",
           "note": "來源只有生活／移動動作；借用既有拍翼／拍耳 Fly，並非新製作的攻擊動畫。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "torchic",
@@ -576,7 +594,8 @@
           "duration": null,
           "source": "authoring/procedural-spirits/dogs.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "combusken",
@@ -605,7 +624,8 @@
           "duration": null,
           "source": "authoring/procedural-spirits/dogs.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "blaziken",
@@ -634,7 +654,8 @@
           "duration": null,
           "source": "authoring/procedural-spirits/dogs.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "mudkip",
@@ -663,7 +684,8 @@
           "duration": 2.6,
           "source": "authoring/beasts/beasts-actions.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "marshtomp",
@@ -692,7 +714,8 @@
           "duration": 3,
           "source": "authoring/beasts/beasts-actions.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "swampert",
@@ -721,7 +744,8 @@
           "duration": 3.208,
           "source": "authoring/beasts/beasts-actions.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "turtwig",
@@ -750,7 +774,8 @@
           "duration": 2.583,
           "source": "authoring/beasts/beasts-actions.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "grotle",
@@ -779,7 +804,8 @@
           "duration": 1.667,
           "source": "authoring/beasts/beasts-actions.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "torterra",
@@ -808,7 +834,8 @@
           "duration": 1.667,
           "source": "authoring/beasts/beasts-actions.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "piplup",
@@ -839,7 +866,8 @@
           "source": "models/native/families.js",
           "note": "來源只有生活／移動動作；借用既有拍翼／拍耳 Fly，並非新製作的攻擊動畫。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "prinplup",
@@ -870,7 +898,8 @@
           "source": "models/native/families.js",
           "note": "來源只有生活／移動動作；借用既有拍翼／拍耳 Fly，並非新製作的攻擊動畫。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "empoleon",
@@ -901,7 +930,8 @@
           "source": "models/native/families.js",
           "note": "來源只有生活／移動動作；借用既有拍翼／拍耳 Fly，並非新製作的攻擊動畫。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "kyogre",
@@ -930,7 +960,8 @@
           "duration": 3.8,
           "source": "authoring/water-spirits/spirits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "groudon",
@@ -959,7 +990,8 @@
           "duration": 3.8,
           "source": "authoring/water-spirits/spirits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "rayquaza",
@@ -988,7 +1020,8 @@
           "duration": 3.8,
           "source": "authoring/water-spirits/spirits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "caterpie",
@@ -1019,7 +1052,8 @@
           "source": "authoring/chest-spirit.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "metapod",
@@ -1050,7 +1084,8 @@
           "source": "authoring/chest-spirit.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "butterfree",
@@ -1081,7 +1116,8 @@
           "source": "authoring/chest-spirit.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "weedle",
@@ -1112,7 +1148,8 @@
           "source": "authoring/book-spirit.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "kakuna",
@@ -1143,7 +1180,8 @@
           "source": "authoring/book-spirit.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "beedrill",
@@ -1174,7 +1212,8 @@
           "source": "authoring/book-spirit.py",
           "note": "GLB 沒有專屬 Attack；沿用現有 React 作為回應動作，不將其當成專屬攻擊。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "jigglypuff",
@@ -1205,7 +1244,8 @@
           "source": "models/native/tricolor-egg.js",
           "note": "原生 Three.js 角色專屬動作與重用特效"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "treecko",
@@ -1236,7 +1276,8 @@
           "source": "models/native/small-birds.js",
           "note": "原生 Three.js 角色專屬動作與重用特效"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "grovyle",
@@ -1267,7 +1308,8 @@
           "source": "models/native/small-birds.js",
           "note": "原生 Three.js 角色專屬動作與重用特效"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "sceptile",
@@ -1298,7 +1340,8 @@
           "source": "models/native/little-eagle.js",
           "note": "原生 Three.js 角色專屬動作與重用特效"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "palkia",
@@ -1329,7 +1372,8 @@
           "source": "models/native/dapeng.js",
           "note": "原生 Three.js 角色專屬動作與重用特效"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "articuno",
@@ -1359,7 +1403,8 @@
           "source": "models/native/frog-spirits.js",
           "note": "同一技能動作有不同 power/cost；未另外聲稱製作大小招的第二段動畫。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "moltres",
@@ -1389,7 +1434,8 @@
           "source": "models/native/frog-spirits.js",
           "note": "同一技能動作有不同 power/cost；未另外聲稱製作大小招的第二段動畫。"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "raikou",
@@ -1418,7 +1464,8 @@
           "duration": 2.417,
           "source": "authoring/fire-monkey/monkey-actions.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "zapdos",
@@ -1447,7 +1494,8 @@
           "duration": 3,
           "source": "authoring/fire-monkey/monkey-actions.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "entei",
@@ -1476,7 +1524,8 @@
           "duration": 4,
           "source": "authoring/water-spirits/spirits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "suicune",
@@ -1505,7 +1554,8 @@
           "duration": null,
           "source": "authoring/beasts/beasts-actions.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "giratina",
@@ -1534,7 +1584,8 @@
           "fallback": false,
           "source": "models/native/rabbits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "raichu",
@@ -1563,12 +1614,13 @@
           "fallback": false,
           "source": "models/native/rabbits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "chimchar",
-      "number": "053",
-      "order": 53,
+      "number": "062",
+      "order": 62,
       "group": "chimchar",
       "name": "阿宏牛仔",
       "skills": [
@@ -1594,12 +1646,13 @@
           "source": "authoring/star-cowboy/build.py",
           "note": "Blender 專屬骨架動畫及同步手部特效"
         }
-      ]
+      ],
+      "category": "tower"
     },
     {
       "id": "monferno",
-      "number": "054",
-      "order": 54,
+      "number": "063",
+      "order": 63,
       "group": "monferno",
       "name": "藍金星輝法師",
       "skills": [
@@ -1625,12 +1678,13 @@
           "source": "authoring/star-cowboy/build.py",
           "note": "Blender 專屬骨架動畫及同步手部特效"
         }
-      ]
+      ],
+      "category": "tower"
     },
     {
       "id": "infernape",
-      "number": "055",
-      "order": 55,
+      "number": "064",
+      "order": 64,
       "group": "infernape",
       "name": "官胖",
       "skills": [
@@ -1656,12 +1710,13 @@
           "source": "authoring/guanpang/build-blender.py",
           "note": "官胖 Blender 專屬骨架與表情動畫；以對應動作時間觸發紫色符紋特效。"
         }
-      ]
+      ],
+      "category": "tower"
     },
     {
       "id": "dialga",
-      "number": "056",
-      "order": 56,
+      "number": "053",
+      "order": 53,
       "group": "dialga",
       "name": "綠眼蝙怪",
       "skills": [
@@ -1691,12 +1746,13 @@
             "stacking": "refresh"
           }
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "pikachu",
-      "number": "057",
-      "order": 57,
+      "number": "054",
+      "order": 54,
       "group": "pikachu",
       "name": "歐頭慢",
       "skills": [
@@ -1724,12 +1780,13 @@
           "note": "模型擺光束姿勢；白色／彩虹光束由遊戲既有特效繪製。",
           "requiresExternalMotionOrFx": true
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "mew",
-      "number": "058",
-      "order": 58,
+      "number": "055",
+      "order": 55,
       "group": "mew",
       "name": "小飯團",
       "skills": [
@@ -1754,12 +1811,13 @@
           "duration": 1.9,
           "source": "models/native/riceball.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "wigglytuff",
-      "number": "059",
-      "order": 59,
+      "number": "056",
+      "order": 56,
       "group": "wigglytuff",
       "name": "小山",
       "skills": [
@@ -1787,12 +1845,13 @@
           "note": "inPlace 模型不自行升空；震地／跳起位移由戰鬥場景處理。",
           "requiresExternalMotionOrFx": true
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "blissey",
-      "number": "060",
-      "order": 60,
+      "number": "057",
+      "order": 57,
       "group": "blissey",
       "name": "光鳳鷹",
       "skills": [
@@ -1816,12 +1875,13 @@
           "duration": 2.7,
           "source": "models/native/light-phoenix.js"
         }
-      ]
+      ],
+      "category": "spirit"
     },
     {
       "id": "mewtwo",
-      "number": "061",
-      "order": 61,
+      "number": "058",
+      "order": 58,
       "group": "mewtwo",
       "name": "水蛟龍王",
       "skills": [
@@ -1845,7 +1905,8 @@
           "duration": 5.8,
           "source": "authoring/water-spirits/spirits.js"
         }
-      ]
+      ],
+      "category": "spirit"
     }
   ],
   "groups": [
@@ -2265,15 +2326,33 @@
   "towerEntries": [
     {
       "id": "forest",
-      "number": "T001"
+      "number": "059",
+      "category": "tower"
     },
     {
       "id": "ice",
-      "number": "T002"
+      "number": "060",
+      "category": "tower"
     },
     {
       "id": "fire",
-      "number": "T003"
+      "number": "061",
+      "category": "tower"
+    },
+    {
+      "id": "chimchar",
+      "number": "062",
+      "category": "tower"
+    },
+    {
+      "id": "monferno",
+      "number": "063",
+      "category": "tower"
+    },
+    {
+      "id": "infernape",
+      "number": "064",
+      "category": "tower"
     }
   ]
 }

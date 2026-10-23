@@ -1075,7 +1075,8 @@
     "stageLabel": "魔王",
     "cardFrame": "red",
     "acquisition": "tower",
-    "acquisitionText": "於星穹挑戰塔擊敗阿宏牛仔取得卡牌；獨立幻靈，無進階關係。"
+    "acquisitionText": "於星穹挑戰塔擊敗阿宏牛仔取得卡牌；獨立幻靈，無進階關係。",
+    "category": "tower"
   },
   {
     "id": "monferno",
@@ -1113,7 +1114,8 @@
     "stageLabel": "魔王",
     "cardFrame": "red",
     "acquisition": "tower",
-    "acquisitionText": "於星穹挑戰塔擊敗藍金星輝法師取得卡牌；獨立幻靈，無進階關係。"
+    "acquisitionText": "於星穹挑戰塔擊敗藍金星輝法師取得卡牌；獨立幻靈，無進階關係。",
+    "category": "tower"
   },
   {
     "id": "infernape",
@@ -1151,7 +1153,8 @@
     "stageLabel": "魔王",
     "cardFrame": "red",
     "acquisition": "tower",
-    "acquisitionText": "於星穹挑戰塔擊敗官胖取得卡牌；獨立幻靈，無進階關係。"
+    "acquisitionText": "於星穹挑戰塔擊敗官胖取得卡牌；獨立幻靈，無進階關係。",
+    "category": "tower"
   },
   {
     "id": "piplup",

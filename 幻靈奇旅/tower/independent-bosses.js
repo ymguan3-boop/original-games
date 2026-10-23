@@ -1,25 +1,25 @@
 /* Independent tower guardians. Installed inside the existing tower's closure. */
 globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,World,T,labels}){
  const defs=[
-  {id:'chimchar',model:'ahong-cowboy',name:'落日決鬥場',en:'SUNSET SHOWDOWN',monster:'阿宏牛仔',hp:1250,kind:'cowboy',color:'#ffce8a',loot:['決鬥彈殼','牛仔徽章','落日火藥'],brief:'雙槍鎖定你的站位後不再追蹤；橫向移動避開彈道，彈雨後有反擊空檔。',patterns:['duel','barrage']},
-  {id:'monferno',model:'starlight-mage',name:'星輝觀測台',en:'ASTRAL OBSERVATORY',monster:'藍金星輝法師',hp:1500,kind:'astral',color:'#91cfff',loot:['星輝碎晶','星軌核心','月光粉塵'],brief:'星彈鎖定後離開光圈；星殞依序落下，沿空白處移動，大絕後法師會露出破綻。',patterns:['starbolt','meteor']},
-  {id:'infernape',model:'guanpang',name:'金印鎮守殿',en:'GOLDEN SEAL HALL',monster:'官胖',hp:1800,kind:'seal',color:'#f1d27f',loot:['金印碎片','守殿綬帶','護心玉'],brief:'金印先標出落點；震殿金印由近至遠爆發，拉開距離或翻滾穿過光圈。',patterns:['seal','decree']}
+  {id:'chimchar',model:'ahong-cowboy',castRate:1.4,name:'落日決鬥場',en:'SUNSET SHOWDOWN',monster:'阿宏牛仔',hp:1250,kind:'cowboy',color:'#ffce8a',loot:['決鬥彈殼','牛仔徽章','落日火藥'],brief:'雙槍鎖定你的站位後不再追蹤；橫向移動避開彈道，彈雨後有反擊空檔。',patterns:['duel','barrage']},
+  {id:'monferno',model:'starlight-mage',castRate:1.4,name:'星輝觀測台',en:'ASTRAL OBSERVATORY',monster:'藍金星輝法師',hp:1500,kind:'astral',color:'#91cfff',loot:['星輝碎晶','星軌核心','月光粉塵'],brief:'星彈鎖定後離開光圈；星殞依序落下，沿空白處移動，大絕後法師會露出破綻。',patterns:['starbolt','meteor']},
+  {id:'infernape',model:'guanpang',castRate:1.4,name:'金印鎮守殿',en:'GOLDEN SEAL HALL',monster:'官胖',hp:1800,kind:'seal',color:'#f1d27f',loot:['金印碎片','守殿綬帶','護心玉'],brief:'金印先標出落點；震殿金印由近至遠爆發，拉開距離或翻滾穿過光圈。',patterns:['seal','decree']}
  ];
  LEVELS.push(...defs);
  SHOP_WEAPONS.push(
-  {id:'duelist_recoil',type:2,name:'落日震退雙槍',effect:'knock',label:'命中 35% 擊退・傷害 +12%',chance:.35,boost:1.12,recipe:[['決鬥彈殼',6],['牛仔徽章',2]]},
-  {id:'starlight_siphon',type:3,name:'星輝回生長刀',effect:'lifesteal',label:'命中回復 4 生命・傷害 +10%',chance:1,boost:1.10,recipe:[['星輝碎晶',6],['星軌核心',2]]},
-  {id:'golden_ward',type:0,name:'金印護身重劍',effect:'ward',label:'所受傷害 -20%・攻擊 +15%',chance:1,boost:1.15,recipe:[['金印碎片',6],['護心玉',2]]}
+  {id:'duelist_recoil',type:2,name:'落日震退雙槍',effect:'knock',label:'命中 35% 擊退・傷害 +12%',chance:.35,boost:1.12,recipe:[['決鬥彈殼',120],['牛仔徽章',40]]},
+  {id:'starlight_siphon',type:3,name:'星輝回生長刀',effect:'lifesteal',label:'命中回復 4 生命・傷害 +10%',chance:1,boost:1.10,recipe:[['星輝碎晶',120],['星軌核心',40]]},
+  {id:'golden_ward',type:0,name:'金印護身重劍',effect:'ward',label:'所受傷害 -20%・攻擊 +15%',chance:1,boost:1.15,recipe:[['金印碎片',120],['護心玉',40]]}
  );
  Object.assign(labels,{duel:'交叉速射 · 離開鎖定圓圈',barrage:'曙光彈雨 · 沿空白處移動',starbolt:'星輝連彈 · 光圈鎖定後閃開',meteor:'天穹星殞 · 避開連續星軌',seal:'鎮守金印 · 離開金印',decree:'震殿敕令 · 光圈依序爆發'});
  const proto=Hunt.prototype,oldStart=proto.startPattern,oldResolve=proto.resolvePattern,oldClaim=proto.claimRewards,oldEffect=proto.applyWeaponEffect,oldDamage=proto.damagePlayer,oldTick=proto.tick,oldUnleash=proto.unleash;
  proto.tick=function(dt,input){if(!LEVELS[this.level].id||this.mode!=='battle')return oldTick.call(this,dt,input);const m=this.monster,base=m.moveMultiplier;if(m.state==='idle')m.moveMultiplier*=1.35;try{return oldTick.call(this,dt,input);}finally{m.moveMultiplier=base;}};
- proto.startPattern=function(){const l=LEVELS[this.level];if(!l.id)return oldStart.call(this);const m=this.monster,p=this.player;m.phase++;m.pattern=l.patterns[(m.phase-1)%2];m.state='windup';m.timer=m.phase%2?1.05:1.7;m.target={x:p.x,z:p.z};m.origin={x:m.x,z:m.z};m.dir={x:(p.x-m.x)/(Math.hypot(p.x-m.x,p.z-m.z)||1),z:(p.z-m.z)/(Math.hypot(p.x-m.x,p.z-m.z)||1)};m.facing=Math.atan2(m.dir.x,m.dir.z);m.attackElapsed=0;this.emit('warning',{pattern:m.pattern});
+ proto.startPattern=function(){const l=LEVELS[this.level];if(!l.id)return oldStart.call(this);const m=this.monster,p=this.player;m.phase++;m.pattern=l.patterns[(m.phase-1)%2];m.state='windup';m.timer=(m.phase%2?1.05:1.7)/l.castRate;m.target={x:p.x,z:p.z};m.origin={x:m.x,z:m.z};m.dir={x:(p.x-m.x)/(Math.hypot(p.x-m.x,p.z-m.z)||1),z:(p.z-m.z)/(Math.hypot(p.x-m.x,p.z-m.z)||1)};m.facing=Math.atan2(m.dir.x,m.dir.z);m.attackElapsed=0;this.emit('warning',{pattern:m.pattern});
   const count=m.phase%2?3:6;
   for(let i=0;i<count;i++){let x,z,r=2.2;if(m.pattern==='duel'||m.pattern==='barrage'){x=p.x+(i%3-1)*3.8;z=p.z+Math.floor(i/3)*4-2;}else if(m.pattern==='meteor'){const a=i*Math.PI/3;x=p.x+Math.sin(a)*5;z=p.z+Math.cos(a)*5;r=2.7;}else if(m.pattern==='decree'){const a=i*Math.PI/3;x=m.x+Math.sin(a)*6;z=m.z+Math.cos(a)*6;r=3.4;}else{x=p.x+(i-1)*3.5;z=p.z;r=m.pattern==='seal'?2.8:2;}
-   this.hazards.push({x:Math.max(-19,Math.min(19,x)),z:Math.max(-19,Math.min(19,z)),radius:r,timer:m.timer+.2+i*.23,life:.5,active:false,hit:false,type:m.pattern,phase:m.phase});}
+   this.hazards.push({x:Math.max(-19,Math.min(19,x)),z:Math.max(-19,Math.min(19,z)),radius:r,timer:m.timer+(.2+i*.23)/l.castRate,life:.5,active:false,hit:false,type:m.pattern,phase:m.phase});}
  };
- proto.resolvePattern=function(){if(!LEVELS[this.level].id)return oldResolve.call(this);for(const hazard of this.hazards)if(hazard.phase===this.monster.phase)hazard.released=true;this.emit('impact',{pattern:this.monster.pattern});this.monster.state='recover';this.monster.timer=this.monster.phase%2?2.0:3.2;};
+ proto.resolvePattern=function(){if(!LEVELS[this.level].id)return oldResolve.call(this);for(const hazard of this.hazards)if(hazard.phase===this.monster.phase)hazard.released=true;this.emit('impact',{pattern:this.monster.pattern});this.monster.state='recover';this.monster.timer=(this.monster.phase%2?2.0:3.2)/LEVELS[this.level].castRate;};
 
  // Player finishers may cancel a warning, but cannot erase attacks already emitted.
  proto.unleash=function(...args){if(!LEVELS[this.level].id)return oldUnleash.apply(this,args);const released=this.hazards.filter(hazard=>hazard.released),used=oldUnleash.apply(this,args);if(used)for(const hazard of released)if(!this.hazards.includes(hazard))this.hazards.push(hazard);return used;};
@@ -85,7 +85,7 @@ globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,Worl
   action.setLoop(single?T.LoopOnce:T.LoopRepeat,single?1:Infinity);
   action.clampWhenFinished=single;
   const clipTime=action.getClip()?.duration||1;
-  const rate=duration&&single?Math.max(.55,Math.min(2.2,clipTime/Math.max(.3,duration))):role==='Run'&&/walk|move/i.test(chosen)?1.65:1;
+  const rate=['Attack','Ultimate'].includes(role)?l.castRate:duration&&single?Math.max(.55,Math.min(2.2,clipTime/Math.max(.3,duration))):role==='Run'&&/walk|move/i.test(chosen)?1.65:1;
   action.setEffectiveTimeScale(rate).play();
   g.nativeMotion=chosen;
  };this.bossLoading=false;},undefined,e=>{if(token!==this.bossToken)return;this.bossLoading=false;g.userData.loadError=true;console.error('挑戰者模型載入失敗',e);document.getElementById('objectiveHint').textContent='模型載入失敗，請返回選關重新載入。';});return g;};
@@ -117,7 +117,7 @@ globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,Worl
      if(m.state==='windup'&&state.phase!==m.phase){
       state.phase=m.phase;const role=m.phase%2?'Attack':'Ultimate';
       const clip=b.nativeActions[b.nativeClipFor(role)];
-      const cast={role,elapsed:0,duration:clip?.getClip().duration||1,started:false};
+      const cast={role,elapsed:0,duration:(clip?.getClip().duration||1)/l.castRate,rate:l.castRate,started:false};
       if(casting())state.nextAttack=cast;else state.attack=cast;
      }
      const flashing=m.flash>0;
@@ -150,7 +150,7 @@ globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,Worl
      }
     }
     const current=b.nativeActions[b.nativeMotion];
-    b.userData.nativeAnimation={role:b.nativeMotion,time:current?.time||0,phase:state.phase,castElapsed:state.attack?.elapsed||0,castLocked:!!state.attack?.started,hurtPending:!!state.hurtPending,hurtRemaining:state.hurtRemaining,delta:step};
+    b.userData.nativeAnimation={role:b.nativeMotion,time:current?.time||0,phase:state.phase,castElapsed:state.attack?.elapsed||0,castRate:l.castRate,castDuration:state.attack?.duration||0,castLocked:!!state.attack?.started,hurtPending:!!state.hurtPending,hurtRemaining:state.hurtRemaining,delta:step};
    }
   }
   return oldRender.call(this,h,dt,...rest);

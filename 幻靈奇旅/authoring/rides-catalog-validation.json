@@ -1,0 +1,66 @@
+{
+  "revision": "20261023-rides-v1",
+  "baseCommit": "913112cc64e7a427d5c06f7a36e9c21c152ec7fe",
+  "catalog": {
+    "runtimeSpecies": 61,
+    "regularCards": "001-058",
+    "towerCards": "059-064",
+    "totalDisplayCards": 64
+  },
+  "recipes": {
+    "specialWeapons": {
+      "primaryMaterial": 120,
+      "secondaryMaterial": 40,
+      "multiplier": 20
+    },
+    "eachMount": {
+      "cowboyCards": 3,
+      "mageCards": 3,
+      "guanpangCards": 3,
+      "permanent": true
+    }
+  },
+  "casts": {
+    "bosses": [
+      "chimchar",
+      "monferno",
+      "infernape"
+    ],
+    "playbackRate": 1.4,
+    "completedReleasedCastLock": true
+  },
+  "validation": {
+    "economy": "PASS: immutable purchase, no duplicate charges, insufficient funds, tower save roundtrip",
+    "mounts": "PASS: actual overworld speed ratio 1.5, actual capture throw, adventure and sound outfits, indoor and arena suspension",
+    "catalog": "PASS: 64 unique sequential display numbers and legacy owned boss card detail",
+    "arena": {
+      "warmEntryMs": 44.7,
+      "secondMeanFrameMs": 16.07,
+      "exitTextures": [
+        10,
+        10
+      ],
+      "errors": [],
+      "firstRenderLongTaskMs": 195
+    },
+    "tower": {
+      "threeBossesBasicAndUltimate": "PASS",
+      "medianFrameMsRange": [
+        15.6,
+        16.1
+      ],
+      "p95FrameMsRange": [
+        19.1,
+        19.4
+      ],
+      "errors": []
+    },
+    "limitations": "Desktop Chrome measurements; mobile model-room viewport checked, physical mobile gameplay not measured."
+  },
+  "cleanup": {
+    "archivedUntrackedBlenderBackups": 11,
+    "bytes": 6639137,
+    "sourceMastersPreserved": true,
+    "artifactLocation": "workspace artifacts/ride-catalog-20261023 outside repository"
+  }
+}

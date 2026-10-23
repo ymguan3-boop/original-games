@@ -10,7 +10,26 @@
       "description": "古林中的重甲魔物，以衝鋒與震地逼近旅人。看到路徑預警後向側面翻滾。",
       "portrait": "assets/tower-cards/forest.png",
       "source": "使用者提供魔物肖像",
-      "category": "挑戰塔魔物"
+      "category": "挑戰塔魔物",
+      "number": "059",
+      "model": "tower://forest",
+      "type": "森",
+      "stageLabel": "魔物",
+      "rarity": "傳說",
+      "cardFrame": "purple",
+      "acquisition": "tower",
+      "skills": [
+        {
+          "name": "衝鋒震地",
+          "power": 41,
+          "cost": 1
+        },
+        {
+          "name": "古林震波",
+          "power": 82,
+          "cost": 3
+        }
+      ]
     },
     {
       "id": "ice",
@@ -22,7 +41,26 @@
       "description": "寒峽中的冰甲獵獸，冰爆會追蹤站位。持續移動，避開逐次亮起的冰圈。",
       "portrait": "assets/tower-cards/ice.png",
       "source": "使用者提供魔物肖像",
-      "category": "挑戰塔魔物"
+      "category": "挑戰塔魔物",
+      "number": "060",
+      "model": "tower://ice",
+      "type": "霜",
+      "stageLabel": "魔物",
+      "rarity": "傳說",
+      "cardFrame": "purple",
+      "acquisition": "tower",
+      "skills": [
+        {
+          "name": "冰爆追擊",
+          "power": 40,
+          "cost": 1
+        },
+        {
+          "name": "寒霜爆破",
+          "power": 80,
+          "cost": 3
+        }
+      ]
     },
     {
       "id": "fire",
@@ -34,7 +72,119 @@
       "description": "龍巢中的熔冠守衛，以烈焰吐息和熔岩圈封鎖路徑。吐息後是安全反擊時機。",
       "portrait": "assets/tower-cards/fire.png",
       "source": "使用者提供魔物肖像",
-      "category": "挑戰塔魔物"
+      "category": "挑戰塔魔物",
+      "number": "061",
+      "model": "tower://fire",
+      "type": "炎",
+      "stageLabel": "魔物",
+      "rarity": "傳說",
+      "cardFrame": "red",
+      "acquisition": "tower",
+      "skills": [
+        {
+          "name": "烈焰吐息",
+          "power": 46,
+          "cost": 1
+        },
+        {
+          "name": "熔岩封鎖",
+          "power": 92,
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "chimchar",
+      "name": "阿宏牛仔",
+      "hp": 1250,
+      "element": "electric",
+      "type": "雷",
+      "attack": 46,
+      "description": "靈巧的雷屬性雙槍牛仔。雙槍快射交替開火；六芒追星連射以六發星光彈壓制對手。",
+      "model": "models/spirits/ahong-cowboy.glb",
+      "skills": [
+        {
+          "name": "雙槍快射",
+          "power": 46,
+          "cost": 1
+        },
+        {
+          "name": "六芒追星連射",
+          "power": 100,
+          "cost": 3
+        }
+      ],
+      "stageLabel": "魔王",
+      "rarity": "傳說",
+      "cardFrame": "red",
+      "speciesId": "chimchar",
+      "number": "062",
+      "portrait": "cards/art/ahong-cowboy.webp",
+      "category": "挑戰塔魔物",
+      "acquisition": "tower",
+      "source": "遊戲獨立首領模型與肖像"
+    },
+    {
+      "id": "monferno",
+      "name": "藍金星輝法師",
+      "hp": 1500,
+      "element": "psychic",
+      "type": "念",
+      "attack": 50,
+      "description": "戴著金框眼鏡的念屬性星輝法師。右手持星辰法杖、左手凝聚星芒矢；天穹星陣展開星環，連續射出藍金星束。",
+      "model": "models/spirits/starlight-mage.glb",
+      "skills": [
+        {
+          "name": "星芒矢",
+          "power": 50,
+          "cost": 1
+        },
+        {
+          "name": "天穹星陣",
+          "power": 112,
+          "cost": 3
+        }
+      ],
+      "stageLabel": "魔王",
+      "rarity": "傳說",
+      "cardFrame": "red",
+      "speciesId": "monferno",
+      "number": "063",
+      "portrait": "cards/art/starlight-mage.webp",
+      "category": "挑戰塔魔物",
+      "acquisition": "tower",
+      "source": "遊戲獨立首領模型與肖像"
+    },
+    {
+      "id": "infernape",
+      "name": "官胖",
+      "hp": 1800,
+      "element": "psychic",
+      "type": "念",
+      "attack": 68,
+      "description": "官胖是身披紫紋尖刺重甲的念屬性傳說魔王。以震地斧擊迅速砸地；天墜裂地則雙手持斧、開腿深蹲後高跳前劈，落地釋放紫色震波。",
+      "model": "models/spirits/guanpang.glb",
+      "skills": [
+        {
+          "name": "震地斧擊",
+          "power": 68,
+          "cost": 1
+        },
+        {
+          "name": "天墜裂地",
+          "power": 136,
+          "cost": 3
+        }
+      ],
+      "stageLabel": "魔王",
+      "rarity": "傳說",
+      "cardFrame": "red",
+      "speciesId": "infernape",
+      "number": "064",
+      "portrait": "cards/art/guanpang.webp",
+      "category": "挑戰塔魔物",
+      "acquisition": "tower",
+      "source": "遊戲獨立首領模型與肖像"
     }
   ]
 }

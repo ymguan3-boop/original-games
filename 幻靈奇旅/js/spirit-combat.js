@@ -29,9 +29,9 @@
   if(!actor.controller){
    const candidates=[...(configured.nativeAttack===false?[]:[mode]),...(strong?['Ultimate','Special','Attack']:['Attack']),mode,'React','Takeoff','Walk','Idle'];
    mode=candidates.map(name=>find(available,name)).find(Boolean)||available[0]||'Idle';
-   const action=actor.actions?.[mode],clip=action?.getClip?.();duration=clip?.duration?clip.duration/Math.max(.01,Math.abs(action.getEffectiveTimeScale?.()||1)):duration;
+   const action=actor.actions?.[mode],clip=action?.getClip?.();duration=clip?.duration?clip.duration/(['chimchar','monferno','infernape'].includes(species.id)?1.4:Math.max(.01,Math.abs(action.getEffectiveTimeScale?.()||1))):duration;
   }
-  return{mode:mode||'Attack',duration:Math.max(.1,duration||.65),nativeFx,releaseFraction:/guanpang\.glb$/.test(path)?(strong?.655:.50):.48};
+  return{playbackRate:['chimchar','monferno','infernape'].includes(species.id)?1.4:null,mode:mode||'Attack',duration:Math.max(.1,duration||.65),nativeFx,releaseFraction:/guanpang\.glb$/.test(path)?(strong?.655:.50):.48};
  }
 
  // Arena-only target adapter. Model-room controllers keep their original authored effects.
