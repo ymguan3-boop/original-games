@@ -1135,7 +1135,7 @@ function exchangeSpiritCardsForMasterBall(){
 
 let overworldMount=null,mountSelection=null,mountOwnership={};
 addEventListener('storage',event=>{if(event.key===TOWER_KEY){mountOwnership=towerProgress().mounts||{};if(S.ready){consumeTowerBossGrants();hud();}}});
-addEventListener('pageshow',event=>{if(event.persisted&&S.ready){consumeTowerBossGrants();migrateTowerCardCollection();mountOwnership={...towerProgress().mounts};hud();}});
+addEventListener('pageshow',event=>{if(event.persisted&&S.ready){try{const latest=JSON.parse(localStorage.getItem(KEY)||'{}');if(latest.journeyGuide?.towerEntered&&S.state.journeyGuide)S.state.journeyGuide.towerEntered=true;}catch{}consumeTowerBossGrants();migrateTowerCardCollection();mountOwnership={...towerProgress().mounts};hud();window.PhantomJourneyGuide?.refresh?.();}});
 addEventListener('pagehide',event=>{if(!event.persisted)overworldMount?.dispose();});
 const mountAllowed=()=>!!hero&&!place&&!battle&&!arenaCarry&&!enterBusy;
 const riding=()=>mountAllowed()&&!!S.state?.mountActive&&!!mountOwnership[S.state.mountActive];
