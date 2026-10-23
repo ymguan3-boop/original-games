@@ -121,7 +121,7 @@ function toast(t){const el=$('toast'),absorb=/^冒險服吸收補給/.test(t);if
 function migrate(raw={}){const s={...raw,version:1,brand:'phantom-journey',captureCounts:{...raw.captureCounts},pokedexUnlocks:{...raw.pokedexUnlocks},items:{...raw.items},quests:{...raw.quests},npcRewards:{...raw.npcRewards},gyms:{...raw.gyms},specialAppearances:{...raw.specialAppearances},worldFlags:{...raw.worldFlags},equip:{...raw.equip},adventureClaimed:!!raw.adventureClaimed,petActive:raw.petActive||null,dreamLabLegendChoice:validLabClaimId(raw.dreamLabLegendChoice)?raw.dreamLabLegendChoice:null,dreamLabLegendClaimed:!!raw.dreamLabLegendClaimed&&validLabClaimId(raw.dreamLabLegendChoice)};s.pokeballs=number(raw.pokeballs,30);s.greatBallCount=number(raw.greatBallCount,5);s.masterBallCount=number(raw.masterBallCount);s.berryCount=number(raw.berryCount,12);s.wins=number(raw.wins,number(raw.cardWins));s.cMonkeyArenaStreak=Math.min(3,number(raw.cMonkeyArenaStreak));s.waterBugArenaStreak=Math.min(3,number(raw.waterBugArenaStreak));s.frogArenaStreak=raw.frogArenaPending?0:Math.min(3,number(raw.frogArenaStreak));s.frogArenaPending=false;s.rabbitArenaParticipations=Math.min(3,number(raw.rabbitArenaParticipations));delete s.items.thunderStone;delete s.worldFlags.raichuSpawnUnlocked;s.team=Array.isArray(raw.team)?raw.team.filter(x=>typeof x==='string').slice(0,3):[];s.costume=raw.costume||'trainer';s.unlockedCostumes=Array.from(new Set(['trainer',...(raw.unlockedCostumes||[])]));s.tower={towerEnabled:false,towerFloors:[],towerProgress:0,towerBestRecord:0,towerRewardClaimed:false,towerChallengeState:null,towerMarks:0,...raw.tower};return s;}
 function loadSave(){try{const own=localStorage.getItem(KEY);if(own)return migrate(JSON.parse(own));for(const key of OLD_KEYS){const value=localStorage.getItem(key);if(value){const s=migrate(JSON.parse(value));s.migratedFrom=key;return s;}}}catch(e){S.errors.push('存檔讀取：'+e.message);}return migrate();}
 function save(){if(!S.state)return;try{const pos=battle?battle.previous.position:S.player;S.state.position=[pos.x,pos.z];S.state.buildingId=(battle?battle.previous.place:place)?.id||null;localStorage.setItem(KEY,JSON.stringify(S.state));}catch(e){toast('此瀏覽器無法儲存進度，請檢查網站儲存權限。');}hud();}
-function hud(){if(!S.state)return;$('dexCount').textContent=`${regularSpirits().filter(s=>owned(s.id)).length+towerMonsters.filter(s=>towerCardOwned(s.id)).length} / ${regularSpirits().length+towerMonsters.length}`;$('ballCount').textContent=S.state.pokeballs+'/'+(S.state.costume==='sound'?60:30);$('greatCount').textContent=S.state.greatBallCount;$('berryCount').textContent=S.state.berryCount;if($('masterCount'))$('masterCount').textContent=S.state.masterBallCount;const berry=$('berryBadge');if(berry)berry.textContent=S.state.berryCount;}
+function hud(){if(!S.state)return;$('dexCount').textContent=`${regularSpirits().filter(s=>owned(s.id)).length} / ${regularSpirits().length}`;$('ballCount').textContent=S.state.pokeballs+'/'+(S.state.costume==='sound'?60:30);$('greatCount').textContent=S.state.greatBallCount;$('berryCount').textContent=S.state.berryCount;if($('masterCount'))$('masterCount').textContent=S.state.masterBallCount;const berry=$('berryBadge');if(berry)berry.textContent=S.state.berryCount;}
 function owned(id){return !!(S.state.pokedexUnlocks[id]||S.state.captureCounts[id]>0);}
 function grant(id,count=1){
  S.state.captureCounts[id]=number(S.state.captureCounts[id])+count;
@@ -496,23 +496,43 @@ function unlockAppearanceAudio(){try{if(!appearanceAudio.context){const Construc
 addEventListener('pointerdown',unlockAppearanceAudio,{passive:true});addEventListener('keydown',unlockAppearanceAudio);addEventListener('pagehide',stopAppearanceBgm);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopAppearanceBgm();});
 function tickSpecialAppearances(dt){if(!S.state)return;const due=[];for(const event of specialEvents()){event.nextIn=Math.max(0,(Number.isFinite(event.nextIn)?event.nextIn:180)-dt);if(event.nextIn<=0&&!place&&!battle&&!modal&&!dialog&&wild.some(w=>w.specialEventId===event.eventId))due.push(event);}if(due.length){showWorldBroadcast('守護神獸「'+due.map(e=>byId[e.speciesId].name).join('、')+'」出現於場景中！'+(!appearanceAudio.unlocked?' 點一下畫面啟用牠們的旋律。':''));for(const event of due)event.nextIn=180;save();}if(!place&&!battle&&specialEvents().some(e=>!wild.some(w=>w.specialEventId===e.eventId)))ensureSpecialAppearances();syncAppearanceBgm();}
 async function showGymVictory(){const el=document.createElement('div');el.className='gymVictory';el.textContent='勝利!!';el.style.opacity='0';document.body.append(el);playHeroOutcome(true);try{await captureTween(.85,t=>{el.style.opacity=String(t);el.style.transform='scale('+(.94+t*.06)+')';});await captureTween(.8,()=>{});await captureTween(.35,t=>el.style.opacity=String(1-t));}finally{el.remove();}}
-// 圖鑑進度特殊幻靈：30% 研究所未選的兩隻傳說、50% 小黃、70% 綠眼蝙怪；捕捉後不再出現，圖鑑 100% 時全部解鎖、不限出現次數
-const MILESTONE_SPECIALS=[{id:'giratina',percent:.5},{id:'dialga',percent:.7}];
-function dexReached(percent){return spirits.length>0&&spirits.filter(s=>owned(s.id)).length>=Math.ceil(spirits.length*percent);}
-function dexComplete(){return spirits.length>0&&spirits.every(s=>owned(s.id));}
+// 新手教學、圖鑑 HUD 與特殊幻靈共享 58 種一般幻靈的收錄分母；挑戰塔首領卡牌獨立計算。
+// 25% 三選一未領取的兩隻（包含 C囝仔）、45% 小黃、75% 綠眼蝙怪。
+const LAB_WILD_THRESHOLD=.25;
+const MILESTONE_SPECIALS=[{id:'giratina',percent:.45},{id:'dialga',percent:.75}];
+function dexStats(){const list=regularSpirits();return{owned:list.filter(s=>owned(s.id)).length,total:list.length};}
+function dexReached(percent){const p=dexStats();return p.total>0&&p.owned>=Math.ceil(p.total*percent);}
+function dexComplete(){const p=dexStats();return p.total>0&&p.owned===p.total;}
 function milestoneTargets(){
  if(dexComplete())return [];
  const caught=S.state.worldFlags?.labLegendWildCaught||{},list=[];
- if(labClaimed()&&labLegendMilestoneReached())for(const e of LAB_LEGENDS)if(e.id!==S.state.dreamLabLegendChoice&&!caught[e.id])list.push({id:e.id,percent:.3});
+ if(labClaimed()&&labLegendMilestoneReached())for(const e of LAB_LEGENDS)if(e.id!==S.state.dreamLabLegendChoice&&!caught[e.id]&&pondRespawnAllowed(e.id))list.push({id:e.id,percent:LAB_WILD_THRESHOLD});
  for(const e of MILESTONE_SPECIALS)if(dexReached(e.percent)&&!caught[e.id]&&!owned(e.id))list.push(e);
  return list;
 }
-function labLegendMilestoneReached(){return spirits.length>0&&spirits.filter(s=>owned(s.id)).length>=Math.ceil(spirits.length*.30);}
-function eligible(s){if(s.acquisition==='tower'||['chimchar','monferno','infernape'].includes(s.id))return false;if(s.captureEvolutionOnly||s.evolutionOnly)return false;if(MILESTONE_SPECIALS.some(e=>e.id===s.id))return dexComplete();if(isBook(s)||isGymGuardian(s))return false;
+function labLegendMilestoneReached(){return dexReached(LAB_WILD_THRESHOLD);}
+function eligible(s){
+ if(s.acquisition==='tower'||BOSS_CARD_IDS.includes(s.id))return false;
+ if(s.captureEvolutionOnly||s.evolutionOnly)return false;
+ const special=MILESTONE_SPECIALS.find(e=>e.id===s.id);
+ if(special)return dexReached(special.percent)&&(dexComplete()||!owned(s.id));
+ if(isBook(s)||isGymGuardian(s))return false;
  if(LAB_LEGENDS.some(e=>e.id===s.id)){
   if(!labClaimed())return false;
-  if(s.id!==S.state.dreamLabLegendChoice)return labLegendMilestoneReached();
- }if(WATER_EVENT_ONLY.includes(s.id))return false;if(s.id==='jigglypuff')return S.state.wins>0;if(s.previous&&!owned(s.previous))return false;if(s.role==='legendary'||s.rarity==='傳說'){const list=spirits.filter(x=>(x.role==='legendary'||x.rarity==='傳說')&&!['mew','wigglytuff','pikachu'].includes(x.id)),index=list.indexOf(s),threshold=index<4?.25:index<8?.5:.75;return spirits.filter(x=>owned(x.id)).length/spirits.length>=threshold;}return true;}
+  if(s.id!==S.state.dreamLabLegendChoice&&!labLegendMilestoneReached())return false;
+  if((s.id==='articuno'||s.id==='entei')&&!pondRespawnAllowed(s.id))return false;
+  return dexComplete()||!S.state.worldFlags?.labLegendWildCaught?.[s.id];
+ }
+ if(WATER_EVENT_ONLY.includes(s.id))return false;
+ if(s.id==='jigglypuff')return S.state.wins>0;
+ if(s.previous&&!owned(s.previous))return false;
+ if(s.role==='legendary'||s.rarity==='傳說'){
+  const list=regularSpirits().filter(x=>(x.role==='legendary'||x.rarity==='傳說')&&!['mew','wigglytuff','pikachu'].includes(x.id));
+  const index=list.indexOf(s),threshold=index<4?.25:index<8?.5:.75;
+  return dexReached(threshold);
+ }
+ return true;
+}
 function isAirborne(s){return /^(fly|flying|float|hover)$/.test(s.motionType||'')||/^(bird|owl|phoenix|manta|moth|dragonfly|serpent|griffin)$/.test(s.form||'');}
 function captureTween(duration,update){return new Promise(resolve=>effects.push({start:elapsed,duration,update,done:resolve}));}
 function disposeCaptureFx(root){detach(root);root.traverse(n=>{if(n.geometry)n.geometry.dispose();const materials=Array.isArray(n.material)?n.material:[n.material];materials.forEach(m=>{if(m)m.dispose();});});}
@@ -545,7 +565,7 @@ function updateFlight(a,dt){
 }
 function collectPickup(a){const k=a.pickupKey,amount=k==='core'?5:k==='berry'?3:1;if(k==='core')S.state.pokeballs+=amount;else if(k==='great_core')S.state.greatBallCount+=amount;else if(k==='berry')S.state.berryCount+=amount;else S.state.items.potion=number(S.state.items.potion)+amount;a.root.visible=false;a.respawn=elapsed+90;a.root.position.copy(randomPoint());return({core:'靈核球',great_core:'高階靈核球',berry:'星露果',potion:'初光藥劑',evolutionStone:'雷光結晶'})[k]+' +'+amount;}
 function showWorldBroadcast(text){const el=$('broadcast');if(el){clearTimeout(el.dismissTimer);el.textContent=text;el.hidden=false;layoutWorldNotifications();el.dismissTimer=setTimeout(()=>{el.hidden=true;layoutWorldNotifications();},12000);}}
-function tickGuideBroadcast(){if(elapsed<guideBroadcastAt||place||battle||dialog||modal)return;const names={electric:'鹹蛋超人變身套裝',mist:'小飯團同行',sound:'小山蝴蝶套裝',healing:'冒險套裝'},tips=['圖鑑收錄達 '+[.30,...new Set(MILESTONE_SPECIALS.map(e=>e.percent))].sort((a,b)=>a-b).map(p=>Math.round(p*100)+'%').join('、')+' 時，對應的特殊幻靈將依實際圖鑑門檻出現。持續締約不同種類，探索更多夥伴。','挑戰四座道館可依序取得 '+gyms.map(g=>names[g.costume]).join('、')+'，在旅人手冊的冒險衣櫃換裝。','在河畔釣魚 3 對 3 擊敗金魚小隊，河道會出現 2～3 隻小金魚；把金魚國王與金魚皇后卡片各 3 張交給橋邊的釣魚郎換取魚飼料，就能在河邊召喚水蛟龍王。','一般幻靈一階進二階需 5 份羈絆，二階進三階需 10 份；C囝仔、水毛蟲需在參戰隊伍連續完成 3 場幻靈競技擂台（勝敗皆計），不需羈絆即可進化成 C老猴、水仙子；小金魚集滿 3 張卡片會隨機進化成金魚國王或金魚皇后。','在 3 對 3 競技擂台取得勝利，會開放 '+(byId.jigglypuff?.name||'獎勵幻靈')+' 的出現條件。','找大夢博士領取冒險服；穿著後每 10 秒把場上可收集的補給與道具以飛行特效吸至身邊，成功吸收後才入袋；已收取的補給 90 秒後再生。'];const text='旅人攻略｜'+tips[guideBroadcastIndex++%tips.length];guideBroadcastAt=elapsed+300;showWorldBroadcast(text);}
+function tickGuideBroadcast(){if(elapsed<guideBroadcastAt||place||battle||dialog||modal)return;const names={electric:'鹹蛋超人變身套裝',mist:'小飯團同行',sound:'小山蝴蝶套裝',healing:'冒險套裝'},tips=['圖鑑收錄達 '+[LAB_WILD_THRESHOLD,...new Set(MILESTONE_SPECIALS.map(e=>e.percent))].sort((a,b)=>a-b).map(p=>Math.round(p*100)+'%').join('、')+' 時，對應的特殊幻靈將依實際圖鑑門檻出現。持續締約不同種類，探索更多夥伴。','挑戰四座道館可依序取得 '+gyms.map(g=>names[g.costume]).join('、')+'，在旅人手冊的冒險衣櫃換裝。','在河畔釣魚 3 對 3 擊敗金魚小隊，河道會出現 2～3 隻小金魚；把金魚國王與金魚皇后卡片各 3 張交給橋邊的釣魚郎換取魚飼料，就能在河邊召喚水蛟龍王。','一般幻靈一階進二階需 5 份羈絆，二階進三階需 10 份；C囝仔、水毛蟲需在參戰隊伍連續完成 3 場幻靈競技擂台（勝敗皆計），不需羈絆即可進化成 C老猴、水仙子；小金魚集滿 3 張卡片會隨機進化成金魚國王或金魚皇后。','在 3 對 3 競技擂台取得勝利，會開放 '+(byId.jigglypuff?.name||'獎勵幻靈')+' 的出現條件。','找大夢博士領取冒險服；穿著後每 10 秒把場上可收集的補給與道具以飛行特效吸至身邊，成功吸收後才入袋；已收取的補給 90 秒後再生。'];const text='旅人攻略｜'+tips[guideBroadcastIndex++%tips.length];guideBroadcastAt=elapsed+300;showWorldBroadcast(text);}
 async function spawnWild(species,position,guardianEvent=null){
  if(!species||isChest(species)||isBook(species))return null;
  if(isGymGuardian(species)&&!guardianEncounterAuthorized(species,guardianEvent))return null;
@@ -643,10 +663,10 @@ async function ensureLabLegendWilds(){
    w.labLegendStarter=true;
    appeared.push({name:spirit.name,percent:entry.percent});
   }
-  for(const percent of [.3,.5,.7]){
+  for(const percent of [LAB_WILD_THRESHOLD,...MILESTONE_SPECIALS.map(e=>e.percent)]){
    const names=appeared.filter(a=>a.percent===percent).map(a=>a.name);if(!names.length)continue;
    const label='圖鑑達 '+Math.round(percent*100)+'%';
-   showWorldBroadcast(label+'｜'+(percent===.3?'大夢研究所傳說幻靈':'特殊幻靈')+'：'+names.join('、')+'出現在初光鎮，快去締約！');
+   showWorldBroadcast(label+'｜'+(percent===LAB_WILD_THRESHOLD?'大夢研究所傳說幻靈':'特殊幻靈')+'：'+names.join('、')+'出現在初光鎮，快去締約！');
    toast(label+'｜'+names.join('、')+'已出現在初光鎮！');
   }
  }catch(error){S.errors.push('圖鑑進度特殊幻靈出現：'+error.message);}
@@ -654,13 +674,19 @@ async function ensureLabLegendWilds(){
 }
 const POND_RESPAWN_MS=60*60*1000;
 function pondRespawnAllowed(id){
- const until=Number(S.state?.worldFlags?.pondRespawnAt?.[id])||0;
- return Date.now()>=until;
+ if(id!=='entei'&&id!=='articuno')return true;
+ const flags=S.state?.worldFlags||{},caught=!!flags.pondCapturedOnce?.[id]||Number(flags.pondRespawnAt?.[id])>0||!!flags.labLegendWildCaught?.[id];
+ // 未集齊 58 種前只能在水池捕捉一次；舊存檔的 pondRespawnAt 亦視為已捕捉。
+ if(!dexComplete())return !caught;
+ // 全圖鑑完成後才恢復一小時重生機制；既有時間戳延續，不重置存檔。
+ return Date.now()>=(Number(flags.pondRespawnAt?.[id])||0);
 }
 function recordPondCapture(who){
  if(!who||(who.species?.id!=='entei'&&who.species?.id!=='articuno')||!(who.pondSwim||who.pondJump))return;
  S.state.worldFlags||={};
+ S.state.worldFlags.pondCapturedOnce||={};
  S.state.worldFlags.pondRespawnAt||={};
+ S.state.worldFlags.pondCapturedOnce[who.species.id]=true;
  S.state.worldFlags.pondRespawnAt[who.species.id]=Date.now()+POND_RESPAWN_MS;
 }
 let pondSpawnBusy=false,pondFrogSpawnBusy=false;
@@ -2312,7 +2338,7 @@ await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);
   blocked:()=>!!(modal||dialog||battle||enterBusy||throwing),
   navigate:(type,id)=>beginNavigation(type,id),showCostumes:()=>showCostumes(),
   showMenu:()=>showMenu(),notice:t=>toast(t),
-  progress:()=>{const list=regularSpirits();return{owned:list.filter(s=>owned(s.id)).length,total:list.length};},
+  progress:()=>dexStats(),
   save:()=>save()
  });
  if(new URLSearchParams(location.search).get('monsterDex')==='1')showMonsterDex();$('load').hidden=true;document.body.dataset.ready='true';setTimeout(()=>void loadDeferredTown(nearestNpcs),mobileGraphics?900:350);setTimeout(()=>warmBattleModels(),mobileGraphics?8000:2300);setInterval(save,15000);addEventListener('pagehide',e=>{save();if(!e.persisted&&battle){disposeXiaoshanTrial(battle);disposePhoenixTrial(battle);}else if(battle?.xiaoshanTrial?.utterance)window.speechSynthesis?.cancel();});document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});setInterval(()=>{if(!place&&!battle&&!modal){const far=wild.find(w=>w!==target&&!w.specialEventId&&!w.labLegendStarter&&!w.pondSwim&&!w.pondJump&&w.root.position.distanceTo(S.player)>24);if(far){wild.splice(wild.indexOf(far),1);removeActor(far);replenish();}}},45000);toast(newPlayerStart?'歡迎來到大夢研究所！請向桌上的幻靈球前進，選擇第一位幻靈。':S.state.migratedFrom?'歡迎回來！你的舊版進度已接續。':'歡迎來到初光鎮！靠近幻靈，投出靈核球締約。');updateLabGuide();}catch(e){S.errors.push(e.message);$('loadText').textContent=e.message+'。請重新整理，或確認資產是否完整。';console.error(e);}}
