@@ -1,0 +1,62 @@
+{
+  "generator": "built-in imagegen",
+  "date": "2026-10-23",
+  "transparent": true,
+  "encoding": "512x512 WebP with alpha, quality 88",
+  "items": [
+    {
+      "id": "greatsword",
+      "subject": "one massive two-handed silver fantasy GREATSWORD, broad angular steel blade, gold crossguard, brown leather grip, small blue jewel, diagonal lower-left to upper-right",
+      "prompt": "Use case: stylized-concept. Asset: fantasy game inventory item icon. Subject: one massive two-handed silver fantasy GREATSWORD, broad angular steel blade, gold crossguard, brown leather grip, small blue jewel, diagonal lower-left to upper-right. Premium cute polished 3D toy render, chunky readable silhouette at 80px, restrained ornament, warm soft studio light, centered with ample 12 percent padding. Single isolated equipment item or pair only, no hands, characters, words, numbers, lettering, labels, borders or card frame. Background fully transparent. Square composition.",
+      "output": "tower/icons/greatsword.webp"
+    },
+    {
+      "id": "dual-blades",
+      "subject": "PAIR of short curved silver fantasy daggers / dual blades crossed in an X, teal accented guards and brown grips, both entire blades visible",
+      "prompt": "Use case: stylized-concept. Asset: fantasy game inventory item icon. Subject: PAIR of short curved silver fantasy daggers / dual blades crossed in an X, teal accented guards and brown grips, both entire blades visible. Premium cute polished 3D toy render, chunky readable silhouette at 80px, restrained ornament, warm soft studio light, centered with ample 12 percent padding. Single isolated equipment item or pair only, no hands, characters, words, numbers, lettering, labels, borders or card frame. Background fully transparent. Square composition.",
+      "output": "tower/icons/dual-blades.webp"
+    },
+    {
+      "id": "dual-pistols",
+      "subject": "PAIR of fantasy flintlock pistols, two black steel barrels, gold engraved trims, warm brown wooden grips, crossed in an X, friendly rounded toy proportions",
+      "prompt": "Use case: stylized-concept. Asset: fantasy game inventory item icon. Subject: PAIR of fantasy flintlock pistols, two black steel barrels, gold engraved trims, warm brown wooden grips, crossed in an X, friendly rounded toy proportions. Premium cute polished 3D toy render, chunky readable silhouette at 80px, restrained ornament, warm soft studio light, centered with ample 12 percent padding. Single isolated equipment item or pair only, no hands, characters, words, numbers, lettering, labels, borders or card frame. Background fully transparent. Square composition.",
+      "output": "tower/icons/dual-pistols.webp"
+    },
+    {
+      "id": "katana",
+      "subject": "one elegant fantasy KATANA long slightly curved silver single-edged blade, round gold guard, midnight-blue wrapped grip, blue small jewel, diagonal lower-left to upper-right",
+      "prompt": "Use case: stylized-concept. Asset: fantasy game inventory item icon. Subject: one elegant fantasy KATANA long slightly curved silver single-edged blade, round gold guard, midnight-blue wrapped grip, blue small jewel, diagonal lower-left to upper-right. Premium cute polished 3D toy render, chunky readable silhouette at 80px, restrained ornament, warm soft studio light, centered with ample 12 percent padding. Single isolated equipment item or pair only, no hands, characters, words, numbers, lettering, labels, borders or card frame. Background fully transparent. Square composition.",
+      "output": "tower/icons/katana.webp"
+    },
+    {
+      "id": "heal-potion",
+      "subject": "one round squat glass potion bottle filled with luminous rose-red healing liquid, gold rim, cork stopper, cream small heart-shaped raised medallion on bottle, tiny sparkle",
+      "prompt": "Use case: stylized-concept. Asset: fantasy game inventory consumable icon. Subject: one round squat glass potion bottle filled with luminous rose-red healing liquid, gold rim, cork stopper, cream small heart-shaped raised medallion on bottle, tiny sparkle. Premium cute polished 3D toy render, thick readable silhouette at 80px, warm soft studio light, centered with ample 15 percent padding, whole bottle visible. One isolated item only, no hands, characters, words, numbers, lettering, labels, borders or card frame. Background fully transparent. Square composition.",
+      "output": "tower/icons/heal-potion.webp"
+    },
+    {
+      "id": "power-potion",
+      "subject": "one angular hexagonal glass potion bottle filled with luminous amber-orange battle energy liquid, dark bronze rim, cork stopper, small gold lightning-shaped raised medallion on bottle",
+      "prompt": "Use case: stylized-concept. Asset: fantasy game inventory consumable icon. Subject: one angular hexagonal glass potion bottle filled with luminous amber-orange battle energy liquid, dark bronze rim, cork stopper, small gold lightning-shaped raised medallion on bottle. Premium cute polished 3D toy render, thick readable silhouette at 80px, warm soft studio light, centered with ample 15 percent padding, whole bottle visible. One isolated item only, no hands, characters, words, numbers, lettering, labels, borders or card frame. Background fully transparent. Square composition.",
+      "output": "tower/icons/power-potion.webp"
+    },
+    {
+      "id": "sunset-pistols",
+      "subject": "PAIR of sunset-themed fantasy cowboy revolvers with black barrels, copper-gold sunburst metal trims and brown grips, crossed in an X, small golden stars, short subtle amber recoil aura",
+      "prompt": "Use case: stylized-concept. Asset: boss-reward fantasy game inventory weapon icon. Subject: PAIR of sunset-themed fantasy cowboy revolvers with black barrels, copper-gold sunburst metal trims and brown grips, crossed in an X, small golden stars, short subtle amber recoil aura. Premium cute polished 3D toy render, chunky readable silhouette at 80px, restrained ornament, warm soft studio light, centered with ample 12 percent padding, all weapon tips in frame. Single isolated equipment item or pair only, no hands, characters, words, numbers, lettering, labels, borders or card frame. Background fully transparent. Square composition.",
+      "output": "tower/icons/sunset-pistols.webp"
+    },
+    {
+      "id": "starlight-katana",
+      "subject": "one star-themed fantasy long katana, silver gently curved blade with luminous pale-blue edge, navy wrapped grip, gold star-shaped guard and blue star gem, a delicate tiny blue stardust curl to suggest healing, diagonal composition",
+      "prompt": "Use case: stylized-concept. Asset: boss-reward fantasy game inventory weapon icon. Subject: one star-themed fantasy long katana, silver gently curved blade with luminous pale-blue edge, navy wrapped grip, gold star-shaped guard and blue star gem, a delicate tiny blue stardust curl to suggest healing, diagonal composition. Premium cute polished 3D toy render, chunky readable silhouette at 80px, restrained ornament, warm soft studio light, centered with ample 12 percent padding, all weapon tips in frame. Single isolated equipment item or pair only, no hands, characters, words, numbers, lettering, labels, borders or card frame. Background fully transparent. Square composition.",
+      "output": "tower/icons/starlight-katana.webp"
+    },
+    {
+      "id": "golden-greatsword",
+      "subject": "one massive golden guardian greatsword with broad gold-and-silver blade, embossed shield shape ornament near the guard, gold crossguard and jade-green gem, purple-wrapped handle, diagonal composition, subtle gold protective aura",
+      "prompt": "Use case: stylized-concept. Asset: boss-reward fantasy game inventory weapon icon. Subject: one massive golden guardian greatsword with broad gold-and-silver blade, embossed shield shape ornament near the guard, gold crossguard and jade-green gem, purple-wrapped handle, diagonal composition, subtle gold protective aura. Premium cute polished 3D toy render, chunky readable silhouette at 80px, restrained ornament, warm soft studio light, centered with ample 12 percent padding, all weapon tips in frame. Single isolated equipment item or pair only, no hands, characters, words, numbers, lettering, labels, borders or card frame. Background fully transparent. Square composition.",
+      "output": "tower/icons/golden-greatsword.webp"
+    }
+  ]
+}

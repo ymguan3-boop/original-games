@@ -73,12 +73,12 @@ globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,Worl
  };
  g.nativeClipFor=role=>roleClip(role);
  g.userData.nativeClips=nativeNames.slice();
- g.playNative=(role,{duration,force=false}={})=>{
+ g.playNative=(role,{duration,force=false,resume=false}={})=>{
   const chosen=roleClip(role);
   if(!chosen||(!force&&g.nativeMotion===chosen))return;
   const action=g.nativeActions[chosen],single=['Attack','Ultimate','Hurt','Death'].includes(role);
   Object.values(g.nativeActions).forEach(other=>{if(other!==action)other.fadeOut(.12);});
-  action.reset().fadeIn(.12);
+  if(!resume)action.reset();action.enabled=true;action.paused=false;action.fadeIn(.12);
   action.setLoop(single?T.LoopOnce:T.LoopRepeat,single?1:Infinity);
   action.clampWhenFinished=single;
   const clipTime=action.getClip()?.duration||1;
@@ -89,22 +89,58 @@ globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,Worl
  World.prototype.load=function(level){this.bossToken=(this.bossToken||0)+1;this.bossLoading=false;oldLoad.call(this,level);if(level<3)return;const color=[0xa56f3d,0x3b659d,0x8f783b][level-3];for(let i=0;i<12;i++){const a=i*Math.PI/6,r=24,x=Math.sin(a)*r,z=Math.cos(a)*r;if(level===3){this.part(this.root,'box',0x70482d,x,1.3,z,1,2.6,.3,0,-a);this.part(this.root,'box',0xb78551,x,2.7,z,2.6,.3,.7,0,-a);}else{this.part(this.root,'cyl',color,x,2.5,z,.6,5,.6);this.part(this.root,'ball',level===4?0x69baff:0xffd471,x,5.2,z,.7,.7,.7);}}
   const ring=this.disc(15,level===4?0x64b7ff:0xffce71,.38);ring.position.y=.06;
  };
- World.prototype.render=function(h,time,...rest){oldRender.call(this,h,time,...rest);const b=this.beast;if(!LEVELS[h.level].id)return;if(b.userData.loadError){h.paused=true;return;}if(!b.nativeMixer)return;const m=h.monster,dead=h.mode!=='battle'||m.state==='dead';
- const dt=Math.max(0,Math.min(.05,time-(b.nativeLastTime??time)));
- b.nativeLastTime=time;
- if(dead){
-  if(!b.userData.deathStarted){
-   b.userData.deathStarted=time||.001;
-   b.playNative('Death',{duration:.8,force:true});
+ // `dt` is the frame delta from World.render, never an absolute clock.
+ // Update the rig BEFORE base render submits the scene to WebGL.
+ World.prototype.render=function(h,dt,...rest){
+  const b=this.beast,l=LEVELS[h.level];
+  if(l?.id&&b){
+   if(b.userData.loadError)h.paused=true;
+   else if(b.nativeMixer){
+    const step=h.paused?0:Math.max(0,Math.min(.1,Number(dt)||0));
+    const m=h.monster,state=b.userData.nativePlayback||(b.userData.nativePlayback={phase:null,attack:null,hurtRemaining:0,wasFlashing:false,deathElapsed:0,dead:false});
+    const dead=h.mode==='loot'||h.mode==='victory'||m.state==='dead';
+    const px=b.userData.previousX??m.x,pz=b.userData.previousZ??m.z;
+    const moving=Math.hypot(m.x-px,m.z-pz)>.0001;
+    b.userData.previousX=m.x;b.userData.previousZ=m.z;
+    if(dead){
+     if(!state.dead){state.dead=true;state.deathElapsed=0;state.attack=null;b.playNative('Death',{force:true});}
+     const clip=b.nativeActions[b.nativeClipFor('Death')];
+     const duration=clip?.getClip().duration||.8;
+     if(state.deathElapsed<duration){b.nativeMixer.update(step);state.deathElapsed+=step;}
+    }else{
+     state.dead=false;
+     // A phase owns one cast. Recovery and hit reactions cannot restart that cast.
+     if(m.state==='windup'&&state.phase!==m.phase){
+      state.phase=m.phase;const role=m.phase%2?'Attack':'Ultimate';
+      const clip=b.nativeActions[b.nativeClipFor(role)];
+      state.attack={role,elapsed:0,duration:clip?.getClip().duration||1,started:false};
+     }
+     const flashing=m.flash>0;
+     if(flashing&&!state.wasFlashing){
+      const clip=b.nativeActions[b.nativeClipFor('Hurt')];
+      state.hurtRemaining=clip?.getClip().duration||.75;
+      if(state.attack){const a=b.nativeActions[b.nativeClipFor(state.attack.role)];if(a)a.paused=true;}
+      b.playNative('Hurt',{force:true});
+     }
+     state.wasFlashing=flashing;
+     if(state.hurtRemaining>0){
+      state.hurtRemaining=Math.max(0,state.hurtRemaining-step);
+      b.nativeMixer.update(step);
+     }else if(state.attack&&state.attack.elapsed<state.attack.duration){
+      const cast=state.attack;
+      b.playNative(cast.role,{force:!cast.started,resume:cast.started});
+      cast.started=true;cast.elapsed+=step;b.nativeMixer.update(step);
+     }else{
+      state.attack=null;
+      const role=m.state==='idle'&&moving?'Run':'Idle';
+      b.playNative(role);b.nativeMixer.update(step);
+     }
+    }
+    const current=b.nativeActions[b.nativeMotion];
+    b.userData.nativeAnimation={role:b.nativeMotion,time:current?.time||0,phase:state.phase,castElapsed:state.attack?.elapsed||0,hurtRemaining:state.hurtRemaining,delta:step};
+   }
   }
-  if(time-b.userData.deathStarted<.8&&!h.paused)b.nativeMixer.update(dt);
-  return;
- }
- b.userData.deathStarted=null;
- const px=b.userData.previousX??m.x,pz=b.userData.previousZ??m.z,moving=Math.hypot(m.x-px,m.z-pz)>.008;
- b.userData.previousX=m.x;b.userData.previousZ=m.z;
- const role=m.flash>0?'Hurt':m.state==='windup'?(m.phase%2?'Attack':'Ultimate'):moving?'Run':'Idle';
- b.playNative(role,{duration:role==='Attack'||role==='Ultimate'?m.timer+.25:undefined});
- if(!h.paused)b.nativeMixer.update(dt);};
+  return oldRender.call(this,h,dt,...rest);
+ };
  return defs;
 };

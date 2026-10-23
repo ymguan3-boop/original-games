@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-23",
+  "baseCommit": "352ab00",
+  "animation": {
+    "models": [
+      "ahong-cowboy",
+      "starlight-mage",
+      "guanpang"
+    ],
+    "source": "production extension and actual GLB clips",
+    "checks": [
+      "single-frame dt advances mixer before render",
+      "Run Attack Ultimate Hurt mapped to actual clips",
+      "cast continues through recovery",
+      "Hurt resumes interrupted cast without reset",
+      "pause freezes mixer"
+    ],
+    "result": "PASS"
+  },
+  "shop": {
+    "entries": 19,
+    "weaponEntries": 17,
+    "consumableEntries": 2,
+    "generatedIcons": 9,
+    "totalWebpBytes": 471368,
+    "iconSize": 512,
+    "alphaPreserved": true,
+    "desktop": "image preview opened and Escape returned to shop",
+    "mobile": "390x844, all 19 entries mapped, all 9 icons HTTP200 and decoded, no horizontal overflow",
+    "result": "PASS"
+  },
+  "limits": "Browser automation and isolated rendered animation samples; no physical phone certification. Missing localhost favicon detected during mobile sampling; tower now explicitly disables fallback favicon request."
+}
