@@ -1726,7 +1726,7 @@ function littleGoldfishArenaFx(attacker,defender,strong){
   if(disposed)return;disposed=true;battleGroup.remove(group);
   for(const mesh of created){mesh.geometry.dispose();mesh.material.dispose();}
  };
- return {update,dispose};
+ return {update,approach:()=>0,dispose}; // arena strike() expects script.approach() for every native FX
 }
 // Goldfish King / Queen: use the model's authored Attack/Ultimate pose,
 // then launch a water orb or luminous water cannon from the facing mouth.
