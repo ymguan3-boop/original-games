@@ -33,7 +33,7 @@
   TOWER_CHANCE_STEP:()=>pct(tower.cardChancePerWin)
  });
  const formatNpcText=value=>String(value??'').replace(/\{\{(PATROL_REQUIRED|PATROL_BALL_REWARD|TOWER_BASE_CHANCE|TOWER_CHANCE_STEP)\}\}/g,(_,name)=>npcReplacements[name]());
- const specialNotice=()=>`圖鑑達 ${pct(thresholds.lab)}（研究所三選一未選的兩隻）、${pct(thresholds.yellow)}（小黃）、${pct(thresholds.greenBat)}（綠眼蝙怪）時，可在初光鎮找到對應特殊幻靈；尚未收錄完圖鑑前，成功捕捉後不再重生。`;
- const pondNotice=()=>`大眼蛙與水毛蟲未完成全圖鑑時，野外捕捉後不再出現；完成全 ${mainSpeciesCount} 種一般幻靈圖鑑後，每次捕捉才解鎖 60 分鐘的再次出現冷卻。`;
+ const specialNotice=()=>`圖鑑達 ${pct(thresholds.lab)}（研究所三選一未選的兩隻；C囝仔在一般陸地，其餘兩隻在池塘）、${pct(thresholds.yellow)}（小黃）、${pct(thresholds.greenBat)}（綠眼蝙怪）時，可在初光鎮找到對應特殊幻靈；尚未收錄完圖鑑前，成功捕捉後不再重生。`;
+ const pondNotice=()=>`大眼蛙、水毛蟲與 C囝仔未完成全圖鑑時，野外捕捉後不再出現；完成全 ${mainSpeciesCount} 種一般幻靈圖鑑後，三者每次捕捉皆有 60 分鐘重生冷卻；C囝仔在一般陸地，大眼蛙和水毛蟲在池塘。`;
  window.PhantomGameRules=Object.freeze({mainSpeciesCount,thresholds,quest,arena,tower,pond,evolutionOnlyWild,progress,countAt,towerCardChance,towerDropNotice,specialNotice,pondNotice,formatNpcText,wildScaleFor,guardianOverworldScale,ballHudValue,pct});
 })();

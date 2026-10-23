@@ -9,7 +9,7 @@
   const f=flags();if(!f?.enabled)return null;
   if(!api.state.dreamLabLegendClaimed)return {id:'starter',silent:true};
   if(!f.exitedLab)return {id:'exit',silent:api.inLab(),title:'第一步完成｜準備出發',detail:'你已從大夢博士的三顆幻靈球中選擇第一位夥伴。請走出研究所，繼續冒險教學。'};
-  if(!api.state.adventureClaimed)return {id:'claim',title:'第二步｜領取冒險服',detail:'先回大夢研究所和大夢博士對話，點「領取冒險服」。領取後還要穿上，才能開始捕捉練習。',action:'導航至大夢研究所'};
+  if(!api.state.adventureClaimed)return {id:'claim',title:'第二步｜領取冒險服',detail:'請先導航至大夢研究所門口，與門口的大夢博士對話，點「領取冒險服」。領取後仍需穿上，才能開始捕捉練習。',action:'導航至研究所門口・大夢博士'};
   if(!f.outfitEquipped)return {id:'equip',title:'第二步｜換上冒險服',detail:'已領得冒險服！開啟旅人手冊 → 冒險衣櫃，選擇「博士贈送冒險服」並點換裝。',action:'開啟冒險衣櫃'};
   if(!f.firstWildCapture)return {id:'capture',title:'第二步｜試著捕捉幻靈',detail:'前往初光鎮，靠近野生幻靈，使用右側「鎖定」選取目標，再按「締約」投出靈核球；捕捉成功後就會進入第三步。'};
   if(!f.menuViewed)return {id:'tools',title:'第三步｜認識工具列',detail:'先看右側鎖定、締約、換球、星露果與翻滾，以及左側移動搖桿；再開啟「旅人手冊」查看圖鑑、隊伍、冒險衣櫃、背包、道館、挑戰塔、導航與設定的用途。',action:'查看旅人手冊與工具說明'};
@@ -45,7 +45,7 @@
   const stage=determine();if(!stage)return;
   if(stage.id==='claim'){
    if(api.inLab())api.notice('靠近大夢博士並點「對話」→「領取冒險服」。');
-   else api.navigate('building','dream_lab');
+   else api.navigate('npc','prof_daydream');
   }else if(stage.id==='equip')api.showCostumes();
   else if(stage.id==='tools')api.showMenu();
   else if(stage.id==='arena'){

@@ -20,6 +20,7 @@
   else if(path.startsWith('robot-evolution://')){mode=window.RobotSpirits.attack(path,strong);duration=window.RobotSpirits.duration(path,strong);nativeFx=true;}
   else if(species.id==='kyogre'&&/goldfish-1\.glb$/.test(path)){mode=strong?'Ultimate':'Attack';nativeFx=true;} // model's native clips + timed, thin-water arena FX
   else if(species.id==='entei'&&/water-caterpillar\.glb$/.test(path)){mode=strong?'Ultimate':'Attack';nativeFx=true;} // original three silk volleys / headbutt
+  else if(species.id==='mewtwo'&&/water-dragon-king\.glb$/.test(path)){mode=strong?'Ultimate':'Attack';nativeFx=true;} // original dragon bite / water breath
   else if(/(ahong-cowboy|starlight-mage)\.glb$/.test(path))nativeFx=!!actor.duoFx;
   else if(/guanpang\.glb$/.test(path))nativeFx=!!actor.guanpangFx;
   else if(/fire-monkey-elder\.glb$/.test(path))nativeFx=true;
@@ -31,16 +32,16 @@
   if(!actor.controller){
    const candidates=[...(configured.nativeAttack===false?[]:[mode]),...(strong?['Ultimate','Special','Attack']:['Attack']),mode,'React','Takeoff','Walk','Idle'];
    mode=candidates.map(name=>find(available,name)).find(Boolean)||available[0]||'Idle';
-   const action=actor.actions?.[mode],clip=action?.getClip?.();duration=clip?.duration?clip.duration/(species.id==='entei'?1:['chimchar','monferno','infernape'].includes(species.id)?1.4:Math.max(.01,Math.abs(action.getEffectiveTimeScale?.()||1))):duration; // entei clip speed reset by playbackRate each arena turn
+   const action=actor.actions?.[mode],clip=action?.getClip?.();duration=clip?.duration?clip.duration/(['entei','mewtwo'].includes(species.id)?1:['chimchar','monferno','infernape'].includes(species.id)?1.4:Math.max(.01,Math.abs(action.getEffectiveTimeScale?.()||1))):duration; // entei clip speed reset by playbackRate each arena turn
   }
   // Arena-only tempo increase: preserve the native clip/pose's entire choreography.
   // Original 1.6/4.0s caterpillar and 1.45/4.8s leaf frog run faster,
   // with the same relative impact timestamps and no change to move power/cost.
-  const agile=species.id==='entei'||species.id==='articuno',agileRate=agile?(strong?1.4:1.3):1;
+  const agile=['entei','articuno','mewtwo','cyndaquil','quilava','typhlosion'].includes(species.id),agileRate=agile?(strong?1.4:1.3):1;
   const baseDuration=Math.max(.1,duration||.65);
   return{playbackRate:agile?agileRate:['chimchar','monferno','infernape'].includes(species.id)?1.4:null,
    nativeDuration:baseDuration,mode:mode||'Attack',duration:baseDuration/agileRate,nativeFx,
-   releaseFraction:species.id==='entei'?(strong?1/4:.62/1.6):species.id==='articuno'?(strong?.85/4.8:.55/1.45):/guanpang\.glb$/.test(path)?(strong?.655:.50):.48};
+   releaseFraction:species.id==='mewtwo'?(strong?2.9/5.8:.75/1.9):species.id==='entei'?(strong?1/4:.62/1.6):species.id==='articuno'?(strong?.85/4.8:.55/1.45):/guanpang\.glb$/.test(path)?(strong?.655:.50):.48};
  }
 
  // Arena-only target adapter. Model-room controllers keep their original authored effects.
