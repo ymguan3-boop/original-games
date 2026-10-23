@@ -18,6 +18,7 @@
   if(window.ReplacementSpirits?.has(path)){mode=ReplacementSpirits.attack(path,strong);duration=ReplacementSpirits.duration(path,strong);nativeFx=true;}else if(window.AvianSpirits?.has(path)){mode=AvianSpirits.attack(path,strong);duration=AvianSpirits.duration(path,strong);nativeFx=true;}else if(path.startsWith('leaf-frog://')){mode=window.FrogSpirits.attack(path,strong,skill);duration=window.FrogSpirits.duration(path,strong,skill);nativeFx=true;}
   else if(window.SpiritVfx?.has(path)){mode=strong?'Ultimate':'Attack';nativeFx=true;}
   else if(path.startsWith('robot-evolution://')){mode=window.RobotSpirits.attack(path,strong);duration=window.RobotSpirits.duration(path,strong);nativeFx=true;}
+  else if(species.id==='kyogre'&&/goldfish-1\.glb$/.test(path)){mode=strong?'Ultimate':'Attack';nativeFx=true;} // model's native clips + timed, thin-water arena FX
   else if(/(ahong-cowboy|starlight-mage)\.glb$/.test(path))nativeFx=!!actor.duoFx;
   else if(/guanpang\.glb$/.test(path))nativeFx=!!actor.guanpangFx;
   else if(/fire-monkey-elder\.glb$/.test(path))nativeFx=true;
