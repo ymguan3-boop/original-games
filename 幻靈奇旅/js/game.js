@@ -519,7 +519,7 @@ function eligible(s){
  if(isBook(s)||isGymGuardian(s))return false;
  if(LAB_LEGENDS.some(e=>e.id===s.id)){
   if(!labClaimed())return false;
-  if(s.id!==S.state.dreamLabLegendChoice&&!labLegendMilestoneReached())return false;
+  if(!labLegendMilestoneReached())return false;
   if((s.id==='articuno'||s.id==='entei')&&!pondRespawnAllowed(s.id))return false;
   return dexComplete()||!S.state.worldFlags?.labLegendWildCaught?.[s.id];
  }
@@ -690,7 +690,7 @@ function recordPondCapture(who){
  S.state.worldFlags.pondRespawnAt[who.species.id]=Date.now()+POND_RESPAWN_MS;
 }
 let pondSpawnBusy=false,pondFrogSpawnBusy=false;
-function pondCaterpillarAvailable(){return !!byId.entei&&(eligible(byId.entei)||owned('entei'));}
+function pondCaterpillarAvailable(){return !!byId.entei&&eligible(byId.entei);}
 async function ensurePondCaterpillar(){
  if(pondSpawnBusy||!S.ready||place||battle||!pondBounds()||!pondCaterpillarAvailable()||!pondRespawnAllowed('entei')||wild.some(a=>a.species.id==='entei'))return;
  pondSpawnBusy=true;
