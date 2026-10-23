@@ -62,6 +62,7 @@ const attacker={s:{id:'kyogre'},actor:{root:origin,object:model,worldSize:new Ve
 const defender={actor:{root:enemy,worldSize:new Vec(1,2,1)}};
 for(const strong of [false,true]){
  const fx=make(attacker,defender,strong);
+ assert.equal(fx.approach(.5),0,'Native FX must implement arena approach contract');
  assert.equal(battleGroup.children.length,1);
  const visuals=battleGroup.children[0].children;
  fx.update(.3);if(strong)assert(visuals[4].visible,'Early water ripple missing');
