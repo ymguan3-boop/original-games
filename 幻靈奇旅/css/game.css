@@ -686,3 +686,12 @@ body.battle-active:not(.gym-active) #labels .arenaAllyHp{
  z-index:8;
  pointer-events:none;
 }
+
+/* 2026-10-23: visual-only saturation marker; underlying inventory is unlimited.
+   At exactly 99 the number stays normal; at 100 or more it displays 99 in red. */
+#hud .supply b.ballOver99{
+ color:#ff434e!important;
+ font-weight:900;
+ -webkit-text-stroke:.18px #4c0010;
+ text-shadow:0 1px 1px #30000d,0 0 8px #ff334477;
+}
