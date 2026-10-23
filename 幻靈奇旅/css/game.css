@@ -180,7 +180,7 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 116px);left:50%;r
 body.gym-active #battleActions{left:12px;transform:none;width:144px}
 body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;right:12px;transform:none;max-width:none;width:min(220px,calc(100vw - 180px));text-align:left}
 
-/* 2026-10-13 portrait HUD no overflow: keep all five counters inside the safe viewport. */
+/* 2026-10-23 portrait HUD: four inventory counters; dex progress is merged into the manual shortcut. */
 @media(max-width:700px) and (orientation:portrait){
  #hud{
    left:env(safe-area-inset-left,0px);
@@ -188,7 +188,7 @@ body.gym-active #battleLog{top:calc(env(safe-area-inset-top) + 84px);left:auto;r
    top:calc(env(safe-area-inset-top,0px) + 5px);
    width:auto;max-width:none;transform:none;
    padding:0 6px;display:grid;
-   grid-template-columns:minmax(0,1.42fr) minmax(0,1.38fr) repeat(3,minmax(0,1fr));
+   grid-template-columns:repeat(4,minmax(0,1fr));
    align-items:stretch;gap:3px;
    box-sizing:border-box;white-space:nowrap;
  }
@@ -699,3 +699,13 @@ body.battle-active:not(.gym-active) #labels .arenaAllyHp{
 
 /* 2026-10-23：任務按鈕與雷達上下互換；遊戲 HUD 下方優先顯示小型任務按鈕。 */
 #radar{top:calc(env(safe-area-inset-top,0px) + 94px)}
+
+/* 2026-10-23: merged handbook + dex single quick shortcut, mobile safe, no duplicate HUD button. */
+#menuBtn{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;max-width:min(205px,calc(100vw - 138px));height:44px;padding:0 10px;white-space:nowrap;overflow:hidden;background:#1b3746f0;color:#fff8e7;border:1px solid #cfdfdb70;border-radius:13px;box-shadow:0 3px 11px #142e3d45}
+#menuBtn .menuIcon{flex:0 0 auto;font-size:20px;line-height:1}
+#menuBtn .menuTitle{flex:0 1 auto;min-width:0;font-size:12px;font-weight:800;letter-spacing:.01em;white-space:nowrap}
+#menuBtn .menuDexBadge{display:inline-flex;align-items:center;gap:3px;flex:0 0 auto;padding:5px 6px;background:#49699c77;border:1px solid #bdcff957;border-radius:7px;color:#e8efff;font-size:11px;font-weight:750;font-variant-numeric:tabular-nums}
+#menuBtn .menuDexBadge b{font-size:11px;line-height:1;white-space:nowrap}
+.menuGrid .menuPrimaryDex{grid-column:1/-1;min-height:52px;padding:12px;background:#e1eafa;border:1px solid #a6bde5;color:#263960;font-size:15px;font-weight:800}
+@media(max-width:390px){#menuBtn{gap:5px;max-width:calc(100vw - 138px);height:42px;padding:0 6px}#menuBtn .menuIcon{font-size:18px}#menuBtn .menuTitle{font-size:11px}#menuBtn .menuDexBadge{padding:4px;gap:2px;font-size:10px}#menuBtn .menuDexBadge b{font-size:10px}}
+@media(max-width:325px){#menuBtn{gap:4px}#menuBtn .menuTitle{font-size:10px}#menuBtn .menuDexBadge{padding:3px}}
