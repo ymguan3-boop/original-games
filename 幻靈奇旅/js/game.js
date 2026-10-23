@@ -1708,7 +1708,7 @@ function littleGoldfishArenaFx(attacker,defender,strong){
    ball.material.opacity=.82*opacity;
    glow.material.opacity=.35*opacity;
   }else{
-   ringA.visible=ringB?.visible||false;
+   ringA.visible=false;
    const active=t>=.6&&t<=1.2;
    ball.visible=glow.visible=active;
    if(!active)return;
@@ -1722,7 +1722,7 @@ function littleGoldfishArenaFx(attacker,defender,strong){
   }
  };
  const dispose=()=>{
-  if(disposed)return;disposed=true;group.removeFromParent();
+  if(disposed)return;disposed=true;battleGroup.remove(group);
   for(const mesh of created){mesh.geometry.dispose();mesh.material.dispose();}
  };
  return {update,dispose};
