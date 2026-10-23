@@ -31,7 +31,7 @@
   if(!actor.controller){
    const candidates=[...(configured.nativeAttack===false?[]:[mode]),...(strong?['Ultimate','Special','Attack']:['Attack']),mode,'React','Takeoff','Walk','Idle'];
    mode=candidates.map(name=>find(available,name)).find(Boolean)||available[0]||'Idle';
-   const action=actor.actions?.[mode],clip=action?.getClip?.();duration=clip?.duration?clip.duration/(['chimchar','monferno','infernape'].includes(species.id)?1.4:Math.max(.01,Math.abs(action.getEffectiveTimeScale?.()||1))):duration;
+   const action=actor.actions?.[mode],clip=action?.getClip?.();duration=clip?.duration?clip.duration/(species.id==='entei'?1:['chimchar','monferno','infernape'].includes(species.id)?1.4:Math.max(.01,Math.abs(action.getEffectiveTimeScale?.()||1))):duration; // entei clip speed reset by playbackRate each arena turn
   }
   // Arena-only tempo increase: preserve the native clip/pose's entire choreography.
   // Original 1.6/4.0s caterpillar and 1.45/4.8s leaf frog run faster,
