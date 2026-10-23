@@ -797,7 +797,7 @@ function markJourneyTowerChallengeStarted(){
    ...Object.entries(state.pokedexUnlocks||{}).filter(([,v])=>!!v).map(([id])=>id),
    ...Object.entries(state.captureCounts||{}).filter(([,v])=>Number(v)>0).map(([id])=>id)
   ].filter(id=>!['chimchar','monferno','infernape'].includes(id))).size;
-  if(count<window.PhantomGameRules.countAt(58,window.PhantomGameRules.thresholds.tutorialTower))return;
+  if(count<window.PhantomGameRules.countAt(window.PhantomGameRules.mainSpeciesCount,window.PhantomGameRules.thresholds.tutorialTower))return;
   state.journeyGuide.towerEntered=true;
   localStorage.setItem(key,JSON.stringify(state));
  }catch(error){console.warn('新手教學：挑戰塔進度暫時無法儲存',error);}
