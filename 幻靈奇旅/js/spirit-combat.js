@@ -37,11 +37,11 @@
   // Arena-only tempo increase: preserve the native clip/pose's entire choreography.
   // Original 1.6/4.0s caterpillar and 1.45/4.8s leaf frog run faster,
   // with the same relative impact timestamps and no change to move power/cost.
-  const agile=['entei','articuno','mewtwo','cyndaquil','quilava','typhlosion'].includes(species.id),agileRate=agile?(strong?1.4:1.3):1;
+  const adventureFrog=species.id==='moltres'&&path.startsWith('leaf-frog://'),agile=adventureFrog||['entei','articuno','mewtwo','cyndaquil','quilava','typhlosion'].includes(species.id),agileRate=adventureFrog?(strong?1.65:1.5):agile?(strong?1.4:1.3):1;
   const baseDuration=Math.max(.1,duration||.65);
   return{playbackRate:agile?agileRate:['chimchar','monferno','infernape'].includes(species.id)?1.4:null,
    nativeDuration:baseDuration,mode:mode||'Attack',duration:baseDuration/agileRate,nativeFx,
-   releaseFraction:species.id==='mewtwo'?(strong?2.9/5.8:.75/1.9):species.id==='entei'?(strong?1/4:.62/1.6):species.id==='articuno'?(strong?.85/4.8:.55/1.45):/guanpang\.glb$/.test(path)?(strong?.655:.50):.48};
+   releaseFraction:adventureFrog?(strong?2.38/6.6:.70/1.9):species.id==='mewtwo'?(strong?2.9/5.8:.75/1.9):species.id==='entei'?(strong?1/4:.62/1.6):species.id==='articuno'?(strong?.85/4.8:.55/1.45):/guanpang\.glb$/.test(path)?(strong?.655:.50):.48};
  }
 
  // Arena-only target adapter. Model-room controllers keep their original authored effects.
