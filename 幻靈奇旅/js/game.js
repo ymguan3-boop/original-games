@@ -2494,6 +2494,7 @@ await Promise.allSettled([...nearestNpcs.map(loadNpc),spawnWild(chooseWild())]);
   earlyStarter:labClaimed()&&regularSpirits().filter(s=>owned(s.id)).length===1&&!S.state.adventureClaimed,
   inLab:()=>place?.id==='dream_lab',inBuilding:()=>!!place,inGym:()=>place?.id==='gym_light',
   blocked:()=>!!(modal||dialog||battle||enterBusy||throwing),
+  shortcutBlocked:()=>!!(modal||dialog||battle||enterBusy),
   navigate:(type,id)=>beginNavigation(type,id),showCostumes:()=>showCostumes(),showGyms:()=>showGyms(),
   showMenu:()=>showMenu(),notice:t=>toast(t),
   progress:()=>dexStats(),

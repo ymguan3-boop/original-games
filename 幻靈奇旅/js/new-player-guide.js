@@ -63,7 +63,7 @@
   if(bar)bar.append(button);else document.body.append(button);
   panel=document.createElement('aside');panel.id='journeyGuide';panel.setAttribute('role','region');
   panel.setAttribute('aria-label','冒險任務清單');panel.hidden=true;document.body.append(panel);
-  button.addEventListener('click',()=>{opened=!opened;selectedTask='';refresh();});
+  button.addEventListener('click',()=>{if(api?.blocked?.())return;opened=!opened;selectedTask='';refresh();});
   panel.addEventListener('click',e=>{
    const control=e.target.closest('button[data-journey]');if(!control)return;
    const mode=control.dataset.journey;
@@ -125,8 +125,10 @@
  function refresh(){
   if(!api)return;
   ensure();rewardSync(false);
-  // 不再在地圖中央浮現教學卡片；戰鬥、對話及選單期間隱藏清單。
-  if(api.blocked()){opened=false;button.hidden=true;panel.hidden=true;return;}
+  // 投擲靈核球時只禁止展開任務面板，不可把頂部任務快捷鍵從 HUD 隱藏。
+  // 只有戰鬥、對話、模態視窗、場景載入等狀態才隱藏快捷鍵。
+  if(api.shortcutBlocked?.()??api.blocked()){opened=false;button.hidden=true;panel.hidden=true;return;}
+  if(api.blocked()){opened=false;panel.hidden=true;}
   button.hidden=false;
   const p=count(),done=tasks.filter(t=>finished(t.id,p)).length;
   const current=tasks.find(t=>!finished(t.id,p));
