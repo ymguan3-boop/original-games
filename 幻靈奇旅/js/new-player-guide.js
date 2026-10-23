@@ -1,7 +1,7 @@
 /* 幻靈奇旅｜冒險任務清單：雷達下方小按鈕，所有新手任務與一次性獎勵共用既有存檔。 */
 (()=>{'use strict';
  const Rules=window.PhantomGameRules;
- let api=null,button=null,panel=null,opened=false,lastMarkup='';
+ let api=null,button=null,panel=null,opened=false,selectedTask='',lastMarkup='';
  const tasks=[
   {id:'starter',title:'第一步｜選擇初始幻靈',detail:'在大夢研究所與大夢博士互動，從大眼蛙、C囝仔、水毛蟲中挑選第一位夥伴。',reward:['pokeballs',10,'靈核球']},
   {id:'exit',title:'第一步｜走出研究所',detail:'由研究所出口回到初光鎮，正式展開冒險。',reward:['greatBallCount',5,'高階靈核球']},
@@ -57,11 +57,12 @@
   button.setAttribute('aria-label','開啟冒險任務清單');document.body.append(button);
   panel=document.createElement('aside');panel.id='journeyGuide';panel.setAttribute('role','region');
   panel.setAttribute('aria-label','冒險任務清單');panel.hidden=true;document.body.append(panel);
-  button.addEventListener('click',()=>{opened=!opened;refresh();});
+  button.addEventListener('click',()=>{opened=!opened;selectedTask='';refresh();});
   panel.addEventListener('click',e=>{
    const control=e.target.closest('button[data-journey]');if(!control)return;
    const mode=control.dataset.journey;
-   if(mode==='close'){opened=false;refresh();return;}
+   if(mode==='close'){opened=false;selectedTask='';refresh();return;}
+   if(mode==='inspect'){selectedTask=selectedTask===control.dataset.task?'':control.dataset.task;refresh();return;}
    if(mode==='action')perform(control.dataset.task);
   });
   document.addEventListener('pointerdown',e=>{
@@ -113,13 +114,13 @@
   if(!opened)return;
   let markup='<header><div><strong>冒險任務</strong><small>已完成 '+done+' / '+tasks.length+' 項 · 完成自動發獎</small></div><button type="button" data-journey="close" aria-label="關閉任務清單">×</button></header><ol class="journeyTasks">';
   for(const task of tasks){
-   const doneTask=finished(task.id,p),active=task===current;
+   const doneTask=finished(task.id,p),active=task===current,inspecting=selectedTask===task.id||!selectedTask&&active;
    const reward=task.reward[2]+' ×'+task.reward[1];
-   markup+='<li class="'+(doneTask?'is-done':active?'is-current':'is-later')+'"><div class="journeyTaskLine"><span class="journeyMark" aria-hidden="true">'+(doneTask?'✓':active?'✦':'·')+'</span><b>'+esc(task.title)+'</b></div>'+
+   markup+='<li class="'+(doneTask?'is-done':active?'is-current':'is-later')+'"><button class="journeyTaskLine" type="button" data-journey="inspect" data-task="'+task.id+'" aria-expanded="'+inspecting+'"><span class="journeyMark" aria-hidden="true">'+(doneTask?'✓':active?'✦':'·')+'</span><b>'+esc(task.title)+'</b><span class="journeyChevron">'+(inspecting?'−':'+')+'</span></button>'+
     '<small class="journeyReward">'+(doneTask?'已獲獎勵：':'完成獎勵：')+esc(reward)+'</small>'+
-    (active?'<p>'+esc(task.detail)+'</p>':'')+
-    (active&&task.id==='collect30'||active&&task.id==='collect50'?'<div class="journeyProgress"><i style="width:'+Math.min(100,Math.round(100*p.owned/p.total))+'%"></i></div><small>圖鑑 '+p.owned+' / '+p.total+' 種</small>':'')+
-    (active&&task.action?'<button class="journeyGo" type="button" data-journey="action" data-task="'+task.id+'">'+esc(task.action)+'</button>':'')+'</li>';
+    (inspecting?'<p>'+esc(task.detail)+'</p>':'')+
+    (inspecting&&(task.id==='collect30'||task.id==='collect50')?'<div class="journeyProgress"><i style="width:'+Math.min(100,Math.round(100*p.owned/p.total))+'%"></i></div><small>圖鑑 '+p.owned+' / '+p.total+' 種</small>':'')+
+    (inspecting&&active&&task.action?'<button class="journeyGo" type="button" data-journey="action" data-task="'+task.id+'">'+esc(task.action)+'</button>':'')+'</li>';
   }
   markup+='</ol>'+(done===tasks.length?'<p class="journeyAllDone">✦ 所有冒險任務完成！</p>':'')+'<small class="journeyFoot">完成任務後獎勵立即存入本機背包，不必手動領取，亦不能重複領取。</small>';
   if(markup!==lastMarkup){const scroll=panel.scrollTop;panel.innerHTML=markup;panel.scrollTop=scroll;lastMarkup=markup;}

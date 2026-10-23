@@ -799,6 +799,9 @@ function markJourneyTowerChallengeStarted(){
   ].filter(id=>!['chimchar','monferno','infernape'].includes(id))).size;
   if(count<window.PhantomGameRules.countAt(window.PhantomGameRules.mainSpeciesCount,window.PhantomGameRules.thresholds.tutorialTower))return;
   state.journeyGuide.towerEntered=true;
+  // 跨頁挑戰塔在真正開始挑戰時直接發放一次性獎勵，回到城鎮不再重複領取。
+  const rewards=state.journeyGuide.rewardsClaimed||(state.journeyGuide.rewardsClaimed={});
+  if(!rewards.tower){rewards.tower=true;state.masterBallCount=Math.max(0,Math.floor(Number(state.masterBallCount)||0))+10;}
   localStorage.setItem(key,JSON.stringify(state));
  }catch(error){console.warn('新手教學：挑戰塔進度暫時無法儲存',error);}
 }

@@ -30,3 +30,6 @@ body.battle-active #journeyTaskBtn,body.battle-active #journeyGuide{display:none
 @media(max-width:600px){#journeyTaskBtn{max-width:106px;padding:3px 6px;height:27px;min-height:27px;font-size:10px}#journeyGuide{width:min(292px,calc(100vw - 20px));padding:10px}}
 @media(max-height:520px){#journeyGuide{max-height:50dvh}}
 @media(prefers-reduced-motion:reduce){#journeyTaskBtn,#journeyGuide{scroll-behavior:auto}}
+
+#journeyGuide button.journeyTaskLine{display:flex;width:100%;gap:7px;align-items:flex-start;text-align:left;padding:0;border:0;border-radius:3px;background:transparent;color:inherit;min-height:16px;font:inherit;box-shadow:none}
+#journeyGuide .journeyTaskLine .journeyChevron{font-size:13px;line-height:1;color:#b7cdd2;padding-left:3px}
