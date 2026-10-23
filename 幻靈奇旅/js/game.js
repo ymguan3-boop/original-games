@@ -1645,6 +1645,88 @@ const combatStatusNames={poison:'中毒',burn:'燒傷',freeze:'冰凍',stun:'暈
 const combatStatusFor={fire:'burn',water:'defDown',grass:'heal',electric:'stun',ice:'freeze',psychic:'defDown',fairy:'stun',normal:'attackUp',dark:'defDown',dragon:'burn',ground:'defDown'};
 let combatAudio;
 function combatSound(element,strong=false){try{combatAudio||=new(window.AudioContext||window.webkitAudioContext)();combatAudio.resume();const ctx=combatAudio,now=ctx.currentTime,base=({fire:130,water:440,grass:330,electric:860,ice:680,psychic:250,fairy:590,normal:180,dark:95,dragon:145})[element]||300;for(let i=0;i<(strong?3:2);i++){const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type=element==='electric'?'sawtooth':element==='fire'||element==='dark'?'square':'sine';o.frequency.setValueAtTime(base*(i===0?1:i===1?1.5:2),now+i*.055);o.frequency.exponentialRampToValueAtTime(base*(element==='water'?1.8:.3),now+.4+i*.055);g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.024,now+.015+i*.055);g.gain.exponentialRampToValueAtTime(.0001,now+.48+i*.055);o.start(now+i*.055);o.stop(now+.52+i*.055);}}catch(e){}}
+// Little Goldfish (kyogre): mirror the original GLB's authored Attack/Ultimate choreography.
+// From authoring/water-spirits/spirits.js: bullet at 0.6s; backflip 0.25–1.15s;
+// thin water column 1.3–3.2s and ripples at 0.2/3.2s. Never replace its native clips.
+function littleGoldfishArenaFx(attacker,defender,strong){
+ const a=attacker.actor,d=defender.actor,group=new T.Group(),created=[];
+ const material=(color,opacity)=>new T.MeshBasicMaterial({color,transparent:true,opacity,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide});
+ const make=(geometry,shade,opacity)=>{const mesh=new T.Mesh(geometry,material(shade,opacity));mesh.visible=false;group.add(mesh);created.push(mesh);return mesh;};
+ const ball=make(new T.SphereGeometry(.15,12,10),0x7fd2ff,.95);
+ const glow=make(new T.SphereGeometry(.23,12,10),0xc9f5ff,.35);
+ const column=strong?make(new T.CylinderGeometry(.075,.095,1,12,1,true),0x7fd2ff,.82):null;
+ const halo=strong?make(new T.CylinderGeometry(.14,.18,1,12,1,true),0xdbf9ff,.28):null;
+ const ringA=make(new T.RingGeometry(.26,.34,28),0x8adfff,.78);
+ const ringB=strong?make(new T.RingGeometry(.38,.49,28),0xb9f2ff,.78):null;
+ ringA.rotation.x=-Math.PI/2;
+ if(ringB)ringB.rotation.x=-Math.PI/2;
+ battleGroup.add(group);
+ let released=false,source=null,sounded=false,disposed=false;
+ const mouth=()=>{
+  a.object.updateMatrixWorld(true);
+  const body=a.object.getObjectByName('body');
+  if(body)return body.localToWorld(new T.Vector3(0,.88,.62));
+  const start=a.root.getWorldPosition(new T.Vector3()).add(new T.Vector3(0,a.worldSize.y*.55,0));
+  const delta=d.root.position.clone().sub(a.root.position).setY(0);
+  if(delta.lengthSq()>.0001)start.addScaledVector(delta.normalize(),a.worldSize.z*.28);
+  return start;
+ };
+ const target=()=>d.root.getWorldPosition(new T.Vector3()).add(new T.Vector3(0,d.worldSize.y*.54,0));
+ const ripple=(mesh,position,t,start,duration,maxSize)=>{
+  if(!mesh)return;
+  const u=(t-start)/duration;
+  mesh.visible=u>=0&&u<=1;
+  if(!mesh.visible)return;
+  mesh.position.copy(position);
+  mesh.position.y=Math.max(.07,mesh.position.y);
+  mesh.scale.setScalar(.4+maxSize*u);
+  mesh.material.opacity=.78*(1-u);
+ };
+ const update=seconds=>{
+  if(disposed)return;
+  const t=Math.max(0,seconds);
+  const start=a.root.getWorldPosition(new T.Vector3()).setY(.09);
+  if(strong){
+   ripple(ringA,start,t,.2,.7,2.4);
+   const end=d.root.getWorldPosition(new T.Vector3()).setY(.09);
+   ripple(ringB,end,t,3.2,.58,3.0);
+   const active=t>=1.3&&t<=3.2;
+   ball.visible=glow.visible=column.visible=halo.visible=active;
+   if(!active)return;
+   if(!sounded){combatSound('water',true);sounded=true;}
+   const from=mouth(),to=target(),delta=to.clone().sub(from),length=delta.length(),dir=delta.clone().normalize();
+   if(length<.01)return;
+   const rise=Math.min(1,(t-1.3)/.16),fade=Math.min(1,(3.2-t)/.24),opacity=Math.max(0,Math.min(rise,fade)),distance=length*rise;
+   for(const beam of [column,halo]){
+    beam.position.copy(from).addScaledVector(dir,distance*.5);
+    beam.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),dir);
+    beam.scale.set(1,Math.max(.02,distance),1);
+    beam.material.opacity=(beam===column?.82:.28)*opacity*(.91+.09*Math.sin(t*22));
+   }
+   ball.position.copy(from).addScaledVector(dir,distance);
+   glow.position.copy(ball.position);
+   ball.material.opacity=.82*opacity;
+   glow.material.opacity=.35*opacity;
+  }else{
+   ringA.visible=ringB?.visible||false;
+   const active=t>=.6&&t<=1.2;
+   ball.visible=glow.visible=active;
+   if(!active)return;
+   if(!released){source=mouth();released=true;combatSound('water',false);}
+   const to=target(),u=Math.min(1,(t-.6)/.6);
+   ball.position.lerpVectors(source,to,u);
+   ball.position.y+=Math.sin(u*Math.PI)*.22;
+   glow.position.copy(ball.position);
+   ball.material.opacity=.95*(1-.25*u);
+   glow.material.opacity=.35*(1-.45*u);
+  }
+ };
+ const dispose=()=>{
+  if(disposed)return;disposed=true;group.removeFromParent();
+  for(const mesh of created){mesh.geometry.dispose();mesh.material.dispose();}
+ };
+ return {update,dispose};
+}
 // Goldfish King / Queen: use the model's authored Attack/Ultimate pose,
 // then launch a water orb or luminous water cannon from the facing mouth.
 // This effect is arena-only and is timed to SpiritCatalog's native clip release.
@@ -1850,7 +1932,7 @@ async function defeatSequence(entry){
 // 六屬性相剋：光 > 焰 > 森 > 潮 > 雷 > 念 > 光；剋制 ×1.5、被剋 ×0.75
 const TYPE_BEATS={光:'焰',焰:'森',森:'潮',潮:'雷',雷:'念',念:'光'};
 function typeMultiplier(attackType,defendType){return TYPE_BEATS[attackType]===defendType?1.5:TYPE_BEATS[defendType]===attackType?.75:1;}
-async function strike(attacker,defender,skill){if(!battle)return;const activeBattle=battle;if(statusTick(attacker)){attacker.actor.play('Hurt',true);battleLog(attacker.s.name+'受狀態影響，暫停一次行動。');await delay(600);return;}const strong=(skill.cost||0)>=3,binding=spiritCatalog.skill(attacker.s.id,skill),plan=SpiritCombat.attackPlan(attacker.s,attacker.actor,skill,binding||{}),p=attacker.actor.root.position.clone(),to=defender.actor.root.position.clone().add(new T.Vector3(0,defender.actor.worldSize.y*.55,0)),dir=to.clone().sub(p).setY(0).normalize();attacker.actor.root.rotation.y=Math.atan2(dir.x,dir.z);if(isReplacement(attacker.s.model))attacker.actor.controller?.setTargetDistance?.(p.distanceTo(defender.actor.root.position)/Math.max(.001,attacker.actor.object.scale.x));if(!plan.procedural)attacker.actor.play(plan.mode,true);if(plan.playbackRate)attacker.actor.actions[attacker.actor.mode]?.setEffectiveTimeScale(plan.playbackRate);battleLog(attacker.s.name+'使用'+skill.name+'！');const baseScale=attacker.actor.object.scale.clone(),baseY=attacker.actor.root.position.y,royalGoldfish=attacker.s.id==='groudon'||attacker.s.id==='rayquaza';const script=plan.nativeFx&&window.SpiritVfx?.has(attacker.actor.path||attacker.s.model)?SpiritVfx.script({T,path:attacker.actor.path||attacker.s.model,strong,attacker:attacker.actor,defender:defender.actor,group:battleGroup,now:()=>elapsed,add:(dur,fn,done)=>effects.push({start:elapsed,duration:dur,update:t=>fn(t,t*dur),done}),sound:(el,big)=>combatSound(el,big),color:attacker.s.color,element:attacker.s.element}):null;const melee=SpiritCombat.presentationKind(attacker.s,skill,plan)==='melee',targeted=!script&&(attacker.actor.controller||melee)?SpiritCombat.targetedPresentation({T,species:attacker.s,skill,plan,attacker:attacker.actor,defender:defender.actor,group:battleGroup}):null;if(targeted)plan.nativeFx=true;attacker.actor.duoFx?.setTarget?.(to);let fxReleased=false;const releaseFx=()=>{if(fxReleased)return;fxReleased=true;if(royalGoldfish)royalGoldfishAttackFx(attacker,defender,strong,plan.duration);else if(attacker.s.id==='pikachu'&&['白色光波','彩虹光束'].includes(skill.name))outoumanSkillFx(p.clone().add(new T.Vector3(0,1,0)),to,skill.name);else if(melee)combatRing(defender.actor.root.position,1.05,attacker.s.element,.3);else if(!plan.nativeFx)combatFx(p.clone().add(new T.Vector3(0,attacker.actor.worldSize.y*.55,0)),to,attacker.s.element,strong,Math.max(.1,plan.duration*(1-plan.releaseFraction)));if(strong&&!plan.nativeFx&&!royalGoldfish)combatRing(defender.actor.root.position,1.7,attacker.s.element,.8);};await new Promise(resolve=>effects.push({start:elapsed,duration:plan.duration,update:t=>{if(script)script.update(t*plan.duration);targeted?.update(t*plan.duration);if(t>=plan.releaseFraction)releaseFx();const gap=Math.max(1.2,Math.min(3.2,.3*attacker.actor.worldSize.y+.35*defender.actor.worldSize.y+.6)),meleeReach=Math.max(0,p.distanceTo(defender.actor.root.position)-gap),meleeTravel=Math.max(0,Math.min(1,(t-.04)/.28)),meleeRetreat=Math.max(0,Math.min(1,(t-.80)/.18)),meleeStep=meleeReach*(meleeTravel*meleeTravel*(3-2*meleeTravel))*(1-meleeRetreat*meleeRetreat*(3-2*meleeRetreat)),approach=melee?meleeStep:script?Math.max(0,p.distanceTo(defender.actor.root.position)-gap)*script.approach(t*plan.duration):targeted?targeted.approach(t*plan.duration):isReplacement(attacker.s.model)&&attacker.s.id==='raichu'&&strong?Math.max(0,p.distanceTo(defender.actor.root.position)-1.52*attacker.actor.object.scale.x):0;const ease=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);};attacker.actor.root.position.copy(p).addScaledVector(dir,script||targeted?approach:approach?approach*ease(t/.32)*(1-ease((t-.68)/.32)):Math.sin(t*Math.PI)*(binding?.nativeAttack===false?.35:0));const ps=script?.pose?.(t*plan.duration);if(ps){attacker.actor.root.position.y=baseY+ps.y;attacker.actor.object.scale.set(baseScale.x*(1+ps.sq),baseScale.y*(1-ps.sq),baseScale.z*(1+ps.sq));}if(melee)attacker.actor.root.position.y+=Math.sin(Math.PI*Math.min(1,t/.32))*.7;},done:()=>{targeted?.dispose();attacker.actor.duoFx?.setTarget?.(null);attacker.actor.root.position.copy(p);attacker.actor.object.scale.copy(baseScale);attacker.actor.root.position.y=baseY;resolve();}}));if(battle!==activeBattle)return;const eggResult=AvianRules.apply(attacker,defender,skill,battle.turn);if(eggResult){eggSkillFx(eggResult.kind,attacker,defender);attacker.energy=Math.max(0,attacker.energy-(skill.cost||1));updateHp(attacker);updateHp(defender);battleLog(eggResult.text);await delay(1600);attacker.actor.play('Idle');return;}const costumeBoost=battle?.kind==='arena'&&battle.allies.includes(attacker)?(S.state.costume==='electric'?1.2:1)*heroAttackBoost():1;
+async function strike(attacker,defender,skill){if(!battle)return;const activeBattle=battle;if(statusTick(attacker)){attacker.actor.play('Hurt',true);battleLog(attacker.s.name+'受狀態影響，暫停一次行動。');await delay(600);return;}const strong=(skill.cost||0)>=3,binding=spiritCatalog.skill(attacker.s.id,skill),plan=SpiritCombat.attackPlan(attacker.s,attacker.actor,skill,binding||{}),p=attacker.actor.root.position.clone(),to=defender.actor.root.position.clone().add(new T.Vector3(0,defender.actor.worldSize.y*.55,0)),dir=to.clone().sub(p).setY(0).normalize();attacker.actor.root.rotation.y=Math.atan2(dir.x,dir.z);if(isReplacement(attacker.s.model))attacker.actor.controller?.setTargetDistance?.(p.distanceTo(defender.actor.root.position)/Math.max(.001,attacker.actor.object.scale.x));if(!plan.procedural)attacker.actor.play(plan.mode,true);if(plan.playbackRate)attacker.actor.actions[attacker.actor.mode]?.setEffectiveTimeScale(plan.playbackRate);battleLog(attacker.s.name+'使用'+skill.name+'！');const baseScale=attacker.actor.object.scale.clone(),baseY=attacker.actor.root.position.y,royalGoldfish=attacker.s.id==='groudon'||attacker.s.id==='rayquaza',littleGoldfish=attacker.s.id==='kyogre';const script=littleGoldfish?littleGoldfishArenaFx(attacker,defender,strong):plan.nativeFx&&window.SpiritVfx?.has(attacker.actor.path||attacker.s.model)?SpiritVfx.script({T,path:attacker.actor.path||attacker.s.model,strong,attacker:attacker.actor,defender:defender.actor,group:battleGroup,now:()=>elapsed,add:(dur,fn,done)=>effects.push({start:elapsed,duration:dur,update:t=>fn(t,t*dur),done}),sound:(el,big)=>combatSound(el,big),color:attacker.s.color,element:attacker.s.element}):null;const melee=SpiritCombat.presentationKind(attacker.s,skill,plan)==='melee',targeted=!script&&(attacker.actor.controller||melee)?SpiritCombat.targetedPresentation({T,species:attacker.s,skill,plan,attacker:attacker.actor,defender:defender.actor,group:battleGroup}):null;if(targeted)plan.nativeFx=true;attacker.actor.duoFx?.setTarget?.(to);let fxReleased=false;const releaseFx=()=>{if(fxReleased)return;fxReleased=true;if(royalGoldfish)royalGoldfishAttackFx(attacker,defender,strong,plan.duration);else if(attacker.s.id==='pikachu'&&['白色光波','彩虹光束'].includes(skill.name))outoumanSkillFx(p.clone().add(new T.Vector3(0,1,0)),to,skill.name);else if(melee)combatRing(defender.actor.root.position,1.05,attacker.s.element,.3);else if(!plan.nativeFx)combatFx(p.clone().add(new T.Vector3(0,attacker.actor.worldSize.y*.55,0)),to,attacker.s.element,strong,Math.max(.1,plan.duration*(1-plan.releaseFraction)));if(strong&&!plan.nativeFx&&!royalGoldfish)combatRing(defender.actor.root.position,1.7,attacker.s.element,.8);};await new Promise(resolve=>effects.push({start:elapsed,duration:plan.duration,update:t=>{if(script)script.update(t*plan.duration);targeted?.update(t*plan.duration);if(t>=plan.releaseFraction)releaseFx();const gap=Math.max(1.2,Math.min(3.2,.3*attacker.actor.worldSize.y+.35*defender.actor.worldSize.y+.6)),meleeReach=Math.max(0,p.distanceTo(defender.actor.root.position)-gap),meleeTravel=Math.max(0,Math.min(1,(t-.04)/.28)),meleeRetreat=Math.max(0,Math.min(1,(t-.80)/.18)),meleeStep=meleeReach*(meleeTravel*meleeTravel*(3-2*meleeTravel))*(1-meleeRetreat*meleeRetreat*(3-2*meleeRetreat)),approach=melee?meleeStep:script?Math.max(0,p.distanceTo(defender.actor.root.position)-gap)*script.approach(t*plan.duration):targeted?targeted.approach(t*plan.duration):isReplacement(attacker.s.model)&&attacker.s.id==='raichu'&&strong?Math.max(0,p.distanceTo(defender.actor.root.position)-1.52*attacker.actor.object.scale.x):0;const ease=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);};attacker.actor.root.position.copy(p).addScaledVector(dir,script||targeted?approach:approach?approach*ease(t/.32)*(1-ease((t-.68)/.32)):Math.sin(t*Math.PI)*(binding?.nativeAttack===false?.35:0));const ps=script?.pose?.(t*plan.duration);if(ps){attacker.actor.root.position.y=baseY+ps.y;attacker.actor.object.scale.set(baseScale.x*(1+ps.sq),baseScale.y*(1-ps.sq),baseScale.z*(1+ps.sq));}if(melee)attacker.actor.root.position.y+=Math.sin(Math.PI*Math.min(1,t/.32))*.7;},done:()=>{script?.dispose?.();targeted?.dispose();attacker.actor.duoFx?.setTarget?.(null);attacker.actor.root.position.copy(p);attacker.actor.object.scale.copy(baseScale);attacker.actor.root.position.y=baseY;resolve();}}));if(battle!==activeBattle)return;const eggResult=AvianRules.apply(attacker,defender,skill,battle.turn);if(eggResult){eggSkillFx(eggResult.kind,attacker,defender);attacker.energy=Math.max(0,attacker.energy-(skill.cost||1));updateHp(attacker);updateHp(defender);battleLog(eggResult.text);await delay(1600);attacker.actor.play('Idle');return;}const costumeBoost=battle?.kind==='arena'&&battle.allies.includes(attacker)?(S.state.costume==='electric'?1.2:1)*heroAttackBoost():1;
  const damage=Math.max(8,Math.round((skill.power||attacker.s.attack)*(attacker.attackMultiplier??1)*costumeBoost*(attacker.status?.attackUp?1.45:1)*(defender.status?.defDown?1.4:1)*(attacker.status?.armor?1.3:1)/(defender.status?.armor?1.3:1)*typeMultiplier(attacker.s.type,defender.s.type)*(.88+Math.random()*.24)));const typeNote=({1.5:'屬性剋制，效果絕佳！',0.75:'屬性被剋，效果減弱。'})[typeMultiplier(attacker.s.type,defender.s.type)]||'';defender.hp=Math.max(0,defender.hp-damage);defender.actor.play('Hurt',true);if(!actorHasClip(defender.actor,'hurt'))void hitReact(defender.actor);attacker.energy=Math.max(0,attacker.energy-(skill.cost||1));if(SpiritReplacementRules.poison(defender,skill))updateHp(defender);else if(strong){const status=combatStatusFor[attacker.s.element]||'defDown';statusSet(['heal','attackUp'].includes(status)?attacker:defender,status,3);}updateHp(attacker);updateHp(defender);if(skill.buff)applyBuff(attacker,skill.buff);battleLog(defender.s.name+'受到 '+damage+' 點傷害。'+typeNote+(strong?'絕招效果已發動！':''));await delay(plan.procedural?260:600);attacker.actor.play('Idle');defender.actor.play('Idle');}
 function arenaCostumeHealing(b){
  if(!b||b.kind!=='arena'||S.state.costume!=='mist')return false;
