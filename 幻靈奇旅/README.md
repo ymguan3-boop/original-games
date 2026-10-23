@@ -4,6 +4,13 @@
 
 適合直式手機的原創 3D 探索、捕捉與小隊對戰遊戲。角色、幻靈、NPC、建物與道具採 Blender GLB；鳥族與小肥象家族則使用提供的原生 Three.js 模型與完整關節動作。
 
+## 2026-10-23 更新｜星露果與靈核球一致顯示、三名守護幻靈野外減半
+
+- **星露果（樹果）同樣無持有數量上限。** 保留 `berryCount` 存檔及旅人背包中的實際數量；頂部 HUD 若實際持有數超過 99 顆，即顯示紅色「99」，而剛好 99 顆維持原色。實際 100、522、1000 顆均不會被覆寫、截斷或刪除。
+- **一般場景守護幻靈縮小至既有體型一半：** 歐頭慢（`pikachu`）、小飯團（`mew`）、小山（`wigglytuff`）完成初光道館試煉後於初光鎮野外生成時，套用 `guardianOverworldScale=0.5`。光鳳鷹不變；三名守護者的道館試煉模型、擂台、圖鑑 3D 展示、固定隨行模型與既有角色動畫不受影響。
+- **單一邏輯來源與可回歸測試：** `js/game-rules.js` 新增 `guardianOverworldScale()`，並共用 `ballHudValue()` 處理三種靈核球及星露果的頂部顯示；`js/game.js` 只有在 `spawnWild()` 將倍率套用到戶外角色，與 `a.height`、`a.worldSize` 同步更新。`authoring/check-wild-family-sizes-ball-hud.cjs` 新增守護者與樹果 HUD 的測試情境。
+- **快取與存檔相容：** `index.html` 已更新 JS 快取版本；不重置 `phantom_journey_v1`，不影響原有圖鑑進度、已取得物品或舊存檔。實際手機 3D 外觀仍須實機驗收。
+
 ## 2026-10-23 更新｜三瀾犬／貓女／大熊野外倍率、靈核球不限上限
 
 - **一般場景體型增幅（相對本次修改前）：** 汪汪犬 `torchic` ×1.3、浪鳴犬 `combusken` ×1.3、三瀾犬 `blaziken` ×1.5；小貓娘 `turtwig` ×1.3、靈貓姬 `grotle` ×1.3、雙刃貓女 `torterra` ×1.3；小熊 `mudkip` ×1.3、壯熊 `marshtomp` ×1.3、大熊 `swampert` ×1.5。
