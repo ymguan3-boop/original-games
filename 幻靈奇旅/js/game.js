@@ -555,7 +555,7 @@ async function spawnWild(species,position,guardianEvent=null){
  if((species.id==='articuno'||species.id==='entei')&&!pondRespawnAllowed(species.id)){removeActor(a);return null;}
  const dimensions=a.worldSize||posedBounds(a.object).getSize(new T.Vector3()),maxSpan=Math.min(6,Number(rule.maxSpan)||6),ratio=Math.min(1,maxSpan/Math.max(dimensions.x,dimensions.z,.001));if(ratio<1){a.object.scale.multiplyScalar(ratio);a.object.position.multiplyScalar(ratio);a.height*=ratio;a.worldSize.multiplyScalar(ratio);}
  // Outdoor capturable instances only; gym/arena/collection visuals keep their own sizes.
- const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?3/4:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;
+ const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(['chikorita','bayleef','meganium'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?3/4:species.id==='giratina'?2/3:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;
  if(species.id==='jigglypuff')a.eggEncounter={origin:'jigglypuff',failures:0};
  if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);
  // Every wild water caterpillar, including a lab milestone spawn, belongs to
@@ -1114,6 +1114,25 @@ function changeMount(id){
  if(modal&&$('modalTitle').textContent.includes('寵物商人'))showPetShop();
  toast(S.state.mountActive?'已選擇'+MountEconomy.mounts.find(m=>m.id===id).name+'，一般場景移動速度 +50%。':'已取消騎乘。');
 }
+// Read the joystick's *rendered* rectangle, including mobile breakpoints,
+// so the mount/dismount control stays centred directly above it on every screen.
+function alignMountButton(){
+ const button=$('mountBtn'),stick=$('joystick');
+ if(!button||!stick||button.hidden)return;
+ const rect=stick.getBoundingClientRect(),parent=$('controls')?.getBoundingClientRect();
+ if(!parent||!rect.width||!rect.height)return;
+ const centre=rect.left+rect.width/2-parent.left;
+ const desiredBottom=rect.top-parent.top-12;
+ button.style.position='absolute';
+ button.style.left=centre+'px';
+ button.style.top='auto';
+ button.style.bottom='auto';
+ button.style.transform='translateX(-50%)';
+ // Measure after clearing fixed-position CSS; keep whole button above joystick.
+ button.style.top=Math.max(8,desiredBottom-button.getBoundingClientRect().height)+'px';
+}
+addEventListener('resize',alignMountButton);
+addEventListener('orientationchange',alignMountButton);
 function tickMount(dt){
  if(!overworldMount||!hero)return;
  const selected=mountOwnership[S.state.mountActive]?S.state.mountActive:null;
@@ -1121,7 +1140,7 @@ function tickMount(dt){
  const allowed=mountAllowed()&&!roll;
  overworldMount.update(dt,{position:S.player,yaw:hero.root.rotation.y,moving:tickMount.previous?.distanceToSquared(S.player)>.000001,speed:tickMount.previous?Math.sqrt(tickMount.previous.distanceToSquared(S.player))/Math.max(.001,dt):0,allowed,action:throwing?'Throw':hero.mode});
  (tickMount.previous||=new T.Vector3()).copy(S.player);
- const button=$('mountBtn');if(button){button.hidden=!mountAllowed()||!Object.values(mountOwnership).some(Boolean);button.textContent=riding()?'下車 · '+MountEconomy.mounts.find(m=>m.id===selected)?.name:'選擇騎乘';button.setAttribute('aria-pressed',String(riding()));}
+ const button=$('mountBtn');if(button){const wasHidden=button.hidden,oldText=button.textContent;button.hidden=!mountAllowed()||!Object.values(mountOwnership).some(Boolean);button.textContent=riding()?'下車 · '+MountEconomy.mounts.find(m=>m.id===selected)?.name:'選擇騎乘';button.setAttribute('aria-pressed',String(riding()));if(!button.hidden&&(wasHidden||oldText!==button.textContent))alignMountButton();}
 }
 function showPetShop(){
  const t=towerProgress();
@@ -1368,7 +1387,7 @@ function towerCardCounts(){const t=towerProgress();return Object.fromEntries(tow
 function towerCardOwned(id){const t=towerProgress(),s=towerMonsters.find(s=>s.id===id);return !!s&&(!!t.registeredCards?.[s.name+'卡片']||number(t.cards[s.name+'卡片'])>0||!!s.speciesId&&owned(s.speciesId));}
 function monsterCard(s,detail=false){const n=number(towerCardCounts()[s.id]),registered=towerCardOwned(s.id),color=s.cardFrame||(s.id==='fire'?'red':'purple'),moves=s.skills?.map(k=>[k.name,k.damage||k.power||0])||{forest:[['衝鋒突進',32],['古林震地',34]],ice:[['霜牙衝刺',32],['冰圈爆破',29]],fire:[['烈焰吐息',38],['熔岩爆發',29]]}[s.id]||[];const card=`<article class="collectionCard towerMonsterCard" data-frame="${color}" data-locked="${!registered}"><span class="collectionNumber">No.${spiritCatalog.towerNumber(s.id)}</span><img class="collectionArt" src="${esc(s.portrait)}" alt="${esc(s.name)}肖像" loading="lazy" decoding="async"><img class="collectionFrame" src="assets/cards/frame.png" alt="" decoding="async"><h3 class="collectionName">${registered?esc(s.name):'未知魔物'}</h3><div class="collectionInfo"><div class="collectionType">${registered?esc(s.type||s.element):'???'} · 挑戰塔魔物</div><div class="collectionStats"><span>HP ${registered?s.hp:'???'}</span><span>攻擊 ${registered?s.attack:'???'}</span><span class="collectionBond">卡牌 ×${n}</span></div><ul class="collectionSkills">${moves.map(([name,power])=>`<li><span>${name}</span><b>${power}／傷害</b></li>`).join('')}</ul><div class="collectionSynopsis">${esc(s.description.slice(0,28))}…</div></div></article>`;return detail?card:`<button class="collectionThumb towerMonsterThumb" data-monster="${s.id}" ${registered?'':'disabled'} aria-label="${registered?'查看'+esc(s.name)+'卡牌':'未取得魔物卡牌，取得卡牌後解鎖'}">${card}</button>`;}
 function showMonsterDex(){openModal('挑戰塔魔物圖鑑',`<div class="toolbar"><button data-menu="dex">← 幻靈圖鑑</button><button data-menu="tower">前往挑戰塔</button></div><p class="muted">六位挑戰塔魔物與獨立首領以挑戰塔戰鬥取得收藏卡。擊敗後有 4% 機率掉落卡牌，靠近卡牌手動拾取後收錄，素材與卡片會自動儲存。</p><div class="towerMonsterGrid">${towerMonsters.map(s=>monsterCard(s)).join('')||'<p>魔物卡牌尚未載入，請重新整理。</p>'}</div>`);}
-function showMonsterDetail(id){const s=towerMonsters.find(s=>s.id===id);if(!s)return;if(!towerCardOwned(id))return toast('拾取這隻魔物的收藏卡後，才能解鎖圖鑑。');openModal(s.name+' · 魔物收藏卡',`<div class="collectionDetail towerMonsterDetail">${monsterCard(s,true)}<p class="collectionDescription">${esc(s.description)}</p>${s.speciesId?`<div class="toolbar"><button data-view="${s.speciesId}">查看立體模型</button><button data-add="${s.speciesId}">加入競技隊伍</button></div>`:''}<p class="collectionEvolution">${towerCardOwned(s.id)?'已登錄圖鑑':'拾取魔物卡牌後收錄'} · 攻擊欄為憤怒狀態最高傷害</p></div><div class="toolbar"><button data-menu="monsters">返回魔物圖鑑</button><button data-menu="tower">前往挑戰塔</button></div>`);}
+function showMonsterDetail(id){const s=towerMonsters.find(s=>s.id===id);if(!s)return;if(!towerCardOwned(id))return toast('拾取這隻魔物的收藏卡後，才能解鎖圖鑑。');openModal(s.name+' · 魔物收藏卡',`<div class="collectionDetail towerMonsterDetail">${monsterCard(s,true)}<p class="collectionDescription">${esc(s.description)}</p><p class="collectionEvolution">${towerCardOwned(s.id)?'已登錄圖鑑':'拾取魔物卡牌後收錄'} · 攻擊欄為憤怒狀態最高傷害</p></div><div class="towerMonsterButtonGrid">${s.speciesId?`<button data-view="${s.speciesId}">查看立體模型</button><button data-add="${s.speciesId}">加入競技隊伍</button>`:''}<button data-menu="monsters">返回魔物圖鑑</button><button data-menu="tower">前往挑戰塔</button></div>`);}
 function towerDexHtml(){return `<section class="towerDex"><h3>星穹挑戰塔 · 魔物卡牌</h3><div class="towerMonsterGrid">${towerMonsters.map(s=>monsterCard(s)).join('')}</div></section>`;}
 function showBag(){openModal('旅人背包',`<div class="row">靈核球 <b>${S.state.pokeballs}</b></div><div class="row">高階靈核球 <b>${S.state.greatBallCount}</b></div><div class="row">星耀幻靈球 <b>${S.state.masterBallCount}</b></div><div class="row">星露果 <b>${S.state.berryCount}</b></div>${Object.entries(itemNames).map(([k,n])=>`<div class="row">${n}<b>${number(S.state.items[k])}</b></div>`).join('')}<p class="muted">回復藥恢復生命；裂甲粉降低敵方防禦；勇氣結晶提升我方攻擊。可從居民對話及不定時補給廣播獲得。</p>`);}
 function exportSave(){showReset();}
@@ -1699,7 +1718,7 @@ function shiftArenaRings(arena){
 }
 
 async function battleActors(side){const b=battle;if(!b)return;let entries=b.gym?[[b.enemies[0],0,-3.2,0]]:[[b.allies[b.ai],-1.75,6,Math.PI*.75],[b.enemies[b.ei],1.75,-6,-Math.PI*.25]];if(side&&!b.gym){const keep=side==='ally'?b.enemies[b.ei]:b.allies[b.ai],gone=side==='ally'?b.allies[b.ai]:b.enemies[b.ei];for(const old of [...b.actors])if(old===keep.actor)continue;else{removeActor(old);b.actors.splice(b.actors.indexOf(old),1);}if(gone.label&&gone.label.el.isConnected)removeLabel(gone.label);entries=entries.filter(e=>e[0]!==keep);}else{for(const a of b.actors)removeActor(a);b.actors=[];}for(const [entry,x,z,ry]of entries){// Arena-only appearance multipliers; preserve the existing Initial Light gym guardian size.
-const baseHeight=b.gym?3.05:(entry===b.enemies[b.ei]?2.55:2.05),arenaScale=b.gym?1:SpiritCombat.arenaScale(entry.s)*({blissey:2,zapdos:1.5,pikachu:1.5,chikorita:1,bayleef:1.5,meganium:1.5,torterra:1.5}[entry.s.id]||1),height=b.gym&&entry.s.id==='blissey'?baseHeight*2.5:baseHeight*arenaScale;const a=await actor(entry.s.model,height,battleGroup);a.root.position.set(x,0,z);if(b.gym&&b.sceneConfig?.enemySpawn)a.root.position.fromArray(b.sceneConfig.enemySpawn);a.root.rotation.y=ry;entry.actor=a;b.actors.push(a);entry.label=addLabel(a,'','nameLabel hpLabel');if(side){a.root.visible=false;}if(b.gym)entry.label.el.classList.add('gymTrustLabel');else entry.label.el.classList.add(entry===b.allies[b.ai]?'arenaAllyHp':'arenaEnemyHp');updateHp(entry);if(side)await fadeActor(a,0,1,.45);}}
+const baseHeight=b.gym?3.05:(entry===b.enemies[b.ei]?2.55:2.05),arenaScale=b.gym?1:SpiritCombat.arenaScale(entry.s)*({blissey:2,zapdos:1.5,pikachu:1.5,chikorita:1,bayleef:1.5,meganium:1.5,torterra:1.5,mudkip:1.3,marshtomp:1.3,swampert:1.3}[entry.s.id]||1),height=b.gym&&entry.s.id==='blissey'?baseHeight*2.5:baseHeight*arenaScale;const a=await actor(entry.s.model,height,battleGroup);a.root.position.set(x,0,z);if(b.gym&&b.sceneConfig?.enemySpawn)a.root.position.fromArray(b.sceneConfig.enemySpawn);a.root.rotation.y=ry;entry.actor=a;b.actors.push(a);entry.label=addLabel(a,'','nameLabel hpLabel');if(side){a.root.visible=false;}if(b.gym)entry.label.el.classList.add('gymTrustLabel');else entry.label.el.classList.add(entry===b.allies[b.ai]?'arenaAllyHp':'arenaEnemyHp');updateHp(entry);if(side)await fadeActor(a,0,1,.45);}}
 function updateHp(e){if(!e?.label)return;if(battle?.gym){const max=e.maxHp||e.s.hp,progress=max-e.hp;e.label.el.innerHTML='<b>'+esc(e.s.name)+'</b><div class="hp"><i style="width:'+Math.max(0,progress)/max*100+'%"></i></div><small>信任 '+Math.round(progress/max*100)+'% · 締約試煉</small>';return;}const max=e.maxHp||e.s.hp,status=Object.keys(e.status||{}).filter(k=>e.status[k]>0).map(k=>combatStatusNames[k]||k);if(e.attackMultiplier===.5)status.push('攻擊減半');e.label.el.innerHTML=`<b>${esc(e.s.name)}</b><div class="hp"><i style="width:${Math.max(0,e.hp)/max*100}%"></i></div><small>${Math.max(0,e.hp)} / ${max}${battle?.gym?'':' · 能量 '+e.energy}</small>${status.length?`<small style="display:block;color:#fff3a7">${status.map(esc).join(' · ')}</small>`:''}`;}
 function battleLog(t){$('battleLog').textContent=t;}
 function battleItems(){const b=battle;if(!b||b.busy)return;const defs=[['potion',itemNames.potion,'回復 45 HP'],['armorBreak',itemNames.armorBreak,b.gym?'敵方減防 6 秒':'敵方減防 3 回合'],['attackBoost',itemNames.attackBoost,b.gym?'旅人加攻 12 秒':'己方加攻 3 回合']];$('battleActions').innerHTML=defs.map(([key,name,desc])=>`<button data-battle="item:${key}" ${number(S.state.items[key])<1?'disabled':''}>${name}<small>${desc} · ${number(S.state.items[key])} 份</small></button>`).join('')+'<button data-battle="itemsBack">返回戰鬥</button>'; }
