@@ -1,5 +1,28 @@
-#mountBtn{position:fixed;left:24px;bottom:max(180px,calc(env(safe-area-inset-bottom) + 175px));z-index:4;pointer-events:auto;max-width:150px;padding:8px 14px;border-radius:22px;background:#f9f0d6ed;border:2px solid #bfa66d;font-size:13px;box-shadow:0 3px 12px #26396022}
+/* Fallback for joystick-centred mount switch; JS aligns to the actual joystick rect. */
+#mountBtn{
+ position:absolute;
+ left:92px;
+ top:auto;
+ bottom:calc(max(25px,env(safe-area-inset-bottom)) + 152px);
+ transform:translateX(-50%);
+ z-index:4;
+ pointer-events:auto;
+ width:max-content;max-width:min(188px,calc(100vw - 24px));
+ padding:8px 14px;border-radius:22px;
+ background:#f9f0d6ed;border:2px solid #bfa66d;
+ font-size:13px;font-weight:700;line-height:1.4;
+ box-shadow:0 3px 12px #26396022;
+ white-space:nowrap;
+}
 #mountBtn[aria-pressed=true]{background:#345b4e;color:#fff3cb}
+#mountBtn[hidden]{display:none!important}
 .mountOffer{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:14px 0;border-bottom:1px solid #d5c599}
 .mountOffer strong{display:block;font-size:18px}.mountOffer small{display:block;font-size:12px;line-height:1.8}.mountOffer button{align-self:center;min-height:44px}
-@media(max-width:540px){#mountBtn{left:18px;bottom:max(165px,calc(env(safe-area-inset-bottom) + 160px));font-size:12px}.mountOffer{grid-template-columns:1fr}.mountOffer button{justify-self:start}}
+@media(max-width:540px){
+ #mountBtn{
+  left:78px;
+  bottom:calc(env(safe-area-inset-bottom) + 27px + 124px + 12px);
+  font-size:12px;max-width:min(184px,calc(100vw - 24px));
+ }
+ .mountOffer{grid-template-columns:1fr}.mountOffer button{justify-self:start}
+}
