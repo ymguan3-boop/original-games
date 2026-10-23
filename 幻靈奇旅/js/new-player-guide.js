@@ -1,6 +1,8 @@
 /* 幻靈奇旅｜冒險任務清單：雷達下方小按鈕，所有新手任務與一次性獎勵共用既有存檔。 */
 (()=>{'use strict';
  const Rules=window.PhantomGameRules;
+ const GYM_STAGES=Object.freeze([{id:'gym_1',name:'雷電奔襲'},{id:'gym_2',name:'紫波滾動'},{id:'gym_3',name:'木頭人驚跳'},{id:'gym_4',name:'光鳳破綻'}]);
+ const gymCompleted=()=>GYM_STAGES.filter(g=>api?.state?.gyms?.[g.id]?.cleared).length;
  let api=null,button=null,panel=null,opened=false,selectedTask='',lastMarkup='';
  const tasks=[
   {id:'starter',title:'第一步｜選擇初始幻靈',detail:'在大夢研究所與大夢博士互動，從大眼蛙、C囝仔、水毛蟲中挑選第一位夥伴。',reward:['pokeballs',10,'靈核球']},
@@ -12,6 +14,7 @@
   {id:'collect30',title:'第四步｜圖鑑達 30%',detail:'累積 18／58 種不同的一般幻靈圖鑑卡片。重複捕捉同一種類不增加種類數。',reward:['masterBallCount',10,'星耀靈核球']},
   {id:'arena',title:'第四步｜完成幻靈競技',detail:'編滿三位不同的已締約幻靈，找到擂台訓練家，完成一場 3 對 3 競技擂台（勝敗皆計）。',action:'導航至擂台訓練家',reward:['masterBallCount',10,'星耀靈核球']},
   {id:'collect50',title:'第五步｜圖鑑達 50%',detail:'累積 29／58 種不同的一般幻靈圖鑑卡片。',reward:['masterBallCount',10,'星耀靈核球']},
+  {id:'gym',title:'第五步｜初光道館四大守護者',detail:'前往初光道館進行「初光挑戰」，分別擊敗雷電奔襲、紫波滾動、木頭人驚跳、光鳳破綻四大守護者。四項試煉全部通關可立即獲得星耀靈核球 ×30；已通關紀錄直接計入，不需重打。',action:'導航至初光道館',reward:['masterBallCount',30,'星耀靈核球']},
   {id:'tower',title:'第五步｜挑戰星穹挑戰塔',detail:'進入挑戰塔，實際選擇魔物關卡並開始戰鬥才算完成；只進入塔內不算。',action:'導航至星穹挑戰塔',reward:['masterBallCount',10,'星耀靈核球']}
  ];
  const flags=()=>api?.state?.journeyGuide;
@@ -28,6 +31,7 @@
    case 'collect30':return p.owned>=Rules.countAt(p.total,Rules.thresholds.tutorialArena);
    case 'arena':return !!f?.arenaFinished;
    case 'collect50':return p.owned>=Rules.countAt(p.total,Rules.thresholds.tutorialTower);
+   case 'gym':return gymCompleted()===GYM_STAGES.length;
    case 'tower':return !!f?.towerEntered;
    default:return false;
   }
@@ -95,6 +99,10 @@
   else if(id==='arena'){
    if(api.inBuilding())api.notice('請先離開建築物，再導航至擂台訓練家。');
    else api.navigate('npc','arena_coach');
+  }else if(id==='gym'){
+   if(api.inGym()){opened=false;api.showGyms();}
+   else if(api.inBuilding())api.notice('請先離開目前建築物，再導航至初光道館。');
+   else api.navigate('building','gym_light');
   }else if(id==='tower'){
    if(api.inBuilding())api.notice('請先離開建築物，再導航至挑戰塔。');
    else api.navigate('building','tower_starspire');
@@ -123,6 +131,7 @@
     '<small class="journeyReward">'+(doneTask?'已獲獎勵：':'完成獎勵：')+esc(reward)+'</small>'+
     (inspecting?'<p>'+esc(task.detail)+'</p>':'')+
     (inspecting&&(task.id==='collect30'||task.id==='collect50')?'<div class="journeyProgress"><i style="width:'+Math.min(100,Math.round(100*p.owned/p.total))+'%"></i></div><small>圖鑑 '+p.owned+' / '+p.total+' 種</small>':'')+
+    (inspecting&&task.id==='gym'?'<div class="journeyProgress"><i style="width:'+(gymCompleted()*100/GYM_STAGES.length)+'%"></i></div><small class="journeyGymCount">初光挑戰 '+gymCompleted()+' / '+GYM_STAGES.length+' 項已通關</small><div class="journeyGymStages">'+GYM_STAGES.map(g=>'<span class="'+(api.state.gyms?.[g.id]?.cleared?'cleared':'')+'">'+(api.state.gyms?.[g.id]?.cleared?'✓':'○')+' '+esc(g.name)+'</span>').join('')+'</div>':'')+
     (inspecting&&active&&task.action?'<button class="journeyGo" type="button" data-journey="action" data-task="'+task.id+'">'+esc(task.action)+'</button>':'')+'</li>';
   }
   markup+='</ol>'+(done===tasks.length?'<p class="journeyAllDone">✦ 所有冒險任務完成！</p>':'')+'<small class="journeyFoot">完成任務後獎勵立即存入本機背包，不必手動領取，亦不能重複領取。</small>';
@@ -156,6 +165,7 @@
   onWildCapture(){record('firstWildCapture');},
   onMenuOpened(){if(flags()?.firstWildCapture)record('menuViewed');else refresh();},
   onArenaFinished(){record('arenaFinished');},
+  onGymCleared(){rewardSync(true);refresh();},
   onTowerChallengeStarted(){record('towerEntered');},
   menuHelpHtml,get stage(){return tasks.find(t=>!finished(t.id))?.id||'done';}
  };
