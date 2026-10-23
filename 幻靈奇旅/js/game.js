@@ -1081,8 +1081,8 @@ let modalBack=null;
 function goModal(open,reopenCurrent){const prev=modalBack;open();if(reopenCurrent)modalBack=()=>{reopenCurrent();modalBack=prev;};}
 function modalReopen(){const q=$('dexSearch');if(q){const value=q.value,filter=$('dexFilter')?.value;return()=>{showDex();$('dexSearch').value=value;if(filter&&$('dexFilter'))$('dexFilter').value=filter;renderCards();};}return null;}
 function modalBackOrClose(){if(modalBack&&!evolutionBusy){const back=modalBack;modalBack=null;back();}else closeModal();}
-function openModal(title,html){closeDialog();stopViewer();modal=true;modalBack=null;S.stick.x=S.stick.y=0;$('stick').style.transform='';$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').hidden=false;}
-function closeModal(){if(evolutionBusy)return;if($('modalTitle')?.textContent==='大夢研究所 · 選擇初始幻靈')deferLabChoice();stopViewer();modal=false;$('modal').hidden=true;}
+function openModal(title,html){closeDialog();stopViewer();modal=true;modalBack=null;S.stick.x=S.stick.y=0;$('stick').style.transform='';$('modalTitle').textContent=title;$('modalBody').innerHTML=html;document.body.classList.toggle('quest-shortcut-modal',['旅人手冊','幻靈圖鑑'].includes(title));$('modal').hidden=false;window.PhantomJourneyGuide?.refresh?.();}
+function closeModal(){if(evolutionBusy)return;if($('modalTitle')?.textContent==='大夢研究所 · 選擇初始幻靈')deferLabChoice();stopViewer();modal=false;$('modal').hidden=true;document.body.classList.remove('quest-shortcut-modal');window.PhantomJourneyGuide?.refresh?.();}
 function deferLabChoice(){
  if(place?.id!=='dream_lab'||labClaimed())return;
  labEvent={...(labEvent||{}),phase:'deferred',rearm:false};

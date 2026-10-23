@@ -918,3 +918,13 @@ body.battle-active #topBar #journeyTaskBtn{display:none!important}
    and honor the native hidden attribute even under ID-scoped flex rules. */
 #topBar #dexBtn .dexIcon{display:inline-block!important}
 #topBar #journeyTaskBtn[hidden]{display:none!important}
+
+
+/* Allow the quest HUD shortcut to remain visibly above the modal backdrop
+   in the two permitted screens. Move only those modals below the compact 34px HUD. */
+body.quest-shortcut-modal #modal{
+ top:calc(env(safe-area-inset-top,0px) + 42px);
+}
+body.quest-shortcut-modal #modal .panel{
+ max-height:calc(100dvh - env(safe-area-inset-top,0px) - 54px);
+}
