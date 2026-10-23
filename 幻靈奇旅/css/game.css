@@ -807,3 +807,108 @@ body.battle-active:not(.gym-active) #labels .arenaAllyHp{
  #topBar #journeyTaskBtn{flex-basis:72px}
  #topBar #hud>.supply{flex:1 0 39px}
 }
+
+
+/* 2026-10-23 手機 HUD 最終精簡：手冊／圖鑑／普通球／高階球／星耀球／星露果／任務。
+   只顯示圖示與即時數字；七項單排，頂部總高度 34px。 */
+#topBar{
+ position:fixed;
+ top:calc(env(safe-area-inset-top,0px) + 4px);
+ left:50%;right:auto;
+ width:calc(100% - 8px);max-width:540px;
+ transform:translateX(-50%);
+ height:34px;
+ display:flex;
+ align-items:center;justify-content:flex-start;
+ flex-wrap:nowrap;
+ gap:2px;
+ overflow-x:auto;overflow-y:hidden;
+ z-index:12;
+ scrollbar-width:none;
+}
+#topBar::-webkit-scrollbar{display:none}
+#topBar #hud{display:contents!important}
+#topBar #menuBtn,
+#topBar #dexBtn,
+#topBar #journeyTaskBtn,
+#topBar #hud>.supply{
+ position:relative!important;
+ top:auto!important;right:auto!important;left:auto!important;bottom:auto!important;
+ transform:none!important;
+ display:inline-flex!important;
+ align-items:center;justify-content:center;
+ box-sizing:border-box;
+ height:34px!important;
+ min-height:34px!important;
+ max-height:34px!important;
+ padding:0 2px!important;
+ margin:0!important;
+ min-width:0!important;
+ max-width:none!important;
+ white-space:nowrap;
+ overflow:hidden;
+ border-radius:8px;
+ flex-wrap:nowrap;
+ gap:2px!important;
+ vertical-align:middle;
+ box-shadow:0 2px 6px #132d3c35;
+}
+#topBar #menuBtn{
+ flex:0 0 32px!important;
+ width:32px!important;
+ background:#1b3746f0;color:#f4f6ec;
+ border:1px solid #cfdfdb70;
+}
+#topBar #menuBtn .menuIcon{font-size:18px;line-height:1}
+#topBar #dexBtn{
+ flex:0 0 54px!important;
+ width:54px!important;
+ background:#3e5796ed;color:#edf1ff;
+ border:1px solid #a7bdeb88;
+ font-size:9px;
+}
+#topBar #dexBtn .dexIcon{font-size:13px;line-height:1}
+#topBar #dexBtn b{font-size:9px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums;margin:0}
+#topBar #hud>.supply{
+ flex:1 1 0!important;
+ width:auto!important;
+ min-width:38px!important;
+ border:1px solid #ffffff3d;
+ background:#172a3dea;
+ color:#ffffff;
+ font-size:10px!important;
+}
+#topBar #hud>.supply .coreBall,
+#topBar #hud>.supply .fruitIcon{
+ width:13px!important;height:13px!important;
+ flex:0 0 13px!important;
+ display:inline-block!important;
+ margin:0!important;
+}
+#topBar #hud>.supply b{
+ font-size:10px!important;font-variant-numeric:tabular-nums;
+ line-height:1;white-space:nowrap;
+ margin:0!important;
+}
+#topBar #journeyTaskBtn{
+ flex:0 0 48px!important;
+ width:48px!important;
+ background:#263e4deF;color:#ffe5a4;
+ border:1px solid #c7ae758c;
+ font-size:9px!important;
+ letter-spacing:0;
+ z-index:12;
+}
+#topBar #journeyTaskBtn .taskIcon{font-size:12px!important;color:#ffe5a4}
+#topBar #journeyTaskBtn .taskCount{font-size:9px!important;color:#fff4e0}
+#radar{top:calc(env(safe-area-inset-top,0px) + 49px)}
+/* 當對戰啟動，保留庫存顯示，但隱藏兩個選單按鈕及任務入口。 */
+body.battle-active #topBar #menuBtn,
+body.battle-active #topBar #dexBtn,
+body.battle-active #topBar #journeyTaskBtn{display:none!important}
+@media(max-width:330px){
+ #topBar #menuBtn{flex-basis:31px!important;width:31px!important}
+ #topBar #dexBtn{flex-basis:52px!important;width:52px!important}
+ #topBar #journeyTaskBtn{flex-basis:46px!important;width:46px!important}
+ #topBar #hud>.supply{min-width:37px!important}
+}

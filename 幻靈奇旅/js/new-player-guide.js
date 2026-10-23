@@ -60,7 +60,7 @@
   button.setAttribute('aria-controls','journeyGuide');button.setAttribute('aria-expanded','false');
   button.setAttribute('aria-label','開啟冒險任務清單');
   const bar=document.getElementById('topBar'),hud=document.getElementById('hud');
-  if(bar&&hud)bar.insertBefore(button,hud);else document.body.append(button);
+  if(bar)bar.append(button);else document.body.append(button);
   panel=document.createElement('aside');panel.id='journeyGuide';panel.setAttribute('role','region');
   panel.setAttribute('aria-label','冒險任務清單');panel.hidden=true;document.body.append(panel);
   button.addEventListener('click',()=>{opened=!opened;selectedTask='';refresh();});
@@ -130,7 +130,8 @@
   button.hidden=false;
   const p=count(),done=tasks.filter(t=>finished(t.id,p)).length;
   const current=tasks.find(t=>!finished(t.id,p));
-  button.innerHTML='✦ 任務清單 <span>'+done+'/'+tasks.length+'</span>';
+  button.innerHTML='<span class="taskIcon" aria-hidden="true">✦</span><span class="taskCount">'+done+'/'+tasks.length+'</span>';
+  button.title='冒險任務清單 '+done+'/'+tasks.length;
   button.setAttribute('aria-expanded',String(opened));
   button.setAttribute('aria-label','冒險任務清單，已完成 '+done+' / '+tasks.length+'，'+(opened?'收合':'展開'));
   layout();
