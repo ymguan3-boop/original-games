@@ -46,7 +46,7 @@ hud();
 assert.equal(members.ballCount.textContent,'99');
 assert.equal(members.greatCount.textContent,'99');
 assert.equal(members.masterCount.textContent,'99');
-assert.equal(members.berryCount.textContent,'522');
+assert.equal(String(members.berryCount.textContent),'522'); // DOM stringifies property writes; mock keeps assigned numeric type.
 assert(members.ballCount.classList.contains('ballOver99'));
 assert(!members.greatCount.classList.contains('ballOver99'));
 assert(members.masterCount.classList.contains('ballOver99'));
