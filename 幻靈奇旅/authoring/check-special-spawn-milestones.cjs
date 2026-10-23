@@ -62,6 +62,6 @@ assert.equal(x.eligible(byId.dialga),true);assert.equal(x.eligible(byId.giratina
 assert.equal(x.milestoneTargets().length,0);
 assert(game.includes('progress:()=>dexStats()'),'Tutorial must reuse same denominator');
 assert(game.includes('S.state.worldFlags.labLegendWildCaught[who.species.id]=true'),'One-time chosen starter wild capture must persist');
-assert(load('index.html').includes('js/game.js?v=20261023-rules-sync-v2'));
-assert(load('index.html').includes('js/game-rules.js?v=20261023-rules-sync-v2'));
+assert(load('index.html').includes('js/game.js?v=20261023-rules-sync-v3'));
+assert(load('index.html').includes('js/game-rules.js?v=20261023-rules-sync-v3'));
 console.log('PASS: special unlocks 15/27/44 of 58; once-only before 100%; hourly post-100% pond return; tutorial shares 58-species denominator.');
