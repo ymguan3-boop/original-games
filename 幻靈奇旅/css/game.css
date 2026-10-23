@@ -912,3 +912,9 @@ body.battle-active #topBar #journeyTaskBtn{display:none!important}
  #topBar #journeyTaskBtn{flex-basis:46px!important;width:46px!important}
  #topBar #hud>.supply{min-width:37px!important}
 }
+
+
+/* Compact top HUD regression guards: keep the dex glyph at narrow widths,
+   and honor the native hidden attribute even under ID-scoped flex rules. */
+#topBar #dexBtn .dexIcon{display:inline-block!important}
+#topBar #journeyTaskBtn[hidden]{display:none!important}
