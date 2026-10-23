@@ -1,6 +1,7 @@
 /* +Y up / +Z forward. Call update AFTER the hero AnimationMixer each frame. */
 (()=>{'use strict';window.OverworldMounts={create({THREE:T,parent,hero,createDeer}){
  if(!T||!parent||!hero?.object)throw Error('Mounts require THREE, parent and hero.object');
+ const DEER_SCALE=1.3,DEER_SEAT_Y=2.15*DEER_SCALE;
  const root=new T.Group();root.name='OverworldMount';parent.add(root);root.visible=false;
  const geometries=new Set(),materials=new Set(),wheels=[],pedals=[];let chosen=null,permitted=false,bicycle=null,deer=null,phase=0,wasRiding=false,disposed=false;
  const base={position:hero.object.position.clone(),quaternion:hero.object.quaternion.clone(),scale:hero.object.scale.clone()};
@@ -18,14 +19,14 @@
   mesh(new T.BoxGeometry(.34,.075,.30),saddleMat,[0,1.15,-.15]);
   for(const s of [-1,1]){const pivot=new T.Group();pivot.position.set(0,.61,.08);bicycle.add(pivot);const pedal=mesh(new T.BoxGeometry(.20,.035,.10),rubber,[s*.22,s*.15,0],pivot);pedals.push(pivot);}
  }
- function ensure(type){if(type==='bicycle'&&!bicycle)makeBike();if(type==='mirror-deer'&&!deer){if(!createDeer)throw Error('createDeer missing');deer=createDeer();deer.root.position.set(0,0,.15);root.add(deer.root);const saddle=new T.Mesh(new T.BoxGeometry(.66,.075,.58),saddleMat);geometries.add(saddle.geometry);saddle.position.set(0,2.15,-.24);root.add(saddle);saddle.name='DeerRidingSaddle';}}
+ function ensure(type){if(type==='bicycle'&&!bicycle)makeBike();if(type==='mirror-deer'&&!deer){if(!createDeer)throw Error('createDeer missing');deer=createDeer();deer.root.scale.multiplyScalar(DEER_SCALE);deer.root.position.set(0,0,.15);root.add(deer.root);const saddle=new T.Mesh(new T.BoxGeometry(.66,.075,.58),saddleMat);geometries.add(saddle.geometry);saddle.position.set(0,DEER_SEAT_Y,-.24*DEER_SCALE);root.add(saddle);saddle.name='DeerRidingSaddle';}}
  function restorePose(){hero.object.position.copy(base.position);hero.object.quaternion.copy(base.quaternion);hero.object.scale.copy(base.scale);for(const [name,n]of Object.entries(nodes)){const r=rest[name];n.position.copy(r.p);n.quaternion.copy(r.q);n.scale.copy(r.s);}hero.root.updateMatrixWorld(true);}
  function pose(name,x=0,z=0){const n=nodes[name],r=rest[name];if(!n)return;n.position.copy(r.p);n.scale.copy(r.s);q.setFromAxisAngle(axisX,x);qz.setFromAxisAngle(axisZ,z);n.quaternion.copy(r.q).multiply(q).multiply(qz);}
  function update(dt,state={}){if(disposed)return;dt=Math.max(0,Math.min(.06,Number(dt)||0));permitted=state.allowed!==false;const riding=!!chosen&&permitted;if(!riding){root.visible=false;if(wasRiding)restorePose();wasRiding=false;return;}
   if(!wasRiding){base.position.copy(hero.object.position);base.quaternion.copy(hero.object.quaternion);base.scale.copy(hero.object.scale);}wasRiding=true;root.visible=true;ensure(chosen);if(bicycle)bicycle.visible=chosen==='bicycle';if(deer)deer.root.visible=chosen==='mirror-deer';const saddle=root.getObjectByName('DeerRidingSaddle');if(saddle)saddle.visible=chosen==='mirror-deer';if(state.position){if(Array.isArray(state.position))root.position.fromArray(state.position);else root.position.copy(state.position);}else root.position.copy(hero.root.position);root.rotation.y=Number.isFinite(state.yaw)?state.yaw:hero.root.rotation.y;
   const moving=!!state.moving,speed=Math.max(0,Number(state.speed)||0),step=moving?dt*speed:0;phase+=step/.15;
-  const bike=chosen==='bicycle',seatY=bike?1.13:2.15,bob=bike?0:(moving?.025*Math.sin(phase*.45):0);
-  hero.object.position.copy(base.position);hero.object.position.y+=seatY-initialHip+bob;hero.object.position.z+=bike?-.15:-.24;
+  const bike=chosen==='bicycle',seatY=bike?1.13:DEER_SEAT_Y,bob=bike?0:(moving?.025*Math.sin(phase*.45):0);
+  hero.object.position.copy(base.position);hero.object.position.y+=seatY-initialHip+bob;hero.object.position.z+=bike?-.15:-.24*DEER_SCALE;
   const action=String(state.action||hero.mode||'').toLowerCase(),throwing=/throw|attack|guns|roll|hurt|react/.test(action);
   if(!throwing)pose('root');pose('hips');
   for(const s of [1,-1]){const side=s===1?'L':'R';if(bike){const p=phase+(s===1?0:Math.PI),dy=.61+.15*Math.cos(p)-(seatY-.066),dz=.08+.15*Math.sin(p)-(-.15),l1=.28*base.scale.y,l2=.21*base.scale.y,d=Math.min(l1+l2-.005,Math.max(.06,Math.hypot(dy,dz))),knee=Math.PI-Math.acos(Math.max(-1,Math.min(1,(l1*l1+l2*l2-d*d)/(2*l1*l2)))),a=Math.atan2(-dz,-dy)-Math.acos(Math.max(-1,Math.min(1,(l1*l1+d*d-l2*l2)/(2*l1*d))));pose('thigh'+side,a,s*.08);pose('shin'+side,knee);pose('foot'+side,-a-knee);}
@@ -37,6 +38,6 @@
   if(nodes.hips){const hipY=hero.root.worldToLocal(nodes.hips.getWorldPosition(v)).y;const parentScale=hero.object.parent.getWorldScale(v).y;hero.object.position.y+=(seatY+bob-hipY)/Math.max(.001,parentScale);}
   hero.root.updateMatrixWorld(true);root.updateMatrixWorld(true);
  }
- return{setMount(value){if(value!==null&&!['bicycle','mirror-deer'].includes(value))throw Error('Unknown mount '+value);if(chosen===value)return;if(wasRiding)restorePose();wasRiding=false;chosen=value;root.visible=false;},update,get active(){return chosen;},get speedMultiplier(){return chosen&&permitted?1.5:1;},get root(){return root;},getState(){let triangles=0;bicycle?.traverse(o=>{if(o.isMesh)triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;});return{active:chosen,riding:wasRiding,allowed:permitted,bicycleTriangles:triangles,seatHeight:chosen==='bicycle'?1.13:2.15};},dispose(){if(disposed)return;restorePose();disposed=true;root.parent?.remove(root);deer?.dispose();geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}};
+ return{setMount(value){if(value!==null&&!['bicycle','mirror-deer'].includes(value))throw Error('Unknown mount '+value);if(chosen===value)return;if(wasRiding)restorePose();wasRiding=false;chosen=value;root.visible=false;},update,get active(){return chosen;},get speedMultiplier(){return chosen&&permitted?1.5:1;},get root(){return root;},getState(){let triangles=0;bicycle?.traverse(o=>{if(o.isMesh)triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;});return{active:chosen,riding:wasRiding,allowed:permitted,bicycleTriangles:triangles,seatHeight:chosen==='bicycle'?1.13:DEER_SEAT_Y};},dispose(){if(disposed)return;restorePose();disposed=true;root.parent?.remove(root);deer?.dispose();geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}};
 }};})();
 
