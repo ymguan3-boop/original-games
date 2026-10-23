@@ -16,7 +16,7 @@ assert.equal(R.quest.requiredSpecies,5);assert.equal(R.quest.eachBallReward,30);
 assert.equal(R.towerCardChance(0),.04);assert.equal(R.towerCardChance(1),.09);assert.equal(R.towerCardChance(2),.14);assert.equal(R.towerCardChance(100),1);
 const ranger=npc.npcs.find(n=>n.id==='ranger_lumo'),keeper=npc.npcs.find(n=>n.id==='tower_keeper');
 assert(ranger.functions.includes('quest'),'巡護員必須有可點選的委託按鈕');
-assert(ranger.dialogue.join(' ').includes('30 顆'));assert(keeper.dialogue.join(' ').includes('六名首領'));
+assert(R.formatNpcText(ranger.dialogue.join(' ')).includes('30 顆'));assert(R.formatNpcText(npc.npcs.find(n=>n.id==='shop_vendor').dialogue.join(' ')).includes('4%'));assert(keeper.dialogue.join(' ').includes('六名首領'));
 for(const key of ['pokeballs','greatBallCount','masterBallCount'])assert(G.includes('s.'+key+'=number(s.'+key+')+reward'),'新任務應加發 '+key);
 assert(G.includes('patrolRewardMigrated=true'),'舊存檔的差額補發旗標必須存在');
 assert(G.includes('Rules.evolutionOnlyWild.includes(s.id)'),'特殊擂台進階不能繞過取得規則');
