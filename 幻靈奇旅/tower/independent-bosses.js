@@ -12,14 +12,17 @@ globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,Worl
   {id:'golden_ward',type:0,name:'金印護身重劍',effect:'ward',label:'所受傷害 -20%・攻擊 +15%',chance:1,boost:1.15,recipe:[['金印碎片',6],['護心玉',2]]}
  );
  Object.assign(labels,{duel:'交叉速射 · 離開鎖定圓圈',barrage:'曙光彈雨 · 沿空白處移動',starbolt:'星輝連彈 · 光圈鎖定後閃開',meteor:'天穹星殞 · 避開連續星軌',seal:'鎮守金印 · 離開金印',decree:'震殿敕令 · 光圈依序爆發'});
- const proto=Hunt.prototype,oldStart=proto.startPattern,oldResolve=proto.resolvePattern,oldClaim=proto.claimRewards,oldEffect=proto.applyWeaponEffect,oldDamage=proto.damagePlayer,oldTick=proto.tick;
+ const proto=Hunt.prototype,oldStart=proto.startPattern,oldResolve=proto.resolvePattern,oldClaim=proto.claimRewards,oldEffect=proto.applyWeaponEffect,oldDamage=proto.damagePlayer,oldTick=proto.tick,oldUnleash=proto.unleash;
  proto.tick=function(dt,input){if(!LEVELS[this.level].id||this.mode!=='battle')return oldTick.call(this,dt,input);const m=this.monster,base=m.moveMultiplier;if(m.state==='idle')m.moveMultiplier*=1.35;try{return oldTick.call(this,dt,input);}finally{m.moveMultiplier=base;}};
  proto.startPattern=function(){const l=LEVELS[this.level];if(!l.id)return oldStart.call(this);const m=this.monster,p=this.player;m.phase++;m.pattern=l.patterns[(m.phase-1)%2];m.state='windup';m.timer=m.phase%2?1.05:1.7;m.target={x:p.x,z:p.z};m.origin={x:m.x,z:m.z};m.dir={x:(p.x-m.x)/(Math.hypot(p.x-m.x,p.z-m.z)||1),z:(p.z-m.z)/(Math.hypot(p.x-m.x,p.z-m.z)||1)};m.facing=Math.atan2(m.dir.x,m.dir.z);m.attackElapsed=0;this.emit('warning',{pattern:m.pattern});
   const count=m.phase%2?3:6;
   for(let i=0;i<count;i++){let x,z,r=2.2;if(m.pattern==='duel'||m.pattern==='barrage'){x=p.x+(i%3-1)*3.8;z=p.z+Math.floor(i/3)*4-2;}else if(m.pattern==='meteor'){const a=i*Math.PI/3;x=p.x+Math.sin(a)*5;z=p.z+Math.cos(a)*5;r=2.7;}else if(m.pattern==='decree'){const a=i*Math.PI/3;x=m.x+Math.sin(a)*6;z=m.z+Math.cos(a)*6;r=3.4;}else{x=p.x+(i-1)*3.5;z=p.z;r=m.pattern==='seal'?2.8:2;}
-   this.hazards.push({x:Math.max(-19,Math.min(19,x)),z:Math.max(-19,Math.min(19,z)),radius:r,timer:m.timer+.2+i*.23,life:.5,active:false,hit:false,type:m.pattern});}
+   this.hazards.push({x:Math.max(-19,Math.min(19,x)),z:Math.max(-19,Math.min(19,z)),radius:r,timer:m.timer+.2+i*.23,life:.5,active:false,hit:false,type:m.pattern,phase:m.phase});}
  };
- proto.resolvePattern=function(){if(!LEVELS[this.level].id)return oldResolve.call(this);this.emit('impact',{pattern:this.monster.pattern});this.monster.state='recover';this.monster.timer=this.monster.phase%2?2.0:3.2;};
+ proto.resolvePattern=function(){if(!LEVELS[this.level].id)return oldResolve.call(this);for(const hazard of this.hazards)if(hazard.phase===this.monster.phase)hazard.released=true;this.emit('impact',{pattern:this.monster.pattern});this.monster.state='recover';this.monster.timer=this.monster.phase%2?2.0:3.2;};
+
+ // Player finishers may cancel a warning, but cannot erase attacks already emitted.
+ proto.unleash=function(...args){if(!LEVELS[this.level].id)return oldUnleash.apply(this,args);const released=this.hazards.filter(hazard=>hazard.released),used=oldUnleash.apply(this,args);if(used)for(const hazard of released)if(!this.hazards.includes(hazard))this.hazards.push(hazard);return used;};
  proto.claimRewards=function(){
  const l=LEVELS[this.level];
  if(!l.id)return oldClaim.call(this);
@@ -109,19 +112,29 @@ globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,Worl
      if(state.deathElapsed<duration){b.nativeMixer.update(step);state.deathElapsed+=step;}
     }else{
      state.dead=false;
-     // A phase owns one cast. Recovery and hit reactions cannot restart that cast.
+     // A started cast owns its animation until completion. Queue reactions instead of fading it out.
+     const casting=()=>state.attack?.started&&state.attack.elapsed<state.attack.duration;
      if(m.state==='windup'&&state.phase!==m.phase){
       state.phase=m.phase;const role=m.phase%2?'Attack':'Ultimate';
       const clip=b.nativeActions[b.nativeClipFor(role)];
-      state.attack={role,elapsed:0,duration:clip?.getClip().duration||1,started:false};
+      const cast={role,elapsed:0,duration:clip?.getClip().duration||1,started:false};
+      if(casting())state.nextAttack=cast;else state.attack=cast;
      }
      const flashing=m.flash>0;
      if(flashing&&!state.wasFlashing){
-      const clip=b.nativeActions[b.nativeClipFor('Hurt')];
-      state.hurtRemaining=clip?.getClip().duration||.75;
-      if(state.attack){const a=b.nativeActions[b.nativeClipFor(state.attack.role)];if(a)a.paused=true;}
+      if(casting())state.hurtPending=true;
+      else{
+       const clip=b.nativeActions[b.nativeClipFor('Hurt')];
+       state.hurtPending=false;state.hurtRemaining=clip?.getClip().duration||.75;
+       b.playNative('Hurt',{force:true});
+      }
+     }
+     if(state.attack&&state.attack.elapsed>=state.attack.duration)state.attack=null;
+     if(!state.attack&&state.hurtPending&&state.hurtRemaining<=0){
+      state.hurtPending=false;state.hurtRemaining=b.nativeActions[b.nativeClipFor('Hurt')]?.getClip().duration||.75;
       b.playNative('Hurt',{force:true});
      }
+     if(!state.attack&&state.hurtRemaining<=0&&state.nextAttack){state.attack=state.nextAttack;state.nextAttack=null;}
      state.wasFlashing=flashing;
      if(state.hurtRemaining>0){
       state.hurtRemaining=Math.max(0,state.hurtRemaining-step);
@@ -137,7 +150,7 @@ globalThis.installIndependentTowerBosses=function({LEVELS,SHOP_WEAPONS,Hunt,Worl
      }
     }
     const current=b.nativeActions[b.nativeMotion];
-    b.userData.nativeAnimation={role:b.nativeMotion,time:current?.time||0,phase:state.phase,castElapsed:state.attack?.elapsed||0,hurtRemaining:state.hurtRemaining,delta:step};
+    b.userData.nativeAnimation={role:b.nativeMotion,time:current?.time||0,phase:state.phase,castElapsed:state.attack?.elapsed||0,castLocked:!!state.attack?.started,hurtPending:!!state.hurtPending,hurtRemaining:state.hurtRemaining,delta:step};
    }
   }
   return oldRender.call(this,h,dt,...rest);

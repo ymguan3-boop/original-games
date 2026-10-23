@@ -1,0 +1,81 @@
+{
+  "revision": "20261023-cast-lock-v1",
+  "behavior": "Started casts finish without Hurt interruption; hit reaction is deferred. Emitted hazards survive player ultimate cancellation; damage handling unchanged.",
+  "actualModelChecks": {
+    "results": [
+      {
+        "id": "chimchar",
+        "samples": [
+          {
+            "role": "Attack",
+            "before": 0.19999999999999998,
+            "duration": 1.0333333015441895,
+            "end": 1.0333333015441895,
+            "hitEvents": 13,
+            "deferredHurt": true,
+            "monotonicUntilCompleted": true
+          },
+          {
+            "role": "Ultimate",
+            "before": 0.19999999999999998,
+            "duration": 2.433333396911621,
+            "end": 2.433333396911621,
+            "hitEvents": 34,
+            "deferredHurt": true,
+            "monotonicUntilCompleted": true
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": "monferno",
+        "samples": [
+          {
+            "role": "Attack",
+            "before": 0.19999999999999998,
+            "duration": 1.2333333492279053,
+            "end": 1.2333333492279053,
+            "hitEvents": 16,
+            "deferredHurt": true,
+            "monotonicUntilCompleted": true
+          },
+          {
+            "role": "Ultimate",
+            "before": 0.19999999999999998,
+            "duration": 3.0333333015441895,
+            "end": 3.0333333015441895,
+            "hitEvents": 43,
+            "deferredHurt": true,
+            "monotonicUntilCompleted": true
+          }
+        ],
+        "pass": true
+      },
+      {
+        "id": "infernape",
+        "samples": [
+          {
+            "role": "Attack",
+            "before": 0.19999999999999998,
+            "duration": 1.0833333730697632,
+            "end": 1.0833333730697632,
+            "hitEvents": 14,
+            "deferredHurt": true,
+            "monotonicUntilCompleted": true
+          },
+          {
+            "role": "Ultimate",
+            "before": 0.19999999999999998,
+            "duration": 2.7083332538604736,
+            "end": 2.7083332538604736,
+            "hitEvents": 38,
+            "deferredHurt": true,
+            "monotonicUntilCompleted": true
+          }
+        ],
+        "pass": true
+      }
+    ],
+    "errors": []
+  }
+}
