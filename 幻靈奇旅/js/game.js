@@ -126,7 +126,24 @@ function migrate(raw={}){const s={...raw,version:1,brand:'phantom-journey',captu
  return s;}
 function loadSave(){try{const own=localStorage.getItem(KEY);if(own)return migrate(JSON.parse(own));for(const key of OLD_KEYS){const value=localStorage.getItem(key);if(value){const s=migrate(JSON.parse(value));s.migratedFrom=key;return s;}}}catch(e){S.errors.push('存檔讀取：'+e.message);}return migrate();}
 function save(){if(!S.state)return;try{const pos=battle?battle.previous.position:S.player;S.state.position=[pos.x,pos.z];S.state.buildingId=(battle?battle.previous.place:place)?.id||null;localStorage.setItem(KEY,JSON.stringify(S.state));}catch(e){toast('此瀏覽器無法儲存進度，請檢查網站儲存權限。');}hud();}
-function hud(){if(!S.state)return;$('dexCount').textContent=`${regularSpirits().filter(s=>owned(s.id)).length} / ${regularSpirits().length}`;$('ballCount').textContent=String(S.state.pokeballs);$('greatCount').textContent=S.state.greatBallCount;$('berryCount').textContent=S.state.berryCount;if($('masterCount'))$('masterCount').textContent=S.state.masterBallCount;const berry=$('berryBadge');if(berry)berry.textContent=S.state.berryCount;}
+function hudBallCount(id,quantity,label){
+ const el=$(id);if(!el)return;
+ const result=Rules.ballHudValue(quantity);
+ el.textContent=String(result.display);
+ el.classList.toggle('ballOver99',result.overflow);
+ el.setAttribute('aria-label',label+'實際持有 '+result.actual+' 顆');
+ const holder=el.closest('.supply');
+ if(holder)holder.title=label+'：實際持有 '+result.actual+' 顆（庫存無上限）';
+}
+function hud(){
+ if(!S.state)return;
+ $('dexCount').textContent=`${regularSpirits().filter(s=>owned(s.id)).length} / ${regularSpirits().length}`;
+ hudBallCount('ballCount',S.state.pokeballs,'普通靈核球');
+ hudBallCount('greatCount',S.state.greatBallCount,'高階靈核球');
+ hudBallCount('masterCount',S.state.masterBallCount,'星耀靈核球');
+ $('berryCount').textContent=S.state.berryCount;
+ const berry=$('berryBadge');if(berry)berry.textContent=S.state.berryCount;
+}
 function owned(id){return !!(S.state.pokedexUnlocks[id]||S.state.captureCounts[id]>0);}
 function grant(id,count=1){
  S.state.captureCounts[id]=number(S.state.captureCounts[id])+count;
@@ -583,7 +600,7 @@ async function spawnWild(species,position,guardianEvent=null){
  if(!dexComplete()&&isOneTimeSpecial(species.id)&&wild.some(w=>w.species.id===species.id)){removeActor(a);return null;}
  const dimensions=a.worldSize||posedBounds(a.object).getSize(new T.Vector3()),maxSpan=Math.min(6,Number(rule.maxSpan)||6),ratio=Math.min(1,maxSpan/Math.max(dimensions.x,dimensions.z,.001));if(ratio<1){a.object.scale.multiplyScalar(ratio);a.object.position.multiplyScalar(ratio);a.height*=ratio;a.worldSize.multiplyScalar(ratio);}
  // Outdoor capturable instances only; gym/arena/collection visuals keep their own sizes.
- const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(species.id==='meganium'?1.95:['chikorita','bayleef'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?3/4:species.id==='giratina'?2/3:1);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;
+ const wildFactor=(species.id==='pikachu'?2.55/Math.max(.001,a.height):species.id==='wigglytuff'?4/3:species.id==='blissey'?2/3:(species.id==='meganium'?1.95:['chikorita','bayleef'].includes(species.id)?1.5:['mew','feraligatr'].includes(species.id)?2:1)*SpiritCombat.outdoorScale(species))*(species.id==='articuno'?3/4:species.id==='giratina'?2/3:1)*Rules.wildScaleFor(species);if(Math.abs(wildFactor-1)>.001){a.object.scale.multiplyScalar(wildFactor);a.object.position.multiplyScalar(wildFactor);a.height*=wildFactor;a.worldSize.multiplyScalar(wildFactor);}a.species=species;
  if(species.id==='jigglypuff')a.eggEncounter={origin:'jigglypuff',failures:0};
  if(species.id==='blissey')a.controller?.setFlightHeight?.(4.6);
  // Every wild water caterpillar, including a lab milestone spawn, belongs to
