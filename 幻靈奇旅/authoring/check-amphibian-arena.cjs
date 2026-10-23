@@ -42,7 +42,7 @@ for(const strong of [false,true]){
 let log=[],actor={controller:{seek:(mode,t)=>log.push([mode,t])},nativePaused:false};
 const frogFx=AmphibianArenaFx.frog({actor,plan:{mode:'Bubbles',nativeDuration:4.8,playbackRate:1.4}});
 assert.equal(actor.nativePaused,true);
-frogFx.update(1.5);assert.deepEqual(log[0],['Bubbles',2.1]);assert.equal(frogFx.approach(.3),0);
+frogFx.update(1.5);assert.equal(log[0][0],'Bubbles');assert(Math.abs(log[0][1]-2.1)<1e-8);assert.equal(frogFx.approach(.3),0);
 frogFx.dispose();assert.equal(actor.nativePaused,false);
 class V{
  constructor(x=0,y=0,z=0){Object.assign(this,{x,y,z});}
