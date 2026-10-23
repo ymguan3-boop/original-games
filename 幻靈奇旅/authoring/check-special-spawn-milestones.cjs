@@ -18,7 +18,8 @@ function section(start,end){
  assert(a!==-1&&b>a,'Missing logic block '+start);
  return game.slice(a,b);
 }
-const context={spirits:all,regularSpirits:regular,owned,S,byId,
+const ruleEnv={window:{}};vm.runInNewContext(load('js/game-rules.js'),ruleEnv);
+const context={spirits:all,regularSpirits:regular,owned,S,byId,Rules:ruleEnv.window.PhantomGameRules,
  LAB_LEGENDS:['articuno','raikou','entei'].map(id=>({id})),labClaimed:()=>S.state.dreamLabLegendClaimed,
  BOSS_CARD_IDS:bosses,WATER_EVENT_ONLY:['kyogre','groudon','rayquaza','mewtwo'],
  isBook:s=>s?.family==='book-spirit',isGymGuardian:s=>['pikachu','mew','wigglytuff','blissey'].includes(s?.id),
@@ -61,5 +62,6 @@ assert.equal(x.eligible(byId.dialga),true);assert.equal(x.eligible(byId.giratina
 assert.equal(x.milestoneTargets().length,0);
 assert(game.includes('progress:()=>dexStats()'),'Tutorial must reuse same denominator');
 assert(game.includes('S.state.worldFlags.labLegendWildCaught[who.species.id]=true'),'One-time chosen starter wild capture must persist');
-assert(load('index.html').includes('js/game.js?v=20261023-special-25-45-75-v1'));
+assert(load('index.html').includes('js/game.js?v=20261023-rules-sync-v1'));
+assert(load('index.html').includes('js/game-rules.js?v=20261023-rules-sync-v1'));
 console.log('PASS: special unlocks 15/27/44 of 58; once-only before 100%; hourly post-100% pond return; tutorial shares 58-species denominator.');
