@@ -58,7 +58,9 @@
   if(button)return;
   button=document.createElement('button');button.id='journeyTaskBtn';button.type='button';
   button.setAttribute('aria-controls','journeyGuide');button.setAttribute('aria-expanded','false');
-  button.setAttribute('aria-label','開啟冒險任務清單');document.body.append(button);
+  button.setAttribute('aria-label','開啟冒險任務清單');
+  const bar=document.getElementById('topBar'),hud=document.getElementById('hud');
+  if(bar&&hud)bar.insertBefore(button,hud);else document.body.append(button);
   panel=document.createElement('aside');panel.id='journeyGuide';panel.setAttribute('role','region');
   panel.setAttribute('aria-label','冒險任務清單');panel.hidden=true;document.body.append(panel);
   button.addEventListener('click',()=>{opened=!opened;selectedTask='';refresh();});
@@ -76,18 +78,29 @@
   window.addEventListener('resize',refresh);
  }
  function layout(){
-  const radar=document.getElementById('radar');
-  const rect=radar?.getBoundingClientRect();
-  // 上方是精簡任務按鈕，下方是雷達，間距 8px；雷達展開時也不會蓋到按鈕。
-  const buttonHeight=button.getBoundingClientRect().height||29;
-  const top=Math.max(54,(rect?.top||94)-buttonHeight-8);
+  const radarRect=document.getElementById('radar')?.getBoundingClientRect();
+  const bar=document.getElementById('topBar');
+  // 單列頂部快捷列統一排版，任務按鈕不再依雷達位置獨立漂浮。
+  if(bar){
+   button.style.removeProperty('top');
+   button.style.removeProperty('right');
+   button.style.removeProperty('left');
+   const barRect=bar.getBoundingClientRect();
+   // 展開清單放在頂部工具列和雷達的下方，避免蓋住快捷列與雷達。
+   const panelTop=Math.ceil(Math.max(barRect.bottom,radarRect?.bottom||0)+8);
+   panel.style.top=panelTop+'px';
+   panel.style.right='max(8px,env(safe-area-inset-right,0px))';
+   panel.style.maxHeight=Math.max(110,Math.min(window.innerHeight*.64,window.innerHeight-panelTop-12))+'px';
+   return;
+  }
+  // 相容尚未有 topBar 的版本。
+  const top=Math.max(54,(radarRect?.top||94)-(button.getBoundingClientRect().height||29)-8);
   button.style.top=top+'px';
-  if(rect)button.style.right=Math.max(7,window.innerWidth-rect.right)+'px';
-  // 任務面板在雷達下緣開啟，不遮住雷達。
-  const panelTop=Math.round((rect?.bottom||top+buttonHeight+58)+8);
+  button.style.right=Math.max(7,window.innerWidth-(radarRect?.right||window.innerWidth-12))+'px';
+  const panelTop=Math.round((radarRect?.bottom||top+90)+8);
   panel.style.top=panelTop+'px';
   panel.style.right=button.style.right;
-  panel.style.maxHeight=Math.max(124,Math.min(window.innerHeight*.64,window.innerHeight-panelTop-16))+'px';
+  panel.style.maxHeight=Math.max(110,Math.min(window.innerHeight*.64,window.innerHeight-panelTop-12))+'px';
  }
  function perform(id){
   if(!api||api.blocked()||finished(id))return;

@@ -140,7 +140,7 @@ function hudBallCount(id,quantity,label){
 function hud(){
  if(!S.state)return;
  const dexProgress=`${regularSpirits().filter(s=>owned(s.id)).length} / ${regularSpirits().length}`;
- $('dexCount').textContent=dexProgress;
+ $('dexCount').textContent=dexProgress.replace(/\s*\/\s*/,'/');
  $('menuBtn').setAttribute('aria-label','開啟旅人手冊及幻靈圖鑑，已收錄 '+dexProgress+' 種');
  hudBallCount('ballCount',S.state.pokeballs,'普通靈核球');
  hudBallCount('greatCount',S.state.greatBallCount,'高階靈核球');

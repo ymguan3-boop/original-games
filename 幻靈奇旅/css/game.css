@@ -709,3 +709,101 @@ body.battle-active:not(.gym-active) #labels .arenaAllyHp{
 .menuGrid .menuPrimaryDex{grid-column:1/-1;min-height:52px;padding:12px;background:#e1eafa;border:1px solid #a6bde5;color:#263960;font-size:15px;font-weight:800}
 @media(max-width:390px){#menuBtn{gap:5px;max-width:calc(100vw - 138px);height:42px;padding:0 6px}#menuBtn .menuIcon{font-size:18px}#menuBtn .menuTitle{font-size:11px}#menuBtn .menuDexBadge{padding:4px;gap:2px;font-size:10px}#menuBtn .menuDexBadge b{font-size:10px}}
 @media(max-width:325px){#menuBtn{gap:4px}#menuBtn .menuTitle{font-size:10px}#menuBtn .menuDexBadge{padding:3px}}
+
+
+/* 2026-10-23 頂部單列工具列：旅人手冊（含圖鑑）→ 任務清單 → 四種補給。
+   讓 360px 以上直式手機優先全部可見；320px 等超窄視窗保留單列橫向滑動而非重疊。 */
+#topBar{
+ position:fixed;
+ top:calc(env(safe-area-inset-top,0px) + 6px);
+ left:6px;right:6px;
+ z-index:12;
+ display:flex;align-items:stretch;
+ gap:3px;
+ height:43px;
+ min-width:0;
+ overflow-x:auto;overflow-y:hidden;
+ overscroll-behavior-x:contain;
+ touch-action:pan-x;
+ scrollbar-width:none;
+ -ms-overflow-style:none;
+}
+#topBar::-webkit-scrollbar{display:none}
+#topBar #hud{
+ display:contents!important;
+ position:static!important;
+ top:auto!important;left:auto!important;right:auto!important;
+ width:auto!important;max-width:none!important;
+ transform:none!important;
+}
+#topBar #menuBtn,
+#topBar #journeyTaskBtn,
+#topBar #hud>.supply{
+ position:relative!important;
+ top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;
+ transform:none!important;
+ box-sizing:border-box;
+ height:42px!important;min-height:42px!important;
+ margin:0;
+ overflow:hidden;
+ border-radius:10px;
+}
+#topBar #menuBtn{
+ flex:0 0 clamp(94px,26vw,120px);
+ min-width:94px!important;width:auto!important;max-width:none!important;
+ padding:0 3px!important;
+ gap:2px;
+ justify-content:center;
+ border:1px solid #d4e3eb77;
+ white-space:nowrap;
+}
+#topBar #menuBtn .menuIcon{font-size:14px;flex:0 0 auto}
+#topBar #menuBtn .menuTitle{font-size:clamp(9px,2.4vw,11px);font-weight:800;white-space:nowrap;flex:0 1 auto}
+#topBar #menuBtn .menuDexBadge{
+ gap:1px;
+ padding:2px!important;
+ border-radius:5px;
+ font-size:8px;
+ flex:0 0 auto;
+}
+#topBar #menuBtn .menuDexBadge b{font-size:9px;font-variant-numeric:tabular-nums}
+#topBar #journeyTaskBtn{
+ flex:0 0 clamp(72px,19.1vw,88px);
+ min-width:72px!important;width:auto!important;max-width:none!important;
+ padding:0 2px!important;
+ gap:2px;
+ font-size:9px;
+ letter-spacing:-.05em;
+ border:1px solid rgba(228,207,153,.7);
+ background:rgba(28,48,61,.94);
+ box-shadow:0 3px 10px #0c1e2b38;
+ white-space:nowrap;
+}
+#topBar #journeyTaskBtn span{font-size:9px;letter-spacing:0;white-space:nowrap}
+#topBar #hud>.supply{
+ flex:1 0 39px;
+ min-width:39px!important;
+ width:auto!important;max-width:none!important;
+ padding:0 2px!important;
+ display:flex;align-items:center;justify-content:center;
+ flex-wrap:nowrap;
+ gap:2px!important;
+ font-size:clamp(10px,2.7vw,12px)!important;
+ white-space:nowrap;
+ background:#172a3dea;
+}
+#topBar #hud .coreBall,#topBar #hud .fruitIcon{
+ display:inline-block;
+ flex:0 0 13px!important;width:13px!important;height:13px!important;
+ margin:0;
+}
+#topBar #hud b{font-size:inherit;min-width:0;margin:0}
+#radar{
+ top:calc(env(safe-area-inset-top,0px) + 62px);
+}
+/* 戰鬥中手冊與任務仍按既有規則隱藏，補給 HUD 維持單排顯示。 */
+@media(max-width:350px){
+ #topBar #menuBtn{flex-basis:94px}
+ #topBar #journeyTaskBtn{flex-basis:72px}
+ #topBar #hud>.supply{flex:1 0 39px}
+}
