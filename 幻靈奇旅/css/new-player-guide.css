@@ -1,17 +1,32 @@
-/* 新手引導使用獨立浮動卡片，避開左右操作按鈕與對話框。 */
-#journeyGuide{position:fixed;z-index:27;left:50%;bottom:clamp(146px,22vh,210px);transform:translateX(-50%);width:min(390px,calc(100vw - 32px));max-height:min(36vh,275px);overflow:auto;padding:11px 14px;background:linear-gradient(140deg,rgba(24,41,59,.96),rgba(32,55,70,.94));border:1px solid rgba(226,210,155,.62);border-radius:15px;box-shadow:0 10px 30px rgba(6,18,27,.38);color:#fff5db;font:500 13px/1.55 system-ui,"Noto Sans TC",sans-serif;box-sizing:border-box;pointer-events:auto;backdrop-filter:blur(9px)}
-#journeyGuide[hidden]{display:none!important}
-#journeyGuide header{display:flex;align-items:start;justify-content:space-between;gap:9px}
-#journeyGuide header strong{font-size:14px;color:#ffe6a1;font-weight:750}
-#journeyGuide header button{min-width:28px;min-height:27px;border:1px solid rgba(255,255,255,.24);border-radius:8px;background:#253e50;color:#fff;font-size:19px}
-#journeyGuide p{margin:7px 0 9px;font-size:12.5px;color:#f6f3e8}
-#journeyGuide small{display:block;margin:6px 0;color:#f5dfaa}
-#journeyGuide .journeyGo{display:block;margin:8px 0 2px;padding:8px 12px;min-height:34px;width:100%;border:1px solid #d9bf7d;border-radius:10px;background:#debd77;color:#243746;font-weight:800}
-#journeyGuide .journeyCompact{display:block;width:100%;text-align:center;background:transparent;color:#ffe7b0;border:0;padding:2px 0;font-size:12px;font-weight:700}
-#journeyGuide .journeyProgress{height:6px;background:#394653;border-radius:7px;overflow:hidden}
-#journeyGuide .journeyProgress i{display:block;height:100%;background:linear-gradient(90deg,#7fceba,#e6c977);transition:width .3s}
-.journeyMenuHelp{background:rgba(255,235,171,.08);padding:10px 12px;margin-bottom:10px;border:1px solid rgba(216,193,129,.42);border-radius:10px;color:#e9e0cf}
-.journeyMenuHelp h3{margin:0 0 7px;color:#e3c779;font-size:16px}
-.journeyMenuHelp p{font-size:13px;line-height:1.7;margin:6px 0}
-@media(max-height:650px){#journeyGuide{bottom:120px;max-height:37vh}}
-@media(max-width:600px){#journeyGuide{width:min(345px,calc(100vw - 24px));bottom:clamp(133px,24vh,196px);padding:9px 11px}#journeyGuide p{font-size:12px}}
+/* 冒險任務：畫面僅保留雷達下方小按鈕，玩家自行展開清單。 */
+#journeyTaskBtn{position:fixed;z-index:12;top:114px;right:12px;display:inline-flex;justify-content:center;align-items:center;gap:5px;min-height:29px;height:29px;padding:4px 8px;max-width:116px;border:1px solid rgba(228,207,153,.7);border-radius:9px;background:rgba(28,48,61,.9);box-shadow:0 3px 10px rgba(12,30,43,.22);color:#ffe9ae;font:700 10px/1.1 system-ui,"Noto Sans TC",sans-serif;white-space:nowrap;backdrop-filter:blur(5px)}
+#journeyTaskBtn span{color:#deedf0;font-size:10px;font-variant-numeric:tabular-nums}
+#journeyTaskBtn[hidden],#journeyGuide[hidden]{display:none!important}
+#journeyTaskBtn:focus-visible,#journeyGuide button:focus-visible{outline:2px solid #9be5ff;outline-offset:2px}
+#journeyGuide{position:fixed;z-index:28;top:158px;right:12px;left:auto;transform:none;width:min(315px,calc(100vw - 24px));max-height:64dvh;overflow:auto;overscroll-behavior:contain;box-sizing:border-box;padding:11px 12px;background:linear-gradient(155deg,rgba(23,42,58,.97),rgba(31,54,65,.96));color:#fff6dc;border:1px solid rgba(226,209,156,.58);border-radius:14px;box-shadow:0 10px 27px rgba(5,20,30,.35);backdrop-filter:blur(8px);font:500 12px/1.45 system-ui,"Noto Sans TC",sans-serif;touch-action:pan-y}
+#journeyGuide header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:8px;border-bottom:1px solid #ffffff25}
+#journeyGuide header strong{font-size:14px;color:#ffe5a0}
+#journeyGuide header small{display:block;margin-top:3px;font-size:10px;color:#c8dce0}
+#journeyGuide header button{height:28px;width:28px;min-width:28px;min-height:28px;padding:0;border:1px solid #ffffff33;border-radius:8px;background:#2b4657;color:#fff;font-size:18px}
+#journeyGuide .journeyTasks{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
+#journeyGuide .journeyTasks li{margin:0;padding:7px 9px;border-radius:9px;border:1px solid #ffffff20;background:#ffffff08}
+#journeyGuide .journeyTasks li.is-current{border-color:#efd08c9e;background:#dfbf7130}
+#journeyGuide .journeyTasks li.is-done{background:#86c6a01a;border-color:#9ac7b649}
+#journeyGuide .journeyTasks li.is-later{opacity:.79}
+#journeyGuide .journeyTaskLine{display:flex;align-items:flex-start;gap:7px}
+#journeyGuide .journeyTaskLine b{flex:1;font-size:11.5px;line-height:1.35}
+#journeyGuide .journeyMark{font-size:14px;line-height:1.05;color:#f5d590;width:15px;flex-shrink:0}
+#journeyGuide .is-done .journeyMark{color:#92e7bc}
+#journeyGuide .journeyReward{display:block;margin:3px 0 0 22px;color:#f8db92;font-size:10px}
+#journeyGuide .is-done .journeyReward{color:#9edbbf}
+#journeyGuide p{margin:8px 0 5px 22px;color:#f2f2e9;font-size:11px;line-height:1.55}
+#journeyGuide .journeyGo{display:block;margin:8px 0 1px 22px;max-width:calc(100% - 22px);padding:6px 9px;min-height:31px;border:1px solid #e0c583;border-radius:8px;background:#e1c17b;color:#263b46;font-size:11px;font-weight:800}
+#journeyGuide .journeyProgress{height:5px;background:#334757;border-radius:8px;overflow:hidden;margin:5px 0 3px 22px}
+#journeyGuide .journeyProgress i{display:block;height:100%;background:linear-gradient(90deg,#83d9bd,#e7cf8a)}
+#journeyGuide .is-current>small:last-of-type:not(.journeyReward){margin-left:22px;color:#d0e8e3}
+#journeyGuide .journeyAllDone{margin:6px 0 10px;text-align:center;color:#e5d09b}
+#journeyGuide .journeyFoot{display:block;margin-top:8px;color:#c8dddf;font-size:10px}
+body.battle-active #journeyTaskBtn,body.battle-active #journeyGuide{display:none!important}
+@media(max-width:600px){#journeyTaskBtn{max-width:106px;padding:3px 6px;height:27px;min-height:27px;font-size:10px}#journeyGuide{width:min(292px,calc(100vw - 20px));padding:10px}}
+@media(max-height:520px){#journeyGuide{max-height:50dvh}}
+@media(prefers-reduced-motion:reduce){#journeyTaskBtn,#journeyGuide{scroll-behavior:auto}}

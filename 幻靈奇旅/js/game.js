@@ -1004,15 +1004,8 @@ function showLabProfessorDialogue(n){
  if(labEvent)labEvent.phase='dialogue';
 }
 function updateLabGuide(){
- const first=!!S.state&&!spirits.some(s=>owned(s.id));
- let hint=document.getElementById('labNewPlayerGuide');
- const show=place?.id==='dream_lab'&&first&&!labClaimed();
- if(!show){if(hint)hint.hidden=true;return;}
- if(!hint){hint=document.createElement('div');hint.id='labNewPlayerGuide';hint.setAttribute('role','status');document.body.append(hint);}
- hint.hidden=false;
- const near=S.player.distanceTo(LAB_CENTER)<3.2;
- const message=near?'第一站｜和大夢博士對話，從桌上的三顆幻靈球選一顆！':'第一站｜向桌上的三顆幻靈球前進，選擇你的第一位幻靈！';
- if(hint.textContent!==message)hint.textContent=message;
+ // 教學已收納到雷達下方的任務清單，不再顯示遮住 3D 畫面的研究所中央提示。
+ document.getElementById('labNewPlayerGuide')?.remove();
 }
 function tickLabEvent(dt){
  updateLabGuide();
