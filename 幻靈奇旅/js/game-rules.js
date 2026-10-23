@@ -6,6 +6,16 @@
  const arena=Object.freeze({partySize:3});
  const tower=Object.freeze({baseCardChance:.04,cardChancePerWin:.05});
  const pond=Object.freeze({respawnMs:60*60*1000});
+ // Only apply to wild actors in the open town (not arena, card previews, gym, or followers).
+ // Stage III dog and bear use 1.5x instead of multiplying 1.3x by 1.5x.
+ const wildFamilyMultipliers=Object.freeze({'water-dog':1.3,'cat-girl':1.3,'fire-bear':1.3});
+ const wildScaleFor=spirit=>{
+  const family=spirit?.family;
+  if(!Object.prototype.hasOwnProperty.call(wildFamilyMultipliers,family))return 1;
+  return Number(spirit.stage)===3&&family!=='cat-girl'?1.5:wildFamilyMultipliers[family];
+ };
+ // HUD display cap only: inventory/save can hold unlimited balls.
+ const ballHudValue=value=>{const actual=Number.isFinite(Number(value))?Math.max(0,Math.floor(Number(value))):0;return{display:Math.min(actual,99),overflow:actual>99,actual};};
  const evolutionOnlyWild=Object.freeze(['zapdos','moltres','suicune','raichu','palkia']);
  const progress=(all,owned)=>{const list=all.filter(s=>s?.acquisition!=='tower'&&s?.category!=='tower'&&!['chimchar','monferno','infernape'].includes(s.id));return{owned:list.filter(s=>owned(s.id)).length,total:list.length};};
  const countAt=(total,percent)=>Math.ceil(total*percent);
@@ -21,5 +31,5 @@
  const formatNpcText=value=>String(value??'').replace(/\{\{(PATROL_REQUIRED|PATROL_BALL_REWARD|TOWER_BASE_CHANCE|TOWER_CHANCE_STEP)\}\}/g,(_,name)=>npcReplacements[name]());
  const specialNotice=()=>`圖鑑達 ${pct(thresholds.lab)}（研究所三選一未選的兩隻）、${pct(thresholds.yellow)}（小黃）、${pct(thresholds.greenBat)}（綠眼蝙怪）時，可在初光鎮找到對應特殊幻靈；尚未收錄完圖鑑前，成功捕捉後不再重生。`;
  const pondNotice=()=>`大眼蛙與水毛蟲未完成全圖鑑時，野外捕捉後不再出現；完成全 ${mainSpeciesCount} 種一般幻靈圖鑑後，每次捕捉才解鎖 60 分鐘的再次出現冷卻。`;
- window.PhantomGameRules=Object.freeze({mainSpeciesCount,thresholds,quest,arena,tower,pond,evolutionOnlyWild,progress,countAt,towerCardChance,towerDropNotice,specialNotice,pondNotice,formatNpcText,pct});
+ window.PhantomGameRules=Object.freeze({mainSpeciesCount,thresholds,quest,arena,tower,pond,evolutionOnlyWild,progress,countAt,towerCardChance,towerDropNotice,specialNotice,pondNotice,formatNpcText,wildScaleFor,ballHudValue,pct});
 })();
