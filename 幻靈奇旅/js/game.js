@@ -1708,7 +1708,8 @@ function littleGoldfishArenaFx(attacker,defender,strong){
    ball.material.opacity=.82*opacity;
    glow.material.opacity=.35*opacity;
   }else{
-   ringA.visible=false;
+   const end=d.root.getWorldPosition(new T.Vector3()).setY(.09);
+   ripple(ringA,end,t,1.05,.43,1.7); // source animation releases its bullet at 0.6s; impact splash follows
    const active=t>=.6&&t<=1.2;
    ball.visible=glow.visible=active;
    if(!active)return;
