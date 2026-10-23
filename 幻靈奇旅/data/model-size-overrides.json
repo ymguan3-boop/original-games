@@ -144,22 +144,22 @@
     "maxSpan": 4.5
   },
   "mudkip": {
-    "desiredWorldHeight": 1.06,
+    "desiredWorldHeight": 1.378,
     "stage": 1,
     "form": "bear",
-    "maxSpan": 2.6
+    "maxSpan": 3.38
   },
   "marshtomp": {
-    "desiredWorldHeight": 1.378,
+    "desiredWorldHeight": 1.7914,
     "stage": 2,
     "form": "bear",
-    "maxSpan": 3.3800000000000003
+    "maxSpan": 4.394
   },
   "swampert": {
-    "desiredWorldHeight": 1.791,
+    "desiredWorldHeight": 2.3283,
     "stage": 3,
     "form": "bear",
-    "maxSpan": 4.394000000000001
+    "maxSpan": 5.7122
   },
   "turtwig": {
     "desiredWorldHeight": 1.38,
