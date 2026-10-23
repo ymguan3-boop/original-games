@@ -74,10 +74,13 @@
  function layout(){
   const radar=document.getElementById('radar');
   const rect=radar?.getBoundingClientRect();
-  const top=Math.max(68,(rect?.bottom||105)+7);
+  // 上方是精簡任務按鈕，下方是雷達，間距 8px；雷達展開時也不會蓋到按鈕。
+  const buttonHeight=button.getBoundingClientRect().height||29;
+  const top=Math.max(54,(rect?.top||94)-buttonHeight-8);
   button.style.top=top+'px';
   if(rect)button.style.right=Math.max(7,window.innerWidth-rect.right)+'px';
-  const panelTop=Math.round(top+button.getBoundingClientRect().height+7);
+  // 任務面板在雷達下緣開啟，不遮住雷達。
+  const panelTop=Math.round((rect?.bottom||top+buttonHeight+58)+8);
   panel.style.top=panelTop+'px';
   panel.style.right=button.style.right;
   panel.style.maxHeight=Math.max(124,Math.min(window.innerHeight*.64,window.innerHeight-panelTop-16))+'px';

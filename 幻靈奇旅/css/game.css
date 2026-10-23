@@ -695,3 +695,7 @@ body.battle-active:not(.gym-active) #labels .arenaAllyHp{
  -webkit-text-stroke:.18px #4c0010;
  text-shadow:0 1px 1px #30000d,0 0 8px #ff334477;
 }
+
+
+/* 2026-10-23：任務按鈕與雷達上下互換；遊戲 HUD 下方優先顯示小型任務按鈕。 */
+#radar{top:calc(env(safe-area-inset-top,0px) + 94px)}
