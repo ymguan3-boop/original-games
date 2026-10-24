@@ -1,0 +1,13 @@
+/* Shared, event-driven loading progress. Percent is a phase estimate, never a timer. */
+(()=>{'use strict';let active=false,shown=0,label='正在載入場景',started=0,finished=0,overlay=null,hideTimer=0;const history=[];
+ function mount(){if(!document.body)return null;if(!overlay){overlay=document.createElement('section');overlay.id='sceneLoading';overlay.hidden=true;overlay.setAttribute('role','status');overlay.setAttribute('aria-live','polite');overlay.innerHTML='<div class="scene-loading-card"><small>LOADING</small><strong></strong><div class="scene-loading-track" role="progressbar" aria-label="場景讀取進度" aria-valuemin="0" aria-valuemax="100"><i></i></div><p></p></div>';document.body.append(overlay);}return overlay;}
+ function draw(){if(!mount())return;overlay.hidden=false;overlay.classList.toggle('compact',!active);overlay.querySelector('strong').textContent=label;overlay.querySelector('i').style.width=Math.round(shown*100)+'%';overlay.querySelector('[role=progressbar]').setAttribute('aria-valuenow',Math.round(shown*100));overlay.querySelector('p').textContent=(started?'素材 '+finished+' / '+started+' 項 · ':'')+Math.round(shown*100)+'%';}
+ function begin(text){clearTimeout(hideTimer);active=true;shown=0;started=finished=0;label=text||'正在載入場景';history.push({label,start:performance.now()});draw();}
+ function stage(text,fraction){label=text||label;shown=Math.max(shown,Math.min(.97,Number(fraction)||0));if(active)draw();}
+ function end(){if(!overlay)return;shown=1;draw();active=false;const last=history.at(-1);if(last&&!last.end)last.end=performance.now();clearTimeout(hideTimer);hideTimer=setTimeout(()=>{if(overlay&&!active)overlay.hidden=true;},180);}
+ function fail(text){label=text||'讀取失敗，請重新整理重試';active=false;clearTimeout(hideTimer);draw();}
+ function install(){const m=globalThis.THREE?.DefaultLoadingManager;if(!m||m.__phantomProgress)return;m.__phantomProgress=true;const start=m.itemStart.bind(m),endItem=m.itemEnd.bind(m);m.itemStart=url=>{if(!active&&finished===started){started=finished=0;shown=0;}started++;clearTimeout(hideTimer);if(!active)label='正在載入模型與特效';draw();start(url);};m.itemEnd=url=>{finished++;shown=Math.max(shown,Math.min(.92,finished/Math.max(1,started)*.9));draw();endItem(url);if(!active&&finished>=started){shown=1;draw();hideTimer=setTimeout(()=>{if(!active)overlay.hidden=true;},180);}};}
+ globalThis.PhantomLoading={begin,stage,end,fail,install,get active(){return active;},diagnostics:()=>({active,started,finished,progress:shown,label,history:history.slice(-20)})};
+ document.addEventListener('DOMContentLoaded',()=>{install();if(active)draw();});install();
+ addEventListener('pageshow',event=>{if(event.persisted){active=false;clearTimeout(hideTimer);if(overlay)overlay.hidden=true;}});
+})();

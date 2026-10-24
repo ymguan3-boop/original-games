@@ -2,7 +2,7 @@ import {activeStatuses} from './combat-status.js';
 const TYPES=['poison','paralysis','freeze','slow','heal'];
 export async function createStatusView(T,scene,heightOf){
  const pool=new Map(),loader=new T.TextureLoader(),textures={};
- await Promise.all(TYPES.map(async type=>{const t=await new Promise((resolve,reject)=>loader.load(new URL('../assets/status-'+type+'-v11.png',import.meta.url).href,resolve,undefined,()=>reject(Error('狀態特效圖片無法載入：'+type))));t.encoding=T.sRGBEncoding;textures[type]=t;}));
+ for(const type of TYPES){const t=loader.load(new URL('../assets/status-'+type+'-v11.png',import.meta.url).href,texture=>{texture.encoding=T.sRGBEncoding;texture.needsUpdate=true;},undefined,()=>console.warn('狀態特效圖片無法載入：'+type));t.encoding=T.sRGBEncoding;textures[type]=t;}
  const plane=new T.PlaneGeometry(1,1),ring=new T.RingGeometry(.7,.8,32),knockMat=new T.MeshBasicMaterial({color:0xffbd7c,transparent:true,opacity:.7,depthWrite:false,side:T.DoubleSide,toneMapped:false});
  function build(type){const root=new T.Group();let sprite,ground;if(type==='knockback'){ground=new T.Mesh(ring,knockMat);root.add(ground);}else{sprite=new T.Sprite(new T.SpriteMaterial({map:textures[type],transparent:true,opacity:.72,depthWrite:false,toneMapped:false}));ground=new T.Mesh(plane,new T.MeshBasicMaterial({map:textures[type],transparent:true,opacity:.32,depthWrite:false,side:T.DoubleSide,toneMapped:false}));root.add(sprite,ground);}ground.rotation.x=-Math.PI/2;scene.add(root);return{root,sprite,ground,type};}
  function release(v){scene.remove(v.root);if(v.sprite){v.sprite.material.dispose();v.ground.material.dispose();}}

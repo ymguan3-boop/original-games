@@ -7,7 +7,7 @@ import {projectileStyle,projectileTint} from './actor-layout.js';
 import {setStatus,hasStatus,immobilized,movementScale} from './combat-status.js';
 import {evolutionOptions,evolvePet,petUltimateCooldown} from './manual-evolution.js';
 import {attackProfile,HERO_ATTACKS,ROLL_DURATION} from './combat-profile.js';
-import {TOWER_ULTIMATES} from './tower-fx.js';
+import {TOWER_ULTIMATES} from './tower-ultimates.js';
 import {calculateDamage,applyHit,inShape} from './damage.js';
 import {petMaxHealth,makePet,switchPet,passiveTotals,grantPetXp} from './pet-party.js';
 import {addBuff,addTemporaryWeapon,WEAPONS,ITEMS,BUFF_CAPS,consumeBall,expireBuffs,weaponStats} from './inventory.js';

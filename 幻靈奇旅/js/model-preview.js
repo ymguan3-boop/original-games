@@ -2,7 +2,7 @@
    八個統一動作：待機、移動、跑步、特殊（打招呼）、開心（歡呼）、受擊、普攻、絕招。
    模型沒有對應動作時，以待機／行走為底加上程序動作補上（跑步＝加速行走、打招呼＝搖擺小跳、歡呼＝雙跳旋身、受擊＝後退抖動）。 */
 (async()=>{'use strict';
-const T=THREE,C=ModelRoomSettings,$=id=>document.getElementById(id),host=$('stage');
+PhantomLoading.install();const T=THREE,C=ModelRoomSettings,$=id=>document.getElementById(id),host=$('stage');
 const scene=new T.Scene();
 const renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.domElement.setAttribute('aria-label','可拖曳旋轉與縮放的立體幻靈家族');host.prepend(renderer.domElement);
 const camera=new T.PerspectiveCamera(30,1,.05,200);
@@ -166,7 +166,7 @@ function info(p){selected=p;if(packs.length)scope(single);document.querySelector
  $('evolution').textContent=C.evolution(s,byId);$('description').textContent=s.description||'';
  const art=portraitMap[s.id],fig=$('cardPortrait');fig.dataset.frame=s.cardFrame||'default';fig.hidden=!art?.image;if(art?.image){fig.querySelector('img').src=art.image;fig.querySelector('img').alt=s.name+'圖鑑肖像';$('portrait-caption').textContent='No.'+cardNumber(s)+' · '+s.name;}
  buttons();pressed();}
-async function select(fid,write=true){
+async function select(fid,write=true){PhantomLoading.begin('正在載入幻靈模型');
  const fam=families.find(f=>f.id===fid)||families[0];const token=++serial;$('error').hidden=true;$('status').textContent='載入 '+fam.label+'…';
  try{const built=[];for(const id of fam.ids)built.push(await build(id));if(token!==serial||dead){built.forEach(release);return;}
   packs.forEach(release);packs=built;family=fam;selected=packs[packs.length-1];
@@ -177,7 +177,7 @@ async function select(fid,write=true){
   $('subject').value=fam.id;info(packs[packs.length-1]);play(motion);
   $('status').textContent=packs.map(p=>(p.s?.name||'主角')+'：'+(p.controller?'原生 Three.js':'GLB')).join('｜');
   if(write){const u=new URL(location.href);u.searchParams.set('subject',fam.id);history.replaceState(null,'',u);}
- }catch(e){if(token===serial)error(e);}
+ if(token===serial)PhantomLoading.end();}catch(e){if(token===serial){PhantomLoading.fail('模型讀取失敗，請重試');error(e);}}
 }
 for(const [id,name]of Object.entries(C.suits)){const b=document.createElement('button');b.textContent=name;b.dataset.suit=id;b.onclick=()=>{suit=id;for(const p of packs)if(p.hero)heroCostumes.apply(p.root,id);document.querySelectorAll('[data-suit]').forEach(x=>x.classList.toggle('active',x.dataset.suit===suit));};$('outfit-buttons').append(b);}
 $('subject').onchange=e=>select(e.target.value);$('retry').onclick=()=>select(family?.id||families[0].id);

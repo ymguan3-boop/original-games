@@ -33,4 +33,4 @@ export class TowerFX {constructor(scene){this.dynamic=new T.Group();scene.add(th
 
 dispose(){for(const f of this.visualFX)f.mesh.material.dispose();this.geometries.forEach(g=>g.dispose());this.dynamic.parent?.remove(this.dynamic);}
 }
-export const TOWER_ULTIMATES={sword:{index:0,name:'斷岳三連斬',hits:3,interval:.36},blades:{index:1,name:'逐風十連擊',hits:10,interval:.105},guns:{index:2,name:'曙光彈雨',hits:9,interval:.155},knife:{index:3,name:'居合五連斬',hits:5,interval:.2}};
+export {TOWER_ULTIMATES} from './tower-ultimates.js';

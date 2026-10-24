@@ -16,9 +16,9 @@
   {id:'collect50',title:'第五步｜圖鑑達 50%',detail:'累積 29／58 種不同的一般幻靈圖鑑卡片。',reward:['masterBallCount',10,'星耀靈核球']},
   {id:'gym',title:'第五步｜初光道館四大守護者',detail:'前往初光道館進行「初光挑戰」，分別擊敗雷電奔襲、紫波滾動、木頭人驚跳、光鳳破綻四大守護者。四項試煉全部通關可立即獲得星耀靈核球 ×30；已通關紀錄直接計入，不需重打。',action:'導航至初光道館',reward:['masterBallCount',30,'星耀靈核球']},
   {id:'tower',title:'第五步｜挑戰星穹挑戰塔',detail:'進入挑戰塔，實際選擇魔物關卡並開始戰鬥才算完成；只進入塔內不算。',action:'導航至星穹挑戰塔',reward:['masterBallCount',10,'星耀靈核球']},
-  {id:'cave-fishing',cave:true,title:'洞穴任務｜釣魚擂台獲勝3場',detail:'河畔釣魚的3對3挑戰累積獲勝3場，獲得洞穴1000點。完成後沿北側橋梁前往探索山洞。',action:'查看任務路線',reward:['cavePoints',1000,'洞穴點數']},
-  {id:'cave-enter',cave:true,title:'洞穴任務｜探索無盡洞穴',detail:'前往北側橋梁盡頭的探索山洞，進入初光無盡洞穴。點數可用於召喚、道具與永久武器，三種靈核球與主遊戲共用。',action:'導航至探索山洞',reward:['cavePoints',0,'操作引導']},
-  {id:'cave-dragon',cave:true,title:'洞穴任務｜締約水蛟龍王',detail:'收集小金魚卡片，3張可隨機進化成金魚國王或皇后。國王與皇后卡片各3張向釣魚郎換1份魚飼料，河邊使用後召喚並締約水蛟龍王；完成釣魚3勝後可再得洞穴1000點。',action:'前往收集魚飼料',reward:['cavePoints',1000,'洞穴點數']}
+  {id:'cave-fishing',cave:true,title:'第六步｜河畔釣魚擂台獲勝3場',detail:'河畔釣魚的3對3挑戰累積獲勝3場，獲得洞穴1000點。完成後沿北側橋梁前往探索山洞。',action:'導航至河畔對戰處',reward:['cavePoints',1000,'洞穴點數']},
+  {id:'cave-enter',cave:true,title:'第六步｜探索無盡洞穴',detail:'前往北側橋梁盡頭的探索山洞，進入初光無盡洞穴。點數可用於召喚、道具與永久武器，三種靈核球與主遊戲共用。',action:'導航至探索山洞',reward:['cavePoints',0,'操作引導']},
+  {id:'cave-dragon',cave:true,title:'第六步｜締約水蛟龍王',detail:'收集小金魚卡片，3張可隨機進化成金魚國王或皇后。國王與皇后卡片各3張向釣魚郎換1份魚飼料，河邊使用後召喚並締約水蛟龍王；完成釣魚3勝後可再得洞穴1000點。',action:'前往收集魚飼料',reward:['cavePoints',1000,'洞穴點數']}
  ];
  const flags=()=>api?.state?.journeyGuide;
  const count=()=>{const p=api?.progress?.()||{owned:0,total:Rules.mainSpeciesCount};return{owned:p.owned||0,total:p.total||Rules.mainSpeciesCount};};
