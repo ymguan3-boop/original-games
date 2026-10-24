@@ -5,7 +5,7 @@ import {cardBase} from './card-balance.js';
 import {advanceProjectile} from './projectiles.js';
 import {projectileStyle,projectileTint} from './actor-layout.js';
 import {setStatus,hasStatus,immobilized,movementScale} from './combat-status.js';
-import {evolutionOptions,evolvePet,petUltimateCooldown} from './manual-evolution.js';
+import {evolutionOptions,evolvePet,petUltimateCooldown} from './manual-evolution.js?v=20261024-v15';
 import {attackProfile,HERO_ATTACKS,ROLL_DURATION} from './combat-profile.js';
 import {TOWER_ULTIMATES} from './tower-ultimates.js';
 import {calculateDamage,applyHit,inShape} from './damage.js';
@@ -38,7 +38,7 @@ export class CaveWorld{
  heroUltimate(){const r=this.run,h=r.hero,w=this.weapon();if(h.hp<=0||immobilized(h,r.time)||h.ultimateCd>0||h.roll)return false;const e=this.target(h,w.kind==='guns'?17:8);if(!e){this.emit('message','範圍內沒有可攻擊的目標');return false;}h.heading=Math.atan2(e.x-h.x,e.z-h.z);const type=w.kind==='guns'?'tracking':w.kind==='knife'?'cone':'area';h.ultimateCd=22*(1-Math.min(.3,(r.buffs.cooldown||0)+(this.passives.cooldown||0)));this.emit('heroAnimation',`${w.kind}-ultimate`);h.pendingAttack=null;h.attackCd=TOWER_ULTIMATES[w.kind].hits*TOWER_ULTIMATES[w.kind].interval+.3;this.emit('message',TOWER_ULTIMATES[w.kind].name);this.emit('heroStart',{weapon:TOWER_ULTIMATES[w.kind].index,x:e.x,z:e.z});r.heroCombo={remaining:TOWER_ULTIMATES[w.kind].hits,index:0,next:r.time+.15,interval:TOWER_ULTIMATES[w.kind].interval,weapon:TOWER_ULTIMATES[w.kind].index,type,targetId:e.id,range:w.kind==='guns'?19:7};return true;}
  petUltimate(){const r=this.run,p=r?.pets[r.activePet];if(!p||p.hp<=0)return false;if(p.ultimateCd>0){this.emit('message','大絕冷卻中：'+Math.ceil(p.ultimateCd)+' 秒');return false;}p.ultimateQueued=true;this.emit('message','大絕待命：優先索敵，進入射程自動施放');this.startPetSkill(true);return true;}
  evolutionOptions(index){return evolutionOptions(this.run?.pets[index],this.data.evolution,this.data.spirits);}
- evolve(index,nextId){return evolvePet(this.store,index,this.data,nextId).value;}
+ evolve(index,nextId){return evolvePet(this.store,index,this.data,nextId,undefined,this.random).value;}
  equipWeapon(id){return this.store.transact(this.store.newId('equip-live'),s=>{const r=s.run;if(!r||r.status!=='active'||![...s.weapons,...r.tempWeapons].includes(id))throw Error('未持有此武器');r.weaponId=id;r.hero.pendingAttack=null;r.heroCombo=null;r.hero.attackCd=.12;return id;});}
  feedback(victim,amount,status,details={}){const r=this.run;const faction=victim===r.hero?'hero':r.pets.includes(victim)?'pet':'enemy',id=faction==='hero'?'hero':faction==='pet'?'pet:'+r.pets.indexOf(victim):victim.id;victim.hitSerial=(victim.hitSerial||0)+1;if(!status)victim.hitReactUntil=r.time+.12;const ev={id,faction,amount,status,x:victim.x,z:victim.z,speciesId:victim.speciesId,...details};this.emit('combatFeedback',ev);if(amount>0&&faction==='enemy'&&!status)this.emit('impact',ev);}
  status(victim,type,options={}){if(setStatus(victim,type,this.run.time,options)){this.feedback(victim,0,type);return true;}return false;}
