@@ -1,4 +1,6 @@
 export function createCaveTutorial(api){
+ const qa=new URLSearchParams(location.search).has('qa'),saved=api.store.state,seen=!!(saved.tutorial?.firstVisitSeen||saved.tutorial?.lobby||saved.tutorial?.combat||saved.starterClaimed||saved.run||saved.history?.length),firstVisit=!qa&&!seen;
+ if(!qa&&!saved.tutorial?.firstVisitSeen)api.store.transact(api.store.newId('tutorial-visit'),s=>{s.tutorial||={};s.tutorial.firstVisitSeen=true;});
  const sheet=document.createElement('aside');sheet.id='caveTutorial';sheet.hidden=true;sheet.setAttribute('role','region');sheet.setAttribute('aria-label','洞穴操作教學');document.body.append(sheet);const focus=document.createElement('div');focus.id='tutorialFocus';focus.hidden=true;document.body.append(focus);let phase='',index=0;
  const steps={lobby:[{title:'歡迎進入無盡洞穴',text:'首次可免費召喚三位不同的基礎幻靈。主遊戲任務與商人換得的點數都會顯示在右上錢包。',target:'#start'},
  {title:'靈核召喚',text:'一次100點，十次1000點。召喚會播放動畫並列出獎勵；取得的道具要在探險背包使用才生效。',target:'.gacha-intro',open:()=>api.gacha()},
@@ -16,5 +18,5 @@ export function createCaveTutorial(api){
  addEventListener('resize',position);
  addEventListener('scroll',position,true);
  const observer=new MutationObserver(position);observer.observe(document.getElementById('panel'),{attributes:true,attributeFilter:['open']});
- return{get active(){return !sheet.hidden;},begin(name,force=false){if(!force&&(new URLSearchParams(location.search).has('qa')||api.store.state.tutorial?.[name]?.done))return;if(phase&&phase!==name)save(true);phase=name;index=force?0:Math.min(steps[name].length-1,api.store.state.tutorial?.[name]?.step||0);render();},dispose(){observer.disconnect();sheet.remove();focus.remove();removeEventListener('resize',position);removeEventListener('scroll',position,true);}};
+ return{get active(){return !sheet.hidden;},get isFirstVisit(){return firstVisit;},begin(name,force=false){if(!force&&(!firstVisit||api.store.state.tutorial?.[name]?.done))return;if(phase&&phase!==name)save(true);phase=name;index=force?0:Math.min(steps[name].length-1,api.store.state.tutorial?.[name]?.step||0);render();},dispose(){observer.disconnect();sheet.remove();focus.remove();removeEventListener('resize',position);removeEventListener('scroll',position,true);}};
 }

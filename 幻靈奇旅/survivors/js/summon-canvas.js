@@ -1,6 +1,6 @@
 import {itemArtwork} from './item-pictures.js';
 import {ITEMS} from './inventory.js';
-const COLORS = { yellow:'#ffd16a', purple:'#c18bff', red:'#ff856f' };
+const COLORS = { yellow:'#ffd16a', purple:'#bd75ff', red:'#ff385d' };
 const clamp = x => Math.max(0, Math.min(1,x));
 const ease = x => 1-Math.pow(1-clamp(x),3);
 
@@ -14,7 +14,7 @@ export function createSummon(stage, rewards, picture, duration) {
   const atlases={'assets/items-v08.png':load('assets/items-v08.png'),'assets/status-items-v10.png':load('assets/status-items-v10.png')};
   const cards=rewards.map(r=>r.kind==='spirit' ? load(picture(r.id)) : null);
   stage.dataset.duration=String(duration);
-  const tone=COLORS[rewards.find(r=>r.color==='red')?.color] || COLORS[rewards.find(r=>r.color==='purple')?.color] || COLORS[rewards.find(r=>r.color==='yellow')?.color] || '#80f6e0';
+  const spirits=rewards.filter(r=>r.kind==='spirit'),rarity=spirits.some(r=>r.color==='red')?'red':spirits.some(r=>r.color==='purple')?'purple':spirits.some(r=>r.color==='yellow')?'yellow':'supply',tone=COLORS[rarity]||'#80f6e0';stage.dataset.rarity=rarity;
   const particles=Array.from({length:66},(_,i)=>({angle:i*2.39996,depth:(i*.618034)%1,speed:.12+(i%7)*.025}));
   function resize() { const rect=stage.getBoundingClientRect(); width=Math.max(1,rect.width);height=Math.max(1,rect.height); const dpr=Math.min(1.6,devicePixelRatio||1);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0); }
   const observer=new ResizeObserver(resize);observer.observe(stage);resize();
@@ -28,6 +28,12 @@ export function createSummon(stage, rewards, picture, duration) {
     ctx.fillStyle='#071d31';ctx.fillRect(0,0,width,height);
     if(imageReady(sky)){const zoom=1.08+.2*Math.sin(Math.min(t/4500,1)*Math.PI/2),scale=Math.max(width/sky.naturalWidth,height/sky.naturalHeight)*zoom;const w=sky.naturalWidth*scale,h=sky.naturalHeight*scale;ctx.globalAlpha=.7;ctx.drawImage(sky,(width-w)/2+Math.sin(seconds*.5)*9,(height-h)/2+seconds*3,w,h);ctx.globalAlpha=1;}
     ctx.fillStyle='rgba(3,16,36,.35)';ctx.fillRect(0,0,width,height);
+    if(rarity==='red'||rarity==='purple'){
+      const pulse=.34+Math.sin(seconds*4)*.07;glow(centerX,centerY,Math.max(width,height)*.74,tone,pulse);
+      ctx.save();ctx.translate(centerX,centerY);ctx.globalCompositeOperation='screen';ctx.rotate(seconds*.45);ctx.fillStyle=tone;
+      for(let i=0;i<12;i++){ctx.rotate(Math.PI/6);ctx.globalAlpha=.11+Math.sin(seconds*3+i)*.035;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-width*.035,-height);ctx.lineTo(width*.035,-height);ctx.closePath();ctx.fill();}
+      ctx.strokeStyle=tone;ctx.globalAlpha=.5+Math.sin(seconds*5)*.1;ctx.lineWidth=2.5;for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(0,0,width*(.2+i*.07),height*(.16+i*.05),seconds*.2+i*.6,0,Math.PI*2);ctx.stroke();}ctx.restore();
+    }
     const flight=clamp(t/3300);
     // Perspective cloud ribbons expand from the vanishing point toward the viewer.
     for(let i=0;i<7;i++){const z=(i/7+seconds*.19)%1;const spread=z*z;ctx.save();ctx.translate(centerX,centerY);ctx.scale(1,.45);ctx.strokeStyle=`rgba(168,234,245,${.03+z*.12})`;ctx.lineWidth=12+z*20;ctx.beginPath();ctx.ellipse(0,0,30+spread*width,25+spread*height,Math.sin(i)*.1,0,Math.PI*2);ctx.stroke();ctx.restore();}

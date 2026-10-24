@@ -1,13 +1,31 @@
 import {activeStatuses} from './combat-status.js';
 const TYPES=['poison','paralysis','freeze','slow','heal'];
+/** Procedural THREE geometry only: no status image/texture requests. */
 export async function createStatusView(T,scene,heightOf){
- const pool=new Map(),loader=new T.TextureLoader(),textures={};
- for(const type of TYPES){const t=loader.load(new URL('../assets/status-'+type+'-v11.png',import.meta.url).href,texture=>{texture.encoding=T.sRGBEncoding;texture.needsUpdate=true;},undefined,()=>console.warn('狀態特效圖片無法載入：'+type));t.encoding=T.sRGBEncoding;textures[type]=t;}
- const plane=new T.PlaneGeometry(1,1),ring=new T.RingGeometry(.7,.8,32),knockMat=new T.MeshBasicMaterial({color:0xffbd7c,transparent:true,opacity:.7,depthWrite:false,side:T.DoubleSide,toneMapped:false});
- function build(type){const root=new T.Group();let sprite,ground;if(type==='knockback'){ground=new T.Mesh(ring,knockMat);root.add(ground);}else{sprite=new T.Sprite(new T.SpriteMaterial({map:textures[type],transparent:true,opacity:.72,depthWrite:false,toneMapped:false}));ground=new T.Mesh(plane,new T.MeshBasicMaterial({map:textures[type],transparent:true,opacity:.32,depthWrite:false,side:T.DoubleSide,toneMapped:false}));root.add(sprite,ground);}ground.rotation.x=-Math.PI/2;scene.add(root);return{root,sprite,ground,type};}
- function release(v){scene.remove(v.root);if(v.sprite){v.sprite.material.dispose();v.ground.material.dispose();}}
- function update(run){const seen=new Set(),counts={},details=[];if(run)for(const[id,a]of[['hero',run.hero],...run.pets.filter((p,i)=>i===run.activePet).map(p=>['pet',p]),...run.enemies.map(e=>[e.id,e])]){if(a.hp<=0||a.capturePending)continue;const states=activeStatuses(a,run.time).map(s=>s.type).filter(t=>TYPES.includes(t)||t==='knockback');if(a.healUntil>run.time)states.push('heal');const h=id==='hero'?2.35:heightOf(a.speciesId),size=Math.min(3.8,Math.max(1.7,h*1.4));for(const[typeIndex,type]of states.entries()){const key=id+':'+type;seen.add(key);let v=pool.get(key);if(!v){v=build(type);pool.set(key,v);}v.root.position.set(a.x,.08,a.z);v.ground.position.y=typeIndex*.012;v.ground.scale.setScalar(type==='knockback'?1+Math.max(0,1-(a.statuses.knockback.until-run.time)/.3)*1.5:size);v.ground.rotation.z=run.time*(type==='slow'?-.6:.35);if(v.sprite){const t=run.time,pulse=1+Math.sin(t*(type==='paralysis'?18:4)+typeIndex)*.035;v.sprite.position.y=h*.52+(type==='heal'?Math.sin(t*3)*.08:0);v.sprite.scale.setScalar(size*pulse);v.sprite.material.opacity=(type==='freeze'?.63:type==='heal'?.65:.72)*(states.length>2?.65:1);v.sprite.material.rotation=type==='paralysis'?Math.sin(t*23)*.035:type==='freeze'?Math.sin(t*.8)*.04:t*(type==='slow'?-.3:.14);v.ground.material.opacity=type==='freeze'?.28:.22;}counts[type]=(counts[type]||0)+1;details.push({actor:id,type,asset:type==='knockback'?null:'assets/status-'+type+'-v11.png',size,phase:v.sprite?.material.rotation||0});}}
- for(const[key,v]of pool)if(!seen.has(key)){release(v);pool.delete(key);}return{counts,details,instances:pool.size,textures:TYPES.map(t=>'assets/status-'+t+'-v11.png')};}
+ const pool=new Map(),geometries=[];const own=g=>(geometries.push(g),g),sphere=own(new T.SphereGeometry(1,8,6)),crystal=own(new T.ConeGeometry(1,1,5)),torus=own(new T.TorusGeometry(1,.025,5,40)),box=own(new T.BoxGeometry(1,1,1));
+ const points=[];for(let i=0;i<7;i++)points.push(new T.Vector3((i%2?.08:-.08),i*.15,0));const lightning=own(new T.BufferGeometry().setFromPoints(points));
+ function build(type){const root=new T.Group(),parts=[],materials=[];root.name='Status3D:'+type;scene.add(root);const color={poison:0x85ef4d,paralysis:0xffdf45,freeze:0xa6f0ff,slow:0x64a8ee,heal:0x73ffc0,knockback:0xffc17c}[type];
+ const material=(c=color,opacity=.72)=>{const m=new T.MeshBasicMaterial({color:c,transparent:true,opacity,depthWrite:false,side:T.DoubleSide,toneMapped:false});materials.push(m);return m;};
+ function mesh(g,m){const o=new T.Mesh(g,m);root.add(o);parts.push(o);return o;}
+ const base=material(color,type==='freeze'?.4:.6),accent=material(type==='poison'?0xb55bd5:color,.6);
+ if(type==='poison'){for(let i=0;i<8;i++){const o=mesh(sphere,i%3?base:accent);o.scale.setScalar(.045+(i%3)*.012);}mesh(torus,accent).rotation.x=-Math.PI/2;}
+ if(type==='paralysis'){const lm=new T.LineBasicMaterial({color,transparent:true,opacity:.9,toneMapped:false});materials.push(lm);for(let i=0;i<5;i++){const o=new T.Line(lightning,lm);root.add(o);parts.push(o);}}
+ if(type==='freeze'){for(let i=0;i<7;i++){const o=mesh(crystal,i%2?base:accent);o.scale.set(.13,.45+(i%3)*.08,.13);}mesh(torus,accent).rotation.x=-Math.PI/2;}
+ if(type==='slow'){for(let i=0;i<3;i++){const o=mesh(torus,i%2?accent:base);o.rotation.x=-Math.PI/2;}for(let i=0;i<5;i++){const o=mesh(sphere,accent);o.scale.setScalar(.035);}}
+ if(type==='heal'){for(let i=0;i<3;i++){const o=mesh(torus,base);o.rotation.x=-Math.PI/2;}for(let i=0;i<5;i++){const cross=new T.Group(),a=new T.Mesh(box,accent),b=new T.Mesh(box,accent);a.scale.set(.035,.15,.035);b.scale.set(.15,.035,.035);cross.add(a,b);root.add(cross);parts.push(cross);}}
+ if(type==='knockback'){const o=mesh(torus,base);o.rotation.x=-Math.PI/2;}
+ return{root,parts,materials,type};}
+ function release(v){scene.remove(v.root);v.materials.forEach(m=>m.dispose());}
+ function animate(v,t){const {type,parts}=v;for(let i=0;i<parts.length;i++){const o=parts[i],a=i*2.39996+t*(type==='slow'?-.35:.55),phase=(t*(type==='paralysis'?2.8:type==='slow'?.17:.55)+i*.21)%1;
+ if(type==='poison'){if(i<8){o.position.set(Math.cos(a)*.31,.1+phase*.75,Math.sin(a)*.31);o.scale.setScalar((.04+(i%3)*.012)*(.55+Math.sin(phase*Math.PI)*.7));}else{o.position.y=.035;o.scale.setScalar(.45+Math.sin(t*2)*.025);}}
+ if(type==='paralysis'){o.position.set(Math.cos(a)*.28,.06,Math.sin(a)*.28);o.rotation.y=-a; o.scale.setScalar(.85+Math.sin(t*25+i)*.12);}
+ if(type==='freeze'){if(i<7){o.position.set(Math.cos(a*.08)*.29,.15,Math.sin(a*.08)*.29);o.rotation.z=Math.cos(a)*.24;}else{o.scale.setScalar(.49);o.position.y=.035;}}
+ if(type==='slow'){if(i<3){o.scale.setScalar(.38+i*.12);o.position.y=.04+i*.025;o.rotation.z=t*(i%2?-.32:.22);}else{o.position.set(Math.cos(a)*.46,.12+(i-3)*.07,Math.sin(a)*.46);}}
+ if(type==='heal'){if(i<3){o.scale.setScalar(.32+phase*.18);o.position.y=.04+phase*.7;}else{o.position.set(Math.cos(a)*.32,.1+phase*.9,Math.sin(a)*.32);o.rotation.y=t*.5;}}
+ if(type==='knockback'){o.scale.setScalar(.4+phase*.3);o.position.y=.04;}}
+ for(const m of v.materials)m.opacity=(type==='freeze'?.35:type==='paralysis'?.8:.6)*(1+Math.sin(t*(type==='paralysis'?24:3))*.12);}
+ function update(run){const seen=new Set(),counts={},details=[];if(run)for(const[id,a]of[['hero',run.hero],...run.pets.filter((p,i)=>i===run.activePet).map(p=>['pet',p]),...run.enemies.map(e=>[e.id,e])]){if(a.hp<=0||a.capturePending)continue;const states=activeStatuses(a,run.time).map(s=>s.type).filter(t=>TYPES.includes(t)||t==='knockback');if(a.healUntil>run.time)states.push('heal');const h=id==='hero'?2.35:heightOf(a.speciesId),size=Math.min(3.6,Math.max(1.7,h*1.25));for(const type of states){const key=id+':'+type;seen.add(key);let v=pool.get(key);if(!v){v=build(type);pool.set(key,v);}v.root.position.set(a.x,.05,a.z);v.root.scale.set(size,h,size);animate(v,run.time);counts[type]=(counts[type]||0)+1;details.push({actor:id,type,asset:null,renderer:'three-procedural',size,phase:run.time,parts:v.parts.length});}}
+ for(const[key,v]of pool)if(!seen.has(key)){release(v);pool.delete(key);}return{counts,details,instances:pool.size,textures:[],renderer:'three-procedural'};}
  function clear(){for(const v of pool.values())release(v);pool.clear();}
- return{update,clear,dispose(){clear();Object.values(textures).forEach(t=>t.dispose());plane.dispose();ring.dispose();knockMat.dispose();}};
+ return{update,clear,dispose(){clear();geometries.forEach(g=>g.dispose());}};
 }

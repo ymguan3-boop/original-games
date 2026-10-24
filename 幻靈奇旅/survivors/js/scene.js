@@ -1,5 +1,5 @@
 import {createLootView} from './loot-view.js';
-import {createStatusView} from './status-view.js';
+import {createStatusView} from './status-view.js?v=20261024-v14';
 import {immobilized} from './combat-status.js';
 import {modelHeight} from './actor-layout.js';
 import {createProjectileView} from './projectile-view.js';

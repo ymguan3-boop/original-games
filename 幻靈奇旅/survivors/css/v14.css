@@ -1,0 +1,15 @@
+/* Capture cards keep the original complete 5:7 frame, independent of the dex layout. */
+.capture-flight{width:72px;height:100.8px}
+.capture-flight .dex-card{position:relative;isolation:isolate;width:100%;height:100%;aspect-ratio:5/7;background:transparent;border:0;border-radius:6%;overflow:hidden;box-shadow:none}
+.capture-flight .dex-visual{position:absolute;inset:0;border:0;background:none}
+.capture-flight .dex-art{position:absolute;left:10%;top:9%;width:80%;height:60%;aspect-ratio:auto;object-fit:cover;border-radius:6%;z-index:1}
+.capture-flight .dex-frame{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:2}
+.capture-flight .dex-name{position:absolute;top:4.4%;left:24%;width:52%;margin:0;padding:0;z-index:3;background:none;font-size:3.8px;line-height:1.1;white-space:nowrap;color:#493a49}
+.capture-flight .dex-number{display:block;position:absolute;top:69.8%;left:0;right:0;padding:0;z-index:3;text-align:center;font-size:2.8px;line-height:1.1}
+.capture-flight .dex-info{position:absolute;top:74%;left:15%;right:15%;bottom:8%;display:flex;padding:0;gap:1px;z-index:3;justify-content:center}
+.capture-flight .dex-info p{font-size:2.7px;line-height:1.2;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.capture-flight .dex-stats{display:flex;justify-content:space-between;gap:1px;font-size:2.7px;line-height:1.2;white-space:nowrap}
+.capture-flight .dex-stats span{padding:0;background:none}
+.capture-flight .dex-passive{display:block!important;font-size:2.7px!important;line-height:1.2;overflow:hidden;white-space:nowrap}
+.capture-flight .dex-passive span{display:block;overflow:hidden;text-overflow:ellipsis}
+.summon-v07[data-rarity=purple]{--summon-glow:#bd75ff}.summon-v07[data-rarity=red]{--summon-glow:#ff385d}.summon-v07[data-rarity=purple],.summon-v07[data-rarity=red]{box-shadow:inset 0 0 35px color-mix(in srgb,var(--summon-glow) 45%,transparent),0 0 20px color-mix(in srgb,var(--summon-glow) 30%,transparent)}.summon-v07[data-rarity=purple] .summon-v07-progress i,.summon-v07[data-rarity=red] .summon-v07-progress i{background:var(--summon-glow)}
