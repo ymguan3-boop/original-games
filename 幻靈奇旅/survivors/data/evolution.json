@@ -1,0 +1,453 @@
+{
+  "bulbasaur": {
+    "next": [
+      "ivysaur"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "ivysaur": {
+    "next": [
+      "venusaur"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "venusaur": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "charmander": {
+    "next": [
+      "charmeleon"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "charmeleon": {
+    "next": [
+      "charizard"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "charizard": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "squirtle": {
+    "next": [
+      "wartortle"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "wartortle": {
+    "next": [
+      "blastoise"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "blastoise": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "chikorita": {
+    "next": [
+      "bayleef"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "bayleef": {
+    "next": [
+      "meganium"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "meganium": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "cyndaquil": {
+    "next": [
+      "quilava"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "quilava": {
+    "next": [
+      "typhlosion"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "typhlosion": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "totodile": {
+    "next": [
+      "croconaw"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "croconaw": {
+    "next": [
+      "feraligatr"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "feraligatr": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "treecko": {
+    "next": [
+      "grovyle"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "grovyle": {
+    "next": [
+      "sceptile"
+    ],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "sceptile": {
+    "next": [
+      "palkia"
+    ],
+    "level": 16,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "torchic": {
+    "next": [
+      "combusken"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "combusken": {
+    "next": [
+      "blaziken"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "blaziken": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "mudkip": {
+    "next": [
+      "marshtomp"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "marshtomp": {
+    "next": [
+      "swampert"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "swampert": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "turtwig": {
+    "next": [
+      "grotle"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "grotle": {
+    "next": [
+      "torterra"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "torterra": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "chimchar": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "monferno": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "infernape": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "piplup": {
+    "next": [
+      "prinplup"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "prinplup": {
+    "next": [
+      "empoleon"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "empoleon": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "articuno": {
+    "next": [
+      "moltres"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "zapdos": {
+    "next": [],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "moltres": {
+    "next": [],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "raikou": {
+    "next": [
+      "zapdos"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "entei": {
+    "next": [
+      "suicune"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "suicune": {
+    "next": [],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "kyogre": {
+    "next": [
+      "groudon",
+      "rayquaza"
+    ],
+    "level": 4,
+    "branch": "random",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "groudon": {
+    "next": [],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "rayquaza": {
+    "next": [],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "dialga": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "palkia": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "giratina": {
+    "next": [
+      "raichu"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "pikachu": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "mew": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "wigglytuff": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "blissey": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "raichu": {
+    "next": [],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "caterpie": {
+    "next": [
+      "metapod"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "metapod": {
+    "next": [
+      "butterfree"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "butterfree": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "weedle": {
+    "next": [
+      "kakuna"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "kakuna": {
+    "next": [
+      "beedrill"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "beedrill": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "mewtwo": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "jigglypuff": {
+    "next": [
+      "treecko"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "forest": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "ice": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "fire": {
+    "next": [],
+    "level": 4,
+    "branch": "linear",
+    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  }
+}

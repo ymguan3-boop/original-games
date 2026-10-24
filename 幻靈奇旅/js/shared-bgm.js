@@ -8,5 +8,7 @@ function sync(){if(!unlocked||muted||ducked||document.hidden){audio.pause();retu
 function unlock(){unlocked=true;sync();}
 addEventListener('pointerdown',unlock,{passive:true,capture:true});addEventListener('keydown',unlock,true);
 document.addEventListener('visibilitychange',sync);addEventListener('pagehide',()=>audio.pause());
+function refreshSettings(){try{const v=localStorage.getItem('phantom-bgm-volume');if(v!==null&&Number.isFinite(+v)){bgmVolume=Math.max(0,Math.min(100,Math.round(+v)));audio.volume=bgmVolume/100;}muted=localStorage.getItem('phantom-bgm-muted')==='true';}catch{}sync();}
+addEventListener('pageshow',refreshSettings);addEventListener('storage',e=>{if(['phantom-bgm-volume','phantom-bgm-muted'].includes(e.key))refreshSettings();});
 window.PhantomBgm={setScene(value){scene=value;sync();},setVolume(value){const v=Number(value);if(!Number.isFinite(v))return bgmVolume;bgmVolume=Math.max(0,Math.min(100,Math.round(v)));audio.volume=bgmVolume/100;try{localStorage.setItem('phantom-bgm-volume',String(bgmVolume));}catch{}return bgmVolume;},get volume(){return bgmVolume;},setMuted(value){muted=!!value;try{localStorage.setItem('phantom-bgm-muted',String(muted));}catch{}sync();return muted;},toggle(){return this.setMuted(!muted);},setDucked(value){ducked=!!value;sync();},get muted(){return muted;},diagnostics(){return{scene,active,unlocked,muted,ducked,volume:bgmVolume,paused:audio.paused,currentTime:audio.currentTime,src:audio.currentSrc,error};}};
 })();

@@ -15,13 +15,19 @@
   {id:'arena',title:'第四步｜完成幻靈競技',detail:'編滿三位不同的已締約幻靈，找到擂台訓練家，完成一場 3 對 3 競技擂台（勝敗皆計）。',action:'導航至擂台訓練家',reward:['masterBallCount',10,'星耀靈核球']},
   {id:'collect50',title:'第五步｜圖鑑達 50%',detail:'累積 29／58 種不同的一般幻靈圖鑑卡片。',reward:['masterBallCount',10,'星耀靈核球']},
   {id:'gym',title:'第五步｜初光道館四大守護者',detail:'前往初光道館進行「初光挑戰」，分別擊敗雷電奔襲、紫波滾動、木頭人驚跳、光鳳破綻四大守護者。四項試煉全部通關可立即獲得星耀靈核球 ×30；已通關紀錄直接計入，不需重打。',action:'導航至初光道館',reward:['masterBallCount',30,'星耀靈核球']},
-  {id:'tower',title:'第五步｜挑戰星穹挑戰塔',detail:'進入挑戰塔，實際選擇魔物關卡並開始戰鬥才算完成；只進入塔內不算。',action:'導航至星穹挑戰塔',reward:['masterBallCount',10,'星耀靈核球']}
+  {id:'tower',title:'第五步｜挑戰星穹挑戰塔',detail:'進入挑戰塔，實際選擇魔物關卡並開始戰鬥才算完成；只進入塔內不算。',action:'導航至星穹挑戰塔',reward:['masterBallCount',10,'星耀靈核球']},
+  {id:'cave-fishing',cave:true,title:'洞穴任務｜釣魚擂台獲勝3場',detail:'河畔釣魚的3對3挑戰累積獲勝3場，獲得洞穴1000點。完成後沿北側橋梁前往探索山洞。',action:'查看任務路線',reward:['cavePoints',1000,'洞穴點數']},
+  {id:'cave-enter',cave:true,title:'洞穴任務｜探索無盡洞穴',detail:'前往北側橋梁盡頭的探索山洞，進入初光無盡洞穴。點數可用於召喚、道具與永久武器，三種靈核球與主遊戲共用。',action:'導航至探索山洞',reward:['cavePoints',0,'操作引導']},
+  {id:'cave-dragon',cave:true,title:'洞穴任務｜締約水蛟龍王',detail:'收集小金魚卡片，3張可隨機進化成金魚國王或皇后。國王與皇后卡片各3張向釣魚郎換1份魚飼料，河邊使用後召喚並締約水蛟龍王；完成釣魚3勝後可再得洞穴1000點。',action:'前往收集魚飼料',reward:['cavePoints',1000,'洞穴點數']}
  ];
  const flags=()=>api?.state?.journeyGuide;
  const count=()=>{const p=api?.progress?.()||{owned:0,total:Rules.mainSpeciesCount};return{owned:p.owned||0,total:p.total||Rules.mainSpeciesCount};};
  function finished(id,p=count()){
   const f=flags(),s=api?.state||{};
   switch(id){
+   case 'cave-fishing':return (s.caveQuest?.fishingWins||0)>=3;
+   case 'cave-enter':return !!s.caveQuest?.caveEntered;
+   case 'cave-dragon':return !!s.caveQuest?.claims?.['cave-dragon'];
    case 'starter':return !!s.dreamLabLegendClaimed||!!f?.legacyStarter;
    case 'exit':return !!f?.exitedLab;
    case 'claim':return !!s.adventureClaimed;
@@ -43,6 +49,7 @@
   for(const task of tasks){
    if(!finished(task.id,p)||f.rewardsClaimed[task.id])continue;
    const [field,amount,label]=task.reward;
+   if(field==='cavePoints'){if(amount===0||api.state.caveQuest?.claims?.[task.id])f.rewardsClaimed[task.id]=true;continue;}
    // 標記與數量必須在同一份遊戲存檔中保存，防止重新載入或重複回呼重複獎勵。
    f.rewardsClaimed[task.id]=true;
    api.state[field]=Math.max(0,Math.floor(Number(api.state[field])||0))+amount;
@@ -103,7 +110,7 @@
   panel.style.maxHeight=Math.max(110,Math.min(window.innerHeight*.64,window.innerHeight-panelTop-12))+'px';
  }
  function perform(id){
-  if(!api||api.blocked()||finished(id))return;
+  if(!api||api.blocked())return;if(id.startsWith('cave-')){opened=false;api.caveAction?.(id);refresh();return;}if(finished(id))return;
   if(id==='claim'){
    if(api.inLab())api.notice('靠近大夢博士，對話後點「領取冒險服」。');
    else api.navigate('npc','prof_daydream');
@@ -142,13 +149,14 @@
   let markup='<header><div><strong>冒險任務</strong><small>已完成 '+done+' / '+tasks.length+' 項 · 完成自動發獎</small></div><button type="button" data-journey="close" aria-label="關閉任務清單">×</button></header><ol class="journeyTasks">';
   for(const task of tasks){
    const doneTask=finished(task.id,p),active=task===current,inspecting=selectedTask===task.id||!selectedTask&&active;
-   const reward=task.reward[2]+' ×'+task.reward[1];
+   const reward=task.reward[1]?task.reward[2]+' ×'+task.reward[1]:'首次進入有操作教學';
    markup+='<li class="'+(doneTask?'is-done':active?'is-current':'is-later')+'"><button class="journeyTaskLine" type="button" data-journey="inspect" data-task="'+task.id+'" aria-expanded="'+inspecting+'"><span class="journeyMark" aria-hidden="true">'+(doneTask?'✓':active?'✦':'·')+'</span><b>'+esc(task.title)+'</b><span class="journeyChevron">'+(inspecting?'−':'+')+'</span></button>'+
     '<small class="journeyReward">'+(doneTask?'已獲獎勵：':'完成獎勵：')+esc(reward)+'</small>'+
     (inspecting?'<p>'+esc(task.detail)+'</p>':'')+
     (inspecting&&(task.id==='collect30'||task.id==='collect50')?'<div class="journeyProgress"><i style="width:'+Math.min(100,Math.round(100*p.owned/p.total))+'%"></i></div><small>圖鑑 '+p.owned+' / '+p.total+' 種</small>':'')+
+    (inspecting&&task.id==='cave-fishing'?'<p class="journeyCaveProgress">釣魚勝場 '+Math.min(3,api.state.caveQuest?.fishingWins||0)+' / 3</p>':'')+
     (inspecting&&task.id==='gym'?'<div class="journeyProgress"><i style="width:'+(gymCompleted()*100/GYM_STAGES.length)+'%"></i></div><small class="journeyGymCount">初光挑戰 '+gymCompleted()+' / '+GYM_STAGES.length+' 項已通關</small><div class="journeyGymStages">'+GYM_STAGES.map(g=>'<span class="'+(api.state.gyms?.[g.id]?.cleared?'cleared':'')+'">'+(api.state.gyms?.[g.id]?.cleared?'✓':'○')+' '+esc(g.name)+'</span>').join('')+'</div>':'')+
-    (inspecting&&active&&task.action?'<button class="journeyGo" type="button" data-journey="action" data-task="'+task.id+'">'+esc(task.action)+'</button>':'')+'</li>';
+    (inspecting&&(active||task.cave)&&task.action?'<button class="journeyGo" type="button" data-journey="action" data-task="'+task.id+'">'+esc(task.action)+'</button>':'')+'</li>';
   }
   markup+='</ol>'+(done===tasks.length?'<p class="journeyAllDone">✦ 所有冒險任務完成！</p>':'')+'<small class="journeyFoot">完成任務後獎勵立即存入本機背包，不必手動領取，亦不能重複領取。</small>';
   if(markup!==lastMarkup){const scroll=panel.scrollTop;panel.innerHTML=markup;panel.scrollTop=scroll;lastMarkup=markup;}
@@ -175,7 +183,7 @@
  }
  // 教學全文已整合至任務清單；旅人手冊不額外插入大型教學段落。
  function menuHelpHtml(){return '';}
- window.PhantomJourneyGuide={init,refresh,
+ window.PhantomJourneyGuide={init,refresh,showTask(id){opened=true;selectedTask=id;refresh();},
   onLabExit(){record('exitedLab');},
   onCostume(id){if(id==='adventure')record('outfitEquipped');else refresh();},
   onWildCapture(){record('firstWildCapture');},

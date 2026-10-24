@@ -1,0 +1,8 @@
+/* Canvas owns every animated pixel. Controls remain outside its clipped stage. */
+.summon-v07{position:relative;width:100%;height:min(60dvh,520px);min-height:260px;overflow:hidden;isolation:isolate;border-radius:16px;background:#071d31;box-shadow:inset 0 0 0 1px #b4ffe72b}
+.summon-v07 .summon-film{display:block;width:100%;height:100%;pointer-events:none}
+.summon-v07-caption{position:absolute;bottom:26px;left:10px;right:10px;text-align:center;color:#fff0c8;font-size:clamp(11px,3.2vw,15px);font-weight:700;letter-spacing:1px;text-shadow:0 2px 6px #00101c;pointer-events:none}
+.summon-v07-progress{position:absolute;bottom:13px;left:25%;right:25%;height:2px;background:#ffffff26;border-radius:2px;overflow:hidden}
+.summon-v07-progress i{display:block;height:100%;width:100%;transform:scaleX(0);transform-origin:left;background:#afffe3}
+dialog[data-view=summon] #skipSummon{position:relative;z-index:2;min-height:44px;margin-top:12px;width:100%;touch-action:manipulation}
+@media(max-height:520px){.summon-v07{min-height:160px;height:48dvh}.summon-v07-caption{bottom:20px;font-size:11px}}

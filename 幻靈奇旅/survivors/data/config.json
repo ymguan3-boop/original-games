@@ -1,0 +1,55 @@
+{
+  "version": "1.2",
+  "enemyCap": 36,
+  "heroHp": 200,
+  "heroDefense": 20,
+  "segmentSeconds": 1200,
+  "milestones": [
+    300,
+    600,
+    900,
+    1200
+  ],
+  "caps": {
+    "range": 0.4,
+    "cooldown": 0.3,
+    "reduction": 0.5
+  },
+  "gachaCost": 100,
+  "pityLimit": 100,
+  "switchCooldown": 0,
+  "standbyXpRatio": 0.6,
+  "petAttackPerLevel": 0.04,
+  "bossHitCap": 0.2,
+  "captureWindow": 6,
+  "bossCaptureWindow": 8,
+  "rates": {
+    "yellow": 0.06,
+    "purple": 0.03,
+    "red": 0.01,
+    "item": 0.25,
+    "material": 0.25,
+    "skillBoost": 0.2,
+    "abilityBoost": 0.2
+  },
+  "pityWeights": {
+    "yellow": 0.6,
+    "purple": 0.3,
+    "red": 0.1
+  },
+  "elementCycle": [
+    "光",
+    "焰",
+    "森",
+    "潮",
+    "雷",
+    "念"
+  ],
+  "elementStrong": 1.5,
+  "elementWeak": 0.75,
+  "notes": "獨立模式建議初值；不修改原遊戲能力。",
+  "rollDuration": 0.46,
+  "enemyUltimateFromWave": 6,
+  "critChance": 0.08,
+  "critMultiplier": 1.75
+}

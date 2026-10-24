@@ -1,0 +1,6 @@
+import {cardBase} from './card-balance.js';
+import {ownPassives} from './growth.js';
+import {passiveTotals,petMaxHealth} from './pet-party.js';
+export function evolutionOptions(p,evolution,spirits){if(!p||p.hp<=0)return[];const rule=evolution[p.speciesId];if(!rule||p.level<(rule.level||4))return[];return (Array.isArray(rule.next)?rule.next:rule.next?[rule.next]:[]).filter(id=>spirits[id]);}
+export function evolvePet(store,index,data,nextId,tx=store.newId('evolve')){return store.transact(tx,s=>{const r=s.run,p=r?.pets[index];if(r?.status!=='active'||!evolutionOptions(p,data.evolution,data.spirits).includes(nextId))throw Error('尚未達到進化條件');const before=p.speciesId,ratio=p.hp/p.maxHp;p.speciesId=nextId;p.evolutionStage++;p.baseDefense=cardBase(data.spirits[nextId]).defense;const bonus=(passiveTotals(r,data.passives).hp||0)+(index===r.activePet?(ownPassives(data.spirits[nextId],p.growthLevel||1,data.passives).hp||0):0);p.maxHp=petMaxHealth(p,data.spirits,bonus);p.hp=Math.max(1,Math.round(p.maxHp*ratio));p.passiveHpBonus=bonus;p.pendingSkill=null;p.actionUntil=0;p.ultimateQueued=false;return{before,after:nextId,index};});}
+export const petUltimateCooldown=skill=>Math.max(20,Math.round((skill?.cooldown||22)*2)/2);

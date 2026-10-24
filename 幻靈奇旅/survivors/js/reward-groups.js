@@ -1,0 +1,1 @@
+export function groupRewards(rewards){const groups=new Map();for(const reward of rewards){const key=[reward.kind,reward.id,reward.color||'',!!reward.duplicate].join(':');if(!groups.has(key))groups.set(key,{...reward,quantity:0});groups.get(key).quantity+=reward.quantity||1;}return [...groups.values()];}

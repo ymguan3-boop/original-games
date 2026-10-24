@@ -1,0 +1,1362 @@
+{
+  "bulbasaur": {
+    "name": "青螺靈",
+    "ultimateName": "青螺共鳴",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "range",
+        "value": 0.06
+      }
+    ],
+    "effect": "range",
+    "value": 0.06,
+    "description": "攻擊範圍 +6%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "ivysaur": {
+    "name": "紫羽螺",
+    "ultimateName": "紫羽共鳴",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "range",
+        "value": 0.078
+      }
+    ],
+    "effect": "range",
+    "value": 0.078,
+    "description": "攻擊範圍 +7.8%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "venusaur": {
+    "name": "赤鎧螺王",
+    "ultimateName": "赤鎧共鳴",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "reduction",
+        "value": 0.096
+      }
+    ],
+    "effect": "reduction",
+    "value": 0.096,
+    "description": "承受傷害 −9.6%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "charmander": {
+    "name": "剝皮辣椒雞",
+    "ultimateName": "辣椒投擲",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "attack",
+        "value": 0.125
+      }
+    ],
+    "effect": "attack",
+    "value": 0.125,
+    "description": "攻擊力 +12.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "charmeleon": {
+    "name": "雙椒辣椒雞",
+    "ultimateName": "雙翼連投",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "attack",
+        "value": 0.1625
+      }
+    ],
+    "effect": "attack",
+    "value": 0.1625,
+    "description": "攻擊力 +16.25%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "charizard": {
+    "name": "豐椒辣椒雞王",
+    "ultimateName": "烈焰辣椒雨",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "attack",
+        "value": 0.2
+      }
+    ],
+    "effect": "attack",
+    "value": 0.2,
+    "description": "攻擊力 +20%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "squirtle": {
+    "name": "小芝麻",
+    "ultimateName": "淨帽共鳴",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "heal",
+        "value": 0.08
+      }
+    ],
+    "effect": "heal",
+    "value": 0.08,
+    "description": "治療效果 +8%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "wartortle": {
+    "name": "絨芝麻",
+    "ultimateName": "絨芝共鳴",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "heal",
+        "value": 0.104
+      }
+    ],
+    "effect": "heal",
+    "value": 0.104,
+    "description": "治療效果 +10.4%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "blastoise": {
+    "name": "星冠芝麻",
+    "ultimateName": "星冠共鳴",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "reduction",
+        "value": 0.096
+      }
+    ],
+    "effect": "reduction",
+    "value": 0.096,
+    "description": "承受傷害 −9.6%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "chikorita": {
+    "name": "沒花鹿",
+    "ultimateName": "金蕊共鳴",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "regen",
+        "value": 0.001
+      }
+    ],
+    "effect": "regen",
+    "value": 0.001,
+    "description": "每秒恢復最大 HP 0.1%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "bayleef": {
+    "name": "花鹿米",
+    "ultimateName": "花葉共鳴",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "regen",
+        "value": 0.0013
+      }
+    ],
+    "effect": "regen",
+    "value": 0.0013,
+    "description": "每秒恢復最大 HP 0.13%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "meganium": {
+    "name": "藏鏡鹿",
+    "ultimateName": "花冠映照",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "heal",
+        "value": 0.128
+      }
+    ],
+    "effect": "heal",
+    "value": 0.128,
+    "description": "治療效果 +12.8%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "cyndaquil": {
+    "name": "A1",
+    "ultimateName": "集能大光波",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "proc-paralysis",
+        "value": 0.06
+      }
+    ],
+    "effect": "proc-paralysis",
+    "value": 0.06,
+    "description": "命中 6% 麻痺",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "quilava": {
+    "name": "A傑特",
+    "ultimateName": "紅色能量球",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "proc-paralysis",
+        "value": 0.078
+      }
+    ],
+    "effect": "proc-paralysis",
+    "value": 0.078,
+    "description": "命中 7.8% 麻痺",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "typhlosion": {
+    "name": "假維斯",
+    "ultimateName": "藍色能量球",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "proc-paralysis",
+        "value": 0.096
+      }
+    ],
+    "effect": "proc-paralysis",
+    "value": 0.096,
+    "description": "命中 9.6% 麻痺",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "totodile": {
+    "name": "小肥象",
+    "ultimateName": "大耳飛翔",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "hp",
+        "value": 0.125
+      }
+    ],
+    "effect": "hp",
+    "value": 0.125,
+    "description": "生命上限 +12.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "croconaw": {
+    "name": "小飛",
+    "ultimateName": "大耳飛翔",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "hp",
+        "value": 0.1625
+      }
+    ],
+    "effect": "hp",
+    "value": 0.1625,
+    "description": "生命上限 +16.25%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "feraligatr": {
+    "name": "阿拉肥",
+    "ultimateName": "大耳飛翔",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "hp",
+        "value": 0.2
+      }
+    ],
+    "effect": "hp",
+    "value": 0.2,
+    "description": "生命上限 +20%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "treecko": {
+    "name": "小麻",
+    "ultimateName": "絨羽小旋風",
+    "cardFrame": "purple",
+    "stage": 1,
+    "tierPower": 1.45,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-knockback",
+        "value": 0.1015
+      },
+      {
+        "effect": "speed",
+        "value": 0.0725
+      }
+    ],
+    "effect": "proc-knockback",
+    "value": 0.1015,
+    "description": "命中 10.15% 震退 · 移動速度 +7.25%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "grovyle": {
+    "name": "咕咕",
+    "ultimateName": "晨曦啼鳴",
+    "cardFrame": "purple",
+    "stage": 2,
+    "tierPower": 2,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "regen",
+        "value": 0.002
+      },
+      {
+        "effect": "attack",
+        "value": 0.25
+      }
+    ],
+    "effect": "regen",
+    "value": 0.002,
+    "description": "每秒恢復最大 HP 0.2% · 攻擊力 +25%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "sceptile": {
+    "name": "小鷹",
+    "ultimateName": "幼鷹撲擊",
+    "cardFrame": "purple",
+    "stage": 3,
+    "tierPower": 2.2,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "crit",
+        "value": 0.055
+      },
+      {
+        "effect": "attack",
+        "value": 0.275
+      }
+    ],
+    "effect": "crit",
+    "value": 0.055,
+    "description": "暴擊率 +5.5% · 攻擊力 +27.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "torchic": {
+    "name": "汪汪犬",
+    "ultimateName": "汪汪水彈",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "proc-slow",
+        "value": 0.08
+      }
+    ],
+    "effect": "proc-slow",
+    "value": 0.08,
+    "description": "命中 8% 緩速",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "combusken": {
+    "name": "浪鳴犬",
+    "ultimateName": "雙頭激流",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "proc-slow",
+        "value": 0.104
+      }
+    ],
+    "effect": "proc-slow",
+    "value": 0.104,
+    "description": "命中 10.4% 緩速",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "blaziken": {
+    "name": "三瀾犬",
+    "ultimateName": "三瀾海嘯",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "proc-freeze",
+        "value": 0.08
+      }
+    ],
+    "effect": "proc-freeze",
+    "value": 0.08,
+    "description": "命中 8% 冰凍",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "mudkip": {
+    "name": "小熊",
+    "ultimateName": "烈焰咆哮",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "attack",
+        "value": 0.125
+      }
+    ],
+    "effect": "attack",
+    "value": 0.125,
+    "description": "攻擊力 +12.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "marshtomp": {
+    "name": "壯熊",
+    "ultimateName": "熔岩震地",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "proc-knockback",
+        "value": 0.091
+      }
+    ],
+    "effect": "proc-knockback",
+    "value": 0.091,
+    "description": "命中 9.1% 震退",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "swampert": {
+    "name": "大熊",
+    "ultimateName": "熔岩大劍",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "attack",
+        "value": 0.2
+      }
+    ],
+    "effect": "attack",
+    "value": 0.2,
+    "description": "攻擊力 +20%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "turtwig": {
+    "name": "小貓娘",
+    "ultimateName": "貓爪亂舞",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "crit",
+        "value": 0.025
+      }
+    ],
+    "effect": "crit",
+    "value": 0.025,
+    "description": "暴擊率 +2.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "grotle": {
+    "name": "靈貓姬",
+    "ultimateName": "月牙三連斬",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "crit",
+        "value": 0.0325
+      }
+    ],
+    "effect": "crit",
+    "value": 0.0325,
+    "description": "暴擊率 +3.25%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "torterra": {
+    "name": "雙刃貓女",
+    "ultimateName": "影刃旋風",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "crit",
+        "value": 0.04
+      }
+    ],
+    "effect": "crit",
+    "value": 0.04,
+    "description": "暴擊率 +4%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "chimchar": {
+    "name": "阿宏牛仔",
+    "ultimateName": "六芒追星連射",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "crit",
+        "value": 0.065
+      },
+      {
+        "effect": "attack",
+        "value": 0.325
+      },
+      {
+        "effect": "projectileSpeed",
+        "value": 0.208
+      }
+    ],
+    "effect": "crit",
+    "value": 0.065,
+    "description": "暴擊率 +6.5% · 攻擊力 +32.5% · 投射物速度 +20.8%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "monferno": {
+    "name": "藍金星輝法師",
+    "ultimateName": "天穹星陣",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "proc-slow",
+        "value": 0.208
+      },
+      {
+        "effect": "range",
+        "value": 0.156
+      },
+      {
+        "effect": "attack",
+        "value": 0.325
+      }
+    ],
+    "effect": "proc-slow",
+    "value": 0.208,
+    "description": "命中 20.8% 緩速 · 攻擊範圍 +15.6% · 攻擊力 +32.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "infernape": {
+    "name": "官胖",
+    "ultimateName": "天墜裂地",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "proc-knockback",
+        "value": 0.182
+      },
+      {
+        "effect": "hp",
+        "value": 0.325
+      },
+      {
+        "effect": "hp",
+        "value": 0.325
+      }
+    ],
+    "effect": "proc-knockback",
+    "value": 0.182,
+    "description": "命中 18.2% 震退 · 生命上限 +65%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "piplup": {
+    "name": "雛鳥",
+    "ultimateName": "振翅飛翔",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "speed",
+        "value": 0.05
+      }
+    ],
+    "effect": "speed",
+    "value": 0.05,
+    "description": "移動速度 +5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "prinplup": {
+    "name": "青羽鳥",
+    "ultimateName": "振翅飛翔",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "speed",
+        "value": 0.065
+      }
+    ],
+    "effect": "speed",
+    "value": 0.065,
+    "description": "移動速度 +6.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "empoleon": {
+    "name": "天翼王",
+    "ultimateName": "振翅飛翔",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "speed",
+        "value": 0.08
+      }
+    ],
+    "effect": "speed",
+    "value": 0.08,
+    "description": "移動速度 +8%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "articuno": {
+    "name": "大眼蛙",
+    "ultimateName": "泡泡連彈",
+    "cardFrame": "purple",
+    "stage": 1,
+    "tierPower": 1.45,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-slow",
+        "value": 0.116
+      },
+      {
+        "effect": "projectileSpeed",
+        "value": 0.116
+      }
+    ],
+    "effect": "proc-slow",
+    "value": 0.116,
+    "description": "命中 11.6% 緩速 · 投射物速度 +11.6%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "zapdos": {
+    "name": "C老猴",
+    "ultimateName": "三連棍",
+    "cardFrame": "purple",
+    "stage": 2,
+    "tierPower": 2,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "attack",
+        "value": 0.25
+      },
+      {
+        "effect": "crit",
+        "value": 0.05
+      }
+    ],
+    "effect": "attack",
+    "value": 0.25,
+    "description": "攻擊力 +25% · 暴擊率 +5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "moltres": {
+    "name": "冒險蛙",
+    "ultimateName": "迴旋葉風",
+    "cardFrame": "purple",
+    "stage": 2,
+    "tierPower": 2,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-knockback",
+        "value": 0.14
+      },
+      {
+        "effect": "range",
+        "value": 0.12
+      }
+    ],
+    "effect": "proc-knockback",
+    "value": 0.14,
+    "description": "命中 14% 震退 · 攻擊範圍 +12%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "raikou": {
+    "name": "C囝仔",
+    "ultimateName": "大火球",
+    "cardFrame": "purple",
+    "stage": 1,
+    "tierPower": 1.45,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "attack",
+        "value": 0.18125
+      },
+      {
+        "effect": "range",
+        "value": 0.087
+      }
+    ],
+    "effect": "attack",
+    "value": 0.18125,
+    "description": "攻擊力 +18.125% · 攻擊範圍 +8.7%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "entei": {
+    "name": "水毛蟲",
+    "ultimateName": "吐絲結網",
+    "cardFrame": "purple",
+    "stage": 1,
+    "tierPower": 1.45,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-paralysis",
+        "value": 0.087
+      },
+      {
+        "effect": "proc-slow",
+        "value": 0.116
+      }
+    ],
+    "effect": "proc-paralysis",
+    "value": 0.087,
+    "description": "命中 8.7% 麻痺 · 命中 11.6% 緩速",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "suicune": {
+    "name": "水仙子",
+    "ultimateName": "潮汐花綻",
+    "cardFrame": "purple",
+    "stage": 2,
+    "tierPower": 2,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-freeze",
+        "value": 0.1
+      },
+      {
+        "effect": "heal",
+        "value": 0.16
+      }
+    ],
+    "effect": "proc-freeze",
+    "value": 0.1,
+    "description": "命中 10% 冰凍 · 治療效果 +16%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "kyogre": {
+    "name": "小金魚",
+    "ultimateName": "翻身細水柱",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "projectileSpeed",
+        "value": 0.08
+      }
+    ],
+    "effect": "projectileSpeed",
+    "value": 0.08,
+    "description": "投射物速度 +8%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "groudon": {
+    "name": "金魚國王",
+    "ultimateName": "金色水光束砲",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "attack",
+        "value": 0.1625
+      }
+    ],
+    "effect": "attack",
+    "value": 0.1625,
+    "description": "攻擊力 +16.25%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "rayquaza": {
+    "name": "金魚皇后",
+    "ultimateName": "珍珠水光束砲",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "heal",
+        "value": 0.104
+      }
+    ],
+    "effect": "heal",
+    "value": 0.104,
+    "description": "治療效果 +10.4%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "dialga": {
+    "name": "綠眼蝙怪",
+    "ultimateName": "毒光雷彈",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "proc-poison",
+        "value": 0.208
+      },
+      {
+        "effect": "proc-paralysis",
+        "value": 0.156
+      },
+      {
+        "effect": "attack",
+        "value": 0.325
+      }
+    ],
+    "effect": "proc-poison",
+    "value": 0.208,
+    "description": "命中 20.8% 中毒 · 命中 15.6% 麻痺 · 攻擊力 +32.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "palkia": {
+    "name": "大朋",
+    "ultimateName": "高空衝撞",
+    "cardFrame": "purple",
+    "stage": 4,
+    "tierPower": 2.4,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-knockback",
+        "value": 0.168
+      },
+      {
+        "effect": "attack",
+        "value": 0.3
+      }
+    ],
+    "effect": "proc-knockback",
+    "value": 0.168,
+    "description": "命中 16.8% 震退 · 攻擊力 +30%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "giratina": {
+    "name": "小黃",
+    "ultimateName": "跳撞",
+    "cardFrame": "purple",
+    "stage": 1,
+    "tierPower": 1.45,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-paralysis",
+        "value": 0.087
+      },
+      {
+        "effect": "speed",
+        "value": 0.0725
+      }
+    ],
+    "effect": "proc-paralysis",
+    "value": 0.087,
+    "description": "命中 8.7% 麻痺 · 移動速度 +7.25%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "pikachu": {
+    "name": "歐頭慢",
+    "ultimateName": "彩虹光束",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "proc-paralysis",
+        "value": 0.156
+      },
+      {
+        "effect": "attack",
+        "value": 0.325
+      },
+      {
+        "effect": "projectileSpeed",
+        "value": 0.208
+      }
+    ],
+    "effect": "proc-paralysis",
+    "value": 0.156,
+    "description": "命中 15.6% 麻痺 · 攻擊力 +32.5% · 投射物速度 +20.8%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "mew": {
+    "name": "小飯團",
+    "ultimateName": "紫波連環",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "proc-slow",
+        "value": 0.208
+      },
+      {
+        "effect": "attack",
+        "value": 0.325
+      },
+      {
+        "effect": "cooldown",
+        "value": 0.091
+      }
+    ],
+    "effect": "proc-slow",
+    "value": 0.208,
+    "description": "命中 20.8% 緩速 · 攻擊力 +32.5% · 技能冷卻 −9.1%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "wigglytuff": {
+    "name": "小山",
+    "ultimateName": "小山震地",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "proc-knockback",
+        "value": 0.182
+      },
+      {
+        "effect": "hp",
+        "value": 0.325
+      },
+      {
+        "effect": "defense",
+        "value": 0.26
+      }
+    ],
+    "effect": "proc-knockback",
+    "value": 0.182,
+    "description": "命中 18.2% 震退 · 生命上限 +32.5% · 防禦力 +26%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "blissey": {
+    "name": "光鳳鷹",
+    "ultimateName": "鳳羽連射",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "crit",
+        "value": 0.065
+      },
+      {
+        "effect": "attack",
+        "value": 0.325
+      },
+      {
+        "effect": "range",
+        "value": 0.156
+      }
+    ],
+    "effect": "crit",
+    "value": 0.065,
+    "description": "暴擊率 +6.5% · 攻擊力 +32.5% · 攻擊範圍 +15.6%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "raichu": {
+    "name": "龐克兔",
+    "ultimateName": "電吉他二連擊",
+    "cardFrame": "purple",
+    "stage": 2,
+    "tierPower": 2,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-paralysis",
+        "value": 0.12
+      },
+      {
+        "effect": "attack",
+        "value": 0.25
+      }
+    ],
+    "effect": "proc-paralysis",
+    "value": 0.12,
+    "description": "命中 12% 麻痺 · 攻擊力 +25%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "caterpie": {
+    "name": "銅寶箱",
+    "ultimateName": "銅寶共鳴",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "pickup",
+        "value": 0.06
+      }
+    ],
+    "effect": "pickup",
+    "value": 0.06,
+    "description": "拾取半徑 +6%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "metapod": {
+    "name": "銀寶箱",
+    "ultimateName": "銀寶共鳴",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "pickup",
+        "value": 0.078
+      }
+    ],
+    "effect": "pickup",
+    "value": 0.078,
+    "description": "拾取半徑 +7.8%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "butterfree": {
+    "name": "金寶箱",
+    "ultimateName": "金寶共鳴",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "pickup",
+        "value": 0.096
+      }
+    ],
+    "effect": "pickup",
+    "value": 0.096,
+    "description": "拾取半徑 +9.6%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "weedle": {
+    "name": "破書",
+    "ultimateName": "破書共鳴",
+    "cardFrame": "yellow",
+    "stage": 1,
+    "tierPower": 1,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "petXp",
+        "value": 0.05
+      }
+    ],
+    "effect": "petXp",
+    "value": 0.05,
+    "description": "幻靈經驗 +5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "kakuna": {
+    "name": "論語",
+    "ultimateName": "論語共鳴",
+    "cardFrame": "yellow",
+    "stage": 2,
+    "tierPower": 1.3,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "petXp",
+        "value": 0.065
+      }
+    ],
+    "effect": "petXp",
+    "value": 0.065,
+    "description": "幻靈經驗 +6.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "beedrill": {
+    "name": "辭海",
+    "ultimateName": "辭海共鳴",
+    "cardFrame": "yellow",
+    "stage": 3,
+    "tierPower": 1.6,
+    "slotCount": 1,
+    "effects": [
+      {
+        "effect": "petXp",
+        "value": 0.08
+      }
+    ],
+    "effect": "petXp",
+    "value": 0.08,
+    "description": "幻靈經驗 +8%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "mewtwo": {
+    "name": "水蛟龍王",
+    "ultimateName": "盤旋怒濤龍息",
+    "cardFrame": "red",
+    "stage": 3,
+    "tierPower": 3.2,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "proc-freeze",
+        "value": 0.16
+      },
+      {
+        "effect": "attack",
+        "value": 0.4
+      },
+      {
+        "effect": "range",
+        "value": 0.192
+      }
+    ],
+    "effect": "proc-freeze",
+    "value": 0.16,
+    "description": "命中 16% 冰凍 · 攻擊力 +40% · 攻擊範圍 +19.2%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "jigglypuff": {
+    "name": "三色蛋",
+    "ultimateName": "回滿",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "regen",
+        "value": 0.0026
+      },
+      {
+        "effect": "heal",
+        "value": 0.208
+      },
+      {
+        "effect": "hp",
+        "value": 0.325
+      }
+    ],
+    "effect": "regen",
+    "value": 0.0026,
+    "description": "每秒恢復最大 HP 0.26% · 治療效果 +20.8% · 生命上限 +32.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "forest": {
+    "name": "森棘龍",
+    "ultimateName": "古林震波",
+    "cardFrame": "purple",
+    "stage": 1,
+    "tierPower": 1.45,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-poison",
+        "value": 0.116
+      },
+      {
+        "effect": "defense",
+        "value": 0.145
+      }
+    ],
+    "effect": "proc-poison",
+    "value": 0.116,
+    "description": "命中 11.6% 中毒 · 防禦力 +14.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "ice": {
+    "name": "霜牙獸",
+    "ultimateName": "寒霜爆破",
+    "cardFrame": "purple",
+    "stage": 1,
+    "tierPower": 1.45,
+    "slotCount": 2,
+    "effects": [
+      {
+        "effect": "proc-freeze",
+        "value": 0.0725
+      },
+      {
+        "effect": "reduction",
+        "value": 0.087
+      }
+    ],
+    "effect": "proc-freeze",
+    "value": 0.0725,
+    "description": "命中 7.25% 冰凍 · 承受傷害 −8.7%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  },
+  "fire": {
+    "name": "熔冠翼龍",
+    "ultimateName": "熔岩封鎖",
+    "cardFrame": "red",
+    "stage": 1,
+    "tierPower": 2.6,
+    "slotCount": 3,
+    "effects": [
+      {
+        "effect": "attack",
+        "value": 0.325
+      },
+      {
+        "effect": "range",
+        "value": 0.156
+      },
+      {
+        "effect": "hp",
+        "value": 0.325
+      }
+    ],
+    "effect": "attack",
+    "value": 0.325,
+    "description": "攻擊力 +32.5% · 攻擊範圍 +15.6% · 生命上限 +32.5%",
+    "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
+    "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
+  }
+}
