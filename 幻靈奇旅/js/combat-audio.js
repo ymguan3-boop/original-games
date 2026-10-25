@@ -1,18 +1,19 @@
-/* Gesture-gated combat cues. Synthesized locally; no network audio assets. */
+/* Gesture-gated combat cues. Local synthesis plus lazily loaded cave weapon samples. */
 (()=>{'use strict';
-function createCombatAudio({
+const scriptUrl=globalThis.document?.currentScript?.src;const defaultAssetBase=scriptUrl?new URL('../assets/audio/weapons-v19/',scriptUrl).href:null;
+function createCombatAudio({assetBase=defaultAssetBase,
   getPreferences = () => ({
     sfxMuted: globalThis.PhantomBgm?.sfxMuted ?? false,
     sfxVolume: globalThis.PhantomBgm?.sfxVolume ?? 55,
   }),
 } = {}) {
   let context = null, master = null, compressor = null, disposed = false, resume = null;
-  const voices = new Set(), recent = [], last = new Map();
+  const voices = new Set(), recent = [], last = new Map(),buffers=new Map();let samplePromise=null,currentPriority=false;
   const metrics = {
     unlocked: false, supported: true, played: 0, skippedLocked: 0,
     skippedMuted: 0, throttled: 0, errors: 0, activeVoices: 0,
     peakVoices: 0, lastKind: '', lastPhase: '', volume: 55, muted: false, stops: 0,
-    byPhase: { start: 0, release: 0, strike: 0, impact: 0 },
+    samplesReady:0,sampleErrors:0,weaponEvents:[],samplePlays:0,lastVariant:'',byPhase: { start: 0, release: 0, strike: 0, impact: 0 },
     byKind: { sword: 0, knife: 0, blades: 0, guns: 0, pet: 0 },
   };
 
@@ -51,7 +52,7 @@ function createCombatAudio({
         await resume;
       }
       metrics.unlocked = !disposed && context.state === 'running';
-      return metrics.unlocked;
+      if(metrics.unlocked&&!preferences().muted)void loadSamples();return metrics.unlocked;
     } catch {
       metrics.errors++;
       metrics.unlocked = false;
@@ -71,7 +72,7 @@ function createCombatAudio({
     envelope.gain.exponentialRampToValueAtTime(0.0001, start + duration);
     source.connect(envelope);
     envelope.connect(master);
-    const voice = { source, envelope };
+    const voice = { source, envelope,priority:currentPriority };
     voices.add(voice);
     metrics.activeVoices = voices.size;
     metrics.peakVoices = Math.max(metrics.peakVoices, voices.size);
@@ -85,6 +86,9 @@ function createCombatAudio({
     source.stop(start + duration + 0.025);
   }
 
+  function loadSamples(){if(samplePromise)return samplePromise;if(!assetBase||!globalThis.fetch||!context?.decodeAudioData)return Promise.resolve();samplePromise=Promise.allSettled(['sword','knife','blades','guns'].flatMap(k=>['normal','combo','final'].map(v=>k+'-'+v)).map(async key=>{try{const response=await fetch(new URL(key+'.ogg',assetBase));if(!response.ok)throw Error('audio '+response.status);const data=await response.arrayBuffer(),buffer=await context.decodeAudioData(data);if(!disposed){buffers.set(key,buffer);metrics.samplesReady=buffers.size;}}catch{metrics.sampleErrors++;}}));return samplePromise;}
+  function sample(key,rate=1,gain=1){const buffer=buffers.get(key);if(!buffer||voices.size>=48)return false;const source=context.createBufferSource(),envelope=context.createGain();source.buffer=buffer;source.playbackRate.value=rate;envelope.gain.value=gain;source.connect(envelope);envelope.connect(master);const voice={source,envelope,priority:currentPriority};voices.add(voice);metrics.activeVoices=voices.size;metrics.peakVoices=Math.max(metrics.peakVoices,voices.size);source.onended=()=>{voices.delete(voice);source.disconnect();envelope.disconnect();metrics.activeVoices=voices.size;};source.start(context.currentTime+.003);metrics.samplePlays++;return true;}
+  function weaponCue(ev){if(ev.pet)return false;const phase=ev.phase,kind=ev.kind;if(phase==='start'){tone(kind==='sword'?100:kind==='guns'?550:900,kind==='sword'?420:1800,0,.2,ev.strong?.38:.18,'triangle');metal(kind==='sword'?260:780,.04,.24,.15);metrics.lastVariant='charge';return true;}const variant=phase==='strike'?(ev.final?'final':'combo'):phase==='impact'?'combo':'normal',key=kind+'-'+variant,rate=phase==='impact'?1.2:variant==='combo'?1+Math.min(10,ev.index||0)*.027:1,level=phase==='impact'?.22:variant==='final'?1.85:ev.strong?1.65:1.5;if(!sample(key,rate,level))return false;metrics.lastVariant=key;if(phase!=='impact'){metrics.weaponEvents.push({kind,phase,index:ev.index??null,final:!!ev.final,variant,at:context.currentTime});if(metrics.weaponEvents.length>100)metrics.weaponEvents.shift();}return true;}
   function metal(frequency, at, duration, level) {
     // Inharmonic sine partials give a polished metal ring without noisy grains.
     tone(frequency, frequency * 0.84, at, duration, level);
@@ -123,7 +127,7 @@ function createCombatAudio({
     }
   }
 
-  function synthesize(ev) {
+  function synthesize(ev) {if(weaponCue(ev))return;
     if (ev.pet) { petCue(ev); return; }
     const strong = !!ev.strong;
     if (ev.phase === 'impact') { impact(0, !!ev.final); return; }
@@ -168,7 +172,7 @@ function createCombatAudio({
   }
 
   function applyPreferences() {
-    const prefs = preferences();
+    const prefs = preferences();if(context&&!prefs.muted)void loadSamples();
     if (!master || disposed) return prefs;
     try {
       const now = context.currentTime;
@@ -190,7 +194,7 @@ function createCombatAudio({
       const prefs = applyPreferences();
       if (prefs.muted || globalThis.document?.hidden) { metrics.skippedMuted++; return false; }
       const phase = ['start','release','strike','impact'].includes(event.phase) ? event.phase : 'release';
-      const ev = { ...event, phase };
+      const ev = { ...event, phase };currentPriority=!ev.pet&&phase!=='impact';
       const kind = ev.pet ? 'pet' : ev.kind;
       if (!Object.hasOwn(metrics.byKind, kind)) return false;
       const now = context.currentTime;
@@ -198,8 +202,9 @@ function createCombatAudio({
       const key = `${kind}:${source}:${ev.final ? 'final' : ev.strong ? 'strong' : 'normal'}:${phase}`;
       while (recent.length && recent[0] < now - 1) recent.shift();
       // Per actor/phase debounce preserves release + contact while bounding crowds.
+      if(currentPriority&&voices.size>=44){for(const voice of voices){if(voice.priority)continue;voice.source.onended=null;try{voice.source.stop();voice.source.disconnect();voice.envelope.disconnect();}catch{}voices.delete(voice);if(voices.size<40)break;}metrics.activeVoices=voices.size;}
       const cooldown = ev.final ? 0.10 : phase === 'impact' ? 0.055 : ev.strong ? 0.08 : 0.075;
-      if ((last.has(key) && now - last.get(key) < cooldown) || recent.length >= (ev.final ? 32 : 28) || voices.size >= (ev.final ? 44 : 40)) {
+      if ((last.has(key) && now - last.get(key) < cooldown) || (!currentPriority&&recent.length >= (ev.final ? 32 : 28)) || voices.size >= (currentPriority?48:40)) {
         metrics.throttled++;
         return false;
       }

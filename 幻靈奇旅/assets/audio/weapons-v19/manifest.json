@@ -1,0 +1,337 @@
+{
+  "version": 19,
+  "sampleRate": 22050,
+  "license": "CC0-1.0",
+  "provenance": [
+    {
+      "pack": "impact-sounds",
+      "page": "https://kenney.nl/assets/impact-sounds",
+      "archive": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
+      "sha256": "029d734af1582474edf3a694d1b0cebc97c1c152f2f39fa34d4c2bafc5de77f8"
+    },
+    {
+      "pack": "rpg-audio",
+      "page": "https://kenney.nl/assets/rpg-audio",
+      "archive": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
+      "sha256": "6dbeaf8544da958d8f2adcb4a4a4b76c1ade34a05f8ab9edccd327da7375f38b"
+    },
+    {
+      "pack": "sci-fi-sounds",
+      "page": "https://kenney.nl/assets/sci-fi-sounds",
+      "archive": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip",
+      "sha256": "119340f351a5098ad814f78719438c0da355a9ce8a4c8a3af6a8d48aa3d49e04"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "sword-normal.ogg",
+      "seconds": 0.46,
+      "bytes": 6031,
+      "peak": 0.9,
+      "rms": 0.15231012012839248,
+      "layers": [
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice",
+          "rate": 0.7,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "impact-sounds",
+          "file": "impactMetal_medium_000",
+          "rate": 0.86,
+          "gain": 0.22,
+          "delay": 0.09
+        }
+      ]
+    },
+    {
+      "file": "sword-combo.ogg",
+      "seconds": 0.38,
+      "bytes": 5653,
+      "peak": 0.9,
+      "rms": 0.09220209836040118,
+      "layers": [
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice2",
+          "rate": 0.72,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "impact-sounds",
+          "file": "impactMetal_heavy_000",
+          "rate": 0.9,
+          "gain": 0.32,
+          "delay": 0.045
+        }
+      ]
+    },
+    {
+      "file": "sword-final.ogg",
+      "seconds": 1.45,
+      "bytes": 9132,
+      "peak": 0.9,
+      "rms": 0.16725248411620536,
+      "layers": [
+        {
+          "pack": "sci-fi-sounds",
+          "file": "explosionCrunch_000",
+          "rate": 0.86,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "sci-fi-sounds",
+          "file": "lowFrequency_explosion_000",
+          "rate": 0.95,
+          "gain": 0.65,
+          "delay": 0.015
+        },
+        {
+          "pack": "impact-sounds",
+          "file": "impactMetal_heavy_001",
+          "rate": 0.7,
+          "gain": 0.2,
+          "delay": 0
+        }
+      ]
+    },
+    {
+      "file": "knife-normal.ogg",
+      "seconds": 0.24,
+      "bytes": 5220,
+      "peak": 0.9,
+      "rms": 0.11916821714514722,
+      "layers": [
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice2",
+          "rate": 1.35,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "impact-sounds",
+          "file": "impactMetal_light_000",
+          "rate": 1.2,
+          "gain": 0.24,
+          "delay": 0.035
+        }
+      ]
+    },
+    {
+      "file": "knife-combo.ogg",
+      "seconds": 0.2,
+      "bytes": 4837,
+      "peak": 0.9,
+      "rms": 0.15373387496533547,
+      "layers": [
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice",
+          "rate": 1.55,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "rpg-audio",
+          "file": "drawKnife2",
+          "rate": 1.2,
+          "gain": 0.15,
+          "delay": 0.015
+        }
+      ]
+    },
+    {
+      "file": "knife-final.ogg",
+      "seconds": 0.53,
+      "bytes": 6774,
+      "peak": 0.9,
+      "rms": 0.10021607350073015,
+      "layers": [
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice2",
+          "rate": 0.95,
+          "gain": 0.8,
+          "delay": 0
+        },
+        {
+          "pack": "impact-sounds",
+          "file": "impactMetal_heavy_002",
+          "rate": 1.25,
+          "gain": 0.7,
+          "delay": 0.025
+        }
+      ]
+    },
+    {
+      "file": "blades-normal.ogg",
+      "seconds": 0.29,
+      "bytes": 5528,
+      "peak": 0.9,
+      "rms": 0.1559269292776235,
+      "layers": [
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice",
+          "rate": 1.35,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice2",
+          "rate": 1.5,
+          "gain": 0.8,
+          "delay": 0.045
+        }
+      ]
+    },
+    {
+      "file": "blades-combo.ogg",
+      "seconds": 0.17,
+      "bytes": 4880,
+      "peak": 0.9,
+      "rms": 0.09442809844127246,
+      "layers": [
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice2",
+          "rate": 1.7,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "impact-sounds",
+          "file": "impactMetal_light_001",
+          "rate": 1.3,
+          "gain": 0.16,
+          "delay": 0.025
+        }
+      ]
+    },
+    {
+      "file": "blades-final.ogg",
+      "seconds": 0.56,
+      "bytes": 6767,
+      "peak": 0.9,
+      "rms": 0.09966541398051784,
+      "layers": [
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice",
+          "rate": 1.15,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "rpg-audio",
+          "file": "knifeSlice2",
+          "rate": 1.3,
+          "gain": 0.8,
+          "delay": 0.065
+        },
+        {
+          "pack": "impact-sounds",
+          "file": "impactBell_heavy_001",
+          "rate": 1.7,
+          "gain": 0.14,
+          "delay": 0.08
+        }
+      ]
+    },
+    {
+      "file": "guns-normal.ogg",
+      "seconds": 0.24,
+      "bytes": 5057,
+      "peak": 0.9,
+      "rms": 0.1397281421932366,
+      "layers": [
+        {
+          "pack": "sci-fi-sounds",
+          "file": "laserSmall_001",
+          "rate": 1.15,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "rpg-audio",
+          "file": "metalClick",
+          "rate": 1.0,
+          "gain": 0.18,
+          "delay": 0
+        }
+      ]
+    },
+    {
+      "file": "guns-combo.ogg",
+      "seconds": 0.19,
+      "bytes": 4806,
+      "peak": 0.9,
+      "rms": 0.2025187379208992,
+      "layers": [
+        {
+          "pack": "sci-fi-sounds",
+          "file": "laserSmall_000",
+          "rate": 1.35,
+          "gain": 1,
+          "delay": 0
+        },
+        {
+          "pack": "sci-fi-sounds",
+          "file": "laserRetro_000",
+          "rate": 1.65,
+          "gain": 0.18,
+          "delay": 0.01
+        }
+      ]
+    },
+    {
+      "file": "guns-final.ogg",
+      "seconds": 0.68,
+      "bytes": 7308,
+      "peak": 0.9,
+      "rms": 0.17503917661379514,
+      "layers": [
+        {
+          "pack": "sci-fi-sounds",
+          "file": "laserLarge_001",
+          "rate": 1.2,
+          "gain": 0.9,
+          "delay": 0
+        },
+        {
+          "pack": "sci-fi-sounds",
+          "file": "explosionCrunch_001",
+          "rate": 1.6,
+          "gain": 0.5,
+          "delay": 0.025
+        }
+      ]
+    }
+  ],
+  "sourceFiles": {
+    "rpg-audio/knifeSlice.ogg": "4cd96dc630bed9840c15f1dd2306da2cc56a4da26a5d3f1a03c5a7265ac5e54f",
+    "impact-sounds/impactMetal_medium_000.ogg": "a96f879fec0864a8938e0c745b6996a6c5679c16a234ce31a01cc995e8401003",
+    "rpg-audio/knifeSlice2.ogg": "6c2064d0ef988d1ec3d56868e823ea8823a5cac00f2742560052633529407def",
+    "impact-sounds/impactMetal_heavy_000.ogg": "e07045693e4a2b3d165c424e3dab4c781d9ff8880a386880ac89a51315d7f831",
+    "sci-fi-sounds/explosionCrunch_000.ogg": "4b597d658d0ae101f0a030fbeea5fc3a4292ab85f017470a8254a8e7959cbd69",
+    "sci-fi-sounds/lowFrequency_explosion_000.ogg": "3cb48d86dab63140cfb9aaeea4d4a6846abaca5831d157d8adbec0490da26343",
+    "impact-sounds/impactMetal_heavy_001.ogg": "83554049f81f4db9209379e103c30bfa63f65c42189a03f300b045c2c82e23ae",
+    "impact-sounds/impactMetal_light_000.ogg": "33b5e6e37c6e9d54e07bf5a89b12c76e879f40c1ea83cdd82714df1d6f9fec6d",
+    "rpg-audio/drawKnife2.ogg": "d5df6a4130cbb016f97b4883769a418917b9629cb4c21717030b186e0c73281a",
+    "impact-sounds/impactMetal_heavy_002.ogg": "b914c8f1eb7c0f34bb165d7c77f4be0351f6be0660c13c53e65424e262e2c093",
+    "impact-sounds/impactMetal_light_001.ogg": "fba69c467ddd85da7b1d82e259f936b876d9ba6a3d6f1b24bdd10468e46bfe08",
+    "impact-sounds/impactBell_heavy_001.ogg": "9df61e3ae9a83dc65e5a1fd3ed19d480876f3b22b963a1b9ef6fa293592dcec4",
+    "sci-fi-sounds/laserSmall_001.ogg": "ab87913aba9790a0c5fa173d086267ba521ad522fcad2252271db49988313cf5",
+    "rpg-audio/metalClick.ogg": "9851a69d0c613e13bceef08060ecc4148f098ef487927cbebe270d642398a3b3",
+    "sci-fi-sounds/laserSmall_000.ogg": "72b589eadd41781257ac859e4f4d030222e623390e4a1a83f6d05329a6e026f1",
+    "sci-fi-sounds/laserRetro_000.ogg": "2a203a007d24cc7e607eb8bec1d86bedba7f551911217ce2c4c1f31393aed32c",
+    "sci-fi-sounds/laserLarge_001.ogg": "e678aca631495b7dfef4ac625f0349875ccac81a60f538d530e072241af3e4bd",
+    "sci-fi-sounds/explosionCrunch_001.ogg": "fdd04d6f0032d4d57c134ad37f3587d2d00e58c9572715275bd8cf4f43593576"
+  }
+}

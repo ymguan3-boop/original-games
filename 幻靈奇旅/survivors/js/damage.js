@@ -1,8 +1,9 @@
+import {canCaptureEnemy} from './capture-rules.js?v=20261025-v19';
 export const ELEMENTS=['光','焰','森','潮','雷','念'];
 export function elementMultiplier(a,b){const i=ELEMENTS.indexOf(a),j=ELEMENTS.indexOf(b);if(i<0||j<0)return 1;return (i+1)%6===j?1.5:(j+1)%6===i?.75:1;}
 export function calculateDamage({attack,multiplier=1,element,targetElement,buff=1,defense=0,crit=false,critMultiplier=1.5}){return Math.max(1,Math.round(attack*multiplier*elementMultiplier(element,targetElement)*buff*(crit?critMultiplier:1)*100/(100+Math.max(0,defense))));}
 export function inShape(source,target,kind,range,heading=source.heading||0){const dx=target.x-source.x,dz=target.z-source.z,d=Math.hypot(dx,dz);if(d>range+(target.radius||0))return false;if(kind==='cone'){const dot=(dx*Math.sin(heading)+dz*Math.cos(heading))/Math.max(.001,d);return dot>=Math.cos(Math.PI/3);}return true;}
-export function applyHit(run,enemy,amount){if(enemy.hp<=0||enemy.rewarded||enemy.capturePending)return 0;if(enemy.weakUntil>run.time)return 0;let hit=Math.min(enemy.statuses?.freeze?.until>run.time?Math.max(1,Math.round(amount*.2)):amount,enemy.kind==='boss'?enemy.maxHp*.2:Infinity);const before=enemy.hp;
- if(run.targetId===enemy.id&&!enemy.protectionUsed&&hit>=enemy.hp){enemy.hp=Math.max(1,enemy.maxHp*.1);enemy.weakUntil=run.time+(enemy.kind==='boss'?8:6);enemy.protectionUsed=true;return Math.max(0,before-enemy.hp);}
+export function applyHit(run,enemy,amount){if(enemy.hp<=0||enemy.rewarded||enemy.capturePending)return 0;if(!canCaptureEnemy(enemy))enemy.weakUntil=0;if(enemy.weakUntil>run.time)return 0;let hit=Math.min(enemy.statuses?.freeze?.until>run.time?Math.max(1,Math.round(amount*.2)):amount,enemy.kind==='boss'?enemy.maxHp*.2:Infinity);const before=enemy.hp;
+ if(canCaptureEnemy(enemy)&&run.targetId===enemy.id&&!enemy.protectionUsed&&hit>=enemy.hp){enemy.hp=Math.max(1,enemy.maxHp*.1);enemy.weakUntil=run.time+(enemy.kind==='boss'?8:6);enemy.protectionUsed=true;return Math.max(0,before-enemy.hp);}
  if(enemy.kind==='boss'){const floor=enemy.phase===0?enemy.maxHp*.66:enemy.phase===1?enemy.maxHp*.33:0;if(enemy.hp-hit<floor){enemy.hp=floor;enemy.phase++;enemy.nextAttack=Math.min(enemy.nextAttack,run.time+1);return before-enemy.hp;}}
  enemy.hp=Math.max(0,enemy.hp-hit);return before-enemy.hp;}

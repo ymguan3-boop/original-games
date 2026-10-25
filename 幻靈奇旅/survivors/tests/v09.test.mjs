@@ -1,3 +1,4 @@
+import {familyRoot} from '../js/family-progress.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
@@ -43,7 +44,7 @@ test('all 64 passive definitions use the declared tier and effect units; milesto
  for(const lv of[1,10,20,30,40,50])for(let i=0;i<2;i++)for(const a of groups[i])for(const b of groups[i+1]){const potency=s=>passiveAt(s.id,defs,lv).effects.reduce((n,e)=>n+e.value/PASSIVE_UNITS[e.effect],0);assert.ok(potency(a)<=potency(b)+1e-9,`${a.id}/${b.id} Lv${lv}`);}
 });
 test('display stats, created pets and real attack/defense use one cave balance table',()=>{
- for(const sp of species){const rank={hp:4,attack:3,defense:2},p=makePet(sp.id,data.spirits,rank,10),ui=basicStats(sp,{training:{[sp.id]:rank},growth:{[sp.id]:{level:10}}});assert.equal(p.maxHp,ui.hp);assert.equal(p.baseDefense,cardBase(sp).defense);const world=new CaveWorld(null,data);assert.equal(Math.round(world.petAttack(p)),ui.attack);}
+ for(const sp of species){const rank={hp:4,attack:3,defense:2},p=makePet(sp.id,data.spirits,rank,10),ui=basicStats(sp,{training:{[familyRoot(sp.id)]:rank},growth:{[familyRoot(sp.id)]:{level:10}}});assert.equal(p.maxHp,ui.hp);assert.equal(p.baseDefense,cardBase(sp).defense);const world=new CaveWorld(null,data);assert.equal(Math.round(world.petAttack(p)),ui.attack);}
  const s=initialState();s.team=s.owned=['torchic','squirtle','charmander'];s.starterClaimed=true;const store=createStore(storage(s)),w=new CaveWorld(store,data);w.start();w.run.pets[0].level=9;w.run.pets[0].hp=w.run.pets[0].maxHp/2;
  const next=data.evolution.torchic.next;const id=Array.isArray(next)?next[0]:next;evolvePet(store,0,data,id);const p=w.run.pets[0];assert.equal(p.maxHp,Math.round(cardBase(data.spirits[id]).hp*1.24));assert.ok(Math.abs(p.hp/p.maxHp-.5)<.01);assert.equal(w.petAttack(p),cardBase(data.spirits[id]).attack*1.32);
  const e={speciesId:'torchic',damageScale:1},before=p.hp;w.hurt(p,30,e);const damage=before-p.hp;assert.ok(damage>0&&damage<30);
