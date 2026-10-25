@@ -185,7 +185,7 @@ function create(options={}){
   if(mode.startsWith('Punch')){const big=mode==='PunchNova',release=big?1.15:.55,finish=big?2.8:1.5;if(t>=release&&t<finish){waveActive=true;waveKind=big?'ultimate':'normal';if(!waveFired){waveFired=true;hands.find(h=>h.side==='R').palm.getWorldPosition(waveOrigin);waveDirection.set(0,0,1).transformDirection(root.matrixWorld);waveOrigin.addScaledVector(waveDirection,.20);}const age=t-release,q=age/(finish-release);waveRadius=(big?.65:.18)+q*(big?1.55:.50);wavePosition.copy(waveOrigin).addScaledVector(waveDirection,age*(big?8:6));punchGroup.visible=true;punchGroup.position.copy(wavePosition).applyMatrix4(rootInv);punchGroup.quaternion.setFromUnitVectors(upZ,tempDir.copy(waveDirection).transformDirection(rootInv));punchGroup.scale.setScalar(waveRadius);}}
 
   // Projectile travel is rendered by the cave collision path; native pose and charging remain.
-  beamGroup.visible=false;if(projectileFired)novaGroup.visible=false;punchGroup.visible=false;updateInstances();
+  updateInstances();
  }
  update(0);rig.updateMatrixWorld(true);const initialBox=new T.Box3().setFromObject(rig),baseBounds={min:initialBox.min.toArray(),max:initialBox.max.toArray(),size:initialBox.getSize(new T.Vector3()).toArray()};
  let triangles=0,meshes=0;root.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3*(o.isInstancedMesh?o.count:1);}});
