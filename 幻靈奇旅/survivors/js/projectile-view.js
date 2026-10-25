@@ -2,11 +2,12 @@
 export function createProjectileView(T, scene, { actorPoint, targetPoint, metrics = {} }) {
   const group = new T.Group(); group.name = 'cave-metal-projectiles'; scene.add(group);
   const sphere = new T.SphereGeometry(1, 24, 16), cylinder = new T.CylinderGeometry(1, 1, 1, 24, 1);
+  const crescent = new T.TorusGeometry(1,.09,8,32,Math.PI*1.35);
   const up = new T.Vector3(0, 1, 0), start = new T.Vector3(), end = new T.Vector3(), dir = new T.Vector3(), dummy = new T.Object3D();
   const records = new Map(), flashes = [], CAPACITY = 512, FLASH_LIMIT = 64;
   const colors = { '光': 0xffe5a1, '焰': 0xff853e, '森': 0x6fe5a0, '潮': 0x58caff, '雷': 0xffdc43, '念': 0xc091ff };
   let disposed = false;
-  const pools = [cylinder, cylinder, sphere, sphere, sphere].map((geo, i) => {
+  const pools = [cylinder, cylinder, sphere, sphere, sphere, crescent].map((geo, i) => {
     const mat = i === 4
       ? new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .14, depthWrite: false, blending: T.AdditiveBlending })
       : new T.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: i % 2 ? .85 : .62, metalness: .88, roughness: .18,
@@ -20,16 +21,18 @@ export function createProjectileView(T, scene, { actorPoint, targetPoint, metric
     // Allocate while count is CAPACITY; setting count=0 first produces a zero-length buffer.
     mesh.frustumCulled = false; mesh.setColorAt(0, new T.Color(0xffffff)); mesh.count = 0; group.add(mesh); return mesh;
   });
-  const tint = new T.Color(); let counts = [0, 0, 0, 0, 0];
-  function put(i, x, y, z, r, length, color, isBeam = false) {
+  const tint = new T.Color(); let counts = [0, 0, 0, 0, 0, 0];
+  function put(i, x, y, z, r, length, color, isBeam = false, heading = 0) {
     const n = counts[i]; if (n >= CAPACITY) return; counts[i]++;
     dummy.position.set(x, y, z); dummy.scale.set(r, isBeam ? length : r, r);
     if (isBeam) dummy.quaternion.setFromUnitVectors(up, dir); else dummy.quaternion.identity();
+    if(i===5){dummy.rotation.set(-Math.PI/5,heading,-Math.PI*.15);dummy.scale.set(r,r*1.25,r);}
     dummy.updateMatrix(); pools[i].setMatrixAt(n, dummy.matrix); pools[i].setColorAt(n, tint.setHex(color));
   }
   function draw(p, from, to, fade = 1) {
     const color = p.color ?? colors[p.element] ?? 0x87e8ff;
-    if(p.sourceActor==='hero'&&p.piercing){
+    if(p.fx==='sword-wave'){const heading=Math.atan2(p.vx||0,p.vz||1),size=(p.context?.strong?.95:.65)*fade;put(5,to.x,to.y,to.z,size,0,0xff9b36,false,heading);put(2,to.x,to.y,to.z,.1*fade,0,0xffe6ac);metrics.swordWave={mode:'piercing-crescent',strong:!!p.context?.strong,origin:sourceOf(p),tip:{...to}};
+    } else if(p.sourceActor==='hero'&&p.piercing){
       start.set(from.x,from.y,from.z);end.set(to.x,to.y,to.z);dir.copy(end).sub(start);const len=dir.length();if(len<.001)return;dir.normalize();const spacing=p.context?.strong?.13:.35,n=Math.min(72,Math.max(1,Math.ceil(len/spacing))),radius=(p.context?.strong?.075:.055)*fade;for(let j=0;j<=n;j++){const d=Math.min(len,j*spacing);put(2,start.x+dir.x*d,start.y+dir.y*d,start.z+dir.z*d,radius,0,0x6fe7ff);}metrics.gunTrail={mode:'dots',dense:!!p.context?.strong,spacing,origin:sourceOf(p),dots:n+1};metrics.gunTrails||={};metrics.gunTrails[p.context?.strong?'ultimate':'normal']={...metrics.gunTrail};
     } else if (p.fx === 'beam' || p.piercing) {
       start.set(from.x, from.y, from.z); end.set(to.x, to.y, to.z); dir.copy(end).sub(start);
@@ -70,7 +73,7 @@ export function createProjectileView(T, scene, { actorPoint, targetPoint, metric
     if (!p.piercing) records.delete(p.id);
   }
   function update(projectiles, dt) {
-    if (disposed) return; counts = [0, 0, 0, 0, 0]; const seen = new Set();
+    if (disposed) return; counts = [0, 0, 0, 0, 0, 0]; const seen = new Set();
     for (const p of projectiles || []) {
       seen.add(p.id); let rec = records.get(p.id);
       if (p.piercing) {
@@ -96,6 +99,6 @@ export function createProjectileView(T, scene, { actorPoint, targetPoint, metric
     metrics.projectileRenderer = 'three-metal-instanced'; metrics.projectileFlashViews = flashes.length;
   }
   function clear() { records.clear(); flashes.length = 0; pools.forEach(p => p.count = 0); metrics.projectileViews = 0; metrics.projectileMeshes = 0; }
-  function dispose() { if (disposed) return; clear(); disposed = true; sphere.dispose(); cylinder.dispose(); pools.forEach(p => p.material.dispose()); scene.remove(group); }
+  function dispose() { if (disposed) return; clear(); disposed = true; sphere.dispose(); cylinder.dispose(); crescent.dispose(); pools.forEach(p => p.material.dispose()); scene.remove(group); }
   return { update, impact, clear, dispose };
 }

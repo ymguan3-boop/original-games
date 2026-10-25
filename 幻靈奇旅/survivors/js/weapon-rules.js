@@ -1,0 +1,7 @@
+import {HERO_ATTACKS} from './combat-profile.js?v=20261025-v18';
+import {BOSS_WEAPONS} from './inventory.js?v=20261025-v22';
+export function heroWeaponProfile(w){return w.swordWave?{...HERO_ATTACKS.knife,type:'ranged',range:HERO_ATTACKS.guns.range}:{...HERO_ATTACKS[w.kind||w.type]};}
+export function nearestEnemy(run,origin=run.hero){let target=null,best=Infinity;for(const e of run.enemies){if(e.hp<=0||e.rewarded||e.capturePending||e.weakUntil>run.time)continue;const d=(e.x-origin.x)**2+(e.z-origin.z)**2;if(d<best){target=e;best=d;}}return target;}
+export function blinkPosition(hero,target){const heading=Number.isFinite(target.heading)?target.heading:Math.atan2(hero.x-target.x,hero.z-target.z),spacing=Math.max(.95,(target.radius||.65)+.25),clamp=n=>Math.max(-34,Math.min(34,n));let x=clamp(target.x+Math.sin(heading)*spacing),z=clamp(target.z+Math.cos(heading)*spacing);if(Math.hypot(x-target.x,z-target.z)<spacing*.6){const dx=hero.x-target.x,dz=hero.z-target.z,d=Math.hypot(dx,dz);x=clamp(target.x+(d?dx/d:-Math.sin(heading))*spacing);z=clamp(target.z+(d?dz/d:-Math.cos(heading))*spacing);}return{x,z};}
+// One roll per defeated milestone boss; success chooses one of the two permanent weapons.
+export function bossWeaponDrop(enemy,rng=Math.random){const rate=enemy.kind==='boss'&&enemy.wave%10===0?.1:enemy.kind==='elite'&&enemy.wave%5===0?.05:0;if(!rate||rng()>=rate)return null;return BOSS_WEAPONS[Math.min(BOSS_WEAPONS.length-1,Math.floor(rng()*BOSS_WEAPONS.length))];}

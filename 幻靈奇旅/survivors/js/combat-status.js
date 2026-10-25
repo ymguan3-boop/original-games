@@ -1,4 +1,4 @@
-export const STATUS={poison:{name:'中毒',symbol:'☠',color:'#b1ff75',duration:4},burn:{name:'灼燒',symbol:'♨',color:'#ffb06e',duration:3},slow:{name:'緩速',symbol:'≋',color:'#69c5ff',duration:4},paralysis:{name:'麻痺',symbol:'ϟ',color:'#ffe473',duration:.9},freeze:{name:'冰凍',symbol:'❄',color:'#9eeeff',duration:2.4},knockback:{name:'震退',symbol:'»',color:'#ffbd7c',duration:.3},weaken:{name:'虛弱',symbol:'↓',color:'#c6a1ff',duration:4}};
+export const STATUS={poison:{name:'中毒',symbol:'☠',color:'#b1ff75',duration:4},burn:{name:'燃燒',symbol:'♨',color:'#ff8b42',duration:4},slow:{name:'緩速',symbol:'≋',color:'#69c5ff',duration:4},paralysis:{name:'麻痺',symbol:'ϟ',color:'#ffe473',duration:.9},freeze:{name:'冰凍',symbol:'❄',color:'#9eeeff',duration:2.4},knockback:{name:'震退',symbol:'»',color:'#ffbd7c',duration:.3},weaken:{name:'虛弱',symbol:'↓',color:'#c6a1ff',duration:4}};
 export const CONTROL=['paralysis','freeze','knockback'];
 export const hasStatus=(actor,type,time)=>!!(actor?.statuses?.[type]?.until>time);
 export const immobilized=(actor,time)=>CONTROL.some(type=>hasStatus(actor,type,time));

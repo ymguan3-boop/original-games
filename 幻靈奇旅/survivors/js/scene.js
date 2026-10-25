@@ -1,13 +1,13 @@
 import {createViewLimits} from './view-limits.js?v=20261025-v21';
 import {modelRoomPlan,originalPresentation,createModelRoomEffect} from './model-room-effects.js?v=20261025-v20';
-import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261025-v18';
+import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261025-v22';
 import {flightMotion} from './avian-motion-v17.js?v=20261025-v18';
 import {createCostumeView} from './costume-view.js?v=20261025-v16';
 import {createLootView} from './loot-view.js';
-import {createStatusView} from './status-view.js?v=20261024-v14';
-import {immobilized} from './combat-status.js?v=20261025-v21';
+import {createStatusView} from './status-view.js?v=20261025-v22';
+import {immobilized} from './combat-status.js?v=20261025-v22';
 import {modelHeight} from './actor-layout.js?v=20261025-v18';
-import {createProjectileView} from './projectile-view.js?v=20261025-v18';
+import {createProjectileView} from './projectile-view.js?v=20261025-v22';
 import {playEvolutionSequence} from './evolution-view.js';
 import {attackProfile,HERO_ATTACKS,ROLL_DURATION} from './combat-profile.js?v=20261025-v18';
 import {TOWER_ULTIMATES} from './tower-ultimates.js';
@@ -152,6 +152,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
  if(name==='Roll'){hero.reaction=null;hero.root.rotation.x=0;}const aliases={roll:'Roll',hurt:'Hurt',throw:'Throw'},kind=weapon.toLowerCase();const mapped=/-attack$|-ultimate$/.test(name)?weapon+'Combo':aliases[name]||name;
  hero.play(mapped,true);const ultimate=name.endsWith('-ultimate'),duration=mapped==='Roll'?ROLL_DURATION:ultimate?TOWER_ULTIMATES[kind].hits*TOWER_ULTIMATES[kind].interval+.3:name.endsWith('-attack')?HERO_ATTACKS[kind].duration:mapped==='Hurt'?.25:.5;
  hero.hold=duration;if(hero.current)hero.current.setEffectiveTimeScale(hero.current.getClip().duration/duration);metrics.heroMotion={name:mapped,duration,rate:hero.current?.getEffectiveTimeScale(),ultimate};}
+ function heroBlink(ev){combatVfx.heroBlink(ev);metrics.lastHeroBlink=ev;}
  function heroNormal(ev){combatVfx.heroNormal(ev);metrics.lastHeroNormal=ev;}
  function impact(ev){combatVfx.impact(ev);metrics.hitImpacts||={normal:0,ultimate:0,critical:0};metrics.hitImpacts[ev.ultimate?'ultimate':'normal']++;if(ev.critical)metrics.hitImpacts.critical++;metrics.lastImpact=ev;}
  function spellRelease(ev){const actor=actorFor(ev.sourceActor);if(!actor?.originalPresentation||ev.armor){combatVfx.spellRelease(ev);metrics.fallbackSpellReleases=(metrics.fallbackSpellReleases||0)+1;}else{metrics.originalSpellReleases=(metrics.originalSpellReleases||0)+1;if(ev.global&&ev.final)shakeLevel=Math.max(shakeLevel,.85);}metrics.lastSpellRelease=ev;metrics.spellReleases=(metrics.spellReleases||0)+1;}
@@ -172,11 +173,11 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
     for(let i=ballFlights.length-1;i>=0;i--){const f=ballFlights[i];const enemy=run?.enemies?.find(e=>e.id===f.enemyId);if(enemy)f.to={x:enemy.x,z:enemy.z};f.age+=dt;const u=Math.min(1,Math.max(0,((run?.time||0)-(f.at-.55))/.55));f.root.position.set(f.from.x+(f.to.x-f.from.x)*u,1+Math.sin(u*Math.PI)*2,f.from.z+(f.to.z-f.from.z)*u);f.root.rotation.set(u*9,u*6,0);if(u>=1||run?.captureFlight?.id!==f.id){scene.remove(f.root);ballFlights.splice(i,1);f.resolve(project(f.to));}}
     combatVfx.syncActors([h,...(ps?[ps]:[]),...enemies],run?.time||0);combatVfx.update(dt);projectileView.update((run?.projectiles||[]).filter(p=>!actorFor(p.sourceActor)?.originalPresentation),dt);shakeLevel=Math.max(0,shakeLevel-dt*1.3);
     flames.forEach((m,j)=>m.scale.y=1.05+Math.sin(time*6+j)*.18);
-    const distance=(camera.aspect<.8?19:18)*zoom;const shake=shakeLevel*.65,sx=Math.sin(time*91)*shake,sz=Math.cos(time*83)*shake;metrics.cameraShake=shake;camera.position.set(h.x+sx,distance+sz*.5,h.z+distance*.78+sz);camera.lookAt(h.x-sx*.35,0,h.z-1.2);metrics.cameraOffset={x:sx,z:sz};{const status=statusView.update(run);metrics.statusVisuals=status.counts;metrics.statusArt=status;}renderer.render(scene,camera);
+    const distance=(camera.aspect<.8?19:18)*zoom;const shake=shakeLevel*.65,sx=Math.sin(time*91)*shake,sz=Math.cos(time*83)*shake;metrics.cameraShake=shake;camera.position.set(h.x+sx,distance+sz*.5,h.z+distance*.78+sz);camera.lookAt(h.x-sx*.35,0,h.z-1.2);metrics.cameraOffset={x:sx,z:sz};{const status=statusView.update(run,a=>a===h||viewLimits.visible(a,heightOf(a.speciesId)));metrics.statusVisuals=status.counts;metrics.statusArt=status;}renderer.render(scene,camera);
     metrics.drawCalls=renderer.info.render.calls;metrics.triangles=renderer.info.render.triangles;metrics.activeEffects=metrics.combatVfx?.effects||0;
   }
   function project(pos){const p=new T.Vector3(pos.x,pos.y??1,pos.z).project(camera);return {x:(p.x+1)*.5*canvas.clientWidth,y:(1-p.y)*.5*canvas.clientHeight,visible:p.z<1};}
   function resetTransient(){for(const ring of bossRings.values())scene.remove(ring);bossRings.clear();costumeView.reset();combatVfx.clear();shakeLevel=0;++enemyGeneration;pending.clear();for(const a of specials.values())if(a){scene.remove(a.root);releaseActor(a);}specials.clear();++petGeneration;petKey='';if(pet){scene.remove(pet.root);releaseActor(pet);pet=null;}metrics.activePetModels=0;hero.roomFx?.dispose();hero.hold=0;hero.reaction=null;hero.dead=false;hero.mode=null;hero.root.rotation.set(0,0,0);hero.play(weapon+'Ready');lootView.clear();statusView.clear();projectileView.clear();for(const f of ballFlights){scene.remove(f.root);f.resolve(null);}ballFlights.length=0;}
   function dispose(){canvas.removeEventListener('wheel',wheelZoom);canvas.removeEventListener('touchstart',pinchStart);canvas.removeEventListener('touchmove',pinchMove);canvas.removeEventListener('touchend',pinchEnd);canvas.removeEventListener('touchcancel',pinchEnd);costumeView.dispose();lootView.dispose();statusView.dispose();projectileView.dispose();combatVfx.dispose();disposed=true;++petGeneration;canvas.removeEventListener('pointerdown',pointerDown);canvas.removeEventListener('pointerup',pointerUp);pet?.roomFx?.dispose();pet?.duoFx?.dispose();pet?.guanpangFx?.dispose();pet?.controller?.dispose?.();specials.forEach(a=>{a?.roomFx?.dispose();a?.duoFx?.dispose();a?.guanpangFx?.dispose();a?.controller?.dispose?.();});const mats=new Set(),geos=new Set(),textures=new Set();scene.traverse(o=>{if(o.geometry)geos.add(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){mats.add(m);for(const v of Object.values(m))if(v?.isTexture)textures.add(v);}});geos.forEach(g=>g.dispose());mats.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());resources.forEach(r=>r.dispose());renderer.dispose();}
-  renderer.compile(scene,camera);onReady?.(metrics);return {update,resize,constrainPet,petTargetVisible,setZoom,adjustZoom:delta=>setZoom(zoom+delta),dispose,playHero,playPet,petAction,heroNormal,throwBall,heroStart,heroStrike,impact,projectileOrigin:(id,hand)=>actorPoint(id,true,undefined,hand),projectileImpact,enemyAction,feedbackAnchor,heroHealthAnchor,inspectActor,effect,project,heightOf,evolution,spellRelease,resetTransient,metrics};
+  renderer.compile(scene,camera);onReady?.(metrics);return {update,resize,constrainPet,petTargetVisible,setZoom,adjustZoom:delta=>setZoom(zoom+delta),dispose,playHero,playPet,petAction,heroNormal,heroBlink,throwBall,heroStart,heroStrike,impact,projectileOrigin:(id,hand)=>actorPoint(id,true,undefined,hand),projectileImpact,enemyAction,feedbackAnchor,heroHealthAnchor,inspectActor,effect,project,heightOf,evolution,spellRelease,resetTransient,metrics};
 }

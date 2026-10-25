@@ -105,7 +105,7 @@ test('piercing metal beams remain visible after the original target disappears a
   assert.equal(metrics.projectileViews, 1); assert.ok(metrics.projectileMeshes >= 6);
   assert.ok(Math.abs(metrics.lastProjectileVisual.from.x - 2.5) < .001);
   view.update([], 1); view.update([], .016); assert.equal(metrics.projectileViews, 0); assert.equal(metrics.projectileMeshes, 0);
-  const list = meshes(scene); assert.equal(list.length, 5);
+  const list = meshes(scene); assert.equal(list.length, 6);
   for (const m of list) assert.equal(m.instanceColor.array.length, 512 * 3, 'allocate instance colors before setting visible count to zero');
   for (const m of list.slice(0, 4)) { assert.equal(m.material.isMeshStandardMaterial, true); assert.equal(m.material.flatShading, false); assert.ok(m.material.metalness >= .8); }
   view.dispose(); assert.equal(scene.children.length, 0);

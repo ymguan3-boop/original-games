@@ -59,7 +59,7 @@ export function createStore(storage = globalThis.localStorage, key = SAVE_KEY) {
         next.run=clone(run);
       });
     },
-    resetForTesting(){const raw=storage.getItem(key);if(raw!==lastRaw)throw Error('另一分頁已更新，請先重整');const backup=key+':backup:reset:'+Date.now()+'-'+(++counter);storage.setItem(backup,JSON.stringify(state));const next=initialState();next.points=1000;if(storage.sharedBalls){next.appliedCreditTotal=state.appliedCreditTotal||0;for(const id of ['ball-basic','ball-great','ball-ultra'])if(state.inventory[id])next.inventory[id]=state.inventory[id];}try{storage.setItem(key,JSON.stringify(next));}catch(e){throw Error('重置未生效：'+e.message);}state=next;lastRaw=storage.getItem(key);return{backup,points:1000};},
+    resetForTesting({points=1000,weapons=[]}={}){if(!Number.isSafeInteger(points)||points<0||weapons.some(id=>typeof id!=='string'))throw Error('測試配置無效');const raw=storage.getItem(key);if(raw!==lastRaw)throw Error('另一分頁已更新，請先重整');const backup=key+':backup:reset:'+Date.now()+'-'+(++counter);storage.setItem(backup,JSON.stringify(state));const next=initialState();next.points=points;next.weapons=[...new Set([...next.weapons,...weapons])];if(storage.sharedBalls){next.appliedCreditTotal=state.appliedCreditTotal||0;for(const id of ['ball-basic','ball-great','ball-ultra'])if(state.inventory[id])next.inventory[id]=state.inventory[id];}try{storage.setItem(key,JSON.stringify(next));}catch(e){throw Error('重置未生效：'+e.message);}state=next;lastRaw=storage.getItem(key);return{backup,points};},
     endRun(reason='離開') {
       const run=state.run;
       if (!run) return {ok:true,replayed:true,value:null,state};

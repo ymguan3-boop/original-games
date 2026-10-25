@@ -17,7 +17,10 @@ export const ITEMS={
   'buff-defense':item('防禦增幅','buff',80,{effectId:'damageReduction',effectValue:0.1,description:'本局減傷 +10%，總上限 50%'}),
   'buff-capture':item('捕捉增幅','buff',80,{effectId:'capture',effectValue:0.05,description:'本局捕捉率 +5 個百分點，總上限 +30%'}),
 };
+export const BOSS_WEAPONS=['blades-blinkfire','knife-flamewave'];
 export const WEAPONS={
+ 'blades-blinkfire':{name:'瞬燃雙刀',type:'blades',damage:18,interval:.3,range:2.7,price:0,element:'焰',bossOnly:true,blinkAttack:true,onHit:{type:'burn',chance:1,power:2}},
+ 'knife-flamewave':{name:'幻燃單刃',type:'knife',damage:48,interval:.55,range:12,price:0,element:'焰',bossOnly:true,swordWave:true,onHit:{type:'burn',chance:1,power:2}},
  'blades-venom':{name:'蝕毒雙刃',type:'blades',damage:13,interval:.3,range:2.7,price:1000,element:'森',shopOnly:true,onHit:{type:'poison',chance:.35}},
  'guns-paralysis':{name:'霹靂雙槍',type:'guns',damage:16,interval:.45,range:12,price:1000,element:'雷',shopOnly:true,onHit:{type:'paralysis',chance:.25}},
  'knife-slow':{name:'流沙單刀',type:'knife',damage:54,interval:.55,range:3,price:1000,element:'念',shopOnly:true,onHit:{type:'slow',chance:.4}},
@@ -27,8 +30,8 @@ export const WEAPONS={
   'knife-starter':{name:'巡林單刀',type:'knife',damage:38,interval:0.55,range:3,price:250,element:null},
   'blades-starter':{name:'雙月刃',type:'blades',damage:10,interval:0.3,range:2.7,price:250,element:null},
   'guns-starter':{name:'晨星雙槍',type:'guns',damage:12,interval:0.45,range:12,price:300,element:null},
-  'sword-flame':{name:'焰紋大劍',type:'sword',damage:26,interval:0.9,range:3.4,price:600,element:'焰'},
-  'knife-tide':{name:'潮流單刀',type:'knife',damage:46,interval:0.55,range:3,price:600,element:'潮'},
+  'sword-flame':{name:'焰紋大劍',type:'sword',damage:26,interval:0.9,range:3.4,price:600,element:'焰',onHit:{type:'burn',chance:.35,power:2}},
+  'knife-tide':{name:'潮流單刀',type:'knife',damage:46,interval:0.55,range:3,price:600,element:'潮',noKnockback:true,onHit:{type:'slow',chance:.4}},
   'blades-forest':{name:'森影雙刃',type:'blades',damage:11,interval:0.3,range:2.7,price:600,element:'森'},
   'guns-thunder':{name:'雷鳴雙槍',type:'guns',damage:14,interval:0.45,range:12,price:650,element:'雷'},
 };
@@ -98,7 +101,7 @@ export function buyItem(store,id,txId=store.newId('buy-item')) {
 export function buyWeapon(store,id,txId=store.newId('buy-weapon')) {
   return store.transact(txId,s=> {
     const weapon=WEAPONS[id];
-    if(!weapon || s.weapons.includes(id) || s.points<weapon.price) throw new Error('已持有、武器不存在或點數不足。');
+    if(!weapon || weapon.bossOnly || s.weapons.includes(id) || s.points<weapon.price) throw new Error('已持有、武器不存在或點數不足。');
     s.points-=weapon.price; s.weapons.push(id);
     s.equipped=[id,...s.equipped.filter(x=>x!==id)].slice(0,4);if(s.run?.status==='active'){s.run.weaponId=id;s.run.hero.pendingAttack=null;s.run.heroCombo=null;}
     return {weaponId:id,message:'已永久取得（洞穴專用）'};

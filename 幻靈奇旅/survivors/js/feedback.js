@@ -1,4 +1,4 @@
-import {STATUS,activeStatuses} from './combat-status.js?v=20261025-v21';
+import {STATUS,activeStatuses} from './combat-status.js?v=20261025-v22';
 export function createFeedback(scene){const host=document.createElement('div');host.id='combatFeedback';host.setAttribute('aria-hidden','true');document.body.append(host);const entries=[],badges=new Map();
  function clear(){entries.splice(0).forEach(e=>e.el.remove());badges.forEach(e=>e.remove());badges.clear();}
  function write(item){const ev=item.ev;item.el.replaceChildren();if(ev.amount){const badge=document.createElement('small');badge.textContent=[ev.ultimate?'絕招':'',ev.critical?'暴擊':'',ev.status?STATUS[ev.status]?.name:''].filter(Boolean).join(' · ');if(badge.textContent)item.el.append(badge);const number=document.createElement('b');number.textContent='−'+Math.round(ev.amount);item.el.append(number);}else item.el.textContent=STATUS[ev.status]?.name||ev.text||'';}

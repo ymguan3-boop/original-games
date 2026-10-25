@@ -670,3 +670,7 @@ Three.js 與 GLTFLoader 採 MIT 授權，詳見 vendor 內原始碼授權註記�
 - 模型室涵蓋61隻幻靈，手機直立預設單隻特寫、取景隨視窗重算，保留家族切換。
 - 驗證：authoring/star-cowboy/verify-motion.cjs；肖像提示與來源：authoring/portrait-refresh-20261022.json。
 - 已移除本次Blender備份、暫存檢視頁；保留可編輯母版。手機390×844模擬抽驗通過，未宣稱實體手機效能驗證。
+
+### 無盡洞穴 v0.22（2026-10-25）
+
+新增 Three.js 燃燒、單刀大絕瞬移與兩把魔王限定永久武器；每波敵方生命及攻擊複利成長改為8%。測試重置改為5000點與兩把新武器。[規則與驗證](survivors/docs/validation-v22.md)。

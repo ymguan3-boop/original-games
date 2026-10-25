@@ -85,7 +85,7 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
   function star(e, color, radius, delay = 0, axis = 0) { return part(e, 'sphere', color, { mode: 'star', radius, delay, axis }); }
   function shake(amount, ev) { metrics.combatVfxShake = amount; metrics.combatVfxQuakes = (metrics.combatVfxQuakes || 0) + 1; onShake(amount, ev); }
 
-  function heroNormal(ev = {}) {if(weaponOf(ev)==='guns'){metrics.lastHeroMetalFx={kind:'guns',range:ev.range,renderer:'three-metal',trail:'dots'};return;}
+  function heroNormal(ev = {}) {if(ev.swordWave){metrics.lastHeroMetalFx={kind:'knife',range:ev.range,renderer:'three-metal',trail:'sword-wave'};return;}if(weaponOf(ev)==='guns'){metrics.lastHeroMetalFx={kind:'guns',range:ev.range,renderer:'three-metal',trail:'dots'};return;}
     const kind = weaponOf(ev), e = create('hero-' + kind, ev, kind === 'guns' ? .25 : .34); if (!e) return;
     e.group.rotation.y = e.heading; const r = e.range = finite(ev.range, { blades: 2.1, knife: 3.1, sword: 4.3, guns: 12.9 }[kind]);
     if (kind === 'blades') {
@@ -106,6 +106,7 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
     }
     metrics.lastHeroMetalFx = { kind, range: r, renderer: 'three-metal' };
   }
+  function heroBlink(ev = {}) {for(const point of [ev.from,ev.to]){if(!point)continue;const e=create('blink',ev,.38,point);if(!e)continue;ring(e,0xff813e,1.2,0,.1,true);ring(e,0xffddb0,.8,.02,.18);star(e,0xffbd68,.8,.02,1);}metrics.lastBlink={from:ev.from,to:ev.to,renderer:'three-metal'};}
   function heroStart(ev = {}) {
     const kind = weaponOf(ev), e = create('charge', ev, .65); if (!e) return;
     e.group.rotation.y = e.heading;
@@ -114,7 +115,7 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
     ring(e, 0xffffff, 1.4, .08, .22); star(e, color, .8, .05, 1);
     metrics.lastHeroCharge = { kind, renderer: 'three-metal' };
   }
-  function heroStrike(ev = {}) {if(weaponOf(ev)==='guns'){metrics.lastHeroUltimateFx={kind:'guns',final:!!ev.final,renderer:'three-metal',trail:'dense-dots'};return;}
+  function heroStrike(ev = {}) {if(ev.swordWave){metrics.lastHeroUltimateFx={kind:'knife',final:!!ev.final,renderer:'three-metal',trail:'sword-wave'};return;}if(weaponOf(ev)==='guns'){metrics.lastHeroUltimateFx={kind:'guns',final:!!ev.final,renderer:'three-metal',trail:'dense-dots'};return;}
     const kind = weaponOf(ev), isGlobal = !!ev.global || kind === 'sword', final = !!ev.final, e = create('ultimate-' + kind, ev, final ? .95 : .62); if (!e) return;
     e.group.rotation.y = e.heading;
     const r = Math.max(1, finite(ev.range, kind === 'guns' ? 15 : kind === 'blades' ? 4 : 6));
@@ -257,5 +258,5 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
   }
   function clear() { for (const e of records) release(e); records.length = 0; armorViews.clear(); metrics.armorViews = 0; metrics.combatVfx = { renderer: 'three-metal', time: clock, effects: 0, meshes: 0, allocated, limit: MESH_LIMIT, images: 0 }; }
   function dispose() { if (disposed) return; clear(); disposed = true; scene.remove(root); for (const g of Object.values(geometries)) g.dispose(); for (const m of materials.values()) m.dispose(); free.clear(); materials.clear(); }
-  return { heroNormal, heroStart, heroStrike, spellRelease, impact, syncActors, update, clear, dispose };
+  return { heroNormal, heroBlink, heroStart, heroStrike, spellRelease, impact, syncActors, update, clear, dispose };
 }
