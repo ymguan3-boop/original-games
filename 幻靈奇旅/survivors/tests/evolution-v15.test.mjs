@@ -7,18 +7,19 @@ import {CaveWorld} from '../js/world.js';
 const read=p=>JSON.parse(readFileSync(new URL(p,import.meta.url),'utf8'));
 const data={spirits:Object.fromEntries(read('../../data/spirits.json').map(s=>[s.id,s])),catalog:read('../../data/spirit-catalog.json'),evolution:read('../data/evolution.json'),config:read('../data/config.json'),skills:read('../data/spirit-skills.json'),passives:read('../data/survival-passives.json')};
 test('dex sorts full color groups and uses actual linear/special evolution edges',()=>{
- const cards=dexSpecies(data.spirits,data.catalog),rank={yellow:0,purple:1,red:2};
+ const cards=dexSpecies(data.spirits,data.catalog,data),rank={yellow:0,purple:1,red:2};
  for(let i=1;i<cards.length;i++)assert.ok(rank[cards[i-1].cardFrame||'yellow']<=rank[cards[i].cardFrame||'yellow']);
  assert.equal(cards.filter(s=>['caterpie','weedle'].includes(s.id)).length,0);
  assert.deepEqual(familyPaths('ivysaur',data),[['bulbasaur','ivysaur','venusaur']]);
- assert.deepEqual(familyPaths('grovyle',data),[['jigglypuff','treecko','grovyle','sceptile','palkia']]);
+ assert.deepEqual(familyPaths('grovyle',data),[['jigglypuff','treecko','palkia'],['jigglypuff','grovyle','palkia'],['jigglypuff','sceptile','palkia']]);
  assert.match(evolutionDetail('grovyle',data),/Lv\.16/);
  assert.match(evolutionSummary('venusaur',data),/最終型態/);
  assert.doesNotMatch(evolutionSummary('groudon',data),/Lv\.8/);
+ assert.match(evolutionSummary('groudon',data),/Lv\.15 → 水蛟龍王/);
 });
 test('goldfish guide covers both equiprobable branches and separates the town dragon quest',()=>{
- assert.deepEqual(familyPaths('rayquaza',data),[['kyogre','groudon'],['kyogre','rayquaza']]);
- const guide=evolutionDetail('kyogre',data);for(const text of ['金魚國王','金魚皇后','50%','Lv.4','各 3 張','副本進化不產生主遊戲卡片'])assert.ok(guide.includes(text),text);
+ assert.deepEqual(familyPaths('rayquaza',data),[['kyogre','groudon','mewtwo'],['kyogre','rayquaza','mewtwo']]);
+ const guide=evolutionDetail('kyogre',data);for(const text of ['金魚國王','金魚皇后','50%','Lv.4','Lv.15','副本內不需要魚飼料','各 3 張','副本進化不產生主遊戲卡片'])assert.ok(guide.includes(text),text);
  assert.match(evolutionDetail('mewtwo',data),/無後續進化/);
 });
 test('random evolution is resolved and saved inside the transaction; both halves work and reload cannot reroll',()=>{

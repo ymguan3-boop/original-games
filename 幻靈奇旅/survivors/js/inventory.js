@@ -19,15 +19,15 @@ export const ITEMS={
 export const WEAPONS={
  'blades-venom':{name:'蝕毒雙刃',type:'blades',damage:13,interval:.3,range:2.7,price:1000,element:'森',shopOnly:true,onHit:{type:'poison',chance:.35}},
  'guns-paralysis':{name:'霹靂雙槍',type:'guns',damage:16,interval:.45,range:12,price:1000,element:'雷',shopOnly:true,onHit:{type:'paralysis',chance:.25}},
- 'knife-slow':{name:'流沙單刀',type:'knife',damage:22,interval:.55,range:3,price:1000,element:'念',shopOnly:true,onHit:{type:'slow',chance:.4}},
+ 'knife-slow':{name:'流沙單刀',type:'knife',damage:54,interval:.55,range:3,price:1000,element:'念',shopOnly:true,onHit:{type:'slow',chance:.4}},
  'guns-freeze':{name:'霜晶雙槍',type:'guns',damage:16,interval:.45,range:12,price:1000,element:'潮',shopOnly:true,onHit:{type:'freeze',chance:.2}},
  'sword-knockback':{name:'震嶽大劍',type:'sword',damage:30,interval:.9,range:3.4,price:1000,element:'光',shopOnly:true,onHit:{type:'knockback',chance:.35}},
   'sword-starter':{name:'初光大劍',type:'sword',damage:24,interval:0.9,range:3.4,price:0,element:null},
-  'knife-starter':{name:'巡林單刀',type:'knife',damage:16,interval:0.55,range:3,price:250,element:null},
+  'knife-starter':{name:'巡林單刀',type:'knife',damage:38,interval:0.55,range:3,price:250,element:null},
   'blades-starter':{name:'雙月刃',type:'blades',damage:10,interval:0.3,range:2.7,price:250,element:null},
   'guns-starter':{name:'晨星雙槍',type:'guns',damage:12,interval:0.45,range:12,price:300,element:null},
   'sword-flame':{name:'焰紋大劍',type:'sword',damage:26,interval:0.9,range:3.4,price:600,element:'焰'},
-  'knife-tide':{name:'潮流單刀',type:'knife',damage:18,interval:0.55,range:3,price:600,element:'潮'},
+  'knife-tide':{name:'潮流單刀',type:'knife',damage:46,interval:0.55,range:3,price:600,element:'潮'},
   'blades-forest':{name:'森影雙刃',type:'blades',damage:11,interval:0.3,range:2.7,price:600,element:'森'},
   'guns-thunder':{name:'雷鳴雙槍',type:'guns',damage:14,interval:0.45,range:12,price:650,element:'雷'},
 };

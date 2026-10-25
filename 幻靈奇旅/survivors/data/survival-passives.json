@@ -350,17 +350,23 @@
     "slotCount": 2,
     "effects": [
       {
-        "effect": "proc-knockback",
-        "value": 0.1015
+        "effect": "regen",
+        "value": 0.00145
       },
       {
-        "effect": "speed",
-        "value": 0.0725
+        "effect": "defense",
+        "value": 0.058
       }
     ],
-    "effect": "proc-knockback",
-    "value": 0.1015,
-    "description": "命中 10.15% 震退 · 移動速度 +7.25%",
+    "effect": "regen",
+    "value": 0.00145,
+    "description": "每秒恢復最大 HP 0.145% · 防禦力 +5.8% · 大絕：主角暴擊率 ×2，持續 20 秒（再次施放刷新時間，不疊加倍率）",
+    "inheritedFrom": "jigglypuff",
+    "onUltimate": {
+      "heroCritMultiplier": 2,
+      "duration": 20,
+      "description": "大絕：主角暴擊率 ×2，持續 20 秒（再次施放刷新時間，不疊加倍率）"
+    },
     "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
     "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
   },
@@ -377,13 +383,19 @@
         "value": 0.002
       },
       {
-        "effect": "attack",
-        "value": 0.25
+        "effect": "defense",
+        "value": 0.08
       }
     ],
     "effect": "regen",
     "value": 0.002,
-    "description": "每秒恢復最大 HP 0.2% · 攻擊力 +25%",
+    "description": "每秒恢復最大 HP 0.2% · 防禦力 +8% · 大絕：主角暴擊率 ×2，持續 20 秒（再次施放刷新時間，不疊加倍率）",
+    "inheritedFrom": "jigglypuff",
+    "onUltimate": {
+      "heroCritMultiplier": 2,
+      "duration": 20,
+      "description": "大絕：主角暴擊率 ×2，持續 20 秒（再次施放刷新時間，不疊加倍率）"
+    },
     "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
     "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
   },
@@ -396,17 +408,23 @@
     "slotCount": 2,
     "effects": [
       {
-        "effect": "crit",
-        "value": 0.055
+        "effect": "regen",
+        "value": 0.0022
       },
       {
-        "effect": "attack",
-        "value": 0.275
+        "effect": "defense",
+        "value": 0.088
       }
     ],
-    "effect": "crit",
-    "value": 0.055,
-    "description": "暴擊率 +5.5% · 攻擊力 +27.5%",
+    "effect": "regen",
+    "value": 0.0022,
+    "description": "每秒恢復最大 HP 0.22% · 防禦力 +8.8% · 大絕：主角暴擊率 ×2，持續 20 秒（再次施放刷新時間，不疊加倍率）",
+    "inheritedFrom": "jigglypuff",
+    "onUltimate": {
+      "heroCritMultiplier": 2,
+      "duration": 20,
+      "description": "大絕：主角暴擊率 ×2，持續 20 秒（再次施放刷新時間，不疊加倍率）"
+    },
     "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
     "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
   },
@@ -507,7 +525,7 @@
   },
   "swampert": {
     "name": "大熊",
-    "ultimateName": "熔岩大劍",
+    "ultimateName": "霸體",
     "cardFrame": "yellow",
     "stage": 3,
     "tierPower": 1.6,
@@ -950,17 +968,23 @@
     "slotCount": 2,
     "effects": [
       {
-        "effect": "proc-knockback",
-        "value": 0.168
+        "effect": "regen",
+        "value": 0.0024
       },
       {
-        "effect": "attack",
-        "value": 0.3
+        "effect": "defense",
+        "value": 0.096
       }
     ],
-    "effect": "proc-knockback",
-    "value": 0.168,
-    "description": "命中 16.8% 震退 · 攻擊力 +30%",
+    "effect": "regen",
+    "value": 0.0024,
+    "description": "每秒恢復最大 HP 0.24% · 防禦力 +9.6% · 大絕：主角暴擊率 ×2，持續 20 秒（再次施放刷新時間，不疊加倍率）",
+    "inheritedFrom": "jigglypuff",
+    "onUltimate": {
+      "heroCritMultiplier": 2,
+      "duration": 20,
+      "description": "大絕：主角暴擊率 ×2，持續 20 秒（再次施放刷新時間，不疊加倍率）"
+    },
     "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
     "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
   },
@@ -1272,17 +1296,17 @@
         "value": 0.0026
       },
       {
-        "effect": "heal",
-        "value": 0.208
+        "effect": "defense",
+        "value": 0.26
       },
       {
-        "effect": "hp",
-        "value": 0.325
+        "effect": "defense",
+        "value": 0.26
       }
     ],
     "effect": "regen",
     "value": 0.0026,
-    "description": "每秒恢復最大 HP 0.26% · 治療效果 +20.8% · 生命上限 +32.5%",
+    "description": "每秒恢復最大 HP 0.26% · 防禦力 +52%",
     "scope": "自身能力；存活備戰提供隊伍數值加成；命中效果僅出戰本人觸發",
     "balanceNote": "同培育與投入比較黃3階≤紫2階≤紅卡；每10級只強化既有欄位，重複能力加總。"
   },

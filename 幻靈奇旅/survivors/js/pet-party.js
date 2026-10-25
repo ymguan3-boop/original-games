@@ -1,5 +1,5 @@
 import {cardBase} from './card-balance.js';
-import {passiveAt,ownPassives} from './growth.js';
+import {passiveAt,ownPassives} from './growth.js?v=20261025-v17';
 export function petMaxHealth(p,spirits,bonus=0){return Math.round(cardBase(spirits[p.speciesId]).hp*(1+((p.level||1)-1)*.03)*(1+(p.training?.hp||0)*.03)*(1+((p.growthLevel||1)-1)*.02)*(1+bonus));}
 export function makePet(id,spirits,training={},growthLevel=1){const s=cardBase(spirits[id]),bonus=ownPassives(spirits[id],growthLevel).hp||0;return {baseId:id,speciesId:id,level:1,xp:0,evolutionStage:1,baseDefense:s.defense,passiveHpBonus:bonus,growthLevel,training:{...training},hp:Math.round(s.hp*(1+(training.hp||0)*.03)*(1+(growthLevel-1)*.02)*(1+bonus)),maxHp:Math.round(s.hp*(1+(training.hp||0)*.03)*(1+(growthLevel-1)*.02)*(1+bonus)),ultimateCd:0,attackCd:0,x:1.5,z:1.5,heading:0};}
 export function switchPet(run,index){const p=run.pets[index];if(!p||p.hp<=0||index===run.activePet)return false;const old=run.pets[run.activePet];run.activePet=index;run.switchCd=0;p.x=run.hero.x+1.2;p.z=run.hero.z+1;return true;}

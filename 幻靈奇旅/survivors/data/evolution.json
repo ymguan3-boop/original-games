@@ -133,19 +133,19 @@
   },
   "treecko": {
     "next": [
-      "grovyle"
+      "palkia"
     ],
     "level": 8,
     "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "source": "洞穴 v0.17：小麻戰局 Lv.8 直接進化為大朋"
   },
   "grovyle": {
     "next": [
-      "sceptile"
+      "palkia"
     ],
     "level": 12,
     "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "source": "洞穴 v0.17：咕咕戰局 Lv.12 直接進化為大朋"
   },
   "sceptile": {
     "next": [
@@ -153,7 +153,7 @@
     ],
     "level": 16,
     "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "source": "洞穴 v0.17：小鷹戰局 Lv.16 直接進化為大朋"
   },
   "torchic": {
     "next": [
@@ -265,9 +265,9 @@
     "next": [
       "moltres"
     ],
-    "level": 4,
+    "level": 10,
     "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "source": "洞穴 v0.17：戰局 Lv.10 進化為冒險蛙"
   },
   "zapdos": {
     "next": [],
@@ -285,17 +285,17 @@
     "next": [
       "zapdos"
     ],
-    "level": 4,
+    "level": 10,
     "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "source": "洞穴 v0.17：戰局 Lv.10 進化為C老猴"
   },
   "entei": {
     "next": [
       "suicune"
     ],
-    "level": 4,
+    "level": 10,
     "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "source": "洞穴 v0.17：戰局 Lv.10 進化為水仙子"
   },
   "suicune": {
     "next": [],
@@ -313,16 +313,20 @@
     "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
   },
   "groudon": {
-    "next": [],
-    "level": 8,
+    "next": [
+      "mewtwo"
+    ],
+    "level": 15,
     "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "source": "洞穴 v0.17：金魚國王戰局 Lv.15 進化為水蛟龍王；不改動主遊戲飼料召喚"
   },
   "rayquaza": {
-    "next": [],
-    "level": 8,
+    "next": [
+      "mewtwo"
+    ],
+    "level": 15,
     "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "source": "洞穴 v0.17：金魚皇后戰局 Lv.15 進化為水蛟龍王；不改動主遊戲飼料召喚"
   },
   "dialga": {
     "next": [],
@@ -340,9 +344,9 @@
     "next": [
       "raichu"
     ],
-    "level": 4,
+    "level": 10,
     "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "source": "洞穴 v0.17：戰局 Lv.10 進化為龐克兔"
   },
   "pikachu": {
     "next": [],
@@ -426,11 +430,13 @@
   },
   "jigglypuff": {
     "next": [
-      "treecko"
+      "treecko",
+      "grovyle",
+      "sceptile"
     ],
     "level": 4,
-    "branch": "linear",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "branch": "random",
+    "source": "洞穴 v0.17：三色蛋等機率三分支；各分支依既有累進等級直達大朋"
   },
   "forest": {
     "next": [],

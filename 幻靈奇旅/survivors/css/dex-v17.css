@@ -1,0 +1,16 @@
+/* Only dex display cards change color. Capture flight cards keep their full original frame. */
+:is(.dex-grid,.dex-detail) .dex-card[data-frame="purple"]{background:rgba(69,34,106,.7);border-color:#bf8bef88;color:#f6e8ff}
+:is(.dex-grid,.dex-detail) .dex-card[data-frame="purple"] .dex-name{background:rgba(137,81,178,.28);color:#f9eaff}
+:is(.dex-grid,.dex-detail) .dex-card[data-frame="purple"] .dex-info p,:is(.dex-grid,.dex-detail) .dex-card[data-frame="purple"] .dex-number{color:#eedcfc}
+:is(.dex-grid,.dex-detail) .dex-card[data-frame="purple"] .dex-stats span{background:#bd8bf024}
+:is(.dex-grid,.dex-detail) .dex-card[data-frame="red"]{background:rgba(111,27,50,.68);border-color:#f58da188;color:#fff0f0}
+:is(.dex-grid,.dex-detail) .dex-card[data-frame="red"] .dex-name{background:rgba(198,56,81,.28);color:#fff0ee}
+:is(.dex-grid,.dex-detail) .dex-card[data-frame="red"] .dex-info p,:is(.dex-grid,.dex-detail) .dex-card[data-frame="red"] .dex-number{color:#ffe0e4}
+:is(.dex-grid,.dex-detail) .dex-card[data-frame="red"] .dex-stats span{background:#f589a224}
+.evolution-chains button[data-card-color]{display:inline-flex;align-items:center;gap:6px;border-color:var(--card-color);white-space:normal}
+.evolution-chains button[data-card-color="yellow"]{--card-color:#ddc479}
+.evolution-chains button[data-card-color="purple"]{--card-color:#bb8bea}
+.evolution-chains button[data-card-color="red"]{--card-color:#f18ba2}
+.evolution-chains button small{font-size:10px;color:var(--card-color);font-weight:400}
+.evolution-egg{padding:10px 0;border-top:1px solid #bca56d33}
+@media(max-width:480px){.evolution-chains{gap:10px}.evolution-chains button{padding:6px}.evolution-chains button small{font-size:10px}}

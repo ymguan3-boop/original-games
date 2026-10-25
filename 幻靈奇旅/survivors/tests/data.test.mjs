@@ -30,12 +30,16 @@ test('gacha explicitly matches card frames, excludes advanced/tower IDs and guar
  // v07: the free three are sampled from every eligible common basic starter.
  assert.deepEqual(pool.starter,species.filter(s=>s.role==='starter'&&s.stage===1&&!s.previous).map(s=>s.id));
 });
-test('goldfish branches and five-form avian chain retain actual species links',()=>{
+test('cave goldfish and avian branches use v17 progression and remain acyclic',()=>{
  assert.deepEqual(new Set(ev.kyogre.next),new Set(['groudon','rayquaza']));
- const chain=['jigglypuff','treecko','grovyle','sceptile','palkia'];
- for(let i=0;i<chain.length-1;i++){assert.deepEqual(ev[chain[i]].next,[chain[i+1]]);assert.equal(ev[chain[i]].level,(i+1)*4);}
+ assert.equal(ev.kyogre.branch,'random');assert.equal(ev.kyogre.level,4);
+ for(const id of ['groudon','rayquaza']){assert.deepEqual(ev[id].next,['mewtwo']);assert.equal(ev[id].level,15);}
+ assert.deepEqual(ev.mewtwo.next,[]);
+ assert.deepEqual(ev.jigglypuff.next,['treecko','grovyle','sceptile']);assert.equal(ev.jigglypuff.branch,'random');assert.equal(ev.jigglypuff.level,4);
+ for(const [id,level] of [['treecko',8],['grovyle',12],['sceptile',16]]){assert.deepEqual(ev[id].next,['palkia']);assert.equal(ev[id].level,level);}
  assert.deepEqual(ev.palkia.next,[]);
- for(const s of all){const seen=new Set();let id=s.id;while(ev[id].next.length){assert.ok(!seen.has(id));seen.add(id);id=ev[id].next[0];}}
+ const visit=(id,path=new Set())=>{assert.ok(!path.has(id),'進化鏈循環：'+[...path,id].join(' → '));for(const next of ev[id].next)visit(next,new Set([...path,id]));};
+ for(const s of all)visit(s.id);
 });
 test('integrated cave has an explicit town return and shared-resource bridge',()=>{
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');

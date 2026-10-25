@@ -111,10 +111,10 @@
   },
   "charizard": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "blast",
     "element": "焰",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Attack",
@@ -129,7 +129,8 @@
       "color": 16762941,
       "source": "authoring/procedural-spirits/chicks.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "blastRadius": 7
   },
   "squirtle": {
     "normalType": "melee",
@@ -155,10 +156,10 @@
   },
   "wartortle": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "tracking",
     "element": "潮",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 16,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "React",
@@ -173,14 +174,15 @@
       "color": 8402846,
       "source": "authoring/sesame-spirit.py"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "chainUltimate": true
   },
   "blastoise": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "tracking",
     "element": "潮",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 16,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "React",
@@ -195,7 +197,8 @@
       "color": 9917364,
       "source": "authoring/sesame-spirit.py"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "chainUltimate": true
   },
   "chikorita": {
     "normalType": "melee",
@@ -243,10 +246,10 @@
   },
   "meganium": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "blast",
     "element": "森",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Pulse",
@@ -261,7 +264,8 @@
       "color": 9348961,
       "source": "models/native/floral-deer.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "blastRadius": 7
   },
   "cyndaquil": {
     "normalType": "ranged",
@@ -287,10 +291,10 @@
   },
   "quilava": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "ranged",
     "element": "雷",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "ChestBeam",
@@ -305,14 +309,15 @@
       "color": 12090456,
       "source": "models/native/robot-spirits.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "piercingUltimate": true
   },
   "typhlosion": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "ranged",
     "element": "雷",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "PalmBeam",
@@ -327,7 +332,8 @@
       "color": 12090456,
       "source": "models/native/robot-spirits.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "piercingUltimate": true
   },
   "totodile": {
     "normalType": "melee",
@@ -375,10 +381,10 @@
   },
   "feraligatr": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "blast",
     "element": "潮",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Fly",
@@ -393,7 +399,8 @@
       "color": 6666684,
       "source": "models/native/families.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "blastRadius": 7
   },
   "treecko": {
     "normalType": "melee",
@@ -572,17 +579,17 @@
     "category": "spirit"
   },
   "swampert": {
-    "normalType": "melee",
-    "ultimateType": "area",
+    "normalType": "area",
+    "ultimateType": "self",
     "element": "焰",
-    "range": 2.3,
-    "ultimateRange": 4.8,
+    "range": 4.8,
+    "ultimateRange": 0,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Attack",
     "ultimateAnimation": "Ultimate",
-    "normalName": "霸體",
-    "ultimateName": "熔岩大劍",
+    "normalName": "熔岩大劍",
+    "ultimateName": "霸體",
     "model": "models/spirits/fire-bear-3.glb",
     "fallback": false,
     "fx": {
@@ -639,10 +646,10 @@
   },
   "torterra": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "blast",
     "element": "森",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Attack",
@@ -657,7 +664,8 @@
       "color": 9473636,
       "source": "authoring/beasts/beasts-actions.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "blastRadius": 7
   },
   "chimchar": {
     "normalType": "ranged",
@@ -771,10 +779,10 @@
   },
   "empoleon": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "blast",
     "element": "光",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Fly",
@@ -789,7 +797,8 @@
       "color": 8691131,
       "source": "models/native/families.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "blastRadius": 7
   },
   "articuno": {
     "normalType": "ranged",
@@ -837,10 +846,10 @@
   },
   "moltres": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "tracking",
     "element": "森",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 16,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Kick",
@@ -855,7 +864,8 @@
       "color": 10211141,
       "source": "models/native/frog-spirits.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "chainUltimate": true
   },
   "raikou": {
     "normalType": "melee",
@@ -906,7 +916,7 @@
     "ultimateType": "area",
     "element": "潮",
     "range": 7,
-    "ultimateRange": 4.8,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Attack",
@@ -947,10 +957,10 @@
   },
   "groudon": {
     "normalType": "ranged",
-    "ultimateType": "cone",
+    "ultimateType": "tracking",
     "element": "潮",
     "range": 7,
-    "ultimateRange": 6,
+    "ultimateRange": 16,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Attack",
@@ -965,14 +975,15 @@
       "color": 15049534,
       "source": "authoring/water-spirits/spirits.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "chainUltimate": true
   },
   "rayquaza": {
     "normalType": "ranged",
-    "ultimateType": "cone",
+    "ultimateType": "tracking",
     "element": "潮",
     "range": 7,
-    "ultimateRange": 6,
+    "ultimateRange": 16,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Attack",
@@ -987,7 +998,8 @@
       "color": 12170674,
       "source": "authoring/water-spirits/spirits.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "chainUltimate": true
   },
   "dialga": {
     "normalType": "cone",
@@ -1013,10 +1025,10 @@
   },
   "palkia": {
     "normalType": "melee",
-    "ultimateType": "cone",
+    "ultimateType": "blast",
     "element": "光",
     "range": 2.3,
-    "ultimateRange": 6,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "PowerFlap",
@@ -1031,7 +1043,8 @@
       "color": 11963323,
       "source": "models/native/dapeng.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "blastRadius": 7
   },
   "giratina": {
     "normalType": "melee",
@@ -1057,10 +1070,10 @@
   },
   "pikachu": {
     "normalType": "ranged",
-    "ultimateType": "cone",
+    "ultimateType": "ranged",
     "element": "雷",
     "range": 7,
-    "ultimateRange": 6,
+    "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "BeamPose",
@@ -1075,14 +1088,15 @@
       "color": 13053233,
       "source": "models/native/outouman.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "piercingUltimate": true
   },
   "mew": {
     "normalType": "melee",
-    "ultimateType": "cone",
+    "ultimateType": "tracking",
     "element": "念",
     "range": 2.3,
-    "ultimateRange": 6,
+    "ultimateRange": 16,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Roll",
@@ -1097,14 +1111,16 @@
       "color": 13019357,
       "source": "models/native/riceball.js"
     },
-    "category": "spirit"
+    "category": "spirit",
+    "chainUltimate": true,
+    "sustainDuration": 10
   },
   "wigglytuff": {
     "normalType": "melee",
-    "ultimateType": "area",
+    "ultimateType": "global",
     "element": "光",
     "range": 2.3,
-    "ultimateRange": 4.8,
+    "ultimateRange": 160,
     "multiplier": 2,
     "cooldown": 20,
     "normalAnimation": "Jump",

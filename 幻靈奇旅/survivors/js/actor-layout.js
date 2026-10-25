@@ -1,4 +1,5 @@
 export function modelHeight(spec){if(!spec)return 2.35;const stage=spec.stage||1,path=spec.model||'';
+ if(spec.id==='giratina')return Math.min(2.6,Math.max(1.15,spec.height||1.6))*2/3;
  if(/cat-girl/.test(path))return(2.35+(stage-1)*.3)*.9;
  if(/floral-deer/.test(path))return(2.5+(stage-1)*.45)*2/3;
  if(/water-dog/.test(path))return(2.1+(stage-1)*.5)*2/3;
