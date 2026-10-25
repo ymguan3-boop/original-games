@@ -1,6 +1,7 @@
 export const BUFF_CAPS={attack:1,skill:1,range:0.4,cooldown:0.3,damageReduction:0.5,capture:0.3,speed:0.3,crit:0.3,pickup:1.5};
 const item=(name,kind,price,extra={})=>({name,kind,price,rarity:'一般',stackLimit:999999,duration:0,...extra});
 export const ITEMS={
+ 'vacuum-orb':item('萬象吸取','vacuum',80,{description:'立即吸取場上所有掉落物，包含點數、經驗、補給、武器與技能書；場上無物品時不消耗'}),
  'pet-xp-double':item('幻靈經驗雙倍晶','pet-xp',100,{description:'本局所有存活幻靈獲得2倍戰鬥經驗；不疊加，結束本局後失效'}),
  'buff-pickup':item('拾取範圍增幅','buff',60,{effectId:'pickup',effectValue:.25,description:'本局拾取半徑 +25%，總上限 +150%'}),
   potion:item('治療藥水','heal',30,{value:0.4,description:'由主角使用，同步恢復主角與所有存活幻靈40%最大生命，可受治療被動強化'}),
@@ -59,6 +60,8 @@ export function useItem(store,itemId,txId=store.newId('item'),targetIndex,option
     if(config.kind==='buff') {
       const delta=addBuff(run,config.effectId,config.effectValue);
       if(config.duration>0) {run.buffTimers ||= {}; (run.buffTimers[config.effectId] ||= []).push({expires:(run.time||0)+config.duration,value:delta});}
+    } else if(config.kind==='vacuum') {
+      if(!run.pickups.length||run.vacuumRequested)throw Error('場上沒有可吸取的掉落物，未消耗道具');run.vacuumRequested=true;
     } else if(config.kind==='pet-xp') {
       if(run.petXpDouble)throw Error('本局幻靈經驗已為2倍，未消耗道具');run.petXpDouble=true;
     } else if(config.kind==='heal') {

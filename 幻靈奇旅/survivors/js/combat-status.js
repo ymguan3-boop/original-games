@@ -8,7 +8,7 @@ export function setStatus(actor,type,time,{duration=STATUS[type]?.duration||3,at
  if(!STATUS[type]||actor.hp<=0||actor.capturePending)return false;
  if(CONTROL.includes(type)&&(actor.controlImmuneUntil>time||immobilized(actor,time)))return false;
  actor.statuses||={};const previous=actor.statuses[type];actor.statuses[type]={until:time+duration,next:previous&&previous.until>time?previous.next:time+1,attack,element,ratio};
- if(CONTROL.includes(type)){actor.controlImmuneUntil=time+duration+.65;actor.pendingSkill=null;actor.pendingShot=null;actor.warning=null;actor.actionUntil=0;}
+ if(CONTROL.includes(type)){actor.controlImmuneUntil=time+duration+.65;actor.pendingSkill=null;actor.pendingShot=null;actor.pendingMelee=null;actor.warning=null;actor.actionUntil=0;}
  if(type==='knockback'){const dx=actor.x-(from?.x??actor.x),dz=actor.z-(from?.z??actor.z-1),len=Math.hypot(dx,dz)||1;actor.knockback={until:time+duration,vx:dx/len*distance/duration,vz:dz/len*distance/duration};}
  return true;
 }

@@ -1,4 +1,4 @@
-import {activeStatuses} from './combat-status.js';
+import {activeStatuses} from './combat-status.js?v=20261025-v21';
 const TYPES=['poison','paralysis','freeze','slow','heal'];
 /** Procedural THREE geometry only: no status image/texture requests. */
 export async function createStatusView(T,scene,heightOf){

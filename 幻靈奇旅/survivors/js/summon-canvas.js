@@ -1,5 +1,5 @@
 import {itemArtwork} from './item-pictures.js';
-import {ITEMS,WEAPONS} from './inventory.js';
+import {ITEMS,WEAPONS} from './inventory.js?v=20261025-v21';
 const COLORS = { yellow:'#ffd16a', purple:'#bd75ff', red:'#ff385d' };
 const clamp = x => Math.max(0, Math.min(1,x));
 const ease = x => 1-Math.pow(1-clamp(x),3);

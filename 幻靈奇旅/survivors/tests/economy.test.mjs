@@ -49,7 +49,7 @@ test('ten million seeded non-pity rolls match 12/6/2/10/20/20/15/15',()=> {
 });
 test('gacha consumables only enter inventory; duplicates become materials',()=> {
   const {store}=fixture();store.transact('seed',s=>{s.points=300;s.owned=['e'];});
-  draw(store,pool,1,()=>.99,'ability');assert.equal(store.state.inventory['buff-pickup'],1);assert.equal(store.state.run,null);
+  draw(store,pool,1,()=>.99,'ability');assert.equal(store.state.inventory['vacuum-orb'],1);assert.equal(store.state.run,null);
   draw(store,pool,1,()=>.19,'red');assert.equal(store.state.materials['bond:e'],1);assert.equal(store.state.owned.length,1);
   assert.throws(()=>draw(store,pool,10),/不足/);assert.equal(store.state.points,100);
 });

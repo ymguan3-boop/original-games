@@ -1,9 +1,9 @@
-import {addInventory,WEAPONS} from './inventory.js';
+import {addInventory,WEAPONS} from './inventory.js?v=20261025-v21';
 export const DRAW_COST=100;
 export const RATES={yellow:.12,purple:.06,red:.02,weapon:.1,item:.2,material:.2,skill:.15,ability:.15};
 let cumulative=0;const BANDS=Object.entries(RATES).map(([kind,rate])=>[kind,cumulative=Math.round((cumulative+rate)*1e12)/1e12]);
 export const WEAPON_POOL=Object.keys(WEAPONS).filter(id=>WEAPONS[id].price>0);
-export const REWARD_ITEMS={item:['potion','revive','battery','ball-basic','ball-great','ball-ultra'],skill:['buff-skill','buff-cooldown','pet-xp-double'],ability:['buff-attack','buff-range','buff-defense','buff-capture','buff-pickup']};
+export const REWARD_ITEMS={item:['potion','revive','battery','ball-basic','ball-great','ball-ultra'],skill:['buff-skill','buff-cooldown','pet-xp-double'],ability:['buff-attack','buff-range','buff-defense','buff-capture','buff-pickup','vacuum-orb']};
 /** Read-only original progression supplied by caller; never writes the original save. */
 export function eligiblePool(pool,original={},options={}) {
   const progress=original.state || original;
