@@ -1,7 +1,7 @@
 export const BUFF_CAPS={attack:1,skill:1,range:0.4,cooldown:0.3,damageReduction:0.5,capture:0.3,speed:0.3,crit:0.3,pickup:1.5};
 const item=(name,kind,price,extra={})=>({name,kind,price,rarity:'一般',stackLimit:999999,duration:0,...extra});
 export const ITEMS={
- 'vacuum-orb':item('萬象吸取','vacuum',80,{description:'立即吸取場上所有掉落物，包含點數、經驗、補給、武器與技能書；場上無物品時不消耗'}),
+ 'vacuum-orb':item('萬象吸取','vacuum',200,{description:'立即吸取場上所有掉落物，包含點數、經驗、補給、武器與技能書；場上無物品時不消耗；自動使用間隔10秒，每次消耗1件'}),
  'pet-xp-double':item('幻靈經驗雙倍晶','pet-xp',100,{description:'本局所有存活幻靈獲得2倍戰鬥經驗；不疊加，結束本局後失效'}),
  'buff-pickup':item('拾取範圍增幅','buff',60,{effectId:'pickup',effectValue:.25,description:'本局拾取半徑 +25%，總上限 +150%'}),
   potion:item('治療藥水','heal',30,{value:0.4,description:'由主角使用，同步恢復主角與所有存活幻靈40%最大生命，可受治療被動強化'}),
@@ -17,9 +17,11 @@ export const ITEMS={
   'buff-defense':item('防禦增幅','buff',80,{effectId:'damageReduction',effectValue:0.1,description:'本局減傷 +10%，總上限 50%'}),
   'buff-capture':item('捕捉增幅','buff',80,{effectId:'capture',effectValue:0.05,description:'本局捕捉率 +5 個百分點，總上限 +30%'}),
 };
-export const BOSS_WEAPONS=['blades-blinkfire','knife-flamewave'];
+export const BOSS_WEAPONS=['blades-blinkfire','knife-flamewave','guns-critical','sword-leek'];
 export const WEAPONS={
- 'blades-blinkfire':{name:'瞬燃雙刀',type:'blades',damage:18,interval:.3,range:2.7,price:0,element:'焰',bossOnly:true,blinkAttack:true,onHit:{type:'burn',chance:1,power:2}},
+ 'guns-critical':{name:'必暴雙槍',type:'guns',damage:17,interval:.45,range:12,price:0,element:'光',bossOnly:true,forceCrit:true,onHit:{type:'knockback',chance:.4}},
+ 'sword-leek':{name:'大蔥',type:'sword',damage:28,interval:.9,range:3.4,price:0,element:'森',bossOnly:true,attackSpeed:.5,appearance:'leek',onHit:{type:'paralysis',chance:.5,duration:.9}},
+ 'blades-blinkfire':{name:'瞬燃雙刀',type:'blades',damage:18,interval:.3,range:2.7,price:0,element:'焰',bossOnly:true,rangeBonus:.3,onHit:{type:'burn',chance:1,power:2}},
  'knife-flamewave':{name:'幻燃單刃',type:'knife',damage:48,interval:.55,range:12,price:0,element:'焰',bossOnly:true,swordWave:true,onHit:{type:'burn',chance:1,power:2}},
  'blades-venom':{name:'蝕毒雙刃',type:'blades',damage:13,interval:.3,range:2.7,price:1000,element:'森',shopOnly:true,onHit:{type:'poison',chance:.35}},
  'guns-paralysis':{name:'霹靂雙槍',type:'guns',damage:16,interval:.45,range:12,price:1000,element:'雷',shopOnly:true,onHit:{type:'paralysis',chance:.25}},
@@ -27,13 +29,13 @@ export const WEAPONS={
  'guns-freeze':{name:'霜晶雙槍',type:'guns',damage:16,interval:.45,range:12,price:1000,element:'潮',shopOnly:true,onHit:{type:'freeze',chance:.2}},
  'sword-knockback':{name:'震嶽大劍',type:'sword',damage:30,interval:.9,range:3.4,price:1000,element:'光',shopOnly:true,onHit:{type:'knockback',chance:.35}},
   'sword-starter':{name:'初光大劍',type:'sword',damage:24,interval:0.9,range:3.4,price:0,element:null},
-  'knife-starter':{name:'巡林單刀',type:'knife',damage:38,interval:0.55,range:3,price:250,element:null},
-  'blades-starter':{name:'雙月刃',type:'blades',damage:10,interval:0.3,range:2.7,price:250,element:null},
+  'knife-starter':{name:'巡林單刀',type:'knife',damage:38,interval:0.55,range:3,price:0,element:null},
+  'blades-starter':{name:'雙月刃',type:'blades',damage:10,interval:0.3,range:2.7,price:0,element:null},
   'guns-starter':{name:'晨星雙槍',type:'guns',damage:12,interval:0.45,range:12,price:300,element:null},
   'sword-flame':{name:'焰紋大劍',type:'sword',damage:26,interval:0.9,range:3.4,price:600,element:'焰',onHit:{type:'burn',chance:.35,power:2}},
   'knife-tide':{name:'潮流單刀',type:'knife',damage:46,interval:0.55,range:3,price:600,element:'潮',noKnockback:true,onHit:{type:'slow',chance:.4}},
-  'blades-forest':{name:'森影雙刃',type:'blades',damage:11,interval:0.3,range:2.7,price:600,element:'森'},
-  'guns-thunder':{name:'雷鳴雙槍',type:'guns',damage:14,interval:0.45,range:12,price:650,element:'雷'},
+  'blades-forest':{name:'森影雙刃',type:'blades',damage:11,interval:0.3,range:2.7,price:600,element:'森',killHeal:.05},
+  'guns-thunder':{name:'雷鳴雙槍',type:'guns',damage:14,interval:0.45,range:12,price:650,element:'雷',critChance:.1},
 };
 export function addBuff(run,key,value) {
   if (!(key in BUFF_CAPS) || !Number.isFinite(value) || value<=0) throw new Error('未知增幅。');
@@ -64,7 +66,7 @@ export function useItem(store,itemId,txId=store.newId('item'),targetIndex,option
       const delta=addBuff(run,config.effectId,config.effectValue);
       if(config.duration>0) {run.buffTimers ||= {}; (run.buffTimers[config.effectId] ||= []).push({expires:(run.time||0)+config.duration,value:delta});}
     } else if(config.kind==='vacuum') {
-      if(!run.pickups.length||run.vacuumRequested)throw Error('場上沒有可吸取的掉落物，未消耗道具');run.vacuumRequested=true;
+      if(options.automatic&&(run.autoItemNext?.[itemId]||0)>run.time)throw Error('自動吸取冷卻中，未消耗道具');if(!run.pickups.length||run.vacuumRequested)throw Error('場上沒有可吸取的掉落物，未消耗道具');run.vacuumRequested=true;
     } else if(config.kind==='pet-xp') {
       if(run.petXpDouble)throw Error('本局幻靈經驗已為2倍，未消耗道具');run.petXpDouble=true;
     } else if(config.kind==='heal') {
@@ -78,7 +80,8 @@ export function useItem(store,itemId,txId=store.newId('item'),targetIndex,option
     } else if(config.kind==='ball') {
       throw new Error('請在戰場鎖定有效目標後按投球。');
     }
-    if(options.automatic&&!['heal','revive'].includes(config.kind)){run.autoItemUsed||=[];if(!run.autoItemUsed.includes(itemId))run.autoItemUsed.push(itemId);}
+    if(options.automatic&&config.kind==='vacuum'){run.autoItemNext||={};run.autoItemNext[itemId]=run.time+10;}
+    if(options.automatic&&!['heal','revive','vacuum'].includes(config.kind)){run.autoItemUsed||=[];if(!run.autoItemUsed.includes(itemId))run.autoItemUsed.push(itemId);}
     if (--state.inventory[itemId]===0) delete state.inventory[itemId];
     return {itemId,targetIndex:targetIndex??-1,message:`${config.name}已使用`};
   });

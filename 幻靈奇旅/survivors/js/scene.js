@@ -1,9 +1,10 @@
+import {createLeekSword} from './leek-weapon.js?v=20261025-v23';
 import {createViewLimits} from './view-limits.js?v=20261025-v21';
 import {modelRoomPlan,originalPresentation,createModelRoomEffect} from './model-room-effects.js?v=20261025-v20';
 import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261025-v22';
 import {flightMotion} from './avian-motion-v17.js?v=20261025-v18';
 import {createCostumeView} from './costume-view.js?v=20261025-v16';
-import {createLootView} from './loot-view.js';
+import {createLootView} from './loot-view.js?v=20261025-v23';
 import {createStatusView} from './status-view.js?v=20261025-v22';
 import {immobilized} from './combat-status.js?v=20261025-v22';
 import {modelHeight} from './actor-layout.js?v=20261025-v18';
@@ -107,7 +108,8 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
   const mounts=[];const right=hero.object.getObjectByName('propR'),left=hero.object.getObjectByName('propL');
   if(!right||!left)throw Error('原主角模型缺少 propR / propL 武器握點');
   for(const [name,file,dual] of [['Sword','sword',false],['Knife','knife',false],['Blades','blade',true],['Guns','gun',true]]){const g=await load('models/tower/kid-'+file+'.glb');const r=g.scene;right.add(r);mounts.push({name,mesh:r});if(name==='Guns'){const muzzle=new T.Object3D();muzzle.name='cave-gun-muzzle';let barrel;r.traverse(n=>{if(n.isMesh&&n.userData?.part?.m==='steelDark')barrel=n;});if(barrel){barrel.geometry.computeBoundingBox();const b=barrel.geometry.boundingBox;muzzle.position.set((b.min.x+b.max.x)/2,b.min.y,(b.min.z+b.max.z)/2);barrel.add(muzzle);}else{muzzle.position.set(0,-.1875,.062);r.add(muzzle);}}if(dual){const l=r.clone(true);left.add(l);mounts.push({name,mesh:l});}}
-  const lootView=createLootView(T,scene,renderer,Object.fromEntries(mounts.map(m=>[m.name.toLowerCase(),m.mesh])),metrics);
+  const leek=createLeekSword(T);right.add(leek);mounts.push({name:'Sword',variant:'leek',mesh:leek});metrics.leekWeapon={...leek.userData.weaponBudget,appearance:'leek',mountedTo:'propR'};
+  const lootView=createLootView(T,scene,renderer,{...Object.fromEntries(mounts.filter(m=>!m.variant).map(m=>[m.name.toLowerCase(),m.mesh])), 'sword-leek':leek},metrics);
 
   await script('js/hero-costumes.js','HeroCostumes');const costumes=globalThis.HeroCostumes.create(T),costumeView=createCostumeView(T,scene,hero,costumes,{prepareSound:()=>script('models/native/xiaoshan.js','XiaoshanSpirit'),makeCompanion:()=>actor(species.get('mew').model,.95,'wardrobe-companion'),releaseActor,metrics,onError:report});
   function prepareView(h){viewLimits.prepare(h,camera.aspect,zoom);}
@@ -148,9 +150,9 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
  const coreModels={};await Promise.all([['ball-basic','core.glb'],['ball-great','great_core.glb'],['ball-ultra','master_core.glb']].map(async([key,file])=>{coreModels[key]=(await load('models/props/'+file)).scene;}));
  const ballFlights=[];
  function throwBall(ev){const root=cloneModel(coreModels[ev.ball]||coreModels['ball-basic']);normalize(root,.48);scene.add(root);metrics.lastCoreModel='models/props/'+({'ball-basic':'core.glb','ball-great':'great_core.glb','ball-ultra':'master_core.glb'}[ev.ball]||'core.glb');return new Promise(resolve=>ballFlights.push({root,id:ev.id,enemyId:ev.enemyId,at:ev.at,age:0,from:ev.from,to:ev.target,resolve}));}
-  function playHero(name){if(name==='Hurt'){hero.react();metrics.heroHitReaction=.12;return;}
- if(name==='Roll'){hero.reaction=null;hero.root.rotation.x=0;}const aliases={roll:'Roll',hurt:'Hurt',throw:'Throw'},kind=weapon.toLowerCase();const mapped=/-attack$|-ultimate$/.test(name)?weapon+'Combo':aliases[name]||name;
- hero.play(mapped,true);const ultimate=name.endsWith('-ultimate'),duration=mapped==='Roll'?ROLL_DURATION:ultimate?TOWER_ULTIMATES[kind].hits*TOWER_ULTIMATES[kind].interval+.3:name.endsWith('-attack')?HERO_ATTACKS[kind].duration:mapped==='Hurt'?.25:.5;
+  function playHero(name,timing={}){if(name==='Hurt'){hero.react();metrics.heroHitReaction=.12;return;}
+ if(name==='Roll'){hero.reaction=null;hero.root.rotation.x=0;}const aliases={roll:'Roll',hurt:'Hurt',throw:'Throw'},kind=weapon.toLowerCase();const motionKind=/-attack$|-ultimate$/.test(name)?({sword:'Sword',knife:'Knife',blades:'Blades',guns:'Guns'})[name.split('-')[0]]||weapon:weapon;const mapped=/-attack$|-ultimate$/.test(name)?motionKind+'Combo':aliases[name]||name;
+ hero.play(mapped,true);const ultimate=name.endsWith('-ultimate'),duration=timing.duration??(mapped==='Roll'?ROLL_DURATION:ultimate?TOWER_ULTIMATES[kind].hits*TOWER_ULTIMATES[kind].interval+.3:name.endsWith('-attack')?HERO_ATTACKS[kind].duration:mapped==='Hurt'?.25:.5);
  hero.hold=duration;if(hero.current)hero.current.setEffectiveTimeScale(hero.current.getClip().duration/duration);metrics.heroMotion={name:mapped,duration,rate:hero.current?.getEffectiveTimeScale(),ultimate};}
  function heroBlink(ev){combatVfx.heroBlink(ev);metrics.lastHeroBlink=ev;}
  function heroNormal(ev){combatVfx.heroNormal(ev);metrics.lastHeroNormal=ev;}
@@ -162,7 +164,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
   function petAction(strong,target){const state=currentRun?.pets?.[currentRun.activePet];if(!pet||pet.id!==state?.speciesId)return{ready:false};skill(pet,strong,target);return{...pet.skillInfo,ready:true};}
   function resize(){const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}resize();
   function update(run,dt=0){if(disposed)return;currentRun=run;dt=Math.min(.05,Math.max(0,dt));time+=dt;const h=run?.hero||{x:0,z:0,hp:1};
-    const next=({sword:'Sword',knife:'Knife',blades:'Blades',guns:'Guns'})[(run?.weaponId||'guns-starter').split('-')[0]]||'Sword';if(next!==weapon){weapon=next;hero.mode=null;}mounts.forEach(m=>m.mesh.visible=m.name===weapon);
+    const next=({sword:'Sword',knife:'Knife',blades:'Blades',guns:'Guns'})[(run?.weaponId||'guns-starter').split('-')[0]]||'Sword';if(next!==weapon){weapon=next;hero.mode=null;}mounts.forEach(m=>m.mesh.visible=m.name===weapon&&(m.variant==='leek'?run?.weaponId==='sword-leek':m.name==='Sword'?run?.weaponId!=='sword-leek':true));metrics.heroWeaponAppearance={id:run?.weaponId,model:run?.weaponId==='sword-leek'?'leek':weapon,visibleMounts:mounts.filter(m=>m.mesh.visible).map(m=>m.variant||m.name)};
     hero.root.position.set(h.x,0,h.z);hero.root.rotation.y=h.heading||0;hero.tick(dt,h);costumeView.update(run,dt);const attackRange=h.attackRange||HERO_ATTACKS[weapon.toLowerCase()]?.range||4.2;attackRing.visible=h.hp>0&&!!run;attackRing.position.set(h.x,.027,h.z);attackRing.scale.setScalar(attackRange);metrics.attackCircle={radius:attackRange,color:'#ff3b42',x:h.x,z:h.z,visible:attackRing.visible};
     const ps=run?.pets?.[run.activePet??0];requestPet(ps);if(pet&&ps){pet.root.position.set(ps.x??h.x-1.6,0,ps.z??h.z+1);pet.root.rotation.y=ps.heading||0;pet.tick(dt,ps);const safe=constrainPet({...ps,x:pet.root.position.x,z:pet.root.position.z},h);pet.root.position.x=safe.x;pet.root.position.z=safe.z;}
     prepareView(h);const enemies=run?.enemies||[];let visibleEnemies=0;for(const e of enemies){if(e.hp<=0)continue;const cached=specials.get(e.id);if(!viewLimits.visible(e,heightOf(e.speciesId))){if(cached){cached.root.visible=false;cached.roomFx?.dispose();cached.roomFx=null;cached.hold=0;}continue;}if(cached)cached.root.visible=true;requestSpecial(e);const a=specials.get(e.id);if(a){visibleEnemies++;a.root.position.set(e.x,0,e.z);a.root.rotation.y=e.heading||0;if(e.attackSerial&&a.lastAttack!==e.attackSerial){a.lastAttack=e.attackSerial;skill(a,!!e.skillStrong,run.hero);}a.tick(dt,{...e,moving:!e.warning&&e.weakUntil<=run.time&&!(e.captureStunUntil>run.time)&&!(e.hitReactUntil>run.time)});}}metrics.enemyInstances=0;metrics.enemyModels=visibleEnemies;for(const e of enemies.filter(e=>e.hp>0&&['boss','elite'].includes(e.kind))){let ring=bossRings.get(e.id);if(!ring){ring=new T.Mesh(bossRingGeo,bossRingMat);ring.rotation.x=-Math.PI/2;scene.add(ring);bossRings.set(e.id,ring);}ring.position.set(e.x,.045,e.z);ring.scale.setScalar(heightOf(e.speciesId)*.8);ring.visible=true;}for(const[id,ring]of bossRings)if(!enemies.some(e=>e.id===id&&e.hp>0)){scene.remove(ring);bossRings.delete(id);}metrics.bossCircles=bossRings.size;
