@@ -1,6 +1,8 @@
-import {addInventory} from './inventory.js';
+import {addInventory,WEAPONS} from './inventory.js';
 export const DRAW_COST=100;
-export const RATES={yellow:0.06,purple:0.03,red:0.01,item:0.25,material:0.25,skill:0.2,ability:0.2};
+export const RATES={yellow:.12,purple:.06,red:.02,weapon:.1,item:.2,material:.2,skill:.15,ability:.15};
+let cumulative=0;const BANDS=Object.entries(RATES).map(([kind,rate])=>[kind,cumulative=Math.round((cumulative+rate)*1e12)/1e12]);
+export const WEAPON_POOL=Object.keys(WEAPONS).filter(id=>WEAPONS[id].price>0);
 export const REWARD_ITEMS={item:['potion','revive','battery','ball-basic','ball-great','ball-ultra'],skill:['buff-skill','buff-cooldown','pet-xp-double'],ability:['buff-attack','buff-range','buff-defense','buff-capture','buff-pickup']};
 /** Read-only original progression supplied by caller; never writes the original save. */
 export function eligiblePool(pool,original={},options={}) {
@@ -21,7 +23,7 @@ export function validatePool(pool) {
 export function rollCategory(rng=Math.random,pity=0) {
   const x=random(rng);
   if(pity>=99) return x<0.6?'yellow':x<0.9?'purple':'red';
-  return x<0.06?'yellow':x<0.09?'purple':x<0.1?'red':x<0.35?'item':x<0.6?'material':x<0.8?'skill':'ability';
+  return BANDS.find(([,end])=>x<end)[0];
 }
 export function claimStarter(store,pool,rng=Math.random) {
   const all=[...new Set(pool.starter || [...(pool.yellow||[]),...(pool.purple||[]),...(pool.red||[])])];
@@ -58,7 +60,8 @@ export function draw(store,pool,count=1,rng=Math.random,txId=store.newId('gacha'
         s.pity=0; reward={kind:'spirit',color:kind,id,duplicate,guaranteed};
       } else {
         s.pity++;
-        if(kind==='material') {s.materials.ore=(s.materials.ore||0)+1;reward={kind,id:'ore',quantity:1};}
+        if(kind==='weapon'){const id=pick(WEAPON_POOL,rng),duplicate=s.weapons.includes(id),price=WEAPONS[id].price;if(duplicate)s.points+=cost;else s.weapons.push(id);reward={kind:'weapon',id,price,color:price>=1000?'red':'purple',duplicate,refund:duplicate?cost:0,quantity:1};}
+        else if(kind==='material') {s.materials.ore=(s.materials.ore||0)+1;reward={kind,id:'ore',quantity:1};}
         else {const id=pick(REWARD_ITEMS[kind],rng);addInventory(s,id);reward={kind:'item',category:kind,id,quantity:1,message:'已入背包，可於戰鬥中使用'};}
       }
       rewards.push(reward);

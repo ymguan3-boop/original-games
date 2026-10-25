@@ -29,7 +29,7 @@ test('save corruption is preserved; write failure does not grant starter',()=> {
   assert.throws(()=>createStore(storage));assert.equal(storage.getItem(SAVE_KEY),'{broken');
 });
 test('draw has exact boundaries, conditional pity and ten-pull sequential counter',()=> {
-  const boundaries=[[0,'yellow'],[.059999,'yellow'],[.06,'purple'],[.09,'red'],[.1,'item'],[.35,'material'],[.6,'skill'],[.8,'ability']];
+  const boundaries=[[0,'yellow'],[.119999,'yellow'],[.12,'purple'],[.18,'red'],[.2,'weapon'],[.3,'item'],[.5,'material'],[.7,'skill'],[.85,'ability']];
   for(const [x,expected] of boundaries) assert.equal(rollCategory(()=>x),expected);
   assert.equal(rollCategory(()=>.5999,99),'yellow');assert.equal(rollCategory(()=>.6,99),'purple');assert.equal(rollCategory(()=>.9,99),'red');
   const {store,storage}=fixture();store.transact('seed',s=>{s.points=1000;s.pity=95;});
@@ -39,18 +39,18 @@ test('draw has exact boundaries, conditional pity and ten-pull sequential counte
   assert.equal(draw(store,pool,10,()=>0,'ten').replayed,true);
   assert.equal(createStore(storage).state.pity,5);
 });
-test('ten million seeded non-pity rolls match 6/3/1/25/25/20/20',()=> {
+test('ten million seeded non-pity rolls match 12/6/2/10/20/20/15/15',()=> {
   let seed=0x23c0ffee;const rng=()=>{seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;};
-  const n=10_000_000,counts={yellow:0,purple:0,red:0,item:0,material:0,skill:0,ability:0};
+  const n=10_000_000,counts={yellow:0,purple:0,red:0,weapon:0,item:0,material:0,skill:0,ability:0};
   for(let i=0;i<n;i++) counts[rollCategory(rng)]++;
-  const rates={yellow:.06,purple:.03,red:.01,item:.25,material:.25,skill:.2,ability:.2};
+  const rates={yellow:.12,purple:.06,red:.02,weapon:.1,item:.2,material:.2,skill:.15,ability:.15};
   for(const key of Object.keys(rates)) assert.ok(Math.abs(counts[key]/n-rates[key])<.0005,`${key}: ${counts[key]/n}`);
   console.log('10M seed 0x23c0ffee:',JSON.stringify(counts));
 });
 test('gacha consumables only enter inventory; duplicates become materials',()=> {
   const {store}=fixture();store.transact('seed',s=>{s.points=300;s.owned=['e'];});
   draw(store,pool,1,()=>.99,'ability');assert.equal(store.state.inventory['buff-pickup'],1);assert.equal(store.state.run,null);
-  draw(store,pool,1,()=>.095,'red');assert.equal(store.state.materials['bond:e'],1);assert.equal(store.state.owned.length,1);
+  draw(store,pool,1,()=>.19,'red');assert.equal(store.state.materials['bond:e'],1);assert.equal(store.state.owned.length,1);
   assert.throws(()=>draw(store,pool,10),/不足/);assert.equal(store.state.points,100);
 });
 test('item consumption and checkpoint are atomic, idempotent, capped and survive refresh',()=> {

@@ -55,16 +55,21 @@
   ],
   "metadata": {
     "source": "data/spirits.json cardFrame + css/collection-card.css（未標cardFrame使用原金色框）",
-    "policy": "洞穴獨立轉蛋：新手後允許小黃與三色蛋作為紫/紅基礎池；特殊首領仍須原探索資格；寶箱及書本六種排除，固定6/3/1不重新分配。 新手改為所有一般可進化基礎家族中無放回隨機三隻。",
+    "policy": "幻靈20%（黃12／紫6／紅2）、永久武器10%、補給20%、素材20%、技能15%、能力15%；第100抽保底幻靈，寶箱怪與書本怪家族排除。",
     "excluded": "進階型、三位塔首領與三種塔魔物不進普通池；小麻有previous三色蛋，不視為未進階。",
     "counts": {
       "spirits": 61,
       "combined": 64
     },
     "rates": {
-      "yellow": 0.06,
-      "purple": 0.03,
-      "red": 0.01
+      "yellow": 0.12,
+      "purple": 0.06,
+      "red": 0.02,
+      "weapon": 0.1,
+      "item": 0.2,
+      "material": 0.2,
+      "skill": 0.15,
+      "ability": 0.15
     }
   },
   "excludedIds": [

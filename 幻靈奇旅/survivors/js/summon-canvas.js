@@ -1,5 +1,5 @@
 import {itemArtwork} from './item-pictures.js';
-import {ITEMS} from './inventory.js';
+import {ITEMS,WEAPONS} from './inventory.js';
 const COLORS = { yellow:'#ffd16a', purple:'#bd75ff', red:'#ff385d' };
 const clamp = x => Math.max(0, Math.min(1,x));
 const ease = x => 1-Math.pow(1-clamp(x),3);
@@ -14,7 +14,7 @@ export function createSummon(stage, rewards, picture, duration) {
   const atlases={'assets/items-v08.png':load('assets/items-v08.png'),'assets/status-items-v10.png':load('assets/status-items-v10.png')};
   const cards=rewards.map(r=>r.kind==='spirit' ? load(picture(r.id)) : null);
   stage.dataset.duration=String(duration);
-  const spirits=rewards.filter(r=>r.kind==='spirit'),rarity=spirits.some(r=>r.color==='red')?'red':spirits.some(r=>r.color==='purple')?'purple':spirits.some(r=>r.color==='yellow')?'yellow':'supply',tone=COLORS[rarity]||'#80f6e0';stage.dataset.rarity=rarity;
+  const spirits=rewards.filter(r=>r.kind==='spirit'||r.kind==='weapon'),rarity=spirits.some(r=>r.color==='red')?'red':spirits.some(r=>r.color==='purple')?'purple':spirits.some(r=>r.color==='yellow')?'yellow':'supply',tone=COLORS[rarity]||'#80f6e0';stage.dataset.rarity=rarity;
   const particles=Array.from({length:66},(_,i)=>({angle:i*2.39996,depth:(i*.618034)%1,speed:.12+(i%7)*.025}));
   function resize() { const rect=stage.getBoundingClientRect(); width=Math.max(1,rect.width);height=Math.max(1,rect.height); const dpr=Math.min(1.6,devicePixelRatio||1);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0); }
   const observer=new ResizeObserver(resize);observer.observe(stage);resize();
@@ -54,7 +54,7 @@ export function createSummon(stage, rewards, picture, duration) {
       const cardW=Math.min(rewards.length===1?156:100,(width-24-(cols-1)*6)/cols),cardH=cardW*1.33,gap=6,totalW=cols*cardW+(cols-1)*gap,totalH=rows*cardH+(rows-1)*12;
       let revealed=0;
       rewards.forEach((reward,i)=>{const start=revealStart+i*Math.min(185,1600/Math.max(1,rewards.length-1)),p=clamp((t-start)/480);if(p<=0)return;revealed++;const x=centerX-totalW/2+(i%cols)*(cardW+gap)+cardW/2,y=centerY-totalH/2+Math.floor(i/cols)*(cardH+12)+cardH/2;const color=COLORS[reward.color]||'#80f6e0';
-        glow(x,y,cardW*.85,color,.16*ease(p));ctx.save();ctx.translate(x,y+(1-ease(p))*35);ctx.scale(Math.max(.025,Math.sin(p*Math.PI/2)),.8+.2*ease(p));ctx.globalAlpha=ease(p);ctx.fillStyle='#102a3e';ctx.fillRect(-cardW/2,-cardH/2,cardW,cardH);if(imageReady(cards[i])){const img=cards[i],s=Math.max(cardW/img.naturalWidth,cardH/img.naturalHeight);ctx.save();ctx.beginPath();ctx.rect(-cardW/2,-cardH/2,cardW,cardH);ctx.clip();ctx.drawImage(img,-img.naturalWidth*s/2,-img.naturalHeight*s/2,img.naturalWidth*s,img.naturalHeight*s);ctx.restore();}else{const art=itemArtwork(reward.id),atlas=art&&atlases[art.src];if(art&&imageReady(atlas)){const sw=atlas.naturalWidth/art.cols,sh=atlas.naturalHeight/art.rows;ctx.drawImage(atlas,art.col*sw,art.row*sh,sw,sh,-cardW*.46,-cardH*.38,cardW*.92,cardW*.92);stage.dataset.itemArt='ready';}ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`${Math.max(8,cardW*.14)}px sans-serif`;ctx.fillText(ITEMS[reward.id]?.name||(reward.id==='ore'?'洞穴礦石':reward.id),0,cardH*.3,cardW*.94);}ctx.strokeStyle=color;ctx.lineWidth=2;ctx.strokeRect(-cardW/2,-cardH/2,cardW,cardH);ctx.restore();
+        glow(x,y,cardW*.85,color,.16*ease(p));ctx.save();ctx.translate(x,y+(1-ease(p))*35);ctx.scale(Math.max(.025,Math.sin(p*Math.PI/2)),.8+.2*ease(p));ctx.globalAlpha=ease(p);ctx.fillStyle='#102a3e';ctx.fillRect(-cardW/2,-cardH/2,cardW,cardH);if(imageReady(cards[i])){const img=cards[i],s=Math.max(cardW/img.naturalWidth,cardH/img.naturalHeight);ctx.save();ctx.beginPath();ctx.rect(-cardW/2,-cardH/2,cardW,cardH);ctx.clip();ctx.drawImage(img,-img.naturalWidth*s/2,-img.naturalHeight*s/2,img.naturalWidth*s,img.naturalHeight*s);ctx.restore();}else{const art=itemArtwork(reward.id),atlas=art&&atlases[art.src];if(art&&imageReady(atlas)){const sw=atlas.naturalWidth/art.cols,sh=atlas.naturalHeight/art.rows;ctx.drawImage(atlas,art.col*sw,art.row*sh,sw,sh,-cardW*.46,-cardH*.38,cardW*.92,cardW*.92);stage.dataset.itemArt='ready';}ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`${Math.max(8,cardW*.14)}px sans-serif`;ctx.fillText(WEAPONS[reward.id]?.name||ITEMS[reward.id]?.name||(reward.id==='ore'?'洞穴礦石':reward.id),0,cardH*.3,cardW*.94);}ctx.strokeStyle=color;ctx.lineWidth=2;ctx.strokeRect(-cardW/2,-cardH/2,cardW,cardH);ctx.restore();
       });stage.dataset.revealed=String(revealed);
     }
     stage.dataset.frame=String(++frame);stage.dataset.elapsed=String(Math.round(realTime));progress.style.transform=`scaleX(${clamp(realTime/duration)})`;
