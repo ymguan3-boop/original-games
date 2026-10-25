@@ -2,7 +2,7 @@ import {heroWeaponProfile,heroWeaponCombo,nearestEnemy,blinkPosition,bossWeaponD
 import {trainingOf,familyGrowth} from './family-progress.js?v=20261025-v19';
 import {waveScales,spawnInterval} from './difficulty.js?v=20261025-v22';
 import {canCaptureEnemy} from './capture-rules.js?v=20261025-v19';
-import {costumeFor,costumeAttack,costumeReach,costumeBall} from './costume-effects.js?v=20261025-v16';
+import {costumeFor,costumeAttack,costumeReach,costumeBall} from './costume-effects.js?v=20261025-v24';
 import {rememberJourney} from './journey.js';
 import {statusPassives} from './status-passives.js?v=20261025-v22';
 import {ownPassives} from './growth.js?v=20261025-v19';
@@ -22,13 +22,13 @@ export const UPGRADES=[{key:'pickup',value:.25,name:'靈光牽引',description:'
 export function createRun(state,data){const heroHp=data.config.heroHp||200;return {id:uid(),status:'active',time:0,depth:1,segmentStart:0,kills:0,captures:0,earned:0,hero:{x:0,z:0,heading:0,moving:false,hp:heroHp,maxHp:heroHp,level:1,xp:0,attackCd:0,ultimateCd:0,rollCd:0,invincible:0},pets:state.team.slice(0,3).map(id=>makePet(id,data.spirits,trainingOf(state,id),familyGrowth(state,id).level)),activePet:0,switchCd:0,buffs:{},buffTimers:{},tempWeapons:[],fusions:{},weaponId:state.equipped?.[0]||'guns-starter',enemies:[],projectiles:[],pickups:[],targetId:null,spawnAt:1,specialMinute:0,milestone:0,bossWave:0,nextId:1,pendingUpgrade:0,upgradeChoices:[],pendingMaterials:0,petXpDouble:false};}
 export class CaveWorld{
  constructor(store,data,events={}){this.store=store;this.data=data;this.events=events;this.random=Math.random;this.setCostume(events.costume??this.run?.costumeId);}
- setCostume(value){this.costume=costumeFor(value);const r=this.run;if(!r)return;const changed=r.costumeId!==this.costume.id;r.costumeId=this.costume.id;if(changed||!Number.isFinite(r.costumeAbsorbAt))r.costumeAbsorbAt=r.time+10;if(changed||!Number.isFinite(r.costumeWave))r.costumeWave=Math.floor((r.time-r.segmentStart)/60);if(this.costume.id!=='adventure')for(const p of r.pickups)delete p.costumePull;}
+ setCostume(value){this.costume=costumeFor(value);const r=this.run;if(!r)return;const changed=r.costumeId!==this.costume.id;r.costumeId=this.costume.id;if(changed||!Number.isFinite(r.costumeAbsorbAt))r.costumeAbsorbAt=r.time+(this.costume.collectInterval||10);if(changed||!Number.isFinite(r.costumeWave))r.costumeWave=Math.floor((r.time-r.segmentStart)/60);if(this.costume.id!=='adventure')for(const p of r.pickups)delete p.costumePull;}
  heroRange(range){return range*costumeReach(this.costume);}
  attackRange(base,source=this.run.hero){const hero=source===this.run.hero;return (hero?this.heroRange(base):base)*(1+Math.min(.4,(this.run.buffs.range||0)+(this.passives.range||0)+(hero?0:this.own(source).range||0)));}
  refreshAttackRange(){const r=this.run;if(r)r.hero.attackRange=this.attackRange(heroWeaponProfile(this.weapon()).range||4.2);return r?.hero.attackRange;}
 
- tickCostume(dt){const r=this.run,wave=Math.floor((r.time-r.segmentStart)/60);if(wave>r.costumeWave){r.costumeWave=wave;if(this.costume.id==='mist'){let healed=0;for(const pet of r.pets)healed+=this.heal(pet,pet.maxHp*.2);if(healed)this.emit('message','小飯團同行：存活幻靈恢復20%生命');}}
-  if(this.costume.id!=='adventure')return;if(r.time>=r.costumeAbsorbAt){r.costumeAbsorbAt=r.time+10;for(const p of r.pickups)p.costumePull=true;if(r.pickups.length)r.costumePulseAt=r.time;}
+ tickCostume(dt){const r=this.run,wave=Math.floor((r.time-r.segmentStart)/60);if(wave>r.costumeWave){r.costumeWave=wave;if(this.costume.id==='mist'){let healed=0;for(const pet of r.pets)healed+=this.heal(pet,pet.maxHp*(this.costume.waveHeal||0));if(healed)this.emit('message','小飯團同行：存活幻靈恢復20%生命');}}
+  if(this.costume.id!=='adventure')return;if(r.time>=r.costumeAbsorbAt){r.costumeAbsorbAt=r.time+(this.costume.collectInterval||10);for(const p of r.pickups)p.costumePull=true;if(r.pickups.length)r.costumePulseAt=r.time;}
   for(const p of r.pickups){if(!p.costumePull)continue;const d=distance(p,r.hero);if(d<.01)continue;const step=Math.min(d,(12+d*3)*dt);p.x+=(r.hero.x-p.x)/d*step;p.z+=(r.hero.z-p.z)/d*step;}
  }
  get run(){return this.store?.state?.run;}
