@@ -29,7 +29,9 @@ export function createProjectileView(T, scene, { actorPoint, targetPoint, metric
   }
   function draw(p, from, to, fade = 1) {
     const color = p.color ?? colors[p.element] ?? 0x87e8ff;
-    if (p.fx === 'beam' || p.piercing) {
+    if(p.sourceActor==='hero'&&p.piercing){
+      start.set(from.x,from.y,from.z);end.set(to.x,to.y,to.z);dir.copy(end).sub(start);const len=dir.length();if(len<.001)return;dir.normalize();const spacing=p.context?.strong?.13:.35,n=Math.min(72,Math.max(1,Math.ceil(len/spacing))),radius=(p.context?.strong?.075:.055)*fade;for(let j=0;j<=n;j++){const d=Math.min(len,j*spacing);put(2,start.x+dir.x*d,start.y+dir.y*d,start.z+dir.z*d,radius,0,0x6fe7ff);}metrics.gunTrail={mode:'dots',dense:!!p.context?.strong,spacing,origin:sourceOf(p),dots:n+1};metrics.gunTrails||={};metrics.gunTrails[p.context?.strong?'ultimate':'normal']={...metrics.gunTrail};
+    } else if (p.fx === 'beam' || p.piercing) {
       start.set(from.x, from.y, from.z); end.set(to.x, to.y, to.z); dir.copy(end).sub(start);
       const length = dir.length(); if (length < .01) return; dir.multiplyScalar(1 / length); start.add(end).multiplyScalar(.5);
       const r = (p.context?.strong ? .14 : .07) * fade;

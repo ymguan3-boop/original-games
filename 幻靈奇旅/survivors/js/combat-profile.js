@@ -27,7 +27,7 @@ export function attackProfile(spec,config={},strong=false){
  const range=type==='melee'?Math.min(3.2,configured):['area','cone'].includes(type)?Math.max(5,configured):type==='self'?10:Math.max(strong?11:9,configured);
  return {type,range,ranged:!['melee','self'].includes(type)};
 }
-export const HERO_ATTACKS={sword:{duration:.76,release:.32,type:'cone',range:4.2},blades:{duration:.54,release:.2,type:'area',range:2.4},guns:{duration:.44,release:.14,type:'ranged',range:12.6},knife:{duration:.6,release:.26,type:'melee',range:3.2}};
+export const HERO_ATTACKS={sword:{duration:.76,release:.32,type:'cone',range:2.94},blades:{duration:.54,release:.2,type:'area',range:1.68},guns:{duration:.44,release:.14,type:'ranged',range:7.56},knife:{duration:.6,release:.26,type:'melee',range:2.24}};
 export const ROLL_DURATION=.46;
 
 export function skillDescription(spec,config={},strong=false){const p=attackProfile(spec,config,strong);const label={melee:'單體 · 近身攻擊',ranged:'單體 · 遠程射擊',tracking:'追蹤攻擊',cone:'範圍 · 前方扇形',area:'範圍 · 周身攻擊',blast:'遠程 · 大範圍爆發',global:'全場地 · 最後一擊地震',self:'自身增益'};return (p.armor?'霸體 10 秒：攻擊與防禦 +50%，免疫控制':label[p.type])+(p.piercing?' · 貫穿':'')+(p.chain?(p.chainOnHit?' · 命中後連鎖下一目標':' · 擊敗後連鎖下一目標'):'')+(p.sustain?' · 持續 '+p.sustain+' 秒':'')+(p.jump?' · 原地高跳後落地震擊':'');}

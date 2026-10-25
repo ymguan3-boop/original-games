@@ -156,3 +156,5 @@ test('remote blasts center on the enemy, while 大熊 uses a molten sword and a 
   fx.syncActors([{ ...actor, hp: 0, armorUntil: 20 }], 13); assert.equal(metrics.armorViews, 0);
   fx.dispose(); assert.equal(scene.children.length, 0);
 });
+
+test('hero gun trails are dots only and the ultimate uses denser spacing from recorded muzzle origin',()=>{const scene=new T.Scene(),metrics={},v=createProjectileView(T,scene,{actorPoint:()=>({x:999,y:999,z:999}),targetPoint:()=>null,metrics});const p={id:'dot',sourceActor:'hero',piercing:true,x:3,z:0,vx:1,vz:0,travelled:3,origin:{x:0,y:1.3,z:0},context:{strong:false}};v.update([p],.02);assert.equal(metrics.gunTrails.normal.spacing,.35);assert.equal(metrics.gunTrails.normal.origin.y,1.3);const beams=[];scene.traverse(o=>{if(o.isInstancedMesh&&o.geometry.type==='CylinderGeometry')beams.push(o.count);});assert.ok(beams.every(n=>n===0));p.context.strong=true;v.update([p],.02);assert.equal(metrics.gunTrails.ultimate.spacing,.13);assert.ok(metrics.gunTrails.ultimate.dots>metrics.gunTrails.normal.dots);v.dispose();});

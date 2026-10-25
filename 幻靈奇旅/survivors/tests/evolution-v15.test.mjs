@@ -11,7 +11,7 @@ test('dex sorts full color groups and uses actual linear/special evolution edges
  for(let i=1;i<cards.length;i++)assert.ok(rank[cards[i-1].cardFrame||'yellow']<=rank[cards[i].cardFrame||'yellow']);
  assert.equal(cards.filter(s=>['caterpie','weedle'].includes(s.id)).length,0);
  assert.deepEqual(familyPaths('ivysaur',data),[['bulbasaur','ivysaur','venusaur']]);
- assert.deepEqual(familyPaths('grovyle',data),[['jigglypuff','treecko','palkia'],['jigglypuff','grovyle','palkia'],['jigglypuff','sceptile','palkia']]);
+ assert.deepEqual(familyPaths('grovyle',data),[['jigglypuff','treecko'],['jigglypuff','grovyle'],['jigglypuff','sceptile','palkia']]);
  assert.match(evolutionDetail('grovyle',data),/Lv\.16/);
  assert.match(evolutionSummary('venusaur',data),/最終型態/);
  assert.doesNotMatch(evolutionSummary('groudon',data),/Lv\.8/);
