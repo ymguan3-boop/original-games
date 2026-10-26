@@ -30,13 +30,13 @@ export function ultimateEffectDescription(s){const u=petUltimateRule(s);if(!u)re
 }
 // Called once at the authored release, never when merely queued or warming up.
 export function applyPetUltimate(w,p){const r=w.run,h=r.hero,u=petUltimateRule(w.data.spirits[p.speciesId]);if(!u)return false;
- if(u.heal)w.heal(h,h.maxHp*u.heal);if(u.selfHeal)w.heal(p,p.maxHp*u.selfHeal);
+ const instantHeal=u.heal?w.heal(h,h.maxHp*u.heal,true):0;if(u.selfHeal)w.heal(p,p.maxHp*u.selfHeal);
  if(u.regen){const old=h.skillRegen;h.skillRegen={ratio:Math.max(u.regen,old?.until>r.time?old.ratio:0),until:r.time+10,next:old?.until>r.time?old.next:r.time+1};}
  if(u.reduction)h.damageShield={reduction:Math.max(u.reduction,h.damageShield?.until>r.time?h.damageShield.reduction:0),until:r.time+10};
  if(u.block)h.shieldCharges=1;
  if(u.crit){h.skillCritBonus=u.crit;h.skillCritUntil=r.time+10;}
  if(u.fieldStatus)for(const e of r.enemies)if(e.hp>0&&!e.rewarded&&!e.capturePending)w.status(e,u.fieldStatus,{duration:u.statusDuration||u.duration,attack:w.petAttack(p)*.3,element:u.fieldStatus==='burn'?'焰':u.fieldStatus==='poison'?'森':'潮',from:p});
- w.emit('supportCast',{sourceActor:'pet:'+r.pets.indexOf(p),speciesId:p.speciesId,x:p.x,z:p.z,hero:{x:h.x,z:h.z},support:!!(u.heal||u.regen||u.reduction||u.block||u.crit),statusWave:u.fieldStatus,shield:!!(u.block||u.reduction),element:u.fieldStatus==='burn'?'焰':'森',strong:true});
+ w.emit('supportCast',{sourceActor:'pet:'+r.pets.indexOf(p),speciesId:p.speciesId,x:p.x,z:p.z,hero:{x:h.x,z:h.z},instantHeal,support:!!(u.heal||u.regen||u.reduction||u.block||u.crit),statusWave:u.fieldStatus,shield:!!(u.block||u.reduction),element:u.fieldStatus==='burn'?'焰':'森',strong:true});
  return !!u.replace;
 }
 export function tickHeroSupport(w){const h=w.run.hero,t=w.run.time,a=h.skillRegen;if(a){while(a.next<=Math.min(t,a.until)){w.heal(h,h.maxHp*a.ratio);a.next+=1;}if(t>=a.until)delete h.skillRegen;}if(h.damageShield?.until<=t)delete h.damageShield;if(h.skillCritUntil<=t){delete h.skillCritUntil;delete h.skillCritBonus;}}

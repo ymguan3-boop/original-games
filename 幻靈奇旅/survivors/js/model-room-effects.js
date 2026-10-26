@@ -1,5 +1,7 @@
 // Reuse the model room's authored SpiritVfx scripts; no alternate cave artwork.
-export function modelRoomPlan(actor,plan){
+export function modelRoomPlan(actor,plan,strong=false){
+ if(actor.id==='mewtwo'||/water-dragon-king\.glb$/.test(actor.path||'')){const mode=strong?'Ultimate':'Attack',duration=actor.actions?.[mode]?.getClip?.().duration||(strong?5.8:1.9);return{...plan,mode,duration,playbackRate:1,authored:true,releaseFraction:(strong?2.9:.75)/duration};}
+ if(actor.id==='pikachu'||actor.path==='outouman://pikachu')return{...plan,mode:strong?'Beam':'BeamPose',duration:2,playbackRate:1,authored:true,releaseFraction:1.1/2};
  const clip=actor.actions?.[plan.mode]?.getClip?.();
  return {...plan,duration:plan.procedural?(plan.duration||.55):(clip?.duration||plan.nativeDuration||plan.duration||.65),playbackRate:1};
 }

@@ -1,4 +1,4 @@
-import {heroSupportStates} from './pet-ultimate-rules.js?v=20261026-v25';
+import {heroSupportStates} from './pet-ultimate-rules.js?v=20261026-v27';
 import {STATUS,activeStatuses} from './combat-status.js?v=20261025-v22';
 export function createFeedback(scene){const host=document.createElement('div');host.id='combatFeedback';host.setAttribute('aria-hidden','true');document.body.append(host);const entries=[],badges=new Map();
  function clear(){entries.splice(0).forEach(e=>e.el.remove());badges.forEach(e=>e.remove());badges.clear();}

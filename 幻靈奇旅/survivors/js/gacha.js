@@ -1,4 +1,4 @@
-import {addInventory,WEAPONS} from './inventory.js?v=20261026-v25';
+import {addInventory,WEAPONS} from './inventory.js?v=20261026-v27';
 export const DRAW_COST=100;
 export const RATES={yellow:.12,purple:.06,red:.02,weapon:.1,item:.2,material:.2,skill:.15,ability:.15};
 let cumulative=0;const BANDS=Object.entries(RATES).map(([kind,rate])=>[kind,cumulative=Math.round((cumulative+rate)*1e12)/1e12]);

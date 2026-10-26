@@ -15,6 +15,7 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
   const armorViews = new Map();
   const geometries = {
     sphere: new T.SphereGeometry(1, 24, 16),
+    box:new T.BoxGeometry(1,1,1),
     beam: new T.CylinderGeometry(1, 1, 1, 24, 1),
     lance: new T.ConeGeometry(1, 1, 24, 1),
     ring: new T.TorusGeometry(1, .035, 8, 80),
@@ -39,21 +40,21 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
     const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(positions, 3));
     g.setAttribute('normal', new T.Float32BufferAttribute(normals, 3)); g.setIndex(indices); g.computeBoundingSphere(); return g;
   }
-  function material(color, glow = false) {
-    const key = color + ':' + Number(glow);
+  function material(color, glow = false, unlit = false) {
+    const key = color + ':' + Number(glow)+':'+Number(unlit);
     if (!materials.has(key)) {
-      const m = glow ? new T.MeshBasicMaterial({ color, transparent: true, opacity: .19, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide })
+      const m = unlit ? new T.MeshBasicMaterial({color,transparent:true,opacity:.88,depthWrite:false,toneMapped:false,fog:false}):glow ? new T.MeshBasicMaterial({ color, transparent: true, opacity: .19, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide })
         : new T.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: .52, metalness: .88, roughness: .19, side: T.DoubleSide });
       materials.set(key, m);
     }
     return materials.get(key);
   }
-  function mesh(type, color, glow = false) {
-    const key = type + ':' + color + ':' + Number(glow), pool = free.get(key);
+  function mesh(type, color, glow = false, unlit = false) {
+    const key = type + ':' + color + ':' + Number(glow)+':'+Number(unlit), pool = free.get(key);
     let m = pool?.pop();
     if (!m) {
       if (allocated >= MESH_LIMIT) return null;
-      m = new T.Mesh(geometries[type], material(color, glow)); m.userData.combatPoolKey = key; allocated++;
+      m = new T.Mesh(geometries[type], material(color, glow,unlit)); m.userData.combatPoolKey = key; allocated++;
     }
     m.visible = true; m.position.set(0, 0, 0); m.rotation.set(0, 0, 0); m.scale.set(1, 1, 1); return m;
   }
@@ -70,7 +71,7 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
   }
   function part(e, type, color, config = {}) {
     if (!e) return null;
-    const m = mesh(type, color, !!config.glow); if (!m) return null;
+    const m = mesh(type, color, !!config.glow,!!config.unlit); if (!m) return null;
     e.group.add(m); const p = { mesh: m, ...config }; e.parts.push(p); return p;
   }
   function finite(n, fallback = 0) { return Number.isFinite(n) ? n : fallback; }
@@ -143,7 +144,21 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
     }
     metrics.lastHeroUltimateFx = { kind, global: isGlobal, final, renderer: 'three-metal' };
   }
+  function nativeSpirit(ev={}){
+    const dragon=ev.speciesId==='mewtwo',strong=!!ev.strong,from=pointOf(ev),to=targetOf(ev),e=create('native-spirit',ev,dragon?(strong?2.3:.65):.8,from);if(!e)return;
+    const end={x:to.x-from.x,y:to.y-from.y,z:to.z-from.z},colors=dragon?[0xc8f8ff,0x38baff,0x77e9ff]:strong?[0xff3b46,0xffa236,0xfff35a,0x55ff8a,0x44dfff,0x527cff,0xc879ff]:[0xffffff];
+    const dx=end.x,dz=end.z,len=Math.hypot(dx,dz)||1,side={x:dz/len,z:-dx/len};
+    if(dragon&&!strong){part(e,'sphere',0x66e5ff,{mode:'water-ball',end});ring(e,0xc5f8ff,1,0,.05,true);}
+    else colors.forEach((color,i)=>{const spread=dragon?(i-1)*.09:(i-3)*.17,offset={x:side.x*spread,y:0,z:side.z*spread};beam(e,color,offset,{x:end.x+offset.x,y:end.y,z:end.z+offset.z},dragon?(i===0?.29:.4):.075);});
+    metrics.lastNativeSpiritFx={speciesId:ev.speciesId,strong,from,to,colors,renderer:'three-metal',authored:true};
+  }
+  function healBurst(ev){const e=create('heal-burst',{...ev,from:undefined,actor:undefined,sourceActor:undefined},1.4,ev.hero);if(!e)return;
+    ring(e,0x7effc1,2.4,0,.12,false,true);ring(e,0xebfff7,1.9,.12,.32,true);
+    for(let i=0;i<3;i++)for(const horizontal of [false,true])part(e,'box',i?0xc9ffea:0x48ffad,{mode:'heal-cross',unlit:true,cross:i,horizontal,delay:i*.12});
+    beam(e,0x7fffc3,{x:0,y:.15,z:0},{x:0,y:3.1,z:0},.38,0,true);metrics.healBursts=(metrics.healBursts||0)+1;metrics.lastHealBurst={amount:ev.instantHeal,hero:ev.hero,follow:true,duration:1.4};
+  }
   function spellRelease(ev = {}) {
+    if(ev.instantHeal>0){healBurst(ev);if(!ev.statusWave&&!ev.shield)return;}
     if(ev.kind==='support'){const color=({burn:0xff6838,poison:0x94f85f,slow:0x72baff,paralysis:0xffdf55,freeze:0xa4efff})[ev.statusWave]||(ev.shield?0x8edbff:ev.shieldBreak?0xffd274:0x83ffc5),point=ev.support||ev.shieldBreak?ev.hero:ev;const e=create('support',ev,.9,point||ev);if(!e)return;ring(e,color,ev.statusWave?68:2.2,0,.15,false,true);ring(e,color,ev.statusWave?58:1.65,.06,.35);if(ev.support||ev.shieldBreak)star(e,ev.shieldBreak?0xffd274:color,1.2,.04,1);metrics.lastSupportFx={status:ev.statusWave,shield:ev.shield,shieldBreak:!!ev.shieldBreak,renderer:'three-metal'};return;}
     const color = colorOf(ev), strong = !!(ev.strong || ev.ultimate), id = ev.speciesId, global = !!ev.global || (id === 'infernape' && strong);
     const waterDragon = id === 'mewtwo', blast = ev.kind === 'blast', origin = blast ? targetOf(ev, pointOf(ev)) : pointOf(ev);
@@ -186,7 +201,7 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
   }
   function syncActors(states = [], worldTime = 0) {
     if (disposed) return;
-    const active = new Set();
+    const active = new Set();for(const e of records)if(e.kind==='heal-burst'&&states[0]?.hp>0)e.group.position.set(states[0].x,0,states[0].z);
     for (const state of states) {
       if (!(state?.armorUntil > worldTime) || !(state.hp > 0)) continue;
       active.add(state); let e = armorViews.get(state);
@@ -215,7 +230,9 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
       const m = p.mesh, delay = p.delay || 0, local = (age - delay) / Math.max(.08, e.duration - delay);
       m.visible = local >= 0 && local < 1; if (!m.visible) continue;
       const q = Math.min(1, Math.max(0, local)), f = Math.max(.001, 1 - q * q);
-      if (p.mode === 'ring') {
+      if(p.mode==='heal-cross'){const angle=p.cross*2.1;const radius=p.cross?.55:0;m.position.set(Math.cos(angle)*radius,1.5+q*.9+p.cross*.22,Math.sin(angle)*radius+.25);const size=(p.cross?1:1.8)*(.85+.15*Math.sin(q*Math.PI))*f;m.scale.set((p.horizontal?.9:.17)*size,(p.horizontal?.17:.9)*size,.16*size);}
+      else if(p.mode==='water-ball'){const u=Math.min(1,q*1.8);m.position.set(p.end.x*u,p.end.y*u,p.end.z*u);m.scale.setScalar(.55*Math.sin(q*Math.PI));}
+      else if (p.mode === 'ring') {
         const radius = p.radius * (.12 + .88 * (1 - (1 - q) ** 3)); m.position.y = p.height + Math.sin(q * Math.PI) * .08;
         m.rotation.x = -Math.PI / 2; m.scale.set(radius, radius, Math.max(.12, f));
       } else if (p.mode === 'slash') {
@@ -259,5 +276,5 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
   }
   function clear() { for (const e of records) release(e); records.length = 0; armorViews.clear(); metrics.armorViews = 0; metrics.combatVfx = { renderer: 'three-metal', time: clock, effects: 0, meshes: 0, allocated, limit: MESH_LIMIT, images: 0 }; }
   function dispose() { if (disposed) return; clear(); disposed = true; scene.remove(root); for (const g of Object.values(geometries)) g.dispose(); for (const m of materials.values()) m.dispose(); free.clear(); materials.clear(); }
-  return { heroNormal, heroBlink, heroStart, heroStrike, spellRelease, impact, syncActors, update, clear, dispose };
+  return { heroNormal, heroBlink, heroStart, heroStrike, spellRelease, nativeSpirit, impact, syncActors, update, clear, dispose };
 }

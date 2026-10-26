@@ -21,7 +21,7 @@ export const BOSS_WEAPONS=['blades-blinkfire','knife-flamewave','guns-critical',
 export const WEAPONS={
  'guns-critical':{name:'必暴雙槍',type:'guns',damage:17,interval:.45,range:12,price:0,element:'光',bossOnly:true,forceCrit:true,onHit:{type:'knockback',chance:.4}},
  'sword-leek':{name:'大蔥',type:'sword',damage:28,interval:.9,range:3.4,price:0,element:'森',bossOnly:true,attackSpeed:.5,appearance:'leek',onHit:{type:'paralysis',chance:.5,duration:.9}},
- 'blades-blinkfire':{name:'瞬燃雙刀',type:'blades',damage:18,interval:.3,range:2.7,price:0,element:'焰',bossOnly:true,rangeBonus:.3,onHit:{type:'burn',chance:1,power:2}},
+ 'blades-blinkfire':{name:'瞬燃雙刀',type:'blades',damage:18,interval:.3,range:2.7,price:0,element:'焰',bossOnly:true,rangeBonus:.6,onHit:{type:'burn',chance:1,power:2}},
  'knife-flamewave':{name:'幻燃單刃',type:'knife',damage:48,interval:.55,range:12,price:0,element:'焰',bossOnly:true,swordWave:true,onHit:{type:'burn',chance:1,power:2}},
  'blades-venom':{name:'蝕毒雙刃',type:'blades',damage:13,interval:.3,range:2.7,price:1000,element:'森',shopOnly:true,onHit:{type:'poison',chance:.35}},
  'guns-paralysis':{name:'霹靂雙槍',type:'guns',damage:16,interval:.45,range:12,price:1000,element:'雷',shopOnly:true,onHit:{type:'paralysis',chance:.25}},
