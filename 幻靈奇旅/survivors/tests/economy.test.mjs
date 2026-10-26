@@ -47,11 +47,11 @@ test('ten million seeded non-pity rolls match 12/6/2/10/20/20/15/15',()=> {
   for(const key of Object.keys(rates)) assert.ok(Math.abs(counts[key]/n-rates[key])<.0005,`${key}: ${counts[key]/n}`);
   console.log('10M seed 0x23c0ffee:',JSON.stringify(counts));
 });
-test('gacha consumables only enter inventory; duplicates become materials',()=> {
+test('gacha consumables only enter inventory; duplicates return points',()=> {
   const {store}=fixture();store.transact('seed',s=>{s.points=300;s.owned=['e'];});
   draw(store,pool,1,()=>.99,'ability');assert.equal(store.state.inventory['vacuum-orb'],1);assert.equal(store.state.run,null);
-  draw(store,pool,1,()=>.19,'red');assert.equal(store.state.materials['bond:e'],1);assert.equal(store.state.owned.length,1);
-  assert.throws(()=>draw(store,pool,10),/不足/);assert.equal(store.state.points,100);
+  draw(store,pool,1,()=>.19,'red');assert.equal(store.state.materials['bond:e'],undefined);assert.equal(store.state.owned.length,1);
+  assert.throws(()=>draw(store,pool,10),/不足/);assert.equal(store.state.points,600);
 });
 test('item consumption and checkpoint are atomic, idempotent, capped and survive refresh',()=> {
   const {store,storage}=fixture();store.transact('seed',s=>{s.inventory['buff-range']=6;});

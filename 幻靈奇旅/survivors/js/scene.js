@@ -1,16 +1,16 @@
 import {createLeekSword} from './leek-weapon.js?v=20261025-v23';
 import {createViewLimits} from './view-limits.js?v=20261025-v21';
-import {modelRoomPlan,originalPresentation,createModelRoomEffect} from './model-room-effects.js?v=20261026-v27';
-import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261026-v27';
+import {modelRoomPlan,originalPresentation,createModelRoomEffect} from './model-room-effects.js?v=20261026-v28';
+import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261026-v28';
 import {flightMotion} from './avian-motion-v17.js?v=20261025-v18';
 import {createCostumeView} from './costume-view.js?v=20261025-v24';
 import {createLootView} from './loot-view.js?v=20261025-v23';
-import {createStatusView} from './status-view.js?v=20261026-v27';
+import {createStatusView} from './status-view.js?v=20261026-v28';
 import {immobilized} from './combat-status.js?v=20261025-v22';
-import {modelHeight} from './actor-layout.js?v=20261026-v27';
+import {modelHeight} from './actor-layout.js?v=20261026-v28';
 import {createProjectileView} from './projectile-view.js?v=20261025-v22';
 import {playEvolutionSequence} from './evolution-view.js';
-import {baseAttackProfile,attackProfile,HERO_ATTACKS,ROLL_DURATION} from './combat-profile.js?v=20261026-v27';
+import {baseAttackProfile,attackProfile,HERO_ATTACKS,ROLL_DURATION} from './combat-profile.js?v=20261026-v28';
 import {TOWER_ULTIMATES} from './tower-ultimates.js';
 /* Rendering only. Reuses the town's assets and animation contracts; owns no save data. */
 const BASE = new URL('../../', import.meta.url);

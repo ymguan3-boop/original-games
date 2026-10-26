@@ -1,4 +1,4 @@
-import {petUltimateRule,ultimateEffectDescription} from './pet-ultimate-rules.js?v=20261026-v27';
+import {petUltimateRule,ultimateEffectDescription} from './pet-ultimate-rules.js?v=20261026-v28';
 // Match the original model-room's presentationKind contract, without touching its files.
 export function baseAttackProfile(spec,config={},strong=false){
  const id=spec?.id;

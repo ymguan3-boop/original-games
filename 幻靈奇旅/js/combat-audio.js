@@ -9,12 +9,12 @@ function createCombatAudio({assetBase=defaultAssetBase,outputGain=.42,onPlayed=n
 } = {}) {
   const mixGain=Number.isFinite(outputGain)?Math.max(0,Math.min(1.5,outputGain)):.42;
   let context = null, master = null, compressor = null, disposed = false, resume = null;
-  const voices = new Set(), recent = [], last = new Map(),buffers=new Map();let samplePromise=null,currentPriority=false;
+  const voices = new Set(), recent = [], last = new Map(),buffers=new Map();let samplePromise=null,currentPriority=false,gunBuffer=null;
   const metrics = {
     unlocked: false, supported: true, played: 0, skippedLocked: 0,
     skippedMuted: 0, throttled: 0, errors: 0, activeVoices: 0,
     peakVoices: 0, lastKind: '', lastPhase: '', volume: 55, muted: false, stops: 0, outputGain:mixGain,masterGain:0,
-    samplesReady:0,sampleErrors:0,weaponEvents:[],samplePlays:0,lastVariant:'',byPhase: { start: 0, release: 0, strike: 0, impact: 0 },
+    gunBursts:0,gunShots:0,gunSchedules:[],samplesReady:0,sampleErrors:0,weaponEvents:[],samplePlays:0,lastVariant:'',byPhase: { start: 0, release: 0, strike: 0, impact: 0 },
     byKind: { sword: 0, knife: 0, blades: 0, guns: 0, pet: 0 },
   };
 
@@ -88,8 +88,25 @@ function createCombatAudio({assetBase=defaultAssetBase,outputGain=.42,onPlayed=n
     source.stop(start + duration + 0.025);
   }
 
-  function loadSamples(){if(samplePromise)return samplePromise;if(!assetBase||!globalThis.fetch||!context?.decodeAudioData)return Promise.resolve();samplePromise=Promise.allSettled(['sword','knife','blades','guns'].flatMap(k=>['normal','combo','final'].map(v=>k+'-'+v)).map(async key=>{try{const response=await fetch(new URL(key+'.ogg',assetBase));if(!response.ok)throw Error('audio '+response.status);const data=await response.arrayBuffer(),buffer=await context.decodeAudioData(data);if(!disposed){buffers.set(key,buffer);metrics.samplesReady=buffers.size;}}catch{metrics.sampleErrors++;}}));return samplePromise;}
+  function loadSamples(){if(samplePromise)return samplePromise;if(!assetBase||!globalThis.fetch||!context?.decodeAudioData)return Promise.resolve();samplePromise=Promise.allSettled(['sword','knife','blades'].flatMap(k=>['normal','combo','final'].map(v=>k+'-'+v)).map(async key=>{try{const response=await fetch(new URL(key+'.ogg',assetBase));if(!response.ok)throw Error('audio '+response.status);const data=await response.arrayBuffer(),buffer=await context.decodeAudioData(data);if(!disposed){buffers.set(key,buffer);metrics.samplesReady=buffers.size;}}catch{metrics.sampleErrors++;}}));return samplePromise;}
   function sample(key,rate=1,gain=1){const buffer=buffers.get(key);if(!buffer||voices.size>=48)return false;const source=context.createBufferSource(),envelope=context.createGain();source.buffer=buffer;source.playbackRate.value=rate;envelope.gain.value=gain;source.connect(envelope);envelope.connect(master);const voice={source,envelope,priority:currentPriority};voices.add(voice);metrics.activeVoices=voices.size;metrics.peakVoices=Math.max(metrics.peakVoices,voices.size);source.onended=()=>{voices.delete(voice);source.disconnect();envelope.disconnect();metrics.activeVoices=voices.size;};source.start(context.currentTime+.003);metrics.samplePlays++;return true;}
+  // One reusable short percussion buffer: a dry mechanical click plus a punchy body.
+  // Scheduling the pair on the audio clock avoids timers and long laser-like tails.
+  function gunBurst(ev) {
+    if(ev.phase==='start'){tone(380,760,0,.09,.18,'triangle');metrics.lastVariant='guns-charge';return;}
+    if(ev.phase==='impact'){tone(170,65,0,.045,.19,'triangle');return;}
+    if(!gunBuffer&&context.createBuffer){const rate=context.sampleRate||44100,length=Math.ceil(rate*.058);gunBuffer=context.createBuffer(1,length,rate);const data=gunBuffer.getChannelData(0);let seed=731;for(let i=0;i<length;i++){const t=i/rate;seed=(Math.imul(seed,1664525)+1013904223)|0;const noise=(seed>>>0)/2147483648-1;const attack=Math.min(1,t/.0012),body=Math.sin(2*Math.PI*(195*t-800*t*t));data[i]=attack*(noise*.7*Math.exp(-t*145)+body*.65*Math.exp(-t*85));}}
+    const count=ev.final?6:ev.strong?4:2,interval=ev.strong?.042:.055;
+    metrics.gunBursts++;metrics.lastVariant=ev.final?'guns-burst-final':ev.strong?'guns-burst-combo':'guns-burst-normal';
+    for(let i=0;i<count;i++){
+      if(voices.size>=48)break;
+      const delay=i*interval,start=context.currentTime+.003+delay;
+      if(gunBuffer){const source=context.createBufferSource(),envelope=context.createGain();source.buffer=gunBuffer;source.playbackRate.value=i%2?1.06:1;envelope.gain.value=ev.strong?1.15:1.05;source.connect(envelope);envelope.connect(master);const voice={source,envelope,priority:currentPriority};voices.add(voice);metrics.activeVoices=voices.size;metrics.peakVoices=Math.max(metrics.peakVoices,voices.size);source.onended=()=>{voices.delete(voice);source.disconnect();envelope.disconnect();metrics.activeVoices=voices.size;};source.start(start);}
+      else {tone(210,65,delay,.052,.45,'triangle');tone(1800,650,delay,.023,.17,'square');}
+      metrics.gunShots++;metrics.gunSchedules.push(start);if(metrics.gunSchedules.length>32)metrics.gunSchedules.shift();
+    }
+    metrics.weaponEvents.push({kind:'guns',phase:ev.phase,index:ev.index??null,final:!!ev.final,variant:metrics.lastVariant,at:context.currentTime});if(metrics.weaponEvents.length>100)metrics.weaponEvents.shift();
+  }
   function weaponCue(ev){if(ev.pet)return false;const phase=ev.phase,kind=ev.kind;if(phase==='start'){tone(kind==='sword'?100:kind==='guns'?550:900,kind==='sword'?420:1800,0,.2,ev.strong?.38:.18,'triangle');metal(kind==='sword'?260:780,.04,.24,.15);metrics.lastVariant='charge';return true;}const variant=phase==='strike'?(ev.final?'final':'combo'):phase==='impact'?'combo':'normal',key=kind+'-'+variant,rate=phase==='impact'?1.2:variant==='combo'?1+Math.min(10,ev.index||0)*.027:1,level=phase==='impact'?.22:variant==='final'?1.85:ev.strong?1.65:1.5;if(!sample(key,rate,level))return false;metrics.lastVariant=key;if(phase!=='impact'){metrics.weaponEvents.push({kind,phase,index:ev.index??null,final:!!ev.final,variant,at:context.currentTime});if(metrics.weaponEvents.length>100)metrics.weaponEvents.shift();}return true;}
   function metal(frequency, at, duration, level) {
     // Inharmonic sine partials give a polished metal ring without noisy grains.
@@ -129,7 +146,7 @@ function createCombatAudio({assetBase=defaultAssetBase,outputGain=.42,onPlayed=n
     }
   }
 
-  function synthesize(ev) {if(weaponCue(ev))return;
+  function synthesize(ev) {if(!ev.pet&&ev.kind==='guns'){gunBurst(ev);return;}if(weaponCue(ev))return;
     if (ev.pet) { petCue(ev); return; }
     const strong = !!ev.strong;
     if (ev.phase === 'impact') { impact(0, !!ev.final); return; }
@@ -149,14 +166,7 @@ function createCombatAudio({assetBase=defaultAssetBase,outputGain=.42,onPlayed=n
         tone(760 + i * 90, 230 + i * 30, delay, 0.14, 0.13, 'triangle');
         metal(640 + i * 140, delay + 0.02, 0.18, 0.11);
       }
-    } else if (ev.kind === 'guns') {
-      // Paired laser voices rather than a noisy gunshot, with a longer piercing tail.
-      for (let i = 0; i < 2; i++) {
-        const delay = i * 0.045;
-        tone(strong ? 1480 : 1260, strong ? 130 : 330, delay, strong ? 0.36 : 0.16, 0.19);
-        tone(strong ? 740 : 630, strong ? 260 : 420, delay, strong ? 0.32 : 0.13, 0.07, 'triangle');
-      }
-      if (strong) metal(1880, 0.025, 0.38, 0.08);
+
     }
   }
 
