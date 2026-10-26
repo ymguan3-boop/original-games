@@ -147,9 +147,9 @@
     "next": [
       "palkia"
     ],
-    "level": 16,
+    "level": 8,
     "branch": "linear",
-    "source": "洞穴 v0.17：小鷹戰局 Lv.16 直接進化為大朋"
+    "source": "洞穴 v0.25：戰局 Lv.8 進化；主遊戲條件不變"
   },
   "torchic": {
     "next": [
@@ -261,9 +261,9 @@
     "next": [
       "moltres"
     ],
-    "level": 10,
+    "level": 8,
     "branch": "linear",
-    "source": "洞穴 v0.17：戰局 Lv.10 進化為冒險蛙"
+    "source": "洞穴 v0.25：戰局 Lv.8 進化；主遊戲條件不變"
   },
   "zapdos": {
     "next": [],
@@ -281,17 +281,17 @@
     "next": [
       "zapdos"
     ],
-    "level": 10,
+    "level": 8,
     "branch": "linear",
-    "source": "洞穴 v0.17：戰局 Lv.10 進化為C老猴"
+    "source": "洞穴 v0.25：戰局 Lv.8 進化；主遊戲條件不變"
   },
   "entei": {
     "next": [
       "suicune"
     ],
-    "level": 10,
+    "level": 8,
     "branch": "linear",
-    "source": "洞穴 v0.17：戰局 Lv.10 進化為水仙子"
+    "source": "洞穴 v0.25：戰局 Lv.8 進化；主遊戲條件不變"
   },
   "suicune": {
     "next": [],
@@ -312,17 +312,17 @@
     "next": [
       "mewtwo"
     ],
-    "level": 15,
+    "level": 8,
     "branch": "linear",
-    "source": "洞穴 v0.17：金魚國王戰局 Lv.15 進化為水蛟龍王；不改動主遊戲飼料召喚"
+    "source": "洞穴 v0.25：戰局 Lv.8 進化；主遊戲條件不變"
   },
   "rayquaza": {
     "next": [
       "mewtwo"
     ],
-    "level": 15,
+    "level": 8,
     "branch": "linear",
-    "source": "洞穴 v0.17：金魚皇后戰局 Lv.15 進化為水蛟龍王；不改動主遊戲飼料召喚"
+    "source": "洞穴 v0.25：戰局 Lv.8 進化；主遊戲條件不變"
   },
   "dialga": {
     "next": [],
@@ -340,9 +340,9 @@
     "next": [
       "raichu"
     ],
-    "level": 10,
+    "level": 8,
     "branch": "linear",
-    "source": "洞穴 v0.17：戰局 Lv.10 進化為龐克兔"
+    "source": "洞穴 v0.25：戰局 Lv.8 進化；主遊戲條件不變"
   },
   "pikachu": {
     "next": [],

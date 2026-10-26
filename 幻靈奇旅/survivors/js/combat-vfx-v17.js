@@ -144,6 +144,7 @@ export function createCombatVfx(T, scene, { metrics = {}, onShake = () => {} } =
     metrics.lastHeroUltimateFx = { kind, global: isGlobal, final, renderer: 'three-metal' };
   }
   function spellRelease(ev = {}) {
+    if(ev.kind==='support'){const color=({burn:0xff6838,poison:0x94f85f,slow:0x72baff,paralysis:0xffdf55,freeze:0xa4efff})[ev.statusWave]||(ev.shield?0x8edbff:ev.shieldBreak?0xffd274:0x83ffc5),point=ev.support||ev.shieldBreak?ev.hero:ev;const e=create('support',ev,.9,point||ev);if(!e)return;ring(e,color,ev.statusWave?68:2.2,0,.15,false,true);ring(e,color,ev.statusWave?58:1.65,.06,.35);if(ev.support||ev.shieldBreak)star(e,ev.shieldBreak?0xffd274:color,1.2,.04,1);metrics.lastSupportFx={status:ev.statusWave,shield:ev.shield,shieldBreak:!!ev.shieldBreak,renderer:'three-metal'};return;}
     const color = colorOf(ev), strong = !!(ev.strong || ev.ultimate), id = ev.speciesId, global = !!ev.global || (id === 'infernape' && strong);
     const waterDragon = id === 'mewtwo', blast = ev.kind === 'blast', origin = blast ? targetOf(ev, pointOf(ev)) : pointOf(ev);
     const e = create('spell', ev, strong ? .85 : .44, origin); if (!e) return;

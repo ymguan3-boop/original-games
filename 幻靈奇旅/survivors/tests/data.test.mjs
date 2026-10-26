@@ -33,10 +33,10 @@ test('gacha explicitly matches card frames, excludes advanced/tower IDs and guar
 test('cave goldfish and avian branches use v17 progression and remain acyclic',()=>{
  assert.deepEqual(new Set(ev.kyogre.next),new Set(['groudon','rayquaza']));
  assert.equal(ev.kyogre.branch,'random');assert.equal(ev.kyogre.level,4);
- for(const id of ['groudon','rayquaza']){assert.deepEqual(ev[id].next,['mewtwo']);assert.equal(ev[id].level,15);}
+ for(const id of ['groudon','rayquaza']){assert.deepEqual(ev[id].next,['mewtwo']);assert.equal(ev[id].level,8);}
  assert.deepEqual(ev.mewtwo.next,[]);
  assert.deepEqual(ev.jigglypuff.next,['treecko','grovyle','sceptile']);assert.equal(ev.jigglypuff.branch,'random');assert.equal(ev.jigglypuff.level,4);
- for(const id of ['treecko','grovyle'])assert.deepEqual(ev[id].next,[]);for(const [id,level] of [['sceptile',16]]){assert.deepEqual(ev[id].next,['palkia']);assert.equal(ev[id].level,level);}
+ for(const id of ['treecko','grovyle'])assert.deepEqual(ev[id].next,[]);for(const [id,level] of [['sceptile',8]]){assert.deepEqual(ev[id].next,['palkia']);assert.equal(ev[id].level,level);}
  assert.deepEqual(ev.palkia.next,[]);
  const visit=(id,path=new Set())=>{assert.ok(!path.has(id),'進化鏈循環：'+[...path,id].join(' → '));for(const next of ev[id].next)visit(next,new Set([...path,id]));};
  for(const s of all)visit(s.id);

@@ -9,6 +9,7 @@ export function createCaveTutorial(api){
  combat:[{title:'移動、翻滾與換寵',text:'拖曳左下搖桿移動，翻滾可閃避攻擊。點其他存活寵物卡可換人，點出戰卡施放大絕；倒下者需復甦藥。',target:'#joystick',open:()=>api.close()},
  {title:'設定自動補血',text:'道具／暫停 → 背包，在治療藥水下開啟「自動使用」，可選任一角色血量低於40%等門檻。由主角使用，所有存活寵物一起回血。',target:'.auto-item-control',open:()=>api.bag()},
  {title:'自動捕捉與共用庫存',text:'長按靈核球約半秒開啟自動捕捉；鎖定目標低於40%生命時自動投球。短按手動投球，三種球與主遊戲共用庫存，捕捉後卡片翻轉換點數。',target:'#throw',open:()=>api.close()},
+ {title:'寵物大絕與進化',text:'點出戰卡片施放大絕，長按卡牌開關自動大絕；多隻會由左至右輪替出戰。點ⓘ查看招式效果；備戰幻靈達進化等級時點亮起的肖像即可進化。',target:'#party'},
  {title:'武器與掉落',text:'長按武器按鈕選擇裝備。金屬圓球代表點數；技能書與武器要走近拾取才生效。前五波魔物會普攻，第六波開始使用專屬大絕。',target:'#weapon'}]};
  function save(done=false){api.store.transact(api.store.newId('tutorial'),s=>{s.tutorial||={};s.tutorial[phase]={step:index,done};});}
  function position(){if(!phase||sheet.hidden)return;const modal=document.getElementById('panel'),host=modal?.open?modal:document.body;if(sheet.parentNode!==host)host.append(sheet,focus);const r=document.querySelector(steps[phase][index].target)?.getBoundingClientRect();focus.hidden=!r||r.width===0||r.height===0;if(!focus.hidden)Object.assign(focus.style,{left:r.x-5+'px',top:r.y-5+'px',width:r.width+10+'px',height:r.height+10+'px'});}

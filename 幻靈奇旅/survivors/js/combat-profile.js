@@ -1,5 +1,6 @@
+import {petUltimateRule,ultimateEffectDescription} from './pet-ultimate-rules.js?v=20261026-v25';
 // Match the original model-room's presentationKind contract, without touching its files.
-export function attackProfile(spec,config={},strong=false){
+export function baseAttackProfile(spec,config={},strong=false){
  const id=spec?.id;
  if(id==='swampert')return strong?{type:'self',range:0,ranged:false,armor:true}:{type:'area',range:4.8,ranged:false,lavaSword:true};
  if(strong){
@@ -27,7 +28,8 @@ export function attackProfile(spec,config={},strong=false){
  const range=type==='melee'?Math.min(3.2,configured):['area','cone'].includes(type)?Math.max(5,configured):type==='self'?10:Math.max(strong?11:9,configured);
  return {type,range,ranged:!['melee','self'].includes(type)};
 }
+export function attackProfile(spec,config={},strong=false){const p=baseAttackProfile(spec,config,strong),u=strong?petUltimateRule(spec):null;return u?.replace?{type:'self',range:0,ranged:false,noTarget:true,support:true}:u?{...p,noTarget:!!u.noTarget}:p;}
 export const HERO_ATTACKS={sword:{duration:.76,release:.32,type:'cone',range:2.94},blades:{duration:.54,release:.2,type:'area',range:1.68},guns:{duration:.44,release:.14,type:'ranged',range:7.56},knife:{duration:.6,release:.26,type:'melee',range:2.24}};
 export const ROLL_DURATION=.46;
 
-export function skillDescription(spec,config={},strong=false){const p=attackProfile(spec,config,strong);const label={melee:'單體 · 近身攻擊',ranged:'單體 · 遠程射擊',tracking:'追蹤攻擊',cone:'範圍 · 前方扇形',area:'範圍 · 周身攻擊',blast:'遠程 · 大範圍爆發',global:'全場地 · 最後一擊地震',self:'自身增益'};return (p.armor?'霸體 10 秒：攻擊與防禦 +50%，免疫控制':label[p.type])+(p.piercing?' · 貫穿':'')+(p.chain?(p.chainOnHit?' · 命中後連鎖下一目標':' · 擊敗後連鎖下一目標'):'')+(p.sustain?' · 持續 '+p.sustain+' 秒':'')+(p.jump?' · 原地高跳後落地震擊':'');}
+export function skillDescription(spec,config={},strong=false){const p=attackProfile(spec,config,strong);const label={melee:'單體 · 近身攻擊',ranged:'單體 · 遠程射擊',tracking:'追蹤攻擊',cone:'範圍 · 前方扇形',area:'範圍 · 周身攻擊',blast:'遠程 · 大範圍爆發',global:'全場地 · 最後一擊地震',self:'自身增益'};return (p.support?'輔助大絕（無須鎖定敵人）':p.armor?'霸體 10 秒：攻擊與防禦 +50%，免疫控制':label[p.type])+(p.piercing?' · 貫穿':'')+(p.chain?(p.chainOnHit?' · 命中後連鎖下一目標':' · 擊敗後連鎖下一目標'):'')+(p.sustain?' · 持續 '+p.sustain+' 秒':'')+(p.jump?' · 原地高跳後落地震擊':'')+(strong&&ultimateEffectDescription(spec)?' · '+ultimateEffectDescription(spec):'');}

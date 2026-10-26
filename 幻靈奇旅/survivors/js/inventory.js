@@ -121,11 +121,11 @@ export function addTemporaryWeapon(run,id,permanentWeapons) {
   if(!run.tempWeapons.includes(id)) run.tempWeapons.push(id);
   return {weaponId:id,temporary:true};
 }
-export function weaponStats(run,id) {
+export function weaponStats(run,id,upgrades={}) {
   const weapon=WEAPONS[id];
   if(!weapon) throw new Error('未知武器。');
   const stacks=Math.min(3,run.fusions?.[id]||0);
-  return {...weapon,damage:weapon.damage*(1+stacks*0.15),statusChance:stacks*0.05};
+  return {...weapon,damage:weapon.damage*(1+stacks*0.15)+(upgrades?.[id]||0),statusChance:stacks*0.05};
 }
 export function expireBuffs(run) {
   for(const [key,timers] of Object.entries(run.buffTimers||{})) {

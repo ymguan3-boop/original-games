@@ -1,7 +1,7 @@
 import {migrateFamilyProgress} from './family-progress.js?v=20261025-v19';
 import {rememberJourney} from './journey.js';
 export const SAVE_KEY = 'phantom-endless-cave-v1';
-export const initialState = () => ({version:1,owned:[],team:[],points:0,autoItems:{},growth:{},training:{},pity:0,inventory:{},materials:{},loadoutVersion:9,weapons:['guns-starter'],equipped:['guns-starter'],starterClaimed:false,transactions:[],history:[],run:null});
+export const initialState = () => ({version:1,owned:[],team:[],points:0,autoItems:{},autoPetUltimates:[false,false,false],weaponUpgrades:{},growth:{},training:{},pity:0,inventory:{},materials:{},loadoutVersion:9,weapons:['guns-starter'],equipped:['guns-starter'],starterClaimed:false,transactions:[],history:[],run:null});
 const clone = value => JSON.parse(JSON.stringify(value));
 const plain = value => value && typeof value === 'object' && !Array.isArray(value);
 export function validateState(s) {
@@ -16,6 +16,8 @@ export function validateState(s) {
   if (typeof s.starterClaimed !== 'boolean' || s.transactions.some(t=>!plain(t)||typeof t.id!=='string')) throw new Error('交易紀錄異常。');
   if (s.run !== null && (!plain(s.run) || typeof s.run.id!=='string' || !['active','depth-cleared','defeated'].includes(s.run.status) || !plain(s.run.hero) || !Number.isFinite(s.run.hero.hp) || !Array.isArray(s.run.pets))) throw new Error('戰局檢查點異常。');
   if(s.loadoutVersion!==9){const untouched=!s.run&&s.weapons.length===1&&s.weapons[0]==='sword-starter'&&s.equipped[0]==='sword-starter';if(!s.weapons.includes('guns-starter'))s.weapons.push('guns-starter');if(untouched)s.equipped=['guns-starter'];s.loadoutVersion=9;}
+  s.autoPetUltimates||=[false,false,false];if(!Array.isArray(s.autoPetUltimates)||s.autoPetUltimates.length!==3||s.autoPetUltimates.some(v=>typeof v!=='boolean'))throw Error('自動大絕設定異常');
+  s.weaponUpgrades||={};if(!plain(s.weaponUpgrades)||Object.values(s.weaponUpgrades).some(n=>!Number.isSafeInteger(n)||n<0))throw Error('永久武器加成異常');
   s.training||={};if(!plain(s.training))throw Error('培育資料格式異常');for(const levels of Object.values(s.training)){if(!plain(levels)||Object.values(levels).some(n=>!Number.isInteger(n)||n<0||n>10))throw Error('培育等級異常');}
   s.growth||={};if(!plain(s.growth)||Object.values(s.growth).some(g=>!plain(g)||!Number.isInteger(g.level)||g.level<1||g.level>50||!Number.isFinite(g.xp)||g.xp<0))throw Error('培育經驗格式異常');
   migrateFamilyProgress(s);
