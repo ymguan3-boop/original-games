@@ -1,18 +1,19 @@
 /* Gesture-gated combat cues. Local synthesis plus lazily loaded cave weapon samples. */
 (()=>{'use strict';
 const scriptUrl=globalThis.document?.currentScript?.src;const defaultAssetBase=scriptUrl?new URL('../assets/audio/weapons-v19/',scriptUrl).href:null;
-function createCombatAudio({assetBase=defaultAssetBase,
+function createCombatAudio({assetBase=defaultAssetBase,outputGain=.42,onPlayed=null,
   getPreferences = () => ({
     sfxMuted: globalThis.PhantomBgm?.sfxMuted ?? false,
     sfxVolume: globalThis.PhantomBgm?.sfxVolume ?? 55,
   }),
 } = {}) {
+  const mixGain=Number.isFinite(outputGain)?Math.max(0,Math.min(1.5,outputGain)):.42;
   let context = null, master = null, compressor = null, disposed = false, resume = null;
   const voices = new Set(), recent = [], last = new Map(),buffers=new Map();let samplePromise=null,currentPriority=false;
   const metrics = {
     unlocked: false, supported: true, played: 0, skippedLocked: 0,
     skippedMuted: 0, throttled: 0, errors: 0, activeVoices: 0,
-    peakVoices: 0, lastKind: '', lastPhase: '', volume: 55, muted: false, stops: 0,
+    peakVoices: 0, lastKind: '', lastPhase: '', volume: 55, muted: false, stops: 0, outputGain:mixGain,masterGain:0,
     samplesReady:0,sampleErrors:0,weaponEvents:[],samplePlays:0,lastVariant:'',byPhase: { start: 0, release: 0, strike: 0, impact: 0 },
     byKind: { sword: 0, knife: 0, blades: 0, guns: 0, pet: 0 },
   };
@@ -24,6 +25,7 @@ function createCombatAudio({assetBase=defaultAssetBase,
     const volume = Number.isFinite(raw) ? Math.max(0, Math.min(100, raw)) : 55;
     metrics.volume = volume;
     metrics.muted = !!(value.sfxMuted ?? value.muted ?? false) || volume === 0;
+    metrics.masterGain=metrics.muted?0:volume/100*mixGain;
     return { muted: metrics.muted, volume };
   }
 
@@ -43,7 +45,7 @@ function createCombatAudio({assetBase=defaultAssetBase,
         compressor.attack.value = 0.004;
         compressor.release.value = 0.16;
         const prefs = preferences();
-        master.gain.value = prefs.muted ? 0 : prefs.volume / 100 * 0.42;
+        master.gain.value = prefs.muted ? 0 : prefs.volume / 100 * mixGain;
         master.connect(compressor);
         compressor.connect(context.destination);
       }
@@ -180,7 +182,7 @@ function createCombatAudio({assetBase=defaultAssetBase,
       if (prefs.muted) {
         master.gain.setValueAtTime(0, now);
         stop();
-      } else master.gain.setTargetAtTime(prefs.volume / 100 * 0.42, now, 0.01);
+      } else master.gain.setTargetAtTime(prefs.volume / 100 * mixGain, now, 0.01);
     } catch { metrics.errors++; }
     return prefs;
   }
@@ -211,7 +213,7 @@ function createCombatAudio({assetBase=defaultAssetBase,
       last.set(key, now);
       if (last.size > 256) for (const [oldKey, at] of last) if (at < now - 2) last.delete(oldKey);
       recent.push(now);
-      synthesize(ev);
+      synthesize(ev);onPlayed?.(ev);
       metrics.played++;
       metrics.byKind[kind]++;
       metrics.byPhase[phase]++;
