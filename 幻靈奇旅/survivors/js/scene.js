@@ -24,7 +24,7 @@ function script(path, globalName) {
   return scripts.get(path);
 }
 export async function createScene(canvas, {spirits = [], catalog = {}, onSelect, onReady, onError} = {}) {
-  await script('vendor/three.min.js', 'THREE');await script('js/outoman-v2-fx.js?v=20261027-outoman-fix','createOutomanV2Fx');await Promise.all([script('js/arena-fx.js','SpiritVfx'),script('js/duo-combat-vfx.js','createDuoCombatVFX'),script('js/guanpang-combat-vfx.js','createGuanpangCombatVFX')]);if(!globalThis.THREE.GLTFLoader)await script('vendor/GLTFLoader.js');globalThis.PhantomLoading?.install();
+  await script('vendor/three.min.js', 'THREE');await script('js/outoman-v2-fx.js?v=20261027-outoman-fix2','createOutomanV2Fx');await Promise.all([script('js/arena-fx.js','SpiritVfx'),script('js/duo-combat-vfx.js','createDuoCombatVFX'),script('js/guanpang-combat-vfx.js','createGuanpangCombatVFX')]);if(!globalThis.THREE.GLTFLoader)await script('vendor/GLTFLoader.js');globalThis.PhantomLoading?.install();
   const T = globalThis.THREE, species = new Map((Array.isArray(spirits)?spirits:Object.values(spirits)).map(s => [s.id, s]));
   const entries = new Map((catalog.entries || []).map(s => [s.id,s]));
   const renderer = new T.WebGLRenderer({canvas, antialias: true, powerPreference:'high-performance'});
