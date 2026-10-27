@@ -31,7 +31,8 @@ export function createProjectileView(T, scene, { actorPoint, targetPoint, metric
   }
   function draw(p, from, to, fade = 1) {
     const color = p.color ?? colors[p.element] ?? 0x87e8ff;
-    if(p.fx==='sword-wave'){const heading=Math.atan2(p.vx||0,p.vz||1),size=(p.context?.strong?.95:.65)*fade;put(5,to.x,to.y,to.z,size,0,0xff9b36,false,heading);put(2,to.x,to.y,to.z,.1*fade,0,0xffe6ac);metrics.swordWave={mode:'piercing-crescent',strong:!!p.context?.strong,origin:sourceOf(p),tip:{...to}};
+    if(p.fx==='pumpkin-fireball'){const r=.28*fade,dx=p.vx||0,dz=p.vz||1;put(4,to.x,to.y,to.z,r*2,0,0xff6920);put(2,to.x,to.y,to.z,r,0,0xff7620);put(3,to.x,to.y,to.z,r*.52,0,0xffe37a);for(let i=1;i<=3;i++)put(4,to.x-dx*i*.28,to.y,to.z-dz*i*.28,r*(1.5-i*.25),0,0xff9f22);metrics.pumpkinProjectile={piercing:true,fx:'fireball'};
+    } else if(p.fx==='sword-wave'){const heading=Math.atan2(p.vx||0,p.vz||1),size=(p.context?.strong?.95:.65)*fade;put(5,to.x,to.y,to.z,size,0,0xff9b36,false,heading);put(2,to.x,to.y,to.z,.1*fade,0,0xffe6ac);metrics.swordWave={mode:'piercing-crescent',strong:!!p.context?.strong,origin:sourceOf(p),tip:{...to}};
     } else if(p.sourceActor==='hero'&&p.piercing){
       start.set(from.x,from.y,from.z);end.set(to.x,to.y,to.z);dir.copy(end).sub(start);const len=dir.length();if(len<.001)return;dir.normalize();const spacing=p.context?.strong?.13:.35,n=Math.min(72,Math.max(1,Math.ceil(len/spacing))),radius=(p.context?.strong?.075:.055)*fade;for(let j=0;j<=n;j++){const d=Math.min(len,j*spacing);put(2,start.x+dir.x*d,start.y+dir.y*d,start.z+dir.z*d,radius,0,0x6fe7ff);}metrics.gunTrail={mode:'dots',dense:!!p.context?.strong,spacing,origin:sourceOf(p),dots:n+1};metrics.gunTrails||={};metrics.gunTrails[p.context?.strong?'ultimate':'normal']={...metrics.gunTrail};
     } else if (p.fx === 'beam' || p.piercing) {

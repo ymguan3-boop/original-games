@@ -19,9 +19,10 @@ export const ITEMS={
 };
 export const BOSS_WEAPONS=['blades-blinkfire','knife-flamewave','guns-critical','sword-leek'];
 export const WEAPONS={
+ 'staff-pumpkin':{name:'南瓜魔杖',type:'guns',damage:28,interval:.6,range:12,price:0,element:'森',eventOnly:true,pumpkinStaff:true},
  'guns-critical':{name:'必暴雙槍',type:'guns',damage:17,interval:.45,range:12,price:0,element:'光',bossOnly:true,forceCrit:true,onHit:{type:'knockback',chance:.4}},
  'sword-leek':{name:'大蔥',type:'sword',damage:28,interval:.9,range:3.4,price:0,element:'森',bossOnly:true,attackSpeed:.5,appearance:'leek',onHit:{type:'paralysis',chance:.5,duration:.9}},
- 'blades-blinkfire':{name:'瞬燃雙刀',type:'blades',damage:18,interval:.3,range:2.7,price:0,element:'焰',bossOnly:true,rangeBonus:.6,onHit:{type:'burn',chance:1,power:2}},
+ 'blades-blinkfire':{name:'瞬燃雙刀',type:'blades',damage:18,interval:.3,range:2.7,price:0,element:'焰',bossOnly:true,rangeBonus:.6,lowHealthAttack:true,onHit:{type:'burn',chance:1,power:2}},
  'knife-flamewave':{name:'幻燃單刃',type:'knife',damage:48,interval:.55,range:12,price:0,element:'焰',bossOnly:true,swordWave:true,onHit:{type:'burn',chance:1,power:2}},
  'blades-venom':{name:'蝕毒雙刃',type:'blades',damage:13,interval:.3,range:2.7,price:1000,element:'森',shopOnly:true,onHit:{type:'poison',chance:.35}},
  'guns-paralysis':{name:'霹靂雙槍',type:'guns',damage:16,interval:.45,range:12,price:1000,element:'雷',shopOnly:true,onHit:{type:'paralysis',chance:.25}},
@@ -104,7 +105,7 @@ export function buyItem(store,id,txId=store.newId('buy-item')) {
 export function buyWeapon(store,id,txId=store.newId('buy-weapon')) {
   return store.transact(txId,s=> {
     const weapon=WEAPONS[id];
-    if(!weapon || weapon.bossOnly || s.weapons.includes(id) || s.points<weapon.price) throw new Error('已持有、武器不存在或點數不足。');
+    if(!weapon || weapon.bossOnly || weapon.eventOnly || s.weapons.includes(id) || s.points<weapon.price) throw new Error('已持有、武器不存在或點數不足。');
     s.points-=weapon.price; s.weapons.push(id);
     s.equipped=[id,...s.equipped.filter(x=>x!==id)].slice(0,4);if(s.run?.status==='active'){s.run.weaponId=id;s.run.hero.pendingAttack=null;s.run.heroCombo=null;}
     return {weaponId:id,message:'已永久取得（洞穴專用）'};
@@ -125,7 +126,10 @@ export function weaponStats(run,id,upgrades={}) {
   const weapon=WEAPONS[id];
   if(!weapon) throw new Error('未知武器。');
   const stacks=Math.min(3,run.fusions?.[id]||0);
-  return {...weapon,damage:weapon.damage*(1+stacks*0.15)+(upgrades?.[id]||0),statusChance:stacks*0.05};
+  const baseDamage=weapon.damage*(1+stacks*0.15)+(upgrades?.[id]||0);
+  const h=run?.hero, hpRatio=h&&Number.isFinite(h.hp)&&Number.isFinite(h.maxHp)&&h.maxHp>0?Math.max(0,Math.min(1,h.hp/h.maxHp)):1;
+  const lowHealthBonus=weapon.lowHealthAttack?Math.min(4,(1-hpRatio)*8):0;
+  return {...weapon,damage:baseDamage*(1+lowHealthBonus),lowHealthBonus,statusChance:stacks*0.05};
 }
 export function expireBuffs(run) {
   for(const [key,timers] of Object.entries(run.buffTimers||{})) {

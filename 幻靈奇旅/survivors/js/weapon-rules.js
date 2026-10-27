@@ -1,9 +1,9 @@
 import {HERO_ATTACKS} from './combat-profile.js?v=20261027-v30';
 import {TOWER_ULTIMATES} from './tower-ultimates.js';
-import {WEAPONS,BOSS_WEAPONS} from './inventory.js?v=20261027-v30';
+import {WEAPONS,BOSS_WEAPONS} from './inventory.js?v=20261027-halloween';
 export function heroWeaponProfile(w){const p=w.swordWave?{...HERO_ATTACKS.knife,type:'ranged',range:HERO_ATTACKS.guns.range}:{...HERO_ATTACKS[w.kind||w.type]};const speed=1+(w.attackSpeed||0);return{...p,range:p.range*(1+(w.rangeBonus||0)),duration:p.duration/speed,release:p.release/speed};}
 export function heroWeaponCombo(w){const c=TOWER_ULTIMATES[w.kind||w.type];return{...c,interval:c.interval/(1+(w.attackSpeed||0)),startup:.15/(1+(w.attackSpeed||0))};}
-export function shopWeaponEntries(){const all=Object.entries(WEAPONS);return [...all.filter(([,w])=>!w.bossOnly).sort((a,b)=>b[1].price-a[1].price),...all.filter(([,w])=>w.bossOnly)];}
+export function shopWeaponEntries(){const all=Object.entries(WEAPONS).filter(([,w])=>!w.eventOnly);return [...all.filter(([,w])=>!w.bossOnly).sort((a,b)=>b[1].price-a[1].price),...all.filter(([,w])=>w.bossOnly)];}
 export function nearestEnemy(run,origin=run.hero){let target=null,best=Infinity;for(const e of run.enemies){if(e.hp<=0||e.rewarded||e.capturePending||e.weakUntil>run.time)continue;const d=(e.x-origin.x)**2+(e.z-origin.z)**2;if(d<best){target=e;best=d;}}return target;}
 export function blinkPosition(hero,target){const heading=Number.isFinite(target.heading)?target.heading:Math.atan2(hero.x-target.x,hero.z-target.z),spacing=Math.max(.95,(target.radius||.65)+.25),clamp=n=>Math.max(-34,Math.min(34,n));let x=clamp(target.x+Math.sin(heading)*spacing),z=clamp(target.z+Math.cos(heading)*spacing);if(Math.hypot(x-target.x,z-target.z)<spacing*.6){const dx=hero.x-target.x,dz=hero.z-target.z,d=Math.hypot(dx,dz);x=clamp(target.x+(d?dx/d:-Math.sin(heading))*spacing);z=clamp(target.z+(d?dz/d:-Math.cos(heading))*spacing);}return{x,z};}
 // One roll per defeated milestone boss; success chooses one of the four permanent weapons.
