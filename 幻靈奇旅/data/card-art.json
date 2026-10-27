@@ -454,9 +454,9 @@
     "bytes": 117174
   },
   "pikachu": {
-    "image": "cards/art/outoman-v2.webp",
+    "image": "cards/art/outoman-v3.webp",
     "name": "歐頭慢",
-    "source": "imagegen-user-outoman-v2-reference",
+    "source": "imagegen-user-outoman-v3-cute-power-reference",
     "referenceModel": "models/spirits/outoman-v2.glb",
     "group": 12,
     "quadrant": 0,

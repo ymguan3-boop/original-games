@@ -1,5 +1,5 @@
 export function modelHeight(spec){if(!spec)return 2.35;const stage=spec.stage||1,path=spec.model||'';
- if(spec.id==='pikachu')return Math.min(2.6,Math.max(1.15,spec.height||1.6))*2.1;
+ if(spec.id==='pikachu')return Math.min(2.6,Math.max(1.15,spec.height||1.6))*2.1*.25;
  if(spec.id==='wigglytuff')return Math.min(2.6,Math.max(1.15,spec.height||1.6))*1.3;
  if(spec.id==='giratina')return Math.min(2.6,Math.max(1.15,spec.height||1.6))*2/3;
  if(/cat-girl/.test(path))return(2.35+(stage-1)*.3)*.9;

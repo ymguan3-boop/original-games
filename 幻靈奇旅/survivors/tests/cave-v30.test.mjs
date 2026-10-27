@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import{modelHeight}from'../js/actor-layout.js';import{teamFirstRoster}from'../js/team-roster.js';
+test('歐頭慢洞穴寵物與魔王沿用同一縮放，為前版四分之一，保留魔王1.5倍',()=>{const spec={id:'pikachu',height:1.275},old=1.275*2.1;assert.equal(modelHeight(spec),old/4);assert.equal(modelHeight(spec)*1.5,old*1.5/4);assert.equal(modelHeight({id:'wigglytuff',height:1.5}),1.5*1.3);});
+test('幻靈編組依隊伍槽位置頂，未編組收藏維持原順序，且不更動存檔陣列',()=>{const owned=['a','b','c','d','e'],team=['d','b','e'];assert.deepEqual(teamFirstRoster(owned,team),['d','b','e','a','c']);assert.deepEqual(owned,['a','b','c','d','e']);assert.deepEqual(team,['d','b','e']);assert.deepEqual(teamFirstRoster(owned,['missing','c']),['c','a','b','d','e']);});

@@ -2,7 +2,7 @@
   "id": "pikachu",
   "model": "models/spirits/outoman-v2.glb",
   "source": "outoman/v2/assets/outoman-game.glb",
-  "portrait": "cards/art/outoman-v2.webp",
+  "portrait": "cards/art/outoman-v3.webp",
   "triangles": 139996,
   "clips": [
     "Idle",
@@ -21,5 +21,10 @@
     "gym",
     "evolution"
   ],
-  "portraitPrompt": "Faithful full-body orange tiger guardian based on the supplied Blender V2 face and rainbow-beam previews: dark tiger stripes, cream eye coverings integrated into a silver helmet, two long silver horns, red and silver armor, glowing blue chest core, pointed ears, whiskers and tail. Fantasy meadow with floating ruins; rainbow wrist beam. No text or card border."
+  "portraitPrompt": "User reference: cute but powerful orange tiger superhero, large glowing pale-yellow eye lenses, joyful confident fanged smile, silver helmet fins and red silver armor with blue chest core; dynamic crossed arms golden-white beam, fantasy forest floating ruins, smooth stylized illustration, no lettering.",
+  "caveEntranceArt": {
+    "image": "survivors/assets/cave-entrance-v30.webp",
+    "tool": "built-in image_gen",
+    "prompt": "Inviting blue-teal crystal cavern, turquoise river and amber gateway, soft magical 3D game key art, detail left and calm dark right for HTML controls, no text or UI."
+  }
 }

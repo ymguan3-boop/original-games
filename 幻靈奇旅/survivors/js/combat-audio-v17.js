@@ -1,5 +1,5 @@
 /* Cave-only foreground mix. Shared sliders and mute remain authoritative. */
-import '../../js/combat-audio.js?v=20261027-v29';
+import '../../js/combat-audio.js?v=20261027-v30';
 export function createCombatAudio(options={}) {
   const sync=()=>{const bgm=globalThis.PhantomBgm;if(!bgm)return;const active=!bgm.sfxMuted&&bgm.sfxVolume>0;bgm.setMix?.({gain:.55,ceiling:active?bgm.sfxVolume/100*.1:1});};
   sync();globalThis.addEventListener?.('phantom-audio-settings',sync);

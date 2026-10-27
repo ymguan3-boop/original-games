@@ -1,6 +1,6 @@
-import {HERO_ATTACKS} from './combat-profile.js?v=20261027-v29';
+import {HERO_ATTACKS} from './combat-profile.js?v=20261027-v30';
 import {TOWER_ULTIMATES} from './tower-ultimates.js';
-import {WEAPONS,BOSS_WEAPONS} from './inventory.js?v=20261027-v29';
+import {WEAPONS,BOSS_WEAPONS} from './inventory.js?v=20261027-v30';
 export function heroWeaponProfile(w){const p=w.swordWave?{...HERO_ATTACKS.knife,type:'ranged',range:HERO_ATTACKS.guns.range}:{...HERO_ATTACKS[w.kind||w.type]};const speed=1+(w.attackSpeed||0);return{...p,range:p.range*(1+(w.rangeBonus||0)),duration:p.duration/speed,release:p.release/speed};}
 export function heroWeaponCombo(w){const c=TOWER_ULTIMATES[w.kind||w.type];return{...c,interval:c.interval/(1+(w.attackSpeed||0)),startup:.15/(1+(w.attackSpeed||0))};}
 export function shopWeaponEntries(){const all=Object.entries(WEAPONS);return [...all.filter(([,w])=>!w.bossOnly).sort((a,b)=>b[1].price-a[1].price),...all.filter(([,w])=>w.bossOnly)];}
