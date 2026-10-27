@@ -1,11 +1,11 @@
 // Reuse the model room's authored SpiritVfx scripts; no alternate cave artwork.
 export function modelRoomPlan(actor,plan,strong=false){
  if(actor.id==='mewtwo'||/water-dragon-king\.glb$/.test(actor.path||'')){const mode=strong?'Ultimate':'Attack',duration=actor.actions?.[mode]?.getClip?.().duration||(strong?5.8:1.9);return{...plan,mode,duration,playbackRate:1,authored:true,releaseFraction:(strong?2.9:.75)/duration};}
- if(actor.id==='pikachu'||actor.path==='outouman://pikachu')return{...plan,mode:strong?'Beam':'BeamPose',duration:2,playbackRate:1,authored:true,releaseFraction:1.1/2};
+ if(actor.id==='pikachu'){const mode=strong?'Ultimate':'Attack',duration=actor.actions?.[mode]?.getClip?.().duration||(strong?3.6333333333333333:2.433333333333333);return{...plan,mode,duration,playbackRate:1,authored:true,releaseFraction:.38};}
  const clip=actor.actions?.[plan.mode]?.getClip?.();
  return {...plan,duration:plan.procedural?(plan.duration||.55):(clip?.duration||plan.nativeDuration||plan.duration||.65),playbackRate:1};
 }
-export function originalPresentation(actor,plan){return !!(actor.controller||actor.duoFx||actor.guanpangFx||plan.nativeFx||globalThis.SpiritVfx?.has(actor.path));}
+export function originalPresentation(actor,plan){return !!(actor.controller||actor.outomanFx||actor.duoFx||actor.guanpangFx||plan.nativeFx||globalThis.SpiritVfx?.has(actor.path));}
 export function createModelRoomEffect(T,scene,actor,strong,target,metrics){
  if(!globalThis.SpiritVfx?.has(actor.path))return null;
  const group=new T.Group();group.name='cave-model-room-'+actor.id;scene.add(group);

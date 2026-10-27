@@ -25,7 +25,7 @@ addEventListener('unhandledrejection',e=>error(e.reason));
 function script(path){if(scriptCache.has(path))return scriptCache.get(path);const p=new Promise((res,rej)=>{const n=document.createElement('script');n.src=path+'?v='+C.revision;n.onload=res;n.onerror=()=>{scriptCache.delete(path);n.remove();rej(Error('程式載入失敗：'+path));};document.head.append(n);});scriptCache.set(path,p);return p;}
 async function scripts(paths){for(const p of paths)await script(p);}
 function owned(root){const r=new Set();root.traverse(n=>{if(n.geometry)r.add(n.geometry);if(n.skeleton?.boneTexture)r.add(n.skeleton.boneTexture);for(const m of Array.isArray(n.material)?n.material:n.material?[n.material]:[]){r.add(m);for(const v of Object.values(m))if(v?.isTexture)r.add(v);}});return r;}
-function release(p){if(!p)return;p.guanpangFx?.dispose();p.duoFx?.dispose();p.mixer?.stopAllAction();p.mixer?.uncacheRoot(p.root);if(p.hero&&heroCostumes)heroCostumes.dispose(p.root);try{p.controller?.dispose?.();}catch{}for(const r of p.resources||[])r.dispose?.();p.display?.parent?.remove(p.display);}
+function release(p){if(!p)return;p.guanpangFx?.dispose();p.duoFx?.dispose();p.outomanFx?.dispose();p.mixer?.stopAllAction();p.mixer?.uncacheRoot(p.root);if(p.hero&&heroCostumes)heroCostumes.dispose(p.root);try{p.controller?.dispose?.();}catch{}for(const r of p.resources||[])r.dispose?.();p.display?.parent?.remove(p.display);}
 function excluded(n,root){for(let x=n;x;x=x.parent){if(!x.visible||x.userData?.isEffect||x.userData?.effect||/^(Effects|ReusableEffects|ReusableLightEffects|CombatEffects|ReusableFireball)$/.test(x.name))return true;if(x===root)break;}return false;}
 function bounds(root){const box=new T.Box3(),temp=new T.Box3();root.updateMatrixWorld(true);root.traverse(n=>{if(!n.isMesh||!n.geometry||excluded(n,root))return;const ms=Array.isArray(n.material)?n.material:[n.material];if(ms.every(m=>m?.isMeshBasicMaterial&&m.transparent&&m.depthWrite===false))return;const g=n.geometry;if(!g.boundingBox)g.computeBoundingBox();if(g.boundingBox)box.union(temp.copy(g.boundingBox).applyMatrix4(n.matrixWorld));});if(box.isEmpty())throw Error('模型沒有可見幾何');return box;}
 const cardNumber=value=>catalog.number(value)!=='—'?catalog.number(value):catalog.towerNumber(typeof value==='string'?value:value?.id);
@@ -39,15 +39,16 @@ async function build(id){
  const display=new T.Group();display.add(root);
  const duoFx=/(ahong-cowboy|starlight-mage)\.glb$/.test(path)?createDuoCombatVFX(T,display,root,path):null;
  const guanpangFx=/guanpang\.glb$/.test(path)?createGuanpangCombatVFX(T,display,root,clips):null;
+ const outomanFx=/outoman-v2\.glb$/.test(path)?createOutomanV2Fx(T,display,root,clips):null;
  const state=controller?.getState?.()||{},modes=controller?(Array.isArray(state.modes)?state.modes:route?.modes||[]).slice():clips.map(c=>c.name);
- const p={id,s,path,root,display,controller,mixer,clips,resources,route,modes,duoFx,guanpangFx,hero:id==='hero',durations:Object.assign({},typeof route?.durations==='function'?route.durations():route?.durations,state.durations),base:new T.Vector3(),scale:1,current:null,time:0,plan:null};
+ const p={id,s,path,root,display,controller,mixer,clips,resources,route,modes,duoFx,guanpangFx,outomanFx,hero:id==='hero',durations:Object.assign({},typeof route?.durations==='function'?route.durations():route?.durations,state.durations),base:new T.Vector3(),scale:1,current:null,time:0,plan:null};
  if(p.hero){heroCostumes??=HeroCostumes.create(T);heroCostumes.apply(root,suit);}
  return p;
 }
 
 /* ---------- 動作對應 ---------- */
 const GAME={Idle:'Idle',Walk:'Walk',Run:'Run',Greet:'Wave',Cheer:'Celebrate',Hurt:'Hurt'};
-const CAND={Idle:['Idle','Hover','Rest'],Walk:['Walk','Fly','Roll','Hop','Move'],Run:['Run','NinjaRun','Dash','Fly'],Greet:['Wave','Greet','React'],Cheer:['Celebrate','JumpCelebrate','Jump','Hop','Cheer'],Hurt:['Hurt','Stuck','Scared']};
+const CAND={Idle:['Idle','Hover','Rest'],Walk:['Walk','Fly','Roll','Hop','Move'],Run:['Run','NinjaRun','Dash','Fly'],Greet:['Wave','Greet','React'],Cheer:['Celebrate','JumpCelebrate','Jump','Hop','Cheer'],Hurt:['Hurt','Hit','Stuck','Scared']};
 function nativeMap(p,name){const k=p.route?.kind,f=k==='replacement'?window.ReplacementSpirits?.motion:k==='avian'?window.AvianSpirits?.motion:k==='frog'?window.FrogSpirits?.motion:k==='robot'?window.RobotSpirits?.motion:null;try{return f?f(p.path,name):null;}catch{return null;}}
 const find=(names,n)=>names.find(x=>x.toLowerCase()===String(n).toLowerCase());
 function resolve(p,canon){
@@ -73,7 +74,7 @@ const LOOP=new Set(['Idle','Walk','Run']);
 function duration(p,mode){const clip=p.clips.find(c=>c.name===mode);if(clip)return clip.duration;return p.durations[mode]||catalog?.get(p.s)?.skills?.find(k=>k.animation===mode)?.duration||2.4;}
 function nativeSeek(p,mode,t){const c=p.controller;if(p.path==='avian://jigglypuff'){c.setMode(mode);c.seek(t);}else if(typeof c.seek==='function')c.seek(mode,t);else c.setMode(mode);}
 function start(p,canon){
- const plan=resolve(p,canon);p.plan=plan;p.canon=canon;p.time=0;p.hitDone=false;p.dur=Math.max(.4,duration(p,plan.mode)/(plan.speed||1));if(p.k0)p.root.scale.copy(p.k0);p.fx=null;p.fxT=0;if(plan.procedural)p.dur=canon==='Ultimate'?1.15:.55;
+ const plan=resolve(p,canon);p.plan=plan;p.canon=canon;p.time=0;p.hitDone=false;p.outomanFx?.stop();p.dur=Math.max(.4,duration(p,plan.mode)/(plan.speed||1));if(p.k0)p.root.scale.copy(p.k0);p.fx=null;p.fxT=0;if(plan.procedural)p.dur=canon==='Ultimate'?1.15:.55;
  if(plan.proc==='greet'||plan.proc==='cheer')p.dur=1.8;if(plan.proc==='hurt')p.dur=.9;
  if(p.controller){p.controller.setMode(plan.mode);nativeSeek(p,plan.mode,0);return;}
  p.mixer.stopAllAction();const clip=p.clips.find(c=>c.name===plan.mode);if(!clip)return;
@@ -98,6 +99,7 @@ function fxStep(p,dt){
  if(p.fxT>=p.fx.total+.35)p.fx=null;
 }
 function proc(p,u,t){const d=p.display,k=p.scale,h=p.height;d.position.copy(p.base);d.rotation.set(0,0,0);
+ if(p.outomanFx&&p.plan?.attack!=null)d.rotation.y=Math.atan2(dummy.g.position.x-p.base.x,dummy.g.position.z-p.base.z);
  switch(p.plan?.proc){
   case 'run':d.position.y+=Math.abs(Math.sin(t*14))*.08*h;d.rotation.x=.12;break;
   case 'walk':d.position.y+=Math.abs(Math.sin(t*8))*.04*h;d.rotation.z=Math.sin(t*8)*.05;break;
@@ -198,6 +200,7 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.max(0,Math.min(.0
     if(!LOOP.has(p.plan.mode)&&t>=p.dur){p.time=0;p.hitDone=false;nativeSeek(p,p.plan.mode,0);}}
    else p.mixer.update(dt);
    if(p.plan.attack!=null){if(u<.05)p.hitDone=false;if(!p.hitDone&&u>=p.plan.release){p.hitDone=true;hitDummy(p);}}
+   if(p.outomanFx){p.outomanFx.setTarget(dummy.g.position.clone().add(new T.Vector3(0,1.3,0)));p.outomanFx.update(p.plan.mode,p.current?.time||0);}
    p.guanpangFx?.update(p.plan.mode,p.current?.time||0);p.duoFx?.update(p.plan.mode,p.current?.time||0);if(p.hero)heroCostumes.update(p.root,dt);
    proc(p,u,t);fxStep(p,dt);}
   fxTick(paused?0:dt);stepDummy(dt);renderer.render(scene,camera);}catch(e){paused=true;pressed();error(e);}}

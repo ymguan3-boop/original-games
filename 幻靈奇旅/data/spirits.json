@@ -1710,7 +1710,7 @@
     "role": "gym",
     "previous": null,
     "next": null,
-    "model": "outouman://pikachu",
+    "model": "models/spirits/outoman-v2.glb",
     "height": 1.275,
     "hp": 178,
     "attack": 61,
@@ -1729,7 +1729,7 @@
         "cost": 3
       }
     ],
-    "description": "歐頭慢是身穿銀紅裝甲的雷屬性傳說守護者，胸前藍燈閃爍。白色光波能震盪對手，彩虹光束凝聚七彩能量攻擊；遭遇投球時會向前翻滾閃避。",
+    "description": "歐頭慢是虎紋身軀、身穿銀紅裝甲的雷屬性傳說守護者；雙尖角與貼臉眼罩是牠的特徵，胸前藍燈閃爍。牠從手腕蓄力發射白色光波，並能放出分離色帶的彩虹光束；遭遇投球時會向前翻滾閃避。",
     "stageLabel": "守護者",
     "cardFrame": "red"
   },

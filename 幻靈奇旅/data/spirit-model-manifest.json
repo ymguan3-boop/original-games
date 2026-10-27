@@ -995,23 +995,23 @@
   {
     "id": "pikachu",
     "name": "歐頭慢",
-    "vertices": 46011,
-    "triangles": 45062,
-    "materials": 8,
-    "bones": 0,
+    "vertices": 76525,
+    "triangles": 139996,
+    "materials": 12,
+    "bones": 19,
     "height": 1.275,
     "animations": [
       "Idle",
       "Walk",
-      "Wave",
-      "BeamPose",
-      "Roll",
-      "Jump",
-      "Hurt"
+      "Run",
+      "Hit",
+      "Attack",
+      "Ultimate"
     ],
-    "fileBytes": 14011,
-    "source": "Native Three.js procedural joint rig",
-    "model": "outouman://pikachu"
+    "fileBytes": 7438804,
+    "source": "User-selected outoman/v2 Blender game GLB, original six skeletal and morph clips with shared wrist beam FX",
+    "model": "models/spirits/outoman-v2.glb",
+    "native": false
   },
   {
     "id": "mew",

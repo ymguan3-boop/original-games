@@ -1076,17 +1076,17 @@
     "ultimateRange": 18,
     "multiplier": 2,
     "cooldown": 20,
-    "normalAnimation": "BeamPose",
-    "ultimateAnimation": "BeamPose",
+    "normalAnimation": "Attack",
+    "ultimateAnimation": "Ultimate",
     "normalName": "白色光波",
     "ultimateName": "彩虹光束",
-    "model": "outouman://pikachu",
+    "model": "models/spirits/outoman-v2.glb",
     "fallback": false,
     "fx": {
       "style": "cone",
       "element": "雷",
       "color": 13053233,
-      "source": "models/native/outouman.js"
+      "source": "js/outoman-v2-fx.js"
     },
     "category": "spirit",
     "piercingUltimate": true

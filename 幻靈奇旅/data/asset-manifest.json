@@ -1,6 +1,6 @@
 {
   "spiritCount": 61,
-  "modelCount": 79,
+  "modelCount": 80,
   "models": [
     {
       "file": "models/gyms/electric.glb",
@@ -745,9 +745,23 @@
       "file": "models/world/town.glb",
       "bytes": 4384616,
       "animations": []
+    },
+    {
+      "file": "models/spirits/outoman-v2.glb",
+      "bytes": 7438804,
+      "triangles": 139996,
+      "animations": [
+        "Idle",
+        "Walk",
+        "Run",
+        "Hit",
+        "Attack",
+        "Ultimate"
+      ],
+      "sha256": "6a6a4bab26d8d96843e75eed6904c99c3f763d793dd1cfc43ae5a729f4e5d8f8"
     }
   ],
-  "nativeModelCount": 21,
+  "nativeModelCount": 20,
   "nativeModels": [
     {
       "id": "piplup",
@@ -866,22 +880,6 @@
         "React"
       ],
       "controller": "XiaoshanSpirit"
-    },
-    {
-      "id": "pikachu",
-      "key": "outouman://pikachu",
-      "runtime": "three-r128",
-      "triangles": 45062,
-      "meshes": 83,
-      "animations": [
-        "Idle",
-        "Walk",
-        "Wave",
-        "BeamPose",
-        "Roll",
-        "Jump",
-        "Hurt"
-      ]
     },
     {
       "id": "chikorita",
@@ -1136,11 +1134,6 @@
       "file": "models/native/little-eagle.js",
       "bytes": 29802,
       "sha256": "75616355adcdb56068510c76869910361940cb9f72b47545f664228da49ded97"
-    },
-    {
-      "file": "models/native/outouman.js",
-      "bytes": 14149,
-      "sha256": "fb46d1036f7195884232247d54ee2bc8a97b51bb5c5fdbd911f058a7bc954b6c"
     },
     {
       "file": "models/native/rabbits.js",

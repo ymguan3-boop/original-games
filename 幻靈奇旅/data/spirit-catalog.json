@@ -1759,26 +1759,28 @@
         {
           "index": 0,
           "name": "白色光波",
-          "animation": "BeamPose",
-          "mode": "BeamPose",
+          "animation": "Attack",
+          "mode": "Attack",
           "nativeAttack": true,
           "fallback": false,
-          "duration": 2,
-          "source": "models/native/outouman.js",
-          "note": "模型擺光束姿勢；白色／彩虹光束由遊戲既有特效繪製。",
-          "requiresExternalMotionOrFx": true
+          "duration": 2.433333333333333,
+          "source": "models/spirits/outoman-v2.glb",
+          "note": "歐頭慢V2原始骨架與表情動畫；手腕蓄力後發射白色／分離彩虹光束。",
+          "requiresExternalMotionOrFx": true,
+          "releaseFraction": 0.38
         },
         {
           "index": 1,
           "name": "彩虹光束",
-          "animation": "BeamPose",
-          "mode": "BeamPose",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
           "nativeAttack": true,
           "fallback": false,
-          "duration": 2,
-          "source": "models/native/outouman.js",
-          "note": "模型擺光束姿勢；白色／彩虹光束由遊戲既有特效繪製。",
-          "requiresExternalMotionOrFx": true
+          "duration": 3.6333333333333333,
+          "source": "models/spirits/outoman-v2.glb",
+          "note": "歐頭慢V2原始骨架與表情動畫；手腕蓄力後發射白色／分離彩虹光束。",
+          "requiresExternalMotionOrFx": true,
+          "releaseFraction": 0.38
         }
       ],
       "category": "spirit"

@@ -1,0 +1,25 @@
+{
+  "id": "pikachu",
+  "model": "models/spirits/outoman-v2.glb",
+  "source": "outoman/v2/assets/outoman-game.glb",
+  "portrait": "cards/art/outoman-v2.webp",
+  "triangles": 139996,
+  "clips": [
+    "Idle",
+    "Walk",
+    "Run",
+    "Hit",
+    "Attack",
+    "Ultimate"
+  ],
+  "generatedPortrait": true,
+  "portraitTool": "built-in image_gen",
+  "preservedGameplay": [
+    "identity",
+    "stats",
+    "ownership",
+    "gym",
+    "evolution"
+  ],
+  "portraitPrompt": "Faithful full-body orange tiger guardian based on the supplied Blender V2 face and rainbow-beam previews: dark tiger stripes, cream eye coverings integrated into a silver helmet, two long silver horns, red and silver armor, glowing blue chest core, pointed ears, whiskers and tail. Fantasy meadow with floating ruins; rainbow wrist beam. No text or card border."
+}

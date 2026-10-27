@@ -1,13 +1,11 @@
-# 歐頭慢模型與初光挑戰
+# 歐頭慢 Blender V2 整合
 
-保留 `pikachu` 收藏與隊伍識別碼及 `electric` 套裝解鎖碼；原閃角兔模型與肖像由 `models/native/outouman.js`、`cards/art/outouman-spirit.webp` 取代。此替換不更動原有進化線、稀有度與戰鬥數值。
+2026-10-27：採用玩家指定的 `outoman/v2/assets/outoman-game.glb`，遊戲檔為 `models/spirits/outoman-v2.glb`。可編輯母檔仍保留於獨立 `outoman/v2/blender/outoman-master.blend` 與 `outoman-game.blend`，不刪除玩家來源工程。模型室、一般場景、初光挑戰、擂台及無盡洞穴共用此 GLB。
 
-模型是依使用者三視圖直接以 Three.js r128 建立的關節角色；API 為 `OutoumanSpirit.create({inPlace:true,beamEffects:false})`，回傳 root／update／setMode／dispose／getState。包含 Idle、Walk、Wave、Beam、BeamPose、Throw、Roll、Hurt、Jump；Roll 以輪廓支撐函數保持地面接觸，外層遊戲控制平移。BeamPose 與 Throw 不產生模型內建白光，供遊戲發射彩虹光束或幻靈球。
+保留 `pikachu` 收藏／隊伍識別碼、`electric` 套裝解鎖、技能名稱、能力、稀有度及存檔。圖鑑說明更新為虎紋銀紅裝甲造型；新肖像 `cards/art/outoman-v2.webp` 使用內建 image_gen 參考實際 Blender 預覽生成。生成提示與來源記錄在 `data/outoman-v2.json`。
 
-初光挑戰每 5 秒發射持續 2 秒的彩虹光束，長度 42、半徑 1.1 場景單位。每束鎖定啟動當下方向，碰撞採同一條光束中軸與半徑（加上玩家半徑），翻滾可避開；每束對玩家最多造成一次 2 秒麻痺與投球封鎖。光束使用預建幾何與 7 色材質，結束戰鬥時釋放資源。
+GLB 有 Idle、Walk、Run、Hit、Attack、Ultimate 六組骨架與形變動畫，139,996 個三角形、76,525 個頂點、19 根骨架、12 種材質。`js/outoman-v2-fx.js` 依原工作室的手腕位置 `wristL (0,-0.15,0.15)` 發射光束；Attack 白光／Ultimate 七色光束於動作 38%–82% 階段顯示。每個實例固定 9 個特效 mesh，幾何重複使用，離場釋放獨立材質與幾何。
 
-玩家球命中當下另以 30% 機率觸發 0.6 秒、3 場景單位的平滑翻滾，顯示透明無底紅字 MISS!! 並略過信任傷害。原本的 20% 首領迴避不會重複套用。
+初光挑戰原每 5 秒發射、持續 2 秒、命中麻痺 2 秒，以及投球 30% 翻滾閃避的規則保留。挑戰使用新腕骨的相同出光位置；GLB 動作調速對齊該 2 秒演出，實際碰撞光束不重複疊加。
 
-electric 換裝將原主角 GLB 隱藏，在相同玩家根節點顯示歐頭慢，保留碰撞、導航及存檔。投球使用 BeamPose，發射既有實體幻靈球模型；切回其他服裝恢復原主角。
-
-驗收範圍僅兩項：戰鬥機制（光束／麻痺／翻滾閃避）與變身投球，各一次。閃避抽驗固定亂數命中 30% 分支，並非統計估計其機率。首輪工具因到期狀態欄位清除而等待逾時；保留已完成光束紀錄後，只接續其餘步驟，未重複執行光束抽驗。紀錄及原始參考圖留於工作區 artifacts/outouman-spirit，不隨遊戲部署。
+舊遊戲版程序模型與舊肖像在新版本抽驗後移除；不重複打包高面數 Blender 母檔、生成原圖與測試截圖。[驗證紀錄](../survivors/docs/validation-v29.md)。

@@ -454,14 +454,14 @@
     "bytes": 117174
   },
   "pikachu": {
-    "image": "cards/art/outouman-spirit.webp",
+    "image": "cards/art/outoman-v2.webp",
     "name": "歐頭慢",
-    "source": "imagegen-reference-portrait",
-    "referenceModel": "outouman://pikachu",
+    "source": "imagegen-user-outoman-v2-reference",
+    "referenceModel": "models/spirits/outoman-v2.glb",
     "group": 12,
     "quadrant": 0,
-    "style": "stylized-3d-rainbow-guardian",
-    "generatedAt": "2026-10-17"
+    "style": "tiger-silver-red-armor-rainbow-guardian",
+    "generatedAt": "2026-10-27"
   },
   "mew": {
     "image": "cards/art/riceball-spirit.webp",

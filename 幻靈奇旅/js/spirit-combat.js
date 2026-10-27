@@ -27,7 +27,7 @@
   else if(/fire-bear-3\.glb$/.test(path)&&!strong)nativeFx=true;   // 大熊的霸體是自身增益，不射出投射物   // C老猴：金箍棒近身打擊，不另外射出投射物（C囝仔的火球出手由遊戲火系投射物接手）
   else if(path.startsWith('light-phoenix://')){mode=/羽|Feather/i.test(skill.name||'')?'FeatherVolley':'WingBurst';duration=mode==='FeatherVolley'?2.7:2.4;nativeFx=true;}
   else if(path.startsWith('floral-deer://')){mode='Pulse';duration=duration||2.4;nativeFx=true;}
-  else if(path.startsWith('outouman://')){mode='BeamPose';duration=duration||2.0;}
+  else if(/outoman-v2\.glb$/.test(path)){mode=strong?'Ultimate':'Attack';nativeFx=true;}
   else if(path.startsWith('riceball://')){mode=configured.animation||(strong?'Wave':'Roll');duration=duration||2;nativeFx=mode==='Wave';}
   if(!actor.controller){
    const candidates=[...(configured.nativeAttack===false?[]:[mode]),...(strong?['Ultimate','Special','Attack']:['Attack']),mode,'React','Takeoff','Walk','Idle'];
@@ -41,7 +41,7 @@
   const baseDuration=Math.max(.1,duration||.65);
   return{playbackRate:agile?agileRate:['chimchar','monferno','infernape'].includes(species.id)?1.4:null,
    nativeDuration:baseDuration,mode:mode||'Attack',duration:baseDuration/agileRate,nativeFx,
-   releaseFraction:species.id==='raichu'&&strong?2.18/5.25:adventureFrog?(strong?2.38/6.6:.70/1.9):species.id==='mewtwo'?(strong?2.9/5.8:.75/1.9):species.id==='entei'?(strong?1/4:.62/1.6):species.id==='articuno'?(strong?.85/4.8:.55/1.45):/guanpang\.glb$/.test(path)?(strong?.655:.50):.48};
+   releaseFraction:/outoman-v2\.glb$/.test(path)?.38:species.id==='raichu'&&strong?2.18/5.25:adventureFrog?(strong?2.38/6.6:.70/1.9):species.id==='mewtwo'?(strong?2.9/5.8:.75/1.9):species.id==='entei'?(strong?1/4:.62/1.6):species.id==='articuno'?(strong?.85/4.8:.55/1.45):/guanpang\.glb$/.test(path)?(strong?.655:.50):.48};
  }
 
  // Arena-only target adapter. Model-room controllers keep their original authored effects.
