@@ -15,7 +15,7 @@ function createCombatAudio({assetBase=defaultAssetBase,outputGain=.42,onPlayed=n
     skippedMuted: 0, throttled: 0, errors: 0, activeVoices: 0,
     peakVoices: 0, lastKind: '', lastPhase: '', volume: 55, muted: false, stops: 0, outputGain:mixGain,masterGain:0,
     gunBursts:0,gunShots:0,gunSchedules:[],samplesReady:0,sampleErrors:0,weaponEvents:[],samplePlays:0,lastVariant:'',byPhase: { start: 0, release: 0, strike: 0, impact: 0 },
-    byKind: { sword: 0, knife: 0, blades: 0, guns: 0, pet: 0 },
+    byKind: { sword: 0, knife: 0, blades: 0, guns: 0, pumpkin: 0, pet: 0 },
   };
 
   function preferences() {
@@ -146,7 +146,15 @@ function createCombatAudio({assetBase=defaultAssetBase,outputGain=.42,onPlayed=n
     }
   }
 
-  function synthesize(ev) {if(!ev.pet&&ev.kind==='guns'){gunBurst(ev);return;}if(weaponCue(ev))return;
+  function pumpkinCue(ev) {
+    const final=!!ev.final, impactPhase=ev.phase==='impact';
+    if(ev.phase==='start'){tone(85,150,0,.18,.35,'triangle');metrics.lastVariant='pumpkin-charge';return;}
+    const count=impactPhase?1:2, gap=final?.17:.12;
+    for(let i=0;i<count;i++){const delay=i*gap; tone(final?130:170,final?32:48,delay,final?.65:.30,final?.9:.65,'sine');tone(final?92:115,35,delay+.01,final?.52:.24,final?.45:.30,'triangle');}
+    metrics.lastVariant=final?'pumpkin-boom-final':impactPhase?'pumpkin-boom-impact':'pumpkin-boom-boom';
+    metrics.weaponEvents.push({kind:'pumpkin',phase:ev.phase,final,variant:metrics.lastVariant,at:context.currentTime});if(metrics.weaponEvents.length>100)metrics.weaponEvents.shift();
+  }
+  function synthesize(ev) {if(!ev.pet&&ev.kind==='pumpkin'){pumpkinCue(ev);return;}if(!ev.pet&&ev.kind==='guns'){gunBurst(ev);return;}if(weaponCue(ev))return;
     if (ev.pet) { petCue(ev); return; }
     const strong = !!ev.strong;
     if (ev.phase === 'impact') { impact(0, !!ev.final); return; }
