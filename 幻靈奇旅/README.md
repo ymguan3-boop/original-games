@@ -1,5 +1,11 @@
 # 幻靈奇旅：初光之境
 
+## 遊戲介紹影片
+
+[![幻靈奇旅 遊戲介紹影片](https://img.youtube.com/vi/fwPXvGaNljE/maxresdefault.jpg)](https://youtu.be/fwPXvGaNljE)
+
+▶ [在 YouTube 觀看：幻靈奇旅 遊戲介紹影片](https://youtu.be/fwPXvGaNljE)
+
 ## 2026-10-27｜流暢轉場與歐頭慢修正 v0.30
 
 重製可愛英勇的歐頭慢肖像與晶洞入口；圖鑑3D支援視窗自適應，初光完整播放原GLB蓄力與大絕。進出挑戰及回城新增獨立星門動畫，必要模型與首幀完成後才開戰，原遊玩中右下讀取條保留。洞穴編組置頂、入口按鈕可完整捲動，歐頭慢體型縮為前版四分之一。修正移動中的多指翻滾，主遊戲Shift翻滾／Space投球。[驗證紀錄](survivors/docs/validation-v30.md)。
