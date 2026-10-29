@@ -6,11 +6,11 @@
  let api=null,button=null,panel=null,opened=false,selectedTask='',lastMarkup='';
  const tasks=[
   {id:'starter',title:'第一步｜選擇初始幻靈',detail:'在大夢研究所與大夢博士互動，從大眼蛙、C囝仔、水毛蟲中挑選第一位夥伴。',reward:['pokeballs',10,'靈核球']},
-  {id:'exit',title:'第一步｜走出研究所',detail:'由研究所出口回到初光鎮，正式展開冒險。',reward:['greatBallCount',5,'高階靈核球']},
+  {id:'exit',title:'第二步｜走出研究所',detail:'由研究所出口回到初光鎮，正式展開冒險。',reward:['greatBallCount',5,'高階靈核球']},
   {id:'claim',title:'第二步｜領取冒險服',detail:'到大夢研究所門口找大夢博士對話，點「領取冒險服」。',action:'導航至大夢博士',reward:['greatBallCount',10,'高階靈核球']},
   {id:'equip',title:'第二步｜換上冒險服',detail:'旅人手冊 → 冒險衣櫃，選「博士贈送冒險服」並換裝。',action:'開啟冒險衣櫃',reward:['berryCount',10,'星露果']},
-  {id:'capture',title:'第二步｜首次野外締約',detail:'回到初光鎮，使用「鎖定」對準野生幻靈，再按「締約」投出靈核球並成功捕捉。',reward:['greatBallCount',5,'高階靈核球']},
-  {id:'tools',title:'第三步｜認識工具列',detail:'開啟旅人手冊，認識圖鑑、隊伍、背包、衣櫃、道館、挑戰塔、設定；場景有移動、鎖定、締約、換球、星露果、翻滾與雷達。',action:'查看旅人手冊',reward:['pokeballs',10,'靈核球']},
+  {id:'capture',title:'第二步｜首次野外締約',detail:'回到初光鎮，依引導點擊移動、翻滾、鎖定、餵食與締約五種按鈕，並完成首次野外捕捉。',reward:['greatBallCount',5,'高階靈核球']},
+  {id:'tools',title:'第三步｜認識工具列',detail:'開啟旅人手冊，認識推薦優先遊玩的初光挑戰與星穹挑戰塔，完成簡短介紹後關閉手冊。',action:'查看旅人手冊',reward:['pokeballs',10,'靈核球']},
   {id:'collect30',title:'第四步｜圖鑑達 30%',detail:'累積 18／58 種不同的一般幻靈圖鑑卡片。重複捕捉同一種類不增加種類數。',reward:['masterBallCount',10,'星耀靈核球']},
   {id:'arena',title:'第四步｜完成幻靈競技',detail:'編滿三位不同的已締約幻靈，找到擂台訓練家，完成一場 3 對 3 競技擂台（勝敗皆計）。',action:'導航至擂台訓練家',reward:['masterBallCount',10,'星耀靈核球']},
   {id:'collect50',title:'第五步｜圖鑑達 50%',detail:'累積 29／58 種不同的一般幻靈圖鑑卡片。',reward:['masterBallCount',10,'星耀靈核球']},
@@ -34,7 +34,7 @@
    case 'exit':return !!f?.exitedLab;
    case 'claim':return !!s.adventureClaimed;
    case 'equip':return !!f?.outfitEquipped;
-   case 'capture':return !!f?.firstWildCapture;
+   case 'capture':return !!f?.firstWildCapture&&(!f?.onboarding||!!f.controlsPracticed);
    case 'tools':return !!f?.menuViewed;
    case 'collect30':return p.owned>=Rules.countAt(p.total,Rules.thresholds.tutorialArena);
    case 'arena':return !!f?.arenaFinished;
@@ -190,7 +190,7 @@
   onLabExit(){record('exitedLab');},
   onCostume(id){if(id==='adventure')record('outfitEquipped');else refresh();},
   onWildCapture(){record('firstWildCapture');},
-  onMenuOpened(){if(flags()?.firstWildCapture)record('menuViewed');else refresh();},
+  onMenuOpened(){refresh();},
   onArenaFinished(){record('arenaFinished');},
   onGymCleared(){rewardSync(true);refresh();},
   onTowerChallengeStarted(){record('towerEntered');},
