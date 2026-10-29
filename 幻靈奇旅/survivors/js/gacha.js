@@ -1,4 +1,4 @@
-import {addInventory,WEAPONS} from './inventory.js?v=20261027-halloween';
+import {addInventory,WEAPONS} from './inventory.js?v=20261029-reaper-v1';
 export const DRAW_COST=100;
 export const DUPLICATE_POINTS=Object.freeze({yellow:50,purple:100,red:500});
 const EXCLUDED_SPIRITS=new Set(['mewtwo']);

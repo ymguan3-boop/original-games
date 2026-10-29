@@ -19,6 +19,7 @@ export const ITEMS={
 };
 export const BOSS_WEAPONS=['blades-blinkfire','knife-flamewave','guns-critical','sword-leek'];
 export const WEAPONS={
+ 'sword-starlight-scythe':{name:'星輝鐮刀',type:'sword',damage:28,interval:2.79,range:3.4,price:0,element:'念',eventOnly:true,scythe:true},
  'staff-pumpkin':{name:'南瓜魔杖',type:'guns',damage:28,interval:.6,range:12,price:0,element:'森',eventOnly:true,pumpkinStaff:true},
  'guns-critical':{name:'必暴雙槍',type:'guns',damage:17,interval:.45,range:12,price:0,element:'光',bossOnly:true,forceCrit:true,onHit:{type:'knockback',chance:.4}},
  'sword-leek':{name:'大蔥',type:'sword',damage:28,interval:.9,range:3.4,price:0,element:'森',bossOnly:true,attackSpeed:.5,appearance:'leek',onHit:{type:'paralysis',chance:.5,duration:.9}},

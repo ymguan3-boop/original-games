@@ -1,4 +1,4 @@
-import {costumeFor} from './costume-effects.js?v=20261025-v24';
+import {costumeFor} from './costume-effects.js?v=20261029-reaper-v1';
 export function createCostumeView(T,scene,hero,costumes,{makeCompanion,prepareSound,releaseActor,metrics,onError}){
  const anchor=new T.Group(),tilt=new T.Group();anchor.name='衣櫃漂浮';tilt.position.y=1.1;hero.object.position.y-=1.1;hero.root.add(anchor);anchor.add(tilt);tilt.add(hero.object);
  const pulse=new T.Mesh(new T.TorusGeometry(1,.035,6,64),new T.MeshBasicMaterial({color:0xffdc81,transparent:true,opacity:0,depthWrite:false}));pulse.rotation.x=-Math.PI/2;pulse.visible=false;scene.add(pulse);

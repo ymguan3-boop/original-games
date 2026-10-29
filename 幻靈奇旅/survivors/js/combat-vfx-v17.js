@@ -1,5 +1,5 @@
 // Smooth, reusable Three.js battle effects. No images, sprites or point particles.
-// The owner advances this view once per scene frame; gameplay remains in world.js.
+// The owner advances this view once per scene frame; gameplay remains in world.js?v=20261029-reaper-v1.
 export function jumpUltimateHeight(state, time) {
   const jump = state?.jumpUltimate;
   if (!jump || state.hp <= 0 || !Number.isFinite(time) || time < jump.start || time >= jump.land) return 0;

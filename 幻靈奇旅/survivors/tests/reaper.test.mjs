@@ -1,0 +1,16 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createStore} from '../js/save-bridge.js';
+import {CaveWorld} from '../js/world.js';
+import {SCYTHE_COMBO,shopWeaponEntries} from '../js/weapon-rules.js';
+import '../../js/reaper-event.js';
+const E=globalThis.PhantomReaperEvent,id=E.weaponId;
+const read=p=>JSON.parse(readFileSync(new URL(p,import.meta.url),'utf8'));
+const data={spirits:Object.fromEntries(read('../../data/spirits.json').map(s=>[s.id,s])),config:read('../data/config.json'),skills:read('../data/spirit-skills.json'),passives:read('../data/survival-passives.json')};
+function setup(){const m=new Map(),store=createStore({getItem:k=>m.get(k)??null,setItem:(k,v)=>m.set(k,v)});store.transact('init',s=>{s.weapons=[id];s.equipped=[id];});const hits=[],w=new CaveWorld(store,data,{heroNormal:e=>hits.push(e),heroStrike:e=>hits.push(e)});w.start();const r=w.run;r.spawnAt=1e8;w.random=()=>.99;w.spawn();Object.assign(r.enemies[0],{x:0,z:1,hp:1e6,maxHp:1e6,nextAttack:1e8,defense:0});return {w,r,hits};}
+test('merchant rejects wrong code without mutation and grants the complete gift once',async()=>{const s={};await assert.rejects(E.redeem(s,'123456'));assert.deepEqual(s,{});assert.equal(await E.redeem(s,'741216'),true);const before=JSON.stringify(s);assert.equal(await E.redeem(s,'741216'),false);assert.equal(JSON.stringify(s),before);assert.equal(s.costume,'reaper');assert.ok(s.unlockedCostumes.includes('reaper'));});
+test('both battle inventories grant once and do not duplicate or override a later equipment selection',()=>{const root={reaperGift:{claimed:true}},c={weapons:['guns-starter'],equipped:['guns-starter']},t={};assert.equal(E.cave(c,{}),false);assert.equal(E.cave(c,root),true);c.equipped=['guns-starter'];assert.equal(E.cave(c,root),false);assert.deepEqual(c.equipped,['guns-starter']);E.tower(t,root);assert.ok(t.weaponsOwned[id]);t.equipped[0]='other';E.tower(t,root);assert.equal(t.equipped[0],'other');assert.ok(!shopWeaponEntries().some(([key])=>key===id));});
+test('five actual strikes follow presentation timing and full recovery without an early restart',()=>{const {w,r,hits}=setup();assert.ok(w.startScytheCombo());for(let i=0;i<281;i++){r.time=i/100;w.tickScytheCombo();}assert.equal(hits.length,5);assert.deepEqual(hits.map(h=>h.index),[0,1,2,3,4]);assert.equal(r.heroCombo,null);assert.ok(SCYTHE_COMBO.hitTimes.at(-1)<SCYTHE_COMBO.duration);});
+test('ultimate is local, expands on its final strike, spends cooldown once and cannot overlap',()=>{const {w,r,hits}=setup();assert.ok(w.heroUltimate());assert.equal(w.heroUltimate(),false);assert.equal(r.hero.ultimateCd,22);for(let i=0;i<281;i++){r.time=i/100;w.tickScytheCombo();}assert.equal(hits.length,5);assert.ok(hits.at(-1).range>hits[0].range);assert.ok(hits.every(h=>h.strong&&!h.global));});
+test('normal roll and damage cancel future scythe strikes',()=>{for(const cancel of ['roll','hurt']){const {w,r,hits}=setup();w.startScytheCombo();r.time=.4;w.tickScytheCombo();assert.equal(hits.length,1);if(cancel==='roll')assert.ok(w.roll(1,0));else w.hurt(r.hero,5,r.enemies[0],{raw:true});r.time=3;w.tickScytheCombo();assert.equal(hits.length,1);assert.equal(r.heroCombo,null);}});
