@@ -141,7 +141,7 @@
   button.hidden=false;
   const p=count(),done=tasks.filter(t=>finished(t.id,p)).length;
   const current=tasks.find(t=>!finished(t.id,p));
-  button.innerHTML='<span class="taskIcon" aria-hidden="true">✦</span><span class="taskCount">'+done+'/'+tasks.length+'</span>';
+  button.innerHTML='<span class="taskIcon" aria-hidden="true">✦</span><span class="shortcutName">冒險任務</span><span class="taskCount">'+done+'/'+tasks.length+'</span>';
   button.title='冒險任務清單 '+done+'/'+tasks.length;
   button.setAttribute('aria-expanded',String(opened));
   button.setAttribute('aria-label','冒險任務清單，已完成 '+done+' / '+tasks.length+'，'+(opened?'收合':'展開'));

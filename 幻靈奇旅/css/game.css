@@ -928,3 +928,23 @@ body.quest-shortcut-modal #modal{
 body.quest-shortcut-modal #modal .panel{
  max-height:calc(100dvh - env(safe-area-inset-top,0px) - 54px);
 }
+
+/* Desktop shortcuts retain their icons and counts, and name every action/resource. */
+#topBar .shortcutName{display:none}
+@media(min-width:900px){
+ #topBar{width:calc(100% - 28px);max-width:1180px;height:44px;gap:6px}
+ #topBar #menuBtn,#topBar #dexBtn,#topBar #journeyTaskBtn,#topBar #hud>.supply{
+  flex:1 1 auto!important;width:auto!important;min-width:max-content!important;
+  height:44px!important;min-height:44px!important;max-height:44px!important;
+  padding:0 9px!important;gap:7px!important;border-radius:10px;
+ }
+ #topBar .shortcutName,#topBar #menuBtn .shortcutName,#topBar #journeyTaskBtn .shortcutName{
+  display:inline!important;font-size:12px!important;font-weight:700;line-height:1.2;color:inherit;
+ }
+ #topBar #dexBtn b,#topBar #hud>.supply b,#topBar #journeyTaskBtn .taskCount{font-size:12px!important}
+ #topBar #hud>.supply .coreBall,#topBar #hud>.supply .fruitIcon{width:16px!important;height:16px!important;flex-basis:16px!important}
+ #topBar #dexBtn .dexIcon,#topBar #journeyTaskBtn .taskIcon{font-size:16px!important}
+ #radar{top:calc(env(safe-area-inset-top,0px) + 58px)}
+ body.quest-shortcut-modal #modal{top:calc(env(safe-area-inset-top,0px) + 56px)}
+ body.quest-shortcut-modal #modal .panel{max-height:calc(100dvh - env(safe-area-inset-top,0px) - 68px)}
+}
