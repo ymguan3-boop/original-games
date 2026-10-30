@@ -1,5 +1,5 @@
 import {itemArtwork} from './item-pictures.js?v=20261029-reaper-v1';
-import {ITEMS,WEAPONS} from './inventory.js?v=20261029-reaper-v1';
+import {ITEMS,WEAPONS} from './inventory.js?v=20261030-reaper-v2';
 const COLORS = { yellow:'#ffd16a', purple:'#bd75ff', red:'#ff385d' };
 const clamp = x => Math.max(0, Math.min(1,x));
 const ease = x => 1-Math.pow(1-clamp(x),3);

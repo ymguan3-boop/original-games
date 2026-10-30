@@ -1,8 +1,8 @@
 export const SCYTHE_COMBO=Object.freeze({duration:4.6/1.65,hitTimes:Object.freeze([.52,1.55,2.23,2.93,3.67].map(t=>t/1.65))});
 import {HERO_ATTACKS} from './combat-profile.js?v=20261027-v30';
 import {TOWER_ULTIMATES} from './tower-ultimates.js';
-import {WEAPONS,BOSS_WEAPONS} from './inventory.js?v=20261029-reaper-v1';
-export function heroWeaponProfile(w){if(w.scythe)return {type:'cone',range:w.range,duration:SCYTHE_COMBO.duration+.08,release:SCYTHE_COMBO.hitTimes[0]};const p=w.swordWave?{...HERO_ATTACKS.knife,type:'ranged',range:HERO_ATTACKS.guns.range}:{...HERO_ATTACKS[w.kind||w.type]};const speed=1+(w.attackSpeed||0);return{...p,range:p.range*(1+(w.rangeBonus||0)),duration:p.duration/speed,release:p.release/speed};}
+import {WEAPONS,BOSS_WEAPONS} from './inventory.js?v=20261030-reaper-v2';
+export function heroWeaponProfile(w){if(w.scythe)return {type:'cone',range:w.range,duration:SCYTHE_COMBO.duration/(1+(w.attackSpeed||0))+.08,release:SCYTHE_COMBO.hitTimes[0]/(1+(w.attackSpeed||0))};const p=w.swordWave?{...HERO_ATTACKS.knife,type:'ranged',range:HERO_ATTACKS.guns.range}:{...HERO_ATTACKS[w.kind||w.type]};const speed=1+(w.attackSpeed||0);return{...p,range:p.range*(1+(w.rangeBonus||0)),duration:p.duration/speed,release:p.release/speed};}
 export function heroWeaponCombo(w){const c=TOWER_ULTIMATES[w.kind||w.type];return{...c,interval:c.interval/(1+(w.attackSpeed||0)),startup:.15/(1+(w.attackSpeed||0))};}
 export function shopWeaponEntries(){const all=Object.entries(WEAPONS).filter(([,w])=>!w.eventOnly);return [...all.filter(([,w])=>!w.bossOnly).sort((a,b)=>b[1].price-a[1].price),...all.filter(([,w])=>w.bossOnly)];}
 export function nearestEnemy(run,origin=run.hero){let target=null,best=Infinity;for(const e of run.enemies){if(e.hp<=0||e.rewarded||e.capturePending||e.weakUntil>run.time)continue;const d=(e.x-origin.x)**2+(e.z-origin.z)**2;if(d<best){target=e;best=d;}}return target;}

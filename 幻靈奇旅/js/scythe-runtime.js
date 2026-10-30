@@ -23,7 +23,8 @@ function create(options){
  function sample(list,time,weight=1){for(const t of list){const values=t.read.evaluate(time);if(weight===1)t.node[t.key].fromArray(values);else if(t.key==='quaternion'){qa.copy(t.node.quaternion);qb.fromArray(values);t.node.quaternion.copy(qa.slerp(qb,weight));}else t.node[t.key].lerp(v.fromArray(values),weight);}}
  // The grip controller works in the unscaled hero's native coordinate system.
  const grip=global.createScytheGripMotion(T,model,model,weapon);
- weapon.traverse(n=>{if(n.isMesh){n.castShadow=true;n.frustumCulled=false;}});grip.control.visible=false;
+ const crimsonMaterials=new Map(),materialOwners=[];
+ weapon.traverse(n=>{if(n.isMesh){const original=n.material;const tint=m=>{if(!/刃|星核/.test(m.name||''))return m;if(!crimsonMaterials.has(m)){const copy=m.clone();copy.color.set(/刃緣/.test(m.name)?0xff2444:0x9b0925);if(copy.emissive){copy.emissive.set(0x78051c);copy.emissiveIntensity=/刃緣|星核/.test(m.name)?.65:.15;}crimsonMaterials.set(m,copy);}return crimsonMaterials.get(m);};n.material=Array.isArray(original)?original.map(tint):tint(original);materialOwners.push({node:n,original});n.castShadow=true;n.frustumCulled=false;}});grip.control.visible=false;
  let elapsed=0,clock=0,attacking=false,lastAttack=false,lastId,lastCue=-1,disposed=false,activeBefore=false;
  const metrics={phase:'hidden',grip:null,swishes:0,trailPoints:0,attacking:false,active:false,elapsed:0};
  // A pooled blade ribbon, attached outside the spinning model.
@@ -38,7 +39,7 @@ function create(options){
  function clearTrail(){count=0;head=0;geometry.setDrawRange(0,0);metrics.trailPoints=0;}
  function trail(active){weapon.updateMatrixWorld(true);weapon.localToWorld(tip.set(1.56,.073,0));weapon.localToWorld(inner.set(.26,1.048,0));const scale=model.getWorldScale(v).x,last=count?history[(head+count-1)%capacity]:null;if(active&&(!last||tip.distanceTo(last.tip)>.005*scale)){if(count===capacity){head=(head+1)%capacity;count--;}const item=history[(head+count++)%capacity];item.tip.copy(tip);item.inner.copy(inner);item.time=clock;}
   while(count&&clock-history[head].time>.18){head=(head+1)%capacity;count--;}
-  let vertices=0;for(let i=1;i<count;i++){const a=history[(head+i-1)%capacity],b=history[(head+i)%capacity];if(a.tip.distanceTo(b.tip)>.55*scale)continue;const alpha=clamp(1-(clock-(a.time+b.time)/2)/.18);for(const point of [a.inner,a.tip,b.tip,a.inner,b.tip,b.inner]){world.worldToLocal(local.copy(point));const k=vertices++*3;positions[k]=local.x;positions[k+1]=local.y;positions[k+2]=local.z;colors[k]=.25*alpha;colors[k+1]=.83*alpha;colors[k+2]=alpha;}}
+  let vertices=0;for(let i=1;i<count;i++){const a=history[(head+i-1)%capacity],b=history[(head+i)%capacity];if(a.tip.distanceTo(b.tip)>.55*scale)continue;const alpha=clamp(1-(clock-(a.time+b.time)/2)/.18);for(const point of [a.inner,a.tip,b.tip,a.inner,b.tip,b.inner]){world.worldToLocal(local.copy(point));const k=vertices++*3;positions[k]=local.x;positions[k+1]=local.y;positions[k+2]=local.z;colors[k]=alpha;colors[k+1]=.06*alpha;colors[k+2]=.16*alpha;}}
   geometry.attributes.position.needsUpdate=geometry.attributes.color.needsUpdate=true;geometry.setDrawRange(0,vertices);metrics.trailPoints=count;
  }
  let context=null,noise=null;const sounds=new Set();
@@ -52,7 +53,7 @@ function create(options){
   if(state.cancel)attacking=false;activeBefore=true;grip.control.visible=true;rememberPose();
   if(state.attack&&(!lastAttack||state.attackId!==lastId)){attacking=true;elapsed=0;lastCue=-1;clearTrail();}
   lastAttack=!!state.attack;lastId=state.attackId;
-  if(attacking){elapsed+=Math.max(0,Math.min(.1,dt||0));if(elapsed>=total/rate)attacking=false;}
+  if(attacking){elapsed+=Math.max(0,Math.min(.1,dt||0))*(state.speed||1);if(elapsed>=total/rate)attacking=false;}
   if(!attacking){grip.reset();const name=motion==='Walk'||motion==='Run'?motion:'Idle',clip=clips.find(c=>c.name===name);sample(samplers[name],clock%clip.duration);sample(samplers.carry,.10);metrics.grip=grip.apply(-1,0);metrics.phase=name;trail(false);}
   else{sample(samplers.SwordReady,.10);const t=Math.min(total,elapsed*rate),phase=Math.max(0,bounds.findIndex((b,i)=>i>0&&t<b)-1),u=(t-bounds[phase])/durations[phase],weight=ease(t/.20),source=t<bounds[4]?t/bounds[4]*1.5:t<bounds[5]?1.5:1.5+(t-bounds[5])/durations[5]*.49;
    sample(samplers.SwordCombo,Math.min(1.99,source),weight);sample(torsoRest,.10);const drive=Math.sin(t/total*Math.PI*4)*weight,bend=Math.sin(t/total*Math.PI*2)*weight;model.getObjectByName('hips').rotation.y+=.10*drive;const chest=model.getObjectByName('chest');chest.rotation.y+=.20*drive;chest.rotation.x+=.10*bend;
@@ -60,7 +61,7 @@ function create(options){
   }
   finishPose();outputQ.copy(model.quaternion);metrics.attacking=attacking;metrics.active=attacking;metrics.elapsed=elapsed;return metrics;
  }
- function dispose(){if(disposed)return;clearPoseOverlay();restoreHeading();disposed=true;grip.dispose();ribbon.parent?.remove(ribbon);geometry.dispose();material.dispose();texture.dispose();for(const {src,filter,volume}of sounds){src.onended=null;try{src.stop();}catch(_){}src.disconnect();filter.disconnect();volume.disconnect();}sounds.clear();if(context)context.close().catch(()=>{});noise=null;clearTrail();}
+ function dispose(){if(disposed)return;clearPoseOverlay();restoreHeading();disposed=true;grip.dispose();for(const {node,original} of materialOwners)node.material=original;for(const m of crimsonMaterials.values())m.dispose();ribbon.parent?.remove(ribbon);geometry.dispose();material.dispose();texture.dispose();for(const {src,filter,volume}of sounds){src.onended=null;try{src.stop();}catch(_){}src.disconnect();filter.disconnect();volume.disconnect();}sounds.clear();if(context)context.close().catch(()=>{});noise=null;clearTrail();}
  return {update,dispose,metrics,totalDuration:4.6/rate,timings:timings.slice(),hitTimes:timings.slice(),control:grip.control};
 }
 global.PhantomScythe={create,totalDuration:4.6/rate,timings:timings.slice(),hitTimes:timings.slice()};
