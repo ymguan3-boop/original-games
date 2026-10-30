@@ -2,12 +2,12 @@
 (function(global){'use strict';
 global.installReaperTower=function({Hunt,World,T,SHOP_WEAPONS,WEAPONS,costumeAttackBoost,costumeAttackRangeBoost,onSound=()=>{}}){
  const id='sword-starlight-scythe',duration=PhantomScythe.totalDuration,times=PhantomScythe.hitTimes;
- SHOP_WEAPONS.push({id,type:0,name:'死神鐮刀',label:'星冥連舞／冥月收割',category:'鐮刀',description:'擊殺後攻速+50%持續10秒（刷新、不疊加）；大絕無須鎖定，全場5倍加成攻擊，並恢復加成攻擊力3%的生命',scythe:true,eventOnly:true,boost:1,chance:0,recipe:[]});
+ SHOP_WEAPONS.push({id,type:0,name:'死神鐮刀',label:'星冥連舞／冥月收割',category:'鐮刀',description:'使用鐮刀擊殺魔物後，普攻速度+50%，持續10秒；再次擊殺只刷新時間、不疊加。冥月收割：無須鎖定，演出結束後全場造成當時加成攻擊力5倍的基礎傷害，並回復該攻擊力3%的生命（受生命上限限制）',scythe:true,eventOnly:true,boost:1,chance:0,recipe:[]});
  const active=h=>h.equippedWeapon()?.id===id;
  const wrap=(proto,name,fn)=>{const old=proto[name];proto[name]=function(...args){return fn.call(this,old,...args);};};
  const stop=h=>{h.reaperSequence=null;h.player.attack=0;h.player.special=0;};
  wrap(Hunt.prototype,'purchase',function(old,key){if(key===id)return false;return old.call(this,key);});
- wrap(Hunt.prototype,'load',function(old,...args){this.reaperSequence=null;this.reaperHaste=0;this.reaperSlashes=[];return old.apply(this,args);});
+ wrap(Hunt.prototype,'load',function(old,...args){const carry=this.mode==='victory'&&args[0]>this.level?this.reaperHaste||0:0;this.reaperSequence=null;this.reaperSlashes=[];const result=old.apply(this,args);this.reaperHaste=carry;return result;});
  wrap(Hunt.prototype,'switchWeapon',function(old,...args){if(this.reaperSequence)return false;return old.apply(this,args);});
  const effectiveAttack=h=>WEAPONS[0].damage*(1+h.cardBoost()/100)*(h.player.attackBoostTime>0?1.25:1)*costumeAttackBoost();
  function start(h,strong,heavy){const p=h.player,m=h.monster,cost=heavy?24:14;if(h.mode!=='battle'||h.paused||p.hp<=0||h.reaperSequence||h.ultimateSequence||p.dodge>0||(strong&&(p.ultimateCd>0||p.special>0)))return false;
@@ -23,7 +23,7 @@ global.installReaperTower=function({Hunt,World,T,SHOP_WEAPONS,WEAPONS,costumeAtt
  wrap(Hunt.prototype,'damagePlayer',function(old,...args){const hit=old.apply(this,args);if(hit&&this.reaperSequence&&!this.reaperSequence.strong)stop(this);return hit;});
  wrap(Hunt.prototype,'tryMonsterDodge',function(old,...args){return this.reaperSequence?.strong&&this.reaperSequence.resolved?false:old.apply(this,args);});
  wrap(Hunt.prototype,'damageMonster',function(old,...args){const before=this.monster.hp,result=old.apply(this,args);if(active(this)&&result&&before>0&&this.monster.hp<=0)this.reaperHaste=10;return result;});
- wrap(Hunt.prototype,'tick',function(old,dt,input){const seq=this.reaperSequence,step=this.paused?0:Math.max(0,Math.min(.05,dt));if(this.mode==='battle')this.reaperHaste=Math.max(0,(this.reaperHaste||0)-step);const result=old.call(this,dt,input);if(!seq||this.reaperSequence!==seq||this.paused)return result;if(this.mode!=='battle'||this.player.hp<=0){stop(this);return result;}
+ wrap(Hunt.prototype,'tick',function(old,dt,input){const seq=this.reaperSequence,step=this.paused?0:Math.max(0,Math.min(.05,dt));if(['battle','loot','victory'].includes(this.mode))this.reaperHaste=Math.max(0,(this.reaperHaste||0)-step);const result=old.call(this,dt,input);if(!seq||this.reaperSequence!==seq||this.paused)return result;if(this.mode!=='battle'||this.player.hp<=0){stop(this);return result;}
   seq.elapsed+=step;this.player.facing=seq.heading;const p=this.player;
   if(seq.strong){if(seq.elapsed>=seq.duration&&!seq.resolved){seq.resolved=true;const attack=effectiveAttack(this);this.damageMonster(Math.round(attack*5),true,true);const healed=Math.max(0,Math.min(150-p.hp,attack*.03));if(p.hp>0)p.hp+=healed;this.reaperWave={serial:(this.reaperWave?.serial||0)+1,x:p.x,z:p.z,healed};}}
   else while(seq.index<times.length&&seq.elapsed*seq.speed>=times[seq.index]){const i=seq.index++,m=this.monster,range=4.4*costumeAttackRangeBoost();
