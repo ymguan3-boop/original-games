@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {SPOTS, MOBILE_SPOTS} from '../js/islands.js';
 
 /* Stage ordering must stay aligned with STAGES; the ferry must never skip an island. */
@@ -23,4 +24,26 @@ test('portrait islands form a continuous serpentine ferry route from the bottom 
     assert.ok(distance > 100 && distance < 300, `islands ${i} and ${i + 1} are too far apart`);
     assert.ok(by <= ay, 'the ferry proceeds steadily up the chart toward stage ten');
   }
+});
+
+/* The entire diorama, not only the centre point, must fit within the portrait SVG. */
+test('portrait chart bounds include islands and the harbor without overlay', () => {
+  const chartWidth = 700, chartHeight = 890;
+  for (const [x, y] of MOBILE_SPOTS) {
+    assert.ok(x - 78 >= 0 && x + 78 <= chartWidth, 'island artwork cropped horizontally');
+    assert.ok(y - 82 >= 0 && y + 70 <= chartHeight, 'island artwork or label cropped vertically');
+  }
+  const harbor = [80, 805];
+  assert.ok(harbor[0] + 100 <= chartWidth);
+  assert.ok(harbor[1] - 90 >= 0 && harbor[1] + 64 <= chartHeight);
+});
+
+test('portrait HUD reserves distinct map and button areas, with fixed-right items and contained stars', () => {
+  const css = readFileSync(new URL('../css/defense.css', import.meta.url), 'utf8');
+  assert.match(css, /grid-template-rows:auto minmax\(0,1fr\) auto/);
+  assert.match(css, /#lobby \.sea-wrap \{[\s\S]*?grid-row:2/);
+  assert.match(css, /#lobby \.isle-panel \{[\s\S]*?grid-row:3/);
+  assert.match(css, /#hud \.hud-bottom \{[\s\S]*?grid-template-columns:minmax\(0,1fr\) 86px/);
+  assert.match(css, /#hud \.item-wrap \{[\s\S]*?grid-column:2/);
+  assert.match(css, /#hud \.hand-card \.stars \{[\s\S]*?top:3px/);
 });
