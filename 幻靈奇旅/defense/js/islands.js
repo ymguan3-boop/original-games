@@ -1,13 +1,13 @@
 /* 幻靈群島 sea chart: one island per stage joined by sea lanes, plus the 初光鎮 pier. The boat sails lane by lane
    (SVG path lengths), so moving between far islands follows the route through every island in between. */
 const W = 1000, H = 620;
-const MOBILE_W = 700, MOBILE_H = 1120;
+const MOBILE_W = 700, MOBILE_H = 890;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
 /* A compact portrait archipelago uses a readable two-column, five-row sailing route instead of
    shrinking the entire desktop chart to postage-stamp islands. Ordering remains port -> 1 ... -> 10. */
-export const MOBILE_SPOTS = [[210, 924], [485, 924], [485, 742], [210, 742], [210, 560],
-  [485, 560], [485, 378], [210, 378], [210, 196], [485, 196]];
-const MOBILE_HOME = [80, 1040];
+export const MOBILE_SPOTS = [[210, 675], [485, 675], [485, 530], [210, 530], [210, 385],
+  [485, 385], [485, 240], [210, 240], [210, 95], [485, 95]];
+const MOBILE_HOME = [80, 805];
 const spots = () => isPortrait() ? MOBILE_SPOTS : SPOTS;
 const home = () => isPortrait() ? MOBILE_HOME : HOME;
 /* index -1 is the town pier; 0..9 are the stages */
@@ -51,8 +51,8 @@ export function createIslandMap(host, {stages, onPick, onHome, esc = (s) => s}) 
       <filter id="isleShadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="7" stdDeviation="4" flood-color="#0b3f6a" flood-opacity=".35"/></filter>
       <filter id="locked"><feColorMatrix type="saturate" values=".15"/><feComponentTransfer><feFuncA type="linear" slope=".85"/></feComponentTransfer></filter>
     </defs>
-    <rect x="-1500" y="-1500" width="${W + 3000}" height="${H + 3000}" fill="#2f8fcc"/><rect width="${W}" height="${H}" fill="url(#seaGlow)"/>
-    <rect class="waves-a" x="-1500" y="-1500" width="${W + 3060}" height="${H + 3000}" fill="url(#seaWaves)"/>
+    <rect x="-1500" y="-1500" width="${W + 3000}" height="${MOBILE_H + 3000}" fill="#2f8fcc"/><rect width="100%" height="100%" fill="url(#seaGlow)"/>
+    <rect class="waves-a" x="-1500" y="-1500" width="${W + 3060}" height="${MOBILE_H + 3000}" fill="url(#seaWaves)"/>
     <g class="lanes"></g><g class="isles"></g><g class="home"></g><g class="boat-layer"></g>
   </svg>`;
   const svg = host.querySelector('svg'), lanesG = svg.querySelector('.lanes'), islesG = svg.querySelector('.isles'), homeG = svg.querySelector('.home'), boatG = svg.querySelector('.boat-layer');
