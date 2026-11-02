@@ -78,12 +78,12 @@ export function createIslandMap(host, {stages, onPick, onHome, esc = (s) => s}) 
       const [x, y] = spots()[i], look = LOOK[s.scene] || LOOK.meadow, locked = i > state.open, cleared = !!state.cleared[s.id], sel = state.selected === i, r = 46 + (s.path?.length || 0) % 3 * 3;
       return `<g class="isle ${locked ? 'is-locked' : ''} ${cleared ? 'is-cleared' : ''} ${sel ? 'is-selected' : ''}" data-isle="${i}" transform="translate(${x},${y})" tabindex="${locked ? -1 : 0}" role="button" aria-label="${i + 1}. ${esc(s.name)}${locked ? '（未解鎖）' : ''}">
         ${sel ? `<ellipse class="isle-ring" rx="${r + 16}" ry="${(r + 16) * 0.62}"/>` : ''}
-        ${state.art?.[i] ? `<image href="${state.art[i]}" x="-78" y="-82" width="156" height="120" ${locked ? 'class="fogged" filter="url(#locked)"' : ''}/>${locked ? '<text class="isle-icon" y="-10" text-anchor="middle">☁️</text>' : ''}` : `<g filter="url(#isleShadow)" ${locked ? 'class="fogged"' : ''}>
+        ${state.art?.[i] ? `<image href="${state.art[i]}" x="-78" y="-82" width="156" height="120"/>${locked ? '<text class="isle-lock" x="36" y="-44" text-anchor="middle">🔒</text>' : ''}` : `<g filter="url(#isleShadow)">
           <path d="${blob(r + 6, i + 1)}" fill="#f2deaa" transform="translate(0,6)"/>
           <path d="${blob(r, i + 1)}" fill="${look.side}" transform="translate(0,4)"/>
           <path d="${blob(r - 4, i + 2)}" fill="${look.top}"/>
         </g>
-        <text class="isle-icon" y="-4" text-anchor="middle">${locked ? '☁️' : look.icon}</text>`}
+        <text class="isle-icon" y="-4" text-anchor="middle">${look.icon}</text>${locked ? '<text class="isle-lock" x="36" y="-44">🔒</text>' : ''}`}
         ${state.bosses[i] && !locked && !state.art?.[i] ? `<image href="${state.bosses[i]}" x="${r - 28}" y="-${r * 0.62 + 10}" width="30" height="30" class="isle-boss" clip-path="circle(15px at 15px 15px)"/>` : ''}
         <g class="isle-label" transform="translate(0,${r * 0.62 + 20})"><rect x="-58" y="-14" width="116" height="24" rx="12"/><text text-anchor="middle" y="3" class="isle-name">${i + 1}. ${esc(s.name)}</text></g>
         ${cleared ? `<text class="isle-flag" x="${-r + 6}" y="${-r * 0.4}">🚩</text>` : ''}
