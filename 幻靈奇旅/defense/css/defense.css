@@ -536,3 +536,156 @@ dialog#panel[data-view="gacha"] { width:min(660px,calc(100vw - 20px)); max-heigh
 @media(max-width:540px) {
   #panel[data-view="gacha"] .gacha-machine.compact-summoner {height:clamp(165px,23dvh,225px);min-height:165px;width:100%;}
 }
+
+
+/* 2026-11-02 mobile chart v3: dedicated grid rows, fixed tool slot, contained star badges */
+/* Cards: the star capsule belongs inside the card, including at rank 2/3. */
+#hud .hand-card { box-sizing:border-box; min-width:0; }
+#hud .hand-card .stars {
+  top:3px;
+  left:50%;
+  right:auto;
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:calc(100% - 10px);
+  padding:1px 3px 2px;
+  display:flex;
+  justify-content:center;
+  gap:0;
+  box-sizing:border-box;
+  overflow:hidden;
+  white-space:nowrap;
+  font-size:clamp(7px,17cqi,14px);
+  line-height:1;
+  letter-spacing:-.03em;
+  pointer-events:none;
+}
+#hud .hand-card .stars i { flex:0 1 auto; min-width:0; }
+/* Card count never changes the right-hand tools' screen position. */
+#hud .hud-bottom {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 86px;
+  align-items:end;
+  justify-content:stretch;
+  gap:8px;
+  left:8px;
+  right:8px;
+  width:auto;
+  transform:none;
+  pointer-events:none;
+}
+#hud .hand {
+  grid-column:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  min-width:0;
+  width:100%;
+  pointer-events:auto;
+}
+#hud .item-wrap {
+  grid-column:2;
+  justify-self:end;
+  align-self:end;
+  width:86px;
+  flex:none;
+  pointer-events:auto;
+}
+#hud .item-wrap #items { width:100%; }
+@media(max-width:720px) {
+  #hud .hud-bottom { grid-template-columns:minmax(0,1fr) 62px; gap:5px; left:7px; right:7px; }
+  #hud .hand { gap:3px; }
+  #hud .hand-card { width:min(13vw,72px,calc((100vw - 98px)/6)); flex:none; }
+  #hud .hand-card .stars { top:2px; max-width:calc(100% - 6px); padding:1px 2px; font-size:clamp(7px,17cqi,12px); }
+  #hud .item-wrap { width:62px; }
+  #hud .item-wrap #items { width:62px; }
+}
+@media (orientation:portrait) and (max-width:720px) {
+  /* Three actual layout rows: toolbar / ten islands / sortie. This is not
+     an overlay, so island 1 and the departure pier can never sit behind
+     the lower button panel on portrait mobile screens. */
+  #lobby {
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:auto minmax(0,1fr) auto;
+    min-height:0;
+    height:100%;
+    overflow:hidden;
+    gap:0;
+  }
+  #lobby .chart-head {
+    grid-column:1;
+    grid-row:1;
+    position:relative;
+    top:auto;
+    left:auto;
+    right:auto;
+    z-index:3;
+    display:grid;
+    grid-template-columns:44px minmax(0,1fr);
+    gap:4px 8px;
+    align-items:center;
+    padding:8px 10px 5px;
+    margin:0;
+    width:100%;
+    min-width:0;
+    background:linear-gradient(180deg,#2b87c5 5%,#2b87c5dd 90%,transparent);
+  }
+  #lobby .chart-head .logo {grid-column:1;grid-row:1;width:43px;}
+  #lobby .chart-head .title-block {grid-column:2;grid-row:1;min-width:0;}
+  #lobby .chart-tools {grid-column:1/-1;grid-row:2;width:100%;margin:0;justify-content:space-between;flex-wrap:nowrap;gap:5px;min-width:0;}
+  #lobby .chart-tools .points-badge {white-space:nowrap;min-width:0;padding:5px 8px;}
+  #lobby button.tool {min-width:39px;padding:7px 8px;}
+  #lobby .sea-wrap {
+    grid-column:1;
+    grid-row:2;
+    position:relative;
+    inset:auto;
+    top:auto;
+    bottom:auto;
+    left:auto;
+    right:auto;
+    min-width:0;
+    min-height:0;
+    height:100%;
+    width:100%;
+    overflow:hidden;
+    align-self:stretch;
+    display:grid;
+    place-items:center;
+  }
+  #lobby .sea-chart {
+    display:block;
+    width:100%;
+    height:100%;
+    max-height:100%;
+    max-width:100%;
+    overflow:hidden;
+  }
+  #lobby .isle-panel {
+    grid-column:1;
+    grid-row:3;
+    position:relative;
+    left:auto;
+    right:auto;
+    top:auto;
+    bottom:auto;
+    margin:2px 10px max(10px,env(safe-area-inset-bottom));
+    width:auto;
+    max-height:min(27dvh,180px);
+    min-height:0;
+    overflow:auto;
+    align-self:end;
+    z-index:5;
+  }
+  #lobby .isle-card {padding:8px 10px;gap:5px 9px;}
+  #lobby .isle-card > button.wide {min-height:42px;font-size:18px;padding:5px;}
+}
+@media (orientation:portrait) and (max-width:720px) and (max-height:650px) {
+  #lobby .chart-head {padding-top:4px;padding-bottom:3px;}
+  #lobby .chart-head h1 {font-size:17px;}
+  #lobby .isle-panel {max-height:138px;margin-bottom:7px;}
+  #lobby .isle-card {padding:6px 8px;gap:3px;}
+  #lobby .isle-boss img {width:30px;height:30px;}
+  #lobby .isle-card > button.wide {min-height:38px;}
+}
