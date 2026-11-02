@@ -597,16 +597,8 @@ export function createView(canvas, {spirits, catalog}) {
     }
   }
 
-  /* field-wide skills light up the whole map: a coloured wash over every tile plus sparkles everywhere */
-  const washTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 4, 64, 64, 64); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.6, 'rgba(255,255,255,.55)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
-  function fieldWash(color, life = 1.6) {
-    const pts = state.path.points, xs = pts.map((p) => p[0]), zs = pts.map((p) => p[1]);
-    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cz = (Math.min(...zs) + Math.max(...zs)) / 2, w = Math.max(...xs) - Math.min(...xs) + 16, d = Math.max(...zs) - Math.min(...zs) + 14;
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({map: washTex, color: linear(color), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending}));
-    m.rotation.x = -Math.PI / 2; m.position.set(cx, 0.2, cz);
-    addEffect(m, life, (o, k) => { o.material.opacity = 0.5 * (k < 0.18 ? k / 0.18 : 1 - (k - 0.18) / 0.82); });
-    for (let x = cx - w / 2 + 2; x < cx + w / 2; x += 4) for (let z = cz - d / 2 + 2; z < cz + d / 2; z += 4) fx.particles({x: x + (Math.random() - 0.5) * 2, z: z + (Math.random() - 0.5) * 2, y: 0.4, count: 3, color, size: 0.45, speed: 0.6, up: 1.6, spread: 0.8, life: 1.2, gravity: -0.5});
-  }
+  /* Global screen-wide washes were removed in V2.0: only localized VFX
+     are allowed, so a hit cannot darken the scene or repaint its fixed sky. */
 
   function supportSkill(ev) {
     const color = ELEMENT_COLORS[ev.element], c = crystal.position, center = world((state.left + state.right) / 2);
