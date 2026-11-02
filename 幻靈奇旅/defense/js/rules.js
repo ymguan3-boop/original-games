@@ -233,9 +233,19 @@ export const SKILL_WINDUP = 1.1;
 export const BOSS_OUT_AT = 0.6, BOSS_SKILL_FIRST = 16;
 export const bossSkillEvery = (stageIndex) => Math.max(18, 26 - stageIndex);
 export const bossSkillDamage = (stageIndex) => 0.1 + stageIndex * 0.006;
+/* Shared heavy-animation gate: support, boss and fighter ultimates all reserve one
+   1.8s visual slot. Queueing never holds the browser or spawns multiple casters at once. */
 function castSupport(state, card) {
-  state.pendingSkills.push({card: {...card}, at: state.time + SKILL_WINDUP});
-  const s = SUPPORT[card.species];
+  const start = Math.max(state.time, state.nextUltimateAt), at = start + SKILL_WINDUP;
+  state.nextUltimateAt = at + ULTIMATE_SPACING;
+  const job = {card: {...card}, start, at, started: false};
+  state.pendingSkills.push(job);
+  if (start <= state.time) startSupport(state, job);
+}
+function startSupport(state, job) {
+  if (job.started) return;
+  job.started = true;
+  const card = job.card, s = SUPPORT[card.species];
   emit(state, 'skillStart', {species: card.species, kind: s.kind, rank: card.rank, skill: s.skill, element: state.spirits.get(card.species).type});
 }
 function applySupport(state, card) {
@@ -314,9 +324,11 @@ function knock(state, f, distance = 1.6) {
 function hurt(state, f, amount, element, source, strong = false, crit = false, kind = null) {
   if (f.hp <= 0) return 0;
   if (f.side === 'ally' && state.shieldUntil > state.time) { emit(state, 'hit', {id: f.id, amount: 0, element, blocked: true}); return 0; }
-  const mult = elementMultiplier(element, f.type), dealt = amount * mult * (f.statuses.weaken?.until > state.time ? 1.2 : 1) * (1 - (f.guard || 0));
+  let dealt = amount * (f.statuses.weaken?.until > state.time ? 1.2 : 1) *
+    (1 - Math.min(0.75, (f.guard || 0) + (f.extraGuardUntil > state.time ? (f.extraGuard || 0) : 0)));
+  if (f.barrierHp > 0) { const blocked = Math.min(f.barrierHp, dealt); f.barrierHp -= blocked; dealt -= blocked; }
   f.hp = Math.max(0, f.hp - dealt);
-  if (amount >= 1) emit(state, 'hit', {id: f.id, amount: dealt, element, strong, crit, kind, effective: mult > 1, resisted: mult < 1});
+  if (amount >= 1) emit(state, 'hit', {id: f.id, amount: dealt, element, strong, crit, kind});
   if (f.hp === 0) {
     if (source) source.kills++;
     if (f.side === 'enemy') { state.stats.kills++; state.dealAt -= 0.2; const pts = killPoints(state.stageIndex, f.boss); state.stats.points += pts; emit(state, 'points', {amount: pts, x: f.x, z: f.z, boss: f.boss}); }
@@ -348,54 +360,116 @@ function setStatus(state, f, type, amount) {
   else if (type === 'knockback' && !f.boss) knock(state, f, 1.2);
 }
 
-/* A summoned spirit (or the boss) uses its cave ultimate whenever its cooldown is ready. */
+/* A critical hit still works, but element affinity never changes damage.
+   One heavy ultimate at a time; other fighters continue their normal attacks. */
+function healingTargets(state, f, reach, count = 1) {
+  return state.fighters.filter((x) => x.side === f.side && x.hp > 0 && x.hp < x.maxHp &&
+      Math.abs(x.x - f.x) <= reach).sort((a, b) => (a.hp / a.maxHp) - (b.hp / b.maxHp) || a.id - b.id).slice(0, count);
+}
+function healOne(state, target, amount, source) {
+  if (!target || target.hp <= 0) return;
+  const before = target.hp;
+  target.hp = Math.min(target.maxHp, target.hp + amount);
+  if (target.hp > before) emit(state, 'heal', {id: target.id, source: source.id, amount: target.hp - before});
+}
+function basicPriestHeal(state, f, target) {
+  healOne(state, target, target.maxHp * 0.055 * (f.healMul || 1), f);
+  f.cooldown = 2.1;
+  f.busyUntil = state.time + 0.55;
+  emit(state, 'priestCast', {id: f.id, target: target.id, species: f.species});
+}
+function applyOwnSkill(state, shot, src, friends, foes, at, base) {
+  const skill = shot.skill;
+  if (!skill || !src) return false;
+  if (skill.kind === 'heal') {
+    const patients = friends().filter((o) => Math.abs(o.x - src.x) <= shot.profile.reach &&
+        o.hp < o.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp || a.id - b.id)
+        .slice(0, skill.targets || 1);
+    for (const o of patients) {
+      healOne(state, o, o.maxHp * skill.heal * (src.healMul || 1) * (1 + 0.2 * (src.rank - 1)), src);
+      if (skill.shield) o.barrierHp = Math.max(o.barrierHp || 0, o.maxHp * skill.shield);
+      if (skill.regen) { o.extraRegen = skill.regen; o.extraRegenUntil = state.time + (skill.duration || 5); }
+    }
+    if (skill.baseHeal) { const b = src.side === 'ally' ? state.crystal : state.nest; b.hp = Math.min(b.maxHp, b.hp + b.maxHp * skill.baseHeal); }
+    if (skill.once) src.usedOnce = true;
+    emit(state, 'release', {...info(shot), x: src.x, z: src.z, heal: true});
+    return true;
+  }
+  if (skill.shield) src.barrierHp = Math.max(src.barrierHp || 0, src.maxHp * skill.shield);
+  if (skill.guard) { src.extraGuard = skill.guard; src.extraGuardUntil = state.time + (skill.duration || 5); }
+  return false;
+}
 function attack(state, f, target) {
-  const strong = (f.side === 'ally' || f.boss) && state.time >= f.ultAt;
-  if (strong) f.ultAt = state.time + f.ultCd;
-  const spec = state.spirits.get(f.species), profile = strong ? profileFor(spec, state.entries.get(f.species), true) : f.profile;
+  const skill = ultimateFor(f.species);
+  const isHealerReady = f.role !== 'priest' || healingTargets(state, f, roleFor(f.species).range).length > 0;
+  const strong = (f.side === 'ally' || f.boss) && !f.usedOnce && isHealerReady &&
+    state.time >= f.ultAt && state.time >= state.nextUltimateAt && !!skill && skill.kind !== 'support';
+  if (strong) {
+    f.ultAt = state.time + f.ultCd;
+    state.nextUltimateAt = state.time + ULTIMATE_SPACING;
+    if (skill.once) f.usedOnce = true;
+  }
+  const spec = state.spirits.get(f.species);
+  const profile = strong ? profileFor(spec, state.entries.get(f.species), true) : f.profile;
   const timing = state.hooks.fire?.(f, target, strong, profile) || {release: 0.25, hold: 0.5};
   const travel = profile.ranged && !['global', 'self', 'area'].includes(profile.type) ? Math.abs(target.x - f.x) / 20 : 0;
   const haste = f.side === 'ally' && state.hasteUntil > state.time ? 0.5 : 1;
-  f.attacks++; f.busyUntil = state.time + Math.max(timing.hold || 0, 0.3) * haste; f.cooldown = f.rate * haste;
-  state.shots.push({id: state.nextId++, from: f.id, side: f.side, target: target.id ?? (target === state.nest ? 'nest' : 'crystal'), element: spec.type, species: f.species, strong, profile,
-    crit: state.random() < CRIT.chance + (f.critBonus || 0), damage: f.attack * (strong ? 3 : 1), x: target.x, z: target.z || 0, ox: f.x, oz: f.z, release: (timing.release || 0) * haste, travel: 0, eta: (timing.release || 0) * haste + travel});
+  f.attacks++; f.busyUntil = state.time + Math.max(timing.hold || 0, 0.3) * haste;
+  f.cooldown = f.rate * haste;
+  state.shots.push({id: state.nextId++, from: f.id, side: f.side,
+    target: target.id ?? (target === state.nest ? 'nest' : 'crystal'), element: spec.type,
+    species: f.species, strong, profile, skill: strong ? skill : null,
+    crit: state.random() < CRIT.chance + (f.critBonus || 0),
+    damage: f.attack * (strong ? (skill.power || 0) * (1 + 0.3 * (f.rank - 1)) : 1),
+    x: target.x, z: target.z || 0, ox: f.x, oz: f.z,
+    release: (timing.release || 0) * haste, travel: 0,
+    eta: (timing.release || 0) * haste + travel});
   emit(state, strong ? 'ultimate' : 'fire', {id: f.id, side: f.side, element: spec.type, species: f.species});
 }
-
 function resolve(state, shot) {
   const src = state.fighters.find((f) => f.id === shot.from);
-  const {profile, element} = shot, rider = ELEMENT_EFFECTS[element]?.status, foeSide = shot.side === 'ally' ? 'enemy' : 'ally';
+  const {profile, element, skill} = shot, foeSide = shot.side === 'ally' ? 'enemy' : 'ally';
   const base = shot.side === 'ally' ? state.nest : state.crystal, baseSide = shot.side === 'ally' ? 'nest' : 'crystal';
   const target = typeof shot.target === 'number' ? state.fighters.find((f) => f.id === shot.target) : null;
-  /* flying spirits take half damage from melee attacks */
   const crit = shot.crit ? CRIT.mult : 1;
-  const hitOne = (o, amount) => { hurt(state, o, (o.flying && profile.type === 'melee' ? amount * 0.5 : amount) * crit, element, src, shot.strong, shot.crit, profile.type); if (rider && (rider !== 'paralysis' || shot.strong || state.random() < 0.25)) setStatus(state, o, rider, amount); for (const pr of src?.procs || []) if (o.hp > 0 && state.random() < pr.chance) setStatus(state, o, pr.type, amount); };
   const foes = () => state.fighters.filter((o) => o.side === foeSide && o.hp > 0);
+  const friends = () => state.fighters.filter((o) => o.side === shot.side && o.hp > 0);
   const at = target ? {x: target.x, z: target.z} : {x: shot.x, z: 0};
+  if (shot.strong && applyOwnSkill(state, shot, src, friends, foes, at, base)) return;
+  const hitOne = (o, amount) => {
+    const meleePenalty = o.flying && profile.type === 'melee' ? 0.5 : 1;
+    hurt(state, o, amount * meleePenalty * crit, element, src, shot.strong, shot.crit, profile.type);
+    /* Statuses come exclusively from the authored ultimate or character passive. */
+    if (shot.strong && skill?.status && o.hp > 0) setStatus(state, o, skill.status, amount);
+    if (shot.strong && skill?.knock && o.hp > 0) knock(state, o, skill.knock);
+    for (const pr of src?.procs || []) if (o.hp > 0 && state.random() < pr.chance) setStatus(state, o, pr.type, amount);
+  };
   if (profile.type === 'self') {
-    const heal = shot.damage * (shot.strong ? 2.5 : 1.2) * (src?.healMul || 1);
-    for (const o of state.fighters) if (o.side === shot.side && o.hp > 0 && Math.abs(o.x - shot.ox) <= 4) o.hp = Math.min(o.maxHp, o.hp + heal);
-    emit(state, 'release', {...info(shot), x: shot.ox, z: shot.oz, heal: true});
+    emit(state, 'release', {...info(shot), x: shot.ox, z: shot.oz, heal: false});
     return;
   }
   if (profile.type === 'global') {
     for (const o of foes()) hitOne(o, shot.damage);
-    hurtBase(state, base, shot.damage * 0.5, baseSide);
-    emit(state, 'release', {...info(shot), x: at.x, z: at.z, global: true});
-    return;
+    hurtBase(state, base, shot.damage * 0.4, baseSide);
+    emit(state, 'release', {...info(shot), x: at.x, z: at.z, global: true}); return;
   }
-  const radius = profile.radius || (shot.strong ? 2 : 0);
+  const radius = profile.radius || 0;
   if (radius) {
-    for (const o of foes()) if (Math.abs(o.x - at.x) <= radius) hitOne(o, shot.damage);
-    if (Math.abs(base.x - at.x) <= radius + 1.2) hurtBase(state, base, shot.damage, baseSide);
-  } else if (target && target.hp > 0) hitOne(target, shot.damage);
+    const targets = foes().filter((o) => Math.abs(o.x - at.x) <= radius).slice(0, 14);
+    for (const o of targets) hitOne(o, shot.damage * (o === target ? 1 : skill?.splashMultiplier || 0.7));
+    if (Math.abs(base.x - at.x) <= radius + 1.2) hurtBase(state, base, shot.damage * 0.5, baseSide);
+  } else if (target && target.hp > 0 && target.side === foeSide) hitOne(target, shot.damage);
   else if (!target && shot.target === baseSide) hurtBase(state, base, shot.damage, baseSide);
-  if (profile.chain && target) {
+  if (profile.chain && target && target.side === foeSide) {
     const hit = [target]; let dmg = shot.damage, cur = target;
-    for (let i = 0; i < (shot.strong ? 4 : 2); i++) {
-      const next = foes().filter((o) => !hit.includes(o) && Math.abs(o.x - cur.x) <= 2.6).sort((a, b) => Math.abs(a.x - cur.x) - Math.abs(b.x - cur.x))[0];
+    for (let i = 0; i < Math.max(0, (profile.targets || 3) - 1); i++) {
+      const next = foes().filter((o) => !hit.includes(o) && Math.abs(o.x - cur.x) <= (skill?.kind === 'line' ? 5.1 : 2.6))
+        .sort((a, b) => Math.abs(a.x - cur.x) - Math.abs(b.x - cur.x))[0];
       if (!next) break;
-      dmg *= 0.7; hitOne(next, dmg); emit(state, 'chain', {...info(shot), from: cur.id, to: next.id}); hit.push(next); cur = next;
+      dmg *= skill?.kind === 'line' ? 0.85 : 0.7;
+      hitOne(next, dmg);
+      emit(state, 'chain', {...info(shot), from: cur.id, to: next.id});
+      hit.push(next); cur = next;
     }
   }
   emit(state, 'release', {...info(shot), x: at.x, z: at.z, radius});
@@ -459,11 +533,24 @@ export function step(state, dt) {
     if (f.hp <= 0) continue;
     for (const k of ['burn', 'poison']) { const s = f.statuses[k]; if (s?.until > state.time) hurt(state, f, s.dps * dt, k === 'burn' ? '焰' : '森', null); }
     if (f.hp <= 0) continue;
-    if (f.regen) f.hp = Math.min(f.maxHp, f.hp + f.maxHp * f.regen * dt);
+    if (f.regen || f.extraRegenUntil > state.time) f.hp = Math.min(f.maxHp,
+      f.hp + f.maxHp * ((f.regen || 0) + (f.extraRegenUntil > state.time ? (f.extraRegen || 0) : 0)) * dt);
     if (f.side === 'enemy' && frozen) { f.moving = false; continue; }
     f.cooldown -= dt * (f.side === 'ally' ? haste : 1);
     if (f.knockUntil > state.time) { f.x = Math.max(state.left + 1, Math.min(state.right - 1, f.x + f.knockVel * dt)); f.moving = false; continue; }
     if (f.stunUntil > state.time || f.busyUntil > state.time) { f.moving = false; continue; }
+    /* Priests heal the lowest HP-ratio friendly in range before considering damage. */
+    if (f.role === 'priest') {
+      const wounded = healingTargets(state, f, roleFor(f.species).range * (f.reachMul || 1))[0];
+      if (wounded) {
+        f.moving = false;
+        if (f.cooldown <= 0) {
+          if ((f.side === 'ally' || f.boss) && state.time >= f.ultAt && state.time >= state.nextUltimateAt && !f.usedOnce) attack(state, f, wounded);
+          else basicPriestHeal(state, f, wounded);
+        }
+        continue;
+      }
+    }
     const target = findTarget(state, f, f.profile.reach * (f.reachMul || 1));
     if (target) { f.moving = false; if (f.cooldown <= 0) attack(state, f, target); continue; }
     const slow = (f.statuses.slow?.until > state.time ? 0.5 : 1) * (f.trapSlow || 1);
