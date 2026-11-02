@@ -16,6 +16,21 @@ function woodTexture(T,hex,{w=256,h=64,planks=1,vertical=false}={}){
  const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=4;return t;
 }
 
+/* Cel look to match the reference art: three-tone toon shading plus a dark-brown inverted-hull outline (the back
+   faces pushed out along their normals). Glass, water, foam, spray and wakes are left soft. */
+function toonOutline(T,root,{thickness=.035,color=0x3b2412}={}){
+ const data=new Uint8Array([110,190,255]),grad=new T.DataTexture(data,3,1,T.LuminanceFormat);grad.minFilter=grad.magFilter=T.NearestFilter;grad.generateMipmaps=false;grad.needsUpdate=true;
+ const line=new T.MeshBasicMaterial({color,side:T.BackSide});
+ line.onBeforeCompile=s=>{s.uniforms.thick={value:thickness};s.vertexShader='uniform float thick;'+String.fromCharCode(10)+s.vertexShader.replace('#include <begin_vertex>','vec3 transformed = position + normal * thick;');};
+ const toons=new Map(),meshes=[];
+ root.traverse(n=>{if(n.isMesh&&!n.userData.soft&&!n.userData.isOutline)meshes.push(n);});
+ for(const n of meshes){
+  const m=n.material;
+  if(m&&m.isMeshStandardMaterial&&!m.transparent){if(!toons.has(m))toons.set(m,new T.MeshToonMaterial({color:m.color,map:m.map,emissive:m.emissive,emissiveIntensity:m.emissiveIntensity,gradientMap:grad}));n.material=toons.get(m);}
+  const o=new T.Mesh(n.geometry,line);o.userData.isOutline=true;o.castShadow=false;o.receiveShadow=false;n.add(o);
+ }
+}
+
 function build({THREE:T,group,mobile=false,config}){
  const C={...DEFAULTS,...(config||{})},root=new T.Group();root.name='East harbour · pier · speedboat';group.add(root);
  const mat=(color,o={})=>new T.MeshStandardMaterial({color,roughness:.8,...o});
@@ -83,7 +98,7 @@ function build({THREE:T,group,mobile=false,config}){
  const sideShape=outline(1),hole=new T.Path();hole.moveTo(-2.1,-.78);hole.lineTo(1.15,-.78);hole.quadraticCurveTo(1.45,0,1.15,.78);hole.lineTo(-2.1,.78);hole.lineTo(-2.1,-.78);sideShape.holes.push(hole);
  extrude(sideShape,.42,.22,white);
  const floor=box(3.2,.06,1.5,mat(0xd9dee6,{roughness:.6}));floor.position.set(-.48,.26,0);boat.add(floor);
- const ws=new T.Mesh(new T.CylinderGeometry(1,1,.55,24,1,true,Math.PI*.18,Math.PI*.64),glass);ws.rotation.z=-.35;ws.scale.set(.55,1,.92);ws.position.set(.95,.95,0);ws.rotation.y=Math.PI/2;boat.add(ws);
+ const ws=new T.Mesh(new T.CylinderGeometry(1,1,.55,24,1,true,Math.PI*.18,Math.PI*.64),glass);ws.rotation.z=-.35;ws.scale.set(.55,1,.92);ws.position.set(.95,.95,0);ws.rotation.y=Math.PI/2;ws.userData.soft=true;boat.add(ws);
  const wsFrame=new T.Mesh(new T.TorusGeometry(.86,.035,6,24,Math.PI*.64),deep);wsFrame.rotation.set(Math.PI/2,0,Math.PI*.18-Math.PI/2);wsFrame.scale.set(.6,1,1);wsFrame.position.set(.98,1.2,0);boat.add(wsFrame);
  const consoleBox=box(.5,.62,.9,white);consoleBox.position.set(.72,.58,0);boat.add(consoleBox);
  const dash=box(.52,.06,.92,deep);dash.position.set(.72,.92,0);boat.add(dash);
@@ -102,10 +117,12 @@ function build({THREE:T,group,mobile=false,config}){
  const sprayMat=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.85,depthWrite:false}),sprayGeo=new T.SphereGeometry(.09,6,4),spray=[];
  for(let i=0;i<70;i++){const d=new T.Mesh(sprayGeo,sprayMat);d.visible=false;root.add(d);spray.push({d,life:0,v:new T.Vector3()});}
  const wakeMat=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false});
- const wakes=[-1,1].map(s=>{const w=new T.Mesh(new T.PlaneGeometry(1,.5),wakeMat);w.rotation.x=-Math.PI/2;w.position.set(-3,-.27,0);boat.add(w);return {w,s};});
+ const wakes=[-1,1].map(s=>{const w=new T.Mesh(new T.PlaneGeometry(1,.5),wakeMat);w.rotation.x=-Math.PI/2;w.position.set(-3,-.27,0);w.userData.soft=true;boat.add(w);return {w,s};});
  const moor=new T.Vector3(C.pierEnd-1.4,-.1,C.pierZ+C.pierHalf+1.55);boat.position.copy(moor);root.add(boat);
  const HIP=1.15;/* the town hero's hip height above its feet */
 
+ /* cel shading and outlines on the pier, the booth and the speedboat (not the sea, sand, shells or spray) */
+ toonOutline(T,pier,{thickness:.04});toonOutline(T,booth,{thickness:.04});toonOutline(T,boat,{thickness:.03});
  let time=0,voyage=null,sprayNext=0;
  function emitSpray(rate,dt){
   sprayNext-=dt;while(sprayNext<0){sprayNext+=1/rate;const p=spray.find(s=>s.life<=0);if(!p)break;const side=Math.random()<.5?-1:1,bow=Math.random()<.65;
