@@ -2,7 +2,7 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier} from './rules.js?v=20261103-roles-v2';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier} from './rules.js?v=20261103-roles-v2';
 import {loadEngine, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createIslandRenderer} from './islands3d.js';
@@ -25,6 +25,7 @@ const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 let data, record, view, audio, game = null, speed = 1, paused = false, last = 0, acc = 0, lastImpact = 0;
+let pendingDealingScene = null, startSerial = 0;
 /* merged cards that are playing their evolution in their own frame: uid -> {from, to, start} */
 const evolvingCards = new Map(), EVO_TIME = 2.4;
 
@@ -260,21 +261,37 @@ function showHowTo() {
 
 /* ---------- battle ---------- */
 async function startGame() {
+  /* Loading is not gameplay. Stop any previous battle and reset the simulation
+     clock even when this is a restart or an automatic next-island voyage. */
+  const serial = ++startSerial;
+  pendingDealingScene = null;
+  game = null;
+  acc = 0; last = 0; paused = true;
+  $('hud').hidden = true;
   $('loading').hidden = false; $('loadingText').textContent = '正在準備戰場…'; $('loadingBar').style.width = '15%';
   try {
     await loadEngine();
     if (!view) view = createView($('world'), {spirits: data.spirits, catalog: data.catalog});
     if (!audio) audio = createCombatAudio();
     view.costume = costumeFor(journey()).id;
-    game = createGame({stageIndex: record.stage, deck: record.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
+    game = createGame({stageIndex: record.stage, deck: record.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
     game.runId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
     view.setGame(game);
     $('loadingBar').style.width = '40%'; $('loadingText').textContent = '幻靈們正在集合…';
     await Promise.race([view.preload([...record.deck, ...game.stage.groups.map((g) => g.species)]), new Promise((r) => setTimeout(r, 9000))]);
     $('loadingBar').style.width = '100%';
-  } catch (e) { console.error(e); toast(e.message); $('loading').hidden = true; return; }
+    if (serial !== startSerial) return;
+  } catch (e) {
+    if (serial !== startSerial) return;
+    console.error(e); toast(e.message); $('loading').hidden = true;
+    game = null; $('hud').hidden = true; $('lobby').hidden = false;
+    return;
+  }
   $('loading').hidden = true; $('lobby').hidden = true; $('hud').hidden = false;
-  speed = 1; paused = false; handSig = '';
+  speed = 1; paused = false; handSig = ''; acc = 0; last = 0;
+  /* Wait until the first visible 3D battle frame finishes rendering. The
+     loop below then deals the opening three cards and starts the 3.2 s clock. */
+  pendingDealingScene = game;
   $('stageName').textContent = `${record.stage + 1}. ${game.stage.name}・${stageWeather(game.stage.scene).icon} ${stageWeather(game.stage.scene).name}`;
   renderHand(); hud();
   banner(game.stage.name);
@@ -557,7 +574,8 @@ function openPause() {
 function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.1, (now - (last || now)) / 1000); last = now;
-  const running = game && !game.result && !paused && !$('modal').open;
+  const visibleBattle = game && game.started && $('loading').hidden && $('lobby').hidden && !$('hud').hidden;
+  const running = visibleBattle && !game.result && !paused && !$('modal').open;
   if (running) {
     acc += dt * speed;
     let n = 0;
@@ -566,6 +584,14 @@ function loop(now) {
   if (game && game.events.length) { handleEvents(); hud(); }
   else if (running && now - (loop.hudAt || 0) > 100) { hud(); loop.hudAt = now; }
   view?.update(running ? dt * speed : 0);
+  if (pendingDealingScene && pendingDealingScene === game &&
+      $('loading').hidden && $('lobby').hidden && !$('hud').hidden && !$('modal').open) {
+    /* This is after the first player-visible scene render, never behind loading. */
+    const launched = beginDealing(game);
+    pendingDealingScene = null;
+    acc = 0; last = now;
+    if (launched) { handSig = ''; hud(); }
+  }
   if (game) game.events.length = 0;
 }
 
