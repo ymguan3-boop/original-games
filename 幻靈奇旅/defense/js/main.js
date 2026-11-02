@@ -18,6 +18,7 @@ import {groupRewards} from '../../survivors/js/reward-groups.js';
 import {itemPicture} from '../../survivors/js/item-pictures.js';
 import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v2';
 import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261103-weather-v1';
+import {openingFor} from './boss-openings.js?v=20261103-opening-v1';
 import {icon} from '../../survivors/js/ui-art.js';
 import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
 
@@ -25,7 +26,7 @@ const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 let data, record, view, audio, game = null, speed = 1, paused = false, last = 0, acc = 0, lastImpact = 0;
-let pendingDealingScene = null, startSerial = 0;
+let pendingDealingScene = null, startSerial = 0, bossIntroTimer = null;
 /* merged cards that are playing their evolution in their own frame: uid -> {from, to, start} */
 const evolvingCards = new Map(), EVO_TIME = 2.4;
 
@@ -33,6 +34,23 @@ function readJson(key, fallback) { try { return JSON.parse(localStorage.getItem(
 function saveRecord() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(record)); } catch {} }
 function toast(text) { const t = $('toast'); t.textContent = text; t.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), 2200); }
 function picture(id) { const a = data.art[id]; return '../' + (a?.image || 'portraits/' + id + '.png'); }
+function hideBossIntro() {
+  clearTimeout(bossIntroTimer);
+  bossIntroTimer = null;
+  $('bossIntro').hidden = true;
+}
+function showBossIntro(stage) {
+  const speech = openingFor(stage);
+  if (!speech) return;
+  hideBossIntro();
+  $('bossIntroPortrait').src = picture(stage.boss);
+  $('bossIntroPortrait').alt = speech.name;
+  $('bossIntroStage').textContent = '第 ' + (STAGES.indexOf(stage) + 1) + ' 關 · 魔王放話';
+  $('bossIntroName').textContent = speech.name;
+  $('bossIntroLine').textContent = '「' + speech.line + '」';
+  $('bossIntro').hidden = false;
+  bossIntroTimer = setTimeout(hideBossIntro, 5500);
+}
 function spirit(id) { return data.spiritMap.get(id); }
 function shapeLabel(id, strong) {
   const p = profileFor(spirit(id), data.entries.get(id), strong);
@@ -264,6 +282,7 @@ async function startGame() {
   /* Loading is not gameplay. Stop any previous battle and reset the simulation
      clock even when this is a restart or an automatic next-island voyage. */
   const serial = ++startSerial;
+  hideBossIntro();
   pendingDealingScene = null;
   game = null;
   acc = 0; last = 0; paused = true;
@@ -308,7 +327,7 @@ function creditPoints() {
 function leaveGame() {
   /* Prevent an in-flight load or first-frame callback from dealing into
      a battle after the user returns to the island chart. */
-  ++startSerial; pendingDealingScene = null;
+  ++startSerial; pendingDealingScene = null; hideBossIntro();
   creditPoints();
   game = null; $('hud').hidden = true; $('lobby').hidden = false; $('modal').close();
   view?.setGame(null); audio?.stop?.();
@@ -531,6 +550,7 @@ function showResult(r) {
 
 
 function bindHud() {
+  $('dismissBossIntro').onclick = hideBossIntro;
   $('items').onclick = () => { const menu = $('itemMenu'); menu.hidden = !menu.hidden; if (!menu.hidden) renderItems(); };
   $('itemMenu').onclick = (e) => {
     const b = e.target.closest('[data-item]'); if (!b || !game) return;
@@ -593,7 +613,7 @@ function loop(now) {
     const launched = beginDealing(game);
     pendingDealingScene = null;
     acc = 0; last = now;
-    if (launched) { handleEvents(); handSig = ''; hud(); }
+    if (launched) { handleEvents(); handSig = ''; hud(); showBossIntro(game.stage); }
   }
   if (game) game.events.length = 0;
 }
