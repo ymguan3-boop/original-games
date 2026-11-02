@@ -431,3 +431,92 @@ button.tool.small { padding: 6px 10px; font-size: 13px; }
 .boatman-card p { margin: 0; line-height: 1.6; font-size: 14px; }
 .home-hit { cursor: pointer; outline: none; }
 .home-hit:hover image, .home-hit:focus-visible image { filter: brightness(1.06); }
+
+
+/* 2026-11-02 mobile portrait chart and warm outlined game controls */
+/* Match the reference game's thick warm outlines, stepped shadows and easy touch targets. */
+#lobby button, #hud button, #modal button {
+  border: 2px solid #795033;
+  color: #4e341d;
+  font-weight: 800;
+  background: linear-gradient(180deg,#fff8e6 0%,#f7e2b7 100%);
+  box-shadow: inset 0 2px 0 #fffdf7, 0 4px 0 #936545, 0 6px 9px #49301826;
+  text-shadow: none;
+}
+#lobby button:active, #hud button:active, #modal button:active {
+  transform: translateY(3px);
+  box-shadow: inset 0 2px 0 #fffdf7, 0 1px 0 #936545;
+}
+#lobby button.primary, #hud button.primary, #modal button.primary {
+  background: linear-gradient(180deg,#aaf18a,#5dc95c);
+  color: #244b20;
+  border-color: #4c8a31;
+  box-shadow: inset 0 2px 0 #d6ffb6, 0 5px 0 #33782d, 0 7px 9px #244e2633;
+}
+#lobby button.tool.gacha { background:linear-gradient(180deg,#ffd9eb,#ffa8d0); border-color:#aa6080; color:#673c59; }
+#lobby button.tool.home { background:linear-gradient(180deg,#e0f7ff,#9bd7f5); border-color:#5686aa; }
+#lobby .points-badge { border:2px solid #916137; box-shadow:inset 0 2px 0 #fff9e9,0 4px 0 #ac7b36; }
+#modal button.round, #modal button.wide, #hud .side-btn { border-radius:18px; }
+#modal .panel-actions button, #hud button, #lobby button { touch-action: manipulation; }
+@media (orientation: portrait) and (max-width: 720px) {
+  /* The map has its own central zone and cannot be obscured by the sortie controls. */
+  #lobby .sea-wrap {
+    top: clamp(98px, 15dvh, 138px);
+    bottom: clamp(170px, 22dvh, 245px);
+    left: 0; right: 0;
+    overflow: hidden;
+  }
+  #lobby .sea-chart { width: 100%; height: 100%; }
+  #lobby .chart-head { top: max(8px, env(safe-area-inset-top)); gap: 4px 8px; }
+  #lobby .chart-head .logo { width: 40px; }
+  #lobby .chart-head h1 { font-size: 19px; }
+  #lobby .chart-tools { gap: 6px; }
+  #lobby .points-badge { padding: 5px 10px; }
+  #lobby button.tool { padding: 7px 9px; min-width: 45px; justify-content: center; border-radius: 14px; }
+  #lobby .isle-panel { position: absolute; left: 9px; right: 9px; bottom: max(9px,env(safe-area-inset-bottom)); width:auto; max-height: min(24dvh, 215px); overflow-y:auto; overscroll-behavior:contain; z-index:5; }
+  #lobby .isle-card {
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:"title title" "boss deck" "start start";
+    gap:5px 9px; padding:9px 12px;
+    border-radius:17px; box-shadow:0 0 0 2px #fff,0 0 0 4px #d19b4a,0 5px 14px #14365066;
+  }
+  #lobby .isle-title { grid-area:title; display:flex; gap:8px; align-items:center; min-width:0; }
+  #lobby .isle-title small { white-space:nowrap; }
+  #lobby .isle-title h2 { font-size:18px; line-height:1.2; margin:0; }
+  #lobby .cleared-tag { font-size:10px; margin:0; padding:2px 6px; }
+  #lobby .cleared-tag em { display:none; }
+  #lobby .isle-boss { grid-area:boss; padding:3px 6px; gap:5px; min-width:0; box-shadow:none; }
+  #lobby .isle-boss img { width:35px; height:35px; border-width:2px; border-radius:8px; }
+  #lobby .isle-boss b { display:inline-block; max-width:110px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom; font-size:12px; }
+  #lobby .isle-boss small { font-size:9px; }
+  #lobby .isle-boss .el { font-size:10px; }
+  #lobby .isle-facts, #lobby .deck-strip { display:none; }
+  #lobby .isle-deck { grid-area:deck; justify-content:flex-end; }
+  #lobby .isle-deck .tool { font-size:11px; white-space:nowrap; padding:7px 8px; }
+  #lobby .isle-card > button.wide { grid-area:start; min-height:44px; font-size:19px; padding:6px; border-radius:13px; }
+  .isle.is-locked { opacity:.95; }
+  .isle .fogged { filter: grayscale(.4) brightness(.85); }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  #lobby .chart-head h1 {font-size:19px;}
+  #lobby .isle-panel {bottom:7px;right:7px;max-height:80dvh;overflow:auto;width:min(280px,38vw);}
+  #lobby .isle-card {padding:8px;gap:5px;}
+  #lobby .isle-facts, #lobby .deck-strip {display:none;}
+  #lobby .isle-card > button.wide {min-height:44px;}
+}
+/* Cave summons use cave's own dark fantasy skin and room to fit all buttons on phones. */
+dialog#panel[data-view="gacha"] { width:min(660px,calc(100vw - 20px)); max-height: min(90dvh,760px); overflow-x:hidden; overflow-y:auto; }
+#panel[data-view="gacha"] #panelBody { min-width:0; }
+#panel[data-view="gacha"] .gacha-intro { display:grid; grid-template-columns: 125px minmax(0,1fr); align-items:center; gap:12px; }
+#panel[data-view="gacha"] .gacha-machine.compact-summoner { width:116px; height:150px; margin:0; padding:0; overflow:hidden; background:none; border:0; box-shadow:none; }
+#panel[data-view="gacha"] .gacha-machine.compact-summoner .ui-icon { max-width:100%; }
+#panel[data-view="gacha"] .draw-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:8px 0 12px; }
+#panel[data-view="gacha"] .draw-actions button { min-width:0; width:100%; margin:0; padding:12px 6px; white-space:normal; overflow-wrap:anywhere; font-size:clamp(12px,3.1vw,17px); letter-spacing:0; }
+#panel[data-view="gacha"] .draw-actions button:only-child { grid-column:1/-1; }
+@media (max-width:540px) {
+  dialog#panel[data-view="gacha"] { padding:14px 16px; }
+  #panel[data-view="gacha"] .gacha-intro { grid-template-columns:100px minmax(0,1fr); gap:9px; }
+  #panel[data-view="gacha"] .gacha-machine.compact-summoner { width:96px; height:124px; }
+  #panel[data-view="gacha"] .gacha-intro p { line-height:1.5; }
+  #panel[data-view="gacha"] .draw-actions button { font-size:13px; padding:12px 5px; }
+}
