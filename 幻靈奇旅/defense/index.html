@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#2f6b3a">
+  <link rel="icon" href="data:,">
+  <title>幻靈守護戰｜幻靈奇旅</title>
+  <link rel="stylesheet" href="../survivors/css/evolution.css">
+  <link rel="stylesheet" href="../css/collection-card.css?v=20261020-avian-v1">
+  <link rel="stylesheet" href="css/defense.css?v=20261102-islands1">
+</head>
+<body>
+  <canvas id="world" aria-label="幻靈守護戰 戰場"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <main id="lobby">
+    <div id="seaChart" class="sea-wrap"></div>
+    <header class="chart-head">
+      <img class="logo" src="assets/logo.webp" alt="幻靈奇旅">
+      <div class="title-block"><p class="eyebrow">幻靈群島 · SPIRIT ISLES</p><h1>幻靈守護戰</h1></div>
+      <div class="chart-tools">
+        <span class="points-badge" title="與無盡洞穴共用的轉蛋點數">🎟️ <b id="pointsNow">0</b><small>點</small></span>
+        <button id="gachaBtn" class="tool gacha">🎰<span>轉蛋</span></button>
+        <button id="deckBtn" class="tool">🃏<span>卡組</span></button>
+        <button id="howto" class="tool">📖<span>玩法</span></button>
+        <button id="homeBtn" class="tool home">⛵<span>回初光鎮</span></button>
+      </div>
+    </header>
+    <aside id="islePanel" class="isle-panel" aria-live="polite"></aside>
+  </main>
+
+  <div id="hud" hidden>
+    <div class="hud-top">
+      <div class="stat stage" id="stageName"></div>
+      <div class="stat deal" title="下一張牌"><span>發牌</span><i><b id="dealFill"></b></i></div>
+      <div class="stat pts" title="本場擊倒獲得的轉蛋點數（與無盡洞穴共用）">🎟️ <b id="runPoints">0</b></div>
+      <div class="hud-actions">
+        <button id="evoToggle" title="合成進化時是否播放幻靈進階動畫">進化動畫：開</button>
+        <button id="camReset" title="重設視角（滾輪或雙指縮放、拖曳場地旋轉、雙擊重設）">🎥</button>
+        <button id="speed" title="遊戲速度">×1</button>
+        <button id="pause" title="暫停">❚❚</button>
+      </div>
+    </div>
+    <div class="hud-bottom">
+      <div id="hand" class="hand"></div>
+      <div id="cardInfo" class="card-info" hidden></div>
+      <div class="item-wrap"><div id="itemMenu" class="item-menu" hidden></div><button id="items" class="side-btn items"><span class="side-icon">🎒</span><b>道具</b><small id="itemsCount"></small></button></div>
+    </div>
+    <div id="banner" class="banner" hidden></div>
+    <div class="rotate-hint">手機橫放可以看到更寬的戰場</div>
+  </div>
+
+  <dialog id="modal"><div id="modalBody"></div></dialog>
+  <div id="toast" class="toast" role="status"></div>
+  <div id="loading" class="loading"><div class="loading-card"><div class="sail-loader" aria-hidden="true"><i class="sun"></i><i class="cloud c1"></i><i class="cloud c2"></i><svg class="loader-boat" viewBox="-40 -40 80 60"><path d="M-34,-2 L22,-2 Q36,-1 40,8 Q36,16 20,17 L-32,17 Q-36,8 -34,-2 Z" fill="#fbfbf6" stroke="#33445e" stroke-width="3"/><path d="M-33,9 L37,9" stroke="#e23c34" stroke-width="4.5"/><path d="M5,-2 L15,-18 L20,-18 L18,-2 Z" fill="#8fd3ff" stroke="#33445e" stroke-width="2.5"/><circle cx="-5" cy="-19" r="7" fill="#2b1f1a"/><rect x="-11" y="-13" width="13" height="11" rx="3" fill="#3a8fe0"/><rect x="-31" y="-8" width="10" height="6" rx="2" fill="#e23c34"/><rect x="-39" y="-4" width="6" height="15" rx="2" fill="#2b2b33"/></svg><i class="wave w1"></i><i class="wave w2"></i><i class="wave w3"></i></div><p id="loadingText">搭快艇前往幻靈群島…</p><div class="bar"><i id="loadingBar"></i></div></div></div>
+
+  <link rel="stylesheet" href="../css/scene-loading.css?v=20261027-v30">
+  <script src="../js/scene-loading.js?v=20261027-v30"></script>
+  <script src="../js/shared-bgm.js?v=20261027-v30"></script>
+  <!-- shared with the town and the cave: points/bag (cave ledger) and the wardrobe outfit on the base hero -->
+  <script src="../js/cave-economy.js?v=20261029-reaper-v1"></script>
+  <script src="../js/hero-costumes.js?v=20261030-reaper-v2"></script>
+  <script type="module" src="js/main.js?v=20261102-islands1"></script>
+</body>
+</html>
