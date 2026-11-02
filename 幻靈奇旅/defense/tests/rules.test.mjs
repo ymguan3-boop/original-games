@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {STAGES, CRIT, TRAPS, playable, isBaseCard, isRedCard, useItem, itemReady, ITEMS, DECK_BASE, DECK_RED, createGame, step, playCard, moveCard, canPlay, mergeResult, profileFor, caveRoster, elementMultiplier, isSupport, SUPPORT, TRIAL_ROSTER, DECK_SIZE, HAND_SIZE, MAX_ALLIES} from '../js/rules.js';
+import {STAGES, CRIT, TRAPS, playable, isBaseCard, isRedCard, useItem, itemReady, ITEMS, DECK_BASE, DECK_RED, createGame, step, playCard, moveCard, canPlay, mergeResult, profileFor, caveRoster, elementMultiplier, isSupport, SUPPORT, TRIAL_ROSTER, DECK_SIZE, HAND_SIZE, MAX_ALLIES, beginDealing, DEAL_EVERY} from '../js/rules.js';
 import {buildPath, pointAt} from '../js/stages.js';
 
 const read = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
@@ -91,6 +91,25 @@ test('V2 basic attack reaches depend on job not element: warrior 1, archer 3, ma
   assert.equal(archer.reach,warrior.reach*3);
   assert.equal(mage.reach,warrior.reach*5);
   assert.equal(profileFor(spec('charizard'), entries.get('charizard'), true).type, 'blast');
+});
+
+test('live scene deals only after the battlefield has become visible', () => {
+  const s = game({deferDeal:true});
+  assert.equal(s.started,false);
+  assert.equal(s.hand.length,0,'even the three opening cards must not appear behind loading');
+  assert.equal(s.events.length,0,'no card events or animations during loading');
+  for(let i=0;i<10*60;i++) step(s,1/60);
+  assert.equal(s.time,0,'combat simulation clock stays frozen during loading');
+  assert.equal(s.hand.length,0,'still no cards before the visible scene');
+  assert.equal(beginDealing(s),true);
+  assert.equal(s.started,true);
+  assert.equal(s.hand.length + s.stats.merges,3,'opening cards are dealt as the scene starts');
+  assert.equal(beginDealing(s),false,'activation is idempotent');
+  const count = s.hand.length;
+  for(let i=0;i<Math.floor((DEAL_EVERY-.12)*60);i++) step(s,1/60);
+  assert.equal(s.hand.length,count,'next card does not arrive early');
+  for(let i=0;i<Math.ceil(.2*60);i++) step(s,1/60);
+  assert.ok(s.hand.length>=count || s.stats.merges>0,'new cards arrive on the post-entry clock');
 });
 
 test('cards are dealt over time up to the hand size', () => {
