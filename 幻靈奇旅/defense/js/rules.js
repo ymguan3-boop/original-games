@@ -139,7 +139,7 @@ export function createGame({stageIndex = 0, deck, spirits, catalog = {}, evoluti
   const state = {
     stage, stageIndex, path, spirits: spiritMap, entries: new Map((catalog.entries || []).map((e) => [e.id, e])), evolution, hooks, random: rng(seed),
     deck: deck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), hand: [], dealAt: DEAL_EVERY, nextCard: 1,
-    left: -half, right: half, time: 0, itemReady: Object.fromEntries(Object.entries(ITEMS).map(([k, v]) => [k, v.cooldown / 2])), pendingSkills: [], freezeUntil: 0, shieldUntil: 0, hasteUntil: 0,
+    left: -half, right: half, time: 0, itemReady: Object.fromEntries(Object.entries(ITEMS).map(([k, v]) => [k, v.cooldown / 2])), pendingSkills: [], pendingBoss: [], bossSkillAt: BOSS_SKILL_FIRST, freezeUntil: 0, shieldUntil: 0, hasteUntil: 0,
     crystal: {hp: stage.crystal, maxHp: stage.crystal, x: half}, nest: {hp: stage.nest, maxHp: stage.nest, x: -half},
     traps: (stage.traps || []).map((t, i) => ({...TRAPS[t.kind], kind: t.kind, x: -half + t.at * path.length, half: (t.len || 0) * path.length / 2, next: 3 + i * 0.7})),
     fighters: [], shots: [], events: [], nextId: 1, spawnAt: stage.groups.map((g) => g.start), spawned: stage.groups.map(() => 0), bossOut: false,
@@ -221,6 +221,11 @@ export function playCard(state, i) {
 /* A support card first plays its entrance (the spirit jumps out of the card to face the player, then turns to the
    field): skillStart now, the effect lands SKILL_WINDUP seconds later with the skill event. */
 export const SKILL_WINDUP = 1.1;
+/* While on its barrel the boss casts its own cave ultimate at every summoned spirit now and then (the same
+   entrance as a skill card: off the barrel to the front of the screen, turn, cast). */
+export const BOSS_OUT_AT = 0.6, BOSS_SKILL_FIRST = 16;
+export const bossSkillEvery = (stageIndex) => Math.max(18, 26 - stageIndex);
+export const bossSkillDamage = (stageIndex) => 0.1 + stageIndex * 0.006;
 function castSupport(state, card) {
   state.pendingSkills.push({card: {...card}, at: state.time + SKILL_WINDUP});
   const s = SUPPORT[card.species];
@@ -321,7 +326,8 @@ function hurtBase(state, base, amount, side) {
   if (base.hp <= 0) return;
   base.hp = Math.max(0, base.hp - amount);
   emit(state, 'baseHit', {side, hp: base.hp, amount});
-  if (base === state.nest && !state.bossOut && state.stage.boss) { state.bossOut = true; spawn(state, 'enemy', state.stage.boss, {boss: true}); emit(state, 'boss', {species: state.stage.boss}); }
+  /* the boss stays on its barrel (reacting to hits) until the nest is down to BOSS_OUT_AT, then jumps onto the path */
+  if (base === state.nest && !state.bossOut && state.stage.boss && base.hp <= base.maxHp * BOSS_OUT_AT) { state.bossOut = true; state.pendingBoss = []; spawn(state, 'enemy', state.stage.boss, {boss: true}); emit(state, 'boss', {species: state.stage.boss}); }
 }
 
 function setStatus(state, f, type, amount) {
@@ -429,6 +435,17 @@ export function step(state, dt) {
     if (state.fighters.filter((f) => f.side === 'enemy' && f.hp > 0 && f.species === g.species).length < g.max) { spawn(state, 'enemy', g.species); state.spawned[i]++; }
   });
   for (let i = state.pendingSkills.length - 1; i >= 0; i--) if (state.time >= state.pendingSkills[i].at) applySupport(state, state.pendingSkills.splice(i, 1)[0].card);
+  if (state.stage.boss && !state.bossOut && state.time >= state.bossSkillAt) {
+    state.bossSkillAt = state.time + bossSkillEvery(state.stageIndex);
+    state.pendingBoss.push(state.time + SKILL_WINDUP);
+    emit(state, 'bossSkillStart', {species: state.stage.boss, element: state.spirits.get(state.stage.boss).type});
+  }
+  for (let i = state.pendingBoss.length - 1; i >= 0; i--) if (state.time >= state.pendingBoss[i]) {
+    state.pendingBoss.splice(i, 1);
+    const spec = state.spirits.get(state.stage.boss), k = bossSkillDamage(state.stageIndex);
+    for (const f of state.fighters) if (f.side === 'ally' && f.hp > 0) hurt(state, f, f.maxHp * k, spec.type, null, true);
+    emit(state, 'bossSkill', {species: state.stage.boss, element: spec.type});
+  }
   runTraps(state, dt);
   const frozen = state.freezeUntil > state.time, haste = state.hasteUntil > state.time ? 2 : 1;
   for (const f of state.fighters) {

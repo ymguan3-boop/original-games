@@ -142,16 +142,28 @@ export function buildEnvironment(THREE, group, {theme, path, start, end, rand, k
     const phase = rand() * 6; animated.push((dt, t) => { body.position.y = 0.22 + Math.max(0, Math.sin(t * 2 + phase)) * 0.15; });
     return g;
   }
+  /* a rocky cliff of stacked boulders with a curved water curtain, a plunge pool with a foam ring and mist. The
+     curtain and mist skip the outline pass and never write depth, so they cannot cut into the rock. */
   function waterfallCliff() {
-    const g = new THREE.Group(), cliff = box(16, 6, 2.5, 0x8a8f9a); cliff.position.set(0, 3, 0); g.add(cliff);
-    for (let i = 0; i < 9; i++) { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(0.9 + rand() * 0.9, 0), toon(0x9aa0aa)); r.position.set(-7.5 + i * 1.9, 5.8 + rand() * 0.8, rand() - 0.5); g.add(r); }
+    const g = new THREE.Group(), rock = [0x8f96a2, 0x7d8592, 0xa3aab4];
+    for (let row = 0; row < 3; row++) for (let i = 0; i < 9 - row; i++) {
+      const r = new THREE.Mesh(new THREE.DodecahedronGeometry(1.3 + rand() * 0.5, 1), toon(rock[(i + row) % 3]));
+      r.position.set(-7 + i * 1.75 + row * 0.85, 1 + row * 1.7 + rand() * 0.3, -0.6 - rand() * 0.6 - row * 0.2); r.scale.set(1, 0.85, 0.8); r.rotation.set(rand(), rand(), rand());
+      if (Math.abs(r.position.x) < 1.6 && row < 2) r.position.z -= 0.9; /* a notch where the water runs */
+      g.add(r);
+    }
+    for (let i = 0; i < 3; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.5 + rand() * 0.3, 8, 6), toon(0x5fae45)); m.position.set(-5 + i * 5, 5.6, -0.8); m.scale.y = 0.5; g.add(m); }
     const c = document.createElement('canvas'); c.width = 64; c.height = 256; const x = c.getContext('2d');
-    for (let i = 0; i < 40; i++) { x.fillStyle = 'rgba(255,255,255,' + (0.25 + Math.random() * 0.5) + ')'; x.fillRect(Math.random() * 64, Math.random() * 256, 2 + Math.random() * 4, 20 + Math.random() * 60); }
+    x.fillStyle = 'rgba(127,214,255,.55)'; x.fillRect(0, 0, 64, 256);
+    for (let i = 0; i < 46; i++) { x.fillStyle = 'rgba(255,255,255,' + (0.35 + Math.random() * 0.55) + ')'; x.fillRect(Math.random() * 64, Math.random() * 256, 2 + Math.random() * 5, 24 + Math.random() * 70); }
     const fallTex = new THREE.CanvasTexture(c); fallTex.wrapS = fallTex.wrapT = THREE.RepeatWrapping;
-    const fall = new THREE.Mesh(new THREE.PlaneGeometry(3, 6.2), new THREE.MeshBasicMaterial({color: linear(0x7fd6ff), map: fallTex, transparent: true, opacity: 0.92})); fall.position.set(0, 3, 1.3); fall.userData.isEffect = true; g.add(fall);
-    const pool = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.8, 0.1, 24), new THREE.MeshToonMaterial({color: linear(0x5cc4f0), gradientMap: kit.gradientMap})); pool.position.set(0, 0.05, 2.6); g.add(pool);
-    const mist = new THREE.Mesh(new THREE.SphereGeometry(1.4, 12, 8), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.35, depthWrite: false})); mist.position.set(0, 0.5, 2); mist.scale.y = 0.5; mist.userData.isEffect = true; g.add(mist);
-    animated.push((dt, t) => { fallTex.offset.y = -t * 1.6; mist.scale.x = 1 + Math.sin(t * 3) * 0.08; });
+    const fall = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.7, 5.4, 16, 1, true, -Math.PI * 0.4, Math.PI * 0.8), new THREE.MeshBasicMaterial({map: fallTex, transparent: true, depthWrite: false, side: THREE.DoubleSide}));
+    fall.position.set(0, 2.9, -0.7); fall.userData.isEffect = true; fall.renderOrder = 2; g.add(fall);
+    const pool = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.8, 0.12, 28), new THREE.MeshToonMaterial({color: linear(0x5cc4f0), gradientMap: kit.gradientMap})); pool.position.set(0, 0.06, 1.6); g.add(pool);
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(2.7, 0.22, 6, 28), toon(0x8f96a2)); rim.rotation.x = Math.PI / 2; rim.position.set(0, 0.12, 1.6); rim.scale.z = 0.6; g.add(rim);
+    const foamRing = new THREE.Mesh(new THREE.RingGeometry(0.6, 1.3, 24), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.7, depthWrite: false})); foamRing.rotation.x = -Math.PI / 2; foamRing.position.set(0, 0.14, 0.9); foamRing.userData.isEffect = true; g.add(foamRing);
+    const mist = new THREE.Mesh(new THREE.SphereGeometry(1.4, 12, 8), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.3, depthWrite: false})); mist.position.set(0, 0.5, 0.9); mist.scale.y = 0.5; mist.userData.isEffect = true; g.add(mist);
+    animated.push((dt, t) => { fallTex.offset.y = -t * 1.6; mist.scale.x = 1 + Math.sin(t * 3) * 0.08; foamRing.scale.setScalar(1 + Math.sin(t * 4) * 0.08); });
     return g;
   }
   function fruitTree(fruit = 0xff5a4a) { const g = roundTree([0x5cb84a, 0x6fc95a, 0x4aa63e]); for (let i = 0; i < 7; i++) { const f = ball(0.11, fruit, 8), a = rand() * Math.PI * 2; f.position.set(Math.cos(a) * 0.6, 1.4 + rand() * 0.8, Math.sin(a) * 0.6); g.add(f); } return g; }
@@ -195,7 +207,7 @@ export function buildEnvironment(THREE, group, {theme, path, start, end, rand, k
   } else if (theme === 'pond') {
     scatter(3, () => pond(1.8 + rand()), 4.6, 3); scatter(6, frog, 2.2, 0.8); scatter(12, () => roundTree([0x6fcf6a, 0x89d97a, 0x58bb55]), 2.8, 1.6); scatter(10, bush, 2.2, 0.8); scatter(10, flowers, 2, 0.8); scatter(8, rock, 2, 0.6); scatter(2, () => lantern(false), 2.2, 0.6);
   } else if (theme === 'waterfall') {
-    place(waterfallCliff(), 0, -13.5, 0, 0.12);
+    place(waterfallCliff(), 0, -16.5, 0, 0.12); taken.push([0, -16.5, 7.5]);
     scatter(10, () => rock(0x9aa0aa), 2, 0.7); scatter(10, () => roundTree([0x5fb86a, 0x77c97a, 0x4aa65a]), 2.8, 1.6); scatter(5, () => pond(1.2 + rand() * 0.6), 4, 2.4); scatter(8, flowers, 2, 0.8);
   } else if (theme === 'orchard') {
     scatter(14, () => fruitTree([0xff5a4a, 0xffa53a, 0xffd23a][Math.floor(rand() * 3)]), 2.8, 1.6); scatter(6, () => basket([0xff5a4a, 0xffa53a][Math.floor(rand() * 2)]), 2, 0.7); scatter(3, ladder, 2.2, 0.8); scatter(3, haystack, 2.4, 1); scatter(1, barn, 4, 3.4); scatter(8, flowers, 2, 0.8);
@@ -214,7 +226,7 @@ export function buildEnvironment(THREE, group, {theme, path, start, end, rand, k
   }
   /* a ring of trees outside the field so the map never ends in bare grass */
   const outer = theme === 'night' ? () => pine(0x2a5a3c) : theme === 'forge' ? () => roundTree([0xc9a24a, 0xb88a3a]) : theme === 'tower' ? () => pillar() : theme === 'abyss' ? () => coral() : theme === 'desert' ? () => (rand() < 0.5 ? cactus() : mesa()) : theme === 'orchard' ? () => fruitTree() : () => roundTree();
-  for (let i = 0; i < 46; i++) { const a = rand() * Math.PI * 2, x = Math.cos(a) * (19 + rand() * 9), z = Math.sin(a) * (12 + rand() * 7); place(outer(), x, z, undefined, 0.12); }
+  for (let i = 0; i < 46; i++) { const a = rand() * Math.PI * 2, x = Math.cos(a) * (19 + rand() * 9), z = Math.sin(a) * (12 + rand() * 7); if (taken.some((t) => Math.hypot(t[0] - x, t[1] - z) < t[2])) continue; place(outer(), x, z, undefined, 0.12); }
 
   /* grass tufts (instanced) and pebbles along the road */
   const tuftGeo = new THREE.ConeGeometry(0.08, 0.32, 4), tuft = new THREE.InstancedMesh(tuftGeo, toon(T.ground[1]), 900), dummy = new THREE.Object3D();

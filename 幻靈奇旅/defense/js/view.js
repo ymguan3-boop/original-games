@@ -4,6 +4,7 @@
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
 import {createActor, performSkill, loadGltf, cloneModel} from './actors.js';
 import {createFx} from './fx.js';
+import {createSeascape} from './seascape.js';
 import {createToonKit} from './style.js';
 import {buildEnvironment, themeOf, THEMES} from './env.js';
 import {ELEMENT_COLORS, TRAP_WARN} from './rules.js';
@@ -13,7 +14,7 @@ import {createProjectileView} from '../../survivors/js/projectile-view.js';
 import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js';
 
 /* spirits on the path are 0.7x of the earlier size */
-const SCALE = 1.26, BOSS_SCALE = 2.1, FIELD = [34, 20];
+const SCALE = 1.26, BOSS_SCALE = 2.1, FIELD = [34, 20], ISLAND = [33, 23.5];
 
 export function createView(canvas, {spirits, catalog}) {
   const THREE = globalThis.THREE;
@@ -26,7 +27,7 @@ export function createView(canvas, {spirits, catalog}) {
   renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.NoToneMapping;
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xbfe8ff);
-  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 200);
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 700);
   const hemi = new THREE.HemisphereLight(0xe8f6ff, 0x4d6b3a, 0.8); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff1d6, 1.05);
   sun.position.set(-10, 24, 12); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0008;
@@ -43,7 +44,7 @@ export function createView(canvas, {spirits, catalog}) {
   let numbersThisFrame = 0;
   const combatVfx = createCombatVfx(THREE, scene, {metrics, onShake: (a) => { shake = Math.max(shake, a); }});
   const fx = createFx(THREE, scene);
-  const kit = createToonKit(THREE);
+  const kit = createToonKit(THREE), seascape = createSeascape(THREE, scene, kit);
   let env = null;
   const projectileView = createProjectileView(THREE, scene, {actorPoint: (id) => actorPoint(id, true), targetPoint: (id, fallback) => actorPoint(id, false, fallback), metrics});
 
@@ -68,10 +69,21 @@ export function createView(canvas, {spirits, catalog}) {
     mapGroup = new THREE.Group(); scene.add(mapGroup);
     const r = rand(game.stage.id.length * 7919 + game.stageIndex * 131 + 7), [w, h] = FIELD, theme = themeOf(game.stage), T = THEMES[theme];
     /* theme lighting and sky */
-    scene.background = new THREE.Color(T.sky); hemi.color.setHex(T.hemi[0]); hemi.groundColor.setHex(T.hemi[1]); hemi.intensity = T.hemi[2] * 0.62; sun.color.setHex(T.sun[0]); sun.intensity = T.sun[1] * 0.72;
+    seascape.build(theme, ISLAND); hemi.color.setHex(T.hemi[0]); hemi.groundColor.setHex(T.hemi[1]); hemi.intensity = T.hemi[2] * 0.62; sun.color.setHex(T.sun[0]); sun.intensity = T.sun[1] * 0.72;
     const geo = new THREE.PlaneGeometry(w + 40, h + 30, 60, 40).rotateX(-Math.PI / 2), pos = geo.attributes.position, colors = [], c = new THREE.Color();
     const pal = T.ground.map((x) => new THREE.Color(x));
-    for (let i = 0; i < pos.count; i++) { const x = pos.getX(i), z = pos.getZ(i), n = Math.sin(x * 0.45) * Math.cos(z * 0.5) + Math.sin(x * 0.13 + z * 0.21) * 0.8; c.copy(pal[0]).lerp(n > 0.4 ? pal[2] : pal[1], Math.min(1, Math.abs(n) * 0.55)).convertSRGBToLinear(); colors.push(c.r, c.g, c.b); }
+    /* the stage is an island: grass inside, a sand beach near the shore (r = 1 on a wobbly ellipse ISLAND) that slopes
+       under the sea, so the ocean all around replaces the bare background */
+    const sand = new THREE.Color(0xf2dea6), wet = new THREE.Color(0xd8bd82), deepSea = new THREE.Color(0x1f6f9a);
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), z = pos.getZ(i), n = Math.sin(x * 0.45) * Math.cos(z * 0.5) + Math.sin(x * 0.13 + z * 0.21) * 0.8;
+      const a = Math.atan2(z, x), rr = Math.hypot(x / ISLAND[0], z / ISLAND[1]) * (1 + Math.sin(a * 5 + 1.3) * 0.025 + Math.sin(a * 9) * 0.015);
+      if (rr > 0.9) pos.setY(i, -Math.min(2.6, (rr - 0.9) * 12));
+      c.copy(pal[0]).lerp(n > 0.4 ? pal[2] : pal[1], Math.min(1, Math.abs(n) * 0.55));
+      if (rr > 0.84) c.copy(rr > 1.04 ? deepSea : rr > 0.95 ? wet : sand);
+      c.convertSRGBToLinear(); colors.push(c.r, c.g, c.b);
+    }
+    geo.computeVertexNormals();
     geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     const ground = new THREE.Mesh(geo, new THREE.MeshToonMaterial({vertexColors: true, gradientMap: kit.gradientMap})); ground.receiveShadow = true; mapGroup.add(ground);
     /* the road: a dark outline, a warm border and a bright sand surface, so it stands out from the grass;
@@ -170,7 +182,8 @@ export function createView(canvas, {spirits, catalog}) {
       /* face the boss across the field, sitting on the front edge of the barrel head with legs hanging over */
       const facing = faceTo(crystal.position, bossSpot()); root.rotation.y = facing; /* sitting keeps the hips at standing height, so drop the model until the hips rest on the barrel head */
       object.updateMatrixWorld(true); const hips = object.getObjectByName('hips'), hipY = hips ? hips.getWorldPosition(new THREE.Vector3()).y : 0.9;
-      root.position.set(Math.sin(facing) * 0.6, BARREL_H - hipY + 0.12, Math.cos(facing) * 0.6);
+      /* sit right on the front rim so the knees clear the barrel edge (radius 0.92) and the shins hang outside */
+      root.position.set(Math.sin(facing) * 0.82, BARREL_H - hipY + 0.1, Math.cos(facing) * 0.82);
       kit.toonify(object, {outline: 0.03});
       crystal.add(root);
       hero = {root, object, mixer, actions, bones, current: null};
@@ -203,10 +216,77 @@ export function createView(canvas, {spirits, catalog}) {
       const spot = bossSpot(), top = BARREL_H * nest.scale.y; a.throne = nest;
       a.root.position.set(spot.x, top, spot.z); a.root.rotation.y = faceTo(spot, crystal.position);
       scene.add(a.root); a.play('Idle'); nestBoss = a;
-      const crown = textSprite('魔王 ' + spec.name, '#ffd6d6', 40, 'rgba(120,20,40,.9)'); crown.position.set(spot.x, top + a.height + 0.6, spot.z); crown.scale.set(3.2, 1.2, 1); scene.add(crown); nestBoss.crown = crown;
+      a.home = new THREE.Vector3(spot.x, top, spot.z); a.facing = a.root.rotation.y; a.mood = {next: clock + 3, kind: null, t: 0, back: 0}; a.hurtUntil = 0;
     } catch (e) { console.warn(e); }
   }
-  function releaseNestBoss() { if (!nestBoss) return; const b = nestBoss; nestBoss = null; scene.remove(b.crown); b.dispose(); fx.particles({x: b.throne.position.x, z: b.throne.position.z, y: 1.5, count: 30, color: 0xb46cff, size: 0.5, speed: 3, up: 3, life: 0.7}); fx.shockwave({x: nest.position.x, z: nest.position.z, color: 0xff6b8a, radius: 4, life: 0.6}); }
+  /* when the nest is down to 60% the boss leaps off its barrel onto the start of the path (the walking boss takes over) */
+  function releaseNestBoss() {
+    if (!nestBoss) return;
+    const b = nestBoss, p = world(state.left + 1.5); b.cast = null;
+    b.leave = {t: 0, from: b.root.position.clone(), to: new THREE.Vector3(p.x, 0, p.z)}; b.play('Attack', true);
+  }
+  /* the boss on its barrel: idle actions now and then (hop and spin, a taunt, a sway), a flinch when the nest is hit,
+     its ultimate (off the barrel to the front of the screen, face the player, turn, cast at the field, fly back)
+     and the final leap onto the path */
+  function bossFlinch() {
+    const b = nestBoss; if (!b || b.cast || b.leave || clock < b.hurtUntil) return;
+    b.hurtUntil = clock + 0.8; b.play('Hurt', true); b.mood.back = 0.6; b.mood.kind = 'flinch'; b.mood.t = 0;
+  }
+  function bossSkillStart() {
+    const b = nestBoss; if (!b || b.leave) return;
+    const r = canvas.getBoundingClientRect(), to = screenToWorld(r.left + r.width / 2, r.top + r.height * 0.5, CASTER_DIST);
+    to.y -= b.height * 0.45 * 0.6;
+    b.cast = {t: 0, from: b.home.clone(), to, castT: undefined}; b.mood.kind = null; b.play('Idle');
+  }
+  function bossSkill(ev) {
+    const b = nestBoss, color = ELEMENT_COLORS[ev.element] || 0xff6b8a;
+    fieldWash(color);
+    for (const f of state.fighters) if (f.side === 'ally' && f.hp > 0) { const r = fighters.get(f.id); if (r) combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: ev.element, strong: true}); }
+    if (!b?.cast) return;
+    b.cast.castT = 0;
+    const center = world((state.left + state.right) / 2);
+    performSkill(THREE, scene, b, spiritMap.get(state.stage.boss), entries.get(state.stage.boss), true, () => ({x: center.x, z: center.z, width: 30, height: 18}));
+  }
+  function tickNestBoss(dt) {
+    const b = nestBoss; if (!b) return;
+    b.tick(dt);
+    if (b.leave) {
+      const L = b.leave; L.t += dt; const k = Math.min(1, L.t / 0.45), e = ease(k);
+      b.root.position.lerpVectors(L.from, L.to, e); b.root.position.y += Math.sin(k * Math.PI) * 2.2;
+      b.root.scale.setScalar(Math.max(0.01, 1 - Math.max(0, k - 0.75) * 4 * 0.5));
+      if (k >= 1) { fx.shockwave({x: L.to.x, z: L.to.z, color: 0xff6b8a, radius: 3, life: 0.5}); fx.particles({x: L.to.x, z: L.to.z, y: 0.3, count: 24, color: 0xb46cff, size: 0.4, speed: 3, up: 2, life: 0.6}); b.dispose(); nestBoss = null; }
+      return;
+    }
+    if (b.cast) {
+      /* same beats as a skill card: leap out, face the player, turn while rising, cast, then fly home */
+      const c = b.cast; c.t += dt; if (c.castT !== undefined) c.castT += dt;
+      const t = c.t, jump = ease(Math.min(1, t / 0.5)), turn = ease(Math.max(0, Math.min(1, (t - 0.7) / 0.35)));
+      const toCam = Math.atan2(camBase.x - b.root.position.x, camBase.z - b.root.position.z);
+      if (c.castT !== undefined && c.castT > 1.6) {
+        const k = ease(Math.min(1, (c.castT - 1.6) / 0.55));
+        b.root.position.lerpVectors(c.to, b.home, k); b.root.position.y += Math.sin(k * Math.PI) * 1.6;
+        b.root.rotation.y = toCam + Math.PI + (b.facing - toCam - Math.PI) * k; b.root.scale.setScalar(0.6 + 0.4 * k);
+        if (k >= 1) { b.cast = null; b.root.scale.setScalar(1); b.root.rotation.y = b.facing; b.play('Idle'); }
+        return;
+      }
+      b.root.position.lerpVectors(c.from, c.to, jump); b.root.position.y += Math.sin(Math.min(1, t / 0.5) * Math.PI) * 2;
+      b.root.rotation.y = toCam + (1 - jump) * Math.PI * 2 + turn * Math.PI;
+      b.root.scale.setScalar(1 - 0.4 * jump);
+      return;
+    }
+    /* idle on the barrel */
+    const m = b.mood; m.t += dt;
+    let y = b.home.y + Math.sin(clock * 2) * 0.05, rotY = b.facing, rotZ = 0;
+    if (m.kind === 'hop') { const k = Math.min(1, m.t / 0.8); y += Math.sin(k * Math.PI) * 0.9; rotY += k * Math.PI * 2; if (k >= 1) m.kind = null; }
+    else if (m.kind === 'sway') { rotZ = Math.sin(m.t * 9) * 0.18 * Math.max(0, 1 - m.t / 1.4); y += Math.abs(Math.sin(m.t * 9)) * 0.12; if (m.t > 1.4) m.kind = null; }
+    else if ((m.kind === 'taunt' || m.kind === 'flinch') && m.t > (m.kind === 'taunt' ? 1.2 : 0.6)) { m.kind = null; b.play('Idle'); }
+    if (m.kind === 'flinch') { rotZ = -Math.sin(Math.min(1, m.t / 0.6) * Math.PI) * 0.25; }
+    if (!m.kind && clock > m.next) {
+      m.kind = ['hop', 'taunt', 'sway', 'taunt'][Math.floor(Math.random() * 4)]; m.t = 0; m.next = clock + 4 + Math.random() * 4;
+      if (m.kind === 'taunt') b.play(Math.random() < 0.5 ? 'Attack' : 'Ultimate', true);
+    }
+    b.root.position.set(b.home.x, y, b.home.z); b.root.rotation.set(0, rotY, rotZ);
+  }
 
   /* Road traps: zones are decals on the road; point traps pop when they fire, with a red warning ring just before. */
   const TRAP_LOOK = {mud: 0x7a5530, whirl: 0x3fa9e8, rune: 0xb46cff, poison: 0x7fd65a, spike: 0x9a9aa8, shock: 0xffd23a, geyser: 0x58caff};
@@ -545,9 +625,11 @@ export function createView(canvas, {spirits, catalog}) {
       else if (ev.type === 'hit') hit(ev);
       else if (ev.type === 'chain') { const a = actorPoint('f' + ev.from), b = actorPoint('f' + ev.to); if (a && b) bolt(a, b, ELEMENT_COLORS[ev.element]); }
       else if (ev.type === 'death') { const r = fighters.get(ev.id); if (r) { r.dying = 0; r.actor?.play('Death', true); combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: '光', strong: true}); } }
-      else if (ev.type === 'baseHit') { const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } if (ev.side === 'crystal') { heroPlay('Hurt', true); } }
+      else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } if (ev.side === 'crystal') { heroPlay('Hurt', true); } }
       else if (ev.type === 'trap') trapFired(ev);
       else if (ev.type === 'skillStart') skillStart(ev);
+      else if (ev.type === 'bossSkillStart') bossSkillStart(ev);
+      else if (ev.type === 'bossSkill') bossSkill(ev);
       else if (ev.type === 'skill') supportSkill(ev);
       else if (ev.type === 'boss') { shake = Math.max(shake, 0.7); releaseNestBoss(); }
       else if (ev.type === 'ultimate') { const rec = fighters.get(ev.id), name = spiritMap.get(ev.species)?.skills?.[1]?.name; if (rec && name && numbersOnScreen < NUMBER_CAP) { const d = rec.deco.position; numbersOnScreen++; floatText(d.x, 2.2 + rec.scale, d.z, '大絕・' + name, ev.side === 'ally' ? '#fff0a8' : '#ffb0b0', 40, 0.9, () => numbersOnScreen--); } }
@@ -602,10 +684,10 @@ export function createView(canvas, {spirits, catalog}) {
     }
     for (let i = helpers.length - 1; i >= 0; i--) { const hlp = helpers[i]; hlp.a.tick(dt); if (clock > hlp.until) { const k = Math.min(1, (clock - hlp.until) * 3); hlp.a.root.scale.setScalar(Math.max(0.01, 1 - k)); if (k >= 1) { hlp.a.dispose(); helpers.splice(i, 1); } } }
     tickHero(dt); tickCasters(dt);
-    if (nestBoss) { nestBoss.tick(dt); nestBoss.root.position.y = BARREL_H * nest.scale.y + Math.sin(clock * 2) * 0.05; }
+    tickNestBoss(dt);
     if (state) tickTraps(dt);
     if (nest) nest.userData.portal.material.opacity = 0.55 + Math.sin(clock * 3) * 0.2;
-    combatVfx.update(dt); fx.update(dt); env?.update(dt);
+    combatVfx.update(dt); fx.update(dt); env?.update(dt); seascape.update(dt);
     for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { scene.remove(e.obj); effects.splice(i, 1); } }
     const s = shake > 0 ? shake * 0.35 : 0; shake = Math.max(0, shake - dt * 1.6);
     /* smooth, decaying shake (no per-frame random jumps, which read as flicker) */
@@ -623,7 +705,7 @@ export function createView(canvas, {spirits, catalog}) {
     setGame(game) {
       for (const id of [...fighters.keys()]) removeFighter(id);
       for (const hlp of helpers.splice(0)) hlp.a.dispose();
-      if (nestBoss) { scene.remove(nestBoss.crown); nestBoss.dispose(); nestBoss = null; }
+      if (nestBoss) { nestBoss.dispose(); nestBoss = null; }
       hero = null; traps = []; numbersOnScreen = 0;
       for (const c of casters.splice(0)) c.a?.dispose();
       projectileView.clear(); combatVfx.clear(); fx.clear();

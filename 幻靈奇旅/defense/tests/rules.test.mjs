@@ -241,3 +241,18 @@ test('dealing is slower and stops while a card is being dragged', () => {
   for (let i = 0; i < 60 * 3.5; i++) step(g, 1 / 60);
   assert.equal(count(), before + 1, 'one card every 3.2 s once the drag ends');
 });
+
+test('the boss stays on its barrel until the nest is at 60%, and casts its ultimate at the spirits meanwhile', async () => {
+  const {BOSS_OUT_AT, BOSS_SKILL_FIRST, SKILL_WINDUP, bossSkillDamage} = await import('../js/rules.js');
+  const s = game({stageIndex: 2});
+  s.hand = [{uid: 1, species: 'charmander', rank: 1, boost: 0}]; playCard(s, 0);
+  const ally = s.fighters.find((f) => f.side === 'ally'); ally.x = s.right - 1; ally.speed = 0;
+  while (s.time < BOSS_SKILL_FIRST - 0.05) step(s, 1 / 60);
+  const before = ally.hp;
+  while (s.time < BOSS_SKILL_FIRST + SKILL_WINDUP + 0.05) step(s, 1 / 60);
+  assert.ok(before - ally.hp >= ally.maxHp * bossSkillDamage(2) * 0.5, 'the boss ultimate hit the spirit');
+  s.nest.hp = s.nest.maxHp * (BOSS_OUT_AT + 0.05); s.events.length = 0;
+  ally.x = s.left + 2; ally.speed = 0; ally.cooldown = 0;
+  for (let i = 0; i < 60 * 3 && !s.bossOut; i++) step(s, 1 / 60);
+  assert.ok(s.bossOut, 'the boss jumps down once the nest is below 60%');
+});

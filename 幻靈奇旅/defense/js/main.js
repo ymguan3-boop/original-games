@@ -425,6 +425,8 @@ function handleEvents() {
     else if (ev.type === 'deal') fresh.set(ev.uid, 'dealt');
     else if (ev.type === 'merge') { fuse(ev); audio?.play({phase: 'impact', strong: true, final: ev.rank >= 3}); toast(ev.evolved ? `${spirit(ev.from).name} 合成進化成 ${spirit(ev.to).name}！` : isSupport(ev.to) ? `${spirit(ev.to).name} 升到 ${'★'.repeat(ev.rank)}，技能加強！` : `${spirit(ev.to).name} 升到 ${'★'.repeat(ev.rank)}，能力提升！`); }
     else if (ev.type === 'skillStart') { skillBanner(ev); audio?.play({speciesId: ev.species, element: ev.element, pet: true, phase: 'start', strong: true}); }
+    else if (ev.type === 'bossSkillStart') { banner(`魔王 ${spirit(ev.species).name}・${spirit(ev.species).skills?.[1]?.name || '大絕'}！`, true); audio?.play({speciesId: ev.species, element: ev.element, pet: true, phase: 'start', strong: true}); }
+    else if (ev.type === 'bossSkill') audio?.play({speciesId: ev.species, element: ev.element, pet: true, phase: 'release', strong: true, final: true});
     else if (ev.type === 'skill') audio?.play({speciesId: ev.species, element: ev.element, pet: true, phase: 'release', strong: true, final: true});
     else if (ev.type === 'item') { toast(`${ITEMS[ev.id].icon} ${ITEMS[ev.id].name}！`); audio?.play({phase: 'impact', strong: true}); }
     else if (ev.type === 'boss') banner(`魔王 ${spirit(ev.species).name} 現身！`, true);
