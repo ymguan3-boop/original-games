@@ -15,6 +15,21 @@ const WEATHER = {
   tower: {sky: ['#7d74c8', '#c8b4ee', '#ffe0ee'], sea: 0x3a86c0, clouds: 'soft', snow: 380},
   abyss: {sky: ['#2b3a4e', '#56697e', '#8fa1b0'], sea: 0x1f5f7c, clouds: 'storm', rain: 650, storm: true},
 };
+/* One immutable climate per island. Attacks never edit this table, the painted sky,
+   ambient light, rainfall or cloud density. Drifting clouds are cosmetic, not weather changes. */
+export const STAGE_WEATHER = Object.freeze({
+  meadow: {name:'晴天白雲',icon:'☀️',description:'藍天、明亮陽光與白雲',fixed:true},
+  pond: {name:'陰天微雨',icon:'🌦️',description:'柔和陰雲、細雨與池塘水霧',fixed:true},
+  waterfall: {name:'陰雨水霧',icon:'🌧️',description:'瀑布水霧、灰白雲層與細雨',fixed:true},
+  orchard: {name:'晴朗暖陽',icon:'☀️',description:'果園晴空、柔和日光與白雲',fixed:true},
+  forge: {name:'夕陽薄雲',icon:'🌇',description:'工坊夕霞、橘金天空與煙霧',fixed:true},
+  desert: {name:'荒野晴空',icon:'🌤️',description:'清澈藍天與乾燥日照',fixed:true},
+  observatory: {name:'晴朗星夜',icon:'✨',description:'紫色星空、月光與閃爍星點',fixed:true},
+  night: {name:'月影晴夜',icon:'🌙',description:'深藍夜空、月亮及螢火蟲',fixed:true},
+  tower: {name:'靜謐飄雪',icon:'❄️',description:'淡紫天空與持續輕雪',fixed:true},
+  abyss: {name:'深淵暴雨',icon:'⛈️',description:'灰色烏雲、細密雨幕與海風',fixed:true}
+});
+export const stageWeather = (scene) => STAGE_WEATHER[scene] || STAGE_WEATHER.meadow;
 export const weatherOf = (theme) => WEATHER[theme] || WEATHER.meadow;
 const CLOUD = {white: ['#ffffff', 9, 1], soft: ['#f4f8fb', 12, .9], few: ['#ffffff', 4, 1], grey: ['#d3dbe2', 15, .95], dusk: ['#ffe2cc', 9, .85], night: ['#5a6494', 5, .55], storm: ['#4a5566', 18, .95]};
 
