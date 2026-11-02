@@ -7,6 +7,7 @@
 import {attackProfile} from '../../survivors/js/combat-profile.js';
 import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js';
 import {STAGES, buildPath} from './stages.js';
+import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js';
 
 export {STAGES};
 export const ELEMENTS = ['光', '焰', '森', '潮', '雷', '念'];
@@ -62,14 +63,8 @@ export const SUPPORT = {
   blissey: {skill: '鳳羽連射', kind: 'haste', text: '我方幻靈攻擊速度加倍', duration: [6, 8, 10]},
 };
 
-/* 光>焰>森>潮>雷>念>光 */
-export function elementMultiplier(attack, defend) {
-  const a = ELEMENTS.indexOf(attack), d = ELEMENTS.indexOf(defend);
-  if (a < 0 || d < 0) return 1;
-  if ((a + 1) % 6 === d) return 1.5;
-  if ((d + 1) % 6 === a) return 0.75;
-  return 1;
-}
+/* Elements remain an aesthetic identifier for native animation only; no damage counter multipliers. */
+export function elementMultiplier() { return 1; }
 
 export function evolutionsOf(evolution, id) { const rule = evolution?.[id]; return Array.isArray(rule?.next) ? rule.next : rule?.next ? [rule.next] : []; }
 export const isSupport = (id) => !!SUPPORT[id];
@@ -93,13 +88,25 @@ export function caveRoster(progress = {}, legacy = null) {
   return [...team.filter((id) => owned.includes(id)), ...owned.filter((id) => !team.includes(id))];
 }
 
-/* Cave attack profile converted to lane numbers: reach in front of the unit and the splash radius. */
+/* V2 basic reach is class-based: warrior 1.7 / archer 5.1 / mage and priest 8.5.
+   Ultimate reach, area and target strategy come from its own 61-entry profile.
+   Never read an element weakness or auto-apply status based on the element. */
 export function profileFor(spec, entry, strong = false) {
-  const p = attackProfile(spec, entry?.skills?.[strong ? 1 : 0] || {}, strong);
-  const type = SHAPES[p.type] ? p.type : p.ranged ? 'ranged' : 'melee';
-  const reach = type === 'melee' ? 1.7 : type === 'self' ? 3.5 : ['blast', 'cone', 'area'].includes(type) ? (p.ranged ? 4 : 2.2) : Math.max(3, Math.min(6, (p.range || 9) * 0.38));
-  const radius = type === 'blast' ? 2.2 : type === 'cone' ? 2 : type === 'area' ? 2.4 : 0;
-  return {type, reach, radius, ranged: !!p.ranged, chain: !!p.chain || type === 'tracking'};
+  const role = roleFor(spec.id), skill = ultimateFor(spec.id);
+  const basic = role.basic === 'melee' ? 'melee' : 'ranged';
+  if (!strong || !skill || skill.kind === 'support') {
+    return {type: basic, reach: role.range || 1.7, radius: 0, ranged: basic !== 'melee', chain: false};
+  }
+  const k = skill.kind;
+  const type = k === 'heal' || k === 'heal_team' || k === 'shield' || k === 'regen' ? 'self' :
+    k === 'global' ? 'global' : k === 'line' || k === 'chain' ? 'tracking' :
+    k === 'blast' ? 'blast' : k === 'cone' ? 'cone' : k === 'area' ? 'area' : basic;
+  const radius = ['blast', 'cone', 'area'].includes(type) ? (skill.radius || 2.2) : 0;
+  const reach = type === 'self' ? role.range : type === 'global' ? 1000 :
+    k === 'line' || k === 'chain' ? Math.max(role.range, 7.5) :
+    type === 'blast' || type === 'cone' ? Math.max(role.range, role.basic === 'melee' ? 2.4 : 8.5) : role.range;
+  return {type, reach, radius, ranged: type !== 'melee' && type !== 'area' && type !== 'self',
+    chain: k === 'chain' || k === 'line', targets: skill.targets || (k === 'line' ? 5 : 3), skill};
 }
 
 /* Base stats of a spirit on the lane. Enemies scale with the stage; boosts come from merges past the last evolution. */
@@ -112,7 +119,7 @@ export function passivesOf(spec) {
 export const passiveLines = (spec) => passivesOf(spec).effects.map(effectText);
 export const ultCooldown = (spec, boss = false) => {
   const cd = passivesOf(spec).effects.find((e) => e.effect === 'cooldown')?.value || 0;
-  return (boss ? ULT_CD.boss : ULT_CD[spec.cardFrame || 'yellow'] || ULT_CD.yellow) * (1 - Math.min(0.4, cd));
+  return (boss ? Math.max(19, ultimateFor(spec.id)?.cooldown || 20) : (ultimateFor(spec.id)?.cooldown || 18)) * (1 - Math.min(0.4, cd));
 };
 
 /* Gacha points per kill, shared with the endless cave (same scale as its drops: 3 / 8 / 15 by tier, 200 for a
@@ -126,9 +133,9 @@ export function fighterStats(spec, entry, side, scale = 1, boost = 0) {
   const profile = profileFor(spec, entry, false), ally = side === 'ally', k = 1 + 0.5 * boost;
   return {
     hp: Math.round(spec.hp * (ally ? (RARITY_HP[spec.rarity] || 4.8) * k : 1.8 * scale)),
-    attack: spec.attack * (ally ? k : 0.95 * scale) * (profile.type === 'melee' ? 1.25 : 1),
+    attack: spec.attack * (ally ? k : 0.95 * scale) * (roleFor(spec.id).basic === 'melee' ? 1.15 : 1),
     speed: spec.stage >= 3 ? 1.3 : ['run', 'fly', 'hop'].includes(spec.motionType) ? 2.2 : 1.7,
-    profile, rate: SHAPES[profile.type].rate, knockbacks: ally ? 3 : spec.stage >= 3 ? 2 : 1,
+    profile, rate: roleFor(spec.id).basic === 'melee' ? 1.05 : roleFor(spec.id).basic === 'ranged' ? 1.2 : 1.45, knockbacks: ally ? 3 : spec.stage >= 3 ? 2 : 1,
   };
 }
 
@@ -139,7 +146,7 @@ export function createGame({stageIndex = 0, deck, spirits, catalog = {}, evoluti
   const state = {
     stage, stageIndex, path, spirits: spiritMap, entries: new Map((catalog.entries || []).map((e) => [e.id, e])), evolution, hooks, random: rng(seed),
     deck: deck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), hand: [], dealAt: DEAL_EVERY, nextCard: 1,
-    left: -half, right: half, time: 0, itemReady: Object.fromEntries(Object.entries(ITEMS).map(([k, v]) => [k, v.cooldown / 2])), pendingSkills: [], pendingBoss: [], bossSkillAt: BOSS_SKILL_FIRST, freezeUntil: 0, shieldUntil: 0, hasteUntil: 0,
+    left: -half, right: half, time: 0, itemReady: Object.fromEntries(Object.entries(ITEMS).map(([k, v]) => [k, v.cooldown / 2])), pendingSkills: [], pendingBoss: [], bossSkillAt: BOSS_SKILL_FIRST, nextUltimateAt: 0, freezeUntil: 0, shieldUntil: 0, hasteUntil: 0,
     crystal: {hp: stage.crystal, maxHp: stage.crystal, x: half}, nest: {hp: stage.nest, maxHp: stage.nest, x: -half},
     traps: (stage.traps || []).map((t, i) => ({...TRAPS[t.kind], kind: t.kind, x: -half + t.at * path.length, half: (t.len || 0) * path.length / 2, next: 3 + i * 0.7})),
     fighters: [], shots: [], events: [], nextId: 1, spawnAt: stage.groups.map((g) => g.start), spawned: stage.groups.map(() => 0), bossOut: false,
@@ -254,7 +261,7 @@ function spawn(state, side, speciesId, {boss = false, boost = 0, rank = 1} = {})
   /* allies (and the boss) carry their cave passives: stat bonuses plus on-hit status chances */
   const pv = ally || boss ? passivesOf(spec).effects : [], p = Object.fromEntries(pv.map((e) => [e.effect, e.value]));
   const ultCd = ultCooldown(spec, boss);
-  const f = {id: state.nextId++, side, species: speciesId, type: spec.type, stage: spec.stage, rank, boss, flying: FLYING.test(spec.model + spec.family),
+  const f = {id: state.nextId++, side, species: speciesId, role: ROLE_SKILLS[speciesId]?.role || 'warrior', type: spec.type, stage: spec.stage, rank, boss, flying: FLYING.test(spec.model + spec.family),
     ultCd, ultAt: state.time + ultCd * ULT_FIRST, critBonus: p.crit || 0, guard: Math.min(0.5, (p.defense || 0) + (p.reduction || 0)), regen: p.regen || 0,
     reachMul: 1 + (p.range || 0), healMul: 1 + (p.heal || 0), procs: pv.filter((e) => e.effect.startsWith('proc-')).map((e) => ({type: e.effect.slice(5), chance: Math.min(0.65, e.value)})),
     x: ally ? state.right - 1.5 : state.left + 1.5, z: (state.random() - 0.5) * 1.6, hp, maxHp: hp, attack: st.attack * (boss ? 1.2 : 1) * (1 + (p.attack || 0)), speed: st.speed * (boss ? 0.6 : 1) * (1 + (p.speed || 0)),
