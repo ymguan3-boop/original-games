@@ -1,6 +1,15 @@
 /* 幻靈群島 sea chart: one island per stage joined by sea lanes, plus the 初光鎮 pier. The boat sails lane by lane
    (SVG path lengths), so moving between far islands follows the route through every island in between. */
 const W = 1000, H = 620;
+const MOBILE_W = 700, MOBILE_H = 1120;
+const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
+/* A compact portrait archipelago uses a readable two-column, five-row sailing route instead of
+   shrinking the entire desktop chart to postage-stamp islands. Ordering remains port -> 1 ... -> 10. */
+const MOBILE_SPOTS = [[210, 924], [485, 924], [485, 742], [210, 742], [210, 560],
+  [485, 560], [485, 378], [210, 378], [210, 196], [485, 196]];
+const MOBILE_HOME = [80, 1040];
+const spots = () => isPortrait() ? MOBILE_SPOTS : SPOTS;
+const home = () => isPortrait() ? MOBILE_HOME : HOME;
 /* index -1 is the town pier; 0..9 are the stages */
 export const SPOTS = [[240, 470], [262, 352], [186, 196], [362, 104], [506, 236], [438, 420], [622, 512], [724, 320], [648, 140], [864, 236]];
 const HOME = [102, 556];
@@ -15,7 +24,8 @@ const LOOK = {
 };
 
 /* the boat docks on the water at each island's south-west shore; the lanes run between these docking points */
-const pt = (i) => (i < 0 ? HOME_DOCK : [SPOTS[i][0] - 66, SPOTS[i][1] + 14]);
+const pt = (i) => i < 0 ? (isPortrait() ? [MOBILE_HOME[0] + 62, MOBILE_HOME[1] + 6] : HOME_DOCK)
+  : [spots()[i][0] - 66, spots()[i][1] + 14];
 /* a gentle S-curve between two points */
 function lane(a, b, bend) {
   const [x1, y1] = pt(a), [x2, y2] = pt(b), mx = (x1 + x2) / 2, my = (y1 + y2) / 2, dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
@@ -33,8 +43,8 @@ const blob = (r, seed) => {
 };
 
 export function createIslandMap(host, {stages, onPick, onHome, esc = (s) => s}) {
-  let state = {open: 0, cleared: {}, selected: 0, boatAt: -1, bosses: [], art: null}, sailing = null, raf = 0;
-  host.innerHTML = `<svg class="sea-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="幻靈群島航海圖">
+  let state = {open: 0, cleared: {}, selected: 0, boatAt: -1, bosses: [], art: null, homeArt: null}, sailing = null, raf = 0;
+  host.innerHTML = `<svg class="sea-chart" viewBox="0 0 ${isPortrait() ? MOBILE_W : W} ${isPortrait() ? MOBILE_H : H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="幻靈群島航海圖">
     <defs>
       <pattern id="seaWaves" width="60" height="26" patternUnits="userSpaceOnUse"><path d="M0 13 Q15 5 30 13 T60 13" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2"/></pattern>
       <radialGradient id="seaGlow" cx="50%" cy="45%" r="70%"><stop offset="0" stop-color="#5fc6ec"/><stop offset="1" stop-color="#2a86c4"/></radialGradient>
@@ -55,7 +65,7 @@ export function createIslandMap(host, {stages, onPick, onHome, esc = (s) => s}) 
   /* the town harbour: a drawn pier until the 3D picture is ready, then the rendered dock with the boatman; clicking it
      opens the boatman's menu (rules, gacha, back to town) */
   const homeLabel = '<g class="isle-label" transform="translate(0,52)"><rect x="-62" y="-14" width="124" height="24" rx="12"/><text text-anchor="middle" y="3" class="isle-name">初光鎮碼頭・船夫</text></g>';
-  const drawHome = (url) => { homeG.innerHTML = '<g class="home-hit" transform="translate(' + HOME[0] + ',' + HOME[1] + ')" role="button" tabindex="0" aria-label="初光鎮碼頭：和船夫對話">' + (url ? '<image href="' + url + '" x="-100" y="-90" width="200" height="154"/>' : '<rect x="-34" y="-8" width="58" height="12" rx="3" fill="#b07a45" stroke="#6e4a2a" stroke-width="2"/>') + '<rect x="-100" y="-90" width="200" height="154" fill="transparent"/>' + homeLabel + '</g>'; };
+  const drawHome = (url) => { homeG.innerHTML = '<g class="home-hit" transform="translate(' + home()[0] + ',' + home()[1] + ')" role="button" tabindex="0" aria-label="初光鎮碼頭：和船夫對話">' + (url ? '<image href="' + url + '" x="-100" y="-90" width="200" height="154"/>' : '<rect x="-34" y="-8" width="58" height="12" rx="3" fill="#b07a45" stroke="#6e4a2a" stroke-width="2"/>') + '<rect x="-100" y="-90" width="200" height="154" fill="transparent"/>' + homeLabel + '</g>'; };
   drawHome(null);
   homeG.addEventListener('click', () => !sailing && onHome?.());
   homeG.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onHome?.(); } });
@@ -65,7 +75,7 @@ export function createIslandMap(host, {stages, onPick, onHome, esc = (s) => s}) 
 
   function renderIsles() {
     islesG.innerHTML = stages.map((s, i) => {
-      const [x, y] = SPOTS[i], look = LOOK[s.scene] || LOOK.meadow, locked = i > state.open, cleared = !!state.cleared[s.id], sel = state.selected === i, r = 46 + (s.path?.length || 0) % 3 * 3;
+      const [x, y] = spots()[i], look = LOOK[s.scene] || LOOK.meadow, locked = i > state.open, cleared = !!state.cleared[s.id], sel = state.selected === i, r = 46 + (s.path?.length || 0) % 3 * 3;
       return `<g class="isle ${locked ? 'is-locked' : ''} ${cleared ? 'is-cleared' : ''} ${sel ? 'is-selected' : ''}" data-isle="${i}" transform="translate(${x},${y})" tabindex="${locked ? -1 : 0}" role="button" aria-label="${i + 1}. ${esc(s.name)}${locked ? '（未解鎖）' : ''}">
         ${sel ? `<ellipse class="isle-ring" rx="${r + 16}" ry="${(r + 16) * 0.62}"/>` : ''}
         ${state.art?.[i] ? `<image href="${state.art[i]}" x="-78" y="-82" width="156" height="120" ${locked ? 'class="fogged" filter="url(#locked)"' : ''}/>${locked ? '<text class="isle-icon" y="-10" text-anchor="middle">☁️</text>' : ''}` : `<g filter="url(#isleShadow)" ${locked ? 'class="fogged"' : ''}>
@@ -112,13 +122,25 @@ export function createIslandMap(host, {stages, onPick, onHome, esc = (s) => s}) 
   islesG.addEventListener('click', (e) => { const g = e.target.closest('[data-isle]'); if (g && !sailing) onPick?.(Number(g.dataset.isle)); });
   islesG.addEventListener('keydown', (e) => { if (e.key !== 'Enter' && e.key !== ' ') return; const g = e.target.closest('[data-isle]'); if (g) { e.preventDefault(); onPick?.(Number(g.dataset.isle)); } });
 
+  let portraitLayout = isPortrait();
+  const updateLayout = () => {
+    const portrait = isPortrait();
+    if (portrait === portraitLayout || sailing) return;
+    portraitLayout = portrait;
+    svg.setAttribute('viewBox', `0 0 ${portrait ? MOBILE_W : W} ${portrait ? MOBILE_H : H}`);
+    lanePaths.forEach((p, i) => p.setAttribute('d', lane(i - 1, i, ((i - 1) % 2 ? 1 : -1) * 38)));
+    drawHome(state.homeArt);
+    renderIsles();
+    boatTo(state.boatAt);
+  };
+  window.addEventListener('resize', updateLayout);
   return {
     update(next) { state = {...state, ...next}; renderIsles(); if (!sailing) boatTo(state.boatAt); },
     /* swap the drawn icon for the rendered speedboat picture (hull centred on the lane) */
     setBoatImage(url) { boat.querySelector('.boat-bob').innerHTML = `<image href="${url}" x="-34" y="-38" width="68" height="49"/>`; },
     /* the 3D island pictures replace the flat shapes and icons */
     setIslandArt(urls) { state.art = urls; renderIsles(); },
-    setHomeArt(url) { drawHome(url); },
+    setHomeArt(url) { state.homeArt = url; drawHome(url); },
     sail, get sailing() { return !!sailing; }, get boatAt() { return state.boatAt; },
   };
 }
