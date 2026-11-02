@@ -520,3 +520,19 @@ dialog#panel[data-view="gacha"] { width:min(660px,calc(100vw - 20px)); max-heigh
   #panel[data-view="gacha"] .gacha-intro p { line-height:1.5; }
   #panel[data-view="gacha"] .draw-actions button { font-size:13px; padding:12px 5px; }
 }
+
+
+/* Cave-compatible full-width gacha machine rather than a tiny portrait column. */
+#panel[data-view="gacha"] .gacha-intro { display:flex; flex-direction:column; align-items:stretch; gap:4px; }
+#panel[data-view="gacha"] .gacha-intro > div { text-align:center; }
+#panel[data-view="gacha"] .gacha-intro > div p { margin:4px 0 8px; }
+#panel[data-view="gacha"] .gacha-machine.compact-summoner {
+  display:block; width:100%; height:clamp(175px,26dvh,260px); min-height:175px;
+  background:linear-gradient(0deg,#10242f88,transparent 30%),url('../../survivors/assets/gacha-machine-v03.png') center 45% / cover no-repeat;
+  border:1px solid #b4c3a34c; border-radius:13px; margin:0;
+  box-shadow:inset 0 -20px 36px #10242f55; cursor:pointer;
+}
+#panel[data-view="gacha"] .gacha-machine.compact-summoner > * { display:none; }
+@media(max-width:540px) {
+  #panel[data-view="gacha"] .gacha-machine.compact-summoner {height:clamp(165px,23dvh,225px);min-height:165px;width:100%;}
+}
