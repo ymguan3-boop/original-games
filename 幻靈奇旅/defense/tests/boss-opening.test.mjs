@@ -24,5 +24,6 @@ test('opening and first three cards are gated by the rendered, visible battle sc
   assert.match(main,/view\?\.update\(running \? dt \* speed : 0\);[\s\S]*?beginDealing\(game\)/);
   assert.match(main,/if \(launched\) \{ handleEvents\(\); handSig = ''; hud\(\); showBossIntro\(game\.stage\); \}/);
   assert.match(main,/const running = visibleBattle &&/);
+  assert.match(main,/if \(\+\+visibleSceneFrames >= 2\)/,'battle must paint before initial cards');
   assert.match(rules,/if \(!state\.started \|\| state\.result\) return/);
 });
