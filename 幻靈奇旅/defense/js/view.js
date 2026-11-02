@@ -248,8 +248,11 @@ export function createView(canvas, {spirits, catalog}) {
   }
   function bossSkill(ev) {
     const b = nestBoss, color = ELEMENT_COLORS[ev.element] || 0xff6b8a;
-    fieldWash(color);
-    for (const f of state.fighters) if (f.side === 'ally' && f.hp > 0) { const r = fighters.get(f.id); if (r) combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: ev.element, strong: true}); }
+    /* Boss attack remains localized: never tint the entire field/sky. Limit impact draw calls. */
+    for (const f of state.fighters.filter((f) => f.side === 'ally' && f.hp > 0).slice(0, 6)) {
+      const r = fighters.get(f.id);
+      if (r) combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: ev.element, strong: true});
+    }
     if (!b?.cast) return;
     b.cast.castT = 0;
     const center = world((state.left + state.right) / 2);
@@ -497,7 +500,7 @@ export function createView(canvas, {spirits, catalog}) {
     rec.stop = Math.max(rec.stop, ev.crit || ev.strong ? 0.12 : 0.06);
     rec.flashT = 0.14; rec.flash.material.color.copy(linear(ev.crit ? 0xffd54a : rec.side === 'ally' ? 0xff8a8a : ev.strong ? ELEMENT_COLORS[ev.element] || 0xffffff : 0xffffff));
     rec.recoil = ev.crit || ev.strong ? 0.3 : 0.14;
-    if (numbersThisFrame < 6) fx.hit({x: d.x, y, z: d.z, element: ev.element, crit: ev.crit, kind: ev.kind});
+    if (numbersThisFrame < 4) fx.hit({x: d.x, y, z: d.z, element: ev.element, crit: ev.crit, kind: ev.kind});
     numbersThisFrame++;
     const loud = ev.crit || ev.strong || ev.effective;
     rec.pending = (rec.pending || 0) + ev.amount;
@@ -523,7 +526,7 @@ export function createView(canvas, {spirits, catalog}) {
     if (ev.species === 'mewtwo') combatVfx.nativeSpirit({...spell});
     if (ev.strong) {
       /* ultimates: the spirit's own model-room script plays as before, and the defense-map layer replaces the old fallback burst */
-      fx.ultimate({from, to, element: ev.element, kind: ev.kind, radius: ev.radius || 2.4});
+      fx.ultimate({from, to, element: ev.element, kind: ev.kind, radius: Math.min(3.5, ev.radius || 2.4)});
       shake = Math.max(shake, 0.35);
       return;
     }
@@ -611,18 +614,22 @@ export function createView(canvas, {spirits, catalog}) {
     if (caster) { caster.cast = true; if (caster.a) castFrom(caster); }
     const side = ['heal', 'shield', 'haste'].includes(ev.kind) ? 'ally' : 'enemy';
     /* field-wide and team-wide skills wash the whole map; single-target ones (volley, beam) only mark their targets */
-    if (!['volley', 'beam'].includes(ev.kind)) fieldWash(color);
+    /* No global fieldWash: stage weather and the painted sky never react to a skill. */
     if (['freeze', 'quake', 'plague'].includes(ev.kind)) {
       fx.shockwave({x: center.x, z: center.z, color, radius: 24, life: 1.1});
-      for (let i = 0; i < state.path.points.length; i += 6) { const [px, pz] = state.path.points[i]; fx.particles({x: px, z: pz, y: 0.3, count: 5, color, size: 0.5, speed: 1, up: ev.kind === 'plague' ? 0.8 : 2, spread: 1.2, life: 1.2, gravity: ev.kind === 'plague' ? 0.6 : -3}); }
+      for (let i = 0; i < state.path.points.length; i += 16) {
+        const [px, pz] = state.path.points[i];
+        fx.particles({x: px, z: pz, y: 0.3, count: 2, color, size: 0.35, speed: 1, up: 1.2, life: 0.7, gravity: -2});
+      }
     }
-    fx.skill({center, element: ev.element, kind: ev.kind, targets: state.fighters.filter((f) => f.side === side && f.hp > 0).map((f) => fighters.get(f.id)?.deco.position).filter(Boolean)});
+    fx.skill({center, element: ev.element, kind: ev.kind,
+      targets: state.fighters.filter((f) => f.side === side && f.hp > 0).slice(0, 6).map((f) => fighters.get(f.id)?.deco.position).filter(Boolean)});
     shake = Math.max(shake, 0.5);
     const enemies = () => state.fighters.filter((f) => f.side === 'enemy' && f.hp > 0);
     if (ev.kind === 'freeze') { const dome = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshBasicMaterial({color: linear(0xbff4ff), transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false})); dome.position.set(center.x, 0, center.z); addEffect(dome, 1.6, (o, k) => { o.scale.setScalar(2 + Math.min(1, k * 4) * 22); o.material.opacity = 0.3 * (1 - k); }); }
-    else if (ev.kind === 'volley' || ev.kind === 'quake' || ev.kind === 'plague') for (const f of enemies()) { const r = fighters.get(f.id); if (!r) continue; const t = r.deco.position; if (ev.kind === 'volley') bolt({x: c.x, y: 3, z: c.z}, {x: t.x, y: 1, z: t.z}, color); combatVfx.impact({x: t.x, z: t.z, element: ev.element, strong: true}); }
+    else if (ev.kind === 'volley' || ev.kind === 'quake' || ev.kind === 'plague') for (const f of enemies().slice(0, 6)) { const r = fighters.get(f.id); if (!r) continue; const t = r.deco.position; if (ev.kind === 'volley') bolt({x: c.x, y: 3, z: c.z}, {x: t.x, y: 1, z: t.z}, color); combatVfx.impact({x: t.x, z: t.z, element: ev.element, strong: true}); }
     else if (ev.kind === 'beam') tubeAlong(state.right, state.right - (state.right - state.left) * 0.6, color, 1.0, 1.0);
-    else if (ev.kind === 'heal' || ev.kind === 'shield' || ev.kind === 'haste') for (const f of state.fighters) if (f.side === 'ally' && f.hp > 0) { const r = fighters.get(f.id); if (r) burst(r.deco.position.x, r.deco.position.z, ev.kind === 'heal' ? 0x83ffc5 : ev.kind === 'shield' ? 0xffd058 : 0xfff27a, 1.8, 0.7); }
+    else if (ev.kind === 'heal' || ev.kind === 'shield' || ev.kind === 'haste') for (const f of state.fighters.filter((f) => f.side === 'ally' && f.hp > 0).slice(0, 6)) { const r = fighters.get(f.id); if (r) burst(r.deco.position.x, r.deco.position.z, ev.kind === 'heal' ? 0x83ffc5 : ev.kind === 'shield' ? 0xffd058 : 0xfff27a, 1.8, 0.7); }
     if (ev.kind === 'heal') burst(c.x, c.z, 0x83ffc5, 3, 0.9);
   }
 
@@ -631,6 +638,20 @@ export function createView(canvas, {spirits, catalog}) {
     for (const ev of state.events) {
       if (ev.type === 'release') release(ev);
       else if (ev.type === 'hit') hit(ev);
+      else if (ev.type === 'heal') {
+        const rec = fighters.get(ev.id), t = rec?.deco?.position;
+        if (t) {
+          burst(t.x, t.z, 0x83ffc5, 1.15, 0.5);
+          if (numbersOnScreen < NUMBER_CAP) {
+            numbersOnScreen++;
+            floatText(t.x, 2 + rec.scale, t.z, '+' + Math.round(ev.amount), '#a5ffcd', 43, 0.65, () => numbersOnScreen--);
+          }
+        }
+      }
+      else if (ev.type === 'priestCast') {
+        const rec = fighters.get(ev.id), t = rec?.deco?.position;
+        if (t) fx.particles({x:t.x,y:0.8,z:t.z,count:8,color:0x83ffc5,size:0.24,speed:0.6,up:1.3,life:0.45,gravity:0});
+      }
       else if (ev.type === 'chain') { const a = actorPoint('f' + ev.from), b = actorPoint('f' + ev.to); if (a && b) bolt(a, b, ELEMENT_COLORS[ev.element]); }
       else if (ev.type === 'death') { const r = fighters.get(ev.id); if (r) { r.dying = 0; r.actor?.play('Death', true); combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: '光', strong: true}); } }
       else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } if (ev.side === 'crystal') { heroPlay('Hurt', true); } }
