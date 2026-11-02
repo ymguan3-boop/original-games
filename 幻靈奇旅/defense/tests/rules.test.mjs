@@ -39,9 +39,8 @@ test('chest and book families are not playable, same as the cave summon pool', (
   for (const id of TRIAL_ROSTER) assert.ok(!banned.includes(id), id);
 });
 
-test('element cycle 光>焰>森>潮>雷>念>光', () => {
-  assert.equal(elementMultiplier('光', '焰'), 1.5);
-  assert.equal(elementMultiplier('焰', '光'), 0.75);
+test('V2 has no elemental counters or element-based damage multipliers', () => {
+  for (const a of ['光','焰','森','潮','雷','念']) for (const b of ['光','焰','森','潮','雷','念']) assert.equal(elementMultiplier(a,b),1);
 });
 
 test('a deck is 4 base spirits and 2 red support cards', () => {
@@ -81,9 +80,16 @@ test('support cards are exactly the spirits without any evolution', () => {
   assert.deepEqual(Object.keys(SUPPORT).sort(), isolated);
 });
 
-test('attack shapes come from the cave profiles', () => {
+test('V2 basic attack reaches depend on job not element: warrior 1, archer 3, mage 5', () => {
   const spec = (id) => spirits.find((s) => s.id === id);
-  assert.equal(profileFor(spec('charmander'), entries.get('charmander'), false).type, 'melee');
+  const warrior = profileFor(spec('bulbasaur'), entries.get('bulbasaur'), false);
+  const archer = profileFor(spec('charmander'), entries.get('charmander'), false);
+  const mage = profileFor(spec('cyndaquil'), entries.get('cyndaquil'), false);
+  assert.equal(warrior.type,'melee');
+  assert.equal(archer.type,'ranged');
+  assert.equal(mage.type,'ranged');
+  assert.equal(archer.reach,warrior.reach*3);
+  assert.equal(mage.reach,warrior.reach*5);
   assert.equal(profileFor(spec('charizard'), entries.get('charizard'), true).type, 'blast');
 });
 
