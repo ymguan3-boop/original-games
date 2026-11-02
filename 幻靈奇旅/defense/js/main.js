@@ -97,7 +97,7 @@ function renderIslePanel() {
   const traps = (s.traps || []).map((t) => TRAPS[t.kind].name), uniq = [...new Set(traps)].map((n) => `${n}×${traps.filter((x) => x === n).length}`);
   const deck = record.deck.map((id) => `<img src="${picture(id)}" alt="${esc(spirit(id).name)}" title="${esc(spirit(id).name)}" data-frame="${spirit(id).cardFrame || 'yellow'}">`).join('') + '<i></i>'.repeat(Math.max(0, DECK_SIZE - record.deck.length));
   $('islePanel').innerHTML = `<div class="isle-card">
-    <div class="isle-title"><small>第 ${i + 1} 島</small><h2>${esc(s.name)}</h2>${record.cleared[s.id] ? `<span class="cleared-tag">已通關 ${'★'.repeat(best)}<em>可重複挑戰</em></span>` : ''}</div>
+    <div class="isle-title"><small>第 ${i + 1} 島</small><h2>${esc(s.name)}</h2><span class="weather-pill">${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span>${record.cleared[s.id] ? `<span class="cleared-tag">已通關 ${'★'.repeat(best)}<em>可重複挑戰</em></span>` : ''}</div>
     <div class="isle-boss"><img src="${picture(s.boss)}" alt=""><div><small>${i < 5 ? '小魔王' : '大魔王'}・坐鎮酒桶</small><b>${esc(boss.name)}</b><span class="boss-class">${esc(roleLabel(boss.id))}</span></div></div>
     <div class="isle-facts"><span>${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span><span>🛤️ 路線 ${route}</span><span>${uniq.length ? '⚠️ ' + uniq.join('、') : '🌿 無陷阱'}</span><span>🎟️ 擊倒 +${killPoints(i)}・魔王 +${killPoints(i, true)}</span></div>
     <div class="isle-deck"><div class="deck-strip">${deck}</div><button class="tool small" data-open="deck">🃏 編組 ${nb + nr}/${DECK_SIZE}</button></div>
@@ -238,30 +238,25 @@ function revealRewards(rewards, title, repeat) {
 }
 
 function showHowTo() {
-  const rows = ELEMENTS.map((el) => `<tr><td><span class="el el-${el}">${el}</span></td><td>${ELEMENT_EFFECTS[el].label}</td><td>剋 <span class="el el-${ELEMENTS[(ELEMENTS.indexOf(el) + 1) % 6]}">${ELEMENTS[(ELEMENTS.indexOf(el) + 1) % 6]}</span></td></tr>`).join('');
-  const sup = Object.entries(SUPPORT).map(([id, s]) => `<li><b>${esc(spirit(id).name)}・${esc(s.skill)}</b>：${esc(s.text)}${s.duration ? `（${s.duration.join('／')} 秒）` : ''}</li>`).join('');
   const tip = (icon, title, body) => `<section class="tip"><div class="tip-icon">${icon}</div><div><h3>${title}</h3>${body}</div></section>`;
-  openModal(`${ribbon('玩法說明', '📖')}
+  const roles = Object.values(ROLE_META).map((r) =>
+    `<tr><td>${r.icon} ${r.label}</td><td>${r.basic === 'none' ? '只施放技能' : r.basic === 'heal_or_magic' ? '治療／法術' : r.basic === 'magic' ? '法術' : r.basic === 'ranged' ? '遠程普攻' : '近戰普攻'}</td><td>${r.range ? r.range.toFixed(1) : '—'}</td></tr>`).join('');
+  const weathers = STAGES.map((s, i) => `<span class="weather-chip">${i + 1}. ${esc(s.name)}・${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span>`).join('');
+  const supports = Object.entries(SUPPORT).map(([id, skill]) =>
+    `<li><b>${esc(spirit(id).name)}・${esc(skill.skill)}</b>：${esc(skill.text)}</li>`).join('');
+  openModal(`${ribbon('守護戰 V2.0｜職業與技能', '📖')}
     <div class="panel-scroll">
-    ${tip('🪣', '守住基地，攻破巢穴', `<p>主角坐在右邊基地的酒桶上。從這裡派出幻靈，沿著小路打爆另一端<b>魔王坐鎮的巢穴</b>就過關；巢穴第一次被打到時，魔王會親自下場！</p>`)}
-    ${tip('🏝️', '群島航線', `<p>每座小島是一關，島與島之間有航道。點島嶼，快艇會沿航道開過去；過關後按「下一關」，會回到海圖從這座島開往下一座島。通關的島可以重複挑戰。</p>`)}
-    ${tip('🎰', '轉蛋與點數', `<p>擊倒魔物可得轉蛋點數（和無盡洞穴共用）。第一次轉蛋免費，保底 4 隻黃卡幻靈；之後每抽 ${DRAW_COST} 點，幻靈機率 10%，其餘是放進洞穴背包的道具。主角的服裝跟初光鎮衣櫃同步。</p>`)}
-    ${tip('🃏', '發牌與派出', `<p>每 ${DEAL_EVERY} 秒發一張牌（手牌最多 ${HAND_SIZE} 張），擊倒魔物發得更快。點卡片派出幻靈，卡片可以自由拖曳排列（拖曳時發牌會暫停）。</p>`)}
-    ${tip('✨', '相鄰合成升星', `<p>兩張一樣的卡相鄰就會合成：1 階＋1 階→2 階、2 階＋2 階→3 階，進化動畫在卡片裡播放、不會中斷戰鬥。合成會連鎖！</p>`)}
-    ${tip('🔮', '輔助技能卡', `<p>紅卡傳說幻靈點了直接施放技能，升星後更強：</p><ul class="mini">${sup}</ul>`)}
-    ${tip('⚔️', '大絕與暴擊', `<p>每位幻靈都有自己的洞穴原版<b>大絕</b>，冷卻約 ${ULT_CD.yellow}～${ULT_CD.red} 秒（頭上的金色細條集滿就會施放）；也都帶著洞穴的<b>被動能力</b>。任何攻擊都有機會<b>暴擊</b>（金色數字）。<b>長按卡片</b>可以看攻擊、大絕、被動與效果說明。</p>`)}
-    ${tip('⚠️', '路上陷阱', `<p>泥沼、漩渦會讓腳步變慢，符文陣讓防禦變弱，毒蘑菇會中毒；尖刺、電擊板、間歇泉亮起紅圈後就會發動——敵我都會中招！</p>`)}
-    ${tip('🎒', '道具', `<p>${Object.values(ITEMS).map((it) => `<span class="chip">${it.icon} ${it.name}<small>${it.cooldown} 秒</small></span>`).join('')}</p>`)}
-    <section class="tip"><div class="tip-icon">🔥</div><div><h3>屬性相剋</h3><table class="counter-table">${rows}</table><p class="muted">光＞焰＞森＞潮＞雷＞念＞光，剋制時傷害 ×1.5（橘色數字），被剋 ×0.75。</p></div></section>
+    ${tip('⚔️','職業與基本攻擊', `<p>取消屬性相克。普通攻擊只分近距離、遠距離和法術；牧師優先治療最低血量比例隊友，必要時才施放弱法術。</p><table class="counter-table"><tr><th>職業</th><th>攻擊類型</th><th>距離</th></tr>${roles}</table>`)}
+    ${tip('✨','61 隻專屬大絕', '<p>每位幻靈都有自己的大絕招、傷害倍率、範圍或補血效果；依原有角色模型動畫施放。卡牌長按可查看詳細效果。</p>')}
+    ${tip('⏳','大絕錯峰施放', `<p>全場同一時間只允許一個重型大絕啟動；每次間隔至少 ${ULTIMATE_SPACING} 秒。其他幻靈繼續普攻，支援技能與塔上魔王同樣排隊，避免特效同時爆發造成卡頓。</p>`)}
+    ${tip('🌤️','固定關卡天氣', `<p>每關開始即固定自己的天空和天氣，戰鬥、受傷、技能和暴擊都不改變天色：</p><div class="weather-grid">${weathers}</div>`)}
+    ${tip('🏝️','群島航線', '<p>從初光鎮碼頭出發，依序經過十個主題島；通關後可挑戰下一島，已通關島可重複挑戰。</p>')}
+    ${tip('🃏','卡組與升星', `<p>四張基礎幻靈加兩張技能卡，手牌最多 ${HAND_SIZE} 張；相鄰相同卡合成升星，提升專屬技能效果。場上出戰上限 ${20} 隻。</p>`)}
+    ${tip('🔮','支援技能卡', `<ul class="mini">${supports}</ul>`)}
+    ${tip('🎒','道具', `<p>${Object.values(ITEMS).map((it) => `<span class="chip">${it.icon} ${it.name}</span>`).join('')}</p>`)}
     </div>
-    <div class="modal-actions center"><button class="primary big" data-close>知道了！</button></div>`, 'howto');
+    <div class="modal-actions center"><button class="primary big" data-close>開始守護戰</button></div>`,'howto');
 }
-
-function openModal(html, kind = 'info') {
-  $('modalBody').innerHTML = html; const m = $('modal'); m.className = 'panel panel-' + kind;
-  if (!m.open) m.showModal(); m.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => m.close()));
-}
-const ribbon = (text, icon = '') => `<div class="ribbon"><span>${icon ? `<i>${icon}</i>` : ''}${text}</span></div>`;
 
 /* ---------- battle ---------- */
 async function startGame() {
