@@ -88,8 +88,9 @@ export function createFx(THREE, scene) {
     job(life, (k) => { const v = size * (0.4 + Math.sin(Math.min(1, k * 1.6) * Math.PI / 2) * 0.9); s.scale.set(v, v, 1); s.material.opacity = 0.8 * (1 - k * k); }, s);
   }
   function flash({x, y = 2, z, color, intensity = 4, life = 0.5}) {
-    const slot = lights.sort((a, b) => a.until - b.until)[0];
-    slot.l.color = linear(color); slot.l.position.set(x, y, z); slot.peak = Math.min(1.2, intensity * 0.25); slot.life = life; slot.until = clock + life;
+    /* A local additive glow gives impact without pulsating world illumination;
+       neither sunlight nor the painted sky changes when the base takes damage. */
+    glowBall({x, y, z, color, size: Math.min(3, intensity * 0.35), life});
   }
   function lightning({from, to, color, life = 0.35, branches = 2}) {
     const make = (a, b, width) => {
