@@ -689,3 +689,40 @@ dialog#panel[data-view="gacha"] { width:min(660px,calc(100vw - 20px)); max-heigh
   #lobby .isle-boss img {width:30px;height:30px;}
   #lobby .isle-card > button.wide {min-height:38px;}
 }
+
+
+/* V2.0: role identity, no element-counter UI, weather shown without covering islands. */
+.collectionCard { position:relative; }
+.collectionCard .class-medal {
+  position:absolute; z-index:20; left:3px; top:18%; pointer-events:none;
+  display:grid; place-items:center;
+  width:clamp(12px,21%,24px); aspect-ratio:1;
+  font-size:clamp(8px,10cqi,13px); line-height:1;
+  color:#372718; background:linear-gradient(150deg,#fffcf0,#f3c879);
+  border:1.5px solid #684c2b; border-radius:50%;
+  box-shadow:inset 0 1px 0 #fff, 0 1px 3px #2227;
+}
+.collectionCard .class-medal.role-ranged {background:linear-gradient(160deg,#d9f5ff,#76bfeb);}
+.collectionCard .class-medal.role-magic {background:linear-gradient(160deg,#f1e2ff,#c9a3f4);}
+.collectionCard .class-medal.role-heal_or_magic {background:linear-gradient(160deg,#ecffe3,#9fe6b4);}
+.collectionCard .class-medal.role-none {background:linear-gradient(160deg,#ffe8f9,#f7a8d8);}
+#hud .hand-card .class-medal { width:18%; max-width:19px; top:20%; }
+.role-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:8px 0 12px; }
+.role-legend > span { font-size:12px; font-weight:800; color:#654125; background:#fff6dd; border:2px solid #d6ac73; border-radius:12px; padding:5px 8px; }
+.weather-pill { display:inline-flex;align-items:center;flex:none; white-space:nowrap;
+  color:#16456f; background:#def5ff; border:1px solid #8fc7e2;
+  border-radius:999px; padding:2px 7px; font-size:11px; font-weight:750; }
+.boss-class {display:inline-flex;color:#64503b;background:#f6edd9;border-radius:5px;padding:1px 5px;font-size:11px;}
+.weather-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0;}
+.weather-chip {background:#eff9ff;border:1px solid #a2d4ec;border-radius:8px;padding:6px 7px;font-size:11px;color:#274963;}
+#hud .stat.stage {font-size:clamp(10px,2.7vw,15px);white-space:normal;line-height:1.2;}
+#hud .hud-bottom .hand-card {overflow:visible;}
+@media(max-width:720px) {
+  #lobby .isle-title {flex-wrap:wrap;}
+  #lobby .isle-title .weather-pill {font-size:10px;padding:2px 5px;}
+  #lobby .isle-title h2 {flex:0 1 auto;}
+  .collectionCard .class-medal {font-size:clamp(7px,9cqi,11px);}
+  .weather-grid {grid-template-columns:1fr;}
+  .role-legend > span {font-size:10px;padding:3px 6px;}
+  #hud .stat.stage {max-width:44vw;}
+}
