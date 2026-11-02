@@ -2,21 +2,21 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier} from './rules.js';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier} from './rules.js?v=20261103-roles-v2';
 import {loadEngine, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createIslandRenderer} from './islands3d.js';
-import {createView} from './view.js?v=20261102-hp-sky-v2';
+import {createView} from './view.js?v=20261103-roles-v2';
 import {createIslandMap} from './islands.js?v=20261102-chart-v4';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT} from './gacha.js';
-import {buildPath} from './stages.js';
+import {buildPath} from './stages.js?v=20261103-forge-v2';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js';
 import {costumeFor} from '../../survivors/js/costume-effects.js';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js';
 import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js';
 import {groupRewards} from '../../survivors/js/reward-groups.js';
 import {itemPicture} from '../../survivors/js/item-pictures.js';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v1';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v2';
 import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261103-weather-v1';
 import {icon} from '../../survivors/js/ui-art.js';
 import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
