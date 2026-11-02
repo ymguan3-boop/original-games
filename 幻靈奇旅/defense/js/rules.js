@@ -248,17 +248,27 @@ function startSupport(state, job) {
   const card = job.card, s = SUPPORT[card.species];
   emit(state, 'skillStart', {species: card.species, kind: s.kind, rank: card.rank, skill: s.skill, element: state.spirits.get(card.species).type});
 }
+function startBossSkill(state, job) {
+  if (job.started || state.bossOut) return;
+  job.started = true;
+  emit(state, 'bossSkillStart', {species: state.stage.boss, element: state.spirits.get(state.stage.boss).type});
+}
 function applySupport(state, card) {
   const s = SUPPORT[card.species], r = card.rank - 1, foes = state.fighters.filter((f) => f.side === 'enemy' && f.hp > 0), allies = state.fighters.filter((f) => f.side === 'ally' && f.hp > 0);
   const scale = 1 + state.stageIndex * 0.25, element = state.spirits.get(card.species).type;
-  if (s.kind === 'freeze') state.freezeUntil = state.time + s.duration[r];
+  if (s.kind === 'freeze') state.freezeUntil = state.time + Math.min(4.5, s.duration[r]);
   else if (s.kind === 'volley') foes.sort((a, b) => b.hp - a.hp).slice(0, 6).forEach((f) => hurt(state, f, s.power[r] * scale, element, null, true));
   else if (s.kind === 'quake') foes.forEach((f) => { hurt(state, f, s.power[r] * scale, element, null, true); if (f.hp > 0) knock(state, f, 2.4); });
   else if (s.kind === 'plague') foes.forEach((f) => { f.statuses.poison = {until: state.time + s.duration[r], dps: s.power[r] * scale}; f.statuses.weaken = {until: state.time + s.duration[r]}; });
   else if (s.kind === 'beam') foes.filter((f) => state.crystal.x - f.x <= (state.right - state.left) * 0.6).forEach((f) => hurt(state, f, s.power[r] * scale, element, null, true));
-  else if (s.kind === 'heal') { allies.forEach((f) => { f.hp = Math.min(f.maxHp, f.hp + f.maxHp * s.power[r]); }); state.crystal.hp = Math.min(state.crystal.maxHp, state.crystal.hp + state.crystal.maxHp * s.crystal[r]); }
-  else if (s.kind === 'shield') state.shieldUntil = state.time + s.duration[r];
-  else if (s.kind === 'haste') state.hasteUntil = state.time + s.duration[r];
+  else if (s.kind === 'heal') {
+    allies.sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp || a.id - b.id)
+      .filter((f) => f.hp < f.maxHp).slice(0, Math.min(8, allies.length))
+      .forEach((f) => healOne(state, f, f.maxHp * Math.min(0.7, s.power[r]), {id: -1}));
+    state.crystal.hp = Math.min(state.crystal.maxHp, state.crystal.hp + state.crystal.maxHp * s.crystal[r]);
+  }
+  else if (s.kind === 'shield') state.shieldUntil = state.time + Math.min(3.5, s.duration[r]);
+  else if (s.kind === 'haste') state.hasteUntil = state.time + Math.min(5, s.duration[r]);
   state.stats.skills++;
   emit(state, 'skill', {species: card.species, kind: s.kind, rank: card.rank, skill: s.skill, element});
 }
@@ -349,15 +359,21 @@ function hurtBase(state, base, amount, side) {
   if (base === state.nest && !state.bossOut && state.stage.boss && base.hp <= base.maxHp * BOSS_OUT_AT) { state.bossOut = true; state.pendingBoss = []; spawn(state, 'enemy', state.stage.boss, {boss: true}); emit(state, 'boss', {species: state.stage.boss}); }
 }
 
-function setStatus(state, f, type, amount) {
+function setStatus(state, f, type, amount, duration = 4) {
   if (f.hp <= 0) return;
-  const s = f.statuses;
-  if (type === 'burn' || type === 'poison') s[type] = {until: state.time + 4, dps: Math.max(s[type]?.until > state.time ? s[type].dps : 0, amount * 0.25)};
-  else if (type === 'slow') s.slow = {until: state.time + 2};
-  else if (type === 'weaken') s.weaken = {until: state.time + 4};
-  else if (type === 'paralysis' && !f.boss && !(f.controlImmuneUntil > state.time)) { f.stunUntil = state.time + 0.9; f.controlImmuneUntil = state.time + 1.55; f.busyUntil = 0; }
-  else if (type === 'freeze' && !f.boss && !(f.controlImmuneUntil > state.time)) { f.stunUntil = state.time + 1.2; f.controlImmuneUntil = state.time + 2; f.busyUntil = 0; s.freeze = {until: state.time + 1.2}; }
-  else if (type === 'knockback' && !f.boss) knock(state, f, 1.2);
+  const s = f.statuses, d = Math.max(0.4, Math.min(8, duration));
+  if (type === 'burn' || type === 'poison') s[type] = {until: state.time + d,
+    dps: Math.max(s[type]?.until > state.time ? s[type].dps : 0, amount * 0.15)};
+  else if (type === 'slow') s.slow = {until: state.time + d};
+  else if (type === 'weaken') s.weaken = {until: state.time + d};
+  else if ((type === 'stun' || type === 'paralysis') && !f.boss && !(f.controlImmuneUntil > state.time)) {
+    f.stunUntil = state.time + Math.min(d, 1.2);
+    f.controlImmuneUntil = f.stunUntil + 0.8; f.busyUntil = 0;
+  } else if (type === 'freeze' && !f.boss && !(f.controlImmuneUntil > state.time)) {
+    f.stunUntil = state.time + Math.min(d, 1.6);
+    f.controlImmuneUntil = f.stunUntil + 0.8; f.busyUntil = 0;
+    s.freeze = {until: f.stunUntil};
+  } else if (type === 'knockback' && !f.boss) knock(state, f, 1.2);
 }
 
 /* A critical hit still works, but element affinity never changes damage.
@@ -440,7 +456,7 @@ function resolve(state, shot) {
     const meleePenalty = o.flying && profile.type === 'melee' ? 0.5 : 1;
     hurt(state, o, amount * meleePenalty * crit, element, src, shot.strong, shot.crit, profile.type);
     /* Statuses come exclusively from the authored ultimate or character passive. */
-    if (shot.strong && skill?.status && o.hp > 0) setStatus(state, o, skill.status, amount);
+    if (shot.strong && skill?.status && o.hp > 0) setStatus(state, o, skill.status, amount, skill.duration || 3);
     if (shot.strong && skill?.knock && o.hp > 0) knock(state, o, skill.knock);
     for (const pr of src?.procs || []) if (o.hp > 0 && state.random() < pr.chance) setStatus(state, o, pr.type, amount);
   };
@@ -515,14 +531,25 @@ export function step(state, dt) {
     state.spawnAt[i] = state.time + g.every * SPAWN_PACE * (state.spawned[i] >= quota ? 2.5 : 1);
     if (state.fighters.filter((f) => f.side === 'enemy' && f.hp > 0 && f.species === g.species).length < g.max) { spawn(state, 'enemy', g.species); state.spawned[i]++; }
   });
-  for (let i = state.pendingSkills.length - 1; i >= 0; i--) if (state.time >= state.pendingSkills[i].at) applySupport(state, state.pendingSkills.splice(i, 1)[0].card);
+  for (let i = state.pendingSkills.length - 1; i >= 0; i--) {
+    const job = state.pendingSkills[i];
+    if (state.time >= job.start && !job.started) startSupport(state, job);
+    if (state.time >= job.at) { state.pendingSkills.splice(i, 1); applySupport(state, job.card); }
+  }
   if (state.stage.boss && !state.bossOut && state.time >= state.bossSkillAt) {
     state.bossSkillAt = state.time + bossSkillEvery(state.stageIndex);
-    state.pendingBoss.push(state.time + SKILL_WINDUP);
-    emit(state, 'bossSkillStart', {species: state.stage.boss, element: state.spirits.get(state.stage.boss).type});
+    const start = Math.max(state.time, state.nextUltimateAt);
+    const job = {start, at: start + SKILL_WINDUP, started: false};
+    state.nextUltimateAt = job.at + ULTIMATE_SPACING;
+    state.pendingBoss.push(job);
+    if (start <= state.time) startBossSkill(state, job);
   }
-  for (let i = state.pendingBoss.length - 1; i >= 0; i--) if (state.time >= state.pendingBoss[i]) {
+  for (let i = state.pendingBoss.length - 1; i >= 0; i--) {
+    const job = state.pendingBoss[i];
+    if (state.time >= job.start && !job.started) startBossSkill(state, job);
+    if (state.time < job.at) continue;
     state.pendingBoss.splice(i, 1);
+    if (state.bossOut) continue; /* no ghost casting after the boss steps off its tower */
     const spec = state.spirits.get(state.stage.boss), k = bossSkillDamage(state.stageIndex);
     for (const f of state.fighters) if (f.side === 'ally' && f.hp > 0) hurt(state, f, f.maxHp * k, spec.type, null, true);
     emit(state, 'bossSkill', {species: state.stage.boss, element: spec.type});
