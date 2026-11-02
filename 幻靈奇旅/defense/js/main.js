@@ -26,7 +26,7 @@ const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 let data, record, view, audio, game = null, speed = 1, paused = false, last = 0, acc = 0, lastImpact = 0;
-let pendingDealingScene = null, startSerial = 0, bossIntroTimer = null;
+let pendingDealingScene = null, visibleSceneFrames = 0, startSerial = 0, bossIntroTimer = null;
 /* merged cards that are playing their evolution in their own frame: uid -> {from, to, start} */
 const evolvingCards = new Map(), EVO_TIME = 2.4;
 
@@ -45,7 +45,7 @@ function showBossIntro(stage) {
   hideBossIntro();
   $('bossIntroPortrait').src = picture(stage.boss);
   $('bossIntroPortrait').alt = speech.name;
-  $('bossIntroStage').textContent = '第 ' + (STAGES.indexOf(stage) + 1) + ' 關 · 魔王放話';
+  $('bossIntroStage').textContent = '第 ' + (STAGES.indexOf(stage) + 1) + ' 關 · ' + stage.name + ' · 魔王放話';
   $('bossIntroName').textContent = speech.name;
   $('bossIntroLine').textContent = '「' + speech.line + '」';
   $('bossIntro').hidden = false;
@@ -283,7 +283,7 @@ async function startGame() {
      clock even when this is a restart or an automatic next-island voyage. */
   const serial = ++startSerial;
   hideBossIntro();
-  pendingDealingScene = null;
+  pendingDealingScene = null; visibleSceneFrames = 0;
   game = null;
   acc = 0; last = 0; paused = true;
   $('hud').hidden = true;
@@ -310,10 +310,10 @@ async function startGame() {
   speed = 1; paused = false; handSig = ''; acc = 0; last = 0;
   /* Wait until the first visible 3D battle frame finishes rendering. The
      loop below then deals the opening three cards and starts the 3.2 s clock. */
-  pendingDealingScene = game;
+  pendingDealingScene = game; visibleSceneFrames = 0;
   $('stageName').textContent = `${record.stage + 1}. ${game.stage.name}・${stageWeather(game.stage.scene).icon} ${stageWeather(game.stage.scene).name}`;
   renderHand(); hud();
-  banner(game.stage.name);
+  /* Opening boss speech includes the stage title, avoiding overlap with the stage banner. */
   setTimeout(() => game && toast('拖曳卡片排列，相同的卡相鄰會合成；點一下卡片派出'), 2400);
   globalThis.PhantomBgm?.setScene?.('arena');
 }
@@ -327,7 +327,7 @@ function creditPoints() {
 function leaveGame() {
   /* Prevent an in-flight load or first-frame callback from dealing into
      a battle after the user returns to the island chart. */
-  ++startSerial; pendingDealingScene = null; hideBossIntro();
+  ++startSerial; pendingDealingScene = null; visibleSceneFrames = 0; hideBossIntro();
   creditPoints();
   game = null; $('hud').hidden = true; $('lobby').hidden = false; $('modal').close();
   view?.setGame(null); audio?.stop?.();
@@ -609,11 +609,14 @@ function loop(now) {
   view?.update(running ? dt * speed : 0);
   if (pendingDealingScene && pendingDealingScene === game &&
       $('loading').hidden && $('lobby').hidden && !$('hud').hidden && !$('modal').open) {
-    /* This is after the first player-visible scene render, never behind loading. */
-    const launched = beginDealing(game);
-    pendingDealingScene = null;
-    acc = 0; last = now;
-    if (launched) { handleEvents(); handSig = ''; hud(); showBossIntro(game.stage); }
+    /* First render paints the world and empty hand; the next rendered frame
+       starts the first three cards. Never deal during loading or over the chart. */
+    if (++visibleSceneFrames >= 2) {
+      const launched = beginDealing(game);
+      pendingDealingScene = null;
+      acc = 0; last = now;
+      if (launched) { handleEvents(); handSig = ''; hud(); showBossIntro(game.stage); }
+    }
   }
   if (game) game.events.length = 0;
 }
