@@ -36,7 +36,7 @@ export function createFx(THREE, scene) {
   let clock = 0;
   function job(life, update, obj) {
     if (jobs.length >= MAX_JOBS) {
-      obj?.traverse?.((n) => { n.geometry?.dispose?.(); n.material?.dispose?.(); });
+      /* Skipped objects were never uploaded; let GC reclaim them (some use shared geometry). */
       return;
     }
     if (obj) scene.add(obj);
