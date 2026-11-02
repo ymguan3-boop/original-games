@@ -13,6 +13,10 @@ import {buildPath} from './stages.js';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js';
 import {costumeFor} from '../../survivors/js/costume-effects.js';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js';
+import {groupRewards} from '../../survivors/js/reward-groups.js';
+import {itemPicture} from '../../survivors/js/item-pictures.js';
+import {icon} from '../../survivors/js/ui-art.js';
 import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
 
 const $ = (id) => document.getElementById(id);
@@ -116,21 +120,33 @@ async function voyage(i, autoStart) {
   if (autoStart) { await new Promise((r) => setTimeout(r, 400)); startGame(); }
 }
 function nextVoyage(i) { $('modal').close(); leaveGame(); voyage(i, true); }
-async function sailHome() {
+/* back to the town pier: straight there, without retracing the lanes (the page switches at once) */
+function sailHome() {
   if (chart.sailing) return;
-  await chart.sail(chart.boatAt, -1);
+  $('modal').open && $('modal').close();
   record.boatAt = -1; saveRecord();
   if (globalThis.PhantomTransition) PhantomTransition.navigate('../?fromDock=1', '搭快艇返回初光鎮'); else location.href = '../';
 }
+/* the boatman on the chart's dock: rules, summons, or a ride home */
+function openBoatman() {
+  openModal(`${ribbon('老船夫', '⚓')}
+    <div class="boatman-card"><img src="../portraits/boatman-normal.svg" alt="老船夫"><p>歡迎回到碼頭！想聽聽「幻靈守護戰」怎麼玩、去轉蛋機抽幻靈，還是直接回初光鎮？</p></div>
+    <div class="pause-menu"><button class="primary big" id="bmGacha">🎰 群島轉蛋</button><button id="bmRules">📖 守護戰怎麼玩</button><button id="bmHome">🚤 回初光鎮（直接回碼頭）</button><button data-close>先不用</button></div>`, 'pause');
+  $('bmGacha').onclick = () => { $('modal').close(); openGacha(); };
+  $('bmRules').onclick = showHowTo;
+  $('bmHome').onclick = sailHome;
+}
 
 function bindLobby() {
-  chart = createIslandMap($('seaChart'), {stages: STAGES, esc, onPick: (i) => pickIsle(i)});
+  chart = createIslandMap($('seaChart'), {stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman});
   $('islePanel').onclick = (e) => {
     if (e.target.closest('#start')) beginStage();
     else if (e.target.closest('[data-open="deck"]')) openDeck();
     else if (e.target.closest('[data-open="gacha"]')) openGacha();
   };
   $('gachaBtn').onclick = () => openGacha();
+  $('closePanel').onclick = closePanel;
+  $('panel').addEventListener('close', () => { summonController?.dispose(); summonController = null; renderLobby(); });
   $('deckBtn').onclick = openDeck;
   $('howto').onclick = showHowTo;
   $('homeBtn').onclick = sailHome;
@@ -145,7 +161,7 @@ function openDeck() {
     <div class="panel-scroll"><h3 class="roster-group">基礎幻靈 <small>黃卡、紫卡的未進階幻靈與三色蛋</small></h3><div class="roster">${units.base.map(unitButton).join('') || '<p class="muted">還沒有基礎幻靈，先去轉蛋吧！</p>'}</div>
     <h3 class="roster-group">紅卡輔助 <small>點擊施放技能，合成升星</small></h3><div class="roster">${units.red.map(unitButton).join('') || '<p class="muted">紅卡可由轉蛋取得（需先在原探索收錄）。</p>'}</div></div>
     <div class="modal-actions center"><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto');
-  $('deckGacha').onclick = () => openGacha();
+  $('deckGacha').onclick = () => { $('modal').close(); openGacha(); };
   $('modalBody').querySelectorAll('[data-unit]').forEach((b) => (b.onclick = () => {
     const id = b.dataset.unit, k = record.deck.indexOf(id), red = isRedCard(id);
     if (k >= 0) record.deck.splice(k, 1);
@@ -156,38 +172,61 @@ function openDeck() {
   }));
 }
 
-/* summons: free starter (4 yellow), then single / ten draws paid with the shared cave points */
-const ITEM_ICON = {heal: '🧪', revive: '💊', battery: '🔋', ball: '🔮', buff: '✨', 'pet-xp': '💎', vacuum: '🌀'};
-function rewardCard(r, k) {
-  if (r.kind === 'spirit') return `<div class="g-reward spirit frame-${r.color} ${r.duplicate ? 'dup' : 'new'}" style="--d:${k * 0.09}s"><img src="${picture(r.id)}" alt=""><b>${esc(spirit(r.id).name)}</b><small>${r.duplicate ? `重複・退 ${r.refund} 點` : 'NEW!'}</small></div>`;
-  const it = CAVE_ITEMS[r.id] || {name: r.id};
-  return `<div class="g-reward item" style="--d:${k * 0.09}s"><i>${ITEM_ICON[it.kind] || '🎁'}</i><b>${esc(it.name)}</b><small>×${r.quantity || 1}・洞穴背包</small></div>`;
+/* Summons in the endless cave's own gacha dialog (same markup, art and summon film: survivors/js/summon-view.js,
+   item-pictures.js, reward-groups.js; styles from the cave stylesheets plus css/cave-gacha.css). The first summon is
+   free with four yellow base spirits; after that single and ten draws spend the shared cave points. */
+const caveArt = (html) => String(html).replace(/src="assets\//g, 'src="../survivors/assets/');
+let summonController = null;
+function openPanel(title, html, view) {
+  summonController?.dispose(); summonController = null;
+  const p = $('panel'); p.dataset.view = view; $('panelTitle').textContent = title; $('panelBody').innerHTML = html;
+  if (!p.open) p.showModal();
 }
-function openGacha(results = null) {
-  const pts = points(), first = !record.starterClaimed, pool = gachaPool();
-  openModal(`${ribbon('幻靈轉蛋', '🎰')}
-    <div class="gacha-machine ${results ? 'spun' : ''}" aria-hidden="true"><div class="dome"><i></i><i></i><i></i><i></i><i></i></div><div class="body"><span>${first ? 'FREE' : DRAW_COST}</span></div></div>
-    <p class="gacha-points">🎟️ 轉蛋點數 <b>${pts.toLocaleString()}</b><small>與無盡洞穴共用・擊倒魔物獲得</small></p>
-    ${results ? `<div class="gacha-results">${results.map(rewardCard).join('')}</div>` : ''}
-    ${first ? `<button class="primary wide" id="gStarter">🎁 新手轉蛋（免費）・保底 ${STARTER_COUNT} 隻黃卡幻靈</button>`
-      : `<div class="sheet-actions"><button class="primary wide" id="g1" ${pts < DRAW_COST ? 'disabled' : ''}>單抽<small>${DRAW_COST} 點</small></button><button class="primary wide" id="g10" ${pts < DRAW_COST * 10 ? 'disabled' : ''}>十連<small>${DRAW_COST * 10} 點</small></button></div>`}
-    <p class="muted gacha-note">機率：幻靈 10%（黃卡 6%・紫卡 3%・紅卡 1%）・道具與增幅 90%（放進無盡洞穴背包）。基礎幻靈範圍與無盡洞穴轉蛋相同，紫卡、紅卡需先在原探索收錄；重複的幻靈會退還點數。目前可抽：黃 ${pool.yellow.length}・紫 ${pool.purple.length}・紅 ${pool.red.length}</p>
-    <div class="modal-actions center"><button data-close>關閉</button></div>`, 'howto');
-  if ($('gStarter')) $('gStarter').onclick = () => {
-    const r = starterRewards(gachaPool());
-    record.owned = [...new Set([...(record.owned || []), ...r.map((x) => x.id)])]; record.starterClaimed = true; saveRecord();
-    renderLobby(); openGacha(r);
-  };
-  const draw = (n) => {
-    try {
-      const rewards = drawWithStore(caveStore(), gachaPool(), record.owned || [], n).value;
-      record.owned ||= [];
-      for (const r of rewards) if (r.kind === 'spirit' && !record.owned.includes(r.id)) record.owned.push(r.id);
-      saveRecord(); renderLobby(); openGacha(rewards);
-    } catch (e) { toast(e.message); }
-  };
-  if ($('g1')) $('g1').onclick = () => draw(1);
-  if ($('g10')) $('g10').onclick = () => draw(10);
+function closePanel() { summonController?.dispose(); summonController = null; $('panel').close(); renderLobby(); }
+function panelButton(text, fn, className = '') { const b = document.createElement('button'); b.textContent = text; b.className = className; b.onclick = fn; $('panelBody').append(b); return b; }
+const wallet = () => '<div class="wallet-strip"><span>' + caveArt(icon('points')) + '持有點數・與無盡洞穴共用</span><strong>' + points().toLocaleString() + '<small>點</small></strong></div>';
+const itemName = (id) => CAVE_ITEMS[id]?.name || id;
+function openGacha() {
+  const first = !record.starterClaimed, pts = points(), pool = gachaPool();
+  openPanel('群島轉蛋機', wallet() + '<div class="gacha-intro"><button class="gacha-machine compact-summoner" aria-label="轉動轉蛋機">' + caveArt(itemPicture('summon-machine')) + '</button><div><strong>尋找下一位夥伴</strong><p>幻靈・補給・增幅<br>' + (first ? '第一次召喚免費，保底 4 隻黃卡' : '道具放進無盡洞穴背包') + '</p></div></div><div class="draw-actions" id="drawActions"></div>'
+    + '<p class="pity-line">目前可抽 <b>黃 ' + pool.yellow.length + '・紫 ' + pool.purple.length + '・紅 ' + pool.red.length + '</b> · 紫卡紅卡需先在原探索收錄</p>'
+    + '<details class="pool-details"><summary>獎池與機率</summary><p>幻靈10%（黃6%・紫3%・紅1%）<br>補給45%・技能22.5%・能力22.5%（放進無盡洞穴背包）<br>基礎幻靈範圍與無盡洞穴轉蛋相同，寶箱怪、書本怪與水蛟龍王不在池內。重複黃／紫／紅卡返還50／100／500點。</p></details>', 'gacha');
+  const actions = $('drawActions'), add = (text, fn, cls, disabled) => { const b = document.createElement('button'); b.textContent = text; b.className = cls; b.disabled = disabled; b.onclick = fn; actions.append(b); return b; };
+  if (first) add('新手召喚 · 免費（保底 4 隻黃卡）', claimStarter, 'primary', false);
+  else for (const n of [1, 10]) add((n === 1 ? '召喚一次' : '召喚十次') + ' · ' + (n * DRAW_COST).toLocaleString() + ' 點', () => drawBatch(n), n === 10 ? 'primary' : '', pts < n * DRAW_COST);
+  $('panelBody').querySelector('.gacha-machine').onclick = () => { const b = actions.querySelector('button'); if (b.disabled) toast('點數不足，擊倒魔物可獲得點數'); else b.click(); };
+}
+function claimStarter() {
+  const r = starterRewards(gachaPool());
+  record.owned = [...new Set([...(record.owned || []), ...r.map((x) => x.id)])]; record.starterClaimed = true; saveRecord();
+  showRewards(r, '新手召喚', 0);
+}
+function drawBatch(n) {
+  try {
+    const rewards = drawWithStore(caveStore(), gachaPool(), record.owned || [], n).value;
+    record.owned ||= [];
+    for (const r of rewards) if (r.kind === 'spirit' && !record.owned.includes(r.id)) record.owned.push(r.id);
+    saveRecord(); showRewards(rewards, '命運共鳴', n);
+  } catch (e) { toast(e.message); }
+}
+/* the cave summon film, skippable; it reveals the rewards when it ends */
+function showRewards(rewards, title, repeat) {
+  const token = String(Date.now());
+  openPanel(title, summonMarkup(rewards, picture) + '<button id="skipSummon" class="primary">跳過動畫，揭曉獎勵</button>', 'summon');
+  const panel = $('panel'); panel.dataset.summon = token;
+  const reveal = () => { if (panel.dataset.view !== 'summon' || panel.dataset.summon !== token) return; summonController?.dispose(); summonController = null; revealRewards(rewards, title, repeat); };
+  $('skipSummon').onclick = reveal;
+  $('panelBody').querySelector('.summon-v07').addEventListener('summoncomplete', reveal, {once: true});
+  summonController = startSummon(panel, rewards, picture);
+}
+function revealRewards(rewards, title, repeat) {
+  const groups = groupRewards(rewards), total = rewards.reduce((n, r) => n + (r.quantity || 1), 0);
+  openPanel(title === '新手召喚' ? '新手召喚' : '本次獲得', '<div class="reward-summary"><span>獲得 <b>' + total + '</b> 份獎勵 · ' + groups.length + ' 種</span><span>剩餘 <b>' + points().toLocaleString() + '</b> 點</span></div><div class="reward-list">' + groups.map((r) => {
+    const sp = r.kind === 'spirit', color = sp ? r.color || 'yellow' : 'supply';
+    return '<article class="reward-entry ' + color + '" data-reward="' + r.id + '"><div class="reward-portrait">' + (sp ? '<img src="' + picture(r.id) + '" alt="' + esc(spirit(r.id).name) + '">' : caveArt(itemPicture(r.id))) + '</div><div class="reward-copy"><small>' + (sp ? {yellow: '黃卡', purple: '紫卡', red: '紅卡'}[color] : '道具') + '</small><strong>' + esc(sp ? spirit(r.id).name : itemName(r.id)) + '</strong><p>' + (sp ? (r.duplicate ? '重複 → 返還 ' + (r.refund || 0) * r.quantity + ' 點' : '新增幻靈・可編入卡組') : '已存入無盡洞穴背包') + '</p></div><b class="reward-qty">×' + r.quantity + '</b></article>';
+  }).join('') + '</div>', 'rewards');
+  if (repeat) { const again = panelButton((repeat === 10 ? '再召喚十次' : '再召喚一次') + ' · ' + (repeat * DRAW_COST).toLocaleString() + ' 點', () => drawBatch(repeat), 'primary reward-confirm'); again.disabled = points() < repeat * DRAW_COST; if (again.disabled) again.textContent += '（點數不足）'; panelButton('返回轉蛋機', openGacha); }
+  panelButton('收下全部獎勵', closePanel, repeat ? 'reward-confirm' : 'primary reward-confirm');
 }
 
 function showHowTo() {
@@ -531,7 +570,11 @@ function loop(now) {
 async function renderChartArt() {
   await loadEngine();
   const T = globalThis.THREE, H = globalThis.PhantomHarbor, kit = createToonKit(T), art = createIslandRenderer(T, kit);
-  chart.setIslandArt(STAGES.map((s) => art.island(s.scene)));
+  /* each island carries its boss's dex card */
+  const card = (id) => { const s = spirit(id); return {art: picture(id), frameImage: '../assets/cards/frame.png', frame: s.cardFrame || 'yellow', name: s.name, number: data.entries.get(id)?.number || '—', info: s.type + " · " + (s.rarity || "普通") + " · 第 " + (s.stage || 1) + " 階段", hp: s.hp, attack: s.attack}; };
+  const pics = []; for (const s of STAGES) pics.push(await art.island(s.scene, card(s.boss)));
+  chart.setIslandArt(pics);
+  try { const gh = await loadGltf('models/hero.glb'); chart.setHomeArt(art.dock(cloneModel(gh.scene))); } catch (e) { console.warn(e); try { chart.setHomeArt(art.dock(null)); } catch {} }
   if (H?.makeSpeedboat) {
     const {boat, SEAT} = H.makeSpeedboat(T, {mobile: true}); H.toonOutline(T, boat, {thickness: 0.03});
     try {
@@ -564,7 +607,7 @@ async function init() {
   setTimeout(async () => {
     $('loading').hidden = true;
     if (record.boatAt !== record.stage) await sailTo(record.stage);
-    if (!record.starterClaimed) openGacha();
+    if (!record.starterClaimed || new URLSearchParams(location.search).get('open') === 'gacha') openGacha();
   }, fromTown ? 1300 : 300);
   globalThis.PhantomBgm?.setScene?.('general');
   requestAnimationFrame(loop);

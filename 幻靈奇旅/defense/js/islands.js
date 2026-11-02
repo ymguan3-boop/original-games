@@ -2,8 +2,10 @@
    (SVG path lengths), so moving between far islands follows the route through every island in between. */
 const W = 1000, H = 620;
 /* index -1 is the town pier; 0..9 are the stages */
-export const SPOTS = [[118, 470], [262, 352], [186, 196], [362, 104], [506, 236], [438, 420], [622, 512], [724, 320], [648, 140], [864, 236]];
-const HOME = [52, 590];
+export const SPOTS = [[240, 470], [262, 352], [186, 196], [362, 104], [506, 236], [438, 420], [622, 512], [724, 320], [648, 140], [864, 236]];
+const HOME = [102, 556];
+/* where the boat waits at the town pier (the end of the drawn pier) */
+const HOME_DOCK = [HOME[0] + 62, HOME[1] + 6];
 const LOOK = {
   meadow: {top: '#7fcf62', side: '#4f9a3e', icon: '🌾'}, pond: {top: '#69c9a8', side: '#3f8f78', icon: '🐸'},
   waterfall: {top: '#6fc2d6', side: '#3d7f99', icon: '💦'}, orchard: {top: '#8bd168', side: '#5b9a3e', icon: '🍎'},
@@ -13,7 +15,7 @@ const LOOK = {
 };
 
 /* the boat docks on the water at each island's south-west shore; the lanes run between these docking points */
-const pt = (i) => (i < 0 ? HOME : [SPOTS[i][0] - 66, SPOTS[i][1] + 14]);
+const pt = (i) => (i < 0 ? HOME_DOCK : [SPOTS[i][0] - 66, SPOTS[i][1] + 14]);
 /* a gentle S-curve between two points */
 function lane(a, b, bend) {
   const [x1, y1] = pt(a), [x2, y2] = pt(b), mx = (x1 + x2) / 2, my = (y1 + y2) / 2, dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
@@ -30,7 +32,7 @@ const blob = (r, seed) => {
   return d + 'Z';
 };
 
-export function createIslandMap(host, {stages, onPick, esc = (s) => s}) {
+export function createIslandMap(host, {stages, onPick, onHome, esc = (s) => s}) {
   let state = {open: 0, cleared: {}, selected: 0, boatAt: -1, bosses: [], art: null}, sailing = null, raf = 0;
   host.innerHTML = `<svg class="sea-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="幻靈群島航海圖">
     <defs>
@@ -50,7 +52,13 @@ export function createIslandMap(host, {stages, onPick, esc = (s) => s}) {
     const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     p.setAttribute('d', lane(i, i + 1, (i % 2 ? 1 : -1) * 38)); p.setAttribute('class', 'lane'); lanesG.append(p); lanePaths.push(p);
   }
-  homeG.innerHTML = `<g transform="translate(${HOME[0]},${HOME[1]})"><rect x="-34" y="-8" width="58" height="12" rx="3" fill="#b07a45" stroke="#6e4a2a" stroke-width="2"/><rect x="-30" y="2" width="4" height="14" fill="#6e4a2a"/><rect x="14" y="2" width="4" height="14" fill="#6e4a2a"/><text y="-16" text-anchor="middle" class="isle-name home-name">初光鎮碼頭</text></g>`;
+  /* the town harbour: a drawn pier until the 3D picture is ready, then the rendered dock with the boatman; clicking it
+     opens the boatman's menu (rules, gacha, back to town) */
+  const homeLabel = '<g class="isle-label" transform="translate(0,52)"><rect x="-62" y="-14" width="124" height="24" rx="12"/><text text-anchor="middle" y="3" class="isle-name">初光鎮碼頭・船夫</text></g>';
+  const drawHome = (url) => { homeG.innerHTML = '<g class="home-hit" transform="translate(' + HOME[0] + ',' + HOME[1] + ')" role="button" tabindex="0" aria-label="初光鎮碼頭：和船夫對話">' + (url ? '<image href="' + url + '" x="-100" y="-90" width="200" height="154"/>' : '<rect x="-34" y="-8" width="58" height="12" rx="3" fill="#b07a45" stroke="#6e4a2a" stroke-width="2"/>') + '<rect x="-100" y="-90" width="200" height="154" fill="transparent"/>' + homeLabel + '</g>'; };
+  drawHome(null);
+  homeG.addEventListener('click', () => !sailing && onHome?.());
+  homeG.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onHome?.(); } });
   /* a little speedboat: white hull with a red stripe, windshield and the hero at the wheel */
   boatG.innerHTML = `<g class="boat"><g class="boat-bob"><path d="M-26,-2 L18,-2 Q30,-1 34,6 Q30,12 16,13 L-24,13 Q-28,6 -26,-2 Z" fill="#fbfbf6" stroke="#33445e" stroke-width="2.5"/><path d="M-25,7 L31,7" stroke="#e23c34" stroke-width="3.5"/><path d="M4,-2 L12,-14 L16,-14 L14,-2 Z" fill="#8fd3ff" stroke="#33445e" stroke-width="2"/><circle cx="-4" cy="-14" r="5.5" fill="#2b1f1a"/><rect x="-9" y="-9" width="10" height="8" rx="2" fill="#3a8fe0"/><rect x="-24" y="-6" width="8" height="5" rx="1.5" fill="#e23c34"/><rect x="-30" y="-3" width="5" height="12" rx="1.5" fill="#2b2b33"/></g><ellipse class="wake" cx="-36" cy="10" rx="12" ry="3" fill="rgba(255,255,255,.65)"/></g>`;
   const boat = boatG.querySelector('.boat');
@@ -66,7 +74,7 @@ export function createIslandMap(host, {stages, onPick, esc = (s) => s}) {
           <path d="${blob(r - 4, i + 2)}" fill="${look.top}"/>
         </g>
         <text class="isle-icon" y="-4" text-anchor="middle">${locked ? '☁️' : look.icon}</text>`}
-        ${state.bosses[i] && !locked ? `<image href="${state.bosses[i]}" x="${r - 28}" y="-${r * 0.62 + 10}" width="30" height="30" class="isle-boss" clip-path="circle(15px at 15px 15px)"/>` : ''}
+        ${state.bosses[i] && !locked && !state.art?.[i] ? `<image href="${state.bosses[i]}" x="${r - 28}" y="-${r * 0.62 + 10}" width="30" height="30" class="isle-boss" clip-path="circle(15px at 15px 15px)"/>` : ''}
         <g class="isle-label" transform="translate(0,${r * 0.62 + 20})"><rect x="-58" y="-14" width="116" height="24" rx="12"/><text text-anchor="middle" y="3" class="isle-name">${i + 1}. ${esc(s.name)}</text></g>
         ${cleared ? `<text class="isle-flag" x="${-r + 6}" y="${-r * 0.4}">🚩</text>` : ''}
       </g>`;
@@ -110,6 +118,7 @@ export function createIslandMap(host, {stages, onPick, esc = (s) => s}) {
     setBoatImage(url) { boat.querySelector('.boat-bob').innerHTML = `<image href="${url}" x="-34" y="-38" width="68" height="49"/>`; },
     /* the 3D island pictures replace the flat shapes and icons */
     setIslandArt(urls) { state.art = urls; renderIsles(); },
+    setHomeArt(url) { drawHome(url); },
     sail, get sailing() { return !!sailing; }, get boatAt() { return state.boatAt; },
   };
 }

@@ -424,3 +424,10 @@ button.tool.small { padding: 6px 10px; font-size: 13px; }
 /* ---------- battle HUD: points ---------- */
 .stat.pts { font-weight: 800; color: #6a4300; background: linear-gradient(180deg, #fff6c8, #ffd85a); }
 .result-points { text-align: center; margin: 10px 0 0; font-size: 14px; } .result-points b { color: #c9921f; font-size: 18px; } .result-points small { display: block; font-size: 11px; color: #9a7a4a; }
+
+/* ---------- boatman menu ---------- */
+.boatman-card { display: flex; gap: 12px; align-items: center; padding: 8px 4px 12px; }
+.boatman-card img { width: 78px; height: 104px; object-fit: cover; border-radius: 14px; box-shadow: 0 0 0 3px #fff, 0 0 0 5px #e0a64c; flex: none; }
+.boatman-card p { margin: 0; line-height: 1.6; font-size: 14px; }
+.home-hit { cursor: pointer; outline: none; }
+.home-hit:hover image, .home-hit:focus-visible image { filter: brightness(1.06); }

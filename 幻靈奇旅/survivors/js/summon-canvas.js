@@ -9,7 +9,8 @@ export function createSummon(stage, rewards, picture, duration) {
   const caption=stage.querySelector('.summon-v07-caption'), progress=stage.querySelector('.summon-v07-progress i');
   let raf=0, disposed=false, paused=false, elapsed=0, previous=null, frame=0, width=1, height=1, phase='';
   const images=[];
-  function load(src) { const img=new Image(); img.src=src; images.push(img); return img; }
+  /* cave art paths resolve next to this module, so the summon also plays on other pages (幻靈守護戰) */
+  function load(src) { const img=new Image(); img.src=src.startsWith('assets/')?new URL('../'+src,import.meta.url).href:src; images.push(img); return img; }
   const core=load('assets/spirit-core-v06.png'), sky=load('assets/summon-sky-v06.png');
   const atlases={'assets/items-v08.png':load('assets/items-v08.png'),'assets/status-items-v10.png':load('assets/status-items-v10.png')};
   const cards=rewards.map(r=>r.kind==='spirit' ? load(picture(r.id)) : null);

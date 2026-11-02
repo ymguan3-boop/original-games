@@ -108,7 +108,35 @@ export function createIslandRenderer(THREE, kit) {
     },
   };
 
-  function shot(root, {pos = [3.6, 4.6, 6.4], look = [0, 0.55, 0], fov = 30} = {}) {
+  /* the boss's dex card, drawn like css/collection-card.css: frame image (hue-shifted for purple / red), art window,
+     name, number, type line and stats */
+  const loadImage = (src) => new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
+  const FRAME_FILTER = {red: 'hue-rotate(315deg) saturate(2.3) brightness(.98)', purple: 'hue-rotate(245deg) saturate(1.8) brightness(1.09)', yellow: 'none'};
+  const FRAME_BG = {red: ['#ffdfdc', '#b52635'], purple: ['#f3e3ff', '#b380db'], yellow: ['#fff6dc', '#e8c46a']};
+  async function cardTexture(card) {
+    const c = document.createElement('canvas'), W = 300, H = 420; c.width = W; c.height = H; const g = c.getContext('2d');
+    const [art, frame] = await Promise.all([loadImage(card.art), loadImage(card.frameImage)]);
+    const bg = g.createLinearGradient(0, 0, W, H), [b0, b1] = FRAME_BG[card.frame] || FRAME_BG.yellow; bg.addColorStop(0, b0); bg.addColorStop(1, b1); g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    if (art) { const x = W * 0.1, y = H * 0.09, w = W * 0.8, h = H * 0.6, s = Math.max(w / art.width, h / art.height); g.save(); g.beginPath(); g.roundRect ? g.roundRect(x, y, w, h, 18) : g.rect(x, y, w, h); g.clip(); g.drawImage(art, x + (w - art.width * s) / 2, y + (h - art.height * s) / 2, art.width * s, art.height * s); g.restore(); }
+    if (frame) { g.filter = FRAME_FILTER[card.frame] || 'none'; g.drawImage(frame, 0, 0, W, H); g.filter = 'none'; }
+    g.textAlign = 'center'; g.fillStyle = '#2d2433'; g.font = 'bold 22px "Microsoft JhengHei",sans-serif'; g.fillText(card.name, W / 2, H * 0.075);
+    g.font = '13px "Microsoft JhengHei",sans-serif'; g.fillStyle = '#6b5a74'; g.fillText('No.' + card.number, W / 2, H * 0.715);
+    g.fillStyle = '#62516d'; g.font = '14px "Microsoft JhengHei",sans-serif'; g.fillText(card.info, W / 2, H * 0.79);
+    g.fillStyle = '#382e3f'; g.font = 'bold 16px "Microsoft JhengHei",sans-serif'; g.fillText('HP ' + card.hp + '　攻擊 ' + card.attack, W / 2, H * 0.84);
+    const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4; return t;
+  }
+  /* the card stands slanted in the island's front-right corner, its foot pushed into the grass */
+  async function bossCard(card, y) {
+    const tex = await cardTexture(card), g = new T.Group(), w = 0.92, h = 1.29;
+    const face = new T.MeshBasicMaterial({map: tex}), back = toon(0xe8d6a6);
+    const cardMesh = new T.Mesh(new T.BoxGeometry(w, h, 0.03), [back, back, back, back, face, back]); g.add(cardMesh);
+    const edge = new T.Mesh(new T.BoxGeometry(w + 0.07, h + 0.07, 0.015), new T.MeshBasicMaterial({color: 0x3b2412})); edge.position.z = -0.012; g.add(edge);
+    g.position.set(0.95, y + h * 0.42, 0.75); g.rotation.set(-0.22, -0.35, -0.24);
+    return g;
+  }
+
+  function shot(root, {pos = [3.6, 4.6, 6.4], look = [0, 0.55, 0], fov = 30, size = [300, 230]} = {}) {
+    renderer.setSize(size[0], size[1], false); camera.aspect = size[0] / size[1];
     scene.add(root);
     camera.fov = fov; camera.position.set(...pos); camera.lookAt(...look); camera.updateProjectionMatrix();
     renderer.render(scene, camera);
@@ -117,11 +145,35 @@ export function createIslandRenderer(THREE, kit) {
     return url;
   }
   return {
-    island(theme) {
+    async island(theme, card) {
       const {g, top} = base(theme);
       (BUILD[theme] || BUILD.meadow)(g, top);
       toonify(g, {outline: 0.035});
+      if (card) g.add(await bossCard(card, top));
       return shot(g);
+    },
+    /* the harbour of the town, rebuilt in 3D from the same pier code (js/harbor.js makeDock), with the boatman standing
+       on the beach at the foot of the pier; heroModel is a fresh clone of models/hero.glb (or null) */
+    dock(heroModel) {
+      const H = globalThis.PhantomHarbor, C = {...H.DEFAULTS}, g = new T.Group(), sand = toon(0xf0d9a0), grass = toon(0x86cc5e);
+      const {pier, booth} = H.makeDock(T, C, {mobile: true});
+      /* a rounded sand peninsula with a grass top, a wet-sand rim and foam; the shallow water fades out softly */
+      const blob = (r, h, c, y) => { const m = new T.Mesh(new T.CylinderGeometry(r, r * 1.08, h, 28), toon(c)); m.scale.set(1.05, 1, 1.5); return at(m, 35.2, y, 5); };
+      g.add(blob(5.9, 0.34, 0xd4b479, -0.2), blob(5.5, 0.36, 0xf0d9a0, -0.12), blob(4.3, 0.4, 0x86cc5e, -0.06));
+      const soft = document.createElement('canvas'); soft.width = soft.height = 128; const sx = soft.getContext('2d'), sg = sx.createRadialGradient(64, 64, 0, 64, 64, 64);
+      sg.addColorStop(0, 'rgba(127,216,240,.65)'); sg.addColorStop(0.6, 'rgba(127,216,240,.45)'); sg.addColorStop(1, 'rgba(127,216,240,0)'); sx.fillStyle = sg; sx.fillRect(0, 0, 128, 128);
+      const shallow = new T.Mesh(new T.PlaneGeometry(36, 30), new T.MeshBasicMaterial({map: new T.CanvasTexture(soft), transparent: true, depthWrite: false})); shallow.rotation.x = -Math.PI / 2; shallow.position.set(44, -0.3, 5); shallow.userData.isEffect = true; g.add(shallow);
+      const foam = new T.Mesh(new T.RingGeometry(0.93, 1, 40), new T.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.75, side: T.DoubleSide, depthWrite: false})); foam.rotation.x = -Math.PI / 2; foam.scale.set(6.6, 9.3, 1); foam.position.set(35.2, -0.08, 5); foam.userData.isEffect = true; g.add(foam);
+      g.add(at(tree(0x5fbf4a), 31.6, 0.3, -0.6), at(tree(0x6fcf55), 31.4, 0.3, 10.6));
+      g.add(pier, booth);
+      H.toonOutline(T, pier, {thickness: 0.07}); H.toonOutline(T, booth, {thickness: 0.07});
+      toonify(g, {outline: 0.06});
+      if (heroModel) {
+        const box3 = new T.Box3().setFromObject(heroModel), s = 2.55 / (box3.max.y - box3.min.y); heroModel.scale.setScalar(s); heroModel.position.y = -box3.min.y * s;
+        const man = new T.Group(); man.add(heroModel); H.dressBoatman(T, heroModel); toonify(heroModel, {outline: 0.05});
+        man.position.set(36.6, 0.12, 7.4); man.rotation.y = Math.PI * 0.9; g.add(man);
+      }
+      return shot(g, {pos: [52, 13.5, 24], look: [41, 0.7, 5.5], fov: 36, size: [520, 400]});
     },
     /* the speedboat from js/harbor.js with the hero seated at the wheel */
     boat(root) { return shot(root, {pos: [4.2, 4.6, 8.4], look: [0.1, 0.7, 0], fov: 26}); },

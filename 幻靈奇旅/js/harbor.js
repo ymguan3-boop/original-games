@@ -72,6 +72,74 @@ function makeSpeedboat(T,{mobile=false}={}){
  return {boat,SEAT};
 }
 
+/* The pier, its dock clutter and the ticket booth (shared by the town harbour and the 幻靈守護戰 sea chart). Coordinates
+   follow the town: the pier runs along +x at z = pierZ. */
+function makeDock(T,C,{mobile=false}={}){
+ const mat=(color,o={})=>new T.MeshStandardMaterial({color,roughness:.8,...o});
+ const plankTex=woodTexture(T,0xc98d52,{planks:1}),postTex=woodTexture(T,0x7a5232,{planks:3,vertical:true}),crateTex=woodTexture(T,0xd2a062,{planks:4});
+ const plank=mat(0xffffff,{map:plankTex,roughness:.75}),post=mat(0xffffff,{map:postTex,roughness:.85}),crateMat=mat(0xffffff,{map:crateTex,roughness:.8});
+ const rope=mat(0xd8bf86,{roughness:.95}),iron=mat(0x4d555e,{metalness:.3,roughness:.5});
+ const box=(w,h,d,m)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.castShadow=!mobile;o.receiveShadow=true;return o;};
+ const cyl=(rt,rb,h,m,seg=12)=>{const o=new T.Mesh(new T.CylinderGeometry(rt,rb,h,seg),m);o.castShadow=!mobile;o.receiveShadow=true;return o;};
+ const ball=(r,m,seg=12)=>{const o=new T.Mesh(new T.SphereGeometry(r,seg,Math.max(6,seg-4)),m);o.castShadow=!mobile;return o;};
+ /* pier: textured planks on thick posts, rope rails sagging between posts, lanterns on hooks */
+ const pier=new T.Group();pier.name='Pier';
+ for(let x=C.pierStart;x<C.pierEnd;x+=.6){const p=box(.56,.16,C.pierHalf*2,plank);p.position.set(x+.3,.12,C.pierZ);p.rotation.y=(Math.random()-.5)*.03;p.material=plank;pier.add(p);}
+ const postXs=[];for(let x=C.pierStart+1.2;x<=C.pierEnd+.01;x+=2.6)postXs.push(x);
+ for(const x of postXs)for(const s of[-1,1]){const z=C.pierZ+s*(C.pierHalf+.08),p=cyl(.17,.2,2.1,post);p.position.set(x,-.2,z);pier.add(p);const ringR=new T.Mesh(new T.TorusGeometry(.19,.045,6,14),rope);ringR.rotation.x=Math.PI/2;ringR.position.set(x,.55,z);pier.add(ringR);const cap=cyl(.2,.2,.08,post);cap.position.set(x,.86,z);pier.add(cap);}
+ for(const s of[-1,1])for(let i=0;i<postXs.length-1;i++){const a=new T.Vector3(postXs[i],.78,C.pierZ+s*(C.pierHalf+.08)),b=new T.Vector3(postXs[i+1],.78,a.z),m=a.clone().lerp(b,.5);m.y-=.2;const tube=new T.Mesh(new T.TubeGeometry(new T.QuadraticBezierCurve3(a,m,b),12,.035,5),rope);pier.add(tube);}
+ const lanterns=[],lampMat=new T.MeshStandardMaterial({color:0xffe6a0,emissive:0xffb24a,emissiveIntensity:1.1});
+ for(const x of[postXs[1],postXs[postXs.length-1]])for(const s of[-1,1]){const z=C.pierZ+s*(C.pierHalf+.08),pole=cyl(.05,.05,1.3,post,6);pole.position.set(x,1.5,z);pier.add(pole);const arm=box(.5,.05,.05,post);arm.position.set(x+.22,2.12,z);pier.add(arm);const cage=box(.26,.32,.26,iron);cage.position.set(x+.42,1.86,z);pier.add(cage);const lamp=box(.2,.26,.2,lampMat);lamp.position.set(x+.42,1.86,z);pier.add(lamp);lanterns.push(lamp);}
+ /* dock clutter: crates, barrels, coiled rope, a net and flower pots */
+ const crate=(x,z,s=1,y=0)=>{const c=box(.7*s,.7*s,.7*s,crateMat);c.position.set(x,.2+.35*s+y,z);c.rotation.y=Math.random()*.4;pier.add(c);return c;};
+ crate(C.pierStart+2.2,C.pierZ-.75);crate(C.pierStart+2.25,C.pierZ-.72,.75,.7);crate(C.pierStart+3.05,C.pierZ-.8,.85);
+ const barrelMat=mat(0xffffff,{map:woodTexture(T,0xb5783e,{planks:8,vertical:true}),roughness:.8});
+ for(const [x,z] of[[C.pierEnd-5.2,C.pierZ+.82],[C.pierEnd-4.5,C.pierZ+.88]]){const b=cyl(.32,.3,.78,barrelMat,14);b.position.set(x,.6,z);pier.add(b);for(const y of[.38,.82]){const h=new T.Mesh(new T.TorusGeometry(.33,.03,5,18),iron);h.rotation.x=Math.PI/2;h.position.set(x,y,z);pier.add(h);}}
+ const coil=new T.Mesh(new T.TorusGeometry(.26,.07,6,18),rope);coil.rotation.x=Math.PI/2;coil.position.set(C.pierEnd-1.1,.25,C.pierZ-.85);pier.add(coil);
+ const coil2=coil.clone();coil2.scale.setScalar(.7);coil2.position.y=.36;pier.add(coil2);
+ const pot=(x,z,flower)=>{const p=cyl(.2,.15,.32,mat(0xc0663c),10);p.position.set(x,.36,z);pier.add(p);const bush=ball(.24,mat(0x5fae45));bush.position.set(x,.62,z);pier.add(bush);for(let i=0;i<5;i++){const f=ball(.06,mat(flower),6);const a=i/5*Math.PI*2;f.position.set(x+Math.cos(a)*.17,.72,z+Math.sin(a)*.17);pier.add(f);}};
+ pot(C.pierStart+.4,C.pierZ+C.pierHalf+.55,0xff8fb3);pot(C.pierStart+.4,C.pierZ-C.pierHalf-.55,0xffd23a);
+ /* ticket booth with a striped awning and a sign */
+ const booth=new T.Group();booth.position.set(C.pierStart-1.6,0,C.pierZ-C.pierHalf-2.4);
+ const walls=box(2,1.7,1.5,mat(0xffffff,{map:woodTexture(T,0xe8c58e,{planks:5,vertical:true})}));walls.position.y=.85;booth.add(walls);
+ const counter=box(2.1,.12,.5,post);counter.position.set(0,1.05,.85);booth.add(counter);
+ for(let i=0;i<6;i++){const s=box(.36,.08,1.05,mat(i%2?0xffffff:0x2f7fd6));s.position.set(-.9+i*.36,1.98,.35);s.rotation.x=.42;booth.add(s);}
+ const roof=box(2.3,.14,1.8,mat(0x9a5a34));roof.position.y=1.8;booth.add(roof);
+ const sc=document.createElement('canvas');sc.width=512;sc.height=160;const sg=sc.getContext('2d');sg.fillStyle='#fff3d6';sg.fillRect(0,0,512,160);sg.strokeStyle='#7a4f26';sg.lineWidth=12;sg.strokeRect(6,6,500,148);sg.fillStyle='#2f5f9a';sg.textAlign='center';sg.font='bold 58px "Microsoft JhengHei",sans-serif';sg.fillText('🚤 快艇航線',256,72);sg.fillStyle='#5a3416';sg.font='bold 34px "Microsoft JhengHei",sans-serif';sg.fillText('幻靈群島 · 幻靈守護戰',256,128);
+ const signTex=new T.CanvasTexture(sc);signTex.encoding=T.sRGBEncoding;
+ const sign=new T.Mesh(new T.PlaneGeometry(2,.62),new T.MeshStandardMaterial({map:signTex,roughness:.8}));sign.position.set(0,2.35,.6);booth.add(sign);
+ booth.rotation.y=-Math.PI/2+.25;
+ return {pier,booth,lanterns};
+}
+
+/* The boatman: the town hero model re-dressed as an old sailor (navy and white shirt, dark trousers, white hair and
+   moustache, a captain's cap and a red neckerchief). Materials are cloned for this model only, so the real hero keeps
+   its look. Call on a freshly cloned hero scene that faces +z and has not been scaled by anything but its own root. */
+function dressBoatman(T,object){
+ try{globalThis.HeroCostumes?.create(T).apply(object,'trainer');}catch(e){console.warn('boatman costume',e);}
+ object.updateMatrixWorld(true);
+ const tint={shirt:0x1d3a7a,shirtLight:0xf4f1e6,shorts:0x2a3144,shoe:0x3a2a20,sole:0x2a2018,hair:0xe4e4df,hairFuzz:0xe4e4df,brow:0xb8b8b2};
+ object.traverse(n=>{const m=n.isMesh&&n.userData.part?.m;if(m&&tint[m]!==undefined){n.material=n.material.clone();n.material.color.setHex(tint[m]);}});
+ const head=object.getObjectByName('head');if(!head)return;
+ const box=new T.Box3();head.traverse(n=>{if(n.isMesh&&n.userData.part?.stage===1)box.expandByObject(n);});
+ if(box.isEmpty())return;
+ const size=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3()),ws=new T.Vector3();head.getWorldScale(ws);
+ const std=(c,o={})=>new T.MeshStandardMaterial({color:c,roughness:.7,...o}),R=size.x*.5;
+ const place=(g,wx,wy,wz)=>{g.scale.setScalar(1/ws.x);g.position.copy(head.worldToLocal(new T.Vector3(wx,wy,wz)));head.add(g);};
+ const hat=new T.Group(),part=(geo,m,x,y,z)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);hat.add(o);return o;};
+ part(new T.CylinderGeometry(R*1,R*1.06,R*.4,24),std(0xf4f4ee),0,R*.08,0);
+ part(new T.CylinderGeometry(R*1.12,R*1.1,R*.1,24),std(0xf4f4ee),0,R*.3,0);
+ part(new T.CylinderGeometry(R*1.06,R*1.06,R*.15,24),std(0x1d3a7a),0,-R*.1,0);
+ part(new T.CylinderGeometry(R*.98,R*.98,R*.05,20,1,false,-Math.PI/2,Math.PI),std(0x15171c),0,-R*.16,R*.04);
+ part(new T.SphereGeometry(R*.13,10,8),std(0xe2b13a,{metalness:.5,roughness:.35}),0,R*.1,R*1.04);
+ place(hat,center.x,box.max.y-size.y*.04,center.z);
+ const scarf=new T.Group();const ring=new T.Mesh(new T.TorusGeometry(size.x*.3,size.x*.055,8,18),std(0xc93a2e));ring.rotation.x=Math.PI/2;scarf.add(ring);
+ const knot=new T.Mesh(new T.SphereGeometry(size.x*.075,8,6),std(0xc93a2e));knot.position.set(0,-size.x*.03,size.x*.3);scarf.add(knot);
+ place(scarf,center.x,box.min.y+size.y*.03,center.z);
+ const mo=new T.Group();for(const s of[-1,1]){const m=new T.Mesh(new T.SphereGeometry(size.x*.1,10,6),std(0xe9e9e4));m.scale.set(1.5,.55,.7);m.position.x=s*size.x*.1;mo.add(m);}
+ place(mo,center.x,box.min.y+size.y*.3,box.max.z-size.x*.02);
+}
+
 function build({THREE:T,group,mobile=false,config}){
  const C={...DEFAULTS,...(config||{})},root=new T.Group();root.name='East harbour · pier · speedboat';group.add(root);
  const mat=(color,o={})=>new T.MeshStandardMaterial({color,roughness:.8,...o});
@@ -96,33 +164,7 @@ function build({THREE:T,group,mobile=false,config}){
  const base=Float32Array.from(seaGeo.attributes.position.array);
  const foam=new T.Mesh(new T.PlaneGeometry(.5,C.maxZ-C.minZ+8),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.75}));foam.rotation.x=-Math.PI/2;foam.position.set(C.shoreX,-.2,(C.minZ+C.maxZ)/2);root.add(foam);
 
- /* pier: textured planks on thick posts, rope rails sagging between posts, lanterns on hooks */
- const pier=new T.Group();pier.name='Pier';root.add(pier);
- for(let x=C.pierStart;x<C.pierEnd;x+=.6){const p=box(.56,.16,C.pierHalf*2,plank);p.position.set(x+.3,.12,C.pierZ);p.rotation.y=(Math.random()-.5)*.03;p.material=plank;pier.add(p);}
- const postXs=[];for(let x=C.pierStart+1.2;x<=C.pierEnd+.01;x+=2.6)postXs.push(x);
- for(const x of postXs)for(const s of[-1,1]){const z=C.pierZ+s*(C.pierHalf+.08),p=cyl(.17,.2,2.1,post);p.position.set(x,-.2,z);pier.add(p);const ringR=new T.Mesh(new T.TorusGeometry(.19,.045,6,14),rope);ringR.rotation.x=Math.PI/2;ringR.position.set(x,.55,z);pier.add(ringR);const cap=cyl(.2,.2,.08,post);cap.position.set(x,.86,z);pier.add(cap);}
- for(const s of[-1,1])for(let i=0;i<postXs.length-1;i++){const a=new T.Vector3(postXs[i],.78,C.pierZ+s*(C.pierHalf+.08)),b=new T.Vector3(postXs[i+1],.78,a.z),m=a.clone().lerp(b,.5);m.y-=.2;const tube=new T.Mesh(new T.TubeGeometry(new T.QuadraticBezierCurve3(a,m,b),12,.035,5),rope);pier.add(tube);}
- const lanterns=[],lampMat=new T.MeshStandardMaterial({color:0xffe6a0,emissive:0xffb24a,emissiveIntensity:1.1});
- for(const x of[postXs[1],postXs[postXs.length-1]])for(const s of[-1,1]){const z=C.pierZ+s*(C.pierHalf+.08),pole=cyl(.05,.05,1.3,post,6);pole.position.set(x,1.5,z);pier.add(pole);const arm=box(.5,.05,.05,post);arm.position.set(x+.22,2.12,z);pier.add(arm);const cage=box(.26,.32,.26,iron);cage.position.set(x+.42,1.86,z);pier.add(cage);const lamp=box(.2,.26,.2,lampMat);lamp.position.set(x+.42,1.86,z);pier.add(lamp);lanterns.push(lamp);}
- /* dock clutter: crates, barrels, coiled rope, a net and flower pots */
- const crate=(x,z,s=1,y=0)=>{const c=box(.7*s,.7*s,.7*s,crateMat);c.position.set(x,.2+.35*s+y,z);c.rotation.y=Math.random()*.4;pier.add(c);return c;};
- crate(C.pierStart+2.2,C.pierZ-.75);crate(C.pierStart+2.25,C.pierZ-.72,.75,.7);crate(C.pierStart+3.05,C.pierZ-.8,.85);
- const barrelMat=mat(0xffffff,{map:woodTexture(T,0xb5783e,{planks:8,vertical:true}),roughness:.8});
- for(const [x,z] of[[C.pierEnd-5.2,C.pierZ+.82],[C.pierEnd-4.5,C.pierZ+.88]]){const b=cyl(.32,.3,.78,barrelMat,14);b.position.set(x,.6,z);pier.add(b);for(const y of[.38,.82]){const h=new T.Mesh(new T.TorusGeometry(.33,.03,5,18),iron);h.rotation.x=Math.PI/2;h.position.set(x,y,z);pier.add(h);}}
- const coil=new T.Mesh(new T.TorusGeometry(.26,.07,6,18),rope);coil.rotation.x=Math.PI/2;coil.position.set(C.pierEnd-1.1,.25,C.pierZ-.85);pier.add(coil);
- const coil2=coil.clone();coil2.scale.setScalar(.7);coil2.position.y=.36;pier.add(coil2);
- const pot=(x,z,flower)=>{const p=cyl(.2,.15,.32,mat(0xc0663c),10);p.position.set(x,.36,z);pier.add(p);const bush=ball(.24,mat(0x5fae45));bush.position.set(x,.62,z);pier.add(bush);for(let i=0;i<5;i++){const f=ball(.06,mat(flower),6);const a=i/5*Math.PI*2;f.position.set(x+Math.cos(a)*.17,.72,z+Math.sin(a)*.17);pier.add(f);}};
- pot(C.pierStart+.4,C.pierZ+C.pierHalf+.55,0xff8fb3);pot(C.pierStart+.4,C.pierZ-C.pierHalf-.55,0xffd23a);
- /* ticket booth with a striped awning and a sign */
- const booth=new T.Group();booth.position.set(C.pierStart-1.6,0,C.pierZ-C.pierHalf-2.4);root.add(booth);
- const walls=box(2,1.7,1.5,mat(0xffffff,{map:woodTexture(T,0xe8c58e,{planks:5,vertical:true})}));walls.position.y=.85;booth.add(walls);
- const counter=box(2.1,.12,.5,post);counter.position.set(0,1.05,.85);booth.add(counter);
- for(let i=0;i<6;i++){const s=box(.36,.08,1.05,mat(i%2?0xffffff:0x2f7fd6));s.position.set(-.9+i*.36,1.98,.35);s.rotation.x=.42;booth.add(s);}
- const roof=box(2.3,.14,1.8,mat(0x9a5a34));roof.position.y=1.8;booth.add(roof);
- const sc=document.createElement('canvas');sc.width=512;sc.height=160;const sg=sc.getContext('2d');sg.fillStyle='#fff3d6';sg.fillRect(0,0,512,160);sg.strokeStyle='#7a4f26';sg.lineWidth=12;sg.strokeRect(6,6,500,148);sg.fillStyle='#2f5f9a';sg.textAlign='center';sg.font='bold 58px "Microsoft JhengHei",sans-serif';sg.fillText('🚤 快艇航線',256,72);sg.fillStyle='#5a3416';sg.font='bold 34px "Microsoft JhengHei",sans-serif';sg.fillText('幻靈群島 · 幻靈守護戰',256,128);
- const signTex=new T.CanvasTexture(sc);signTex.encoding=T.sRGBEncoding;
- const sign=new T.Mesh(new T.PlaneGeometry(2,.62),new T.MeshStandardMaterial({map:signTex,roughness:.8}));sign.position.set(0,2.35,.6);booth.add(sign);
- booth.rotation.y=-Math.PI/2+.25;
+ const {pier,booth,lanterns}=makeDock(T,C,{mobile});root.add(pier,booth);
 
  const {boat,SEAT}=makeSpeedboat(T,{mobile});
  /* spray and V-wake while running */
@@ -174,5 +216,5 @@ function build({THREE:T,group,mobile=false,config}){
   reset(){voyage=null;boat.position.copy(moor);boat.rotation.set(0,0,0);wakeMat.opacity=0;for(const p of spray){p.life=0;p.d.visible=false;}}
  };
 }
-window.PhantomHarbor={build,DEFAULTS,makeSpeedboat,toonOutline,HERO_HIP:1.15};
+window.PhantomHarbor={build,DEFAULTS,makeSpeedboat,makeDock,dressBoatman,toonOutline,HERO_HIP:1.15};
 })();

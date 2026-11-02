@@ -303,6 +303,35 @@
       ],
       "interiorPosition": null,
       "roamRadius": 0
+    },
+    {
+      "id": "boatman",
+      "name": "老船夫",
+      "buildingId": null,
+      "role": "船夫",
+      "model": "models/hero.glb",
+      "height": 2.55,
+      "dialogue": [
+        "歡迎來到初光碼頭！我的快艇可以載你去幻靈群島，參加「幻靈守護戰」。",
+        "那邊每座小島都有魔王坐鎮，擊倒魔物能得到轉蛋點數，和無盡洞穴共用喔。"
+      ],
+      "functions": [
+        "boatman",
+        "tips"
+      ],
+      "portraits": {
+        "normal": "portraits/boatman-normal.svg"
+      },
+      "position": [
+        36.6,
+        0,
+        7.4
+      ],
+      "interiorPosition": [
+        0,
+        0
+      ],
+      "roamRadius": 0
     }
   ]
 }

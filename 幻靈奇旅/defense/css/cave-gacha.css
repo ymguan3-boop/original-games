@@ -1,0 +1,65 @@
+/* Generated from survivors/css/cave.css (scripts: scratchpad cave-gacha-css.cjs): the endless cave gacha
+   look, scoped to dialog#panel on the 幻靈守護戰 page. */
+#panel{font-family:"Microsoft JhengHei","PingFang TC",sans-serif;color:#ecf0e8;background:#101c23;--gold:#e2c58d;--muted:#a9bab9;--line:#c7dac32a;--panel:#14262cf5}
+#panel button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#panel button{font:inherit;color:inherit;background:#20353b;border:1px solid var(--line);border-radius:8px;padding:12px 16px;cursor:pointer}
+#panel button:hover{border-color:var(--gold);background:#32464b}
+#panel button:disabled{opacity:.45;cursor:default}
+#panel button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+#panel button small{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+#panel .primary{width:100%;background:#dac18e;color:#16252b;font-weight:bold;border-color:#edd9ad;padding:15px;letter-spacing:2px;margin:12px 0}
+#panel .primary:hover{background:#ebd7ac}
+dialog#panel{background:var(--panel);color:#e8f0e9;border:1px solid #b4c3a34c;border-radius:16px;width:min(680px,92vw);max-height:85dvh;padding:25px 28px;box-shadow:0 20px 100px #0008}
+dialog#panel::backdrop{background:#031119a8;backdrop-filter:blur(5px)}
+#panel .dialog-top{display:flex;justify-content:space-between;align-items:center}
+#panel .dialog-top p{margin:0}
+#panel .dialog-top button{font-size:23px;border:0;background:transparent;padding:0 5px}
+dialog#panel h2{font-size:25px;font-weight:500;letter-spacing:3px;margin:14px 0 20px}
+dialog#panel p{line-height:1.8;font-size:13px}
+dialog#panel .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:760px){#panel .primary{padding:13px;margin:9px 0}
+dialog#panel{padding:20px;max-height:80dvh}
+dialog#panel h2{font-size:21px}
+dialog#panel .grid{gap:8px}
+}
+#panel .gacha-machine{height:260px;border-radius:12px;position:relative;background:linear-gradient(0deg,#11262c 0%,transparent 25%),url('../../survivors/assets/gacha-machine-v03.png') center 47% /cover;margin-bottom:16px;overflow:hidden}
+#panel .summon-stage{position:relative;height:min(430px,55dvh);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:end;background:linear-gradient(0deg,#10242fe0,transparent 50%),url('../../survivors/assets/gacha-machine-v03.png') center/cover}
+#panel .summon-stage p{position:relative;z-index:3;text-shadow:0 2px 5px #000;color:#ffe6a3;font-size:13px;letter-spacing:2px}
+#panel .summon-rays{position:absolute;inset:-100%;background:repeating-conic-gradient(from 0deg,#6dffef00 0deg,#b3ffed55 5deg,#6dffef00 15deg);animation:summonSpin 7s linear infinite;mix-blend-mode:screen;pointer-events:none}
+#panel .summon-orb{position:absolute;top:42%;width:100px;height:100px;display:grid;place-items:center;border-radius:50%;color:#fff0b0;font-size:55px;border:3px solid #e3c97e;background:radial-gradient(circle at 35% 25%,#dafff5,#259d9f 38%,#14464c 60%,#ad8749 63%,#315a59 70%);box-shadow:0 0 45px #9affee99;animation:summonLift 2.8s both}
+@keyframes summonSpin{to{transform:rotate(360deg)}}
+@keyframes summonGlow{50%{opacity:.3}}
+@keyframes summonLift{0%{opacity:0;transform:translateY(100px) scale(.3)}40%{opacity:1;transform:translateY(0) scale(1)}75%{transform:translateY(-12px) scale(1.12)}90%{transform:translateY(-12px) scale(1.2)}100%{transform:translateY(-12px) scale(1.5);filter:brightness(2)}}
+@media(max-width:760px){#panel .gacha-machine{height:225px}
+}
+#panel .wallet-strip{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-radius:12px;background:linear-gradient(100deg,#304a46,#1b353b);border:1px solid #c7ae6d44;margin:0 0 14px}
+#panel .wallet-strip>span{display:flex;align-items:center;gap:8px;font-size:12px;color:#c6d9d2}
+#panel .wallet-strip strong{font-size:23px;color:#f4d9a0;font-variant-numeric:tabular-nums}
+#panel .wallet-strip small{font-size:10px;margin-left:6px;font-weight:400}
+#panel .bag-footer .primary{flex:1;margin:0;letter-spacing:1px;padding:12px}
+#panel .reward-count{font-size:12px!important;color:#bbd3c8;margin:18px 0}
+#panel .reward-list{display:grid;gap:9px}
+#panel .reward-entry{display:flex;gap:12px;align-items:center;border:1px solid #d3bb8055;border-radius:12px;padding:12px;background:linear-gradient(100deg,#3d433143,#182e35);animation:cardReveal .5s both}
+#panel .reward-entry.purple{border-color:#b7a0ec77;background:linear-gradient(100deg,#52436166,#182e35)}
+#panel .reward-entry.red{border-color:#f4a9a077;background:linear-gradient(100deg,#704f4a77,#182e35)}
+#panel .reward-portrait{height:65px;width:65px;border-radius:10px;overflow:hidden;display:grid;place-items:center;background:#1b3b43;color:#e5d2a0;flex-shrink:0}
+#panel .reward-portrait img{height:100%;width:100%;object-fit:cover}
+#panel .reward-portrait .ui-icon{width:36px;height:36px}
+#panel .reward-entry>div:nth-child(2){flex:1;min-width:0}
+#panel .reward-entry small{font-size:9px;color:#d2b881}
+#panel .reward-entry strong{display:block;font-size:14px;margin:4px 0}
+#panel .reward-entry p{font-size:10px!important;color:#a2c0b4;line-height:1.5!important;margin:4px 0}
+#panel .reward-qty{font-size:17px;color:#eed6a6}
+#panel .summon-stage{background-image:linear-gradient(0deg,#10242fe0,#10242fb0),url('../../survivors/assets/gacha-machine-v03.png')}
+#panel .summon-stage p{margin:0 0 12px!important;font-size:11px!important;letter-spacing:1px;pointer-events:none}
+#panel .gacha-machine[role=button]{cursor:pointer}
+#panel .gacha-machine[role=button]:hover{box-shadow:0 0 18px #98efd52a}
+@media(max-width:760px){dialog#panel{width:min(94vw,560px);padding:19px 18px;max-height:86dvh}
+dialog#panel h2{margin:10px 0 16px;font-size:21px}
+#panel .wallet-strip{padding:10px 12px}
+#panel .wallet-strip strong{font-size:21px}
+#panel .reward-portrait{height:55px;width:55px}
+#panel .reward-entry{padding:10px}
+#panel .reward-entry strong{font-size:13px}
+}
+#panel .wallet-strip{position:sticky;top:-19px;z-index:3}
