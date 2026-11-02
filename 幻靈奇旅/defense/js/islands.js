@@ -5,7 +5,7 @@ const MOBILE_W = 700, MOBILE_H = 1120;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
 /* A compact portrait archipelago uses a readable two-column, five-row sailing route instead of
    shrinking the entire desktop chart to postage-stamp islands. Ordering remains port -> 1 ... -> 10. */
-const MOBILE_SPOTS = [[210, 924], [485, 924], [485, 742], [210, 742], [210, 560],
+export const MOBILE_SPOTS = [[210, 924], [485, 924], [485, 742], [210, 742], [210, 560],
   [485, 560], [485, 378], [210, 378], [210, 196], [485, 196]];
 const MOBILE_HOME = [80, 1040];
 const spots = () => isPortrait() ? MOBILE_SPOTS : SPOTS;
