@@ -4,10 +4,9 @@
    evolutions from the cave table (survivors/data/evolution.json). The view's hooks.fire plays the cave attack and
    reports when the hit releases, so damage lands on the animation frame.
    Lane coordinate x runs from state.left (monster nest, path start) to state.right (crystal, path end). */
-import {attackProfile} from '../../survivors/js/combat-profile.js';
 import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js';
-import {STAGES, buildPath} from './stages.js';
-import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js';
+import {STAGES, buildPath} from './stages.js?v=20261103-forge-v2';
+import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v2';
 
 export {STAGES};
 export const ELEMENTS = ['光', '焰', '森', '潮', '雷', '念'];
