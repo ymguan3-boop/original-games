@@ -306,6 +306,9 @@ function creditPoints() {
   try { globalThis.PhantomCaveBridge.reward('defense:' + game.runId, pts); return pts; } catch (e) { console.warn(e); toast('點數寫入失敗：' + e.message); return 0; }
 }
 function leaveGame() {
+  /* Prevent an in-flight load or first-frame callback from dealing into
+     a battle after the user returns to the island chart. */
+  ++startSerial; pendingDealingScene = null;
   creditPoints();
   game = null; $('hud').hidden = true; $('lobby').hidden = false; $('modal').close();
   view?.setGame(null); audio?.stop?.();
@@ -590,7 +593,7 @@ function loop(now) {
     const launched = beginDealing(game);
     pendingDealingScene = null;
     acc = 0; last = now;
-    if (launched) { handSig = ''; hud(); }
+    if (launched) { handleEvents(); handSig = ''; hud(); }
   }
   if (game) game.events.length = 0;
 }
