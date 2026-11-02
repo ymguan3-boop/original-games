@@ -16,6 +16,8 @@ import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js';
 import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js';
 import {groupRewards} from '../../survivors/js/reward-groups.js';
 import {itemPicture} from '../../survivors/js/item-pictures.js';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v1';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261103-weather-v1';
 import {icon} from '../../survivors/js/ui-art.js';
 import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
 
@@ -31,7 +33,12 @@ function saveRecord() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(reco
 function toast(text) { const t = $('toast'); t.textContent = text; t.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), 2200); }
 function picture(id) { const a = data.art[id]; return '../' + (a?.image || 'portraits/' + id + '.png'); }
 function spirit(id) { return data.spiritMap.get(id); }
-function shapeLabel(id, strong) { return SHAPES[profileFor(spirit(id), data.entries.get(id), strong).type].label; }
+function shapeLabel(id, strong) {
+  const p = profileFor(spirit(id), data.entries.get(id), strong);
+  if (!strong) return roleFor(id).basic === 'magic' ? '法術攻擊' : roleFor(id).basic === 'heal_or_magic' ? '治療／法術' :
+    roleFor(id).basic === 'ranged' ? '遠距普攻' : '近距普攻';
+  return ultimateFor(id)?.description || SHAPES[p.type].label;
+}
 
 async function loadData() {
   const get = (p) => fetch(new URL('../' + p, location.href)).then((r) => { if (!r.ok) throw Error('讀取失敗：' + p); return r.json(); });
@@ -42,8 +49,8 @@ async function loadData() {
 /* The main game's dex card (css/collection-card.css + assets/cards/frame.png). */
 function cardHtml(id, {line} = {}) {
   const s = spirit(id), number = data.entries.get(id)?.number || '—';
-  const info = line || `${esc(s.type)} · ${esc(s.rarity || '普通')} · 第 ${s.stage || 1} 階段`;
-  return `<article class="collectionCard" data-frame="${s.cardFrame || 'yellow'}"><span class="collectionNumber">No.${number}</span><img class="collectionArt" src="${picture(id)}" alt="${esc(s.name)}" decoding="async"><img class="collectionFrame" src="../assets/cards/frame.png" alt="" decoding="async"><h3 class="collectionName">${esc(s.name)}</h3><div class="collectionInfo"><div class="collectionType">${info}</div><div class="collectionStats"><span>HP ${s.hp}</span><span>攻擊 ${s.attack}</span></div></div></article>`;
+  const info = line || `${esc(roleLabel(id))} · ${esc(s.rarity || '普通')} · 第 ${s.stage || 1} 階段`;
+  return `<article class="collectionCard" data-frame="${s.cardFrame || 'yellow'}"><span class="collectionNumber">No.${number}</span><span class="class-medal role-${roleFor(id).basic}" title="${esc(roleLabel(id))}">${roleFor(id).icon}</span><img class="collectionArt" src="${picture(id)}" alt="${esc(s.name)}" decoding="async"><img class="collectionFrame" src="../assets/cards/frame.png" alt="" decoding="async"><h3 class="collectionName">${esc(s.name)}</h3><div class="collectionInfo"><div class="collectionType">${info}</div><div class="collectionStats"><span>HP ${s.hp}</span><span>攻擊 ${s.attack}</span></div></div></article>`;
 }
 
 /* ---------- lobby ---------- */
@@ -64,7 +71,7 @@ const deckRed = () => record.deck.filter(isRedCard);
 
 function unitButton({id, trial = false}) {
   const n = record.deck.indexOf(id), sup = SUPPORT[id];
-  const line = sup ? `技能：${esc(sup.skill)}` : `${esc(spirit(id).type)} · ${shapeLabel(id, false)}`;
+  const line = sup ? `✨ 技能：${esc(sup.skill)}` : `${esc(roleLabel(id))} · ${shapeLabel(id, false)}`;
   return `<button class="collectionThumb ${n >= 0 ? 'on' : ''}" data-unit="${id}" title="${esc(sup ? sup.text : '大絕：' + shapeLabel(id, true))}">${trial ? '<span class="trial">體驗</span>' : ''}${n >= 0 ? '<span class="order">✓</span>' : ''}${sup ? '<span class="skilltag">輔助</span>' : ''}${cardHtml(id, {line})}</button>`;
 }
 
@@ -91,8 +98,8 @@ function renderIslePanel() {
   const deck = record.deck.map((id) => `<img src="${picture(id)}" alt="${esc(spirit(id).name)}" title="${esc(spirit(id).name)}" data-frame="${spirit(id).cardFrame || 'yellow'}">`).join('') + '<i></i>'.repeat(Math.max(0, DECK_SIZE - record.deck.length));
   $('islePanel').innerHTML = `<div class="isle-card">
     <div class="isle-title"><small>第 ${i + 1} 島</small><h2>${esc(s.name)}</h2>${record.cleared[s.id] ? `<span class="cleared-tag">已通關 ${'★'.repeat(best)}<em>可重複挑戰</em></span>` : ''}</div>
-    <div class="isle-boss"><img src="${picture(s.boss)}" alt=""><div><small>${i < 5 ? '小魔王' : '大魔王'}・坐鎮酒桶</small><b>${esc(boss.name)}</b><span class="el el-${boss.type}">${boss.type}</span></div></div>
-    <div class="isle-facts"><span>🛤️ 路線 ${route}</span><span>${uniq.length ? '⚠️ ' + uniq.join('、') : '🌿 無陷阱'}</span><span>🎟️ 擊倒 +${killPoints(i)}・魔王 +${killPoints(i, true)}</span></div>
+    <div class="isle-boss"><img src="${picture(s.boss)}" alt=""><div><small>${i < 5 ? '小魔王' : '大魔王'}・坐鎮酒桶</small><b>${esc(boss.name)}</b><span class="boss-class">${esc(roleLabel(boss.id))}</span></div></div>
+    <div class="isle-facts"><span>${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span><span>🛤️ 路線 ${route}</span><span>${uniq.length ? '⚠️ ' + uniq.join('、') : '🌿 無陷阱'}</span><span>🎟️ 擊倒 +${killPoints(i)}・魔王 +${killPoints(i, true)}</span></div>
     <div class="isle-deck"><div class="deck-strip">${deck}</div><button class="tool small" data-open="deck">🃏 編組 ${nb + nr}/${DECK_SIZE}</button></div>
     ${nb ? '<button id="start" class="primary wide">⚔️ 出擊！</button>' : '<button class="primary wide" data-open="gacha">🎁 先轉蛋取得幻靈</button>'}
   </div>`;
@@ -157,7 +164,8 @@ function openDeck() {
   normalizeDeck();
   const units = availableUnits(), nb = deckBase().length, nr = deckRed().length;
   openModal(`${ribbon('出擊卡組', '🃏')}
-    <p class="result-sub">基礎幻靈 ${nb}/${DECK_BASE}・紅卡輔助 ${nr}/${DECK_RED}（點選切換；幻靈由轉蛋取得）</p>
+    <p class="result-sub">基礎幻靈 ${nb}/${DECK_BASE}・技能卡 ${nr}/${DECK_RED}（職業決定攻擊方式，四名出戰角色搭配兩張技能卡）</p>
+    <div class="role-legend">${Object.values(ROLE_META).map((r) => `<span>${r.icon} ${r.label}</span>`).join('')}</div>
     <div class="panel-scroll"><h3 class="roster-group">基礎幻靈 <small>黃卡、紫卡的未進階幻靈與三色蛋</small></h3><div class="roster">${units.base.map(unitButton).join('') || '<p class="muted">還沒有基礎幻靈，先去轉蛋吧！</p>'}</div>
     <h3 class="roster-group">紅卡輔助 <small>點擊施放技能，合成升星</small></h3><div class="roster">${units.red.map(unitButton).join('') || '<p class="muted">紅卡可由轉蛋取得（需先在原探索收錄）。</p>'}</div></div>
     <div class="modal-actions center"><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto');
@@ -272,7 +280,7 @@ async function startGame() {
   } catch (e) { console.error(e); toast(e.message); $('loading').hidden = true; return; }
   $('loading').hidden = true; $('lobby').hidden = true; $('hud').hidden = false;
   speed = 1; paused = false; handSig = '';
-  $('stageName').textContent = `${record.stage + 1}. ${game.stage.name}`;
+  $('stageName').textContent = `${record.stage + 1}. ${game.stage.name}・${stageWeather(game.stage.scene).icon} ${stageWeather(game.stage.scene).name}`;
   renderHand(); hud();
   banner(game.stage.name);
   setTimeout(() => game && toast('拖曳卡片排列，相同的卡相鄰會合成；點一下卡片派出'), 2400);
@@ -302,7 +310,7 @@ function renderHand() {
   handSig = sig;
   $('hand').innerHTML = game.hand.map((c, i) => {
     const sup = SUPPORT[c.species], anim = fresh.get(c.uid) || '';
-    const line = sup ? `技能：${esc(sup.skill)}` : `${esc(spirit(c.species).type)} · ${shapeLabel(c.species, false)}`;
+    const line = sup ? `✨ 技能：${esc(sup.skill)}` : `${esc(roleLabel(c.species))} · ${shapeLabel(c.species, false)}`;
     return `<button class="hand-card ${sup ? 'support' : ''} ${canPlay(game, i) ? '' : 'disabled'} ${anim}" data-uid="${c.uid}" title="${esc(sup ? sup.text : spirit(c.species).name + '・大絕' + shapeLabel(c.species, true))}"><span class="stars stars-${spirit(c.species).cardFrame || 'yellow'}">${'<i>★</i>'.repeat(c.rank)}</span>${sup ? '<span class="badge">技能</span>' : ''}${cardHtml(c.species, {line})}${evoOverlay(c.uid)}</button>`;
   }).join('');
   fresh.clear();
@@ -335,18 +343,19 @@ function markDrop(x, dragged) {
 }
 /* Long-press a hand card: attack, ultimate, passive and effect notes for that spirit (support cards: the skill). */
 function cardInfoHtml(card) {
-  const s = spirit(card.species), sup = SUPPORT[card.species], el = s.type, i = ELEMENTS.indexOf(el);
-  const beats = ELEMENTS[(i + 1) % 6], weak = ELEMENTS[(i + 5) % 6], rider = ELEMENT_EFFECTS[el];
+  const s = spirit(card.species), sup = SUPPORT[card.species], r = roleFor(card.species),
+    u = ultimateFor(card.species), atk = shapeLabel(card.species, false);
   const row = (tag, title, body) => `<div class="ci-row"><span class="ci-tag ${tag}">${title}</span><div>${body}</div></div>`;
   const passives = passiveLines(s);
   const rows = sup
-    ? row('t-skill', '技能', `<b>${esc(sup.skill)}</b>　${esc(sup.text)}${sup.duration ? `<br><small>持續 ${sup.duration.join('／')} 秒（★1／★2／★3），目前 ★${card.rank}</small>` : `<br><small>星數越高越強，目前 ★${card.rank}</small>`}`)
-    : row('t-atk', '攻擊', `<b>${esc(s.skills?.[0]?.name || '普通攻擊')}</b>　${shapeLabel(card.species, false)}・${el}屬性　攻擊 ${s.attack}${rider ? `<br><small>命中附加「${rider.label}」</small>` : ''}`)
-      + row('t-ult', '大絕', `<b>${esc(s.skills?.[1]?.name || '大絕')}</b>　${shapeLabel(card.species, true)}・傷害 ×3<br><small>冷卻 ${+ultCooldown(s).toFixed(1)} 秒，金色細條集滿時自動施放</small>`)
-      + row('t-pas', '被動', passives.length ? passives.map(esc).join('<br>') : '無被動能力');
-  return `<div class="ci-head" data-frame="${s.cardFrame || 'yellow'}"><img src="${picture(card.species)}" alt=""><div><b>${esc(s.name)}</b><span class="stars-${s.cardFrame || 'yellow'}">${'<i>★</i>'.repeat(card.rank)}</span><small>${esc(s.rarity || '普通')}・第 ${s.stage || 1} 階段${card.rank > 1 && !sup ? `・能力 +${(card.rank - 1) * 50}%` : ''}</small></div></div>`
-    + rows + row('t-eff', '效果', `<span class="el el-${el}">${el}</span> 剋 <span class="el el-${beats}">${beats}</span>（傷害 ×1.5）・被 <span class="el el-${weak}">${weak}</span> 剋（×0.75）`);
+    ? row('t-skill','輔助',`<b>${esc(sup.skill)}</b>　${esc(sup.text)}<br><small>大絕排隊施放，避免視覺效果重疊。★${card.rank}</small>`)
+    : row('t-atk','職業',`<b>${esc(roleLabel(s.id))}</b>　${atk}・距離 ${r.range.toFixed(1)}<br><small>普攻不再判斷屬性相克，特效仍沿用原動畫。</small>`)
+      + row('t-ult','大絕',`<b>${esc(u?.name || s.skills?.[1]?.name || '大絕')}</b>　${esc(u?.description || '專屬技能')}<br><small>冷卻 ${+ultCooldown(s).toFixed(1)} 秒，至少間隔 ${ULTIMATE_SPACING} 秒錯峰施放。★${card.rank}</small>`)
+      + row('t-pas','被動',passives.length ? passives.map(esc).join('<br>') : '無被動能力');
+  return `<div class="ci-head" data-frame="${s.cardFrame || 'yellow'}"><img src="${picture(card.species)}" alt=""><div><b>${esc(s.name)}</b><span class="stars-${s.cardFrame || 'yellow'}">${'<i>★</i>'.repeat(card.rank)}</span><small>${esc(roleLabel(s.id))}・第 ${s.stage || 1} 階段</small></div></div>`
+    + rows + row('t-eff','提醒','<small>職業取代屬性剋制；燃燒、減速與控制只來自角色專屬技能或被動。</small>');
 }
+
 function showCardInfo(el, card) {
   const box = $('cardInfo'); box.innerHTML = cardInfoHtml(card); box.hidden = false;
   const r = el.getBoundingClientRect(), w = box.offsetWidth;
