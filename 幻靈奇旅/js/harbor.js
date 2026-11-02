@@ -31,6 +31,47 @@ function toonOutline(T,root,{thickness=.035,color=0x3b2412}={}){
  }
 }
 
+/* The speedboat (shared by the town pier and the 幻靈守護戰 sea chart). Bow is +x; the hero sits on SEAT. */
+function makeSpeedboat(T,{mobile=false}={}){
+ const mat=(color,o={})=>new T.MeshStandardMaterial({color,roughness:.8,...o});
+ const box=(w,h,d,m)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.castShadow=!mobile;o.receiveShadow=true;return o;};
+ const cyl=(rt,rb,h,m,seg=12)=>{const o=new T.Mesh(new T.CylinderGeometry(rt,rb,h,seg),m);o.castShadow=!mobile;o.receiveShadow=true;return o;};
+ /* the speedboat (after the reference): white hull with a royal-blue sheer stripe and bottom, an open cockpit with
+    raised sides, a wraparound windshield, a console with a wheel, a padded seat and an outboard motor. Bow is +x.
+    The hero sits on SEAT; the seat, the cockpit sides and the floor hide the legs, so nothing clips. */
+ const boat=new T.Group();boat.name='Speedboat';
+ const white=mat(0xfbfbf7,{roughness:.32}),blue=mat(0x0a3fc0,{roughness:.35}),deep=mat(0x0b2a78,{roughness:.4}),dark=mat(0x23262e,{roughness:.45});
+ const glass=new T.MeshStandardMaterial({color:0x9fdcff,transparent:true,opacity:.42,roughness:.05,metalness:.2,side:T.DoubleSide,depthWrite:false});
+ const outline=(s=1,dx=0)=>{const sh=new T.Shape();sh.moveTo(-2.4*s+dx,-1*s);sh.lineTo(1.2*s+dx,-1*s);sh.quadraticCurveTo(2.9*s+dx,-.8*s,3.4*s+dx,0);sh.quadraticCurveTo(2.9*s+dx,.8*s,1.2*s+dx,1*s);sh.lineTo(-2.4*s+dx,1*s);sh.quadraticCurveTo(-2.6*s+dx,0,-2.4*s+dx,-1*s);return sh;};
+ const extrude=(shape,depth,y,m)=>{const g=new T.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:.06,bevelThickness:.06,bevelSegments:2,curveSegments:16});g.rotateX(-Math.PI/2);const o=new T.Mesh(g,m);o.position.y=y;o.castShadow=!mobile;o.receiveShadow=true;boat.add(o);return o;};
+ extrude(outline(.97),.22,-.62,blue);/* keel band */
+ extrude(outline(1),.62,-.4,white);/* hull */
+ const stripe=extrude(outline(1.012),.12,.08,blue);stripe.scale.y=1;
+ /* cockpit sides: the outline with the cockpit cut out, raised above the deck */
+ const sideShape=outline(1),hole=new T.Path();hole.moveTo(-2.1,-.78);hole.lineTo(1.15,-.78);hole.quadraticCurveTo(1.45,0,1.15,.78);hole.lineTo(-2.1,.78);hole.lineTo(-2.1,-.78);sideShape.holes.push(hole);
+ extrude(sideShape,.42,.22,white);
+ const floor=box(3.2,.06,1.5,mat(0xd9dee6,{roughness:.6}));floor.position.set(-.48,.26,0);boat.add(floor);
+ const ws=new T.Mesh(new T.CylinderGeometry(1,1,.55,24,1,true,Math.PI*.18,Math.PI*.64),glass);ws.rotation.z=-.35;ws.scale.set(.55,1,.92);ws.position.set(.95,.95,0);ws.rotation.y=Math.PI/2;ws.userData.soft=true;boat.add(ws);
+ /* the glass gets a dark rim (tubes round all four edges) so it reads with the same outline as the rest */
+ const rim=new T.MeshBasicMaterial({color:0x3b2412}),arc=(y,a0,a1)=>new T.CatmullRomCurve3(Array.from({length:9},(_,i)=>{const t=a0+(a1-a0)*i/8;return new T.Vector3(Math.sin(t),y,Math.cos(t));})),t0=Math.PI*.18,t1=Math.PI*.82,edge=(curve)=>{const m=new T.Mesh(new T.TubeGeometry(curve,16,.022,5),rim);m.userData.soft=true;ws.add(m);};
+ edge(arc(-.275,t0,t1));edge(arc(.275,t0,t1));for(const t of[t0,t1])edge(new T.LineCurve3(new T.Vector3(Math.sin(t),-.275,Math.cos(t)),new T.Vector3(Math.sin(t),.275,Math.cos(t))));
+ const wsFrame=new T.Mesh(new T.TorusGeometry(.86,.035,6,24,Math.PI*.64),deep);wsFrame.rotation.set(Math.PI/2,0,Math.PI*.18-Math.PI/2);wsFrame.scale.set(.6,1,1);wsFrame.position.set(.98,1.2,0);boat.add(wsFrame);
+ const consoleBox=box(.5,.62,.9,white);consoleBox.position.set(.72,.58,0);boat.add(consoleBox);
+ const dash=box(.52,.06,.92,deep);dash.position.set(.72,.92,0);boat.add(dash);
+ const wheel=new T.Mesh(new T.TorusGeometry(.2,.035,8,20),dark);wheel.position.set(.42,1.02,0);wheel.rotation.set(0,Math.PI/2,0);wheel.rotateX(-.55);boat.add(wheel);
+ const hub=cyl(.05,.05,.1,dark,8);hub.rotation.z=Math.PI/2;hub.position.copy(wheel.position);boat.add(hub);
+ const SEAT={x:-.38,y:.62};
+ const seat=box(.62,.36,.9,white);seat.position.set(SEAT.x,.44,0);boat.add(seat);
+ const cushion=box(.6,.1,.86,blue);cushion.position.set(SEAT.x,.66,0);boat.add(cushion);
+ const back=box(.14,.6,.86,blue);back.position.set(SEAT.x-.34,.95,0);back.rotation.z=.12;boat.add(back);
+ const rearBench=box(.5,.32,1.4,white);rearBench.position.set(-1.75,.42,0);boat.add(rearBench);
+ const motor=new T.Group(),cowl=box(.48,.62,.42,dark);cowl.position.y=.95;motor.add(cowl);const cowlTop=box(.5,.12,.44,white);cowlTop.position.y=1.32;motor.add(cowlTop);const shaft=box(.14,.9,.14,dark);shaft.position.y=.3;motor.add(shaft);motor.position.set(-2.72,0,0);boat.add(motor);
+ const lightMat=new T.MeshStandardMaterial({color:0xfff8e0,emissive:0xffe9a0,emissiveIntensity:.8});
+ for(const s of[-1,1]){const l=box(.08,.07,.22,lightMat);l.position.set(2.62,.1,s*.42);l.rotation.y=s*.5;boat.add(l);}
+ for(const s of[-1,1]){const rail=cyl(.025,.025,1.5,mat(0xd5d9de,{metalness:.6,roughness:.25}),6);rail.rotation.z=Math.PI/2;rail.position.set(2.05,.75,s*.55);boat.add(rail);}
+ return {boat,SEAT};
+}
+
 function build({THREE:T,group,mobile=false,config}){
  const C={...DEFAULTS,...(config||{})},root=new T.Group();root.name='East harbour · pier · speedboat';group.add(root);
  const mat=(color,o={})=>new T.MeshStandardMaterial({color,roughness:.8,...o});
@@ -83,36 +124,7 @@ function build({THREE:T,group,mobile=false,config}){
  const sign=new T.Mesh(new T.PlaneGeometry(2,.62),new T.MeshStandardMaterial({map:signTex,roughness:.8}));sign.position.set(0,2.35,.6);booth.add(sign);
  booth.rotation.y=-Math.PI/2+.25;
 
- /* the speedboat (after the reference): white hull with a royal-blue sheer stripe and bottom, an open cockpit with
-    raised sides, a wraparound windshield, a console with a wheel, a padded seat and an outboard motor. Bow is +x.
-    The hero sits on SEAT; the seat, the cockpit sides and the floor hide the legs, so nothing clips. */
- const boat=new T.Group();boat.name='Speedboat';
- const white=mat(0xfbfbf7,{roughness:.32}),blue=mat(0x0a3fc0,{roughness:.35}),deep=mat(0x0b2a78,{roughness:.4}),dark=mat(0x23262e,{roughness:.45});
- const glass=new T.MeshStandardMaterial({color:0x9fdcff,transparent:true,opacity:.42,roughness:.05,metalness:.2,side:T.DoubleSide,depthWrite:false});
- const outline=(s=1,dx=0)=>{const sh=new T.Shape();sh.moveTo(-2.4*s+dx,-1*s);sh.lineTo(1.2*s+dx,-1*s);sh.quadraticCurveTo(2.9*s+dx,-.8*s,3.4*s+dx,0);sh.quadraticCurveTo(2.9*s+dx,.8*s,1.2*s+dx,1*s);sh.lineTo(-2.4*s+dx,1*s);sh.quadraticCurveTo(-2.6*s+dx,0,-2.4*s+dx,-1*s);return sh;};
- const extrude=(shape,depth,y,m)=>{const g=new T.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:.06,bevelThickness:.06,bevelSegments:2,curveSegments:16});g.rotateX(-Math.PI/2);const o=new T.Mesh(g,m);o.position.y=y;o.castShadow=!mobile;o.receiveShadow=true;boat.add(o);return o;};
- extrude(outline(.97),.22,-.62,blue);/* keel band */
- extrude(outline(1),.62,-.4,white);/* hull */
- const stripe=extrude(outline(1.012),.12,.08,blue);stripe.scale.y=1;
- /* cockpit sides: the outline with the cockpit cut out, raised above the deck */
- const sideShape=outline(1),hole=new T.Path();hole.moveTo(-2.1,-.78);hole.lineTo(1.15,-.78);hole.quadraticCurveTo(1.45,0,1.15,.78);hole.lineTo(-2.1,.78);hole.lineTo(-2.1,-.78);sideShape.holes.push(hole);
- extrude(sideShape,.42,.22,white);
- const floor=box(3.2,.06,1.5,mat(0xd9dee6,{roughness:.6}));floor.position.set(-.48,.26,0);boat.add(floor);
- const ws=new T.Mesh(new T.CylinderGeometry(1,1,.55,24,1,true,Math.PI*.18,Math.PI*.64),glass);ws.rotation.z=-.35;ws.scale.set(.55,1,.92);ws.position.set(.95,.95,0);ws.rotation.y=Math.PI/2;ws.userData.soft=true;boat.add(ws);
- const wsFrame=new T.Mesh(new T.TorusGeometry(.86,.035,6,24,Math.PI*.64),deep);wsFrame.rotation.set(Math.PI/2,0,Math.PI*.18-Math.PI/2);wsFrame.scale.set(.6,1,1);wsFrame.position.set(.98,1.2,0);boat.add(wsFrame);
- const consoleBox=box(.5,.62,.9,white);consoleBox.position.set(.72,.58,0);boat.add(consoleBox);
- const dash=box(.52,.06,.92,deep);dash.position.set(.72,.92,0);boat.add(dash);
- const wheel=new T.Mesh(new T.TorusGeometry(.2,.035,8,20),dark);wheel.position.set(.42,1.02,0);wheel.rotation.set(0,Math.PI/2,0);wheel.rotateX(-.55);boat.add(wheel);
- const hub=cyl(.05,.05,.1,dark,8);hub.rotation.z=Math.PI/2;hub.position.copy(wheel.position);boat.add(hub);
- const SEAT={x:-.38,y:.62};
- const seat=box(.62,.36,.9,white);seat.position.set(SEAT.x,.44,0);boat.add(seat);
- const cushion=box(.6,.1,.86,blue);cushion.position.set(SEAT.x,.66,0);boat.add(cushion);
- const back=box(.14,.6,.86,blue);back.position.set(SEAT.x-.34,.95,0);back.rotation.z=.12;boat.add(back);
- const rearBench=box(.5,.32,1.4,white);rearBench.position.set(-1.75,.42,0);boat.add(rearBench);
- const motor=new T.Group(),cowl=box(.48,.62,.42,dark);cowl.position.y=.95;motor.add(cowl);const cowlTop=box(.5,.12,.44,white);cowlTop.position.y=1.32;motor.add(cowlTop);const shaft=box(.14,.9,.14,dark);shaft.position.y=.3;motor.add(shaft);motor.position.set(-2.72,0,0);boat.add(motor);
- const lightMat=new T.MeshStandardMaterial({color:0xfff8e0,emissive:0xffe9a0,emissiveIntensity:.8});
- for(const s of[-1,1]){const l=box(.08,.07,.22,lightMat);l.position.set(2.62,.1,s*.42);l.rotation.y=s*.5;boat.add(l);}
- for(const s of[-1,1]){const rail=cyl(.025,.025,1.5,mat(0xd5d9de,{metalness:.6,roughness:.25}),6);rail.rotation.z=Math.PI/2;rail.position.set(2.05,.75,s*.55);boat.add(rail);}
+ const {boat,SEAT}=makeSpeedboat(T,{mobile});
  /* spray and V-wake while running */
  const sprayMat=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.85,depthWrite:false}),sprayGeo=new T.SphereGeometry(.09,6,4),spray=[];
  for(let i=0;i<70;i++){const d=new T.Mesh(sprayGeo,sprayMat);d.visible=false;root.add(d);spray.push({d,life:0,v:new T.Vector3()});}
@@ -144,7 +156,8 @@ function build({THREE:T,group,mobile=false,config}){
     boat.position.x=moor.x+e*36;boat.position.z=moor.z+e*1.5;boat.rotation.z=idle?Math.sin(time*40)*.006:Math.min(.13,s*.5)-s*s*.05;
     v.player.x=boat.position.x+SEAT.x;v.player.z=boat.position.z;v.hero.position.set(v.player.x,boat.position.y+SEAT.y-HIP+Math.sin(SEAT.x)*0+(boat.rotation.z*SEAT.x),v.player.z);v.hero.rotation.set(0,Math.PI/2,0);v.hero.rotation.z=boat.rotation.z;
     if(!idle){emitSpray(30+s*90,dt);wakeMat.opacity=Math.min(.7,s*2);for(const {w,s:side} of wakes){w.scale.set(2+s*6,1,1);w.position.set(-3.2-s*3,-.27,side*(.5+s*1.4));w.rotation.z=side*(.18+s*.12);}}}
-   if(k>=1&&!v.done){v.done=true;v.onDone?.();}
+   /* hand over to the 幻靈守護戰 page as soon as the speedboat has cleared the pier */
+   if(k>=.78&&!v.done){v.done=true;v.onDone?.();}
   }
   boat.position.y=-.1+Math.sin(time*1.4)*.05;if(!voyage){boat.rotation.z=Math.sin(time*1.1)*.02;wakeMat.opacity=0;}
  }
@@ -161,5 +174,5 @@ function build({THREE:T,group,mobile=false,config}){
   reset(){voyage=null;boat.position.copy(moor);boat.rotation.set(0,0,0);wakeMat.opacity=0;for(const p of spray){p.life=0;p.d.visible=false;}}
  };
 }
-window.PhantomHarbor={build,DEFAULTS};
+window.PhantomHarbor={build,DEFAULTS,makeSpeedboat,toonOutline,HERO_HIP:1.15};
 })();

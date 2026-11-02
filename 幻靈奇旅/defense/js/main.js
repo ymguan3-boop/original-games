@@ -3,7 +3,9 @@
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
 import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier} from './rules.js';
-import {loadEngine} from './actors.js';
+import {loadEngine, loadGltf, cloneModel} from './actors.js';
+import {createToonKit} from './style.js';
+import {createIslandRenderer} from './islands3d.js';
 import {createView} from './view.js';
 import {createIslandMap} from './islands.js';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT} from './gacha.js';
@@ -524,16 +526,40 @@ function loop(now) {
   if (game) game.events.length = 0;
 }
 
+/* The chart art is rendered with Three.js once per visit: a small 3D diorama for every island (islands3d.js) and the
+   real speedboat (shared js/harbor.js) with the hero seated at the wheel in the outfit from the town wardrobe. */
+async function renderChartArt() {
+  await loadEngine();
+  const T = globalThis.THREE, H = globalThis.PhantomHarbor, kit = createToonKit(T), art = createIslandRenderer(T, kit);
+  chart.setIslandArt(STAGES.map((s) => art.island(s.scene)));
+  if (H?.makeSpeedboat) {
+    const {boat, SEAT} = H.makeSpeedboat(T, {mobile: true}); H.toonOutline(T, boat, {thickness: 0.03});
+    try {
+      const g = await loadGltf('models/hero.glb'), hero = cloneModel(g.scene), box = new T.Box3().setFromObject(hero), s = 2.55 / (box.max.y - box.min.y);
+      hero.scale.setScalar(s); hero.position.y = -box.min.y * s;
+      const seat = new T.Group(); seat.add(hero); seat.position.set(SEAT.x, SEAT.y - H.HERO_HIP, 0); seat.rotation.y = Math.PI / 2; boat.add(seat);
+      try { globalThis.HeroCostumes?.create(T).apply(hero, costumeFor(journey()).id); } catch (e) { console.warn(e); }
+      const idle = g.animations.find((c) => /idle/i.test(c.name)); if (idle) { const mixer = new T.AnimationMixer(hero); mixer.clipAction(idle).play(); mixer.update(0.4); }
+      kit.toonify(hero, {outline: 0.025});
+    } catch (e) { console.warn(e); }
+    chart.setBoatImage(art.boat(boat));
+  }
+  art.dispose();
+}
+
 async function init() {
   record = readJson(SAVE_KEY, {}) || {};
   if (!Number.isInteger(record.stage)) record.stage = 0;
   record.cleared = record.cleared || {}; record.owned = record.owned || []; record.best = record.best || {};
   const fromTown = new URLSearchParams(location.search).has('fromTown');
+  /* the town's speedboat handoff card gives way to this page's own speedboat loader */
+  globalThis.PhantomTransition?.finish?.();
   if (fromTown || !Number.isInteger(record.boatAt)) record.boatAt = -1;
   $('loadingBar').style.width = '30%';
   try { data = await loadData(); } catch (e) { toast(e.message); $('loading').hidden = true; return; }
   $('loadingBar').style.width = '100%';
   bindLobby(); bindHud(); bindHand(); renderLobby();
+  renderChartArt().catch((e) => console.warn(e));
   /* the boat loader stays a moment so the voyage reads, then the speedboat sails from the town pier to the island */
   setTimeout(async () => {
     $('loading').hidden = true;

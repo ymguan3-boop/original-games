@@ -12,7 +12,8 @@ const LOOK = {
   tower: {top: '#f2a9c6', side: '#c06a90', icon: '🗼'}, abyss: {top: '#4f8fd0', side: '#2b5590', icon: '🐉'},
 };
 
-const pt = (i) => (i < 0 ? HOME : SPOTS[i]);
+/* the boat docks on the water at each island's south-west shore; the lanes run between these docking points */
+const pt = (i) => (i < 0 ? HOME : [SPOTS[i][0] - 66, SPOTS[i][1] + 14]);
 /* a gentle S-curve between two points */
 function lane(a, b, bend) {
   const [x1, y1] = pt(a), [x2, y2] = pt(b), mx = (x1 + x2) / 2, my = (y1 + y2) / 2, dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
@@ -30,7 +31,7 @@ const blob = (r, seed) => {
 };
 
 export function createIslandMap(host, {stages, onPick, esc = (s) => s}) {
-  let state = {open: 0, cleared: {}, selected: 0, boatAt: -1, bosses: []}, sailing = null, raf = 0;
+  let state = {open: 0, cleared: {}, selected: 0, boatAt: -1, bosses: [], art: null}, sailing = null, raf = 0;
   host.innerHTML = `<svg class="sea-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="幻靈群島航海圖">
     <defs>
       <pattern id="seaWaves" width="60" height="26" patternUnits="userSpaceOnUse"><path d="M0 13 Q15 5 30 13 T60 13" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2"/></pattern>
@@ -59,20 +60,20 @@ export function createIslandMap(host, {stages, onPick, esc = (s) => s}) {
       const [x, y] = SPOTS[i], look = LOOK[s.scene] || LOOK.meadow, locked = i > state.open, cleared = !!state.cleared[s.id], sel = state.selected === i, r = 46 + (s.path?.length || 0) % 3 * 3;
       return `<g class="isle ${locked ? 'is-locked' : ''} ${cleared ? 'is-cleared' : ''} ${sel ? 'is-selected' : ''}" data-isle="${i}" transform="translate(${x},${y})" tabindex="${locked ? -1 : 0}" role="button" aria-label="${i + 1}. ${esc(s.name)}${locked ? '（未解鎖）' : ''}">
         ${sel ? `<ellipse class="isle-ring" rx="${r + 16}" ry="${(r + 16) * 0.62}"/>` : ''}
-        <g filter="url(#isleShadow)" ${locked ? 'class="fogged"' : ''}>
+        ${state.art?.[i] ? `<image href="${state.art[i]}" x="-78" y="-82" width="156" height="120" ${locked ? 'class="fogged" filter="url(#locked)"' : ''}/>${locked ? '<text class="isle-icon" y="-10" text-anchor="middle">☁️</text>' : ''}` : `<g filter="url(#isleShadow)" ${locked ? 'class="fogged"' : ''}>
           <path d="${blob(r + 6, i + 1)}" fill="#f2deaa" transform="translate(0,6)"/>
           <path d="${blob(r, i + 1)}" fill="${look.side}" transform="translate(0,4)"/>
           <path d="${blob(r - 4, i + 2)}" fill="${look.top}"/>
         </g>
-        <text class="isle-icon" y="-4" text-anchor="middle">${locked ? '☁️' : look.icon}</text>
+        <text class="isle-icon" y="-4" text-anchor="middle">${locked ? '☁️' : look.icon}</text>`}
         ${state.bosses[i] && !locked ? `<image href="${state.bosses[i]}" x="${r - 28}" y="-${r * 0.62 + 10}" width="30" height="30" class="isle-boss" clip-path="circle(15px at 15px 15px)"/>` : ''}
         <g class="isle-label" transform="translate(0,${r * 0.62 + 20})"><rect x="-58" y="-14" width="116" height="24" rx="12"/><text text-anchor="middle" y="3" class="isle-name">${i + 1}. ${esc(s.name)}</text></g>
         ${cleared ? `<text class="isle-flag" x="${-r + 6}" y="${-r * 0.4}">🚩</text>` : ''}
       </g>`;
     }).join('');
   }
-  function placeBoat(x, y, dir = 1) { boat.setAttribute('transform', `translate(${x},${y - 16}) scale(${dir < 0 ? -1 : 1},1)`); }
-  function boatTo(i) { const [x, y] = pt(i); placeBoat(x, y - 30); }
+  function placeBoat(x, y, dir = 1) { boat.setAttribute('transform', `translate(${x},${y}) scale(${dir < 0 ? -1 : 1},1)`); }
+  function boatTo(i) { const [x, y] = pt(i); placeBoat(x, y); }
 
   /* sail along the lanes from `from` to `to` (either direction), lane by lane; resolves on arrival */
   function sail(from, to, {speed = 260} = {}) {
@@ -89,7 +90,7 @@ export function createIslandMap(host, {stages, onPick, esc = (s) => s}) {
         const d = (L.reverse ? 1 - e : e) * total, p = L.path.getPointAtLength(d), q = L.path.getPointAtLength(Math.min(total, Math.max(0, d + (L.reverse ? -2 : 2))));
         /* lift the boat off the island centre at both ends of a leg so it docks at the shore */
         const lift = Math.sin(Math.min(1, k * 4) * Math.PI / 2) * Math.sin(Math.min(1, (1 - k) * 4) * Math.PI / 2);
-        placeBoat(p.x, p.y - 30 * (1 - lift) + 6 * lift, q.x >= p.x ? 1 : -1);
+        placeBoat(p.x, p.y + 4 * lift, q.x >= p.x ? 1 : -1);
         if (k >= 1) {
           state.boatAt = L.end; leg++; t0 = now;
           if (leg >= legs.length) { host.classList.remove('sailing'); sailing = null; boatTo(to); resolve(); return; }
@@ -105,6 +106,10 @@ export function createIslandMap(host, {stages, onPick, esc = (s) => s}) {
 
   return {
     update(next) { state = {...state, ...next}; renderIsles(); if (!sailing) boatTo(state.boatAt); },
+    /* swap the drawn icon for the rendered speedboat picture (hull centred on the lane) */
+    setBoatImage(url) { boat.querySelector('.boat-bob').innerHTML = `<image href="${url}" x="-34" y="-38" width="68" height="49"/>`; },
+    /* the 3D island pictures replace the flat shapes and icons */
+    setIslandArt(urls) { state.art = urls; renderIsles(); },
     sail, get sailing() { return !!sailing; }, get boatAt() { return state.boatAt; },
   };
 }
