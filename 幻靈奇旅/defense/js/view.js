@@ -108,15 +108,21 @@ export function createView(canvas, {spirits, catalog}) {
     /* our base at the path end: the hero sitting on an oak wine barrel; the boss stands on a dark one at the nest */
     crystal = new THREE.Group(); crystal.position.set(end[0], 0, end[1]); crystal.scale.setScalar(1.3);
     const baseBody = makeBarrel(0xc0874a, 0x4f5560); crystal.add(baseBody);
-    const cbar = hpBar(3, 0x6ee8ff); cbar.position.y = 4.4; crystal.add(cbar);
-    crystal.userData = {bar: cbar, body: baseBody}; mapGroup.add(crystal);
+    /* Two compact bars share the seated hero's overhead anchor: base durability and the
+       protected hero's ready status. No second marker is drawn over the barrel. */
+    const cbar = hpBar(2.5, 0x6ee8ff); cbar.position.y = 3.6; crystal.add(cbar);
+    const heroBar = hpBar(2.5, 0x8ee27b); heroBar.position.y = 4.02; crystal.add(heroBar);
+    crystal.userData = {bar: cbar, guardianBar: heroBar, body: baseBody}; mapGroup.add(crystal);
     seatHero(game);
     /* the monster tower: a plum barrel with gold hoops and a glowing portal on its head; the boss stands on it */
     nest = new THREE.Group(); nest.position.set(start[0], 0, start[1]); nest.scale.setScalar(1.3);
     const nestBody = makeBarrel(0x6a3d78, 0xd9a93a); nest.add(nestBody);
     const portal = new THREE.Mesh(new THREE.CircleGeometry(0.75, 32), glow(0xb48cff, 0.75)); portal.rotation.x = -Math.PI / 2; portal.position.y = BARREL_H + 0.01; nest.add(portal);
-    const nbar = hpBar(3, 0xff6b8a); nbar.position.y = 4.4; nest.add(nbar);
-    nest.userData = {portal, bar: nbar, body: nestBody}; mapGroup.add(nest);
+    /* While the boss stands on the nest, stack the nest and boss bars above the boss.
+       Once it leaps down, keep only the nest bar here and show its combat bar on the path. */
+    const nbar = hpBar(2.5, 0xff6b8a); nbar.position.y = 3.6; nest.add(nbar);
+    const guardBar = hpBar(2.5, 0xf4c46e); guardBar.position.y = 4.02; nest.add(guardBar);
+    nest.userData = {portal, bar: nbar, guardianBar: guardBar, body: nestBody}; mapGroup.add(nest);
     nestBody.rotation.y = faceTo(nest.position, crystal.position);
     seatBoss(game);
     buildTraps(game);
@@ -223,7 +229,9 @@ export function createView(canvas, {spirits, catalog}) {
   function releaseNestBoss() {
     if (!nestBoss) return;
     const b = nestBoss, p = world(state.left + 1.5); b.cast = null;
-    b.leave = {t: 0, from: b.root.position.clone(), to: new THREE.Vector3(p.x, 0, p.z)}; b.play('Attack', true);
+    b.leave = {t: 0, from: b.root.position.clone(), to: new THREE.Vector3(p.x, 0, p.z)};
+    if (nest?.userData.guardianBar) nest.userData.guardianBar.visible = false;
+    b.play('Attack', true);
   }
   /* the boss on its barrel: idle actions now and then (hop and spin, a taunt, a sway), a flinch when the nest is hit,
      its ultimate (off the barrel to the front of the screen, face the player, turn, cast at the field, fly back)
@@ -652,7 +660,8 @@ export function createView(canvas, {spirits, catalog}) {
           if (a) { a.root.scale.setScalar(Math.max(0.01, 1 - rec.dying * 1.1)); a.root.position.y = d.position.y - rec.dying * 0.6; a.tick(dt * 0.6); }
           continue;
         }
-        if (f.boss || f.hp < f.maxHp) { rec.bar.visible = true; rec.bar.userData.fill.scale.x = rec.bar.userData.width * 0.94 * f.hp / f.maxHp; }
+        rec.bar.visible = !!(f.boss || f.hp < f.maxHp);
+        if (rec.bar.visible) rec.bar.userData.fill.scale.x = rec.bar.userData.width * 0.94 * Math.max(0, f.hp) / f.maxHp;
         if (rec.ult) { const k = Math.max(0, Math.min(1, 1 - (f.ultAt - state.time) / f.ultCd)); rec.ult.userData.fill.scale.x = Math.max(0.001, rec.ult.userData.width * 0.94 * k); rec.ult.userData.fill.material.color.setHex(k >= 1 ? (Math.sin(clock * 10) > 0 ? 0xfff2a0 : 0xffc93a) : 0xffc93a); }
         trapWalkFx(f, rec, dt);
         rec.ice.visible = f.side === 'enemy' && frozen;
@@ -689,7 +698,9 @@ export function createView(canvas, {spirits, catalog}) {
     if (nest) nest.userData.portal.material.opacity = 0.55 + Math.sin(clock * 3) * 0.2;
     combatVfx.update(dt); fx.update(dt); env?.update(dt); seascape.update(dt);
     for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { scene.remove(e.obj); effects.splice(i, 1); } }
-    const s = shake > 0 ? shake * 0.35 : 0; shake = Math.max(0, shake - dt * 1.6);
+    /* Keep the sky and horizon visually steady when a tower or spirit takes damage.
+       Damage feedback remains on the character and tower rather than the camera. */
+    const s = 0; shake = Math.max(0, shake - dt * 1.6);
     /* smooth, decaying shake (no per-frame random jumps, which read as flicker) */
     camera.position.set(camBase.x + Math.sin(clock * 38) * s, camBase.y + Math.sin(clock * 47) * s * 0.4, camBase.z + Math.cos(clock * 33) * s * 0.6);
     if (s) camera.lookAt(view3.target);
