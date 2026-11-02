@@ -140,19 +140,31 @@ export function fighterStats(spec, entry, side, scale = 1, boost = 0) {
 
 function rng(seed) { let s = seed >>> 0 || 1; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 
-export function createGame({stageIndex = 0, deck, spirits, catalog = {}, evolution = {}, hooks = {}, seed = Date.now()}) {
+export function createGame({stageIndex = 0, deck, spirits, catalog = {}, evolution = {}, hooks = {}, seed = Date.now(), deferDeal = false}) {
   const stage = STAGES[stageIndex], spiritMap = new Map(spirits.map((s) => [s.id, s])), path = buildPath(stage.path), half = path.length / 2;
   const state = {
     stage, stageIndex, path, spirits: spiritMap, entries: new Map((catalog.entries || []).map((e) => [e.id, e])), evolution, hooks, random: rng(seed),
-    deck: deck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), hand: [], dealAt: DEAL_EVERY, nextCard: 1,
+    deck: deck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), hand: [], dealAt: DEAL_EVERY, nextCard: 1, started: !deferDeal,
     left: -half, right: half, time: 0, itemReady: Object.fromEntries(Object.entries(ITEMS).map(([k, v]) => [k, v.cooldown / 2])), pendingSkills: [], pendingBoss: [], bossSkillAt: BOSS_SKILL_FIRST, nextUltimateAt: 0, freezeUntil: 0, shieldUntil: 0, hasteUntil: 0,
     crystal: {hp: stage.crystal, maxHp: stage.crystal, x: half}, nest: {hp: stage.nest, maxHp: stage.nest, x: -half},
     traps: (stage.traps || []).map((t, i) => ({...TRAPS[t.kind], kind: t.kind, x: -half + t.at * path.length, half: (t.len || 0) * path.length / 2, next: 3 + i * 0.7})),
     fighters: [], shots: [], events: [], nextId: 1, spawnAt: stage.groups.map((g) => g.start), spawned: stage.groups.map(() => 0), bossOut: false,
     stats: {summons: 0, kills: 0, merges: 0, skills: 0, points: 0}, result: null,
   };
-  for (let i = 0; i < 3; i++) deal(state);
+  if (!deferDeal) for (let i = 0; i < 3; i++) deal(state);
   return state;
+}
+
+/* The live battle defers every card—including the first 3—until its scene
+   has actually rendered to the player. Pure logic tests keep legacy immediate
+   dealing unless deferDeal=true is explicitly supplied. Safe to call once. */
+export function beginDealing(state) {
+  if (!state || state.started || state.result) return false;
+  state.started = true;
+  state.time = 0;
+  state.dealAt = DEAL_EVERY;
+  for (let i = 0; i < 3; i++) deal(state);
+  return true;
 }
 
 function emit(state, type, data = {}) { state.events.push({...data, type}); }
@@ -524,7 +536,7 @@ function runTraps(state, dt) {
 }
 
 export function step(state, dt) {
-  if (state.result) return;
+  if (!state.started || state.result) return;
   state.time += dt;
   /* the deal clock stops while the player is dragging a card around the hand */
   if (state.dragging) state.dealAt += dt;
