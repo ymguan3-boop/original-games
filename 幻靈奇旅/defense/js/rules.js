@@ -95,7 +95,7 @@ export function profileFor(spec, entry, strong = false) {
   const role = roleFor(spec.id), skill = ultimateFor(spec.id);
   const basic = role.basic === 'melee' ? 'melee' : 'ranged';
   if (!strong || !skill || skill.kind === 'support') {
-    return {type: basic, reach: role.range || 1.7, radius: 0, ranged: basic !== 'melee', chain: false};
+    return {type: basic, reach: role.basic === 'none' ? 8.5 : role.range, radius: 0, ranged: basic !== 'melee', chain: false};
   }
   const k = skill.kind;
   const type = k === 'heal' || k === 'heal_team' || k === 'shield' || k === 'regen' ? 'self' :
@@ -416,7 +416,11 @@ function applyOwnSkill(state, shot, src, friends, foes, at, base) {
   return false;
 }
 function attack(state, f, target) {
-  const skill = ultimateFor(f.species);
+  /* A support-card legend encountered as a stage boss still fights at range
+     after leaving the barrel; its signature tower skill is preserved. */
+  const baseSkill = ultimateFor(f.species);
+  const skill = f.boss && baseSkill?.kind === 'support'
+    ? {...baseSkill, kind:'blast', power:2.6, radius:2.6} : baseSkill;
   const isHealerReady = f.role !== 'priest' || healingTargets(state, f, roleFor(f.species).range).length > 0;
   const strong = (f.side === 'ally' || f.boss) && !f.usedOnce && isHealerReady &&
     state.time >= f.ultAt && state.time >= state.nextUltimateAt && !!skill && skill.kind !== 'support';
@@ -426,7 +430,9 @@ function attack(state, f, target) {
     if (skill.once) f.usedOnce = true;
   }
   const spec = state.spirits.get(f.species);
-  const profile = strong ? profileFor(spec, state.entries.get(f.species), true) : f.profile;
+  const profile = strong && f.boss && baseSkill?.kind === 'support'
+    ? {type:'blast', reach:8.5, radius:2.6, ranged:true, chain:false, skill}
+    : strong ? profileFor(spec, state.entries.get(f.species), true) : f.profile;
   const timing = state.hooks.fire?.(f, target, strong, profile) || {release: 0.25, hold: 0.5};
   const travel = profile.ranged && !['global', 'self', 'area'].includes(profile.type) ? Math.abs(target.x - f.x) / 20 : 0;
   const haste = f.side === 'ally' && state.hasteUntil > state.time ? 0.5 : 1;
