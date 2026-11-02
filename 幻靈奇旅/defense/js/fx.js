@@ -28,12 +28,11 @@ export function createFx(THREE, scene) {
   const beamTex = canvasTexture(THREE, 128, (g, s) => { const r = g.createLinearGradient(0, s, 0, 0); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.6, 'rgba(255,255,255,.55)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, s, s); const h = g.createLinearGradient(0, 0, s, 0); h.addColorStop(0, 'rgba(0,0,0,.9)'); h.addColorStop(0.5, 'rgba(0,0,0,0)'); h.addColorStop(1, 'rgba(0,0,0,.9)'); g.globalCompositeOperation = 'destination-out'; g.fillStyle = h; g.fillRect(0, 0, s, s); });
   const leafTex = canvasTexture(THREE, 64, (g, s) => { g.translate(s / 2, s / 2); g.rotate(0.6); g.fillStyle = '#fff'; g.beginPath(); g.ellipse(0, 0, s * 0.42, s * 0.18, 0, 0, Math.PI * 2); g.fill(); });
 
-  const jobs = [], lights = [];
-  /* Hard budgets keep mobile GPUs stable even with 20 active allies. */
+  /* No temporary point lights: every island keeps its authored sky, sun
+     and ambient lighting unchanged during normal hits and ultimates. */
+  const jobs = [];
   const MOBILE_FX = typeof matchMedia !== 'undefined' && matchMedia('(max-width: 720px)').matches;
   const MAX_JOBS = MOBILE_FX ? 76 : 140, MAX_PARTICLES = MOBILE_FX ? 24 : 52;
-  for (let i = 0; i < 4; i++) { /* lights stay in the scene at zero intensity: switching them on/off would change the light count and recompile every shader (a visible hitch and flash) */
-    const l = new THREE.PointLight(0xffffff, 0, 14, 2); scene.add(l); lights.push({l, until: 0, peak: 0, life: 1}); }
   let clock = 0;
   function job(life, update, obj) {
     if (jobs.length >= MAX_JOBS) {
@@ -224,8 +223,7 @@ export function createFx(THREE, scene) {
       j.update(k, dt);
       if (k >= 1) { if (j.obj) { scene.remove(j.obj); j.obj.traverse?.((n) => { n.geometry?.dispose?.(); n.material?.dispose?.(); }); } jobs.splice(i, 1); }
     }
-    for (const s of lights) { const left = s.until - clock; if (left <= 0) s.l.intensity = 0; else s.l.intensity = s.peak * (left / s.life); }
   }
-  function clear() { for (const j of jobs.splice(0)) if (j.obj) scene.remove(j.obj); for (const s of lights) { s.l.visible = false; s.until = 0; } }
+  function clear() { for (const j of jobs.splice(0)) if (j.obj) scene.remove(j.obj); }
   return {charge, ultimate, skill, hit, particles, shockwave, update, clear};
 }
