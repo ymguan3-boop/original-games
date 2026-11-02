@@ -7,7 +7,7 @@ import {loadEngine, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createIslandRenderer} from './islands3d.js';
 import {createView} from './view.js?v=20261102-hp-sky-v2';
-import {createIslandMap} from './islands.js?v=20261102-portrait-v2';
+import {createIslandMap} from './islands.js?v=20261102-portrait-v3';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT} from './gacha.js';
 import {buildPath} from './stages.js';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js';
