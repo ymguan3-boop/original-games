@@ -29,13 +29,25 @@ export function createFx(THREE, scene) {
   const leafTex = canvasTexture(THREE, 64, (g, s) => { g.translate(s / 2, s / 2); g.rotate(0.6); g.fillStyle = '#fff'; g.beginPath(); g.ellipse(0, 0, s * 0.42, s * 0.18, 0, 0, Math.PI * 2); g.fill(); });
 
   const jobs = [], lights = [];
+  /* Hard budgets keep mobile GPUs stable even with 20 active allies. */
+  const MOBILE_FX = typeof matchMedia !== 'undefined' && matchMedia('(max-width: 720px)').matches;
+  const MAX_JOBS = MOBILE_FX ? 76 : 140, MAX_PARTICLES = MOBILE_FX ? 24 : 52;
   for (let i = 0; i < 4; i++) { /* lights stay in the scene at zero intensity: switching them on/off would change the light count and recompile every shader (a visible hitch and flash) */
     const l = new THREE.PointLight(0xffffff, 0, 14, 2); scene.add(l); lights.push({l, until: 0, peak: 0, life: 1}); }
   let clock = 0;
-  function job(life, update, obj) { if (obj) scene.add(obj); jobs.push({life, age: 0, update, obj}); }
+  function job(life, update, obj) {
+    if (jobs.length >= MAX_JOBS) {
+      obj?.traverse?.((n) => { n.geometry?.dispose?.(); n.material?.dispose?.(); });
+      return;
+    }
+    if (obj) scene.add(obj);
+    jobs.push({life, age: 0, update, obj});
+  }
 
   /* particles: one Points cloud per burst; each particle has velocity, gravity and drag */
   function particles({x, y = 0.5, z, count = 40, color, size = 0.5, speed = 4, up = 2, spread = 1, life = 1.1, gravity = -4, drag = 1.6, tex = soft, swirl = 0, toward = null, ring = 0}) {
+    count = Math.max(0, Math.min(MAX_PARTICLES, count));
+    if (jobs.length >= MAX_JOBS || count === 0) return;
     const geo = new THREE.BufferGeometry(), pos = new Float32Array(count * 3), vel = [];
     for (let i = 0; i < count; i++) {
       const a = Math.random() * Math.PI * 2, r = ring ? ring : Math.random() * spread, s = speed * (0.4 + Math.random() * 0.8);
@@ -193,11 +205,11 @@ export function createFx(THREE, scene) {
   /* Support skills: a large circle in the field centre and a burst over every target. */
   function skill({center, targets = [], element, kind}) {
     const [c1, c2] = PALETTE[element] || PALETTE.光;
-    magicCircle({x: center.x, z: center.z, color: c1, radius: 9, life: 2.2, spin: 0.8});
-    shockwave({x: center.x, z: center.z, color: c2, radius: 22, life: 1.4});
+    magicCircle({x: center.x, z: center.z, color: c1, radius: 5, life: 1.25, spin: 0.8});
+    shockwave({x: center.x, z: center.z, color: c2, radius: 12, life: 0.85});
     flash({x: center.x, y: 6, z: center.z, color: c1, intensity: 6, life: 1});
-    particles({x: center.x, z: center.z, y: 0.5, count: 160, color: c2, size: 0.6, speed: 9, up: 3, spread: 2, life: 1.8, gravity: -1.5, tex: spark});
-    targets.slice(0, 16).forEach((t, i) => setTimeout(() => {
+    particles({x: center.x, z: center.z, y: 0.5, count: 40, color: c2, size: 0.6, speed: 9, up: 3, spread: 2, life: 1.8, gravity: -1.5, tex: spark});
+    targets.slice(0, 6).forEach((t, i) => setTimeout(() => {
       if (kind === 'freeze') { particles({x: t.x, z: t.z, y: 0.3, count: 24, color: 0xd8f6ff, size: 0.6, speed: 1.2, up: 2.5, spread: 0.6, life: 1.4, gravity: -1, tex: spark}); shockwave({x: t.x, z: t.z, color: 0xbff4ff, radius: 1.6, life: 0.7}); }
       else if (kind === 'volley' || kind === 'beam' || kind === 'quake') ultimate({from: null, to: t, element, kind: 'blast', radius: 1.6});
       else if (kind === 'plague') particles({x: t.x, z: t.z, y: 0.5, count: 30, color: 0x94f85f, size: 0.7, speed: 1.5, up: 1.5, spread: 0.5, life: 1.6, gravity: 0.5, swirl: 4});
