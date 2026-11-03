@@ -185,5 +185,55 @@ test('top points and four action shortcuts share all available width at phone an
   assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
   assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
   assert.match(top,/sortie-base-warning/);
-  assert.match(html,/four-base-toolbar-v10/,'new assets must bypass cached CSS and 3D view');
+  assert.match(html,/result-road-stable-v11/,'new assets must bypass cached CSS and 3D view');
+});
+
+test('win screen keeps Next Stage button in a fixed accessible footer on landscape phones', () => {
+  const result = main.slice(main.indexOf('function showResult(r) {'),
+    main.indexOf('/* jump straight into another stage', main.indexOf('function showResult(r) {')));
+  assert.match(result,/class="stage-result-content"/);
+  assert.match(result,/class="sheet-actions stage-result-actions"/);
+  assert.match(result,/id="nextStage"/);
+  assert.match(result,/\$\('nextStage'\)\.onclick = \(\) => nextVoyage\(idx \+ 1\)/);
+  assert.match(result,/\$\('modal'\)\.classList\.add\('stage-result'\)/);
+  assert.match(css,/dialog#modal\.stage-result #modalBody \{/);
+  assert.match(css,/dialog#modal\.stage-result \.stage-result-content \{/);
+  assert.match(css,/overflow-y:auto;/);
+  assert.match(css,/dialog#modal\.stage-result \.stage-result-actions \{/);
+  assert.match(css,/flex:0 0 auto;/);
+  assert.match(css,/@media \(orientation:landscape\) and \(max-height:650px\)/);
+  assert.match(css,/@media \(orientation:landscape\) and \(max-height:380px\)/);
+  assert.match(css,/safe-area-inset-bottom/);
+});
+
+test('all ten stages use continuous non-overlapping road mesh strips instead of flashing segments', () => {
+  const begin=view.indexOf('function buildRoadRibbon(points, width, y) {');
+  const end=view.indexOf('const roadLayers = [',begin);
+  assert.ok(begin>=0&&end>begin);
+  const body=view.slice(begin,end);
+  assert.doesNotMatch(body,/BoxGeometry|CylinderGeometry/);
+  const geom = new Function('THREE',body+';return buildRoadRibbon;')({
+    BufferGeometry:class {
+      setAttribute(k,v){this.position=v;return this;}
+      setIndex(v){this.indices=v;return this;}
+      computeVertexNormals(){}
+    },
+    BufferAttribute:class {constructor(values,itemSize){this.array=values;this.itemSize=itemSize;}}
+  });
+  for (const stage of STAGES) {
+    const path = buildPath(stage.path);
+    for(const [width,height] of [[3.3,.018],[2.8,.038],[2.25,.058]]) {
+      const g=geom(path.points,width,height);
+      assert.equal(g.position.array.length,path.points.length*6,stage.name);
+      assert.equal(g.indices.length,(path.points.length-1)*6,stage.name);
+      assert.ok([...g.position.array].every(Number.isFinite),stage.name+' invalid coordinates');
+      assert.ok(g.indices.every(i=>i>=0&&i<path.points.length*2),stage.name+' invalid triangles');
+    }
+  }
+  assert.match(view,/roadLayers\.forEach\(/);
+  assert.match(view,/new THREE\.MeshBasicMaterial/);
+  assert.match(view,/road\.receiveShadow = false/);
+  assert.match(view,/road\.name = 'static-road-layer-'/);
+  assert.doesNotMatch(view.slice(view.indexOf('const pts = game.path.points;'),
+    view.indexOf('/* small arrows on the road')),/new THREE\.BoxGeometry\(width, 0\.03/);
 });
