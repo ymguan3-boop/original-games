@@ -293,17 +293,62 @@ test('dealing is slower and stops while a card is being dragged', () => {
   assert.equal(count(), before + 1, 'one card every 3.2 s once the drag ends');
 });
 
-test('the boss stays on its barrel until the nest is at 60%, and casts its ultimate at the spirits meanwhile', async () => {
+test('a non-waterfall boss stays on its barrel until 60% HP and casts its ultimate at spirits', async () => {
   const {BOSS_OUT_AT, BOSS_SKILL_FIRST, SKILL_WINDUP, bossSkillDamage} = await import('../js/rules.js');
-  const s = game({stageIndex: 2});
+  const s = game({stageIndex: 1});
   s.hand = [{uid: 1, species: 'charmander', rank: 1, boost: 0}]; playCard(s, 0);
   const ally = s.fighters.find((f) => f.side === 'ally'); ally.x = s.right - 1; ally.speed = 0;
   while (s.time < BOSS_SKILL_FIRST - 0.05) step(s, 1 / 60);
   const before = ally.hp;
   while (s.time < BOSS_SKILL_FIRST + SKILL_WINDUP + 0.05) step(s, 1 / 60);
-  assert.ok(before - ally.hp >= ally.maxHp * bossSkillDamage(2) * 0.5, 'the boss ultimate hit the spirit');
+  assert.ok(before - ally.hp >= ally.maxHp * bossSkillDamage(1) * 0.5, 'the boss ultimate hit the spirit');
   s.nest.hp = s.nest.maxHp * (BOSS_OUT_AT + 0.02); s.events.length = 0;
   ally.x = s.left + 2; ally.speed = 0; ally.cooldown = 0;
   for (let i = 0; i < 60 * 20 && !s.bossOut; i++) { ally.hp = ally.maxHp; s.fighters = s.fighters.filter((f) => f.side === 'ally'); step(s, 1 / 60); }
   assert.ok(s.bossOut, 'the boss jumps down once the nest is below 60%');
+});
+
+test('third-island thunder is occasional, road-anchored, damages all field spirits, and never changes bases or sky', async () => {
+  const {WATERFALL_THUNDER}=await import('../js/rules.js');
+  const s=game({stageIndex:2,deferDeal:true});
+  assert.equal(s.stage.id,'waterfall');
+  assert.ok(s.nextWeatherLightningAt>=12 && s.nextWeatherLightningAt<22);
+  s.started=true;
+  const fighter=(id,side,x)=>({
+    id,side,x,z:0,hp:100,maxHp:100,attack:0,speed:0,
+    statuses:{},guard:0,barrierHp:0,regen:0,knockLeft:0,
+    cooldown:999,profile:{reach:1},stationary:true,moving:false,
+    stunUntil:0,busyUntil:0,knockUntil:0,role:'warrior'
+  });
+  const left=fighter(90001,'ally',s.right-1);
+  const right=fighter(90002,'enemy',s.left+1);
+  s.fighters.push(left,right);
+  const bases=[s.crystal.hp,s.nest.hp];
+  s.nextWeatherLightningAt=0.01;
+  step(s,0.02);
+  const strikes=s.events.filter(ev=>ev.type==='weatherLightning');
+  assert.equal(strikes.length,1);
+  assert.ok(strikes[0].x>=s.left && strikes[0].x<=s.right,'strike stays on the road');
+  assert.equal(strikes[0].damageRatio,WATERFALL_THUNDER.damageRatio);
+  assert.ok(left.hp<100 && right.hp<100,'both living sides are damaged');
+  assert.deepEqual([s.crystal.hp,s.nest.hp],bases,'bases do not take weather damage');
+  assert.ok(s.nextWeatherLightningAt-s.time>=18 && s.nextWeatherLightningAt-s.time<=30);
+  step(s,0.2);
+  assert.equal(s.events.filter(ev=>ev.type==='weatherLightning').length,1,'no rapid-fire strikes');
+});
+
+test('fourth through tenth stages and random PK arenas never schedule independent thunderstorms', async () => {
+  const {PK_STAGE,pkArenaFor}=await import('../js/rules.js');
+  assert.equal(PK_STAGE.crystal,1800,'host barrel HP is halved');
+  assert.equal(PK_STAGE.nest,1800,'rival barrel HP is halved');
+  for(let i=3;i<STAGES.length;i++) {
+    const s=game({stageIndex:i,deferDeal:true});
+    assert.equal(s.nextWeatherLightningAt,Infinity,STAGES[i].name+' must not switch weather');
+  }
+  for(let i=0;i<10;i++) {
+    const s=game({stage:pkArenaFor(i),foeDeck:TRIAL_ROSTER,deferDeal:true});
+    assert.equal(s.crystal.maxHp,1800,'PK host health');
+    assert.equal(s.nest.maxHp,1800,'PK guest health');
+    assert.equal(s.nextWeatherLightningAt,Infinity,'PK disables weather AOE even on waterfall scenery');
+  }
 });
