@@ -127,6 +127,43 @@ export function createFx(THREE, scene) {
     }, head);
   }
 
+  /* Weather thunder: Three.js mesh confined to a lane coordinate; no sky,
+     renderer clear-color, global illumination or camera flash is touched. */
+  function lightningStrike({x, z}) {
+    if (jobs.length >= MAX_JOBS - 3) return;
+    const path = [];
+    for (let i = 0; i <= 9; i++) {
+      const t = i / 9;
+      path.push(new THREE.Vector3(
+        x + (i === 9 ? 0 : (Math.random() - 0.5) * 0.7),
+        6.5 - 6.1 * t,
+        z + (i === 9 ? 0 : (Math.random() - 0.5) * 0.7),
+      ));
+    }
+    const curve = new THREE.CatmullRomCurve3(path);
+    const outer = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 24, 0.09, 5, false),
+      new THREE.MeshBasicMaterial({color: linear(0x80cfff), transparent: true,
+        opacity: 0.8, depthWrite: false, blending: add}),
+    );
+    const core = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 24, 0.035, 5, false),
+      new THREE.MeshBasicMaterial({color: linear(0xfff6ba), transparent: true,
+        opacity: 0.96, depthWrite: false, blending: add}),
+    );
+    const bolt = new THREE.Group(); bolt.name = 'road-weather-lightning';
+    bolt.add(outer, core);
+    job(0.42, (k) => {
+      /* A brief bolt fades locally. Never use a whole-screen light or flash. */
+      const opacity = Math.max(0, 1 - k * 1.2);
+      outer.material.opacity = 0.8 * opacity;
+      core.material.opacity = 0.96 * opacity;
+    }, bolt);
+    shockwave({x, z, color: 0x9ddcff, radius: 1.25, life: 0.38, strength: 0.45});
+    particles({x, z, y: 0.5, count: 12, color: 0xd7efff, size: 0.3,
+      speed: 1.6, up: 1.2, spread: 0.25, life: 0.4, gravity: -4});
+  }
+
   /* ---------- recipes ---------- */
   const PALETTE = {焰: [0xff7a2a, 0xffd25a], 潮: [0x3fb6ff, 0xc6f2ff], 森: [0x5ce06a, 0xe6ff9a], 雷: [0xffe23a, 0xfffbd0], 念: [0xb66bff, 0xf0d6ff], 光: [0xffe7a0, 0xffffff]};
 
@@ -238,5 +275,5 @@ export function createFx(THREE, scene) {
       });
     }
   }
-  return {charge, ultimate, skill, hit, particles, shockwave, update, clear};
+  return {charge, ultimate, skill, hit, lightningStrike, particles, shockwave, update, clear};
 }
