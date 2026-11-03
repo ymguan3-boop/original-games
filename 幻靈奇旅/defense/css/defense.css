@@ -1031,3 +1031,15 @@ button.fs-toggle { display: inline-grid !important; place-items: center; width: 
   #lobby .sea-zoom { left: auto; right: 8px; top: auto; bottom: 8px; transform: none; }
   #lobby .isle-card > button.wide { flex-direction: row; gap: 6px; }
 }
+
+/* card back: one collapsible section per star */
+.star-sec { margin-top: 6px; border-radius: 12px; background: #fffdf6; box-shadow: inset 0 0 0 2px #ead7ae; overflow: hidden; }
+.star-sec > summary { list-style: none; display: flex; align-items: center; gap: 8px; padding: 7px 10px; cursor: pointer; }
+.star-sec > summary::-webkit-details-marker { display: none; }
+.star-sec > summary::after { content: '▾'; margin-left: auto; color: #7a4a24; transition: transform .2s; }
+.star-sec[open] > summary::after { transform: rotate(180deg); }
+.star-sec > summary b { font-size: 14px; } .star-sec > summary small { color: #8a6f50; font-size: 11px; }
+.star-sec > .ci-row, .star-sec > .form-name { margin: 0 10px; }
+.star-sec > .ci-row:last-child { margin-bottom: 6px; }
+.form-name { margin: 6px 10px 0; font-weight: 800; color: #7a4a24; font-size: 13px; }
+.t-job { background: #7a9a3a; }

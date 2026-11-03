@@ -72,7 +72,7 @@ test('gacha gives this mode own items; the panel, boatman and landscape sortie p
 
 test('the deck sheet shows a card\'s attack, ultimate and passives; boarding the boat puts the weapon away', () => {
   const main = read('../js/main.js'), game = read('../../js/game.js'), css = read('../css/defense.css');
-  assert.ok(main.includes('id="flipLayer"') && main.includes('cardInfoHtml({species: id, rank: 1})') && main.includes('加入出戰卡組'));
+  assert.ok(main.includes('id="flipLayer"') && main.includes('cardBackHtml(id)') && main.includes('加入出戰卡組'));
   assert.ok(!main.includes("$('modalBody').querySelectorAll('[data-unit]').forEach((b) => (b.onclick = () => {\n    const id = b.dataset.unit, k"), 'a tap no longer toggles the deck directly');
   assert.ok(css.includes('.flip-card.flipped'));
   assert.ok(game.includes('&&!riding()&&!harbor?.sailing'), 'the scythe is disabled while the hero boards and sails');
@@ -90,7 +90,7 @@ test('one icon style: every emoji in the interface becomes a warm line icon, and
 
 test('card back lists the star 1/2/3 effects; icons use a neutral tag so no span rule can distort them', () => {
   const main = read('../js/main.js'), icons = read('../js/ui-icons.js');
-  assert.ok(main.includes('function starRows(id)') && main.includes('升星效果') && main.includes('大絕威力 '));
+  assert.ok(main.includes('function cardBackHtml(id)') && main.includes('class="star-sec"') && !main.includes("'提醒'"));
   assert.ok(icons.includes('<x-ico class="ico"') && !icons.includes('<span class="ico"'), 'the icon is not a span');
   assert.ok(read('../tools/audit-centering.js').includes('auditCentering'), 'the centring audit is kept for later screens');
 });

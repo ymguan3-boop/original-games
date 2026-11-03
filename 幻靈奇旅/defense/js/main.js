@@ -256,7 +256,7 @@ function openDeck(picked = null, keepScroll = 0) {
     const line = sup ? '技能：' + esc(sup.skill) : esc(roleLabel(id)) + ' · ' + shapeLabel(id, false);
     layer.innerHTML = '<div class="flip-scene"><div class="flip-card" data-frame="' + (s.cardFrame || 'yellow') + '">'
       + '<div class="flip-face front"><div class="collectionThumb flip-thumb">' + cardHtml(id, {line}) + '</div></div>'
-      + '<div class="flip-face back"><div class="flip-info">' + cardInfoHtml({species: id, rank: 1}) + '<h4 class="star-head">升星效果（兩張相同、相鄰的同星卡合成）</h4>' + starRows(id) + '</div>'
+      + '<div class="flip-face back"><div class="flip-info">' + cardBackHtml(id) + '</div>'
       + '<div class="flip-actions"><button class="' + (inDeck ? '' : 'primary') + '" id="deckToggle">' + (inDeck ? '移出出戰卡組' : '加入出戰卡組') + '</button><button id="flipClose">返回</button></div></div></div></div>';
     layer.hidden = false;
     const card = layer.querySelector('.flip-card');
@@ -472,43 +472,49 @@ function cardInfoHtml(card) {
       + row('t-ult','大絕',`<b>${esc(u?.name || s.skills?.[1]?.name || '大絕')}</b>　${esc(u?.description || '專屬技能')}<br><small>冷卻 ${+ultCooldown(s).toFixed(1)} 秒，至少間隔 ${ULTIMATE_SPACING} 秒錯峰施放。★${card.rank}</small>`)
       + row('t-pas','被動',passives.length ? passives.map(esc).join('<br>') : '無被動能力');
   return `<div class="ci-head" data-frame="${s.cardFrame || 'yellow'}"><img src="${picture(card.species)}" alt=""><div><b>${esc(s.name)}</b><span class="stars-${s.cardFrame || 'yellow'}">${'<i>★</i>'.repeat(card.rank)}</span><small>${esc(roleLabel(s.id))}・第 ${s.stage || 1} 階段</small></div></div>`
-    + rows + row('t-eff','提醒','<small>職業取代屬性剋制；燃燒、減速與控制只來自角色專屬技能或被動。</small>');
+    + rows;
 }
 
-/* What each star level changes (merging two identical cards of the same star gives the next star): real numbers from the rules. */
+/* The back of a deck card: one section per star (★ / ★★ / ★★★, tap to open). Each lists that star's job, basic attack,
+   ultimate and passives in the same layout, with the real numbers of the rules (merging two identical cards of a star gives the next star:
+   a spirit with a further form evolves into it, one without grows ×1.5 / ×2 in HP and attack; ultimates hit 100% / 130% / 160%). */
 const spiritName = (id) => spirit(id)?.name || id;
-function starRows(id) {
-  const sup = SUPPORT[id], u = ultimateFor(id), tag = (r) => '★'.repeat(r + 1);
-  const row = (r, body) => `<div class="ci-row star-row"><span class="ci-tag t-star">${tag(r)}</span><div>${body}</div></div>`;
-  const rows = [];
-  if (sup) {
-    const pct = (v) => Math.round(v * 100) + '%', cap = (v, m) => +Math.min(v, m).toFixed(1);
-    for (let r = 0; r < MAX_RANK; r++) {
-      const k = sup.kind;
-      const t = k === 'freeze' ? '全場魔物冰凍 ' + cap(sup.duration[r], 4.5) + ' 秒'
-        : k === 'volley' ? '六發追星彈，每發傷害 ' + sup.power[r] + '（隨關卡提高）'
-        : k === 'quake' ? '全場重擊 ' + sup.power[r] + ' 並擊退'
-        : k === 'plague' ? '中毒＋虛弱 ' + sup.duration[r] + ' 秒，每秒毒傷 ' + sup.power[r]
-        : k === 'beam' ? '光束傷害 ' + sup.power[r] + '，貫穿路上的魔物'
-        : k === 'heal' ? '回復幻靈 ' + pct(Math.min(0.7, sup.power[r])) + ' 生命，基地回復 ' + pct(sup.crystal[r])
-        : k === 'shield' ? '我方幻靈無敵 ' + cap(sup.duration[r], 3.5) + ' 秒'
-        : k === 'haste' ? '我方攻擊速度加倍 ' + cap(sup.duration[r], 5) + ' 秒' : sup.text;
-      rows.push(row(r, esc(t)));
-    }
-    return rows.join('');
+function supportText(sup, r) {
+  const pct = (v) => Math.round(v * 100) + '%', cap = (v, m) => +Math.min(v, m).toFixed(1), k = sup.kind;
+  return k === 'freeze' ? '全場魔物冰凍 ' + cap(sup.duration[r], 4.5) + ' 秒'
+    : k === 'volley' ? '六發追星彈擊中最強的魔物，每發傷害 ' + sup.power[r] + '（隨關卡提高）'
+    : k === 'quake' ? '全場重擊 ' + sup.power[r] + ' 並擊退魔物'
+    : k === 'plague' ? '全場魔物中毒並虛弱 ' + sup.duration[r] + ' 秒，每秒毒傷 ' + sup.power[r]
+    : k === 'beam' ? '從基地射出光束，貫穿路上的魔物，傷害 ' + sup.power[r]
+    : k === 'heal' ? '回復我方幻靈 ' + pct(Math.min(0.7, sup.power[r])) + ' 生命，基地回復 ' + pct(sup.crystal[r])
+    : k === 'shield' ? '我方幻靈無敵 ' + cap(sup.duration[r], 3.5) + ' 秒'
+    : k === 'haste' ? '我方幻靈攻擊速度加倍 ' + cap(sup.duration[r], 5) + ' 秒' : sup.text;
+}
+function formRows(id, rank, mul) {
+  const s = spirit(id), sup = SUPPORT[id], r = roleFor(id), u = ultimateFor(id), k = rank - 1;
+  const row = (tag, title, body) => `<div class="ci-row"><span class="ci-tag ${tag}">${title}</span><div>${body}</div></div>`;
+  if (sup) return row('t-job', '職業', '<b>輔助</b>　點擊卡片立即施放技能') + row('t-skill', '技能', `<b>${esc(sup.skill)}</b>　${esc(supportText(sup, k))}`);
+  const heal = u && /heal|regen|shield/.test(u.kind || ''), passives = passiveLines(s);
+  return row('t-job', '職業', `<b>${esc(roleLabel(id))}</b>`)
+    + row('t-atk', '普攻', `${shapeLabel(id, false)}・距離 ${r.range.toFixed(1)}<br><small>生命 ${Math.round(s.hp * mul)}・攻擊 ${Math.round(s.attack * mul)}${mul > 1 ? '（×' + mul.toFixed(1) + '）' : ''}</small>`)
+    + row('t-ult', '大絕', `<b>${esc(u?.name || s.skills?.[1]?.name || '大絕')}</b>　${esc(u?.description || '專屬技能')}<br><small>威力 ${Math.round((1 + 0.3 * k) * 100)}%${heal ? '・治療量 ' + Math.round((1 + 0.2 * k) * 100) + '%' : ''}・冷卻 ${+ultCooldown(s).toFixed(1)} 秒${s.stage ? '・第 ' + s.stage + ' 階段' : ''}</small>`)
+    + row('t-pas', '被動', passives.length ? passives.map(esc).join('<br>') : '無被動能力');
+}
+function cardBackHtml(id) {
+  const s = spirit(id), sup = SUPPORT[id];
+  /* the forms at each star: evolutions when there are any (a random branch lists every option), else the same spirit */
+  const tiers = [[id]];
+  for (let r = 1; r < MAX_RANK; r++) {
+    const next = sup ? [] : [...new Set(tiers[r - 1].flatMap((f) => evolutionsOf(data.evolution, f).filter((e) => spirit(e))))];
+    tiers.push(next.length ? next : tiers[r - 1]);
   }
-  const heal = u && /heal|regen|shield/.test(u.kind || ''), power = (r) => Math.round((1 + 0.3 * r) * 100) + '%', healPow = (r) => Math.round((1 + 0.2 * r) * 100) + '%';
-  const chain = [id]; for (let r = 1; r < MAX_RANK; r++) { const nx = evolutionsOf(data.evolution, chain[r - 1]).filter((e) => spirit(e)); chain.push(nx.length ? nx : null); if (!nx.length) break; chain[r] = nx; }
-  const form = (r) => { const c = chain[r]; return Array.isArray(c) ? c.map(spiritName).join(' 或 ') : null; };
-  for (let r = 0; r < MAX_RANK; r++) {
-    const parts = [];
-    if (r === 0) parts.push('基本能力');
-    else if (form(r)) parts.push('合成進化為「' + esc(form(r)) + '」，改用新形態的能力與技能');
-    else parts.push('生命・攻擊 ×' + (1 + 0.5 * r).toFixed(1) + '（沒有更進一步的進化形態）');
-    parts.push('大絕威力 ' + power(r) + (heal ? '、治療／回復量 ' + healPow(r) : ''));
-    rows.push(row(r, parts.join('；')));
-  }
-  return rows.join('');
+  const sections = tiers.map((forms, r) => {
+    const evolved = r > 0 && forms !== tiers[r - 1];
+    const growth = r === 0 ? '出場時' : '兩張 ' + '★'.repeat(r) + ' 相鄰合成' + (sup ? '' : evolved ? '・進化' : '・生命攻擊 ×' + (1 + 0.5 * r).toFixed(1));
+    const body = forms.map((f) => (forms.length > 1 ? `<p class="form-name">${esc(spiritName(f))}</p>` : '') + formRows(f, r + 1, evolved ? 1 : sup ? 1 : 1 + 0.5 * r)).join('');
+    return `<details class="star-sec"${r === 0 ? ' open' : ''}><summary><span class="ci-tag t-star">${'★'.repeat(r + 1)}</span><b>${esc(forms.map(spiritName).join(' 或 '))}</b><small>${growth}</small></summary>${body}</details>`;
+  }).join('');
+  return `<div class="ci-head" data-frame="${s.cardFrame || 'yellow'}"><img src="${picture(id)}" alt=""><div><b>${esc(s.name)}</b><small>${esc(sup ? '紅卡輔助' : roleLabel(id))}・點選星級查看該階段能力</small></div></div>` + sections;
 }
 function showCardInfo(el, card) {
   const box = $('cardInfo'); box.innerHTML = cardInfoHtml(card); box.hidden = false;
