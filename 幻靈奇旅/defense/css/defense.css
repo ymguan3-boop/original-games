@@ -1210,3 +1210,16 @@ body.pk-mode #hud .hud-bottom {
     grid-template-columns: minmax(0,1fr) 72px;
   }
 }
+
+/* 2026-11-03 three-color egg anywhere-on-road placement controls */
+body.placing-egg #world { cursor: crosshair; touch-action: none; }
+#hud .hand-card.egg-lane-card { touch-action: none; }
+#hud .hand-card.egg-selected {
+  z-index: 12;
+  filter: drop-shadow(0 0 9px #ffe189);
+  outline: 2px solid #ffdf74;
+  outline-offset: 2px;
+}
+body.placing-egg #hud .hand-card.egg-selected .collectionCard {
+  box-shadow: 0 0 0 2px #ffe6a1, 0 0 17px #ffda71;
+}
