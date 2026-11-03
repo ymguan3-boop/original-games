@@ -2,12 +2,15 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem} from './rules.js?v=20261105-traps-v1';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, PK_STAGE, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261109-pk-v1';
+import {createPkIsland} from './pk-island.js?v=20261109-pk-v1';
+import {createPkLobby} from './pk-lobby.js?v=20261109-pk-v1';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261109-pk-v1';
 import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createChartModels} from './chart-models.js?v=20261106-items-v2';
 import {createView} from './view.js?v=20261105-traps-v1';
-import {createSeaChart} from './sea3d.js?v=20261108-audio-v1';
+import {createSeaChart} from './sea3d.js?v=20261109-pk-v1';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261106-items-v1';
 import {buildPath} from './stages.js?v=20261105-traps-v1';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js';
@@ -33,6 +36,8 @@ let data, record, view, audio, game = null, speed = 1, paused = false, last = 0,
 let pendingDealingScene = null, visibleSceneFrames = 0, startSerial = 0, bossIntroTimer = null;
 /* merged cards that are playing their evolution in their own frame: uid -> {from, to, start} */
 const evolvingCards = new Map(), EVO_TIME = 2.4;
+/* PK: the live match's session (role 'host' runs the battle, 'guest' shows a mirror of it), and the lobby */
+let pk = null, pkLobby = null;
 
 function readJson(key, fallback) { try { return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback; } catch { return fallback; } }
 function saveRecord() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(record)); } catch {} }
@@ -214,7 +219,9 @@ function openBoatman() {
 }
 
 function bindLobby() {
-  chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman});
+  chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman, onPk: () => pkLobby.open()});
+  pkLobby = createPkLobby({openModal, closeModal: () => $('modal').close(), ribbon, esc, picture, spirit, deck: () => (normalizeDeck(), record.deck.slice()),
+    name: () => record.pkName || (record.pkName = '旅人' + String(Math.floor(Math.random() * 90) + 10)), setName: (n) => { record.pkName = n; saveRecord(); }, toast, onStart: startPkGame});
   $('islePanel').onclick = (e) => {
     if (e.target.closest('#start')) beginStage();
     else if (e.target.closest('[data-open="deck"]')) openDeck();
@@ -403,6 +410,81 @@ async function startGame() {
   globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
 }
 
+/* ---------- PK battle: the host runs rules.js in duel mode and streams snapshots; the guest shows the mirror ---------- */
+async function startPkGame(session) {
+  const serial = ++startSerial;
+  hideBossIntro(); pendingDealingScene = null; visibleSceneFrames = 0; game = null; acc = 0; last = 0; paused = false; speed = 1;
+  pk = session; pk.outbox = []; pk.sentAt = 0; pk.foeLoaded = false; pk.loadedSent = false; pk.waitFrom = 0;
+  document.body.classList.add('pk-mode');
+  $('hud').hidden = true; $('loading').hidden = false; $('loadingText').textContent = '前往 PK 競技場…'; $('loadingBar').style.width = '15%';
+  try {
+    await loadEngine();
+    if (!view) view = createView($('world'), {spirits: data.spirits, catalog: data.catalog});
+    if (!audio) audio = createCombatAudio();
+    view.costume = costumeFor(journey()).id;
+    if (pk.role === 'host') {
+      game = createGame({stage: PK_STAGE, deck: pk.me.deck, foeDeck: pk.foe.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, seed: pk.seed, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
+      pk.on('act', (m) => {
+        if (!game || game.result) return;
+        const i = game.foe.hand.findIndex((c) => c.uid === m.uid); if (i < 0) return;
+        try { if (m.a === 'play') playCard(game, i, 'enemy'); else if (m.a === 'move') moveCard(game, i, m.to, 'enemy'); } catch (e) { pk.send({t: 'toast', text: e.message}); }
+      });
+      pk.on('loaded', () => { pk.foeLoaded = true; });
+      pk.on('quit', () => { if (game && !game.result) { game.nest.hp = 0; pk.foeQuit = true; } });
+    } else {
+      game = createMirror(PK_STAGE);
+      pk.on('snap', (m) => { if (game?.mirror) applySnapshot(game, m.d, (f, target, strong) => view.fire(f, target, strong)); });
+      pk.on('toast', (m) => toast(m.text));
+    }
+    game.runId = 'pk-' + Date.now().toString(36);
+    pk.onGone = () => { if (game && !game.result) { toast('對手離線了'); showPkResult({won: true, gone: true, time: game.time}); } };
+    view.setGame(game);
+    $('loadingBar').style.width = '40%'; $('loadingText').textContent = '雙方幻靈進場中…';
+    await Promise.race([view.preload([...pk.me.deck, ...pk.foe.deck]), new Promise((r) => setTimeout(r, 9000))]);
+    $('loadingBar').style.width = '100%';
+    if (serial !== startSerial) return;
+  } catch (e) {
+    console.error(e); toast(e.message); $('loading').hidden = true; endPk(); return;
+  }
+  $('loading').hidden = true; $('lobby').hidden = true; $('hud').hidden = false;
+  handSig = ''; pendingDealingScene = game; visibleSceneFrames = 0;
+  renderHand(); hud();
+  setTimeout(() => game && pk && toast('PK 開始！派出幻靈，打倒對方的基地'), 1800);
+  globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
+}
+function pkClock() { const left = Math.max(0, PK_TIME - (game?.time || 0)); return Math.floor(left / 60) + ':' + String(Math.floor(left % 60)).padStart(2, '0'); }
+function endPk() {
+  document.body.classList.remove('pk-mode');
+  pk = null;
+}
+function showPkResult(r) {
+  if (!pk || pk.shown) return; pk.shown = true;
+  const won = r.won === true, draw = r.won === null, mine = Math.round((game?.crystal.hp || 0) / (game?.crystal.maxHp || 1) * 100), theirs = Math.round((game?.nest.hp || 0) / (game?.nest.maxHp || 1) * 100);
+  const kills = pk.role === 'host' ? game?.stats.kills : game?.stats.kills, lost = pk.role === 'host' ? game?.foe?.kills || 0 : game?.foeKills || 0;
+  const why = r.gone ? '對手離線，判定獲勝' : pk.quit ? '你投降了' : pk.foeQuit || r.foeQuit ? '對手投降了' : r.timeUp ? (mine !== theirs ? '時間到，比基地剩餘血量' : '時間到，基地血量相同，比擊倒數') : won ? '攻破了對方的基地！' : '基地被攻破了…';
+  const stat = (icon, value, label, tone) => `<div class="stat"><i class="tone-${tone}">${icon}</i><b>${value}</b><small>${label}</small></div>`;
+  const mins = Math.floor((r.time || 0) / 60), secs = Math.round((r.time || 0) % 60);
+  openModal(`<header class="sheet-head"><div class="sunburst"></div><h2 class="sheet-title">${draw ? '平手' : won ? '勝利！' : '落敗'}</h2></header>
+    <p class="result-title">PK 競技場・vs ${esc(pk.foe?.name || '對手')}</p>
+    <p class="result-sub">${why}</p>
+    <div class="stats">${stat('⏱', `${mins}:${String(secs).padStart(2, '0')}`, '用時', 'blue')}${stat('💥', kills || 0, '擊倒', 'red')}${stat('❤', mine + '%', '我方基地', 'green')}${stat('🏰', theirs + '%', '對方基地', 'violet')}</div>
+    <div class="sheet-actions">
+      <button class="round" id="pkToChart" title="離開房間回海圖"><span>🗺️</span><small>海圖</small></button>
+      ${r.gone ? '' : '<button class="primary wide" id="pkAgain">再戰一場 ↻<small>回到對戰準備</small></button>'}
+    </div>`, won ? 'win' : 'lose');
+  const close = () => { const s = pk; leaveGame(); return s; };
+  $('pkToChart').onclick = () => { close(); pkLobby.leave(); };
+  if ($('pkAgain')) $('pkAgain').onclick = () => { close(); pkLobby.rematch(); };
+}
+function openPkPause() {
+  openModal(`${ribbon('PK 對戰中', '⚔️')}<p class="result-sub">對戰不會暫停。投降會直接判對手獲勝。</p>
+    <div class="modal-actions center"><button class="tool" id="pkGiveUp">投降</button><button class="primary big" data-close>繼續對戰</button></div>`, 'howto pk');
+  $('pkGiveUp').onclick = () => {
+    $('modal').close(); if (!pk || !game || game.result) return; pk.quit = true;
+    if (pk.role === 'host') game.crystal.hp = 0; else pk.send({t: 'quit'});
+  };
+}
+
 /* credit this battle's kill points to the shared cave wallet once (idempotent per run id) */
 function creditPoints() {
   if (!game || game.credited) return 0; game.credited = true;
@@ -415,6 +497,7 @@ function leaveGame() {
   ++startSerial; pendingDealingScene = null; visibleSceneFrames = 0; hideBossIntro();
   creditPoints();
   endPlacing(); game = null; $('hud').hidden = true; $('lobby').hidden = false; $('modal').close();
+  if (pk) { if (pk.handlers) for (const k of ['snap', 'act', 'quit', 'loaded', 'toast']) delete pk.handlers[k]; pk.onGone = null; endPk(); }
   view?.setGame(null); audio?.stop?.();
   globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
   renderLobby();
@@ -447,6 +530,7 @@ function play(uid) {
   const i = indexOfUid(uid); if (i < 0) return;
   /* a support spirit jumps out of this card, so the view needs where the card is on screen */
   const el = $('hand').querySelector(`[data-uid="${uid}"]`); if (el && isSupport(game.hand[i].species)) { const r = el.getBoundingClientRect(); view.cardOrigin = {x: r.left + r.width / 2, y: r.top + r.height * 0.4}; }
+  if (pk?.role === 'guest') { pk.send({t: 'act', a: 'play', uid}); return; }
   try { playCard(game, i); hud(); } catch (e) { toast(e.message); }
 }
 
@@ -548,7 +632,8 @@ function bindHand() {
     if (d.info) { hideCardInfo(); return; }
     if (!d.moving) { play(d.uid); return; }
     const from = indexOfUid(d.uid), to = dropIndex(e.clientX, d.el);
-    if (from >= 0) { moveCard(game, from, to); handleEvents(); game.events.length = 0; }
+    if (from >= 0 && pk?.role === 'guest') { pk.send({t: 'act', a: 'move', uid: d.uid, to}); const c = game.hand.splice(from, 1)[0]; game.hand.splice(to, 0, c); }
+    else if (from >= 0) { moveCard(game, from, to); handleEvents(); if (pk) pk.outbox.push(...game.events); game.events.length = 0; }
     handSig = ''; hud();
   };
   /* listen on the window: the pointer may be released outside the hand */
@@ -560,6 +645,7 @@ function bindHand() {
 function hud() {
   if (!game) return;
   $('runPoints').textContent = game.stats.points.toLocaleString();
+  if (pk) $('stageName').textContent = '⚔️ vs ' + (pk.foe?.name || '對手') + '・' + pkClock() + (game.time > PK_RAGE_AT ? '・狂暴！' : '');
   const owned = usableItems().reduce((n, u) => n + u.count, 0);
   $('items').classList.toggle('ready', owned > 0); $('itemsCount').textContent = owned ? owned + ' 個' : '無道具';
   if (!$('itemMenu').hidden) renderItems();
@@ -670,6 +756,9 @@ const weaponSound = (kind) => WEAPON_SOUND[kind] || 'knife';
 /* Events -> sounds (the shared combat audio the cave uses) and hand animations. */
 function handleEvents() {
   for (const ev of game.events) {
+    if (pk && ev.side === 'enemy' && (ev.type === 'deal' || ev.type === 'merge' || ev.type === 'play' || ev.type === 'move')) continue;
+    if (pk && ev.type === 'finish') { setTimeout(() => showPkResult({...ev, foeQuit: pk?.foeQuit}), 900); continue; }
+    if (pk && ev.type === 'skillStart' && ev.side === 'enemy') { banner('對手施放 ' + spirit(ev.species).name + '・' + ev.skill + '！'); continue; }
     if (ev.type === 'fire' || ev.type === 'ultimate') audio?.play({speciesId: ev.species, element: ev.element, pet: true, phase: 'start', strong: ev.type === 'ultimate'});
     else if (ev.type === 'release') { audio?.play({speciesId: ev.species, element: ev.element, pet: true, phase: 'release', strong: ev.strong, final: ev.strong}); if (ev.side === 'ally' || Math.random() < 0.4) audio?.play({kind: weaponSound(ev.kind), element: ev.element, pet: false, phase: 'release', strong: ev.strong}); }
     else if (ev.type === 'hit' && ev.amount > 0 && (ev.crit || performance.now() - lastImpact > 90)) { lastImpact = performance.now(); audio?.play({kind: weaponSound(ev.kind), element: ev.element, pet: false, phase: 'impact', strong: ev.strong || ev.crit, critical: ev.crit, final: ev.crit && ev.strong}); }
@@ -729,7 +818,7 @@ function bindHud() {
   $('speed').onclick = () => { speed = speed === 1 ? 2 : 1; hud(); };
   $('camReset').onclick = () => view?.resetCamera();
   $('evoToggle').onclick = () => { record.evoAnim = record.evoAnim === false; saveRecord(); hud(); toast(record.evoAnim ? '合成進化時，卡片裡會播放進化動畫' : '已關閉進化動畫，合成時只播放卡片特效'); };
-  $('pause').onclick = () => { paused = true; openPause(); hud(); };
+  $('pause').onclick = () => { if (pk) { openPkPause(); return; } paused = true; openPause(); hud(); };
   addEventListener('pointerdown', () => audio?.unlock?.(), {capture: true});
   addEventListener('keydown', (e) => {
     if (!game || $('modal').open) return;
@@ -790,8 +879,9 @@ function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.1, (now - (last || now)) / 1000); last = now;
   const visibleBattle = game && game.started && $('loading').hidden && $('lobby').hidden && !$('hud').hidden;
-  const running = visibleBattle && !game.result && !paused && !$('modal').open;
-  if (running) {
+  const running = visibleBattle && !game.result && (pk ? true : !paused && !$('modal').open);
+  if (running && pk?.role === 'guest') advanceMirror(game, dt);
+  else if (running) {
     acc += dt * speed;
     let n = 0;
     while (acc >= 1 / 30 && n < 8) { step(game, 1 / 30); acc -= 1 / 30; n++; }
@@ -803,12 +893,19 @@ function loop(now) {
       $('loading').hidden && $('lobby').hidden && !$('hud').hidden && !$('modal').open) {
     /* First render paints the world and empty hand; the next rendered frame
        starts the first three cards. Never deal during loading or over the chart. */
+    if (pk?.role === 'guest' && !pk.loadedSent && visibleSceneFrames >= 1) { pk.loadedSent = true; pk.send({t: 'loaded'}); }
+    if (pk?.role === 'host' && !pk.foeLoaded) { pk.waitFrom ||= now; if (now - pk.waitFrom < 15000) { visibleSceneFrames = 0; $('banner').hidden = false; $('banner').textContent = '等待對手載入戰場…'; } }
     if (++visibleSceneFrames >= 2) {
       const launched = beginDealing(game);
       pendingDealingScene = null;
       acc = 0; last = now;
-      if (launched) { handleEvents(); handSig = ''; hud(); showBossIntro(game.stage); }
+      if (launched) { handleEvents(); handSig = ''; hud(); if (!pk) showBossIntro(game.stage); else $('banner').hidden = true; }
     }
+  }
+  if (pk?.role === 'host' && game) {
+    pk.outbox.push(...game.events);
+    const every = pk.ch.kind === 'firebase-relay' ? 300 : 100;
+    if (now - pk.sentAt >= every) { pk.sentAt = now; pk.send({t: 'snap', d: snapshot(game, pk.outbox)}); pk.outbox = []; }
   }
   if (game) game.events.length = 0;
 }
@@ -829,6 +926,7 @@ async function warmBattle() {
 async function renderChartArt() {
   const T = globalThis.THREE, H = globalThis.PhantomHarbor, kit = createToonKit(T), models = createChartModels(T, kit, {loadGltf, cloneModel});
   chart.addAnimations(models.animated);
+  try { const isle = createPkIsland(T, kit); chart.setPk(isle.group); chart.addAnimations([isle.animate]); } catch (e) { console.warn(e); }
   const card = (id) => { const s = spirit(id); return {art: picture(id), frameImage: 'assets/card-frame.webp', frame: s.cardFrame || 'yellow', name: s.name, number: data.entries.get(id)?.number || '—', info: s.type + " · " + (s.rarity || "普通") + " · 第 " + (s.stage || 1) + " 階段", hp: s.hp, attack: s.attack}; };
   const tasks = [];
   STAGES.forEach((s, i) => tasks.push(models.island(s.scene, card(s.boss)).then((g) => chart.setIsland(i, g)).catch((e) => console.warn(e))));

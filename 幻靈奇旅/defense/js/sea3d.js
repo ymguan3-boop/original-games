@@ -7,16 +7,18 @@ const HOME = [102, 556];
 /* portrait: a seven-star (Big Dipper) pattern: the handle rises from the pier, the bowl closes at islands 5-8, then two more stars lead on */
 export const MOBILE_SPOTS = [[170, 735], [330, 690], [470, 620], [560, 520], [480, 420], [260, 370], [230, 240], [470, 260], [600, 160], [380, 90]];
 const MOBILE_HOME = [80, 805];
+/* the PK colosseum island, just above (north of) the town pier */
+const PK_SPOT = [92, 404], MOBILE_PK_SPOT = [66, 640];
 const WATER_Y = -0.12, PITCH = 0.95, FOV = 38;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 import {ico} from './ui-icons.js?v=20261108-audio-v1';
 
-export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s) => s}) {
+export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, esc = (s) => s}) {
   let state = {open: 0, cleared: {}, selected: 0, boatAt: -1}, sailing = null, portrait = isPortrait();
   const w3 = (p) => [p[0] / UNIT, p[1] / UNIT];
-  const spots = () => (portrait ? MOBILE_SPOTS : SPOTS).map(w3), home = () => w3(portrait ? MOBILE_HOME : HOME);
+  const spots = () => (portrait ? MOBILE_SPOTS : SPOTS).map(w3), home = () => w3(portrait ? MOBILE_HOME : HOME), pkSpot = () => w3(portrait ? MOBILE_PK_SPOT : PK_SPOT);
   /* where the boat waits at each island: its south-west shore. The pier's tip is the town's mooring. */
   const HOME_SCALE = 0.42, MOOR = [51.6, -0.1, 6.9];
   const dockPoint = (i) => {
@@ -97,6 +99,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
     const flag = new T.Group(); const pole = new T.Mesh(flagGeo, new T.MeshBasicMaterial({color: 0x6a4a2a})); pole.position.y = 0.65; const cloth = flagCloth.clone(); cloth.position.set(0.33, 1.1, 0); flag.add(pole, cloth); flag.position.set(-1.5, 0.3, 0.5); flag.visible = false; root.add(flag); flags.push(flag);
   }
   const homeRoot = new T.Group(); scene.add(homeRoot);
+  const pkRoot = new T.Group(); scene.add(pkRoot);
   const boat = new T.Group(); boat.scale.setScalar(0.5); scene.add(boat);
   const wake = new T.Mesh(new T.PlaneGeometry(5, 1.8), new T.MeshBasicMaterial({map: (() => { const c = document.createElement('canvas'); c.width = 128; c.height = 64; const g = c.getContext('2d'), gr = g.createRadialGradient(100, 32, 2, 56, 32, 60); gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 64); return new T.CanvasTexture(c); })(), transparent: true, depthWrite: false, opacity: 0}));
   wake.rotation.x = -Math.PI / 2; wake.position.set(-3.6, 0.3, 0); boat.add(wake);
@@ -106,15 +109,16 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
     spots().forEach((s, i) => { islandRoots[i].position.set(s[0], 0, s[1]); });
     const h = home(); homeRoot.position.set(h[0] + 3.4 - MOOR[0] * HOME_SCALE, 0, h[1] + 0.4 - MOOR[2] * HOME_SCALE);
     homeRoot.scale.setScalar(HOME_SCALE);
+    const k = pkSpot(); pkRoot.position.set(k[0], 0, k[1]);
   }
 
   /* ---------- camera rig ---------- */
   const rig = {x: 0, z: 0, dist: 30, yaw: 0, pitch: PITCH}, home0 = {x: 0, z: 0, dist: 30};
   let bounds = {minX: 0, maxX: 1, minZ: 0, maxZ: 1}, fitB = bounds, W = 0, H = 0;
   function computeBounds() {
-    const pts = [...spots(), home()]; bounds = {minX: Infinity, maxX: -Infinity, minZ: Infinity, maxZ: -Infinity};
+    const pts = [...spots(), home(), pkSpot()]; bounds = {minX: Infinity, maxX: -Infinity, minZ: Infinity, maxZ: -Infinity};
     const isl = spots(); fitB = {minX: Math.min(...isl.map((p) => p[0])) - 4.2, maxX: Math.max(...isl.map((p) => p[0])) + 4.8, minZ: Math.min(...isl.map((p) => p[1])) - 3, maxZ: Math.max(...isl.map((p) => p[1]), home()[1]) + 3.6};
-    fitB.minX = Math.min(fitB.minX, home()[0] - 0.5);
+    fitB.minX = Math.min(fitB.minX, home()[0] - 0.5, pkSpot()[0] - 4.6); fitB.minZ = Math.min(fitB.minZ, pkSpot()[1] - 3.5);
     for (const [x, z] of pts) { bounds.minX = Math.min(bounds.minX, x - (x === home()[0] ? 7 : 4.2)); bounds.maxX = Math.max(bounds.maxX, x + 4.8); bounds.minZ = Math.min(bounds.minZ, z - 3.0); bounds.maxZ = Math.max(bounds.maxZ, z + 3.6); }
   }
   function fit() {
@@ -143,7 +147,9 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
   /* ---------- tags (island names) ---------- */
   const tagEls = [], tagHome = document.createElement('button');
   tagHome.type = 'button'; tagHome.className = 'isle-tag home-tag'; tagHome.textContent = '⚓ 初光鎮碼頭・船夫'; tagHome.addEventListener('click', () => !sailing && onHome?.());
-  tags.append(tagHome);
+  const tagPk = document.createElement('button');
+  tagPk.type = 'button'; tagPk.className = 'isle-tag pk-tag'; tagPk.textContent = '⚔️ PK 競技場'; tagPk.addEventListener('click', () => !sailing && onPk?.());
+  tags.append(tagHome, tagPk);
   stages.forEach((s, i) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'isle-tag'; b.dataset.isle = i;
     b.addEventListener('click', () => !sailing && onPick?.(i)); tags.append(b); tagEls.push(b);
@@ -175,9 +181,9 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
   const ray = new T.Raycaster(), ndc = new T.Vector2();
   function pickAt(cx, cy) {
     const r = canvas.getBoundingClientRect(); ndc.set((cx - r.left) / r.width * 2 - 1, -((cy - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, camera);
-    const hit = ray.intersectObjects([...islandRoots, homeRoot], true).find((h) => !h.object.userData.isEffect && h.object.visible && !fogs.includes(h.object));
+    const hit = ray.intersectObjects([...islandRoots, homeRoot, pkRoot], true).find((h) => !h.object.userData.isEffect && h.object.visible && !fogs.includes(h.object));
     if (!hit) return null;
-    for (let o = hit.object; o; o = o.parent) { if (o === homeRoot) return 'home'; if (islandRoots.includes(o)) return o.userData.index; }
+    for (let o = hit.object; o; o = o.parent) { if (o === homeRoot) return 'home'; if (o === pkRoot) return 'pk'; if (islandRoots.includes(o)) return o.userData.index; }
     return null;
   }
   canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -207,7 +213,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
     if (!had) return;
     if (down && ptrs.size === 0) {
       const tap = down.moved < 8 && performance.now() - down.t < 600 && e.type === 'pointerup';
-      if (tap && !sailing) { const hit = pickAt(e.clientX, e.clientY); if (hit === 'home') onHome?.(); else if (typeof hit === 'number') onPick?.(hit); }
+      if (tap && !sailing) { const hit = pickAt(e.clientX, e.clientY); if (hit === 'home') onHome?.(); else if (hit === 'pk') onPk?.(); else if (typeof hit === 'number') onPick?.(hit); }
       down = null; canvas.style.cursor = 'grab';
     }
   };
@@ -266,6 +272,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
     ringMat.opacity = 0.7 + Math.sin(time * 3) * 0.25; selRing.rotation.z += dt * 0.5;
     for (const b of billboards) { const p = b.getWorldPosition(tagPos); b.rotation.y = Math.atan2(camera.position.x - p.x, camera.position.z - p.z) - (b.parent?.rotation.y || 0); }
     for (let i = 0; i < islandRoots.length; i++) { const r = islandRoots[i]; projectTag(tagEls[i], r.position.x, 0.3, r.position.z); }
+    projectTag(tagPk, pkRoot.position.x, 0.3, pkRoot.position.z, 2.3);
     projectTag(tagHome, homeRoot.position.x + (MOOR[0] - 8) * HOME_SCALE, 0.4, homeRoot.position.z + MOOR[2] * HOME_SCALE, 0.8);
     renderer.render(scene, camera);
   }
@@ -295,6 +302,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
       group.traverse((o) => { if (o.userData.billboard) billboards.push(o); });
       group.scale.setScalar(0.01); const t0 = performance.now(), pop = (now) => { const k = Math.min(1, (now - t0) / 450); group.scale.setScalar(0.01 + 0.99 * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(pop); }; requestAnimationFrame(pop);
     },
+    setPk(group) { pkRoot.add(group); group.traverse((o) => { if (o.userData.billboard) billboards.push(o); }); },
     setHome(group) { homeRoot.add(group); homeRoot.userData.model = group; },
     get homeGroup() { return homeRoot.userData.model || null; },
     setBoat(model) { boatModel?.parent?.remove(boatModel); boatModel = model; boat.add(model); },

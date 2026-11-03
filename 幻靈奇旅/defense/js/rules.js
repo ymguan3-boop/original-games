@@ -9,6 +9,15 @@ import {STAGES, buildPath} from './stages.js?v=20261103-forge-v2';
 import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v2';
 
 export {STAGES};
+/* PK (duel): two players on one road. The host's spirits start at the crystal end (side 'ally'), the guest's at the
+   nest end (side 'enemy'); each side deals from its own deck and the first to break the other's base wins. No AI waves,
+   no boss, no items; when time runs out the base with more health left wins. */
+export const PK_STAGE = {id: 'pk', name: 'PK 競技場', scene: 'desert', element: '光', nest: 3600, crystal: 3600, scale: 1, boss: null,
+  path: [[-15, -1], [-10, -6], [-1, -7], [-4, 0], [4, 0], [1, 7], [10, 6], [15, 1]], groups: [], traps: []};
+export const PK_TIME = 240, PK_MAX_UNITS = 12, PK_RAGE_AT = 120;
+/* from PK_RAGE_AT on, every hit grows stronger (x2 at 180 s, x3 at 240 s) so a crowded stalemate always breaks */
+export const pkRage = (state) => (state.duel && state.time > PK_RAGE_AT ? 1 + (state.time - PK_RAGE_AT) / 60 : 1);
+const unitCap = (state) => (state.duel ? PK_MAX_UNITS : MAX_ALLIES);
 export const ELEMENTS = ['光', '焰', '森', '潮', '雷', '念'];
 export const ELEMENT_COLORS = {光: 0xffe5a1, 焰: 0xff853e, 森: 0x6fe5a0, 潮: 0x58caff, 雷: 0xffdc43, 念: 0xc091ff};
 /* Element riders use the cave's status names. */
@@ -143,8 +152,8 @@ export function killPoints(stageIndex, boss = false) {
   return stageIndex < 3 ? 3 : stageIndex < 6 ? 8 : 15;
 }
 
-export function fighterStats(spec, entry, side, scale = 1, boost = 0) {
-  const profile = profileFor(spec, entry, false), ally = side === 'ally', k = 1 + 0.5 * boost;
+export function fighterStats(spec, entry, side, scale = 1, boost = 0, duel = false) {
+  const profile = profileFor(spec, entry, false), ally = side === 'ally' || duel, k = 1 + 0.5 * boost;
   return {
     hp: Math.round(spec.hp * (ally ? (RARITY_HP[spec.rarity] || 4.8) * k : 1.8 * scale)),
     attack: spec.attack * (ally ? k : 0.95 * scale) * (roleFor(spec.id).basic === 'melee' ? 1.15 : 1),
@@ -155,8 +164,8 @@ export function fighterStats(spec, entry, side, scale = 1, boost = 0) {
 
 function rng(seed) { let s = seed >>> 0 || 1; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 
-export function createGame({stageIndex = 0, deck, spirits, catalog = {}, evolution = {}, hooks = {}, seed = Date.now(), deferDeal = false}) {
-  const stage = STAGES[stageIndex], spiritMap = new Map(spirits.map((s) => [s.id, s])), path = buildPath(stage.path), half = path.length / 2;
+export function createGame({stageIndex = 0, stage: stageOverride = null, deck, foeDeck = null, spirits, catalog = {}, evolution = {}, hooks = {}, seed = Date.now(), deferDeal = false}) {
+  const stage = stageOverride || STAGES[stageIndex], spiritMap = new Map(spirits.map((s) => [s.id, s])), path = buildPath(stage.path), half = path.length / 2;
   const state = {
     stage, stageIndex, path, spirits: spiritMap, entries: new Map((catalog.entries || []).map((e) => [e.id, e])), evolution, hooks, random: rng(seed),
     deck: deck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), hand: [], dealAt: DEAL_EVERY, nextCard: 1, started: !deferDeal,
@@ -165,8 +174,10 @@ export function createGame({stageIndex = 0, deck, spirits, catalog = {}, evoluti
     traps: [], buffs: {attack: 0, guard: 0},
     fighters: [], shots: [], events: [], nextId: 1, spawnAt: stage.groups.map((g) => g.start), spawned: stage.groups.map(() => 0), bossOut: false,
     stats: {summons: 0, kills: 0, merges: 0, skills: 0, points: 0}, result: null,
+    duel: !!foeDeck, foe: foeDeck ? {hand: [], deck: foeDeck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), dealAt: DEAL_EVERY, dragging: false} : null,
+    freezeAllyUntil: 0, shieldEnemyUntil: 0, hasteEnemyUntil: 0, timeLimit: foeDeck ? PK_TIME : 0,
   };
-  if (!deferDeal) for (let i = 0; i < 3; i++) deal(state);
+  if (!deferDeal) for (let i = 0; i < 3; i++) { deal(state); if (state.duel) deal(state, 'enemy'); }
   return state;
 }
 
@@ -178,21 +189,26 @@ export function beginDealing(state) {
   state.started = true;
   state.time = 0;
   state.dealAt = DEAL_EVERY;
-  for (let i = 0; i < 3; i++) deal(state);
+  if (state.foe) state.foe.dealAt = DEAL_EVERY;
+  for (let i = 0; i < 3; i++) { deal(state); if (state.duel) deal(state, 'enemy'); }
   return true;
 }
 
 function emit(state, type, data = {}) { state.events.push({...data, type}); }
-export function alliesOnField(state) { return state.fighters.filter((f) => f.side === 'ally' && f.hp > 0).length; }
+export function alliesOnField(state, side = 'ally') { return state.fighters.filter((f) => f.side === side && f.hp > 0).length; }
+/* a hand and its deal clock: the state itself for the player (side 'ally'), state.foe for the PK guest */
+export const seatOf = (state, side = 'ally') => (side === 'enemy' && state.foe ? state.foe : state);
+const other = (side) => (side === 'ally' ? 'enemy' : 'ally');
 
 /* ---------- hand: deal, merge (七大罪 style), play ---------- */
-function deal(state) {
-  if (!state.deck.length || state.hand.length >= HAND_SIZE) return null;
-  const species = state.deck[Math.floor(state.random() * state.deck.length)];
+function deal(state, side = 'ally') {
+  const seat = seatOf(state, side);
+  if (!seat.deck.length || seat.hand.length >= HAND_SIZE) return null;
+  const species = seat.deck[Math.floor(state.random() * seat.deck.length)];
   const card = {uid: state.nextCard++, species, rank: 1, boost: 0};
-  state.hand.push(card);
-  emit(state, 'deal', {uid: card.uid});
-  mergeHand(state);
+  seat.hand.push(card);
+  emit(state, 'deal', {uid: card.uid, side});
+  mergeHand(state, side);
   return card;
 }
 
@@ -209,16 +225,17 @@ export function mergeResult(state, card) {
 }
 
 /* Adjacent identical cards (same spirit, same star) merge, and merges cascade. */
-function mergeHand(state) {
+function mergeHand(state, side = 'ally') {
+  const hand = seatOf(state, side).hand;
   for (let again = true; again;) {
     again = false;
-    for (let i = 0; i + 1 < state.hand.length; i++) {
-      const a = state.hand[i], b = state.hand[i + 1];
+    for (let i = 0; i + 1 < hand.length; i++) {
+      const a = hand[i], b = hand[i + 1];
       if (a.species !== b.species || a.rank !== b.rank) continue;
       const r = mergeResult(state, a); if (!r) continue;
       const merged = {uid: state.nextCard++, ...r};
-      state.hand.splice(i, 2, merged); state.stats.merges++;
-      emit(state, 'merge', {uid: merged.uid, a: a.uid, b: b.uid, index: i, from: a.species, to: merged.species, rank: merged.rank, evolved: merged.species !== a.species});
+      hand.splice(i, 2, merged); if (side === 'ally') state.stats.merges++;
+      emit(state, 'merge', {uid: merged.uid, a: a.uid, b: b.uid, index: i, from: a.species, to: merged.species, rank: merged.rank, evolved: merged.species !== a.species, side});
       again = true; break;
     }
   }
@@ -226,28 +243,28 @@ function mergeHand(state) {
 
 /* Drag-and-drop: move a card to another place in the hand (index in the hand after removing it), then merge
    any identical neighbours, so placing two identical cards side by side evolves / stars them up. */
-export function moveCard(state, from, to) {
-  const card = state.hand[from]; if (!card) return false;
-  state.hand.splice(from, 1);
-  state.hand.splice(Math.max(0, Math.min(state.hand.length, to)), 0, card);
-  emit(state, 'move', {uid: card.uid});
-  mergeHand(state);
+export function moveCard(state, from, to, side = 'ally') {
+  const hand = seatOf(state, side).hand, card = hand[from]; if (!card) return false;
+  hand.splice(from, 1);
+  hand.splice(Math.max(0, Math.min(hand.length, to)), 0, card);
+  emit(state, 'move', {uid: card.uid, side});
+  mergeHand(state, side);
   return true;
 }
 
-export function canPlay(state, i) { const c = state.hand[i]; return !!c && (isSupport(c.species) || alliesOnField(state) < MAX_ALLIES); }
+export function canPlay(state, i, side = 'ally') { const c = seatOf(state, side).hand[i]; return !!c && (isSupport(c.species) || alliesOnField(state, side) < unitCap(state)); }
 
-export function playCard(state, i) {
-  const card = state.hand[i]; if (!card) throw Error('沒有這張卡');
-  if (isSupport(card.species)) castSupport(state, card);
+export function playCard(state, i, side = 'ally') {
+  const hand = seatOf(state, side).hand, card = hand[i]; if (!card) throw Error('沒有這張卡');
+  if (isSupport(card.species)) castSupport(state, {...card, side});
   else {
-    if (alliesOnField(state) >= MAX_ALLIES) throw Error(`場上最多 ${MAX_ALLIES} 隻幻靈`);
-    spawn(state, 'ally', card.species, {boost: card.boost, rank: card.rank});
-    state.stats.summons++;
+    if (alliesOnField(state, side) >= unitCap(state)) throw Error(`場上最多 ${unitCap(state)} 隻幻靈`);
+    spawn(state, side, card.species, {boost: card.boost, rank: card.rank});
+    if (side === 'ally') state.stats.summons++;
   }
-  state.hand.splice(i, 1);
-  emit(state, 'play', {uid: card.uid, species: card.species, rank: card.rank});
-  mergeHand(state);
+  hand.splice(i, 1);
+  emit(state, 'play', {uid: card.uid, species: card.species, rank: card.rank, side});
+  mergeHand(state, side);
   return card;
 }
 
@@ -272,7 +289,7 @@ function startSupport(state, job) {
   if (job.started) return;
   job.started = true;
   const card = job.card, s = SUPPORT[card.species];
-  emit(state, 'skillStart', {species: card.species, kind: s.kind, rank: card.rank, skill: s.skill, element: state.spirits.get(card.species).type});
+  emit(state, 'skillStart', {species: card.species, kind: s.kind, rank: card.rank, skill: s.skill, element: state.spirits.get(card.species).type, side: card.side || 'ally'});
 }
 function startBossSkill(state, job) {
   if (job.started || state.bossOut) return;
@@ -280,32 +297,33 @@ function startBossSkill(state, job) {
   emit(state, 'bossSkillStart', {species: state.stage.boss, element: state.spirits.get(state.stage.boss).type});
 }
 function applySupport(state, card) {
-  const s = SUPPORT[card.species], r = card.rank - 1, foes = state.fighters.filter((f) => f.side === 'enemy' && f.hp > 0), allies = state.fighters.filter((f) => f.side === 'ally' && f.hp > 0);
+  const side = card.side || 'ally', mine = side === 'ally', home = mine ? state.crystal : state.nest;
+  const s = SUPPORT[card.species], r = card.rank - 1, foes = state.fighters.filter((f) => f.side === other(side) && f.hp > 0), allies = state.fighters.filter((f) => f.side === side && f.hp > 0);
   const scale = 1 + state.stageIndex * 0.25, element = state.spirits.get(card.species).type;
-  if (s.kind === 'freeze') state.freezeUntil = state.time + Math.min(4.5, s.duration[r]);
+  if (s.kind === 'freeze') state[mine ? 'freezeUntil' : 'freezeAllyUntil'] = state.time + Math.min(4.5, s.duration[r]);
   else if (s.kind === 'volley') foes.sort((a, b) => b.hp - a.hp).slice(0, 6).forEach((f) => hurt(state, f, s.power[r] * scale, element, null, true));
   else if (s.kind === 'quake') foes.forEach((f) => { hurt(state, f, s.power[r] * scale, element, null, true); if (f.hp > 0) knock(state, f, 2.4); });
   else if (s.kind === 'plague') foes.forEach((f) => { f.statuses.poison = {until: state.time + s.duration[r], dps: s.power[r] * scale}; f.statuses.weaken = {until: state.time + s.duration[r]}; });
-  else if (s.kind === 'beam') foes.filter((f) => state.crystal.x - f.x <= (state.right - state.left) * 0.6).forEach((f) => hurt(state, f, s.power[r] * scale, element, null, true));
+  else if (s.kind === 'beam') foes.filter((f) => Math.abs(home.x - f.x) <= (state.right - state.left) * 0.6).forEach((f) => hurt(state, f, s.power[r] * scale, element, null, true));
   else if (s.kind === 'heal') {
     allies.sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp || a.id - b.id)
       .filter((f) => f.hp < f.maxHp).slice(0, Math.min(8, allies.length))
       .forEach((f) => healOne(state, f, f.maxHp * Math.min(0.7, s.power[r]), {id: -1}));
-    state.crystal.hp = Math.min(state.crystal.maxHp, state.crystal.hp + state.crystal.maxHp * s.crystal[r]);
+    home.hp = Math.min(home.maxHp, home.hp + home.maxHp * s.crystal[r]);
   }
-  else if (s.kind === 'shield') state.shieldUntil = state.time + Math.min(3.5, s.duration[r]);
-  else if (s.kind === 'haste') state.hasteUntil = state.time + Math.min(5, s.duration[r]);
-  state.stats.skills++;
-  emit(state, 'skill', {species: card.species, kind: s.kind, rank: card.rank, skill: s.skill, element});
+  else if (s.kind === 'shield') state[mine ? 'shieldUntil' : 'shieldEnemyUntil'] = state.time + Math.min(3.5, s.duration[r]);
+  else if (s.kind === 'haste') state[mine ? 'hasteUntil' : 'hasteEnemyUntil'] = state.time + Math.min(5, s.duration[r]);
+  if (mine) state.stats.skills++;
+  emit(state, 'skill', {species: card.species, kind: s.kind, rank: card.rank, skill: s.skill, element, side});
 }
 
 /* ---------- fighters ---------- */
 function spawn(state, side, speciesId, {boss = false, boost = 0, rank = 1} = {}) {
-  const spec = state.spirits.get(speciesId), st = fighterStats(spec, state.entries.get(speciesId), side, state.stage.scale, boost), ally = side === 'ally';
-  const passiveHp = ally || boss ? passivesOf(spec).effects.find((e) => e.effect === 'hp')?.value || 0 : 0;
+  const spec = state.spirits.get(speciesId), st = fighterStats(spec, state.entries.get(speciesId), side, state.stage.scale, boost, state.duel), ally = side === 'ally', player = ally || state.duel;
+  const passiveHp = player || boss ? passivesOf(spec).effects.find((e) => e.effect === 'hp')?.value || 0 : 0;
   const hp = Math.round(st.hp * (boss ? 5 : 1) * (1 + passiveHp)), knocks = boss ? 4 : st.knockbacks;
   /* allies (and the boss) carry their cave passives: stat bonuses plus on-hit status chances */
-  const pv = ally || boss ? passivesOf(spec).effects : [], p = Object.fromEntries(pv.map((e) => [e.effect, e.value]));
+  const pv = player || boss ? passivesOf(spec).effects : [], p = Object.fromEntries(pv.map((e) => [e.effect, e.value]));
   const ultCd = ultCooldown(spec, boss);
   const f = {id: state.nextId++, side, species: speciesId, role: ROLE_SKILLS[speciesId]?.role || 'warrior', type: spec.type, stage: spec.stage, rank, boss, flying: FLYING.test(spec.model + spec.family),
     ultCd, ultAt: state.time + ultCd * ULT_FIRST, critBonus: p.crit || 0, guard: Math.min(0.5, (p.defense || 0) + (p.reduction || 0)), regen: p.regen || 0,
@@ -384,15 +402,17 @@ function knock(state, f, distance = 1.6) {
 
 function hurt(state, f, amount, element, source, strong = false, crit = false, kind = null) {
   if (f.hp <= 0) return 0;
-  if (f.side === 'ally' && state.shieldUntil > state.time) { emit(state, 'hit', {id: f.id, amount: 0, element, blocked: true}); return 0; }
-  let dealt = amount * (f.statuses.weaken?.until > state.time ? 1.2 : 1) * (source?.side === 'ally' ? 1 + state.buffs.attack : 1) *
+  if ((f.side === 'ally' ? state.shieldUntil : state.shieldEnemyUntil) > state.time) { emit(state, 'hit', {id: f.id, amount: 0, element, blocked: true}); return 0; }
+  let dealt = amount * pkRage(state) * (f.statuses.weaken?.until > state.time ? 1.2 : 1) * (source?.side === 'ally' ? 1 + state.buffs.attack : 1) *
     (1 - Math.min(0.75, (f.guard || 0) + (f.side === 'ally' ? state.buffs.guard : 0) + (f.extraGuardUntil > state.time ? (f.extraGuard || 0) : 0)));
   if (f.barrierHp > 0) { const blocked = Math.min(f.barrierHp, dealt); f.barrierHp -= blocked; dealt -= blocked; }
   f.hp = Math.max(0, f.hp - dealt);
   if (amount >= 1) emit(state, 'hit', {id: f.id, amount: dealt, element, strong, crit, kind});
   if (f.hp === 0) {
     if (source) source.kills++;
-    if (f.side === 'enemy') { state.stats.kills++; state.dealAt -= 0.2; const pts = killPoints(state.stageIndex, f.boss); state.stats.points += pts; emit(state, 'points', {amount: pts, x: f.x, z: f.z, boss: f.boss}); }
+    if (state.duel && f.side === 'ally') { state.foe.dealAt -= 0.2; state.foe.kills = (state.foe.kills || 0) + 1; }
+    if (f.side === 'enemy' && state.duel) { state.stats.kills++; state.dealAt -= 0.2; }
+    else if (f.side === 'enemy') { state.stats.kills++; state.dealAt -= 0.2; const pts = killPoints(state.stageIndex, f.boss); state.stats.points += pts; emit(state, 'points', {amount: pts, x: f.x, z: f.z, boss: f.boss}); }
     emit(state, 'death', {id: f.id, side: f.side, x: f.x, z: f.z});
   } else if (f.knockLeft > 0 && f.hp <= f.nextKnock) {
     /* every 1/(n+1) of max HP lost pushes the spirit back */
@@ -473,7 +493,7 @@ function attack(state, f, target) {
   const skill = f.boss && baseSkill?.kind === 'support'
     ? {...baseSkill, kind:'blast', power:2.6, radius:2.6} : baseSkill;
   const isHealerReady = f.role !== 'priest' || healingTargets(state, f, roleFor(f.species).range).length > 0;
-  const strong = (f.side === 'ally' || f.boss) && !f.usedOnce && isHealerReady &&
+  const strong = (f.side === 'ally' || f.boss || state.duel) && !f.usedOnce && isHealerReady &&
     state.time >= f.ultAt && state.time >= state.nextUltimateAt && !!skill && skill.kind !== 'support';
   if (strong) {
     f.ultAt = state.time + f.ultCd;
@@ -486,7 +506,7 @@ function attack(state, f, target) {
     : strong ? profileFor(spec, state.entries.get(f.species), true) : f.profile;
   const timing = state.hooks.fire?.(f, target, strong, profile) || {release: 0.25, hold: 0.5};
   const travel = profile.ranged && !['global', 'self', 'area'].includes(profile.type) ? Math.abs(target.x - f.x) / 20 : 0;
-  const haste = f.side === 'ally' && state.hasteUntil > state.time ? 0.5 : 1;
+  const haste = (f.side === 'ally' ? state.hasteUntil : state.hasteEnemyUntil) > state.time ? 0.5 : 1;
   f.attacks++; f.busyUntil = state.time + Math.max(timing.hold || 0, 0.3) * haste;
   f.cooldown = f.rate * haste;
   state.shots.push({id: state.nextId++, from: f.id, side: f.side,
@@ -497,7 +517,7 @@ function attack(state, f, target) {
     x: target.x, z: target.z || 0, ox: f.x, oz: f.z,
     release: (timing.release || 0) * haste, travel: 0,
     eta: (timing.release || 0) * haste + travel});
-  emit(state, strong ? 'ultimate' : 'fire', {id: f.id, side: f.side, element: spec.type, species: f.species});
+  emit(state, strong ? 'ultimate' : 'fire', {id: f.id, side: f.side, element: spec.type, species: f.species, target: target.id ?? (target === state.nest ? 'nest' : 'crystal')});
 }
 function resolve(state, shot) {
   const src = state.fighters.find((f) => f.id === shot.from);
@@ -583,6 +603,7 @@ export function step(state, dt) {
   /* the deal clock stops while the player is dragging a card around the hand */
   if (state.dragging) state.dealAt += dt;
   else if (state.time >= state.dealAt) { state.dealAt = state.time + DEAL_EVERY; deal(state); }
+  if (state.foe) { if (state.foe.dragging) state.foe.dealAt += dt; else if (state.time >= state.foe.dealAt) { state.foe.dealAt = state.time + DEAL_EVERY; deal(state, 'enemy'); } }
   /* enemy spawns from the nest; once a group has sent its quota it trickles in slowly, leaving room to push */
   state.stage.groups.forEach((g, i) => {
     if (state.time < state.spawnAt[i]) return;
@@ -614,15 +635,15 @@ export function step(state, dt) {
     emit(state, 'bossSkill', {species: state.stage.boss, element: spec.type});
   }
   runTraps(state, dt);
-  const frozen = state.freezeUntil > state.time, haste = state.hasteUntil > state.time ? 2 : 1;
+  const frozen = state.freezeUntil > state.time, frozenAlly = state.freezeAllyUntil > state.time, haste = state.hasteUntil > state.time ? 2 : 1, hasteFoe = state.hasteEnemyUntil > state.time ? 2 : 1;
   for (const f of state.fighters) {
     if (f.hp <= 0) continue;
     for (const k of ['burn', 'poison']) { const s = f.statuses[k]; if (s?.until > state.time) hurt(state, f, s.dps * dt, k === 'burn' ? '焰' : '森', null); }
     if (f.hp <= 0) continue;
     if (f.regen || f.extraRegenUntil > state.time) f.hp = Math.min(f.maxHp,
       f.hp + f.maxHp * ((f.regen || 0) + (f.extraRegenUntil > state.time ? (f.extraRegen || 0) : 0)) * dt);
-    if (f.side === 'enemy' && frozen) { f.moving = false; continue; }
-    f.cooldown -= dt * (f.side === 'ally' ? haste : 1);
+    if (f.side === 'enemy' ? frozen : frozenAlly) { f.moving = false; continue; }
+    f.cooldown -= dt * (f.side === 'ally' ? haste : hasteFoe);
     if (f.knockUntil > state.time) { f.x = Math.max(state.left + 1, Math.min(state.right - 1, f.x + f.knockVel * dt)); f.moving = false; continue; }
     if (f.stunUntil > state.time || f.busyUntil > state.time) { f.moving = false; continue; }
     /* Priests heal the lowest HP-ratio friendly in range before considering damage. */
@@ -631,7 +652,7 @@ export function step(state, dt) {
       if (wounded) {
         f.moving = false;
         if (f.cooldown <= 0) {
-          if ((f.side === 'ally' || f.boss) && state.time >= f.ultAt && state.time >= state.nextUltimateAt && !f.usedOnce) attack(state, f, wounded);
+          if ((f.side === 'ally' || f.boss || state.duel) && state.time >= f.ultAt && state.time >= state.nextUltimateAt && !f.usedOnce) attack(state, f, wounded);
           else basicPriestHeal(state, f, wounded);
         }
         continue;
@@ -647,9 +668,14 @@ export function step(state, dt) {
   state.fighters = state.fighters.filter((f) => f.hp > 0 || (f.deadAt ??= state.time) > state.time - 0.9);
   if (state.nest.hp <= 0) finish(state, true);
   else if (state.crystal.hp <= 0) finish(state, false);
+  else if (state.timeLimit && state.time >= state.timeLimit) {
+    /* time up: more base health left wins; level bases go to the side that knocked out more spirits */
+    const a = state.crystal.hp / state.crystal.maxHp, b = state.nest.hp / state.nest.maxHp, ka = state.stats.kills, kb = state.foe.kills || 0;
+    finish(state, a !== b ? a > b : ka !== kb ? ka > kb : null, true);
+  }
 }
 
-function finish(state, won) {
-  state.result = {won, time: state.time, kills: state.stats.kills, crystal: state.crystal.hp / state.crystal.maxHp};
+function finish(state, won, timeUp = false) {
+  state.result = {won, time: state.time, kills: state.stats.kills, crystal: state.crystal.hp / state.crystal.maxHp, nest: state.nest.hp / state.nest.maxHp, foeKills: state.foe?.kills || 0, timeUp, draw: won === null};
   emit(state, 'finish', state.result);
 }
