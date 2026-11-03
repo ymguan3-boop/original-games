@@ -61,6 +61,10 @@ export const BAG_ITEMS = {
   battery: {icon: '🔋', name: '幻靈大絕電池', text: '我方全體幻靈的大絕立刻充滿'},
   'buff-attack': {icon: '⚔️', name: '攻擊增幅', text: '本關我方攻擊 +10%（最多 +100%）'},
   'buff-defense': {icon: '🛡️', name: '防禦增幅', text: '本關我方減傷 +10%（最多 +50%）'},
+  'card-organize': {icon: '🗂️', name: '速整卡牌', text: '立即整理手牌，讓同名同星卡靠在一起並自動合成'},
+  'deal-boost': {icon: '⏩', name: '疾速發牌', text: '12 秒內我方發牌速度加倍（3.2 秒→1.6 秒）'},
+  'deal-jam': {icon: '🕸️', name: '發牌干擾', text: '10 秒內讓對手發牌減半；單人關卡則延緩敵方出兵'},
+
 };
 const FLYING = /avian-evolution|moon-owl|green-eye-bat|light-phoenix/;
 /* Free trial cards so the mode is playable before the cave collection has enough spirits. */
@@ -168,13 +172,13 @@ export function createGame({stageIndex = 0, stage: stageOverride = null, deck, f
   const stage = stageOverride || STAGES[stageIndex], spiritMap = new Map(spirits.map((s) => [s.id, s])), path = buildPath(stage.path), half = path.length / 2;
   const state = {
     stage, stageIndex, path, spirits: spiritMap, entries: new Map((catalog.entries || []).map((e) => [e.id, e])), evolution, hooks, random: rng(seed),
-    deck: deck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), hand: [], dealAt: DEAL_EVERY, nextCard: 1, started: !deferDeal,
+    deck: deck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), hand: [], dealAt: DEAL_EVERY, dealRate: 1, dealBoostUntil: 0, dealSlowUntil: 0, nextCard: 1, started: !deferDeal,
     left: -half, right: half, time: 0, itemReady: Object.fromEntries(Object.entries(ITEMS).map(([k, v]) => [k, v.cooldown / 2])), pendingSkills: [], pendingBoss: [], bossSkillAt: BOSS_SKILL_FIRST, nextUltimateAt: 0, freezeUntil: 0, shieldUntil: 0, hasteUntil: 0,
     crystal: {hp: stage.crystal, maxHp: stage.crystal, x: half}, nest: {hp: stage.nest, maxHp: stage.nest, x: -half},
-    traps: [], buffs: {attack: 0, guard: 0},
+    traps: [], buffs: {attack: 0, guard: 0}, spawnSlowUntil: 0,
     fighters: [], shots: [], events: [], nextId: 1, spawnAt: stage.groups.map((g) => g.start), spawned: stage.groups.map(() => 0), bossOut: false,
     stats: {summons: 0, kills: 0, merges: 0, skills: 0, points: 0}, result: null,
-    duel: !!foeDeck, foe: foeDeck ? {hand: [], deck: foeDeck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), dealAt: DEAL_EVERY, dragging: false} : null,
+    duel: !!foeDeck, foe: foeDeck ? {hand: [], deck: foeDeck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), dealAt: DEAL_EVERY, dealRate: 1, dealBoostUntil: 0, dealSlowUntil: 0, dragging: false} : null,
     freezeAllyUntil: 0, shieldEnemyUntil: 0, hasteEnemyUntil: 0, timeLimit: foeDeck ? PK_TIME : 0,
   };
   if (!deferDeal) for (let i = 0; i < 3; i++) { deal(state); if (state.duel) deal(state, 'enemy'); }
@@ -346,10 +350,42 @@ export function placeTrap(state, kind, x) {
   return t;
 }
 
+/* The hand rate is time-based rather than a UI timer, so boost/jam works
+   identically for the host's cards and the connected guest's cards.
+   Keep the percentage of the current deal already completed on any rate change. */
+export const DEAL_BOOST_SECONDS = 12, DEAL_JAM_SECONDS = 10;
+export function dealRateAt(seat, now) {
+  return (seat.dealBoostUntil > now ? 2 : 1) * (seat.dealSlowUntil > now ? 0.5 : 1);
+}
+function syncDealRate(state, seat) {
+  const previous = seat.dealRate || 1, next = dealRateAt(seat, state.time);
+  if (next !== previous) {
+    seat.dealAt = state.time + Math.max(0, seat.dealAt - state.time) * previous / next;
+    seat.dealRate = next;
+  }
+}
+function arrangeHand(state, side = 'ally') {
+  const hand = seatOf(state, side).hand;
+  if (!hand.length) return false;
+  const key = (c) => c.species + '#' + c.rank;
+  const order = [...new Set(hand.map(key))];
+  hand.sort((a, b) => order.indexOf(key(a)) - order.indexOf(key(b)));
+  mergeHand(state, side);
+  emit(state, 'arrange', {side});
+  return true;
+}
 /* Use a gacha supply from the bag. The caller removes one from the bag when this returns true. */
-export function useBagItem(state, id) {
-  if (!BAG_ITEMS[id] || state.result) return false;
-  const allies = state.fighters.filter((f) => f.side === 'ally' && f.hp > 0);
+export function useBagItem(state, id, side = 'ally') {
+  if (!BAG_ITEMS[id] || state.result || !state.started || state.mirror) return false;
+  if (side !== 'ally' && (!state.duel || side !== 'enemy')) return false;
+  const seat = seatOf(state, side), otherSeat = seatOf(state, other(side));
+  /* The three hand-control items can be used by either PK participant.
+     Existing healing/buff items remain ordinary single-player supplies. */
+  if (state.duel && !['card-organize','deal-boost','deal-jam'].includes(id)) return false;
+  if (id === 'card-organize' && !seat.hand.length) return false;
+  if (id === 'deal-boost' && seat.dealBoostUntil > state.time) return false;
+  if (id === 'deal-jam' && (state.duel ? otherSeat.dealSlowUntil : state.spawnSlowUntil) > state.time) return false;
+  const allies = state.fighters.filter((f) => f.side === side && f.hp > 0);
   if (id === 'potion' || id === 'revive') {
     const k = id === 'potion' ? 0.4 : 0.2, c = id === 'potion' ? 0.08 : 0.5;
     for (const a of allies) a.hp = Math.min(a.maxHp, a.hp + a.maxHp * k);
@@ -357,7 +393,21 @@ export function useBagItem(state, id) {
   } else if (id === 'battery') { for (const a of allies) a.ultAt = Math.min(a.ultAt, state.time); state.nextUltimateAt = Math.min(state.nextUltimateAt, state.time); }
   else if (id === 'buff-attack') state.buffs.attack = Math.min(1, state.buffs.attack + 0.1);
   else if (id === 'buff-defense') state.buffs.guard = Math.min(0.5, state.buffs.guard + 0.1);
-  emit(state, 'bagItem', {id});
+  else if (id === 'card-organize') arrangeHand(state, side);
+  else if (id === 'deal-boost') {
+    seat.dealBoostUntil = state.time + DEAL_BOOST_SECONDS;
+    syncDealRate(state, seat);
+  }
+  else if (id === 'deal-jam') {
+    if (state.duel) {
+      otherSeat.dealSlowUntil = state.time + DEAL_JAM_SECONDS;
+      syncDealRate(state, otherSeat);
+    } else {
+      state.spawnSlowUntil = state.time + DEAL_JAM_SECONDS;
+      state.spawnAt = state.spawnAt.map((t) => state.time + Math.max(0, t - state.time) * 1.6);
+    }
+  }
+  emit(state, 'bagItem', {id, side});
   return true;
 }
 
@@ -368,12 +418,7 @@ export function useItem(state, id) {
   state.itemReady[id] = state.time + ITEMS[id].cooldown;
   if (id === 'reshuffle') { const n = Math.max(3, state.hand.length); state.hand = []; for (let i = 0; i < n; i++) deal(state); }
   else if (id === 'quickdeal') { deal(state); deal(state); }
-  else if (id === 'sort') {
-    /* group identical cards (same spirit and star) in the order they first appear, then let them merge */
-    const key = (c) => c.species + '#' + c.rank, order = [...new Set(state.hand.map(key))];
-    state.hand.sort((a, b) => order.indexOf(key(a)) - order.indexOf(key(b)));
-    mergeHand(state);
-  }
+  else if (id === 'sort') arrangeHand(state);
   emit(state, 'item', {id});
   return true;
 }
@@ -600,15 +645,22 @@ function runTraps(state, dt) {
 export function step(state, dt) {
   if (!state.started || state.result) return;
   state.time += dt;
-  /* the deal clock stops while the player is dragging a card around the hand */
-  if (state.dragging) state.dealAt += dt;
-  else if (state.time >= state.dealAt) { state.dealAt = state.time + DEAL_EVERY; deal(state); }
-  if (state.foe) { if (state.foe.dragging) state.foe.dealAt += dt; else if (state.time >= state.foe.dealAt) { state.foe.dealAt = state.time + DEAL_EVERY; deal(state, 'enemy'); } }
+  /* Deal clocks honour boosts/jams, preserving the current card's progress.
+     A player dragging cards freezes only that player's deal clock. */
+  for (const side of state.foe ? ['ally','enemy'] : ['ally']) {
+    const seat = seatOf(state, side);
+    syncDealRate(state, seat);
+    if (seat.dragging) seat.dealAt += dt;
+    else if (state.time >= seat.dealAt) {
+      seat.dealAt = state.time + DEAL_EVERY / (seat.dealRate || 1);
+      deal(state, side);
+    }
+  }
   /* enemy spawns from the nest; once a group has sent its quota it trickles in slowly, leaving room to push */
   state.stage.groups.forEach((g, i) => {
     if (state.time < state.spawnAt[i]) return;
     const quota = g.max * 3 + state.stageIndex;
-    state.spawnAt[i] = state.time + g.every * SPAWN_PACE * (state.spawned[i] >= quota ? 2.5 : 1);
+    state.spawnAt[i] = state.time + g.every * SPAWN_PACE * (state.spawned[i] >= quota ? 2.5 : 1) * (state.spawnSlowUntil > state.time ? 1.6 : 1);
     if (state.fighters.filter((f) => f.side === 'enemy' && f.hp > 0 && f.species === g.species).length < g.max) { spawn(state, 'enemy', g.species); state.spawned[i]++; }
   });
   for (let i = state.pendingSkills.length - 1; i >= 0; i--) {
