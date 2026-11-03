@@ -1133,4 +1133,12 @@ button.fs-toggle { display: inline-grid !important; place-items: center; width: 
 .pk-side .pk-deck img { width: 40px; height: 40px; border-radius: 9px; }
 @media (max-width: 520px) { .pk-versus { grid-template-columns: 1fr; } .pk-vs { text-align: center; font-size: 26px; } .pk-choices { grid-template-columns: 1fr; } }
 /* in a PK match: no gacha points, items or speed button */
-body.pk-mode #hud .stat.pts, body.pk-mode #items, body.pk-mode #speed, body.pk-mode .item-wrap { display: none; }
+/* PK hides unrelated points/speed, but tactical consumables must remain accessible
+   on the right exactly as they are in the island battle. */
+body.pk-mode #hud .stat.pts, body.pk-mode #speed { display: none; }
+.item-empty { margin: 0; padding: 12px 8px; border: 2px dashed #d5b582; border-radius: 12px;
+  text-align: center; font-size: 12px; font-weight: 700; line-height: 1.6; color: #76563c; }
+#hud .item-menu:has(.item-empty) { width: min(290px, calc(100vw - 24px)); }
+#hud .item-menu .item { cursor: pointer; }
+#hud .item-menu .item:active { transform: translateY(1px); }
+body.pk-mode #hud .item-wrap, body.pk-mode #hud #items { display: block; }
