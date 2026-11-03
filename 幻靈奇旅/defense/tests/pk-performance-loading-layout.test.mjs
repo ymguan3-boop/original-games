@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {STAGES} from '../js/stages.js';
+import {STAGES,buildPath} from '../js/stages.js';
 import {PK_STAGE, PK_ARENAS, pkArenaFor, createGame, TRIAL_ROSTER} from '../js/rules.js';
 import {createMirror} from '../js/pk-sync.js';
 
