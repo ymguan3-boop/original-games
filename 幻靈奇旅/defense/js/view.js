@@ -51,7 +51,7 @@ export function createView(canvas, {spirits, catalog}) {
     if (!obj) return;
     obj.parent?.remove(obj);
     obj.traverse((node) => {
-      if (node.geometry && node.geometry !== sphereGeo && node.geometry !== ringGeo) node.geometry.dispose();
+      if (!node.isSprite && node.geometry && node.geometry !== sphereGeo && node.geometry !== ringGeo) node.geometry.dispose();
       for (const mat of (Array.isArray(node.material) ? node.material : [node.material])) {
         if (!mat) continue;
         if (node.userData?.ownsMap) mat.map?.dispose?.();
@@ -67,7 +67,7 @@ export function createView(canvas, {spirits, catalog}) {
     mapGroup.parent?.remove(mapGroup);
     const geometries = new Set(), materials = new Set(), maps = new Set();
     mapGroup.traverse((node) => {
-      if (node.geometry) geometries.add(node.geometry);
+      if (!node.isSprite && node.geometry) geometries.add(node.geometry);
       for (const mat of (Array.isArray(node.material) ? node.material : [node.material])) {
         if (mat && !kit.isSharedMaterial(mat)) {
           materials.add(mat);
