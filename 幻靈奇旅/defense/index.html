@@ -8,7 +8,7 @@
   <title>幻靈守護戰｜幻靈奇旅</title>
   <link rel="stylesheet" href="../survivors/css/evolution.css">
   <link rel="stylesheet" href="../css/collection-card.css?v=20261020-avian-v1">
-  <link rel="stylesheet" href="css/defense.css?v=20261103-landscape-cards-v2">
+  <link rel="stylesheet" href="css/defense.css?v=20261104-country-v5">
   <!-- the endless cave gacha look (summon film, wallet, reward list); cave.css itself is global, so its gacha rules are
        copied into css/cave-gacha.css scoped to dialog#panel -->
   <link rel="stylesheet" href="../survivors/css/v06.css">
@@ -36,6 +36,7 @@
         <button id="howto" class="tool">📖<span>玩法</span></button>
         <button id="homeBtn" class="tool home">⛵<span>回初光鎮</span></button>
       </div>
+      <button class="tool fs-toggle chart-fs" title="全畫面／還原" aria-label="全畫面">⛶</button>
     </header>
     <aside id="islePanel" class="isle-panel" aria-live="polite"></aside>
   </main>
@@ -51,6 +52,7 @@
         <button id="speed" title="遊戲速度">×1</button>
         <button id="pause" title="暫停">❚❚</button>
       </div>
+      <button class="fs-toggle hud-fs" title="全畫面／還原" aria-label="全畫面">⛶</button>
     </div>
     <div class="hud-bottom">
       <div id="hand" class="hand"></div>
@@ -59,13 +61,12 @@
     </div>
     <div id="banner" class="banner" hidden></div>
     <div id="bossIntro" class="boss-intro" hidden role="status" aria-live="polite">
-      <img id="bossIntroPortrait" class="boss-intro-portrait" alt="">
-      <div class="boss-intro-copy">
-        <small id="bossIntroStage">魔王登場</small>
-        <strong id="bossIntroName"></strong>
-        <p id="bossIntroLine"></p>
+      <div class="bi-portrait"><img id="bossIntroPortrait" alt=""></div>
+      <div class="bi-board">
+        <header class="bi-title"><span id="bossIntroStage">魔王登場</span><button id="dismissBossIntro" class="bi-close" aria-label="關閉魔王開場台詞" title="關閉">×</button></header>
+        <div class="bi-paper"><strong id="bossIntroName"></strong><p id="bossIntroLine"></p></div>
+        <i class="bi-grass" aria-hidden="true"></i>
       </div>
-      <button id="dismissBossIntro" class="boss-intro-close" aria-label="關閉魔王開場台詞" title="關閉">×</button>
     </div>
     <div class="rotate-hint">手機橫放可以看到更寬的戰場</div>
   </div>
@@ -82,6 +83,6 @@
   <script src="../js/cave-economy.js?v=20261029-reaper-v1"></script>
   <script src="../js/hero-costumes.js?v=20261030-reaper-v2"></script>
   <script src="../js/harbor.js?v=20261103-harbor-v5"></script>
-  <script type="module" src="js/main.js?v=20261103-no-flying-star-v2"></script>
+  <script type="module" src="js/main.js?v=20261104-country-v5"></script>
 </body>
 </html>

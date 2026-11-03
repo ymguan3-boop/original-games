@@ -1,0 +1,371 @@
+[
+  {
+    "stage": 1,
+    "id": "meadow",
+    "name": "初光草原",
+    "boss": "小黃",
+    "theme": "草原型新手島",
+    "colors": [
+      "嫩綠",
+      "白花",
+      "暖黃"
+    ],
+    "terrain": [
+      "大面積草皮",
+      "小土坡",
+      "鄉村小徑"
+    ],
+    "decor": [
+      "木柵欄",
+      "風車",
+      "穀倉",
+      "白花叢",
+      "乾草堆"
+    ],
+    "mood": "明亮療癒、適合初學者的可愛農村島",
+    "light": "柔和暖陽、高飽和草色",
+    "landmarks": [
+      "風車",
+      "穀倉"
+    ],
+    "props": [
+      "mound",
+      "whiteFlowers",
+      "windmill",
+      "barn",
+      "fence"
+    ]
+  },
+  {
+    "stage": 2,
+    "id": "pond",
+    "name": "青蛙池塘",
+    "boss": "大眼蛙",
+    "theme": "池塘濕地島",
+    "colors": [
+      "青綠",
+      "湖水藍",
+      "白泡泡"
+    ],
+    "terrain": [
+      "中央大池",
+      "濕地",
+      "小瀑流"
+    ],
+    "decor": [
+      "睡蓮與荷葉",
+      "木棧橋",
+      "蘆葦",
+      "圓潤石頭",
+      "青蛙雕像"
+    ],
+    "mood": "生態童話感，水氣與泡泡",
+    "light": "清亮日光、水面輕微起伏",
+    "landmarks": [
+      "木棧橋",
+      "青蛙雕像"
+    ],
+    "props": [
+      "boardwalk",
+      "frogStatue",
+      "bubbles",
+      "pond",
+      "frog"
+    ]
+  },
+  {
+    "stage": 3,
+    "id": "waterfall",
+    "name": "水仙瀑布",
+    "boss": "水仙子",
+    "theme": "瀑布花境島",
+    "colors": [
+      "水藍",
+      "白",
+      "淡黃"
+    ],
+    "terrain": [
+      "多層岩壁",
+      "石階",
+      "清潭"
+    ],
+    "decor": [
+      "瀑布",
+      "水仙花叢",
+      "濕潤岩壁",
+      "彩虹水霧",
+      "漂浮花瓣"
+    ],
+    "mood": "空靈唯美的森林仙境",
+    "light": "潮濕柔光、水霧中的彩虹",
+    "landmarks": [
+      "瀑布與彩虹",
+      "石階"
+    ],
+    "props": [
+      "daffodils",
+      "stoneSteps",
+      "rainbow",
+      "petals",
+      "waterfallCliff"
+    ]
+  },
+  {
+    "stage": 4,
+    "id": "orchard",
+    "name": "猴王果園",
+    "boss": "C老猴",
+    "theme": "果園樹屋島",
+    "colors": [
+      "橙棕",
+      "葉綠",
+      "果紅黃"
+    ],
+    "terrain": [
+      "高低差平台",
+      "果樹林"
+    ],
+    "decor": [
+      "大量果樹",
+      "藤蔓",
+      "木梯",
+      "樹屋",
+      "吊橋",
+      "掉落果實"
+    ],
+    "mood": "熱帶叢林樂園感",
+    "light": "暖橙午後光",
+    "landmarks": [
+      "樹屋",
+      "吊橋"
+    ],
+    "props": [
+      "treehouse",
+      "ropeBridge",
+      "fruitTree",
+      "basket",
+      "ladder"
+    ]
+  },
+  {
+    "stage": 5,
+    "id": "forge",
+    "name": "雷鳴工坊",
+    "boss": "龐克兔",
+    "theme": "雷電工坊島",
+    "colors": [
+      "紫",
+      "電藍",
+      "螢光黃",
+      "黑"
+    ],
+    "terrain": [
+      "金屬平台",
+      "工業管線"
+    ],
+    "decor": [
+      "發電線圈",
+      "喇叭",
+      "舞台燈架",
+      "霓虹燈"
+    ],
+    "mood": "機械搖滾舞台結合工坊",
+    "light": "暖橙黃昏加電光",
+    "landmarks": [
+      "特斯拉線圈",
+      "舞台燈架"
+    ],
+    "props": [
+      "teslaCoil",
+      "speakerStack",
+      "stageLights",
+      "house",
+      "lantern"
+    ]
+  },
+  {
+    "stage": 6,
+    "id": "desert",
+    "name": "牛仔荒野",
+    "boss": "阿宏牛仔",
+    "theme": "西部荒野島",
+    "colors": [
+      "沙棕",
+      "深咖",
+      "酒紅",
+      "夕陽金"
+    ],
+    "terrain": [
+      "紅土峽谷",
+      "岩台"
+    ],
+    "decor": [
+      "仙人掌",
+      "木頭酒館",
+      "馬車",
+      "路牌",
+      "木柵欄"
+    ],
+    "mood": "小鎮式決鬥廣場",
+    "light": "夕陽長影、暖金色",
+    "landmarks": [
+      "酒館",
+      "馬車與路牌"
+    ],
+    "props": [
+      "wagon",
+      "signpost",
+      "deadTree",
+      "saloon",
+      "cactus",
+      "mesa"
+    ]
+  },
+  {
+    "stage": 7,
+    "id": "observatory",
+    "name": "星輝觀星台",
+    "boss": "藍金星輝法師",
+    "theme": "觀星法陣島",
+    "colors": [
+      "藍",
+      "金",
+      "銀白"
+    ],
+    "terrain": [
+      "高台",
+      "星盤地面"
+    ],
+    "decor": [
+      "天文台",
+      "金色法陣",
+      "浮空碎石",
+      "望遠鏡",
+      "星象塔",
+      "流星"
+    ],
+    "mood": "高貴神祕",
+    "light": "暮紫天光、星光點綴",
+    "landmarks": [
+      "星盤法陣",
+      "星象塔"
+    ],
+    "props": [
+      "magicCircle",
+      "floatRock",
+      "starTowerSmall",
+      "shootingStar",
+      "telescope",
+      "domeHall"
+    ]
+  },
+  {
+    "stage": 8,
+    "id": "night",
+    "name": "月影森林",
+    "boss": "綠眼蝙怪",
+    "theme": "月夜森林島",
+    "colors": [
+      "墨綠",
+      "深紫",
+      "黑藍",
+      "螢光綠"
+    ],
+    "terrain": [
+      "林地",
+      "枯木區"
+    ],
+    "decor": [
+      "扭曲樹木",
+      "霧氣",
+      "發光菌菇",
+      "蝙蝠剪影",
+      "毒霧"
+    ],
+    "mood": "微陰森但仍保有童話風",
+    "light": "冷月光、螢光點綴（不閃爍）",
+    "landmarks": [
+      "扭曲古樹",
+      "蝙蝠群"
+    ],
+    "props": [
+      "twistedTree",
+      "mist",
+      "bats",
+      "mushroom",
+      "pine"
+    ]
+  },
+  {
+    "stage": 9,
+    "id": "tower",
+    "name": "星穹塔下",
+    "boss": "歐頭慢",
+    "theme": "塔城平台島",
+    "colors": [
+      "米白",
+      "淡紫",
+      "彩虹",
+      "柔和藍"
+    ],
+    "terrain": [
+      "圓形廣場",
+      "雲階"
+    ],
+    "decor": [
+      "星穹塔",
+      "漂浮石板",
+      "彩色能量紋",
+      "水晶"
+    ],
+    "mood": "守關塔樓與夢幻天空感",
+    "light": "柔和粉紫天光",
+    "landmarks": [
+      "星穹塔",
+      "彩色能量廣場"
+    ],
+    "props": [
+      "starTower",
+      "plaza",
+      "floatSlab",
+      "pillar",
+      "crystalCluster"
+    ]
+  },
+  {
+    "stage": 10,
+    "id": "abyss",
+    "name": "水蛟深淵",
+    "boss": "水蛟龍王",
+    "theme": "深海王座島",
+    "colors": [
+      "深海藍",
+      "青黑",
+      "冷白",
+      "雷光藍"
+    ],
+    "terrain": [
+      "海蝕岩",
+      "深淵裂口"
+    ],
+    "decor": [
+      "古代海神遺跡",
+      "龍紋祭壇",
+      "巨浪拍岸",
+      "雷雨天空"
+    ],
+    "mood": "最終關的史詩與危險感",
+    "light": "暴風雨冷光、青光祭壇",
+    "landmarks": [
+      "龍紋祭壇",
+      "海神拱門"
+    ],
+    "props": [
+      "dragonAltar",
+      "ruinArch",
+      "rift",
+      "foamRock",
+      "coral"
+    ]
+  }
+]

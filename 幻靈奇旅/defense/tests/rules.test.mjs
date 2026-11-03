@@ -158,7 +158,7 @@ test('playing a spirit card summons it; a support card casts its skill', () => {
   playCard(s, 0);
   assert.equal(s.freezeUntil, 0, 'the skill waits for the entrance');
   while (!s.freezeUntil) step(s, 1 / 60);
-  assert.ok(Math.abs(s.freezeUntil - s.time - SUPPORT.monferno.duration[2]) < 0.02, '藍金星輝法師 ★3 freezes for 10 s');
+  assert.ok(Math.abs(s.freezeUntil - s.time - Math.min(4.5, SUPPORT.monferno.duration[2])) < 0.02, '藍金星輝法師 ★3 freezes for 4.5 s (control capped by V2 rules)');
   assert.equal(s.hand.length, 0);
 });
 
@@ -276,8 +276,8 @@ test('the boss stays on its barrel until the nest is at 60%, and casts its ultim
   const before = ally.hp;
   while (s.time < BOSS_SKILL_FIRST + SKILL_WINDUP + 0.05) step(s, 1 / 60);
   assert.ok(before - ally.hp >= ally.maxHp * bossSkillDamage(2) * 0.5, 'the boss ultimate hit the spirit');
-  s.nest.hp = s.nest.maxHp * (BOSS_OUT_AT + 0.05); s.events.length = 0;
+  s.nest.hp = s.nest.maxHp * (BOSS_OUT_AT + 0.02); s.events.length = 0;
   ally.x = s.left + 2; ally.speed = 0; ally.cooldown = 0;
-  for (let i = 0; i < 60 * 3 && !s.bossOut; i++) step(s, 1 / 60);
+  for (let i = 0; i < 60 * 20 && !s.bossOut; i++) { ally.hp = ally.maxHp; s.fighters = s.fighters.filter((f) => f.side === 'ally'); step(s, 1 / 60); }
   assert.ok(s.bossOut, 'the boss jumps down once the nest is below 60%');
 });

@@ -5,8 +5,8 @@
 import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier} from './rules.js?v=20261103-dealing-on-screen-v1';
 import {loadEngine, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
-import {createIslandRenderer} from './islands3d.js';
-import {createView} from './view.js?v=20261103-dealing-on-screen-v1';
+import {createIslandRenderer} from './islands3d.js?v=20261104-islands-v1';
+import {createView} from './view.js?v=20261104-country-v1';
 import {createIslandMap} from './islands.js?v=20261102-chart-v4';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT} from './gacha.js';
 import {buildPath} from './stages.js?v=20261103-forge-v2';
@@ -18,12 +18,15 @@ import {groupRewards} from '../../survivors/js/reward-groups.js';
 import {itemPicture} from '../../survivors/js/item-pictures.js';
 import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v2';
 import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261103-weather-v1';
-import {openingFor} from './boss-openings.js?v=20261103-opening-v1';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-country-v1';
 import {icon} from '../../survivors/js/ui-art.js';
+import {initFullscreen} from './fullscreen.js?v=20261104-country-v1';
 import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
 
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
+/* the game's theme song (the town's general.mp3) plays in the chart and in battle */
+const THEME_SCENE = 'general';
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 let data, record, view, audio, game = null, speed = 1, paused = false, last = 0, acc = 0, lastImpact = 0;
 let pendingDealingScene = null, visibleSceneFrames = 0, startSerial = 0, bossIntroTimer = null;
@@ -34,22 +37,61 @@ function readJson(key, fallback) { try { return JSON.parse(localStorage.getItem(
 function saveRecord() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(record)); } catch {} }
 function toast(text) { const t = $('toast'); t.textContent = text; t.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), 2200); }
 function picture(id) { const a = data.art[id]; return '../' + (a?.image || 'portraits/' + id + '.png'); }
+/* ---------- boss opening: one short line, a 3D bust, the voice file and the country-style frame ---------- */
+let bossVoice = null, portraitJob = null;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+function stopBossVoice() {
+  try { bossVoice?.pause(); } catch {}
+  bossVoice = null;
+  try { globalThis.speechSynthesis?.cancel(); } catch {}
+}
+/* the generated mp3 (defense/audio/boss/*.mp3); if it is missing the browser's own zh-TW voice reads the same line */
+function playBossVoice(speech) {
+  stopBossVoice();
+  if (globalThis.PhantomBgm?.sfxMuted) return;
+  const v = speech.voice; if (!v) return;
+  const volume = clamp((globalThis.PhantomBgm?.sfxVolume ?? 55) / 100 + 0.35, 0.3, 1);
+  const fallback = () => {
+    try {
+      const u = new SpeechSynthesisUtterance(v.ttsText || speech.line); u.lang = 'zh-TW'; u.volume = volume;
+      u.pitch = clamp(1 + parseInt(v.pitch, 10) / 120, 0.5, 1.8); u.rate = clamp(1 + parseInt(v.rate, 10) / 100, 0.5, 1.5);
+      const voices = speechSynthesis.getVoices().filter((x) => /zh[-_]TW|cmn-TW/i.test(x.lang)); if (voices[0]) u.voice = voices[0];
+      speechSynthesis.speak(u);
+    } catch {}
+  };
+  const a = new Audio(new URL('../' + v.audioFile, import.meta.url).href); a.volume = volume; bossVoice = a;
+  a.onerror = fallback;
+  a.play().then(() => globalThis.PhantomBgm?.duckFor?.(0.3, Math.min(4200, (a.duration || 3) * 1000 + 400))).catch((e) => { if (e?.name !== 'NotAllowedError' && e?.name !== 'AbortError') fallback(); });
+}
+function prepareBossPortrait(stage) {
+  const speech = openingFor(stage);
+  portraitJob = speech && view?.portrait ? view.portrait(stage.boss, speech.pose).catch(() => null) : Promise.resolve(null);
+}
 function hideBossIntro() {
   clearTimeout(bossIntroTimer);
   bossIntroTimer = null;
+  stopBossVoice();
   $('bossIntro').hidden = true;
 }
-function showBossIntro(stage) {
+async function showBossIntro(stage) {
   const speech = openingFor(stage);
   if (!speech) return;
   hideBossIntro();
-  $('bossIntroPortrait').src = picture(stage.boss);
+  const serial = startSerial, shot = await Promise.race([portraitJob, new Promise((r) => setTimeout(() => r(null), 700))]);
+  if (serial !== startSerial || !game) return;
+  const box = $('bossIntro'), t = speech.theme;
+  for (const [k, v] of Object.entries({wood: t.wood, paper: t.paper, accent: t.accent, ink: t.ink, glow: t.glow})) box.style.setProperty('--bi-' + k, v);
+  box.dataset.boss = stage.id;
+  $('bossIntroPortrait').src = shot || picture(stage.boss);
+  box.classList.toggle('is-card', !shot);
   $('bossIntroPortrait').alt = speech.name;
-  $('bossIntroStage').textContent = '第 ' + (STAGES.indexOf(stage) + 1) + ' 關 · ' + stage.name + ' · 魔王放話';
+  $('bossIntroStage').textContent = '第 ' + (STAGES.indexOf(stage) + 1) + ' 關｜' + stage.name + '｜' + speech.name;
   $('bossIntroName').textContent = speech.name;
   $('bossIntroLine').textContent = '「' + speech.line + '」';
-  $('bossIntro').hidden = false;
-  bossIntroTimer = setTimeout(hideBossIntro, 5500);
+  box.hidden = false;
+  playBossVoice(speech);
+  const [lo, hi] = OPENING_SECONDS;
+  bossIntroTimer = setTimeout(hideBossIntro, clamp(lo + (speech.line.length - 8) * 0.1, lo, hi) * 1000);
 }
 function spirit(id) { return data.spiritMap.get(id); }
 function shapeLabel(id, strong) {
@@ -277,6 +319,12 @@ function showHowTo() {
     <div class="modal-actions center"><button class="primary big" data-close>開始守護戰</button></div>`,'howto');
 }
 
+function openModal(html, kind = 'info') {
+  $('modalBody').innerHTML = html; const m = $('modal'); m.className = 'panel panel-' + kind;
+  if (!m.open) m.showModal(); m.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => m.close()));
+}
+const ribbon = (text, icon = '') => `<div class="ribbon"><span>${icon ? `<i>${icon}</i>` : ''}${text}</span></div>`;
+
 /* ---------- battle ---------- */
 async function startGame() {
   /* Loading is not gameplay. Stop any previous battle and reset the simulation
@@ -295,7 +343,7 @@ async function startGame() {
     view.costume = costumeFor(journey()).id;
     game = createGame({stageIndex: record.stage, deck: record.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
     game.runId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-    view.setGame(game);
+    view.setGame(game); prepareBossPortrait(game.stage);
     $('loadingBar').style.width = '40%'; $('loadingText').textContent = '幻靈們正在集合…';
     await Promise.race([view.preload([...record.deck, ...game.stage.groups.map((g) => g.species)]), new Promise((r) => setTimeout(r, 9000))]);
     $('loadingBar').style.width = '100%';
@@ -315,7 +363,7 @@ async function startGame() {
   renderHand(); hud();
   /* Opening boss speech includes the stage title, avoiding overlap with the stage banner. */
   setTimeout(() => game && toast('拖曳卡片排列，相同的卡相鄰會合成；點一下卡片派出'), 2400);
-  globalThis.PhantomBgm?.setScene?.('arena');
+  globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
 }
 
 /* credit this battle's kill points to the shared cave wallet once (idempotent per run id) */
@@ -331,7 +379,7 @@ function leaveGame() {
   creditPoints();
   game = null; $('hud').hidden = true; $('lobby').hidden = false; $('modal').close();
   view?.setGame(null); audio?.stop?.();
-  globalThis.PhantomBgm?.setScene?.('general');
+  globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
   renderLobby();
 }
 
@@ -553,6 +601,7 @@ function showResult(r) {
 
 function bindHud() {
   $('dismissBossIntro').onclick = hideBossIntro;
+  initFullscreen();
   $('items').onclick = () => { const menu = $('itemMenu'); menu.hidden = !menu.hidden; if (!menu.hidden) renderItems(); };
   $('itemMenu').onclick = (e) => {
     const b = e.target.closest('[data-item]'); if (!b || !game) return;
@@ -667,8 +716,8 @@ async function init() {
     if (record.boatAt !== record.stage) await sailTo(record.stage);
     if (!record.starterClaimed || new URLSearchParams(location.search).get('open') === 'gacha') openGacha();
   }, fromTown ? 1300 : 300);
-  globalThis.PhantomBgm?.setScene?.('general');
+  globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
   requestAnimationFrame(loop);
-  globalThis.PhantomDefense = {get game() { return game; }, get view() { return view; }, startGame, leaveGame, elementMultiplier, isSupport};
+  globalThis.PhantomDefense = {get game() { return game; }, get view() { return view; }, startGame, leaveGame, showBossIntro, prepareBossPortrait, elementMultiplier, isSupport};
 }
 init();

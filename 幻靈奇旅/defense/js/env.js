@@ -1,6 +1,8 @@
 /* Themed cartoon scenery for each stage (farm meadow, riverside, forge town, library, night forest, star tower,
    abyss): ground colours, lighting and toon-shaded, outlined props placed clear of the road and the two bases. */
 
+import {createIslandProps} from './island-props.js?v=20261104-islands-v1';
+
 export const THEMES = {
   meadow: {sky: 0xbfe6ff, ground: [0x86cc5e, 0x6ab84c, 0xb4d468], hemi: [0xfff6e0, 0x5e8a3a, 0.85], sun: [0xfff0cf, 1.15], road: [0x6a4528, 0xc89a5a, 0xe9c98e]},
   pond: {sky: 0xb8e4ff, ground: [0x7fc965, 0x5fb553, 0xa9d873], hemi: [0xeaf7ff, 0x4f8a48, 0.85], sun: [0xfff4dc, 1.1], road: [0x5e4026, 0xc3a06a, 0xeedbb0]},
@@ -20,6 +22,7 @@ export function buildEnvironment(THREE, group, {theme, path, start, end, rand, k
   const pts = path.points;
   const roadDistance = (x, z) => { let b = Infinity; for (let i = 0; i < pts.length; i += 2) b = Math.min(b, Math.hypot(pts[i][0] - x, pts[i][1] - z)); return b; };
   const taken = [];
+  const P = createIslandProps(THREE, kit, rand, animated);
   /* find a free spot: off the road, away from the bases and other big props */
   function spot(clear = 2.6, room = 1.5, tries = 40, inside = true) {
     for (let i = 0; i < tries; i++) {
@@ -223,6 +226,32 @@ export function buildEnvironment(THREE, group, {theme, path, start, end, rand, k
     scatter(10, () => pillar(), 3, 1.6); scatter(10, () => crystalCluster([0xb69bff, 0x9bd4ff, 0xffd69b][Math.floor(rand() * 3)]), 2.2, 0.9); scatter(8, () => roundTree([0xf2c6e6, 0xe6b0dc, 0xffd6ef], 0x7a5a6a), 2.8, 1.6); scatter(6, () => lantern(true), 2.2, 0.8);
   } else if (theme === 'abyss') {
     scatter(2, () => pond(2 + rand()), 4.8, 3); scatter(12, () => coral([0xff9a8a, 0xffc36a, 0xb48aff][Math.floor(rand() * 3)]), 2.2, 0.8); scatter(10, () => crystalCluster(0x7fe6ff), 2.2, 0.9); scatter(8, () => rock(0x4f7a82), 2, 0.6);
+  }
+  /* ---------- each island's signature props (docs/十關島嶼3D設計規格.md) ---------- */
+  const lift = (make, y) => () => { const o = make(), g = new THREE.Group(); o.position.y = y; g.add(o); return g; };
+  const far = (x, z, r, obj, outline = 0.1) => { taken.push([x, z, r]); return place(obj, x, z, 0, outline); };
+  if (theme === 'meadow') {
+    scatter(5, P.mound, 2.6, 1.2); scatter(6, P.whiteFlowers, 2, 0.8); scatter(3, () => fence(3), 2.2, 1);
+  } else if (theme === 'pond') {
+    scatter(2, () => P.boardwalk(4), 3.4, 2.4); scatter(2, P.frogStatue, 2.4, 1); scatter(3, P.bubbles, 3, 1);
+  } else if (theme === 'waterfall') {
+    scatter(2, P.stoneSteps, 3, 2); scatter(8, P.daffodils, 2, 0.8); far(0, -12.8, 5, P.rainbow(), 0.01).scale.setScalar(1.7); scatter(1, P.petals, 3, 1);
+  } else if (theme === 'orchard') {
+    scatter(2, P.treehouse, 4, 3); scatter(2, () => P.ropeBridge(4), 3.4, 2.4);
+  } else if (theme === 'forge') {
+    scatter(4, P.teslaCoil, 2.6, 1.2); scatter(3, P.speakerStack, 2.4, 1); scatter(1, P.stageLights, 3.4, 2.4);
+  } else if (theme === 'desert') {
+    scatter(2, P.wagon, 3, 1.8); scatter(3, P.signpost, 2.2, 0.8); scatter(4, P.deadTree, 2.4, 0.9);
+  } else if (theme === 'observatory') {
+    scatter(2, () => P.magicCircle(2.3), 4.2, 3); scatter(1, P.starTowerSmall, 3.6, 2.4); group.add(P.shootingStar());
+    for (let i = 0; i < 5; i++) { const sp = spot(2.4, 1.2, 40, false); if (sp) place(lift(P.floatRock, 1.4 + rand() * 1.6)(), sp[0], sp[1], undefined, 0.08); }
+  } else if (theme === 'night') {
+    scatter(6, P.twistedTree, 2.8, 1.6); scatter(4, P.mist, 3, 1.4, true, 0.01); group.add(P.bats(6));
+  } else if (theme === 'tower') {
+    far(0, -14.5, 6, P.plaza(3.6), 0.05); far(0, -14.5, 6, P.starTower(), 0.1);
+    for (let i = 0; i < 5; i++) { const sp = spot(2.4, 1.4, 40, false); if (sp) place(lift(P.floatSlab, 0.8 + rand() * 2.2)(), sp[0], sp[1], undefined, 0.08); }
+  } else if (theme === 'abyss') {
+    scatter(1, P.dragonAltar, 4, 3); scatter(1, P.ruinArch, 3.6, 2.4); scatter(2, P.rift, 3.4, 2, true, 0.01); scatter(5, P.foamRock, 2.4, 1);
   }
   /* a ring of trees outside the field so the map never ends in bare grass */
   const outer = theme === 'night' ? () => pine(0x2a5a3c) : theme === 'forge' ? () => roundTree([0xc9a24a, 0xb88a3a]) : theme === 'tower' ? () => pillar() : theme === 'abyss' ? () => coral() : theme === 'desert' ? () => (rand() < 0.5 ? cactus() : mesa()) : theme === 'orchard' ? () => fruitTree() : () => roundTree();

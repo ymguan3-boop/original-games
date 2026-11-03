@@ -2,7 +2,8 @@
    scene (barn and windmill, frog pond, waterfall cliff, orchard, smoking forge houses, desert mesa and cacti,
    observatory dome, moonlit pines, the star tower, the sea-dragon abyss). Each is rendered once to a transparent
    picture that the SVG chart places on the island spot; the speedboat with the hero is rendered the same way. */
-import {THEMES} from './env.js';
+import {THEMES} from './env.js?v=20261104-islands-v1';
+import {createIslandProps} from './island-props.js?v=20261104-islands-v1';
 
 export function createIslandRenderer(THREE, kit) {
   const T = THREE, {toon, toonify} = kit;
@@ -108,6 +109,23 @@ export function createIslandRenderer(THREE, kit) {
     },
   };
 
+  /* each island's signature props from island-props.js (the same ones the battle field uses), scaled down onto the model:
+     [prop, x, z, scale, height above the grass, turn] */
+  const P = createIslandProps(T, kit, Math.random, []);
+  const SIGNATURE = {
+    meadow: [[P.whiteFlowers, -0.35, 0.95, 0.5, 0, 0], [P.mound, 0.1, -0.95, 0.5, 0, 0]],
+    pond: [[() => P.boardwalk(3), 0.1, 0.05, 0.3, 0.02, 0.3], [P.frogStatue, -0.95, 0.75, 0.32, 0, 0.5]],
+    waterfall: [[P.rainbow, -0.3, -0.85, 0.34, 0.25, 0], [P.daffodils, 0.25, 0.85, 0.45, 0, 0]],
+    orchard: [[P.treehouse, -0.25, -0.45, 0.3, 0, 0.3]],
+    forge: [[P.teslaCoil, 0.2, 0.8, 0.3, 0, 0], [P.speakerStack, -0.95, 0.55, 0.3, 0, 0.6]],
+    desert: [[P.wagon, -0.4, 0.8, 0.3, 0, 0.4], [P.deadTree, 1.2, -0.55, 0.34, 0, 0]],
+    observatory: [[() => P.magicCircle(2.3), 0, 0.15, 0.42, 0, 0], [P.floatRock, 1.05, -0.6, 0.3, 1.0, 0], [P.floatRock, -1.2, 0.2, 0.26, 1.25, 0]],
+    night: [[P.twistedTree, -1.0, -0.45, 0.3, 0, 0], [P.mist, 0.2, 0.55, 0.4, 0, 0], [() => P.bats(3), 0, 0, 0.26, 1.2, 0]],
+    tower: [[() => P.plaza(3.6), -0.1, -0.25, 0.4, 0, 0], [P.floatSlab, 1.15, -0.7, 0.3, 1.0, 0], [P.floatSlab, -1.2, 0.5, 0.26, 1.3, 0]],
+    abyss: [[P.ruinArch, -0.9, -0.55, 0.28, 0, 0.5], [P.foamRock, 1.1, 0.5, 0.3, 0, 0], [P.dragonAltar, 0.05, 0.75, 0.24, 0, 0]],
+  };
+  function signature(theme, g, y) { for (const [make, x, z, k, h, ry] of SIGNATURE[theme] || []) { const o = make(); o.scale.multiplyScalar(k); g.add(at(o, x, y + h, z, ry)); } }
+
   /* the boss's dex card, drawn like css/collection-card.css: frame image (hue-shifted for purple / red), art window,
      name, number, type line and stats */
   const loadImage = (src) => new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
@@ -147,7 +165,7 @@ export function createIslandRenderer(THREE, kit) {
   return {
     async island(theme, card) {
       const {g, top} = base(theme);
-      (BUILD[theme] || BUILD.meadow)(g, top);
+      (BUILD[theme] || BUILD.meadow)(g, top); signature(theme, g, top);
       toonify(g, {outline: 0.035});
       if (card) g.add(await bossCard(card, top));
       return shot(g);
