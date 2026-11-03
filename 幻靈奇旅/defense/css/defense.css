@@ -800,7 +800,8 @@ dialog#panel[data-view="gacha"] { width:min(660px,calc(100vw - 20px)); max-heigh
 /* 2026-11-03: landscape touch HUD is height-constrained (5:7 card proportions). */
 @media (orientation: landscape) and (max-height: 600px) {
   /* Landscape hand sizing uses viewport HEIGHT as well as width. Without this,
-     a 92px card becomes ~129px tall and covers too much of a short phone view. */
+     a 92px card becomes ~129px tall and covers too much of a short phone view.
+     Width budget reserves 150px for the item column, gutters and safe areas. */
   #hud .hud-bottom {
     left: max(6px, env(safe-area-inset-left));
     right: max(6px, env(safe-area-inset-right));
@@ -828,7 +829,7 @@ dialog#panel[data-view="gacha"] { width:min(660px,calc(100vw - 20px)); max-heigh
     pointer-events: auto;
   }
   #hud .hand-card {
-    width: min(80px, 17dvh, calc((100dvw - 132px - env(safe-area-inset-left) - env(safe-area-inset-right)) / 6));
+    width: min(80px, 17dvh, calc(16.6667dvw - 25px));
     min-width: 0;
     height: auto;
     aspect-ratio: 5 / 7;
