@@ -109,3 +109,10 @@ test('landscape sortie panel shows the deck spirits in its own row of the right 
   assert.ok(i > 0 && block.includes('"strip strip"') && block.includes('#lobby .isle-deck { display: contents; }'));
   assert.ok(block.includes('grid-template-columns: repeat(6, minmax(0, 1fr))'), 'six deck slots in one row');
 });
+
+test('HUD labels (stage, deal meter, points), island names and toasts use the same country style as the buttons', () => {
+  const css = read('../css/defense.css'), i = css.lastIndexOf('Country style for every HUD and chart label'), block = css.slice(i);
+  assert.ok(i > 0 && block.includes('#hud .hud-top .stat, .isle-tag, .toast {') && block.includes('border: 3px solid #7a4a24'));
+  assert.ok(block.includes('#hud .hud-top .stat.deal i { display: block; width: 64px; height: 12px;'), 'the deal meter is a bar, not a dial');
+  assert.ok(css.includes('#lobby .chart-tools button.tool { white-space: nowrap;'), 'portrait chart buttons keep their words on one line');
+});
