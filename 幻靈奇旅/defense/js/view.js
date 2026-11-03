@@ -117,15 +117,18 @@ export function createView(canvas, {spirits, catalog}) {
     seatHero(game);
     /* the monster tower: a plum barrel with gold hoops and a glowing portal on its head; the boss stands on it */
     nest = new THREE.Group(); nest.position.set(start[0], 0, start[1]); nest.scale.setScalar(1.3);
-    const nestBody = makeBarrel(0x6a3d78, 0xd9a93a); nest.add(nestBody);
-    const portal = new THREE.Mesh(new THREE.CircleGeometry(0.75, 32), glow(0xb48cff, 0.75)); portal.rotation.x = -Math.PI / 2; portal.position.y = BARREL_H + 0.01; nest.add(portal);
+    const nestBody = game.duel ? makeBarrel(0x8c5834, 0x536b7e) : makeBarrel(0x6a3d78, 0xd9a93a);
+    nest.add(nestBody);
+    const portal = new THREE.Mesh(new THREE.CircleGeometry(0.75, 32), glow(0xb48cff, 0.75));
+    portal.rotation.x = -Math.PI / 2; portal.position.y = BARREL_H + 0.01;
+    portal.visible = !game.duel; nest.add(portal);
     /* While the boss stands on the nest, stack the nest and boss bars above the boss.
        Once it leaps down, keep only the nest bar here and show its combat bar on the path. */
     const nbar = hpBar(2.5, 0xff6b8a); nbar.position.y = 3.6; nest.add(nbar);
     const guardBar = hpBar(2.5, 0xf4c46e); guardBar.position.y = 4.02; nest.add(guardBar);
     nest.userData = {portal, bar: nbar, guardianBar: guardBar, body: nestBody}; mapGroup.add(nest);
     nestBody.rotation.y = faceTo(nest.position, crystal.position);
-    seatBoss(game);
+    if (game.duel) seatRivalHero(game); else seatBoss(game);
     buildTraps(game);
     resize();
   }
@@ -172,7 +175,7 @@ export function createView(canvas, {spirits, catalog}) {
 
   /* The hero (models/hero.glb) sits on the barrel: thighs raised and shins bent after each animation frame. */
   let placeGuide = null, placeGhost = null;
-  let hero = null, nestBoss = null, traps = [], costumeId = 'trainer', costumes = null;
+  let hero = null, rivalHero = null, nestBoss = null, traps = [], costumeId = 'trainer', rivalCostumeId = 'trainer', costumes = null, rivalCostumes = null;
   async function seatHero(game) {
     try {
       const g = await loadGltf('models/hero.glb'); if (state !== game) return;
@@ -213,6 +216,64 @@ export function createView(canvas, {spirits, catalog}) {
     const {thighL, thighR, shinL, shinR} = hero.bones;
     for (const t of [thighL, thighR]) if (t) t.rotation.x = -1.45;
     for (const s of [shinL, shinR]) if (s) s.rotation.x = 1.5;
+  }
+  /* PK has two REAL human trainers, not a monster boss. The room handshake
+     provides the opponent's currently equipped costume. Both trainers reuse
+     models/hero.glb and the same seated pose, one on each barrel. */
+  async function seatRivalHero(game) {
+    try {
+      const g = await loadGltf('models/hero.glb');
+      if (state !== game || !game.duel) return;
+      const object = cloneModel(g.scene), root = new THREE.Group();
+      root.add(object);
+      object.traverse((node) => { if (node.isMesh) node.frustumCulled = false; });
+      try {
+        if (rivalCostumeId === 'sound' && !globalThis.XiaoshanSpirit)
+          await new Promise((ok) => { const script = document.createElement('script'); script.src = '../models/native/xiaoshan.js'; script.onload = script.onerror = ok; document.head.append(script); });
+        if (state !== game) return;
+        rivalCostumes ||= globalThis.HeroCostumes?.create(THREE);
+        rivalCostumes?.apply(object, rivalCostumeId);
+      } catch (err) { console.warn('PK opponent costume', err); }
+      const box = new THREE.Box3().setFromObject(object);
+      const scale = 2.1 / Math.max(0.01, box.max.y - box.min.y);
+      object.scale.setScalar(scale);
+      object.position.y = -box.min.y * scale;
+      const mixer = new THREE.AnimationMixer(object), actions = {};
+      for (const clip of g.animations) actions[clip.name] = mixer.clipAction(clip);
+      const bones = Object.fromEntries(['thighL','thighR','shinL','shinR'].map((id) => [id, object.getObjectByName(id)]));
+      const facing = faceTo(nest.position, crystal.position);
+      root.rotation.y = facing;
+      object.updateMatrixWorld(true);
+      const hips = object.getObjectByName('hips'), hipY = hips ? hips.getWorldPosition(new THREE.Vector3()).y : 0.9;
+      root.position.set(Math.sin(facing) * 0.82, BARREL_H - hipY + 0.1, Math.cos(facing) * 0.82);
+      kit.toonify(object, {outline: 0.03});
+      if (state !== game) return;
+      nest.add(root);
+      rivalHero = {root, object, mixer, actions, bones, current:null, back:0};
+      rivalPlay('Idle');
+    } catch (err) { console.warn('PK rival hero', err); }
+  }
+  function rivalPlay(name, once = false) {
+    if (!rivalHero) return;
+    const action = rivalHero.actions[name];
+    if (!action || (rivalHero.current === action && !once)) return;
+    const prev = rivalHero.current; rivalHero.current = action;
+    action.reset().setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, once ? 1 : Infinity);
+    action.clampWhenFinished = once; action.play();
+    if (prev && prev !== action) action.crossFadeFrom(prev, 0.15, true);
+    rivalHero.back = once ? action.getClip().duration : 0;
+  }
+  function tickRivalHero(dt) {
+    if (!rivalHero) return;
+    rivalHero.mixer.update(dt);
+    try { rivalCostumes?.update(rivalHero.object, dt); } catch {}
+    if (rivalHero.back > 0) {
+      rivalHero.back -= dt;
+      if (rivalHero.back <= 0 && !state?.result) rivalPlay('Idle');
+    }
+    const {thighL,thighR,shinL,shinR} = rivalHero.bones;
+    for (const thigh of [thighL,thighR]) if (thigh) thigh.rotation.x = -1.45;
+    for (const shin of [shinL,shinR]) if (shin) shin.rotation.x = 1.5;
   }
   /* The stage boss waits on the nest (big and idle) until the nest is first hit, then steps onto the path. */
   async function seatBoss(game) {
@@ -660,7 +721,8 @@ export function createView(canvas, {spirits, catalog}) {
       }
       else if (ev.type === 'chain') { const a = actorPoint('f' + ev.from), b = actorPoint('f' + ev.to); if (a && b) bolt(a, b, ELEMENT_COLORS[ev.element]); }
       else if (ev.type === 'death') { const r = fighters.get(ev.id); if (r) { r.dying = 0; r.actor?.play('Death', true); combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: '光', strong: true}); } }
-      else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.barUntil = clock + HIT_BAR_SECONDS; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } if (ev.side === 'crystal') { heroPlay('Hurt', true); } }
+      else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.barUntil = clock + HIT_BAR_SECONDS; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } if (ev.side === 'crystal') heroPlay('Hurt', true);
+        else if (state?.duel && ev.side === 'nest') rivalPlay('Hurt', true); }
       else if (ev.type === 'trap') trapFired(ev);
       else if (ev.type === 'skillStart') skillStart(ev);
       else if (ev.type === 'bossSkillStart') bossSkillStart(ev);
@@ -668,7 +730,7 @@ export function createView(canvas, {spirits, catalog}) {
       else if (ev.type === 'skill') supportSkill(ev);
       else if (ev.type === 'boss') { shake = Math.max(shake, 0.7); releaseNestBoss(); }
       else if (ev.type === 'ultimate') { const rec = fighters.get(ev.id), name = spiritMap.get(ev.species)?.skills?.[1]?.name; if (rec && name && numbersOnScreen < NUMBER_CAP) { const d = rec.deco.position; numbersOnScreen++; floatText(d.x, 2.2 + rec.scale, d.z, '大絕・' + name, ev.side === 'ally' ? '#fff0a8' : '#ffb0b0', 40, 0.9, () => numbersOnScreen--); } }
-      else if (ev.type === 'finish') heroPlay(ev.won ? 'JumpCelebrate' : 'Disappointed', true);
+      else if (ev.type === 'finish') { heroPlay(ev.won ? 'JumpCelebrate' : 'Disappointed', true); if (state?.duel) rivalPlay(ev.won ? 'Disappointed' : 'JumpCelebrate', true); }
     }
   }
 
@@ -722,7 +784,7 @@ export function createView(canvas, {spirits, catalog}) {
       }
     }
     for (let i = helpers.length - 1; i >= 0; i--) { const hlp = helpers[i]; hlp.a.tick(dt); if (clock > hlp.until) { const k = Math.min(1, (clock - hlp.until) * 3); hlp.a.root.scale.setScalar(Math.max(0.01, 1 - k)); if (k >= 1) { hlp.a.dispose(); helpers.splice(i, 1); } } }
-    tickHero(dt); tickCasters(dt);
+    tickHero(dt); tickRivalHero(dt); tickCasters(dt);
     tickNestBoss(dt);
     if (state) { syncTraps(); tickTraps(dt); }
     if (nest) nest.userData.portal.material.opacity = 0.55 + Math.sin(clock * 3) * 0.2;
@@ -742,13 +804,14 @@ export function createView(canvas, {spirits, catalog}) {
     update, resize, fire, metrics,
     set cardOrigin(p) { cardOrigin = p; },
     set costume(id) { costumeId = id || 'trainer'; },
+    set rivalCostume(id) { rivalCostumeId = id || 'trainer'; }
     zoomBy, orbitBy, resetCamera,
-    debug: () => ({THREE, scene, camera, renderer, crystal, nest, hero, nestBoss, traps}),
+    debug: () => ({THREE, scene, camera, renderer, crystal, nest, hero, rivalHero, nestBoss, traps}),
     setGame(game) {
       for (const id of [...fighters.keys()]) removeFighter(id);
       for (const hlp of helpers.splice(0)) hlp.a.dispose();
       if (nestBoss) { nestBoss.dispose(); nestBoss = null; }
-      hero = null; traps = []; placeGuide = placeGhost = null; numbersOnScreen = 0;
+      hero = null; rivalHero = null; traps = []; placeGuide = placeGhost = null; numbersOnScreen = 0;
       for (const c of casters.splice(0)) c.a?.dispose();
       projectileView.clear(); combatVfx.clear(); fx.clear();
       state = game; if (game) buildMap(game);
