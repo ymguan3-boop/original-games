@@ -246,13 +246,16 @@ function bindLobby() {
 }
 
 /* deck editor: base spirits and red support cards from the summoned collection */
+let deckHelpExpanded = false;
 function openDeck(picked = null, keepScroll = 0) {
   normalizeDeck();
   const units = availableUnits(), nb = deckBase().length, nr = deckRed().length;
   openModal(`${ribbon('出擊卡組', '🃏')}
     <p class="result-sub">基礎幻靈 ${nb}/${DECK_BASE}・技能卡 ${nr}/${DECK_RED}（職業決定攻擊方式，四名出戰角色搭配兩張技能卡）</p>
     <div class="role-legend">${Object.values(ROLE_META).map((r) => `<span>${r.icon} ${r.label}</span>`).join('')}</div>
-    <div class="panel-scroll">
+    <div class="panel-scroll deck-card-list">
+      <details class="deck-special-details" ${deckHelpExpanded ? 'open' : ''}>
+        <summary>📖 特殊合體與放置規則（點擊展開）</summary>
       <div class="deck-special-rules" aria-label="特殊合體與出場規則">
         <div class="deck-special-rule">
           <span class="deck-special-icon" aria-hidden="true">🐟</span>
@@ -263,6 +266,7 @@ function openDeck(picked = null, keepScroll = 0) {
           <div><b>三色蛋指定路徑出場</b><p>點選<strong>三色蛋卡牌</strong>，再點選路徑上想放的位置；也能拖曳卡牌到道路放開。放置後不移動，選錯位置不會消耗卡牌。</p></div>
         </div>
       </div>
+      </details>
       <h3 class="roster-group">基礎幻靈 <small>黃卡、紫卡的未進階幻靈與三色蛋</small></h3><div class="roster">${units.base.map(unitButton).join('') || '<p class="muted">還沒有基礎幻靈，先去轉蛋吧！</p>'}</div>
     <h3 class="roster-group">紅卡輔助 <small>點擊施放技能，合成升星</small></h3><div class="roster">${units.red.map(unitButton).join('') || '<p class="muted">紅卡可由轉蛋取得（需先在原探索收錄）。</p>'}</div></div>
     <div id="flipLayer" class="flip-layer" hidden></div>
@@ -270,6 +274,8 @@ function openDeck(picked = null, keepScroll = 0) {
   $('deckGacha').onclick = () => { $('modal').close(); openGacha(); };
   /* tapping a card turns it over: the back lists its attack, ultimate and passives, with a button to add it to / remove it from the deck */
   const scroller = $('modalBody').querySelector('.panel-scroll'), layer = $('flipLayer');
+  const help = scroller?.querySelector('.deck-special-details');
+  help?.addEventListener('toggle', () => { deckHelpExpanded = help.open; });
   if (scroller) scroller.scrollTop = keepScroll;
   const toggle = (id) => {
     const k = record.deck.indexOf(id), red = isRedCard(id);
