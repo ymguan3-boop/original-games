@@ -15,14 +15,16 @@ test('desktop and portrait maps contain ten reachable stages in the same order',
   }
 });
 
-test('portrait islands form a continuous serpentine ferry route from the bottom dock', () => {
+test('portrait islands form a seven-star (Big Dipper) arrangement, not a tidy grid', () => {
+  assert.ok(new Set(MOBILE_SPOTS.map((p) => p[0])).size >= 8, 'almost every island has its own x: no neat columns');
+  const bowl = [4, 5, 6, 7].map((i) => MOBILE_SPOTS[i]), xs = bowl.map((p) => p[0]), ys = bowl.map((p) => p[1]);
+  assert.ok(Math.max(...xs) - Math.min(...xs) > 120 && Math.max(...ys) - Math.min(...ys) > 120, 'islands 5-8 make a bowl');
   assert.ok(MOBILE_SPOTS[0][1] > MOBILE_SPOTS[9][1]);
   for (let i = 1; i < MOBILE_SPOTS.length; i++) {
     const [ax, ay] = MOBILE_SPOTS[i - 1];
     const [bx, by] = MOBILE_SPOTS[i];
     const distance = Math.hypot(ax - bx, ay - by);
     assert.ok(distance > 100 && distance < 300, `islands ${i} and ${i + 1} are too far apart`);
-    assert.ok(by <= ay, 'the ferry proceeds steadily up the chart toward stage ten');
   }
 });
 

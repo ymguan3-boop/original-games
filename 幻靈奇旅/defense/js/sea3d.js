@@ -4,7 +4,8 @@
 const UNIT = 20;                                   /* old chart pixels per world unit */
 export const SPOTS = [[240, 470], [262, 352], [186, 196], [362, 104], [506, 236], [438, 420], [622, 512], [724, 320], [648, 140], [864, 236]];
 const HOME = [102, 556];
-export const MOBILE_SPOTS = [[210, 675], [485, 675], [485, 530], [210, 530], [210, 385], [485, 385], [485, 240], [210, 240], [210, 95], [485, 95]];
+/* portrait: a seven-star (Big Dipper) pattern: the handle rises from the pier, the bowl closes at islands 5-8, then two more stars lead on */
+export const MOBILE_SPOTS = [[170, 735], [330, 690], [470, 620], [560, 520], [480, 420], [260, 370], [230, 240], [470, 260], [600, 160], [380, 90]];
 const MOBILE_HOME = [80, 805];
 const WATER_Y = -0.12, PITCH = 0.95, FOV = 38;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
@@ -30,7 +31,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
   host.append(canvas, tags, tools);
   const renderer = new T.WebGLRenderer({canvas, antialias: true, powerPreference: 'high-performance'});
   renderer.outputEncoding = T.sRGBEncoding; renderer.setClearColor(0x2a86c4, 1);
-  const scene = new T.Scene(), camera = new T.PerspectiveCamera(FOV, 1, 0.5, 400);
+  const scene = new T.Scene(), camera = new T.PerspectiveCamera(FOV, 1, 0.5, 400); host.__sea = {scene, camera};
   const sun = new T.DirectionalLight(0xfff4e0, 0.9); sun.position.set(-6, 14, 8);
   scene.add(new T.HemisphereLight(0xffffff, 0x8fa8bf, 0.85), sun);
 
@@ -73,11 +74,11 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
     const pts = [];
     for (let i = -1; i < stages.length - 1; i++) {
       const c = laneCurve(i, i + 1, (i % 2 ? 1 : -1) * 1.9); curves.push(c);
-      const n = Math.max(6, Math.round(c.getLength() / 0.62));
-      for (let k = 1; k < n; k++) { const p = c.getPointAt(k / n); pts.push(p.x, WATER_Y + 0.1, p.z); }
+      const n = Math.max(6, Math.round(c.getLength() / 0.85));
+      for (let k = 1; k < n; k++) { const p = c.getPointAt(k / n); pts.push(p.x, WATER_Y + 0.22, p.z); }
     }
     const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(pts, 3));
-    laneDots = new T.Points(geo, new T.PointsMaterial({map: dotTex, size: 0.3, color: 0xffffff, transparent: true, opacity: 0.85, depthWrite: false, alphaTest: 0.2}));
+    laneDots = new T.Points(geo, new T.PointsMaterial({map: dotTex, size: 7 * Math.min(window.devicePixelRatio || 1, 1.5), sizeAttenuation: false, color: 0xffffff, transparent: true, opacity: 1, depthWrite: false, alphaTest: 0.2}));
     laneDots.frustumCulled = false; scene.add(laneDots);
   }
 
@@ -107,16 +108,18 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
 
   /* ---------- camera rig ---------- */
   const rig = {x: 0, z: 0, dist: 30, yaw: 0, pitch: PITCH}, home0 = {x: 0, z: 0, dist: 30};
-  let bounds = {minX: 0, maxX: 1, minZ: 0, maxZ: 1}, W = 0, H = 0;
+  let bounds = {minX: 0, maxX: 1, minZ: 0, maxZ: 1}, fitB = bounds, W = 0, H = 0;
   function computeBounds() {
     const pts = [...spots(), home()]; bounds = {minX: Infinity, maxX: -Infinity, minZ: Infinity, maxZ: -Infinity};
+    const isl = spots(); fitB = {minX: Math.min(...isl.map((p) => p[0])) - 4.2, maxX: Math.max(...isl.map((p) => p[0])) + 4.8, minZ: Math.min(...isl.map((p) => p[1])) - 3, maxZ: Math.max(...isl.map((p) => p[1]), home()[1]) + 3.6};
+    fitB.minX = Math.min(fitB.minX, home()[0] - 0.5);
     for (const [x, z] of pts) { bounds.minX = Math.min(bounds.minX, x - (x === home()[0] ? 7 : 4.2)); bounds.maxX = Math.max(bounds.maxX, x + 4.8); bounds.minZ = Math.min(bounds.minZ, z - 3.0); bounds.maxZ = Math.max(bounds.maxZ, z + 3.6); }
   }
   function fit() {
     if (!W || !H) return;
-    const bw = bounds.maxX - bounds.minX, bd = bounds.maxZ - bounds.minZ, t = Math.tan(FOV * Math.PI / 360), a = W / H;
+    const bw = fitB.maxX - fitB.minX, bd = fitB.maxZ - fitB.minZ, t = Math.tan(FOV * Math.PI / 360), a = W / H;
     const needH = bd * Math.sin(PITCH) / (2 * t), needW = bw / (2 * t * a);
-    home0.dist = Math.max(needH, needW) * 1.02; home0.x = (bounds.minX + bounds.maxX) / 2; home0.z = (bounds.minZ + bounds.maxZ) / 2 + 0.3;
+    home0.dist = Math.max(needH, needW) * 1.02; home0.x = (fitB.minX + fitB.maxX) / 2; home0.z = (fitB.minZ + fitB.maxZ) / 2 + 0.3;
   }
   const minDist = () => 9, maxDist = () => Math.max(home0.dist * 1.35, 24);
   function reset(animate = true) { goal = {x: home0.x, z: home0.z, dist: home0.dist, yaw: 0, pitch: PITCH}; if (!animate) Object.assign(rig, goal); }
@@ -295,6 +298,8 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
     setBoat(model) { boatModel?.parent?.remove(boatModel); boatModel = model; boat.add(model); },
     addAnimations(list) { animations.push(...list.map((f) => (dt, t) => f(dt, t))); },
     focusSelected() { const r = islandRoots[state.selected]; if (r) { goal.x = r.position.x; goal.z = r.position.z; goal.dist = Math.min(goal.dist, home0.dist * 0.6); clampRig(goal); } },
+    /* jump the boat to an island without the voyage (used when the sortie starts at once) */
+    snap(i) { state.boatAt = i; if (!sailing) boatTo(i); },
     resetView: reset, sail, get sailing() { return !!sailing; }, get boatAt() { return state.boatAt; },
     dispose() { alive = false; cancelAnimationFrame(raf); ro?.disconnect(); renderer.dispose(); },
   };

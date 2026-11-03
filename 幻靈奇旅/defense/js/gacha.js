@@ -3,17 +3,17 @@
    purple/red cards only after the original game unlocks them). Points come from the shared cave wallet, so
    spending here spends cave points; items land in the shared cave bag. Spirits drawn here join the
    defense collection (record.owned), which is what the deck is built from. */
-import {eligiblePool, DRAW_COST, DUPLICATE_POINTS, REWARD_ITEMS} from '../../survivors/js/gacha.js';
-import {addInventory} from '../../survivors/js/inventory.js';
-import {SUPPORT, TRAP_CARDS} from './rules.js';
+import {eligiblePool, DRAW_COST, DUPLICATE_POINTS} from '../../survivors/js/gacha.js';
+import {SUPPORT, TRAP_CARDS, BAG_ITEMS} from './rules.js';
 
 export {DRAW_COST, DUPLICATE_POINTS};
-/* 10% spirits (yellow 6%, purple 3%, red 1%); the rest are cave items, skills and ability buffs. */
-export const DEFENSE_RATES = {yellow: 0.06, purple: 0.03, red: 0.01, item: 0.45, skill: 0.225, ability: 0.225};
+/* 10% spirits (yellow 6%, purple 3%, red 1%); the other 90% are this mode's own items: supplies and trap cards (kept in the island record). */
+export const DEFENSE_RATES = {yellow: 0.06, purple: 0.03, red: 0.01, item: 0.9};
 export const STARTER_COUNT = 4;
 const COLORS = ['yellow', 'purple', 'red'];
-/* A third of the supply draws are trap cards (laid on the road in the island fight). They are kept in the defense record, not in the cave bag. */
-export const TRAP_SHARE = 1 / 3, TRAP_IDS = Object.keys(TRAP_CARDS), isTrapCard = (id) => id in TRAP_CARDS;
+/* Items: 40% are trap cards (laid on the road in the island fight), 60% supplies (potion, battery, buffs). Both live in the defense record. */
+export const TRAP_SHARE = 0.4, TRAP_IDS = Object.keys(TRAP_CARDS), SUPPLY_IDS = Object.keys(BAG_ITEMS);
+export const isTrapCard = (id) => id in TRAP_CARDS, isDefenseItem = (id) => id in TRAP_CARDS || id in BAG_ITEMS;
 
 /* Red cards that can be played here are the support legends; 三色蛋 (jigglypuff) is red but counts as a base card. */
 export function defensePool(pool, journey = {}, spiritIds = null) {
@@ -52,9 +52,8 @@ export function rollRewards(pool, owned, count = 1, rng = Math.random) {
         continue;
       }
     }
-    const category = COLORS.includes(kind) ? 'item' : kind;
-    if (category === 'item' && rng() < TRAP_SHARE) { out.push({kind: 'item', category: 'item', id: pick(TRAP_IDS, rng), quantity: 1, trap: true}); continue; }
-    out.push({kind: 'item', category, id: pick(REWARD_ITEMS[category], rng), quantity: 1});
+    if (rng() < TRAP_SHARE) out.push({kind: 'item', category: 'trap', id: pick(TRAP_IDS, rng), quantity: 1, trap: true});
+    else out.push({kind: 'item', category: 'supply', id: pick(SUPPLY_IDS, rng), quantity: 1});
   }
   return out;
 }
@@ -76,9 +75,9 @@ export function drawWithStore(store, pool, owned, count = 1, rng = Math.random, 
     s.points -= cost;
     for (const r of rewards) {
       if (r.kind === 'spirit') s.points += r.refund;
-      else if (!isTrapCard(r.id)) addInventory(s, r.id, r.quantity);
+      /* items are not written to the cave bag: the island fight keeps its own stock (record.bag) */
     }
-    s.history.unshift(...rewards.map((r) => ({...r, source: 'defense'}))); s.history = s.history.slice(0, 100);
+    s.history.unshift(...rewards.filter((r) => r.kind === 'spirit').map((r) => ({...r, source: 'defense'}))); s.history = s.history.slice(0, 100);
     return rewards;
   });
 }

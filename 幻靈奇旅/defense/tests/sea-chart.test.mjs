@@ -58,3 +58,14 @@ test('islands, pier and speedboat are loaded from GLB files, not built with code
   assert.ok(existsSync(new URL('../assets/card-frame.webp', import.meta.url)) && main.includes("frameImage: 'assets/card-frame.webp'"), 'a small card frame replaces the 1.7 MB png');
   assert.ok(main.includes('await loadThree()') && !main.includes('try { await loadEngine(); data'), 'the chart no longer waits for the battle scripts');
 });
+
+test('gacha gives this mode own items; the panel, boatman and landscape sortie panel are slim; sortie does not wait for a voyage', () => {
+  const main = read('../js/main.js'), gacha = read('../js/gacha.js'), css = read('../css/defense.css');
+  assert.ok(!gacha.includes('REWARD_ITEMS') && !gacha.includes('addInventory'), 'no cave skills, weapons or cave-bag items');
+  assert.ok(main.includes('class="dg-machine"'), 'own gacha layout with the machine picture');
+  assert.ok(main.includes('const filmRewards'), 'the summon film still plays for this mode');
+  assert.ok(main.includes('chart.snap(record.stage)') && !main.includes('await sailTo(record.stage);' + String.fromCharCode(10) + '  startGame'), 'sortie starts at once');
+  assert.ok(main.includes('async function warmBattle') && main.includes('if (game) view?.update('), 'battle scripts and models are warmed; the battle view is idle in the lobby');
+  assert.ok(main.includes('class="bm-line">要去哪裡？'), 'short boatman dialog');
+  assert.ok(css.includes('#lobby .isle-panel { width: min(200px, 29vw)'));
+});
