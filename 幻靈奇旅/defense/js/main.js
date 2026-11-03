@@ -266,7 +266,7 @@ function openDeck(picked = null, keepScroll = 0) {
       <h3 class="roster-group">基礎幻靈 <small>黃卡、紫卡的未進階幻靈與三色蛋</small></h3><div class="roster">${units.base.map(unitButton).join('') || '<p class="muted">還沒有基礎幻靈，先去轉蛋吧！</p>'}</div>
     <h3 class="roster-group">紅卡輔助 <small>點擊施放技能，合成升星</small></h3><div class="roster">${units.red.map(unitButton).join('') || '<p class="muted">紅卡可由轉蛋取得（需先在原探索收錄）。</p>'}</div></div>
     <div id="flipLayer" class="flip-layer" hidden></div>
-    <div class="modal-actions center"><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto');
+    <div class="modal-actions center"><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto deck');
   $('deckGacha').onclick = () => { $('modal').close(); openGacha(); };
   /* tapping a card turns it over: the back lists its attack, ultimate and passives, with a button to add it to / remove it from the deck */
   const scroller = $('modalBody').querySelector('.panel-scroll'), layer = $('flipLayer');
