@@ -1083,10 +1083,11 @@ const BOATMAN_RUSH_LINES=[
 ];
 const BOATMAN_RUSH_AT=new T.Vector3(37,0,4);
 let boatmanRush=null;
-const defenseVisited=()=>{try{return !!localStorage.getItem('phantom-defense-v1');}catch{return false;}};
+const rushForced=/[?&]boatman=1/.test(location.search);/* 網址加 ?boatman=1 可重看老船夫攔人事件（測試用） */
+const defenseVisited=()=>{if(rushForced)return false;try{return !!localStorage.getItem('phantom-defense-v1');}catch{return false;}};
 function stepBoatman(n,target,dt,speed){const dx=target.x-n.root.position.x,dz=target.z-n.root.position.z,d=Math.hypot(dx,dz);if(d>.05){const k=Math.min(1,speed*dt/d);n.root.position.x+=dx*k;n.root.position.z+=dz*k;n.root.rotation.y=Math.atan2(dx,dz);n.play('Run');}return d;}
 function tickBoatmanRush(dt){
- if(S.state?.boatmanRushDone||!harbor||!hero)return;
+ if((S.state?.boatmanRushDone&&!rushForced)||!harbor||!hero)return;
  if(boatmanRush?.phase==='return'){const n=boatmanRush.n;if(stepBoatman(n,n.home,dt,4.2)<.3){n.root.position.copy(n.home);n.play('Idle');boatmanRush=null;}return;}
  if(place||battle||modal||enterBusy||throwing||harbor.sailing||!(labClaimed()||spirits.some(s=>owned(s.id))))return;
  if(!boatmanRush){
