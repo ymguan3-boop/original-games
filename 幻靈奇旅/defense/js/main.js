@@ -9,7 +9,7 @@ import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js
 import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createChartModels} from './chart-models.js?v=20261106-items-v2';
-import {createView} from './view.js?v=20261103-result-road-stable-v11';
+import {createView} from './view.js?v=20261104-climate-lock-v12';
 import {createSeaChart} from './sea3d.js?v=20261109-pk-v1';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261103-pk-perf-v3';
 import {buildPath} from './stages.js?v=20261105-traps-v1';
@@ -20,7 +20,7 @@ import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js';
 import {groupRewards} from '../../survivors/js/reward-groups.js';
 import {itemPicture} from '../../survivors/js/item-pictures.js';
 import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v2';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261105-weather-v2';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261104-weather-lock-v3';
 import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-country-v1';
 import {icon} from '../../survivors/js/ui-art.js';
 import {initFullscreen} from './fullscreen.js?v=20261108-audio-v1';
@@ -1111,7 +1111,6 @@ function bindHud() {
     if (b.dataset.trap) beginPlacing(b.dataset.trap); else useBag(b.dataset.bag);
   };
   $('speed').onclick = () => { speed = speed === 1 ? 2 : 1; hud(); };
-  $('camReset').onclick = () => view?.resetCamera();
   addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && placing?.type === 'egg') endPlacing();
   });
