@@ -3,11 +3,11 @@
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
 import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js';
-import {createFx} from './fx.js?v=20261103-mobile-fx-v2';
+import {createFx} from './fx.js?v=20261103-pk-perf-v3';
 import {createSeascape} from './seascape.js?v=20261105-weather-v2';
-import {createToonKit} from './style.js';
+import {createToonKit} from './style.js?v=20261103-pk-perf-v3';
 import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-islands-v1';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261103-goldfish-egg-v1';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261103-pk-perf-v3';
 import {pointAt} from './stages.js';
 import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js';
 import {createProjectileView} from '../../survivors/js/projectile-view.js';
