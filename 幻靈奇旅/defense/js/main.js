@@ -547,7 +547,7 @@ function renderHand() {
     const line = isThreeColorEgg(c.species) ? '🥚 點選後放在路徑上'
       : ['groudon','rayquaza'].includes(c.species) ? '🐟 國王＋皇后合體水蛟龍王'
       : sup ? `✨ 技能：${esc(sup.skill)}` : `${esc(roleLabel(c.species))} · ${shapeLabel(c.species, false)}`;
-    return `<button class="hand-card ${sup ? 'support' : ''} ${canPlay(game, i) ? '' : 'disabled'} ${anim}" data-uid="${c.uid}" title="${esc(sup ? sup.text : spirit(c.species).name + '・大絕' + shapeLabel(c.species, true))}"><span class="stars stars-${spirit(c.species).cardFrame || 'yellow'}">${'<i>★</i>'.repeat(c.rank)}</span>${sup ? '<span class="badge">技能</span>' : ''}${cardHtml(c.species, {line})}${evoOverlay(c.uid)}</button>`;
+    return `<button class="hand-card ${sup ? 'support' : ''} ${isThreeColorEgg(c.species) ? 'egg-lane-card' : ''} ${placing?.type === 'egg' && placing.uid === c.uid ? 'egg-selected' : ''} ${canPlay(game, i) ? '' : 'disabled'} ${anim}" data-uid="${c.uid}" title="${esc(sup ? sup.text : spirit(c.species).name + '・大絕' + shapeLabel(c.species, true))}"><span class="stars stars-${spirit(c.species).cardFrame || 'yellow'}">${'<i>★</i>'.repeat(c.rank)}</span>${sup ? '<span class="badge">技能</span>' : ''}${cardHtml(c.species, {line})}${evoOverlay(c.uid)}</button>`;
   }).join('');
   fresh.clear();
 }
@@ -792,6 +792,7 @@ function beginEggPlacement(uid) {
   $('itemMenu').hidden = true;
   document.body.classList.add('placing-egg');
   view?.placement('egg');
+  handSig = ''; hud();
   banner('🥚 點選路徑任意位置放三色蛋，再按原卡或 Esc 取消');
 }
 function placeEggAt(uid, x) {
@@ -822,7 +823,7 @@ function beginPlacing(id) {
   placing = {type:'trap', id, kind: TRAP_CARDS[id].kind}; $('itemMenu').hidden = true; document.body.classList.add('placing-trap');
   view?.placement(placing.kind); banner('點選路上要放「' + TRAP_CARDS[id].name.replace('陷阱卡', '') + '」的位置（再點「道具」或空白處取消）');
 }
-function endPlacing() { if (!placing) return; placing = null; document.body.classList.remove('placing-trap','placing-egg'); view?.placement(null); $('banner').hidden = true; }
+function endPlacing() { if (!placing) return; placing = null; document.body.classList.remove('placing-trap','placing-egg'); view?.placement(null); $('banner').hidden = true; if (game && !drag) { handSig = ''; hud(); } }
 function bindPlacement() {
   const canvas = $('world'); let down = null;
   canvas.addEventListener('pointerdown', (e) => { if (placing) down = {x: e.clientX, y: e.clientY, t: performance.now()}; });
