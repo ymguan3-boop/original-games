@@ -2,7 +2,7 @@
    state.events into effects. Every fighter is a cave actor (actors.js); attacks use the cave's model-room scripts,
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
-import {createActor, performSkill, loadGltf, cloneModel} from './actors.js';
+import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js';
 import {createFx} from './fx.js?v=20261103-mobile-fx-v2';
 import {createSeascape} from './seascape.js?v=20261105-weather-v2';
 import {createToonKit} from './style.js';
@@ -21,7 +21,11 @@ export function createView(canvas, {spirits, catalog}) {
   const spiritMap = new Map(spirits.map((s) => [s.id, s]));
   const entries = new Map((catalog.entries || []).map((e) => [e.id, e]));
   const renderer = new THREE.WebGLRenderer({canvas, antialias: true, powerPreference: 'high-performance'});
-  renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+  /* Two Three.js contexts (chart + battle) can coexist on a phone. A 2x
+   framebuffer + 2048² shadows is too costly in a long PK match. */
+  const mobileGpu = typeof matchMedia === 'function' &&
+    (matchMedia('(pointer: coarse)').matches || matchMedia('(max-width: 820px)').matches);
+  renderer.setPixelRatio(Math.min(mobileGpu ? 1.25 : 1.75, devicePixelRatio || 1));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   /* no film tone mapping: cartoon colours stay saturated */
   renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.NoToneMapping;
@@ -30,7 +34,7 @@ export function createView(canvas, {spirits, catalog}) {
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 700);
   const hemi = new THREE.HemisphereLight(0xe8f6ff, 0x4d6b3a, 0.8); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff1d6, 1.05);
-  sun.position.set(-10, 24, 12); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0008;
+  sun.position.set(-10, 24, 12); sun.castShadow = true; sun.shadow.mapSize.set(mobileGpu ? 1024 : 2048, mobileGpu ? 1024 : 2048); sun.shadow.bias = -0.0008;
   Object.assign(sun.shadow.camera, {left: -22, right: 22, top: 16, bottom: -16, near: 1, far: 70});
   scene.add(sun);
 
@@ -41,6 +45,41 @@ export function createView(canvas, {spirits, catalog}) {
   const metrics = {};
   let shake = 0, state = null, clock = 0, mapGroup = null, crystal = null, nest = null, camBase = new THREE.Vector3();
   const fighters = new Map(), effects = [], helpers = [];
+  const preloadJobs = new Map();
+  const MAX_WORLD_EFFECTS = mobileGpu ? 65 : 110;
+  function disposeWorldEffect(obj) {
+    if (!obj) return;
+    obj.parent?.remove(obj);
+    obj.traverse((node) => {
+      if (node.geometry && node.geometry !== sphereGeo && node.geometry !== ringGeo) node.geometry.dispose();
+      for (const mat of (Array.isArray(node.material) ? node.material : [node.material])) {
+        if (!mat) continue;
+        if (node.userData?.ownsMap) mat.map?.dispose?.();
+        mat.dispose?.();
+      }
+    });
+  }
+  function disposeMap() {
+    if (!mapGroup) return;
+    /* Detach cached GLB heroes before releasing procedural map geometry. */
+    hero?.root?.parent?.remove(hero.root);
+    rivalHero?.root?.parent?.remove(rivalHero.root);
+    mapGroup.parent?.remove(mapGroup);
+    const geometries = new Set(), materials = new Set(), maps = new Set();
+    mapGroup.traverse((node) => {
+      if (node.geometry) geometries.add(node.geometry);
+      for (const mat of (Array.isArray(node.material) ? node.material : [node.material])) {
+        if (mat && !kit.isSharedMaterial(mat)) {
+          materials.add(mat);
+          if (mat.map?.userData?.defenseGenerated) maps.add(mat.map);
+        }
+      }
+    });
+    geometries.forEach((g) => g.dispose());
+    materials.forEach((m) => m.dispose());
+    maps.forEach((t) => t.dispose());
+    mapGroup = null; env = null; crystal = nest = null;
+  }
   let numbersThisFrame = 0;
   const combatVfx = createCombatVfx(THREE, scene, {metrics, onShake: (a) => { shake = Math.max(shake, a); }});
   const fx = createFx(THREE, scene);
@@ -66,7 +105,7 @@ export function createView(canvas, {spirits, catalog}) {
   }
   function distanceToPath(x, z) { let best = Infinity; for (const [px, pz] of state.path.points) best = Math.min(best, Math.hypot(px - x, pz - z)); return best; }
   function buildMap(game) {
-    if (mapGroup) scene.remove(mapGroup);
+    disposeMap();
     mapGroup = new THREE.Group(); scene.add(mapGroup);
     const r = rand(game.stage.id.length * 7919 + game.stageIndex * 131 + 7), [w, h] = FIELD, theme = themeOf(game.stage), T = THEMES[theme];
     /* theme lighting and sky */
@@ -149,7 +188,7 @@ export function createView(canvas, {spirits, catalog}) {
       for (let i = 0; i < 6; i++) { g.fillStyle = tone(0.88 + (i % 2) * 0.1); g.fillRect(0, i * 43, 256, 41); g.fillStyle = tone(0.55); g.fillRect(0, i * 43 + 41, 256, 2); }
       g.strokeStyle = tone(0.6); g.lineWidth = 5; g.beginPath(); g.arc(128, 128, 18, 0, Math.PI * 2); g.stroke();
     }
-    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+    const t = new THREE.CanvasTexture(c); t.userData.defenseGenerated = true; t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
     if (kind === 'staves') { t.wrapS = THREE.RepeatWrapping; }
     return t;
   }
@@ -480,7 +519,7 @@ export function createView(canvas, {spirits, catalog}) {
     const c = document.createElement('canvas'); c.width = 256; c.height = 96;
     const g = c.getContext('2d'); g.font = `900 ${size}px "jf-openhuninn", "Microsoft JhengHei", sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.lineWidth = 12; g.strokeStyle = stroke; g.strokeText(text, 128, 48); g.fillStyle = color; g.fillText(text, 128, 48);
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({map: new THREE.CanvasTexture(c), transparent: true, depthTest: false}));
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({map: new THREE.CanvasTexture(c), transparent: true, depthTest: false})); sp.userData.ownsMap = true;
     sp.scale.set(2.4, 0.9, 1); sp.renderOrder = 12; return sp;
   }
 
@@ -540,7 +579,10 @@ export function createView(canvas, {spirits, catalog}) {
   }
 
   /* ---------- effects ---------- */
-  function addEffect(obj, life, update) { scene.add(obj); effects.push({obj, life, age: 0, update}); }
+  function addEffect(obj, life, update) {
+    if (effects.length >= MAX_WORLD_EFFECTS) { disposeWorldEffect(obj); return; }
+    scene.add(obj); effects.push({obj, life, age:0, update});
+  }
   function burst(x, z, color, radius = 1.5, life = 0.45, y = 0.12) {
     const ring = new THREE.Mesh(ringGeo, glow(color, 0.9)); ring.rotation.x = -Math.PI / 2; ring.position.set(x, y, z);
     addEffect(ring, life, (o, k) => { o.scale.setScalar(0.2 + radius * k); o.material.opacity = 0.9 * (1 - k); });
@@ -789,7 +831,7 @@ export function createView(canvas, {spirits, catalog}) {
     if (state) { syncTraps(); tickTraps(dt); }
     if (nest) nest.userData.portal.material.opacity = 0.55 + Math.sin(clock * 3) * 0.2;
     combatVfx.update(dt); fx.update(dt); env?.update(dt); seascape.update(dt);
-    for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { scene.remove(e.obj); effects.splice(i, 1); } }
+    for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { disposeWorldEffect(e.obj); effects.splice(i, 1); } }
     /* Keep the sky and horizon visually steady when a tower or spirit takes damage.
        Damage feedback remains on the character and tower rather than the camera. */
     const s = 0; shake = Math.max(0, shake - dt * 1.6);
@@ -811,12 +853,34 @@ export function createView(canvas, {spirits, catalog}) {
       for (const id of [...fighters.keys()]) removeFighter(id);
       for (const hlp of helpers.splice(0)) hlp.a.dispose();
       if (nestBoss) { nestBoss.dispose(); nestBoss = null; }
+      for (const e of effects.splice(0)) disposeWorldEffect(e.obj);
+      disposeMap();
       hero = null; rivalHero = null; traps = []; placeGuide = placeGhost = null; numbersOnScreen = 0;
       for (const c of casters.splice(0)) c.a?.dispose();
       projectileView.clear(); combatVfx.clear(); fx.clear();
       state = game; if (game) buildMap(game);
     },
-    async preload(ids) { for (const id of ids) { const spec = spiritMap.get(id); if (spec) try { (await createActor(spec, entries.get(id))).dispose(); } catch {} } },
+    async preload(ids, onProgress = null) {
+      /* Fetch model/assets only. Old code constructed+destroyed every complete
+         skinned fighter sequentially, delaying sortie for many seconds. */
+      const unique = [...new Set(ids)].filter((id) => spiritMap.has(id));
+      let index = 0, done = 0;
+      const worker = async () => {
+        while (index < unique.length) {
+          const id = unique[index++], spec = spiritMap.get(id);
+          if (!preloadJobs.has(id)) {
+            const work = (spec.model?.includes('://')
+              ? nativeAsset(spec.model) : loadGltf(spec.model)).catch((e) => {
+                preloadJobs.delete(id); throw e;
+              });
+            preloadJobs.set(id, work);
+          }
+          try { await preloadJobs.get(id); } catch(e) { console.warn('預載角色失敗', id, e); }
+          done++; onProgress?.(done, unique.length, id);
+        }
+      };
+      await Promise.all(Array.from({length: Math.min(3,unique.length)}, () => worker()));
+    },
     /* Trap placement: while a card is chosen the road is dotted and a preview follows the finger. pick() turns a screen point
        into the lane coordinate of the nearest road point (null when it is not on the road). */
     pickRoad(clientX, clientY) {
