@@ -126,16 +126,55 @@ export function createView(canvas, {spirits, catalog}) {
     geo.computeVertexNormals();
     geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     const ground = new THREE.Mesh(geo, new THREE.MeshToonMaterial({vertexColors: true, gradientMap: kit.gradientMap})); ground.receiveShadow = true; mapGroup.add(ground);
-    /* the road: a dark outline, a warm border and a bright sand surface, so it stands out from the grass;
-       segments plus a disc at every point keep the curves gap-free */
-    const layers = [[kit.toon(T.road[0]), 3.3, 0.02], [kit.toon(T.road[1]), 2.8, 0.035], [kit.toon(T.road[2]), 2.25, 0.05]], pts = game.path.points;
-    for (const [mat, width, y] of layers) {
-      for (let i = 1; i < pts.length; i++) {
-        const [ax, az] = pts[i - 1], [bx, bz] = pts[i], len = Math.hypot(bx - ax, bz - az), ang = Math.atan2(bx - ax, bz - az);
-        const seg = new THREE.Mesh(new THREE.BoxGeometry(width, 0.03, len + 0.05), mat); seg.position.set((ax + bx) / 2, y, (az + bz) / 2); seg.rotation.y = ang; seg.receiveShadow = true; mapGroup.add(seg);
-        if (i % 2 === 0 || i === pts.length - 1) { const j = new THREE.Mesh(new THREE.CylinderGeometry(width / 2, width / 2, 0.03, 20), mat); j.position.set(bx, y, bz); j.receiveShadow = true; mapGroup.add(j); }
+    /* Static, continuous road ribbons: the old hundreds of overlapping BoxGeometry
+       segments and flat cylinders at exactly the same depths caused aggressive
+       z-fighting/flickering on mobile GPU depth buffers. These three BufferGeometry
+       strips use one mesh each, with stable separated Y planes and no per-frame
+       rebuild, so the entire route stays put while fighters follow the same path. */
+    const pts = game.path.points;
+    function buildRoadRibbon(points, width, y) {
+      const vertices = new Float32Array(points.length * 2 * 3);
+      const index = [];
+      for (let i = 0; i < points.length; i++) {
+        const prev = points[Math.max(0, i - 1)], next = points[Math.min(points.length - 1, i + 1)];
+        const dx = next[0] - prev[0], dz = next[1] - prev[1];
+        const len = Math.max(1e-6, Math.hypot(dx, dz));
+        const nx = -dz / len, nz = dx / len;
+        const [x, z] = points[i], k = 6 * i;
+        vertices[k] = x + nx * width * 0.5;
+        vertices[k + 1] = y;
+        vertices[k + 2] = z + nz * width * 0.5;
+        vertices[k + 3] = x - nx * width * 0.5;
+        vertices[k + 4] = y;
+        vertices[k + 5] = z - nz * width * 0.5;
+        if (i > 0) {
+          const p = (i - 1) * 2, q = i * 2;
+          index.push(p, p + 1, q, p + 1, q + 1, q);
+        }
       }
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+      geometry.setIndex(index);
+      geometry.computeVertexNormals();
+      return geometry;
     }
+    const roadLayers = [
+      {color: T.road[0], width: 3.3, height: 0.018},
+      {color: T.road[1], width: 2.8, height: 0.038},
+      {color: T.road[2], width: 2.25, height: 0.058},
+    ];
+    roadLayers.forEach(({color, width, height}, layer) => {
+      const material = new THREE.MeshBasicMaterial({
+        color: linear(color), side: THREE.DoubleSide,
+        depthTest: true, depthWrite: true,
+        polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+      });
+      const road = new THREE.Mesh(buildRoadRibbon(pts, width, height), material);
+      road.name = 'static-road-layer-' + layer;
+      road.renderOrder = layer + 1;
+      road.receiveShadow = false;
+      mapGroup.add(road);
+    });
     /* small arrows on the road show the direction monsters walk */
     const arrowMat = new THREE.MeshBasicMaterial({color: linear(T.road[1]), transparent: true, opacity: 0.7});
     for (let d = 6; d < game.path.length - 4; d += 7) {
