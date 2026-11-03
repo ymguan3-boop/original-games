@@ -525,7 +525,8 @@ async function startGame() {
   /* Wait until the first visible 3D battle frame finishes rendering. The
      loop below then deals the opening three cards and starts the 3.2 s clock. */
   pendingDealingScene = game; visibleSceneFrames = 0;
-  $('stageName').textContent = `${record.stage + 1}. ${game.stage.name}・${stageWeather(game.stage.scene).icon} ${stageWeather(game.stage.scene).name}`;
+  setBattleStageHeading(`${record.stage + 1}. ${game.stage.name}`,
+    `${stageWeather(game.stage.scene).icon} ${stageWeather(game.stage.scene).name}`);
   renderHand(); hud();
   /* Opening boss speech includes the stage title, avoiding overlap with the stage banner. */
   setTimeout(() => game && toast('拖曳卡片排列，相同的卡相鄰會合成；點一下卡片派出'), 2400);
@@ -857,10 +858,23 @@ function bindHand() {
   addEventListener('pointercancel', (e) => { if (drag && e.pointerId === drag.id) { clearTimeout(drag.hold); hideCardInfo(); drag = null; if (game) game.dragging = false; handSig = ''; hud(); } });
 }
 
+/* Stage name and fixed weather are separate no-break text units. On small
+   phones they stack inside one wooden label; never orphan the last character
+   of a Chinese place name or split the weather into single-character rows. */
+function setBattleStageHeading(stageText, weatherText = '') {
+  const heading = $('stageName'), label = $('hudStageLabel'), weather = $('hudWeatherLabel');
+  label.textContent = stageText;
+  weather.textContent = weatherText;
+  weather.hidden = !weatherText;
+  heading.setAttribute('aria-label', stageText + (weatherText ? '，' + weatherText : ''));
+  heading.title = stageText + (weatherText ? '・' + weatherText : '');
+}
+
 function hud() {
   if (!game) return;
   $('runPoints').textContent = game.stats.points.toLocaleString();
-  if (pk) $('stageName').textContent = '⚔️ vs ' + (pk.foe?.name || '對手') + '・' + (pk.arena?.arenaName || '競技場') + '・' + pkClock() + (game.time > PK_RAGE_AT ? '・狂暴！' : '');
+  if (pk) setBattleStageHeading('⚔️ vs ' + (pk.foe?.name || '對手'),
+    (pk.arena?.arenaName || '競技場') + '・' + pkClock() + (game.time > PK_RAGE_AT ? '・狂暴！' : ''));
   const owned = usableItems().reduce((n, u) => n + u.count, 0);
   $('items').classList.toggle('ready', owned > 0);
   $('itemsCount').textContent = owned ? owned + ' 個' : '無道具';
