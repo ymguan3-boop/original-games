@@ -109,3 +109,25 @@ test('touch/click selected-egg placement, touch drag, and cancelled non-deductio
   assert.match(css,/body\.placing-egg #world/);
   assert.match(css,/#hud \.hand-card\.egg-selected/);
 });
+
+
+test('sortie deck editor, flipped card descriptions, and how-to explain actual fusion/placement rules', () => {
+  const main=readFileSync(new URL('../js/main.js',import.meta.url),'utf8');
+  const css=readFileSync(new URL('../css/defense.css',import.meta.url),'utf8');
+  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+  assert.match(main,/ribbon\('出擊卡組'/);
+  assert.match(main,/class="deck-special-rules"/);
+  assert.match(main,/國王 ×1 ＋ 皇后 ×1/);
+  assert.match(main,/同種金魚只升星/);
+  assert.match(main,/三色蛋指定路徑出場/);
+  assert.match(main,/進化成其他幻靈後依一般召喚規則/);
+  assert.match(main,/\['groudon','rayquaza'\]\.includes\(f\) \? \[f\]/,
+    'star-tier preview must not claim two identical kings/queens evolve into a dragon');
+  assert.match(main,/id === 'kyogre'\) tiers\[2\] = \['groudon','rayquaza','mewtwo'\]/);
+  assert.match(main,/國王＋皇后 → 水蛟龍王；同種 ×2 僅升星/);
+  assert.match(main,/id === 'jigglypuff'\s*\? '<div class="deck-special-note">/);
+  assert.match(main,/卡組與升星',[ 'how-to also updated' ]);
+  assert.match(css,/\.deck-special-rules/);
+  assert.match(css,/\.deck-special-note/);
+  assert.match(html,/deck-special-v2/);
+});
