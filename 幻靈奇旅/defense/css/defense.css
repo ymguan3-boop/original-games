@@ -1564,3 +1564,210 @@ dialog#modal.deck .deck-card-list .roster.sortie-current .sortie-empty-slot:acti
   dialog#modal.deck .deck-card-list .roster.sortie-current .sortie-empty-slot b {font-size:10px;}
   dialog#modal.deck .deck-card-list .roster.sortie-current .sortie-empty-slot small {font-size:8px;}
 }
+
+
+/* 2026-11-03 responsive full-width top shortcuts + four-base sortie warning */
+/* One responsive strip consumes ALL available width. No fixed 236px
+   landscape sidebar and no desktop-only max-width that leaves a gap. */
+#lobby .chart-head {
+  box-sizing:border-box;
+  display:grid;
+  grid-template-columns:clamp(42px,4.6vw,64px) max-content minmax(0,1fr) 44px;
+  grid-template-rows:auto;
+  align-items:center;
+  gap:clamp(5px,.8vw,12px);
+  width:auto;
+  max-width:none;
+  left:max(8px,env(safe-area-inset-left));
+  right:max(8px,env(safe-area-inset-right));
+  z-index:10;
+}
+#lobby .chart-head > .logo {
+  position:static;grid-column:1;grid-row:1;
+  width:clamp(40px,4.6vw,64px);max-width:100%;min-width:0;
+}
+#lobby .chart-head > .title-block {
+  position:static;grid-column:2;grid-row:1;
+  left:auto;top:auto;min-width:0;
+}
+#lobby .chart-head .chart-fs {
+  position:relative;grid-column:4;grid-row:1;
+  top:auto;right:auto;left:auto;justify-self:center;
+  width:42px;height:42px;min-width:42px;
+}
+#lobby .chart-head .chart-tools {
+  position:relative;
+  grid-column:3;grid-row:1;
+  display:grid;
+  grid-template-columns:minmax(0,1.16fr) repeat(3,minmax(0,1fr)) minmax(0,1.3fr);
+  justify-content:stretch;align-items:stretch;
+  gap:clamp(3px,.55vw,10px);
+  width:100%;min-width:0;max-width:none;
+  left:auto;right:auto;top:auto;bottom:auto;
+  margin:0;
+}
+#lobby .chart-head .chart-tools > * {
+  grid-column:auto;
+  min-width:0;
+  width:100%;
+  max-width:none;
+  box-sizing:border-box;
+}
+#lobby .chart-head .chart-tools .points-badge {
+  grid-column:auto;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:nowrap;
+  white-space:nowrap;
+  gap:clamp(2px,.4vw,7px);
+  padding:6px clamp(2px,.55vw,12px);
+  min-height:40px;
+  overflow:hidden;
+}
+#lobby .chart-head .chart-tools .points-badge b {
+  font-size:clamp(12px,1.4vw,20px);
+  font-variant-numeric:tabular-nums;
+}
+#lobby .chart-head .chart-tools .points-badge small {font-size:clamp(9px,.9vw,12px);}
+#lobby .chart-head .chart-tools button.tool {
+  grid-column:auto;
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(1px,.3vw,6px);
+  width:100%;min-width:0;max-width:none;
+  min-height:40px;
+  padding:5px clamp(1px,.55vw,12px);
+  text-align:center;
+  font-size:clamp(11px,1.15vw,16px);
+  line-height:1.2;
+  overflow-wrap:anywhere;
+  white-space:normal;
+}
+#lobby .chart-head .chart-tools button.tool span {
+  display:inline;
+  min-width:0;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+@media (max-width:1020px), (orientation:landscape) and (max-height:640px) {
+  #lobby .chart-head {
+    grid-template-columns:clamp(38px,6vw,55px) minmax(0,1fr) 42px;
+    grid-template-rows:auto auto;
+    gap:4px 7px;
+  }
+  #lobby .chart-head > .logo {grid-column:1;grid-row:1;width:clamp(38px,6vw,55px);}
+  #lobby .chart-head > .title-block {grid-column:2;grid-row:1;}
+  #lobby .chart-head .chart-fs {
+    grid-column:3;grid-row:1;justify-self:end;top:auto;right:auto;left:auto;
+  }
+  #lobby .chart-head .chart-tools {
+    grid-column:1/-1;grid-row:2;
+    width:100%;left:auto;right:auto;top:auto;
+    grid-template-columns:minmax(0,1.13fr) repeat(3,minmax(0,1fr)) minmax(0,1.23fr);
+  }
+}
+@media (orientation:portrait) and (max-width:720px) {
+  /* Keep title in row one and all five action cells across row two. */
+  #lobby .chart-head {
+    position:relative;
+    top:auto;left:auto;right:auto;
+    padding:6px max(8px,env(safe-area-inset-right))
+            6px max(8px,env(safe-area-inset-left));
+    width:100%;
+  }
+  #lobby .chart-head .chart-tools {gap:4px;}
+  #lobby .chart-head .chart-tools button.tool {
+    min-width:0;
+    min-height:48px;
+    flex-direction:column;
+    gap:1px;
+    padding:4px 1px;
+    font-size:clamp(10px,2.7vw,13px);
+  }
+  #lobby .chart-head .chart-tools button.tool span {
+    font-size:inherit;
+    line-height:1.15;
+  }
+  #lobby .chart-head .chart-tools .points-badge {
+    min-height:48px;
+    gap:2px;
+    padding:3px 1px;
+  }
+  #lobby .chart-head .chart-tools .points-badge b {font-size:clamp(12px,3.7vw,17px);}
+  #lobby .chart-head .chart-tools .points-badge small {font-size:10px;}
+}
+@media (orientation:landscape) and (max-height:640px) {
+  /* Override the old narrow two-column shortcut sidebar entirely. */
+  #lobby .chart-head {
+    position:absolute;display:grid;
+    grid-template-columns:clamp(35px,5vw,45px) minmax(0,1fr) 38px;
+    grid-template-rows:32px auto;
+    width:auto;
+    left:max(6px,env(safe-area-inset-left));
+    right:max(6px,env(safe-area-inset-right));
+    top:max(3px,env(safe-area-inset-top));
+    padding:3px 3px 5px;
+    gap:3px 5px;
+    background:linear-gradient(180deg,#297cb6ee,#297cb6b8 85%,#297cb600);
+  }
+  #lobby .chart-head > .logo {width:34px;grid-column:1;grid-row:1;}
+  #lobby .chart-head > .title-block {grid-column:2;grid-row:1;}
+  #lobby .chart-head .chart-fs {
+    position:relative;grid-column:3;grid-row:1;
+    width:34px;height:34px;min-width:34px;
+    right:auto;top:auto;justify-self:end;
+  }
+  #lobby .chart-head .chart-tools {
+    position:relative;grid-column:1/-1;grid-row:2;
+    width:100%;top:auto;right:auto;left:auto;
+    grid-template-columns:minmax(0,1.15fr) repeat(3,minmax(0,1fr)) minmax(0,1.25fr);
+    gap:clamp(3px,.75vw,8px);
+  }
+  #lobby .chart-head .chart-tools .points-badge {
+    grid-column:auto;
+    min-height:34px;
+    padding:3px 2px;
+  }
+  #lobby .chart-head .chart-tools button.tool {
+    min-height:34px;min-width:0;
+    padding:3px 2px;
+    font-size:clamp(10px,1.7vw,14px);
+    justify-content:center;
+    flex-direction:row;
+    gap:3px;
+  }
+  #lobby .chart-head .chart-tools button.tool span {white-space:normal;}
+}
+/* A visible Chinese requirement and a clickable, guarded sortie button;
+   aria-disabled documents the state without losing the helpful click message. */
+#lobby .isle-card .sortie-base-warning {
+  box-sizing:border-box;
+  margin:0;
+  padding:5px 8px;
+  border:1px solid #d9a15a;
+  border-radius:9px;
+  background:#fff6e4;
+  color:#834525;
+  font-size:clamp(11px,1.1vw,13px);
+  font-weight:800;
+  line-height:1.4;
+}
+#lobby .isle-card #start[aria-disabled="true"] {
+  filter:saturate(.78);
+  cursor:pointer;
+}
+@media (orientation:portrait) and (max-width:720px) {
+  #lobby .isle-card:has(.sortie-base-warning) {
+    grid-template-areas:"title title" "boss deck" "warning warning" "start start";
+  }
+  #lobby .isle-card .sortie-base-warning {grid-area:warning;padding:3px 6px;font-size:11px;}
+  #lobby .isle-panel:has(.sortie-base-warning) {max-height:min(34dvh,260px);}
+}
+@media (orientation:landscape) and (max-height:560px) {
+  #lobby .isle-card:has(.sortie-base-warning) {
+    grid-template-areas:"title title" "boss boss" "strip strip" "warning warning" "deck start";
+  }
+  #lobby .isle-card .sortie-base-warning {grid-area:warning;padding:3px 5px;font-size:10px;}
+}
