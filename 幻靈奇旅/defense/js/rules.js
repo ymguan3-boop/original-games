@@ -480,6 +480,7 @@ function findTarget(state, f, reach) {
 }
 
 function knock(state, f, distance = 1.6) {
+  if (f.stationary) return; /* an egg placed on the road remains anchored */
   f.knockUntil = state.time + 0.5; f.busyUntil = 0; f.knockVel = (f.side === 'ally' ? 1 : -1) * distance / 0.5;
   emit(state, 'knockback', {id: f.id});
 }
