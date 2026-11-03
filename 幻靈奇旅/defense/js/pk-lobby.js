@@ -79,6 +79,11 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
         deck: (m.deck || []).filter((id) => spirit(id)).slice(0, 6), stock};
       room();
     });
+    session.on('stock', (m) => {
+      if (!session.foe) return;
+      for (const id of ['card-organize','deal-boost','deal-jam'])
+        session.foe.stock[id] = Math.min(99, Math.max(0, Math.floor(Number(m.stock?.[id]) || 0)));
+    });
     session.on('ready', (m) => { session.ready.foe = !!m.on; room(); maybeStart(); });
     session.on('start', (m) => { if (role === 'guest') launch(m.seed); });
     session.on('bye', () => ch._gone?.());
@@ -105,7 +110,7 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
     closeModal(); onStart(s);
   }
   /* after a match: back to the ready screen with the same opponent */
-  function rematch() { if (!session) return home('對手已離開房間'); session.inBattle = false; session.ready = {me: false, foe: false}; ['snap', 'act', 'quit', 'loaded', 'itemUsed', 'itemDenied'].forEach((k) => delete session.handlers[k]); room(); }
+  function rematch() { if (!session) return home('對手已離開房間'); session.inBattle = false; session.ready = {me: false, foe: false}; ['snap', 'act', 'quit', 'loaded', 'itemUsed', 'itemDenied'].forEach((k) => delete session.handlers[k]); session.me.stock = inventory(); session.send({t:'stock',stock:session.me.stock}); room(); }
   function leave() {
     if (hosting) { hosting.cancel(); hosting = null; }
     if (session) { try { session.send({t: 'bye'}); } catch {} const ch = session.ch; session = null; setTimeout(() => ch.close(), 150); }
