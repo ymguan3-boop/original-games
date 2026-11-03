@@ -7,13 +7,13 @@ export function createToonKit(THREE) {
   const gradientMap = new THREE.DataTexture(tones, tones.length, 1, THREE.LuminanceFormat);
   gradientMap.minFilter = gradientMap.magFilter = THREE.NearestFilter; gradientMap.generateMipmaps = false; gradientMap.needsUpdate = true;
   const linear = (hex) => new THREE.Color(hex).convertSRGBToLinear();
-  const solid = new Map(), converted = new Map();
+  const solid = new Map(), converted = new Map(), sharedMaterials = new WeakSet();
   const INK = linear(0x3a2414);
 
   /* a flat-colour toon material for props */
   function toon(hex, extra = {}) {
     const key = hex + JSON.stringify(extra);
-    if (!solid.has(key)) solid.set(key, new THREE.MeshToonMaterial({color: linear(hex), gradientMap, ...extra}));
+    if (!solid.has(key)) { const material = new THREE.MeshToonMaterial({color: linear(hex), gradientMap, ...extra}); solid.set(key, material); sharedMaterials.add(material); }
     return solid.get(key);
   }
 
@@ -29,7 +29,7 @@ export function createToonKit(THREE) {
         skinning: !!mesh.isSkinnedMesh, morphTargets: !!mesh.morphTargetInfluences,
       });
       t.name = (m.name || '') + '-toon';
-      converted.set(key, t);
+      converted.set(key, t); sharedMaterials.add(t);
     }
     return converted.get(key);
   }
@@ -74,5 +74,5 @@ export function createToonKit(THREE) {
     return root;
   }
 
-  return {toon, toonify, gradientMap, linear};
+  return {toon, toonify, gradientMap, linear, isSharedMaterial: (m) => sharedMaterials.has(m)};
 }
