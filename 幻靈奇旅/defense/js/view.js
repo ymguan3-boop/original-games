@@ -842,6 +842,14 @@ export function createView(canvas, {spirits, catalog}) {
   }
 
   const portraits = new Map(); let portraitRig = null;
+  function releasePortraitRenderer() {
+    /* The optional GLB dialogue portrait uses a third WebGL context.
+       Free it outside boss dialogue scenes, particularly during long PK
+       sessions, rather than keeping a spare 384px renderer alive forever. */
+    if (!portraitRig) return;
+    try { portraitRig.r.dispose(); portraitRig.r.forceContextLoss?.(); } catch {}
+    portraitRig = null;
+  }
   return {
     update, resize, fire, metrics,
     set cardOrigin(p) { cardOrigin = p; },
@@ -858,6 +866,7 @@ export function createView(canvas, {spirits, catalog}) {
       hero = null; rivalHero = null; traps = []; placeGuide = placeGhost = null; numbersOnScreen = 0;
       for (const c of casters.splice(0)) c.a?.dispose();
       projectileView.clear(); combatVfx.clear(); fx.clear();
+      if (!game || game.duel) releasePortraitRenderer();
       state = game; if (game) buildMap(game);
     },
     async preload(ids, onProgress = null) {
