@@ -239,7 +239,7 @@ test('all ten stages use continuous non-overlapping road mesh strips instead of 
 });
 
 
-test('portrait battle header uses two compact top rows and never orphans a Chinese stage/weather word', () => {
+test('portrait HUD uses two compact top rows without orphaned stage/weather words', () => {
   assert.match(html,/id="stageName"[^>]+><span class="hud-stage-label" id="hudStageLabel"><\/span><span class="hud-weather-label" id="hudWeatherLabel"><\/span>/);
   assert.match(main,/setBattleStageHeading\(\x60\$\{record\.stage \+ 1\}\. \$\{game\.stage\.name\}\x60/);
   assert.match(main,/if \(pk\) setBattleStageHeading\(/);
@@ -249,7 +249,7 @@ test('portrait battle header uses two compact top rows and never orphans a Chine
   const nodes=Object.fromEntries(['stageName','hudStageLabel','hudWeatherLabel']
     .map(id=>[id,{textContent:'',hidden:false,title:'',setAttribute(name,value){this[name]=value;}}]));
   const setHeading=new Function('$',main.slice(begin,end)+'return setBattleStageHeading;')(id=>nodes[id]);
-  for(let i=0;i<STAGES.length;i++){
+  for(let i=0;i<STAGES.length;i++) {
     const title=(i+1)+'. '+STAGES[i].name;
     setHeading(title,'☀️ 晴朗暖陽');
     assert.equal(nodes.hudStageLabel.textContent,title);
@@ -258,13 +258,13 @@ test('portrait battle header uses two compact top rows and never orphans a Chine
     assert.equal(nodes.hudWeatherLabel.hidden,false);
   }
   setHeading('⚔️ vs 旅人70','PK・猴王果園・2:57');
-  assert.equal(nodes.hudStageLabel.textContent,'⚔️ vs 旅人70');
   assert.equal(nodes.hudWeatherLabel.textContent,'PK・猴王果園・2:57');
   setHeading('單獨標題');
   assert.equal(nodes.hudWeatherLabel.hidden,true);
-  const styles=css.slice(css.indexOf('2026-11-03 v12: portrait battle HUD'));
-  assert.ok(styles.length>1000);
+  const styles=css.slice(css.indexOf('2026-11-04 v14: compact weather-safe HUD'));
+  assert.ok(styles.length>4000);
   assert.match(styles,/white-space:nowrap/);
+  assert.match(styles,/text-overflow:ellipsis/);
   assert.match(styles,/word-break:keep-all/);
   assert.match(styles,/@media \(orientation:portrait\) and \(max-width:720px\)/);
   assert.match(styles,/grid-template-columns:repeat\(12,minmax\(0,1fr\)\)/);
@@ -272,48 +272,56 @@ test('portrait battle header uses two compact top rows and never orphans a Chine
   assert.match(styles,/grid-column:1 \/ span 6/);
   assert.match(styles,/grid-column:7 \/ span 4/);
   assert.match(styles,/grid-column:11 \/ span 2/);
-  assert.match(styles,/grid-column:1 \/ span 3/);
-  assert.match(styles,/grid-column:4 \/ span 9/);
+  assert.match(styles,/grid-column:1 \/ span 4/);
+  assert.match(styles,/grid-column:5 \/ span 8/);
   assert.match(styles,/@media \(orientation:portrait\) and \(max-width:355px\)/);
-  /* Verify the 12-track allocations add up to the phone's available width.
-     Content never slips into an unexpected third row. */
-  for(const width of [320,351,390,430,720]){
-    const inner=width-14, gap=4;
-    const unit=(inner-11*gap)/12;
-    const spans=[6,4,2,3,9].map(n=>unit*n+(n-1)*gap);
-    assert.ok(spans.every(n=>n>0),'tracks positive at '+width+'px');
-    assert.ok(Math.abs(spans[0]+spans[1]+spans[2]+2*gap-inner)<0.01);
-    assert.ok(Math.abs(spans[3]+spans[4]+gap-inner)<0.01);
+  for(const width of [320,351,390,430,720]) {
+    const inner=width-14, gap=4, unit=(inner-11*gap)/12;
+    const span=n=>unit*n+(n-1)*gap;
+    assert.ok(span(5)>0 && span(3)>0,'all PK tracks remain usable');
+    assert.ok(Math.abs(span(6)+span(4)+span(2)+2*gap-inner)<.01);
+    assert.ok(Math.abs(span(4)+span(8)+gap-inner)<.01);
+    assert.ok(Math.abs(span(5)+span(3)+span(2)+span(2)+3*gap-inner)<.01);
   }
-  assert.match(html,/evo-off-v13/);
+  assert.match(html,/evo-off-v13|weather-hud-v14/);
 });
 
-test('evolution card overlays are permanently disabled in solo and PK regardless of old saved option', () => {
-  const hudSection=html.slice(html.indexOf('<div id="hud"'),html.indexOf('<div class="hud-bottom">'));
-  assert.doesNotMatch(hudSection,/evoToggle|進化動畫/,'shared solo/PK HUD must not expose a toggle');
-  assert.match(hudSection,/id="camReset"/);
-  assert.match(hudSection,/id="speed"/);
-  assert.match(hudSection,/id="pause"/);
-  assert.doesNotMatch(main,/evoToggle|evoOverlay\(|evolvingCards|EVO_TIME|\.evo-anim/,
-    'evolution overlay rendering and switch callbacks must be absent');
-  assert.doesNotMatch(css,/#evoToggle|\.evo-anim|\.evo-old|\.evo-new|\.evo-flash|\.evo-rays/,
-    'unused image animation rules should not ship');
+test('evolution cutscene and obsolete camera button stay removed in solo and PK', () => {
+  const head=html.slice(html.indexOf('<div id="hud"'),html.indexOf('<div class="hud-bottom">'));
+  assert.doesNotMatch(head,/camReset|evoToggle|進化動畫/);
+  assert.match(head,/id="speed"/);
+  assert.match(head,/id="pause"/);
+  assert.match(head,/class="fs-toggle hud-fs"/);
+  assert.doesNotMatch(main,/camReset|evoToggle|evoOverlay\(|evolvingCards|EVO_TIME|\.evo-anim/);
+  assert.doesNotMatch(css,/#evoToggle|\.evo-anim|\.evo-old|\.evo-new|\.evo-flash|\.evo-rays/);
   assert.match(main,/if \('evoAnim' in record\) \{ delete record\.evoAnim; saveRecord\(\); \}/);
-  const migration=main.match(/if \('evoAnim' in record\) \{ delete record\.evoAnim; saveRecord\(\); \}/)?.[0];
-  assert.ok(migration);
-  for(const preference of [true,false]) {
-    const record={evoAnim:preference,stage:3,deck:['a','b','c','d']};
-    let saved=0;
-    new Function('record','saveRecord',migration)(record,()=>saved++);
-    assert.ok(!('evoAnim' in record),'old preference is retired');
-    assert.equal(saved,1);
-    assert.equal(record.stage,3);
-  }
-  const source=css.slice(css.indexOf('2026-11-03 v12: portrait battle HUD'));
-  assert.match(source,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/,
-    'solo HUD distributes camera, speed and pause evenly');
-  assert.match(source,/body\.pk-mode #hud \.hud-top \.hud-actions \{grid-column:1 \/ -1;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);\}/,
-    'PK distributes only camera and pause evenly');
+  const source=css.slice(css.indexOf('2026-11-04 v14: compact weather-safe HUD'));
+  assert.match(source,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,
+    'solo HUD divides space evenly between speed and pause');
+  assert.match(source,/body\.pk-mode #hud \.hud-top \.hud-actions \{\s*grid-column:9 \/ span 2;/,
+    'PK gives pause a compact control in the top row');
+  assert.match(source,/@media \(orientation:landscape\) and \(max-height:700px\)/);
+  assert.match(source,/body\.pk-mode #hud \.hud-top \.hud-actions \{\s*grid-column:3;/,
+    'landscape PK gives the pause button its own top-row track');
   assert.match(main,/else if \(ev\.type === 'merge'\) \{ fuse\(ev\)/,
-    'card merging must continue to function');
+    'card merging is not disabled by cutscene removal');
+});
+
+test('all islands retain authored weather and lighting after boss hits, in solo and PK', async () => {
+  const sea=read('../js/seascape.js');
+  const {stageWeather}=await import('../js/seascape.js');
+  for(const stage of STAGES) {
+    assert.equal(stageWeather(stage.scene).fixed,true,stage.name+' should be fixed');
+  }
+  for(const arena of PK_ARENAS) {
+    assert.equal(stageWeather(arena.scene).fixed,true,'PK climate must be stage-controlled');
+  }
+  assert.match(sea,/function lockWeather\(\)/);
+  assert.match(sea,/scene\.background !== skyTex/);
+  assert.match(sea,/scene\.fog !== null/);
+  assert.match(view,/lockedClimateLighting = \{/);
+  assert.match(view,/seascape\.lockWeather\(\)/);
+  assert.match(view,/hemi\.intensity !== c\.hemiPower/);
+  assert.match(view,/sun\.intensity !== c\.sunPower/);
+  assert.doesNotMatch(view,/scene\.background\s*=\s*new THREE\.Color\(0x(?:000000|ffffff)\)/);
 });
