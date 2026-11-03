@@ -1870,3 +1870,231 @@ dialog#modal.stage-result .stage-result-actions #nextStage {
   dialog#modal.stage-result .stage-result-actions button.round,
   dialog#modal.stage-result .stage-result-actions button.wide {height:39px;min-height:39px;}
 }
+
+
+/* 2026-11-03 v12: portrait battle HUD aligned in two fixed top rows, unbroken Chinese labels */
+/* Stage names and weather values are semantic units, never break between
+   individual Chinese characters. A complete label may move to a second row,
+   but no orphan character is allowed. */
+#hud .hud-top #stageName {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-flow:row wrap;
+  gap:2px 6px;
+  min-width:0;
+  max-width:min(47vw,380px);
+  overflow:hidden;
+  word-break:keep-all;
+  overflow-wrap:normal;
+  line-break:strict;
+}
+#hud .hud-top #stageName .hud-stage-label,
+#hud .hud-top #stageName .hud-weather-label {
+  display:block;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  word-break:keep-all;
+  overflow-wrap:normal;
+  line-break:strict;
+  flex:0 1 auto;
+}
+#hud .hud-top #stageName .hud-weather-label[hidden] {display:none;}
+@media (orientation:portrait) and (max-width:720px) {
+  /* Grid spans are chosen to fit a 320px phone:
+     row 1 = stage/weather (6) | deal (4) | fullscreen (2);
+     row 2 = points (3) | evolution/camera/speed/pause (9).
+     This replaces the old flex-wrap producing three irregular rows. */
+  #hud .hud-top {
+    position:fixed;
+    z-index:12;
+    top:max(8px,env(safe-area-inset-top));
+    left:max(7px,env(safe-area-inset-left));
+    right:max(7px,env(safe-area-inset-right));
+    width:auto;
+    max-width:none;
+    padding:0;
+    margin:0;
+    display:grid;
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    grid-template-rows:56px 44px;
+    column-gap:4px;
+    row-gap:5px;
+    align-content:start;
+    align-items:start;
+    justify-items:stretch;
+    flex-wrap:nowrap;
+    pointer-events:none;
+  }
+  #hud .hud-top #stageName {
+    grid-column:1 / span 6;
+    grid-row:1;
+    display:flex;
+    flex-direction:column;
+    flex-wrap:nowrap;
+    justify-content:center;
+    align-items:center;
+    align-self:stretch;
+    box-sizing:border-box;
+    width:100%;
+    max-width:none;
+    height:56px;
+    min-height:56px;
+    margin:0;
+    padding:3px 5px;
+    border-radius:15px;
+    gap:1px;
+    text-align:center;
+  }
+  #hud .hud-top #stageName .hud-stage-label {
+    flex:0 0 auto;
+    width:auto;
+    max-width:100%;
+    font-size:clamp(11px,3.25vw,14px);
+    font-weight:900;
+    line-height:1.2;
+    letter-spacing:-.2px;
+  }
+  #hud .hud-top #stageName .hud-weather-label {
+    flex:0 0 auto;
+    width:auto;
+    max-width:100%;
+    font-size:clamp(10px,2.95vw,12px);
+    font-weight:800;
+    line-height:1.25;
+    letter-spacing:-.3px;
+  }
+  #hud .hud-top .stat.deal {
+    grid-column:7 / span 4;
+    grid-row:1;
+    display:inline-flex;
+    flex-direction:row;
+    flex-wrap:nowrap;
+    justify-content:center;
+    align-items:center;
+    align-self:stretch;
+    width:100%;
+    height:56px;
+    min-height:56px;
+    min-width:0;
+    margin:0;
+    padding:0 3px;
+    gap:4px;
+    border-radius:16px;
+  }
+  #hud .hud-top .stat.deal span {
+    flex:0 0 auto;
+    white-space:nowrap;
+    font-size:clamp(11px,3vw,13px);
+  }
+  #hud .hud-top .stat.deal i {
+    display:block;
+    flex:0 1 42px;
+    width:auto;
+    min-width:18px;
+    max-width:42px;
+    height:11px;
+    box-sizing:border-box;
+    margin:0;
+  }
+  #hud .hud-top .hud-fs {
+    position:static;
+    grid-column:11 / span 2;
+    grid-row:1;
+    top:auto;
+    right:auto;
+    left:auto;
+    display:grid;
+    place-items:center;
+    justify-self:center;
+    align-self:center;
+    box-sizing:border-box;
+    width:min(100%,52px);
+    height:52px;
+    min-width:0;
+    min-height:0;
+    margin:0;
+    padding:0;
+    font-size:20px;
+    pointer-events:auto;
+  }
+  #hud .hud-top .stat.pts {
+    grid-column:1 / span 3;
+    grid-row:2;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    align-self:stretch;
+    box-sizing:border-box;
+    width:100%;
+    min-width:0;
+    height:44px;
+    min-height:44px;
+    margin:0;
+    padding:0 1px;
+    gap:2px;
+    border-radius:16px;
+    font-size:clamp(11px,2.9vw,14px);
+    white-space:nowrap;
+  }
+  #hud .hud-top .stat.pts b {
+    font-size:clamp(12px,3.45vw,16px);
+    line-height:1;
+  }
+  #hud .hud-top .hud-actions {
+    grid-column:4 / span 9;
+    grid-row:2;
+    display:grid;
+    grid-template-columns:minmax(0,2.2fr) repeat(3,minmax(0,1fr));
+    align-items:stretch;
+    align-self:stretch;
+    gap:4px;
+    box-sizing:border-box;
+    width:100%;
+    min-width:0;
+    height:44px;
+    min-height:44px;
+    margin:0;
+    padding:0;
+  }
+  #hud .hud-top .hud-actions button {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    box-sizing:border-box;
+    width:100%;
+    min-width:0;
+    max-width:none;
+    height:44px;
+    min-height:44px;
+    margin:0;
+    padding:0 2px;
+    border-radius:15px;
+    font-size:clamp(11px,3vw,13px);
+    line-height:1;
+    overflow:hidden;
+    white-space:nowrap;
+    word-break:keep-all;
+  }
+  #hud .hud-top #evoToggle {
+    padding:0 2px;
+    font-size:clamp(10px,2.7vw,12px);
+    letter-spacing:-.4px;
+  }
+  body.pk-mode #hud .hud-top .stat.pts {display:none;}
+  body.pk-mode #hud .hud-top .hud-actions {grid-column:1 / -1;}
+}
+@media (orientation:portrait) and (max-width:355px) {
+  #hud .hud-top {column-gap:3px;row-gap:4px;grid-template-rows:53px 42px;}
+  #hud .hud-top #stageName,
+  #hud .hud-top .stat.deal {height:53px;min-height:53px;}
+  #hud .hud-top .hud-fs {height:46px;}
+  #hud .hud-top .stat.pts,
+  #hud .hud-top .hud-actions,
+  #hud .hud-top .hud-actions button {height:42px;min-height:42px;}
+  #hud .hud-top .hud-actions {gap:3px;}
+  #hud .hud-top #evoToggle {font-size:10px;letter-spacing:-.7px;}
+}
