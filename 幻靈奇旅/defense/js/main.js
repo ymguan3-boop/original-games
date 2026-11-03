@@ -389,10 +389,14 @@ function showHowTo() {
     <div class="modal-actions center"><button class="primary big" data-close>開始守護戰</button></div>`,'howto');
 }
 
+let loadingStartedAt = 0;
 function loadingPhase(message, percent) {
+  if (percent <= 8 || !loadingStartedAt) loadingStartedAt = performance.now();
   $('loadingText').textContent = message;
   $('loadingBar').style.width = Math.max(0,Math.min(100,percent)) + '%';
-  $('loadingBar').setAttribute('aria-valuenow', String(Math.round(percent)));
+  $('loadingBar').parentElement?.setAttribute('aria-valuenow', String(Math.round(percent)));
+  if ($('loadingElapsed')) $('loadingElapsed').textContent =
+    '已讀取 ' + Math.floor((performance.now() - loadingStartedAt) / 1000) + ' 秒';
 }
 function nextPaint() {
   return new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
@@ -1095,6 +1099,12 @@ function openPause() {
 
 function loop(now) {
   requestAnimationFrame(loop);
+  if (!$('loading').hidden && now - (loop.loadingUiAt || 0) > 500) {
+    loop.loadingUiAt = now;
+    if ($('loadingElapsed') && loadingStartedAt)
+      $('loadingElapsed').textContent = '已讀取 ' +
+        Math.max(0,Math.floor((performance.now() - loadingStartedAt) / 1000)) + ' 秒 · 請勿關閉頁面';
+  }
   const dt = Math.min(0.1, (now - (last || now)) / 1000); last = now;
   const visibleBattle = game && game.started && $('loading').hidden && $('lobby').hidden && !$('hud').hidden;
   const running = visibleBattle && !game.result && (pk ? true : !paused && !$('modal').open);
