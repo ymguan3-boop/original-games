@@ -69,3 +69,11 @@ test('gacha gives this mode own items; the panel, boatman and landscape sortie p
   assert.ok(main.includes('class="bm-line">要去哪裡？'), 'short boatman dialog');
   assert.ok(css.includes('#lobby .isle-panel { width: min(200px, 29vw)'));
 });
+
+test('the deck sheet shows a card\'s attack, ultimate and passives; boarding the boat puts the weapon away', () => {
+  const main = read('../js/main.js'), game = read('../../js/game.js'), css = read('../css/defense.css');
+  assert.ok(main.includes('id="deckInfo"') && main.includes('cardInfoHtml({species: id, rank: 1})') && main.includes("'加入出戰卡組'"));
+  assert.ok(!main.includes("$('modalBody').querySelectorAll('[data-unit]').forEach((b) => (b.onclick = () => {\n    const id = b.dataset.unit, k"), 'a tap no longer toggles the deck directly');
+  assert.ok(css.includes('.deck-info'));
+  assert.ok(game.includes('&&!riding()&&!harbor?.sailing'), 'the scythe is disabled while the hero boards and sails');
+});

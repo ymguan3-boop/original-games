@@ -937,3 +937,9 @@ body.placing-trap #items { outline: 3px solid #ffd84a; }
   #lobby .isle-deck { grid-area: deck; } #lobby .isle-deck .tool.small { padding: 6px 8px; font-size: 11px; min-height: 40px; }
   #lobby .isle-card > button.wide { grid-area: start; min-height: 40px; font-size: 16px; padding: 4px; }
 }
+
+/* Deck sheet: the tapped card's details sit under the list, with one button to add or remove it. */
+.deck-info { margin-top: 8px; padding: 10px 12px; max-height: 32dvh; overflow-y: auto; border-radius: 14px; background: #fffdf6; box-shadow: inset 0 0 0 2px #ead7ae; }
+.deck-info[hidden] { display: none; }
+.deck-info .wide-btn { width: 100%; margin: 0 0 8px; min-height: 44px; font-size: 16px; }
+.roster .collectionThumb.picked { outline: 3px solid #ffb938; outline-offset: -1px; }

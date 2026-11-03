@@ -228,7 +228,7 @@ function bindLobby() {
 }
 
 /* deck editor: base spirits and red support cards from the summoned collection */
-function openDeck() {
+function openDeck(picked = null, keepScroll = 0) {
   normalizeDeck();
   const units = availableUnits(), nb = deckBase().length, nr = deckRed().length;
   openModal(`${ribbon('出擊卡組', '🃏')}
@@ -236,16 +236,28 @@ function openDeck() {
     <div class="role-legend">${Object.values(ROLE_META).map((r) => `<span>${r.icon} ${r.label}</span>`).join('')}</div>
     <div class="panel-scroll"><h3 class="roster-group">基礎幻靈 <small>黃卡、紫卡的未進階幻靈與三色蛋</small></h3><div class="roster">${units.base.map(unitButton).join('') || '<p class="muted">還沒有基礎幻靈，先去轉蛋吧！</p>'}</div>
     <h3 class="roster-group">紅卡輔助 <small>點擊施放技能，合成升星</small></h3><div class="roster">${units.red.map(unitButton).join('') || '<p class="muted">紅卡可由轉蛋取得（需先在原探索收錄）。</p>'}</div></div>
+    <div id="deckInfo" class="deck-info" hidden></div>
     <div class="modal-actions center"><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto');
   $('deckGacha').onclick = () => { $('modal').close(); openGacha(); };
-  $('modalBody').querySelectorAll('[data-unit]').forEach((b) => (b.onclick = () => {
-    const id = b.dataset.unit, k = record.deck.indexOf(id), red = isRedCard(id);
+  /* tapping a card shows its attack, ultimate and passives; a button then adds it to / removes it from the sortie deck */
+  const scroller = $('modalBody').querySelector('.panel-scroll'), info = $('deckInfo');
+  if (scroller) scroller.scrollTop = keepScroll;
+  const toggle = (id) => {
+    const k = record.deck.indexOf(id), red = isRedCard(id);
     if (k >= 0) record.deck.splice(k, 1);
     else if (red && deckRed().length >= DECK_RED) record.deck.splice(record.deck.indexOf(deckRed()[0]), 1, id);
     else if (!red && deckBase().length >= DECK_BASE) record.deck.splice(record.deck.indexOf(deckBase()[0]), 1, id);
     else record.deck.push(id);
-    saveRecord(); renderIslePanel(); openDeck();
-  }));
+    saveRecord(); renderIslePanel(); openDeck(id, scroller?.scrollTop || 0);
+  };
+  const show = (id) => {
+    const inDeck = record.deck.includes(id);
+    info.innerHTML = `<button class="${inDeck ? 'tool' : 'primary'} wide-btn" id="deckToggle">${inDeck ? '移出出戰卡組' : '加入出戰卡組'}</button>` + cardInfoHtml({species: id, rank: 1});
+    info.hidden = false; $('deckToggle').onclick = () => toggle(id);
+    $('modalBody').querySelectorAll('[data-unit]').forEach((x) => x.classList.toggle('picked', x.dataset.unit === id));
+  };
+  $('modalBody').querySelectorAll('[data-unit]').forEach((b) => (b.onclick = () => show(b.dataset.unit)));
+  if (picked && $('modalBody').querySelector('[data-unit="' + picked + '"]')) show(picked);
 }
 
 /* Summons in the endless cave's own gacha dialog (same markup, art and summon film: survivors/js/summon-view.js,

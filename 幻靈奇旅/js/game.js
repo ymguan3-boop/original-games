@@ -913,7 +913,7 @@ function updateSoundCostume(dt){
   hero.soundTiltPivot.rotation.z=moving?.025*Math.sin(elapsed*6):0;
  }
  heroCostumes.update(hero.object,dt);
- if(hero.scythe){hero.scythe.update(dt,{enabled:S.state.costume==='reaper'&&PhantomReaperEvent.owns(S.state)&&!riding(),motion:hero.mode||'Idle',sound:false});}
+ if(hero.scythe){hero.scythe.update(dt,{enabled:S.state.costume==='reaper'&&PhantomReaperEvent.owns(S.state)&&!riding()&&!harbor?.sailing,motion:hero.mode||'Idle',sound:false});}
 }
 
 function setCostume(id){
