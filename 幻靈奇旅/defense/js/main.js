@@ -460,7 +460,7 @@ async function startGame() {
 /* ---------- PK battle: the host runs rules.js in duel mode and streams snapshots; the guest shows the mirror ---------- */
 async function startPkGame(session) {
   const serial = ++startSerial;
-  hideBossIntro(); pendingDealingScene = null; visibleSceneFrames = 0; game = null; acc = 0; last = 0; paused = false; speed = 1;
+  hideBossIntro(); pendingDealingScene = null; visibleSceneFrames = 0; game = null; acc = 0; last = 0; loop.renderBank = 0; loop.lastRenderAt = 0; paused = false; speed = 1;
   pk = session; pk.arena = pkArenaFor(pk.seed); pk.outbox = []; pk.sentAt = 0; pk.foeLoaded = false; pk.loadedSent = false; pk.waitFrom = 0;
   pk.itemStock = {...(pk.foe?.stock || {})}; pendingPkItems.clear(); bagCache.at = 0;
   document.body.classList.add('pk-mode');
@@ -1106,7 +1106,22 @@ function loop(now) {
   }
   if (game && game.events.length) { handleEvents(); hud(); }
   else if (running && now - (loop.hudAt || 0) > 100) { hud(); loop.hudAt = now; }
-  if (game) view?.update(running ? dt * speed : 0);
+  if (game && view) {
+    /* Long PK battles generate many WebGL draw calls. On touch phones cap
+       battle rendering near 30 FPS; the deterministic rules clock still runs
+       at 30 Hz and all attacks retain their real damage and timings. */
+    const mobilePk = !!pk && typeof matchMedia === 'function' &&
+      (matchMedia('(pointer:coarse)').matches || matchMedia('(max-width:820px)').matches);
+    if (mobilePk && !pendingDealingScene) {
+      loop.renderBank = Math.min(0.1, (loop.renderBank || 0) + (running ? dt * speed : 0));
+      if (now - (loop.lastRenderAt || 0) >= 32 || !running) {
+        view.update(loop.renderBank); loop.renderBank = 0; loop.lastRenderAt = now;
+      }
+    } else {
+      loop.renderBank = 0; loop.lastRenderAt = now;
+      view.update(running ? dt * speed : 0);
+    }
+  }
   if (pendingDealingScene && pendingDealingScene === game &&
       $('loading').hidden && $('lobby').hidden && !$('hud').hidden && !$('modal').open) {
     /* First render paints the world and empty hand; the next rendered frame
@@ -1121,9 +1136,16 @@ function loop(now) {
     }
   }
   if (pk?.role === 'host' && game) {
-    pk.outbox.push(...game.events);
-    const every = pk.ch.kind === 'firebase-relay' ? 300 : 100;
-    if (now - pk.sentAt >= every) { pk.sentAt = now; pk.send({t: 'snap', d: snapshot(game, pk.outbox)}); pk.outbox = []; }
+    /* Only keep recent visual events: hand state, fighters and bases are
+       authoritative in every snapshot. Cap the queue when effects spike. */
+    if (game.events.length) pk.outbox.push(...game.events);
+    if (pk.outbox.length > 160) pk.outbox.splice(0, pk.outbox.length - 160);
+    const every = pk.ch.kind === 'firebase-relay' ? 450 : 190;
+    if (now - pk.sentAt >= every) {
+      pk.sentAt = now;
+      pk.send({t: 'snap', d: snapshot(game, pk.outbox)});
+      pk.outbox.length = 0;
+    }
   }
   if (game) game.events.length = 0;
 }
