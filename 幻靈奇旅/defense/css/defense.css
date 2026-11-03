@@ -1088,3 +1088,22 @@ button.fs-toggle { display: inline-grid !important; place-items: center; width: 
   #lobby .chart-tools button.tool .ico { display: none; }
   #lobby .chart-tools button.tool span { display: inline; white-space: nowrap; }
 }
+
+/* pause sheet: sound shortcuts in the same round wooden buttons, and one slider row for the chosen sound */
+#modal .sheet-actions { flex-wrap: wrap; }
+#modal button.round.on { background: linear-gradient(180deg, #ffe590, #f4b23a); }
+#modal button.round span .ico { width: 1.1em; height: 1.1em; }
+.audio-panel { margin-top: 12px; padding: 10px 12px; border-radius: 16px; border: 3px solid #7a4a24; background: linear-gradient(180deg, #fff9e8, #f8e5b8); box-shadow: inset 0 0 0 2px #fffdf3; }
+.audio-panel[hidden] { display: none; }
+.audio-row { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "label label mute" "slider slider value"; align-items: center; gap: 8px 10px; color: #5a3719; }
+.audio-row b { grid-area: label; display: inline-flex; align-items: center; gap: 6px; font-size: 15px; }
+.audio-row input[type=range] { grid-area: slider; width: 100%; accent-color: #a8642a; height: 26px; }
+.audio-row output { grid-area: value; min-width: 3.2em; text-align: right; font-weight: 800; }
+#modal .audio-row .audio-mute { grid-area: mute; min-height: 36px; padding: 4px 12px; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; }
+#modal .audio-row .audio-mute.off { background: linear-gradient(180deg, #f1e8d6, #dccdb1); color: #7a6a55; }
+@media (max-width: 420px) { #modal .sheet-actions { gap: 7px; } #modal button.round { width: 48px; height: 54px; } }
+@media (max-width: 420px) {
+  #modal .sheet-actions { gap: 5px; flex-wrap: nowrap; }
+  #modal button.round { width: 44px; height: 52px; border-radius: 14px; }
+  #modal button.round small { font-size: 9.5px; }
+}

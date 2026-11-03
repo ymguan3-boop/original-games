@@ -116,3 +116,10 @@ test('HUD labels (stage, deal meter, points), island names and toasts use the sa
   assert.ok(block.includes('#hud .hud-top .stat.deal i { display: block; width: 64px; height: 12px;'), 'the deal meter is a bar, not a dial');
   assert.ok(css.includes('#lobby .chart-tools button.tool { white-space: nowrap;'), 'portrait chart buttons keep their words on one line');
 });
+
+test('the pause sheet has music and attack-sound shortcuts in the same round buttons, with a volume slider and on/off', () => {
+  const main = read('../js/main.js'), css = read('../css/defense.css');
+  assert.ok(main.includes('id="pBgm"') && main.includes('id="pSfx"') && main.includes('function toggleAudioPanel(kind)'));
+  assert.ok(main.includes('B.setVolume(') && main.includes('B.setSfxVolume(') && main.includes('B.toggleSfx()'), 'uses the shared town audio settings');
+  assert.ok(css.includes('.audio-panel {') && css.includes('#modal button.round.on'));
+});

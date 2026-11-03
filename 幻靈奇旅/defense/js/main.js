@@ -7,7 +7,7 @@ import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createChartModels} from './chart-models.js?v=20261106-items-v2';
 import {createView} from './view.js?v=20261105-traps-v1';
-import {createSeaChart} from './sea3d.js?v=20261107-icons-v5';
+import {createSeaChart} from './sea3d.js?v=20261108-audio-v1';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261106-items-v1';
 import {buildPath} from './stages.js?v=20261105-traps-v1';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js';
@@ -20,8 +20,8 @@ import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleL
 import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261105-weather-v2';
 import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-country-v1';
 import {icon} from '../../survivors/js/ui-art.js';
-import {initFullscreen} from './fullscreen.js?v=20261107-icons-v5';
-import {initIcons} from './ui-icons.js?v=20261107-icons-v5';
+import {initFullscreen} from './fullscreen.js?v=20261108-audio-v1';
+import {initIcons, ico} from './ui-icons.js?v=20261108-audio-v1';
 import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
 
 const $ = (id) => document.getElementById(id);
@@ -739,6 +739,22 @@ function bindHud() {
   });
 }
 
+/* Pause sheet: background music and attack sounds, each with a volume slider and an on / off button (shared with the town's settings) */
+function toggleAudioPanel(kind) {
+  const panel = $('audioPanel'), B = globalThis.PhantomBgm;
+  if (!panel || !B) return;
+  if (!panel.hidden && panel.dataset.kind === kind) { panel.hidden = true; $('pBgm').classList.remove('on'); $('pSfx').classList.remove('on'); return; }
+  panel.dataset.kind = kind; panel.hidden = false;
+  $('pBgm').classList.toggle('on', kind === 'bgm'); $('pSfx').classList.toggle('on', kind === 'sfx');
+  const bgm = kind === 'bgm', vol = () => (bgm ? B.volume : B.sfxVolume), muted = () => (bgm ? B.muted : B.sfxMuted);
+  panel.innerHTML = `<div class="audio-row"><b>${ico(bgm ? 'music' : 'speaker')} ${bgm ? '背景音樂' : '攻擊音效'}</b>
+    <input type="range" id="audioVol" min="0" max="100" step="1" value="${vol()}" aria-label="${bgm ? '背景音樂' : '攻擊音效'}音量"><output id="audioVal">${vol()}%</output>
+    <button id="audioMute" class="audio-mute">${muted() ? ico('mute') + '已關閉' : ico(bgm ? 'music' : 'speaker') + '開啟中'}</button></div>`;
+  const paint = () => { $('audioVal').textContent = vol() + '%'; $('audioMute').innerHTML = muted() ? ico('mute') + '已關閉' : ico(bgm ? 'music' : 'speaker') + '開啟中'; $('audioMute').classList.toggle('off', muted()); };
+  $('audioVol').oninput = (e) => { if (bgm) { B.setVolume(+e.target.value); if (B.muted && +e.target.value > 0) B.setMuted(false); } else { B.setSfxVolume(+e.target.value); if (B.sfxMuted && +e.target.value > 0) B.setSfxMuted(false); } paint(); };
+  $('audioMute').onclick = () => { if (bgm) B.toggle(); else B.toggleSfx(); paint(); };
+  paint();
+}
 function openPause() {
   const stage = game.stage, idx = STAGES.indexOf(stage), next = record.cleared[stage.id] && STAGES[idx + 1];
   openModal(`<header class="sheet-head">
@@ -755,13 +771,18 @@ function openPause() {
       <button class="round" id="restart" title="重新開始這一關"><span>↻</span><small>重來</small></button>
       <button class="round" id="howto2" title="玩法說明"><span>?</span><small>說明</small></button>
       ${next ? `<button class="round" id="nextStage" title="直接玩下一關：${esc(next.name)}"><span>⏭</span><small>下一關</small></button>` : ''}
-    </div>`, 'pause');
+      <button class="round" id="pBgm" title="背景音樂音量"><span>${ico('music')}</span><small>音樂</small></button>
+      <button class="round" id="pSfx" title="攻擊音效音量"><span>${ico('speaker')}</span><small>音效</small></button>
+    </div>
+    <div class="audio-panel" id="audioPanel" hidden></div>`, 'pause');
   $('resume').onclick = () => { $('modal').close(); };
   $('quit').onclick = leaveGame;
   $('saveHome').onclick = () => { saveRecord(); toast('已存檔，搭快艇回初光鎮'); sailHome(); };
   $('restart').onclick = () => { $('modal').close(); startGame(); };
   $('howto2').onclick = showHowTo;
   if ($('nextStage')) $('nextStage').onclick = () => nextVoyage(idx + 1);
+  $('pBgm').onclick = () => toggleAudioPanel('bgm');
+  $('pSfx').onclick = () => toggleAudioPanel('sfx');
   $('modal').onclose = () => { paused = false; if (game) hud(); };
 }
 
