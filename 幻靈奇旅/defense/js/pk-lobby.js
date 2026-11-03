@@ -3,7 +3,7 @@
    room channel and hands it to the battle as a session: {role, ch, me, foe, seed, on(type, fn)}. */
 import {hostRoom, joinRoom, normalizeCode, validCode, transportKind} from './pk-net.js?v=20261109-pk-v1';
 
-export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spirit, deck, inventory = () => ({}), name, setName, toast, onStart}) {
+export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spirit, deck, inventory = () => ({}), costume = () => 'trainer', name, setName, toast, onStart}) {
   let session = null, hosting = null;
   const strip = (ids) => `<div class="pk-deck">${ids.map((id) => `<img src="${picture(id)}" alt="${esc(spirit(id)?.name || id)}" title="${esc(spirit(id)?.name || id)}" data-frame="${spirit(id)?.cardFrame || 'yellow'}">`).join('')}</div>`;
   const kindNote = () => ({local: '本機測試模式：請在同一個瀏覽器開兩個分頁', peerjs: '', firebase: ''}[transportKind()] || '');
@@ -67,7 +67,7 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
   /* connected: swap names and decks, then both confirm */
   function begin(role, ch, code) {
     const handlers = {};
-    session = {role, ch, code, me: {name: name(), deck: deck(), stock: inventory()}, foe: null, ready: {me: false, foe: false}, handlers,
+    session = {role, ch, code, me: {name: name(), deck: deck(), stock: inventory(), costume: costume()}, foe: null, ready: {me: false, foe: false}, handlers,
       on(type, fn) { handlers[type] = fn; }, send(o) { ch.send(o); }};
     ch.onmessage = (m) => handlers[m?.t]?.(m);
     ch.onclose = () => { const s = session; session = null; if (s?.inBattle) s.onGone?.(); else home('對手已離開房間'); };
@@ -76,18 +76,20 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
       for (const id of ['card-organize','deal-boost','deal-jam'])
         stock[id] = Math.min(99, Math.max(0, Math.floor(Number(m.stock?.[id]) || 0)));
       session.foe = {name: String(m.name || '對手').slice(0, 8),
-        deck: (m.deck || []).filter((id) => spirit(id)).slice(0, 6), stock};
+        deck: (m.deck || []).filter((id) => spirit(id)).slice(0, 6), stock,
+        costume: typeof m.costume === 'string' && /^[a-zA-Z0-9_-]{1,48}$/.test(m.costume) ? m.costume : 'trainer'};
       room();
     });
     session.on('stock', (m) => {
       if (!session.foe) return;
       for (const id of ['card-organize','deal-boost','deal-jam'])
         session.foe.stock[id] = Math.min(99, Math.max(0, Math.floor(Number(m.stock?.[id]) || 0)));
+      if (typeof m.costume === 'string' && /^[a-zA-Z0-9_-]{1,48}$/.test(m.costume)) session.foe.costume = m.costume;
     });
     session.on('ready', (m) => { session.ready.foe = !!m.on; room(); maybeStart(); });
     session.on('start', (m) => { if (role === 'guest') launch(m.seed); });
     session.on('bye', () => ch._gone?.());
-    ch.send({t: 'hello', name: session.me.name, deck: session.me.deck, stock: session.me.stock});
+    ch.send({t: 'hello', name: session.me.name, deck: session.me.deck, stock: session.me.stock, costume: session.me.costume});
     room();
   }
   function room() {
@@ -110,7 +112,7 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
     closeModal(); onStart(s);
   }
   /* after a match: back to the ready screen with the same opponent */
-  function rematch() { if (!session) return home('對手已離開房間'); session.inBattle = false; session.ready = {me: false, foe: false}; ['snap', 'act', 'quit', 'loaded', 'itemUsed', 'itemDenied'].forEach((k) => delete session.handlers[k]); session.me.stock = inventory(); session.send({t:'stock',stock:session.me.stock}); room(); }
+  function rematch() { if (!session) return home('對手已離開房間'); session.inBattle = false; session.ready = {me: false, foe: false}; ['snap', 'act', 'quit', 'loaded', 'itemUsed', 'itemDenied'].forEach((k) => delete session.handlers[k]); session.me.stock = inventory(); session.me.costume = costume(); session.send({t:'stock',stock:session.me.stock,costume:session.me.costume}); room(); }
   function leave() {
     if (hosting) { hosting.cancel(); hosting = null; }
     if (session) { try { session.send({t: 'bye'}); } catch {} const ch = session.ch; session = null; setTimeout(() => ch.close(), 150); }
