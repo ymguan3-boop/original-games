@@ -74,7 +74,7 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/sortie-first-v8/);
+  assert.match(html,/sortie-slots-v9/);
 });
 
 
@@ -102,17 +102,57 @@ test('sortie editor shows selected deck first with visible 出擊 ribbons and no
   const redSection = main.indexOf('其他紅卡輔助');
   assert.ok(selectedSection >= 0 && selectedSection < selectableSection && selectableSection < redSection,
     'selected deck must appear before all unselected groups');
-  assert.match(main,/const chosen = record\.deck\.map\(\(id\) => unitIndex\.get\(id\)\)\.filter\(Boolean\)/);
+  assert.match(main,/const chosenSlots = record\.deckSlots\.map\(\(id, i\) =>/);
   assert.match(main,/unchosenBase = units\.base\.filter\(\(u\) => !record\.deck\.includes\(u\.id\)\)/);
   assert.match(main,/unchosenRed = units\.red\.filter\(\(u\) => !record\.deck\.includes\(u\.id\)\)/);
-  assert.match(main,/chosen\.map\(unitButton\)\.join\(''\)/);
+  assert.match(main,/chosenSlots\.join\(''\)/);
   assert.match(main,/class="sortie-badge">出擊<\/span>/);
   assert.match(main,/n >= 0 \? '<span class="sortie-badge">出擊<\/span>' : ''/);
-  assert.match(main,/openDeck\(null, k < 0 \? 0 : scroller\?\.scrollTop \|\| 0\)/,
+  assert.match(main,/openDeck\(null, added \? 0 : scroller\?\.scrollTop \|\| 0\)/,
     'when adding a card, reveal its new position in the selected top row');
   assert.match(css,/\.roster\.sortie-current/);
   assert.match(css,/\.collectionThumb\.sortie-picked/);
   assert.match(css,/\.collectionThumb \.sortie-badge/);
   assert.match(css,/aspect-ratio:5 \/ 7/,'selected and unselected cards retain the full aspect ratio');
   assert.match(css,/dialog#modal\.deck #modalBody > \.modal-actions/,'Complete button stays available');
+  assert.match(main,/class="sortie-empty-slot"/);
+  assert.match(css,/\.roster\.sortie-current \.sortie-empty-slot/);
+});
+
+test('fixed sortie slots preserve holes after removal and allow deliberate refill', () => {
+  const normalStart = main.indexOf('function normalizeDeck() {');
+  const selectionStart = main.indexOf('function updateDeckSelection(id) {');
+  const selectionEnd = main.indexOf('function renderLobby() {', selectionStart);
+  assert.ok(normalStart >= 0 && selectionStart > normalStart && selectionEnd > selectionStart);
+  const logic = main.slice(normalStart, selectionStart) + main.slice(selectionStart, selectionEnd);
+  const make = new Function('record','availableUnits','DECK_BASE','DECK_RED','DECK_SIZE','isRedCard','saveRecord',
+    logic + ';return {normalizeDeck,updateDeckSelection};');
+  const base = ['a','b','c','d','e'].map((id) => ({id}));
+  const red = ['r1','r2','r3'].map((id) => ({id}));
+  const availableUnits = () => ({base,red});
+  const redCard = (id) => id.startsWith('r');
+  const old = {deck:['a','b','c','d','r1','r2']};
+  let saved = '';
+  const api = make(old,availableUnits,4,2,6,redCard,()=>{saved=JSON.stringify(old);});
+  api.normalizeDeck();
+  assert.deepEqual(old.deckSlots,['a','b','c','d','r1','r2']);
+  assert.equal(api.updateDeckSelection('b'),false);
+  assert.deepEqual(old.deckSlots,['a',null,'c','d','r1','r2']);
+  assert.deepEqual(old.deck,['a','c','d','r1','r2']);
+  api.normalizeDeck();
+  assert.equal(old.deckSlots[1],null,'normalization must not refill a removed card');
+  const reopened=JSON.parse(saved);
+  make(reopened,availableUnits,4,2,6,redCard,()=>{}).normalizeDeck();
+  assert.equal(reopened.deckSlots[1],null,'saved hole persists after reopening');
+  assert.equal(api.updateDeckSelection('e'),true);
+  assert.deepEqual(old.deckSlots,['a','e','c','d','r1','r2'],'new base card refills the same open base slot');
+  assert.equal(api.updateDeckSelection('r1'),false);
+  assert.equal(old.deckSlots[4],null);
+  assert.equal(api.updateDeckSelection('r3'),true);
+  assert.equal(old.deckSlots[4],'r3','red skill fills red slot, not a base slot');
+  const incomplete={deck:['a','b','c','d'],deckSlots:['a','b','c','d',null,null]};
+  const newer=make(incomplete,availableUnits,4,2,6,redCard,()=>{});
+  newer.normalizeDeck();
+  assert.deepEqual(incomplete.deckSlots,['a','b','c','d',null,null],
+    'empty two red positions must stay visible even when red cards are available');
 });
