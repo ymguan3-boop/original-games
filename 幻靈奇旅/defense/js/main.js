@@ -2,7 +2,7 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, PK_STAGE, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261103-tactics-v1';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_STAGE, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261103-tactics-v1';
 import {createPkIsland} from './pk-island.js?v=20261109-pk-v1';
 import {createPkLobby} from './pk-lobby.js?v=20261103-pk-seated-heroes-v1';
 import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261103-tactics-v1';
@@ -448,7 +448,7 @@ async function startPkGame(session) {
           return;
         }
         const i = game.foe.hand.findIndex((c) => c.uid === m.uid); if (i < 0) return;
-        try { if (m.a === 'play') playCard(game, i, 'enemy'); else if (m.a === 'move') moveCard(game, i, m.to, 'enemy'); } catch (e) { pk.send({t: 'toast', text: e.message}); }
+        try { if (m.a === 'play') playCard(game, i, 'enemy', m.x); else if (m.a === 'move') moveCard(game, i, m.to, 'enemy'); } catch (e) { pk.send({t: 'toast', text: e.message}); }
       });
       pk.on('loaded', () => { pk.foeLoaded = true; });
       pk.on('quit', () => { if (game && !game.result) { game.nest.hp = 0; pk.foeQuit = true; } });
@@ -544,7 +544,9 @@ function renderHand() {
   handSig = sig;
   $('hand').innerHTML = game.hand.map((c, i) => {
     const sup = SUPPORT[c.species], anim = fresh.get(c.uid) || '';
-    const line = sup ? `✨ 技能：${esc(sup.skill)}` : `${esc(roleLabel(c.species))} · ${shapeLabel(c.species, false)}`;
+    const line = isThreeColorEgg(c.species) ? '🥚 點選後放在路徑上'
+      : ['groudon','rayquaza'].includes(c.species) ? '🐟 國王＋皇后合體水蛟龍王'
+      : sup ? `✨ 技能：${esc(sup.skill)}` : `${esc(roleLabel(c.species))} · ${shapeLabel(c.species, false)}`;
     return `<button class="hand-card ${sup ? 'support' : ''} ${canPlay(game, i) ? '' : 'disabled'} ${anim}" data-uid="${c.uid}" title="${esc(sup ? sup.text : spirit(c.species).name + '・大絕' + shapeLabel(c.species, true))}"><span class="stars stars-${spirit(c.species).cardFrame || 'yellow'}">${'<i>★</i>'.repeat(c.rank)}</span>${sup ? '<span class="badge">技能</span>' : ''}${cardHtml(c.species, {line})}${evoOverlay(c.uid)}</button>`;
   }).join('');
   fresh.clear();
@@ -560,6 +562,11 @@ const indexOfUid = (uid) => game.hand.findIndex((c) => c.uid === uid);
 function play(uid) {
   if (!game || game.result) return;
   const i = indexOfUid(uid); if (i < 0) return;
+  if (isThreeColorEgg(game.hand[i].species)) {
+    if (placing?.type === 'egg' && placing.uid === uid) endPlacing();
+    else beginEggPlacement(uid);
+    return;
+  }
   /* a support spirit jumps out of this card, so the view needs where the card is on screen */
   const el = $('hand').querySelector(`[data-uid="${uid}"]`); if (el && isSupport(game.hand[i].species)) { const r = el.getBoundingClientRect(); view.cardOrigin = {x: r.left + r.width / 2, y: r.top + r.height * 0.4}; }
   if (pk?.role === 'guest') { pk.send({t: 'act', a: 'play', uid}); return; }
@@ -582,13 +589,18 @@ function cardInfoHtml(card) {
     u = ultimateFor(card.species), atk = shapeLabel(card.species, false);
   const row = (tag, title, body) => `<div class="ci-row"><span class="ci-tag ${tag}">${title}</span><div>${body}</div></div>`;
   const passives = passiveLines(s);
+  const special = isThreeColorEgg(card.species)
+    ? row('t-atk','放置','<b>固定防衛單位</b>：點擊卡牌，再點選路徑任意位置；或直接拖曳到路徑放開。放置後不移動。')
+    : ['groudon','rayquaza'].includes(card.species)
+      ? row('t-ult','合體','<b>金魚國王＋金魚皇后</b>：兩張不同種類的金魚卡相鄰才會合體成水蛟龍王。同種只升星。')
+      : '';
   const rows = sup
     ? row('t-skill','輔助',`<b>${esc(sup.skill)}</b>　${esc(sup.text)}<br><small>大絕排隊施放，避免視覺效果重疊。★${card.rank}</small>`)
     : row('t-atk','職業',`<b>${esc(roleLabel(s.id))}</b>　${atk}・距離 ${r.range.toFixed(1)}<br><small>普攻不再判斷屬性相克，特效仍沿用原動畫。</small>`)
       + row('t-ult','大絕',`<b>${esc(u?.name || s.skills?.[1]?.name || '大絕')}</b>　${esc(u?.description || '專屬技能')}<br><small>冷卻 ${+ultCooldown(s).toFixed(1)} 秒，至少間隔 ${ULTIMATE_SPACING} 秒錯峰施放。★${card.rank}</small>`)
       + row('t-pas','被動',passives.length ? passives.map(esc).join('<br>') : '無被動能力');
   return `<div class="ci-head" data-frame="${s.cardFrame || 'yellow'}"><img src="${picture(card.species)}" alt=""><div><b>${esc(s.name)}</b><span class="stars-${s.cardFrame || 'yellow'}">${'<i>★</i>'.repeat(card.rank)}</span><small>${esc(roleLabel(s.id))}・第 ${s.stage || 1} 階段</small></div></div>`
-    + rows;
+    + rows + special;
 }
 
 /* The back of a deck card: one section per star (★ / ★★ / ★★★, tap to open). Each lists that star's job, basic attack,
@@ -656,14 +668,34 @@ function bindHand() {
     clearTimeout(drag.hold);
     drag.moving = true; drag.el.classList.add('dragging'); if (game) game.dragging = true;
     drag.el.style.transform = `translate(${dx}px, ${dy}px) scale(1.08) rotate(${Math.max(-8, Math.min(8, dx / 30))}deg)`;
-    markDrop(e.clientX, drag.el);
+    const card = game?.hand[indexOfUid(drag.uid)];
+    const egg = card && isThreeColorEgg(card.species);
+    const fieldTarget = e.clientY < hand.getBoundingClientRect().top - 8;
+    if (egg && fieldTarget) {
+      hand.querySelectorAll('.hand-card').forEach((b) => b.classList.remove('drop-before','drop-after'));
+      const hit = view?.pickRoad(e.clientX, e.clientY);
+      view?.placement('egg', hit?.x ?? null);
+    } else {
+      if (egg) view?.placement(null);
+      markDrop(e.clientX, drag.el);
+    }
   });
   const end = (e) => {
     if (!drag || e.pointerId !== drag.id) return;
     const d = drag; drag = null; if (game) game.dragging = false; clearTimeout(d.hold);
     if (d.info) { hideCardInfo(); return; }
     if (!d.moving) { play(d.uid); return; }
-    const from = indexOfUid(d.uid), to = dropIndex(e.clientX, d.el);
+    const from = indexOfUid(d.uid), card = game?.hand[from];
+    if (card && isThreeColorEgg(card.species) &&
+        e.clientY < hand.getBoundingClientRect().top - 8) {
+      const hit = view?.pickRoad(e.clientX, e.clientY);
+      view?.placement(null);
+      if (hit) placeEggAt(d.uid, hit.x);
+      else beginEggPlacement(d.uid);
+      handSig = ''; hud();
+      return;
+    }
+    const to = dropIndex(e.clientX, d.el);
     if (from >= 0 && pk?.role === 'guest') { pk.send({t: 'act', a: 'move', uid: d.uid, to}); const c = game.hand.splice(from, 1)[0]; game.hand.splice(to, 0, c); }
     else if (from >= 0) { moveCard(game, from, to); handleEvents(); if (pk) pk.outbox.push(...game.events); game.events.length = 0; }
     handSig = ''; hud();
@@ -751,24 +783,59 @@ function useBag(id) {
   handSig = ''; hud(); renderItems(true);
 }
 
+/* Three-color egg is a stationary defender and can be placed at a chosen
+   road point. Tap the card then the road, or drag the card onto the road. */
+function beginEggPlacement(uid) {
+  if (!game || game.result || indexOfUid(uid) < 0) return;
+  if (placing) endPlacing();
+  placing = {type:'egg', uid, kind:'egg'};
+  $('itemMenu').hidden = true;
+  document.body.classList.add('placing-egg');
+  view?.placement('egg');
+  banner('🥚 點選路徑任意位置放三色蛋，再按原卡或 Esc 取消');
+}
+function placeEggAt(uid, x) {
+  if (!game || game.result || !validEggPosition(game, x)) {
+    toast('請選擇路徑上有效的位置'); return false;
+  }
+  const index = indexOfUid(uid);
+  if (index < 0 || !isThreeColorEgg(game.hand[index].species)) {
+    endPlacing(); return false;
+  }
+  if (!canPlay(game, index)) { toast('場上幻靈已達上限'); return false; }
+  if (pk?.role === 'guest') {
+    pk.send({t:'act',a:'play',uid,x:-x}); // guest's coordinates are mirrored by the authoritative host
+    endPlacing(); toast('🥚 已將放置位置送交房主'); return true;
+  }
+  try {
+    playCard(game, index, 'ally', x);
+    endPlacing(); handSig = ''; hud(); toast('🥚 三色蛋已放置在指定位置');
+    return true;
+  } catch(err) { toast(err.message); return false; }
+}
 /* choose a trap card, then tap a spot on the road: the road is dotted and a preview follows the finger */
 function beginPlacing(id) {
   if (!game || game.result) return;
   if ((trapStock()[id] || 0) < 1) return toast('這張陷阱卡用完了，去群島轉蛋機抽抽看');
   if (game.traps.filter((t) => !t.expired).length >= MAX_TRAPS) return toast('路上最多同時放 ' + MAX_TRAPS + ' 個陷阱，等舊的消失再放');
-  placing = {id, kind: TRAP_CARDS[id].kind}; $('itemMenu').hidden = true; document.body.classList.add('placing-trap');
+  if (placing) endPlacing();
+  placing = {type:'trap', id, kind: TRAP_CARDS[id].kind}; $('itemMenu').hidden = true; document.body.classList.add('placing-trap');
   view?.placement(placing.kind); banner('點選路上要放「' + TRAP_CARDS[id].name.replace('陷阱卡', '') + '」的位置（再點「道具」或空白處取消）');
 }
-function endPlacing() { if (!placing) return; placing = null; document.body.classList.remove('placing-trap'); view?.placement(null); $('banner').hidden = true; }
+function endPlacing() { if (!placing) return; placing = null; document.body.classList.remove('placing-trap','placing-egg'); view?.placement(null); $('banner').hidden = true; }
 function bindPlacement() {
   const canvas = $('world'); let down = null;
   canvas.addEventListener('pointerdown', (e) => { if (placing) down = {x: e.clientX, y: e.clientY, t: performance.now()}; });
-  canvas.addEventListener('pointermove', (e) => { if (placing && e.buttons === 0) { const hit = view?.pickRoad(e.clientX, e.clientY); view?.placement(placing.kind, hit ? hit.x : null); } });
+  canvas.addEventListener('pointermove', (e) => { if (placing && (e.buttons === 0 || placing.type === 'egg')) { const hit = view?.pickRoad(e.clientX, e.clientY); view?.placement(placing.kind, hit ? hit.x : null); } });
   canvas.addEventListener('pointerup', (e) => {
     if (!placing || !down) return;
     const tap = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 10 && performance.now() - down.t < 700; down = null;
     if (!tap) return;
     const hit = view?.pickRoad(e.clientX, e.clientY);
+    if (placing.type === 'egg') {
+      if (!hit) { toast('請點在道路上，或點原卡取消'); return; }
+      placeEggAt(placing.uid, hit.x); return;
+    }
     if (!hit) { endPlacing(); return; }
     const t = placeTrap(game, placing.kind, hit.x);
     if (!t) { toast('這裡不能放（太靠近起點或終點，或路上陷阱已滿）'); return; }
@@ -888,6 +955,9 @@ function bindHud() {
   };
   $('speed').onclick = () => { speed = speed === 1 ? 2 : 1; hud(); };
   $('camReset').onclick = () => view?.resetCamera();
+  addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && placing?.type === 'egg') endPlacing();
+  });
   $('evoToggle').onclick = () => { record.evoAnim = record.evoAnim === false; saveRecord(); hud(); toast(record.evoAnim ? '合成進化時，卡片裡會播放進化動畫' : '已關閉進化動畫，合成時只播放卡片特效'); };
   $('pause').onclick = () => { if (pk) { openPkPause(); return; } paused = true; openPause(); hud(); };
   addEventListener('pointerdown', () => audio?.unlock?.(), {capture: true});
