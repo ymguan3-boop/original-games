@@ -188,7 +188,7 @@ export function createView(canvas, {spirits, catalog}) {
       for (let i = 0; i < 6; i++) { g.fillStyle = tone(0.88 + (i % 2) * 0.1); g.fillRect(0, i * 43, 256, 41); g.fillStyle = tone(0.55); g.fillRect(0, i * 43 + 41, 256, 2); }
       g.strokeStyle = tone(0.6); g.lineWidth = 5; g.beginPath(); g.arc(128, 128, 18, 0, Math.PI * 2); g.stroke();
     }
-    const t = new THREE.CanvasTexture(c); t.userData.defenseGenerated = true; t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+    const t = new THREE.CanvasTexture(c); t.userData = {...(t.userData || {}), defenseGenerated: true}; t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
     if (kind === 'staves') { t.wrapS = THREE.RepeatWrapping; }
     return t;
   }
