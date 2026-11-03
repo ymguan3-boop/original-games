@@ -31,6 +31,8 @@ test('one seeded random PK scenery per match, same stage for both phones', () =>
 
 test('battle loading paints the progress overlay then streams models without constructing actors', () => {
   assert.match(main,/await nextPaint\(\)/);
+  assert.match(main,/loadingElapsed/,'elapsed loading seconds must be visible');
+  assert.match(html,/id="loadingElapsed"/);
   assert.match(main,/loadingPhase\('正在搭建島嶼與道路…', 26\)/);
   assert.match(main,/loadingPhase\('戰場準備完成，開始出擊！', 100\)/);
   assert.match(main,/view\.preload\(ids, \(done, total\)/);
@@ -70,5 +72,5 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/pk-perf-v3/);
+  assert.match(html,/pk-perf-v4/);
 });
