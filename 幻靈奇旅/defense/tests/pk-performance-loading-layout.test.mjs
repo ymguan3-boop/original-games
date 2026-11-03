@@ -74,7 +74,7 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/portrait-hud-v12/);
+  assert.match(html,/evo-off-v13/);
 });
 
 
@@ -185,7 +185,7 @@ test('top points and four action shortcuts share all available width at phone an
   assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
   assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
   assert.match(top,/sortie-base-warning/);
-  assert.match(html,/portrait-hud-v12/,'new assets must bypass cached CSS and 3D view');
+  assert.match(html,/evo-off-v13/,'new assets must bypass cached CSS and 3D view');
 });
 
 test('win screen keeps Next Stage button in a fixed accessible footer on landscape phones', () => {
@@ -285,5 +285,35 @@ test('portrait battle header uses two compact top rows and never orphans a Chine
     assert.ok(Math.abs(spans[0]+spans[1]+spans[2]+2*gap-inner)<0.01);
     assert.ok(Math.abs(spans[3]+spans[4]+gap-inner)<0.01);
   }
-  assert.match(html,/portrait-hud-v12/);
+  assert.match(html,/evo-off-v13/);
+});
+
+test('evolution card overlays are permanently disabled in solo and PK regardless of old saved option', () => {
+  const hudSection=html.slice(html.indexOf('<div id="hud"'),html.indexOf('<div class="hud-bottom">'));
+  assert.doesNotMatch(hudSection,/evoToggle|進化動畫/,'shared solo/PK HUD must not expose a toggle');
+  assert.match(hudSection,/id="camReset"/);
+  assert.match(hudSection,/id="speed"/);
+  assert.match(hudSection,/id="pause"/);
+  assert.doesNotMatch(main,/evoToggle|evoOverlay\(|evolvingCards|EVO_TIME|\.evo-anim/,
+    'evolution overlay rendering and switch callbacks must be absent');
+  assert.doesNotMatch(css,/#evoToggle|\.evo-anim|\.evo-old|\.evo-new|\.evo-flash|\.evo-rays/,
+    'unused image animation rules should not ship');
+  assert.match(main,/if \('evoAnim' in record\) \{ delete record\.evoAnim; saveRecord\(\); \}/);
+  const migration=main.match(/if \('evoAnim' in record\) \{ delete record\.evoAnim; saveRecord\(\); \}/)?.[0];
+  assert.ok(migration);
+  for(const preference of [true,false]) {
+    const record={evoAnim:preference,stage:3,deck:['a','b','c','d']};
+    let saved=0;
+    new Function('record','saveRecord',migration)(record,()=>saved++);
+    assert.ok(!('evoAnim' in record),'old preference is retired');
+    assert.equal(saved,1);
+    assert.equal(record.stage,3);
+  }
+  const source=css.slice(css.indexOf('2026-11-03 v12: portrait battle HUD'));
+  assert.match(source,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/,
+    'solo HUD distributes camera, speed and pause evenly');
+  assert.match(source,/body\.pk-mode #hud \.hud-top \.hud-actions \{grid-column:1 \/ -1;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);\}/,
+    'PK distributes only camera and pause evenly');
+  assert.match(main,/else if \(ev\.type === 'merge'\) \{ fuse\(ev\)/,
+    'card merging must continue to function');
 });
