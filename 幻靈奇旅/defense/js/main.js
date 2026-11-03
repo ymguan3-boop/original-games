@@ -221,7 +221,8 @@ function renderIslePanel() {
     <div class="isle-boss"><img src="${picture(s.boss)}" alt=""><div><small>${i < 5 ? '小魔王' : '大魔王'}・坐鎮酒桶</small><b>${esc(boss.name)}</b><span class="boss-class">${esc(roleLabel(boss.id))}</span></div></div>
     <div class="isle-facts"><span>${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span><span>🛤️ 路線 ${route}</span><span>🪤 路上沒有障礙・用陷阱卡自己布置</span><span>🎟️ 擊倒 +${killPoints(i)}・魔王 +${killPoints(i, true)}</span></div>
     <div class="isle-deck"><div class="deck-strip">${deck}</div><button class="tool small" data-open="deck">🃏 編組 ${nb + nr}/${DECK_SIZE}</button></div>
-    ${nb ? '<button id="start" class="primary wide">⚔️ 出擊！</button>' : '<button class="primary wide" data-open="gacha">🎁 先轉蛋取得幻靈</button>'}
+    ${nb < DECK_BASE ? `<p class="sortie-base-warning" role="status">⚠️ 必須編滿四位基礎幻靈才可以出擊（目前 ${nb}/${DECK_BASE} 位），請先進入「卡組」補滿。</p>` : ''}
+    <button id="start" class="primary wide" ${nb < DECK_BASE ? 'aria-disabled="true" title="必須編滿四位基礎幻靈才可以出擊"' : ''}>⚔️ 出擊！</button>
   </div>`;
 }
 async function sailTo(i, speed = 13) {
@@ -234,9 +235,16 @@ async function pickIsle(i) {
   record.stage = i; saveRecord(); renderLobby();
   await sailTo(i);
 }
+function requireCompleteSortie() {
+  normalizeDeck();
+  const count = deckBase().length;
+  if (count >= DECK_BASE) return true;
+  toast(`必須編滿四位基礎幻靈才可以出擊！目前只有 ${count}/${DECK_BASE} 位，請先開啟「卡組」補滿。`);
+  return false;
+}
 async function beginStage() {
   if (chart.sailing) return;
-  if (!deckBase().length) { openGacha(); return; }
+  if (!requireCompleteSortie()) return;
   /* no voyage between pressing sortie and the battle: the boat is simply at the island when the chart comes back */
   if (chart.boatAt !== record.stage) { chart.snap(record.stage); record.boatAt = record.stage; saveRecord(); }
   startGame();
@@ -470,6 +478,8 @@ const ribbon = (text, icon = '') => `<div class="ribbon"><span>${icon ? `<i>${ic
 
 /* ---------- battle ---------- */
 async function startGame() {
+  /* Also check restarts and auto-voyage, not only the chart sortie button. */
+  if (!requireCompleteSortie()) return;
   /* Loading is not gameplay. Stop any previous battle and reset the simulation
      clock even when this is a restart or an automatic next-island voyage. */
   const serial = ++startSerial;
