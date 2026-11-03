@@ -74,7 +74,7 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/result-road-stable-v11/);
+  assert.match(html,/portrait-hud-v12/);
 });
 
 
@@ -236,4 +236,54 @@ test('all ten stages use continuous non-overlapping road mesh strips instead of 
   assert.match(view,/road\.name = 'static-road-layer-'/);
   assert.doesNotMatch(view.slice(view.indexOf('const pts = game.path.points;'),
     view.indexOf('/* small arrows on the road')),/new THREE\.BoxGeometry\(width, 0\.03/);
+});
+
+
+test('portrait battle header uses two compact top rows and never orphans a Chinese stage/weather word', () => {
+  assert.match(html,/id="stageName"[^>]+><span class="hud-stage-label" id="hudStageLabel"><\/span><span class="hud-weather-label" id="hudWeatherLabel"><\/span>/);
+  assert.match(main,/setBattleStageHeading\(\x60\$\{record\.stage \+ 1\}\. \$\{game\.stage\.name\}\x60/);
+  assert.match(main,/if \(pk\) setBattleStageHeading\(/);
+  const begin=main.indexOf('function setBattleStageHeading(stageText, weatherText');
+  const end=main.indexOf('function hud() {',begin);
+  assert.ok(begin>=0 && end>begin);
+  const nodes=Object.fromEntries(['stageName','hudStageLabel','hudWeatherLabel']
+    .map(id=>[id,{textContent:'',hidden:false,title:'',setAttribute(name,value){this[name]=value;}}]));
+  const setHeading=new Function('$',main.slice(begin,end)+'return setBattleStageHeading;')(id=>nodes[id]);
+  for(let i=0;i<STAGES.length;i++){
+    const title=(i+1)+'. '+STAGES[i].name;
+    setHeading(title,'☀️ 晴朗暖陽');
+    assert.equal(nodes.hudStageLabel.textContent,title);
+    assert.equal(nodes.hudWeatherLabel.textContent,'☀️ 晴朗暖陽');
+    assert.equal(nodes.stageName['aria-label'],title+'，☀️ 晴朗暖陽');
+    assert.equal(nodes.hudWeatherLabel.hidden,false);
+  }
+  setHeading('⚔️ vs 旅人70','PK・猴王果園・2:57');
+  assert.equal(nodes.hudStageLabel.textContent,'⚔️ vs 旅人70');
+  assert.equal(nodes.hudWeatherLabel.textContent,'PK・猴王果園・2:57');
+  setHeading('單獨標題');
+  assert.equal(nodes.hudWeatherLabel.hidden,true);
+  const styles=css.slice(css.indexOf('2026-11-03 v12: portrait battle HUD'));
+  assert.ok(styles.length>1000);
+  assert.match(styles,/white-space:nowrap/);
+  assert.match(styles,/word-break:keep-all/);
+  assert.match(styles,/@media \(orientation:portrait\) and \(max-width:720px\)/);
+  assert.match(styles,/grid-template-columns:repeat\(12,minmax\(0,1fr\)\)/);
+  assert.match(styles,/grid-template-rows:56px 44px/);
+  assert.match(styles,/grid-column:1 \/ span 6/);
+  assert.match(styles,/grid-column:7 \/ span 4/);
+  assert.match(styles,/grid-column:11 \/ span 2/);
+  assert.match(styles,/grid-column:1 \/ span 3/);
+  assert.match(styles,/grid-column:4 \/ span 9/);
+  assert.match(styles,/@media \(orientation:portrait\) and \(max-width:355px\)/);
+  /* Verify the 12-track allocations add up to the phone's available width.
+     Content never slips into an unexpected third row. */
+  for(const width of [320,351,390,430,720]){
+    const inner=width-14, gap=4;
+    const unit=(inner-11*gap)/12;
+    const spans=[6,4,2,3,9].map(n=>unit*n+(n-1)*gap);
+    assert.ok(spans.every(n=>n>0),'tracks positive at '+width+'px');
+    assert.ok(Math.abs(spans[0]+spans[1]+spans[2]+2*gap-inner)<0.01);
+    assert.ok(Math.abs(spans[3]+spans[4]+gap-inner)<0.01);
+  }
+  assert.match(html,/portrait-hud-v12/);
 });
