@@ -223,7 +223,7 @@ function openBoatman() {
 
 function bindLobby() {
   chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman, onPk: () => pkLobby.open()});
-  pkLobby = createPkLobby({openModal, closeModal: () => $('modal').close(), ribbon, esc, picture, spirit, deck: () => (normalizeDeck(), record.deck.slice()),
+  pkLobby = createPkLobby({openModal, closeModal: () => $('modal').close(), ribbon, esc, picture, spirit, deck: () => (normalizeDeck(), record.deck.slice()), inventory: tacticalInventory,
     name: () => record.pkName || (record.pkName = '旅人' + String(Math.floor(Math.random() * 90) + 10)), setName: (n) => { record.pkName = n; saveRecord(); }, toast, onStart: startPkGame});
   $('islePanel').onclick = (e) => {
     if (e.target.closest('#start')) beginStage();
@@ -421,6 +421,7 @@ async function startPkGame(session) {
   const serial = ++startSerial;
   hideBossIntro(); pendingDealingScene = null; visibleSceneFrames = 0; game = null; acc = 0; last = 0; paused = false; speed = 1;
   pk = session; pk.outbox = []; pk.sentAt = 0; pk.foeLoaded = false; pk.loadedSent = false; pk.waitFrom = 0;
+  pk.itemStock = {...(pk.foe?.stock || {})}; pendingPkItems.clear(); bagCache.at = 0;
   document.body.classList.add('pk-mode');
   $('hud').hidden = true; $('loading').hidden = false; $('loadingText').textContent = '前往 PK 競技場…'; $('loadingBar').style.width = '15%';
   try {
@@ -431,7 +432,18 @@ async function startPkGame(session) {
     if (pk.role === 'host') {
       game = createGame({stage: PK_STAGE, deck: pk.me.deck, foeDeck: pk.foe.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, seed: pk.seed, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
       pk.on('act', (m) => {
-        if (!game || game.result) return;
+        if (!game || game.result || !game.started) return;
+        if (m.a === 'item') {
+          const id = String(m.id || '');
+          if (!TACTICAL_BAG.includes(id) || !(pk.itemStock[id] > 0) ||
+              !useBagItem(game, id, 'enemy')) {
+            pk.send({t:'itemDenied',id,text:'目前無法使用這項道具（可能已用完或效果尚在持續）'});
+            return;
+          }
+          pk.itemStock[id]--;
+          pk.send({t:'itemUsed',id});
+          return;
+        }
         const i = game.foe.hand.findIndex((c) => c.uid === m.uid); if (i < 0) return;
         try { if (m.a === 'play') playCard(game, i, 'enemy'); else if (m.a === 'move') moveCard(game, i, m.to, 'enemy'); } catch (e) { pk.send({t: 'toast', text: e.message}); }
       });
@@ -441,6 +453,16 @@ async function startPkGame(session) {
       game = createMirror(PK_STAGE);
       pk.on('snap', (m) => { if (game?.mirror) applySnapshot(game, m.d, (f, target, strong) => view.fire(f, target, strong)); });
       pk.on('toast', (m) => toast(m.text));
+      pk.on('itemUsed', (m) => {
+        if (!TACTICAL_BAG.includes(m.id) || !pendingPkItems.has(m.id)) return;
+        pendingPkItems.delete(m.id);
+        if (takeBagItem(m.id)) toast(BAG_ITEMS[m.id].name + ' 已施放！');
+        bagCache.at = 0; handSig = ''; hud(); renderItems(true);
+      });
+      pk.on('itemDenied', (m) => {
+        pendingPkItems.delete(m.id);
+        toast(m.text || '這項道具暫時無法使用');
+      });
     }
     game.runId = 'pk-' + Date.now().toString(36);
     pk.onGone = () => { if (game && !game.result) { toast('對手離線了'); showPkResult({won: true, gone: true, time: game.time}); } };
