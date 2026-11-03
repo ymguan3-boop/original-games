@@ -199,7 +199,7 @@ function renderIslePanel() {
   const i = record.stage, s = STAGES[i], boss = spirit(s.boss), nb = deckBase().length, nr = deckRed().length, best = record.best?.[s.id] || 0;
   const len = buildPath(s.path).length, route = len < 70 ? '短' : len < 105 ? '中' : '長';
   const traps = (s.traps || []).map((t) => TRAPS[t.kind].name), uniq = [...new Set(traps)].map((n) => `${n}×${traps.filter((x) => x === n).length}`);
-  const deck = record.deck.map((id) => `<img src="${picture(id)}" alt="${esc(spirit(id).name)}" title="${esc(spirit(id).name)}" data-frame="${spirit(id).cardFrame || 'yellow'}">`).join('') + '<i></i>'.repeat(Math.max(0, DECK_SIZE - record.deck.length));
+  const deck = record.deckSlots.map((id) => id ? `<img src="${picture(id)}" alt="${esc(spirit(id).name)}" title="${esc(spirit(id).name)}" data-frame="${spirit(id).cardFrame || 'yellow'}">` : '<i title="卡組空位"></i>').join('');
   $('islePanel').innerHTML = `<div class="isle-card">
     <div class="isle-title"><small>第 ${i + 1} 島</small><h2>${esc(s.name)}</h2><span class="weather-pill">${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span>${record.cleared[s.id] ? `<span class="cleared-tag">已通關 ${'★'.repeat(best)}<em>可重複挑戰</em></span>` : ''}</div>
     <div class="isle-boss"><img src="${picture(s.boss)}" alt=""><div><small>${i < 5 ? '小魔王' : '大魔王'}・坐鎮酒桶</small><b>${esc(boss.name)}</b><span class="boss-class">${esc(roleLabel(boss.id))}</span></div></div>
