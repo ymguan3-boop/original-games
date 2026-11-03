@@ -1073,7 +1073,7 @@ function showResult(r) {
   const stars = r.won ? 1 + (r.crystal > 0.5) + (r.crystal > 0.85) : 0, next = r.won && STAGES[idx + 1];
   if (r.won) { record.best = record.best || {}; record.best[stage.id] = Math.max(record.best[stage.id] || 0, stars); saveRecord(); }
   const stat = (icon, value, label, tone) => `<div class="stat"><i class="tone-${tone}">${icon}</i><b>${value}</b><small>${label}</small></div>`;
-  openModal(`<header class="sheet-head">
+  openModal(`<div class="stage-result-content"><header class="sheet-head">
       <div class="sunburst"></div>
       ${r.won ? `<div class="result-stars">${[0, 1, 2].map((i) => `<span class="${i < stars ? 'on' : 'off'}" style="--i:${i}">★</span>`).join('')}</div>` : `<img class="boss-face" src="${picture(stage.boss)}" alt="">`}
       <h2 class="sheet-title">${r.won ? '過關！' : '挑戰失敗'}</h2>
@@ -1083,11 +1083,14 @@ function showResult(r) {
     <div class="stats">${stat('⏱', `${mins}:${String(secs).padStart(2, '0')}`, '用時', 'blue')}${stat('💥', r.kills, '擊倒', 'red')}${stat('✨', game.stats.merges, '合成', 'violet')}${stat('❤', Math.round(r.crystal * 100) + '%', '基地', 'green')}</div>
     <p class="result-points">🎟️ 轉蛋點數 <b>+${(r.earned || 0).toLocaleString()}</b><small>共 ${points().toLocaleString()} 點・與無盡洞穴共用</small></p>
     <p class="result-note">${r.won ? (first && next ? `🔓 解鎖新關卡：<b>${esc(next.name)}</b>` : next ? '已通過這一關！' : '🎉 全部關卡都通過了！') : '💡 把相同的卡排在一起合成高星幻靈，或帶上輔助技能卡。'}</p>
-    <div class="sheet-actions">
+    </div>
+    <div class="sheet-actions stage-result-actions" role="group" aria-label="結算後操作">
       <button class="round" id="toLobby" title="回海圖"><span>🗺️</span><small>海圖</small></button>
       <button class="round" id="again" title="${r.won ? '再玩一次' : '再挑戰'}"><span>↻</span><small>${r.won ? '再玩' : '重來'}</small></button>
       ${next ? `<button class="primary wide" id="nextStage">下一關 ▶<small>${esc(next.name)}</small></button>` : `<button class="primary wide" id="again2">${r.won ? '再玩一次' : '再挑戰 ↻'}</button>`}
     </div>`, r.won ? 'win' : 'lose');
+  /* Result sheet has a separately scrollable body and always-visible controls. */
+  $('modal').classList.add('stage-result');
   $('toLobby').onclick = leaveGame;
   $('again').onclick = () => { $('modal').close(); startGame(); };
   if ($('again2')) $('again2').onclick = $('again').onclick;
