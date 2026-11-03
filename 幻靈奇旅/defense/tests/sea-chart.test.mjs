@@ -127,7 +127,12 @@ test('the pause sheet has music and attack-sound shortcuts in the same round but
 test('town: the old boatman rushes over near the pier and talks the hero onto the speedboat, only until the first voyage', () => {
   const game = read('../../js/game.js');
   assert.ok(game.includes('function tickBoatmanRush(dt)') && game.includes('tickLabEvent(dt);tickBoatmanRush(dt);'));
-  assert.ok(game.includes("if(S.state?.boatmanRushDone||!harbor||!hero)return;") && game.includes("localStorage.getItem('phantom-defense-v1')"), 'never again after the islands were visited');
+  assert.ok(game.includes("if((S.state?.boatmanRushDone&&!rushForced)||!harbor||!hero)return;") && game.includes("localStorage.getItem('phantom-defense-v1')"), 'never again after the islands were visited');
   assert.ok(game.includes("if(action==='rush_go'){S.state.boatmanRushDone=true;save();closeDialog();boatmanRush=null;return sailToDefense();}"), 'the last line boards the boat');
   assert.ok(game.includes('S.state.boatmanRushDone=true;') && /BOATMAN_RUSH_LINES=\[[\s\S]{200,}\]/.test(game), 'a short funny script');
+});
+
+test('resetting the game also clears the islands save, so the boatman invites the hero again', () => {
+  const game = read('../../js/game.js');
+  assert.ok(game.includes("function resetGame(){localStorage.removeItem('phantom-starspire-tower-v1');localStorage.removeItem('phantom-defense-v1');"));
 });
