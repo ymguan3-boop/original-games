@@ -101,22 +101,9 @@ export function createFx(THREE, scene) {
   function flash({x, y = 2, z, color, intensity = 4, life = 0.5}) {
     /* A local additive glow gives impact without pulsating world illumination;
        neither sunlight nor the painted sky changes when the base takes damage. */
-    glowBall({x, y, z, color, size: Math.min(3, intensity * 0.35), life});
+    glowBall({x, y, z, color, size: Math.min(1.4, intensity * 0.24), life});
   }
-  function lightning({from, to, color, life = 0.35, branches = 2}) {
-    const make = (a, b, width) => {
-      const pts = [], n = 10;
-      for (let i = 0; i <= n; i++) { const k = i / n, j = i % n ? 0.9 * Math.sin(k * Math.PI) : 0; pts.push(new THREE.Vector3(a.x + (b.x - a.x) * k + (Math.random() - 0.5) * j, a.y + (b.y - a.y) * k + (Math.random() - 0.5) * j * 0.6, a.z + (b.z - a.z) * k + (Math.random() - 0.5) * j)); }
-      const curve = new THREE.CatmullRomCurve3(pts), mat = new THREE.MeshBasicMaterial({color: linear(color), transparent: true, depthWrite: false, blending: add});
-      const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 40, width, 6, false), mat);
-      const core = new THREE.Mesh(new THREE.TubeGeometry(curve, 40, width * 0.4, 6, false), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, depthWrite: false, blending: add})); tube.add(core);
-      job(life, (k) => { const on = k < 0.6 ? (Math.random() > 0.25 ? 1 : 0.3) : 1 - (k - 0.6) / 0.4; mat.opacity = on; core.material.opacity = on; }, tube);
-      return pts;
-    };
-    const pts = make(from, to, 0.12);
-    for (let b = 0; b < branches; b++) { const p = pts[3 + Math.floor(Math.random() * 5)]; make(p, {x: p.x + (Math.random() - 0.5) * 3, y: Math.max(0.3, p.y - 1.5 - Math.random() * 2), z: p.z + (Math.random() - 0.5) * 3}, 0.05); }
-  }
-  function comet({from, to, color, life = 0.45, size = 1.4}) {
+  /* Sky-spanning random lightning was removed: all thunder now uses a small\n     steady Three.js road-localized bolt in lightningStrike() below. */\n  function comet({from, to, color, life = 0.45, size = 1.4}) {
     const head = new THREE.Sprite(new THREE.SpriteMaterial({map: soft, color: linear(color), transparent: true, depthWrite: false, blending: add})); head.scale.set(size, size, 1);
     const trail = [];
     job(life, (k, dt) => {
@@ -204,13 +191,15 @@ export function createFx(THREE, scene) {
         particles({x, z, count: 70, color: c2, size: 0.7, speed: 2, up: 3.5, spread: r * 0.7, life: 1.6, gravity: -1, swirl: 6, tex: leafTex});
         particles({x, z, count: 40, color: 0xff9ad6, size: 0.45, speed: 4, up: 4, spread: 0.4, life: 1.3, gravity: -3, tex: leafTex});
       } else if (element === '雷') {
-        for (let i = 0; i < 3; i++) setTimeout(() => lightning({from: {x: x + (Math.random() - 0.5) * 3, y: 13, z: z + (Math.random() - 0.5) * 3}, to: {x: x + (Math.random() - 0.5) * r, y: 0.2, z: z + (Math.random() - 0.5) * r}, color: c1}), i * 90);
+        /* Every thunder-type ultimate in every stage and PK now uses the
+           same local strike, never three sky-to-ground flashing bolts. */
+        lightningStrike({x, z});
         particles({x, z, count: 80, color: c2, size: 0.45, speed: 8, up: 4, spread: 0.3, life: 0.8, gravity: -6, drag: 3, tex: spark});
       } else if (element === '念') {
         particles({x, z, y: 1, count: 70, color: c1, size: 0.6, ring: r * 1.4, toward: {x, y: 1.2, z}, life: 0.55, gravity: 0, drag: 0});
         setTimeout(() => { particles({x, z, y: 1.2, count: 90, color: c2, size: 0.55, speed: 7, up: 2, spread: 0.2, life: 1.1, gravity: 0, drag: 2.2, tex: spark}); magicCircle({x, z, y: 1.6, color: c1, radius: r, life: 1.1, spin: 3, vertical: true}); }, 380);
       } else {
-        pillar({x, z, color: c1, radius: r * 0.6, height: 14, life: 1.0, fromSky: true});
+        pillar({x, z, color: c1, radius: Math.min(1.8, r * 0.4), height: 6, life: 0.8});
         particles({x, z, count: 80, color: c2, size: 0.6, speed: 5, up: 5, spread: 0.4, life: 1.2, gravity: -3, tex: spark});
         magicCircle({x, z, color: c1, radius: r * 1.2, life: 1.1, spin: 1.5});
       }
@@ -241,10 +230,10 @@ export function createFx(THREE, scene) {
   /* Support skills: a large circle in the field centre and a burst over every target. */
   function skill({center, targets = [], element, kind}) {
     const [c1, c2] = PALETTE[element] || PALETTE.光;
-    magicCircle({x: center.x, z: center.z, color: c1, radius: 5, life: 1.25, spin: 0.8});
-    shockwave({x: center.x, z: center.z, color: c2, radius: 12, life: 0.85});
-    flash({x: center.x, y: 6, z: center.z, color: c1, intensity: 6, life: 1});
-    particles({x: center.x, z: center.z, y: 0.5, count: 40, color: c2, size: 0.6, speed: 9, up: 3, spread: 2, life: 1.8, gravity: -1.5, tex: spark});
+    magicCircle({x: center.x, z: center.z, color: c1, radius: 3, life: 1.0, spin: 0.8});
+    shockwave({x: center.x, z: center.z, color: c2, radius: 4, life: 0.7});
+    flash({x: center.x, y: 1.2, z: center.z, color: c1, intensity: 2, life: 0.5});
+    particles({x: center.x, z: center.z, y: 0.5, count: 24, color: c2, size: 0.4, speed: 4, up: 2, spread: 1.2, life: 1.1, gravity: -1.5, tex: spark});
     targets.slice(0, 6).forEach((t, i) => { const timer = setTimeout(() => { timers.delete(timer);
       if (kind === 'freeze') { particles({x: t.x, z: t.z, y: 0.3, count: 24, color: 0xd8f6ff, size: 0.6, speed: 1.2, up: 2.5, spread: 0.6, life: 1.4, gravity: -1, tex: spark}); shockwave({x: t.x, z: t.z, color: 0xbff4ff, radius: 1.6, life: 0.7}); }
       else if (kind === 'volley' || kind === 'beam' || kind === 'quake') ultimate({from: null, to: t, element, kind: 'blast', radius: 1.6});
