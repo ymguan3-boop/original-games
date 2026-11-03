@@ -224,6 +224,17 @@ export function createFx(THREE, scene) {
       if (k >= 1) { if (j.obj) { scene.remove(j.obj); j.obj.traverse?.((n) => { n.geometry?.dispose?.(); n.material?.dispose?.(); }); } jobs.splice(i, 1); }
     }
   }
-  function clear() { for (const j of jobs.splice(0)) if (j.obj) scene.remove(j.obj); }
+  function clear() {
+    /* A PK rematch should not retain old GPU particle buffers or shader programs.
+       Particle textures are shared by this module and deliberately stay cached. */
+    for (const j of jobs.splice(0)) if (j.obj) {
+      scene.remove(j.obj);
+      j.obj.traverse?.((node) => {
+        node.geometry?.dispose?.();
+        for (const mat of (Array.isArray(node.material) ? node.material : [node.material]))
+          mat?.dispose?.();
+      });
+    }
+  }
   return {charge, ultimate, skill, hit, particles, shockwave, update, clear};
 }
