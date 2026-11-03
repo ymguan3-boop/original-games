@@ -223,7 +223,7 @@ function openBoatman() {
 
 function bindLobby() {
   chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman, onPk: () => pkLobby.open()});
-  pkLobby = createPkLobby({openModal, closeModal: () => $('modal').close(), ribbon, esc, picture, spirit, deck: () => (normalizeDeck(), record.deck.slice()), inventory: tacticalInventory,
+  pkLobby = createPkLobby({openModal, closeModal: () => $('modal').close(), ribbon, esc, picture, spirit, deck: () => (normalizeDeck(), record.deck.slice()), inventory: tacticalInventory, costume: () => costumeFor(journey()).id,
     name: () => record.pkName || (record.pkName = '旅人' + String(Math.floor(Math.random() * 90) + 10)), setName: (n) => { record.pkName = n; saveRecord(); }, toast, onStart: startPkGame});
   $('islePanel').onclick = (e) => {
     if (e.target.closest('#start')) beginStage();
@@ -429,6 +429,9 @@ async function startPkGame(session) {
     if (!view) view = createView($('world'), {spirits: data.spirits, catalog: data.catalog});
     if (!audio) audio = createCombatAudio();
     view.costume = costumeFor(journey()).id;
+    /* The remote barrel uses that player's own equipped hero outfit.
+       The wardrobe adapter validates unknown/legacy costume IDs. */
+    view.rivalCostume = costumeFor(pk.foe?.costume || 'trainer').id;
     if (pk.role === 'host') {
       game = createGame({stage: PK_STAGE, deck: pk.me.deck, foeDeck: pk.foe.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, seed: pk.seed, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
       pk.on('act', (m) => {
