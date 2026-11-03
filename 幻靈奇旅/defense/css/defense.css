@@ -1440,3 +1440,69 @@ dialog#modal.deck .deck-special-details .deck-special-rules {
     gap:9px;
   }
 }
+
+/* 2026-11-03: selected sortie cards first, with clear rural-style 出擊 ribbon. */
+dialog#modal.deck .deck-card-list > .sortie-heading {
+  margin:5px 0 7px;
+  padding:7px 10px;
+  background:linear-gradient(180deg,#e7fbd4,#d5eeb5);
+  border:2px solid #6f9d48;
+  border-radius:12px;
+  color:#365a23;
+  box-shadow:0 2px 0 #b8d499;
+  font-weight:900;
+}
+dialog#modal.deck .deck-card-list > .sortie-heading small {
+  display:block;
+  margin-top:2px;
+  font-size:11px;
+  line-height:1.35;
+  color:#577342;
+}
+dialog#modal.deck .deck-card-list .roster.sortie-current {
+  padding:5px 3px 13px;
+  margin-bottom:8px;
+  border-bottom:2px dashed #c8ae80;
+}
+dialog#modal.deck .deck-card-list .roster .collectionThumb.sortie-picked {
+  border:3px solid #4e9d45;
+  border-radius:12px;
+  background:#e9fbdc;
+  box-shadow:0 0 0 1px #f5fbea,0 3px 0 #8ea963;
+}
+dialog#modal.deck .deck-card-list .roster .collectionThumb.sortie-picked .collectionCard {
+  border-radius:8px;
+}
+dialog#modal.deck .deck-card-list .roster .collectionThumb .sortie-badge {
+  position:absolute;
+  right:3px;
+  top:7px;
+  z-index:8;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:30px;
+  padding:3px 5px;
+  border:2px solid #fff8de;
+  border-radius:8px;
+  font-size:clamp(10px,2.4vw,12px);
+  font-weight:900;
+  line-height:1.05;
+  letter-spacing:1px;
+  white-space:nowrap;
+  color:#fff8e9;
+  background:linear-gradient(180deg,#57bb51,#277b2a);
+  box-shadow:0 2px 0 #245c21,0 2px 6px #25491f55;
+  pointer-events:none;
+}
+@media (orientation:landscape) and (max-height:600px) {
+  dialog#modal.deck .deck-card-list > .sortie-heading {
+    padding:4px 7px;
+    margin:3px 0 5px;
+    font-size:12px;
+  }
+  dialog#modal.deck .deck-card-list > .sortie-heading small {font-size:10px;}
+  dialog#modal.deck .deck-card-list .roster .collectionThumb .sortie-badge {
+    right:2px;top:4px;min-width:25px;padding:2px 3px;font-size:10px;
+  }
+}
