@@ -12,7 +12,7 @@ export {STAGES};
 /* PK (duel): two players on one road. The host's spirits start at the crystal end (side 'ally'), the guest's at the
    nest end (side 'enemy'); each side deals from its own deck and the first to break the other's base wins. No AI waves,
    no boss, no items; when time runs out the base with more health left wins. */
-export const PK_STAGE = {id: 'pk', name: 'PK 競技場', scene: 'desert', element: '光', nest: 3600, crystal: 3600, scale: 1, boss: null,
+export const PK_STAGE = {id: 'pk', name: 'PK 競技場', scene: 'desert', element: '光', nest: 1800, crystal: 1800, scale: 1, boss: null,
   path: [[-15, -1], [-10, -6], [-1, -7], [-4, 0], [4, 0], [1, 7], [10, 6], [15, 1]], groups: [], traps: []};
 /* A match's random theme is derived from the same seed that both peers receive.
    Keep one symmetric, balanced PK lane and health values; only the scenery changes.
@@ -24,6 +24,15 @@ export function pkArenaFor(seed) {
   return {...PK_STAGE, scene: theme.scene, element: theme.element, name: 'PK・' + theme.name, arenaName: theme.name};
 }
 export const PK_TIME = 240, PK_MAX_UNITS = 12, PK_RAGE_AT = 120;
+/* Waterfall's thunderstorm is a local road hazard, not a full-screen light flash.
+   It only runs in the solo third island; both armies take the same mild damage.
+   The seeded state clock makes a single reliable strike every ~18-30 seconds. */
+export const WATERFALL_THUNDER = Object.freeze({
+  firstMin: 12, firstJitter: 10,
+  intervalMin: 18, intervalJitter: 12,
+  damageRatio: 0.06,
+  pathStart: 0.16, pathSpan: 0.68,
+});
 /* from PK_RAGE_AT on, every hit grows stronger (x2 at 180 s, x3 at 240 s) so a crowded stalemate always breaks */
 export const pkRage = (state) => (state.duel && state.time > PK_RAGE_AT ? 1 + (state.time - PK_RAGE_AT) / 60 : 1);
 const unitCap = (state) => (state.duel ? PK_MAX_UNITS : MAX_ALLIES);
@@ -192,12 +201,14 @@ export function createGame({stageIndex = 0, stage: stageOverride = null, deck, f
     deck: deck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), hand: [], dealAt: DEAL_EVERY, dealRate: 1, dealBoostUntil: 0, dealSlowUntil: 0, nextCard: 1, started: !deferDeal,
     left: -half, right: half, time: 0, itemReady: Object.fromEntries(Object.entries(ITEMS).map(([k, v]) => [k, v.cooldown / 2])), pendingSkills: [], pendingBoss: [], bossSkillAt: BOSS_SKILL_FIRST, nextUltimateAt: 0, freezeUntil: 0, shieldUntil: 0, hasteUntil: 0,
     crystal: {hp: stage.crystal, maxHp: stage.crystal, x: half}, nest: {hp: stage.nest, maxHp: stage.nest, x: -half},
-    traps: [], buffs: {attack: 0, guard: 0}, spawnSlowUntil: 0,
+    traps: [], buffs: {attack: 0, guard: 0}, spawnSlowUntil: 0, nextWeatherLightningAt: Infinity,
     fighters: [], shots: [], events: [], nextId: 1, spawnAt: stage.groups.map((g) => g.start), spawned: stage.groups.map(() => 0), bossOut: false,
     stats: {summons: 0, kills: 0, merges: 0, skills: 0, points: 0}, result: null,
     duel: !!foeDeck, foe: foeDeck ? {hand: [], deck: foeDeck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), dealAt: DEAL_EVERY, dealRate: 1, dealBoostUntil: 0, dealSlowUntil: 0, dragging: false} : null,
     freezeAllyUntil: 0, shieldEnemyUntil: 0, hasteEnemyUntil: 0, timeLimit: foeDeck ? PK_TIME : 0,
   };
+  if (!state.duel && stage.id === 'waterfall')
+    state.nextWeatherLightningAt = WATERFALL_THUNDER.firstMin + state.random() * WATERFALL_THUNDER.firstJitter;
   if (!deferDeal) for (let i = 0; i < 3; i++) { deal(state); if (state.duel) deal(state, 'enemy'); }
   return state;
 }
@@ -694,6 +705,19 @@ function runTraps(state, dt) {
 export function step(state, dt) {
   if (!state.started || state.result) return;
   state.time += dt;
+  /* The third island alone has occasional road lightning. It does not affect
+     the fixed weather or bases; all living friendly/enemy spirits get a small
+     percentage of max HP damage. PK has no weather hazard. */
+  if (!state.duel && state.stage.id === 'waterfall' &&
+      state.time >= state.nextWeatherLightningAt) {
+    state.nextWeatherLightningAt = state.time +
+      WATERFALL_THUNDER.intervalMin + state.random() * WATERFALL_THUNDER.intervalJitter;
+    const x = state.left + (state.right - state.left) *
+      (WATERFALL_THUNDER.pathStart + state.random() * WATERFALL_THUNDER.pathSpan);
+    emit(state, 'weatherLightning', {x, damageRatio: WATERFALL_THUNDER.damageRatio});
+    for (const f of [...state.fighters]) if (f.hp > 0)
+      hurt(state, f, Math.max(1, f.maxHp * WATERFALL_THUNDER.damageRatio), '雷', null, false, false, 'weather');
+  }
   /* Deal clocks honour boosts/jams, preserving the current card's progress.
      A player dragging cards freezes only that player's deal clock. */
   for (const side of state.foe ? ['ally','enemy'] : ['ally']) {
@@ -717,7 +741,10 @@ export function step(state, dt) {
     if (state.time >= job.start && !job.started) startSupport(state, job);
     if (state.time >= job.at) { state.pendingSkills.splice(i, 1); applySupport(state, job.card); }
   }
-  if (state.stage.boss && !state.bossOut && state.time >= state.bossSkillAt) {
+  /* Waterfall's old boss-wide lightning flash is replaced by the independent,
+     occasional road strike above; do not schedule its old cinematic storm. */
+  if (state.stage.boss && state.stage.id !== 'waterfall' &&
+      !state.bossOut && state.time >= state.bossSkillAt) {
     state.bossSkillAt = state.time + bossSkillEvery(state.stageIndex);
     const start = Math.max(state.time, state.nextUltimateAt);
     const job = {start, at: start + SKILL_WINDUP, started: false};
