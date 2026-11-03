@@ -74,7 +74,7 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/sortie-slots-v9/);
+  assert.match(html,/four-base-toolbar-v10/);
 });
 
 
@@ -155,4 +155,35 @@ test('fixed sortie slots preserve holes after removal and allow deliberate refil
   newer.normalizeDeck();
   assert.deepEqual(incomplete.deckSlots,['a','b','c','d',null,null],
     'empty two red positions must stay visible even when red cards are available');
+});
+
+
+test('incomplete base deck is stopped in Chinese and the reported CanvasTexture crash is repaired', () => {
+  assert.match(main,/function requireCompleteSortie\(\)/);
+  assert.match(main,/必須編滿四位基礎幻靈才可以出擊/);
+  assert.match(main,/目前只有 \$\{count\}\/\$\{DECK_BASE\} 位/);
+  assert.match(main,/if \(!requireCompleteSortie\(\)\) return/);
+  assert.match(main,/class="sortie-base-warning"/);
+  assert.match(main,/role="status"/);
+  assert.match(main,/aria-disabled="true"/);
+  assert.match(view,/t\.userData = \{\.\.\.\(t\.userData \|\| \{\}\), defenseGenerated: true\}/);
+  assert.doesNotMatch(view,/t\.userData\.defenseGenerated = true/,
+    'Three.js CanvasTexture may not provide userData before initialization');
+});
+
+test('top points and four action shortcuts share all available width at phone and desktop breakpoints', () => {
+  const top = css.slice(css.indexOf('responsive full-width top shortcuts'));
+  assert.ok(top.length > 0,'responsive toolbar styles exist');
+  assert.match(top,/#lobby \.chart-head \.chart-tools \{/);
+  assert.match(top,/grid-template-columns:minmax\(0,1\.16fr\) repeat\(3,minmax\(0,1fr\)\) minmax\(0,1\.3fr\)/);
+  assert.match(top,/grid-column:3;grid-row:1/,'desktop toolbar fills available middle area');
+  assert.match(top,/grid-column:1\/-1;grid-row:2/,'phone toolbar spans viewport width');
+  assert.match(top,/@media \(max-width:1020px\)/);
+  assert.match(top,/@media \(orientation:portrait\) and \(max-width:720px\)/);
+  assert.match(top,/@media \(orientation:landscape\) and \(max-height:640px\)/);
+  assert.match(top,/width:100%;min-width:0;max-width:none/);
+  assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
+  assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
+  assert.match(top,/sortie-base-warning/);
+  assert.match(html,/four-base-toolbar-v10/,'new assets must bypass cached CSS and 3D view');
 });
