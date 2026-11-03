@@ -103,3 +103,9 @@ test('landscape phones: the islands keep the left side, buttons and the sortie p
   assert.ok(block.includes('#lobby .isle-panel { position: absolute; top: auto; left: auto; right:'), 'the panel no longer stretches across from the left');
   assert.ok(block.includes('#lobby .chart-tools { position: absolute;'), 'the buttons sit above the panel, not over the islands');
 });
+
+test('landscape sortie panel shows the deck spirits in its own row of the right column', () => {
+  const css = read('../css/defense.css'), i = css.lastIndexOf('the sortie panel also shows the deck'), block = css.slice(i);
+  assert.ok(i > 0 && block.includes('"strip strip"') && block.includes('#lobby .isle-deck { display: contents; }'));
+  assert.ok(block.includes('grid-template-columns: repeat(6, minmax(0, 1fr))'), 'six deck slots in one row');
+});

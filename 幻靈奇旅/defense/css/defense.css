@@ -1043,3 +1043,12 @@ button.fs-toggle { display: inline-grid !important; place-items: center; width: 
 .star-sec > .ci-row:last-child { margin-bottom: 6px; }
 .form-name { margin: 6px 10px 0; font-weight: 800; color: #7a4a24; font-size: 13px; }
 .t-job { background: #7a9a3a; }
+/* Landscape phones: the sortie panel also shows the deck's spirits, in its own row of the right column (it grows upward but
+   never past the buttons above it, and the column never reaches the islands). */
+@media (orientation: landscape) and (max-height: 560px) {
+  #lobby .isle-card { grid-template-areas: "title title" "boss boss" "strip strip" "deck start"; }
+  #lobby .isle-deck { display: contents; }
+  #lobby .isle-deck .deck-strip { grid-area: strip; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+  #lobby .isle-deck .deck-strip img, #lobby .isle-deck .deck-strip i { width: 100%; height: auto; aspect-ratio: 1; border-radius: 8px; display: block; }
+  #lobby .isle-deck .tool.small { grid-area: deck; }
+}
