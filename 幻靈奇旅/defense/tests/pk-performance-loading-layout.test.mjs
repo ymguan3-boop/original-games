@@ -74,5 +74,23 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/pk-perf-v6/);
+  assert.match(html,/deck-preview-v7/);
+});
+
+
+test('portrait and landscape deck cards keep their 5:7 previews and one scrolling parent', () => {
+  assert.match(main,/class="panel-scroll deck-card-list"/);
+  assert.match(main,/class="deck-special-details"/);
+  assert.match(main,/deckHelpExpanded \? 'open' : ''/);
+  assert.match(main,/deckHelpExpanded = help.open/);
+  assert.match(css,/dialog#modal\.deck #modalBody > \.panel-scroll\.deck-card-list/);
+  assert.match(css,/dialog#modal\.deck \.deck-card-list \.roster/);
+  assert.match(css,/grid-auto-rows:max-content/);
+  assert.match(css,/max-height:none !important/);
+  assert.match(css,/overflow:visible !important/);
+  assert.match(css,/aspect-ratio:5 \/ 7/);
+  assert.match(css,/dialog#modal\.deck \.deck-special-details > summary/);
+  assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
+  assert.match(css,/@media \(orientation:portrait\) and \(max-width:540px\)/);
+  assert.match(css,/dialog#modal\.deck #modalBody > \.modal-actions/);
 });
