@@ -155,7 +155,7 @@ function unitButton({id, trial = false}) {
     : id === 'kyogre'
       ? '小金魚同星相鄰合成，隨機進化金魚國王或皇后；一張國王＋一張皇后相鄰才會合體水蛟龍王'
       : sup ? sup.text : '大絕：' + shapeLabel(id, true);
-  return `<button class="collectionThumb ${n >= 0 ? 'on' : ''}" data-unit="${id}" title="${esc(hint)}">${trial ? '<span class="trial">體驗</span>' : ''}${n >= 0 ? '<span class="order">✓</span>' : ''}${sup ? '<span class="skilltag">輔助</span>' : ''}${cardHtml(id, {line})}</button>`;
+  return `<button class="collectionThumb ${n >= 0 ? 'on sortie-picked' : ''}" data-unit="${id}" aria-label="${n >= 0 ? '已選出擊：' : '可選卡牌：'}${esc(spirit(id).name)}" title="${esc(hint)}">${trial ? '<span class="trial">體驗</span>' : ''}${n >= 0 ? '<span class="sortie-badge">出擊</span>' : ''}${sup ? '<span class="skilltag">輔助</span>' : ''}${cardHtml(id, {line})}</button>`;
 }
 
 let chart = null;
@@ -250,10 +250,16 @@ let deckHelpExpanded = false;
 function openDeck(picked = null, keepScroll = 0) {
   normalizeDeck();
   const units = availableUnits(), nb = deckBase().length, nr = deckRed().length;
+  const unitIndex = new Map([...units.base, ...units.red].map((u) => [u.id, u]));
+  const chosen = record.deck.map((id) => unitIndex.get(id)).filter(Boolean);
+  const unchosenBase = units.base.filter((u) => !record.deck.includes(u.id));
+  const unchosenRed = units.red.filter((u) => !record.deck.includes(u.id));
   openModal(`${ribbon('出擊卡組', '🃏')}
     <p class="result-sub">基礎幻靈 ${nb}/${DECK_BASE}・技能卡 ${nr}/${DECK_RED}（職業決定攻擊方式，四名出戰角色搭配兩張技能卡）</p>
     <div class="role-legend">${Object.values(ROLE_META).map((r) => `<span>${r.icon} ${r.label}</span>`).join('')}</div>
     <div class="panel-scroll deck-card-list">
+      <h3 class="roster-group sortie-heading">⚔️ 已選出擊卡組 <small>${chosen.length}/${DECK_SIZE}・綠框「出擊」即為目前上陣卡牌</small></h3>
+      <div class="roster sortie-current" aria-label="已加入出擊卡組的卡牌">${chosen.map(unitButton).join('') || '<p class="muted">尚未選擇出擊卡牌，請從下方挑選。</p>'}</div>
       <details class="deck-special-details" ${deckHelpExpanded ? 'open' : ''}>
         <summary>📖 特殊合體與放置規則（點擊展開）</summary>
       <div class="deck-special-rules" aria-label="特殊合體與出場規則">
@@ -267,8 +273,8 @@ function openDeck(picked = null, keepScroll = 0) {
         </div>
       </div>
       </details>
-      <h3 class="roster-group">基礎幻靈 <small>黃卡、紫卡的未進階幻靈與三色蛋</small></h3><div class="roster">${units.base.map(unitButton).join('') || '<p class="muted">還沒有基礎幻靈，先去轉蛋吧！</p>'}</div>
-    <h3 class="roster-group">紅卡輔助 <small>點擊施放技能，合成升星</small></h3><div class="roster">${units.red.map(unitButton).join('') || '<p class="muted">紅卡可由轉蛋取得（需先在原探索收錄）。</p>'}</div></div>
+      <h3 class="roster-group">其他基礎幻靈 <small>點卡牌可加入出擊卡組（黃卡、紫卡與三色蛋）</small></h3><div class="roster">${unchosenBase.map(unitButton).join('') || '<p class="muted">沒有其他可選的基礎幻靈。</p>'}</div>
+      <h3 class="roster-group">其他紅卡輔助 <small>點卡牌可加入出擊卡組</small></h3><div class="roster">${unchosenRed.map(unitButton).join('') || '<p class="muted">沒有其他可選的紅卡輔助，仍可透過轉蛋取得。</p>'}</div></div>
     <div id="flipLayer" class="flip-layer" hidden></div>
     <div class="modal-actions center"><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto deck');
   $('deckGacha').onclick = () => { $('modal').close(); openGacha(); };
@@ -283,7 +289,10 @@ function openDeck(picked = null, keepScroll = 0) {
     else if (red && deckRed().length >= DECK_RED) record.deck.splice(record.deck.indexOf(deckRed()[0]), 1, id);
     else if (!red && deckBase().length >= DECK_BASE) record.deck.splice(record.deck.indexOf(deckBase()[0]), 1, id);
     else record.deck.push(id);
-    saveRecord(); renderIslePanel(); openDeck(null, scroller?.scrollTop || 0);
+    saveRecord(); renderIslePanel();
+    /* A newly selected card moves to the top group immediately; reveal it.
+       Removing a selected card preserves the user's browsing position. */
+    openDeck(null, k < 0 ? 0 : scroller?.scrollTop || 0);
   };
   const show = (id) => {
     const inDeck = record.deck.includes(id), s = spirit(id), sup = SUPPORT[id];
