@@ -116,7 +116,11 @@ export function createSeascape(THREE, scene, kit) {
   function dispose() {
     if (!group) return;
     scene.remove(group);
-    group.traverse((o) => { o.geometry?.dispose?.(); o.material?.alphaMap?.dispose?.(); });
+    group.traverse((o) => {
+      o.geometry?.dispose?.();
+      o.material?.alphaMap?.dispose?.();
+      o.material?.dispose?.();
+    });
     skyTex?.dispose(); group = null; sea = null; foam = null; fall = null; skyTex = null;
   }
   return {build, update, dispose, get weather() { return w; }};
