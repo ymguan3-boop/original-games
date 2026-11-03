@@ -1142,3 +1142,71 @@ body.pk-mode #hud .stat.pts, body.pk-mode #speed { display: none; }
 #hud .item-menu .item { cursor: pointer; }
 #hud .item-menu .item:active { transform: translateY(1px); }
 body.pk-mode #hud .item-wrap, body.pk-mode #hud #items { display: block; }
+
+
+/* 2026-11-03 PK guest-item HUD lock: always show the owned bag at the right edge. */
+body.pk-mode #hud .item-wrap {
+  display: block !important;
+  position: fixed !important;
+  right: max(10px, env(safe-area-inset-right)) !important;
+  bottom: max(9px, env(safe-area-inset-bottom)) !important;
+  left: auto !important;
+  width: 76px;
+  min-width: 0;
+  z-index: 80;
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+}
+body.pk-mode #hud #items {
+  display: grid !important;
+  width: 76px;
+  min-height: 77px;
+  place-items: center;
+  gap: 1px;
+  padding: 5px 3px;
+}
+body.pk-mode #hud .item-wrap .item-menu {
+  display: grid;
+  right: 0;
+  left: auto;
+  bottom: calc(100% + 8px);
+  width: min(320px, calc(100vw - 20px));
+  max-height: min(65dvh, 460px);
+  overflow-y: auto;
+  pointer-events: auto;
+  overscroll-behavior: contain;
+}
+body.pk-mode #hud .item-wrap .item-menu[hidden] {display: none !important;}
+body.pk-mode #hud .item-wrap .item.pk-item-locked {
+  opacity: 0.6;
+  filter: grayscale(.3);
+  cursor: not-allowed;
+}
+body.pk-mode #hud .item-wrap .item.pk-item-locked:active {transform:none;}
+body.pk-mode #hud .item-wrap .pk-item-tip {
+  margin: 2px 0 5px;
+  color: #785231;
+}
+body.pk-mode #hud .hud-bottom {
+  grid-template-columns: minmax(0,1fr) 90px;
+  padding-right: 0;
+}
+@media(max-width:720px), (max-height:600px) {
+  body.pk-mode #hud .item-wrap {
+    width: clamp(51px, 9dvw, 62px);
+    bottom: max(6px, env(safe-area-inset-bottom));
+    right: max(6px, env(safe-area-inset-right));
+  }
+  body.pk-mode #hud #items {
+    width: 100%;
+    height: clamp(55px, 17dvh, 75px);
+    min-height: 0;
+    padding: 2px 1px;
+    font-size: 10px;
+    border-radius: 12px;
+  }
+  body.pk-mode #hud .hud-bottom {
+    grid-template-columns: minmax(0,1fr) 72px;
+  }
+}
