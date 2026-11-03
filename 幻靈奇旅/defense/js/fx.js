@@ -30,7 +30,7 @@ export function createFx(THREE, scene) {
 
   /* No temporary point lights: every island keeps its authored sky, sun
      and ambient lighting unchanged during normal hits and ultimates. */
-  const jobs = [];
+  const jobs = [], timers = new Set();
   const MOBILE_FX = typeof matchMedia !== 'undefined' && matchMedia('(max-width: 720px)').matches;
   const MAX_JOBS = MOBILE_FX ? 76 : 140, MAX_PARTICLES = MOBILE_FX ? 24 : 52;
   let clock = 0;
@@ -208,12 +208,12 @@ export function createFx(THREE, scene) {
     shockwave({x: center.x, z: center.z, color: c2, radius: 12, life: 0.85});
     flash({x: center.x, y: 6, z: center.z, color: c1, intensity: 6, life: 1});
     particles({x: center.x, z: center.z, y: 0.5, count: 40, color: c2, size: 0.6, speed: 9, up: 3, spread: 2, life: 1.8, gravity: -1.5, tex: spark});
-    targets.slice(0, 6).forEach((t, i) => setTimeout(() => {
+    targets.slice(0, 6).forEach((t, i) => { const timer = setTimeout(() => { timers.delete(timer);
       if (kind === 'freeze') { particles({x: t.x, z: t.z, y: 0.3, count: 24, color: 0xd8f6ff, size: 0.6, speed: 1.2, up: 2.5, spread: 0.6, life: 1.4, gravity: -1, tex: spark}); shockwave({x: t.x, z: t.z, color: 0xbff4ff, radius: 1.6, life: 0.7}); }
       else if (kind === 'volley' || kind === 'beam' || kind === 'quake') ultimate({from: null, to: t, element, kind: 'blast', radius: 1.6});
       else if (kind === 'plague') particles({x: t.x, z: t.z, y: 0.5, count: 30, color: 0x94f85f, size: 0.7, speed: 1.5, up: 1.5, spread: 0.5, life: 1.6, gravity: 0.5, swirl: 4});
       else { pillar({x: t.x, z: t.z, color: kind === 'heal' ? 0x83ffc5 : kind === 'shield' ? 0xffd058 : 0xfff27a, radius: 0.8, height: 5, life: 1}); particles({x: t.x, z: t.z, y: 0.3, count: 20, color: c2, size: 0.45, speed: 0.5, up: 3, spread: 0.6, life: 1.2, gravity: 1, tex: spark}); }
-    }, 120 + i * 60));
+    }, 120 + i * 60); timers.add(timer); });
   }
 
   function update(dt) {
@@ -225,6 +225,8 @@ export function createFx(THREE, scene) {
     }
   }
   function clear() {
+    for (const timer of timers) clearTimeout(timer);
+    timers.clear();
     /* A PK rematch should not retain old GPU particle buffers or shader programs.
        Particle textures are shared by this module and deliberately stay cached. */
     for (const j of jobs.splice(0)) if (j.obj) {
