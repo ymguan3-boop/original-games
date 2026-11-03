@@ -3,11 +3,11 @@
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
 import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js';
-import {createFx} from './fx.js?v=20261104-road-thunder-v15';
+import {createFx} from './fx.js?v=20261104-allstage-v16';
 import {createSeascape} from './seascape.js?v=20261104-weather-lock-v3';
 import {createToonKit} from './style.js?v=20261103-pk-perf-v3';
 import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-islands-v1';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261103-pk-perf-v3';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261104-allstage-v16';
 import {pointAt} from './stages.js';
 import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js';
 import {createProjectileView} from '../../survivors/js/projectile-view.js';
@@ -884,6 +884,16 @@ export function createView(canvas, {spirits, catalog}) {
     combatVfx.update(dt); fx.update(dt); env?.update(dt); seascape.update(dt);
     /* Guard against imported skill VFX accidentally modifying climate state.
        Preserve per-character damage flashes without flickering the whole sky. */
+    for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { disposeWorldEffect(e.obj); effects.splice(i, 1); } }
+    /* Keep the sky and horizon visually steady when a tower or spirit takes damage.
+       Damage feedback remains on the character and tower rather than the camera. */
+    const s = 0; shake = Math.max(0, shake - dt * 1.6);
+    /* smooth, decaying shake (no per-frame random jumps, which read as flicker) */
+    camera.position.set(camBase.x + Math.sin(clock * 38) * s, camBase.y + Math.sin(clock * 47) * s * 0.4, camBase.z + Math.cos(clock * 33) * s * 0.6);
+    if (s) camera.lookAt(view3.target);
+    /* All 10 stages and PK: make the authored climate the final render state.
+       No hit, model-room skill, boss attack or road thunder may tint the sky,
+       move lighting, change fog, or switch the renderer to tone mapping. */
     seascape.lockWeather();
     if (lockedClimateLighting) {
       const c = lockedClimateLighting;
@@ -893,15 +903,7 @@ export function createView(canvas, {spirits, catalog}) {
       if (!sun.color.equals(c.sunColor)) sun.color.copy(c.sunColor);
       if (sun.intensity !== c.sunPower) sun.intensity = c.sunPower;
     }
-    for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { disposeWorldEffect(e.obj); effects.splice(i, 1); } }
-    /* Keep the sky and horizon visually steady when a tower or spirit takes damage.
-       Damage feedback remains on the character and tower rather than the camera. */
-    const s = 0; shake = Math.max(0, shake - dt * 1.6);
-    /* smooth, decaying shake (no per-frame random jumps, which read as flicker) */
-    camera.position.set(camBase.x + Math.sin(clock * 38) * s, camBase.y + Math.sin(clock * 47) * s * 0.4, camBase.z + Math.cos(clock * 33) * s * 0.6);
-    if (s) camera.lookAt(view3.target);
-    /* Avoid one-frame sky changes from imported model-room hit effects. */
-    seascape.lockWeather();
+    if (renderer.toneMapping !== THREE.NoToneMapping) renderer.toneMapping = THREE.NoToneMapping;
     renderer.render(scene, camera);
   }
 
