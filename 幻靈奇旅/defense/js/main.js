@@ -695,12 +695,13 @@ function hud() {
 let bagCache = {at: 0, list: []}, placing = null;
 function usableItems() {
   if (performance.now() - bagCache.at < 800 && bagCache.list.length) return bagCache.list;
-  const allow = (id) => (!pk || TACTICAL_BAG.includes(id));
+  /* Show all OWNED items even during PK. Unsupported supplies/traps
+     remain visible with a clear explanation rather than disappearing. */
   const list = [
-    ...Object.entries(BAG_ITEMS).filter(([id]) => allow(id))
+    ...Object.entries(BAG_ITEMS)
       .map(([id, it]) => ({id, ...it, count: bagCount(id), kind: 'bag'})),
-    ...(!pk ? Object.entries(TRAP_CARDS)
-      .map(([id, it]) => ({id, ...it, count: bagCount(id), kind: 'trap'})) : []),
+    ...Object.entries(TRAP_CARDS)
+      .map(([id, it]) => ({id, ...it, count: bagCount(id), kind: 'trap'})),
   ].filter((u) => u.count > 0); // Never display zero-stock entries.
   bagCache = {at: performance.now(), list};
   return list;
@@ -710,14 +711,18 @@ function renderItems(force = false) {
   const list = usableItems(), sig = list.map((u) => u.id + ':' + u.count).join('|') + (pk ? ':pk' : ':islands');
   if (menu.dataset.sig === sig && menu.children.length) return;
   menu.dataset.sig = sig;
-  const row = (u) => `<button class="item" data-${u.kind === 'trap' ? 'trap' : 'bag'}="${u.id}"><span class="item-icon">${u.icon}</span><span class="item-text"><b>${esc(u.name)}</b><small>${esc(u.text)}</small></span><span class="item-cd">×${u.count}</span></button>`;
+  const row = (u) => {
+    const locked = !!pk && (u.kind === 'trap' || !TACTICAL_BAG.includes(u.id));
+    return `<button class="item${locked ? ' pk-item-locked' : ''}" data-${u.kind === 'trap' ? 'trap' : 'bag'}="${u.id}"${locked ? ' disabled title="PK 對戰僅開放三種卡牌戰術道具"' : ''}><span class="item-icon">${u.icon}</span><span class="item-text"><b>${esc(u.name)}</b><small>${locked ? '目前僅能在一般守護戰使用' : esc(u.text)}</small></span><span class="item-cd">×${u.count}</span></button>`;
+  };
   if (!list.length) {
-    menu.innerHTML = '<p class="item-empty">目前沒有可使用的道具。前往群島轉蛋機取得補給與戰術道具。</p>';
+    menu.innerHTML = '<p class="item-empty">目前沒有持有道具。請前往群島轉蛋機抽取補給與戰術道具。</p>';
     return;
   }
   const bag = list.filter((u) => u.kind === 'bag'), traps = list.filter((u) => u.kind === 'trap');
-  menu.innerHTML = (bag.length ? '<p class="item-head">補給與戰術道具</p>' + bag.map(row).join('') : '') +
-    (traps.length ? '<p class="item-head">陷阱卡（點選後放到路上）</p>' + traps.map(row).join('') : '');
+  menu.innerHTML = (pk ? '<p class="item-head pk-item-tip">⚔️ PK 可使用：速整卡牌、疾速發牌、發牌干擾</p>' : '') +
+    (bag.length ? '<p class="item-head">補給與戰術道具</p>' + bag.map(row).join('') : '') +
+    (traps.length ? '<p class="item-head">' + (pk ? '其他持有陷阱（PK 暫不開放）' : '陷阱卡（點選後放到路上）') + '</p>' + traps.map(row).join('') : '');
 }
 function useBag(id) {
   if (!game || game.result || !game.started || !BAG_ITEMS[id]) return;
