@@ -59,6 +59,7 @@ test('long PK mobile rendering, network buffers and VFX queues are bounded', () 
   assert.match(view,/disposeWorldEffect\(e\.obj\)/);
   assert.match(view,/disposeMap\(\)/);
   assert.match(view,/releasePortraitRenderer\(\)/,'unused third WebGL context must be released in PK');
+  assert.match(view,/else seascape\.dispose\(\)/,'ocean GPU resources must be released on exit');
   assert.match(style,/sharedMaterials\.has\(m\)/);
   assert.match(fx,/function clear\(\)/);
   assert.match(fx,/node\.geometry\?\.dispose/);
@@ -73,5 +74,5 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/pk-perf-v5/);
+  assert.match(html,/pk-perf-v6/);
 });
