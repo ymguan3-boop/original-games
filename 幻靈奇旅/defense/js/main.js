@@ -131,6 +131,9 @@ function availableUnits() {
 const journey = () => readJson('phantom_journey_v1', {});
 /* ---------- items: supplies and trap cards from this mode's gacha, kept in the island record (limited in number) ---------- */
 const STARTER_ITEMS = {'trap-mud': 2, 'trap-spike': 2, 'trap-whirl': 1, 'trap-rune': 1, 'trap-shock': 1, potion: 2, revive: 1, battery: 1, 'buff-attack': 1, 'buff-defense': 1};
+const TACTICAL_BAG = ['card-organize','deal-boost','deal-jam'];
+const tacticalInventory = () => Object.fromEntries(TACTICAL_BAG.map((id) => [id, Math.max(0, Math.min(99, bagCount(id)))]));
+const pendingPkItems = new Set();
 function trapStock() { record.bag ||= {}; return record.bag; }
 function addTrapCards(id, n = 1) { const t = trapStock(); t[id] = (t[id] || 0) + n; saveRecord(); }
 function bagCount(id) { return trapStock()[id] || 0; }
@@ -292,15 +295,18 @@ const wallet = () => '<div class="wallet-strip"><span>' + caveArt(icon('points')
 const itemName = (id) => TRAP_CARDS[id]?.name || BAG_ITEMS[id]?.name || CAVE_ITEMS[id]?.name || id;
 const rewardArt = (id) => (isDefenseItem(id) ? '<span class="trap-art">' + (TRAP_CARDS[id] || BAG_ITEMS[id]).icon + '</span>' : caveArt(itemPicture(id)));
 /* the summon film names items from the cave table (the same module the film reads): add this mode's trap cards to it in memory only, so the film shows the right name */
-for (const [id, t] of Object.entries(TRAP_CARDS)) CAVE_ITEMS[id] ||= {name: t.name, kind: 'trap', price: 0, rarity: '一般', stackLimit: 999999, duration: 0};
+for (const [id, t] of Object.entries({...TRAP_CARDS, ...BAG_ITEMS})) CAVE_ITEMS[id] ||= {
+  name: t.name, kind: TRAP_CARDS[id] ? 'trap' : 'supply', price: 0,
+  rarity: '一般', stackLimit: 999999, duration: 0
+};
 const filmRewards = (rewards) => rewards;
 function openGacha() {
   const first = !record.starterClaimed, pts = points(), pool = gachaPool();
   openPanel('群島轉蛋機', `<div class="dg-wallet"><span>🎟️ 持有點數（與無盡洞穴共用）</span><strong>${pts.toLocaleString()}<small>點</small></strong></div>
     <div class="dg-intro"><button class="dg-machine" aria-label="轉動轉蛋機"><img src="../survivors/assets/gacha-machine-v03.png" alt=""></button>
-      <div class="dg-copy"><strong>尋找下一位夥伴</strong><p>基礎幻靈・補給・陷阱卡</p><p class="dg-note">${first ? '第一次召喚免費，保底 4 隻黃卡' : '可抽幻靈：黃 ' + pool.yellow.length + '・紫 ' + pool.purple.length + '・紅 ' + pool.red.length}</p></div></div>
+      <div class="dg-copy"><strong>尋找下一位夥伴</strong><p>基礎幻靈・戰術道具・陷阱卡</p><p class="dg-note">${first ? '第一次召喚免費，保底 4 隻黃卡' : '可抽幻靈：黃 ' + pool.yellow.length + '・紫 ' + pool.purple.length + '・紅 ' + pool.red.length}</p></div></div>
     <div class="draw-actions" id="drawActions"></div>
-    <details class="pool-details"><summary>獎池與機率</summary><p>幻靈 10%（黃 6%・紫 3%・紅 1%）<br>道具 90%：陷阱卡約四成（泥沼、漩渦、符文陣、毒蘑菇、尖刺、電擊板、間歇泉），補給約六成（治療藥水、緊急復甦藥、大絕電池、攻擊增幅、防禦增幅）。<br>道具存在守護戰道具包，戰鬥中點「道具」使用。重複黃／紫／紅卡返還 50／100／500 點。</p></details>`, 'gacha');
+    <details class="pool-details"><summary>獎池與機率</summary><p>幻靈 10%（黃 6%・紫 3%・紅 1%）<br>道具 90%：陷阱卡約四成（泥沼、漩渦、符文陣、毒蘑菇、尖刺、電擊板、間歇泉），補給約六成（治療藥水、緊急復甦藥、大絕電池、攻擊增幅、防禦增幅、速整卡牌、疾速發牌、發牌干擾）。新戰術道具較稀有；發牌干擾在 PK 中降低對手發牌速度，單人關卡則延緩敵方出兵。<br>道具存在守護戰道具包，戰鬥中點「道具」使用。重複黃／紫／紅卡返還 50／100／500 點。</p></details>`, 'gacha');
   const actions = $('drawActions'), add = (text, fn, cls, disabled) => { const b = document.createElement('button'); b.textContent = text; b.className = cls; b.disabled = disabled; b.onclick = fn; actions.append(b); return b; };
   if (first) add('新手召喚 · 免費（保底 4 隻黃卡）', claimStarter, 'primary', false);
   else for (const n of [1, 10]) add((n === 1 ? '召喚一次' : '召喚十次') + ' · ' + (n * DRAW_COST).toLocaleString() + ' 點', () => drawBatch(n), n === 10 ? 'primary' : '', pts < n * DRAW_COST);
@@ -455,6 +461,7 @@ async function startPkGame(session) {
 function pkClock() { const left = Math.max(0, PK_TIME - (game?.time || 0)); return Math.floor(left / 60) + ':' + String(Math.floor(left % 60)).padStart(2, '0'); }
 function endPk() {
   document.body.classList.remove('pk-mode');
+  pendingPkItems.clear(); bagCache.at = 0;
   pk = null;
 }
 function showPkResult(r) {
@@ -647,9 +654,13 @@ function hud() {
   $('runPoints').textContent = game.stats.points.toLocaleString();
   if (pk) $('stageName').textContent = '⚔️ vs ' + (pk.foe?.name || '對手') + '・' + pkClock() + (game.time > PK_RAGE_AT ? '・狂暴！' : '');
   const owned = usableItems().reduce((n, u) => n + u.count, 0);
-  $('items').classList.toggle('ready', owned > 0); $('itemsCount').textContent = owned ? owned + ' 個' : '無道具';
+  $('items').classList.toggle('ready', owned > 0);
+  $('itemsCount').textContent = owned ? owned + ' 個' : '無道具';
   if (!$('itemMenu').hidden) renderItems();
-  $('dealFill').style.width = (game.hand.length >= HAND_SIZE ? 100 : Math.max(0, Math.min(100, (1 - (game.dealAt - game.time) / DEAL_EVERY) * 100))) + '%';
+  const interval = DEAL_EVERY / (game.dealRate || 1);
+  $('dealFill').style.width = (game.hand.length >= HAND_SIZE ? 100 : Math.max(0, Math.min(100, (1 - (game.dealAt - game.time) / interval) * 100))) + '%';
+  const fill = $('dealFill').parentElement;
+  fill.title = game.dealRate > 1 ? '疾速發牌中（速度加倍）' : game.dealRate < 1 ? '發牌受到干擾（速度減半）' : '正常發牌速度';
   $('speed').textContent = '×' + speed; $('pause').textContent = paused ? '▶' : '❚❚';
   $('evoToggle').textContent = record.evoAnim === false ? '進化動畫：關' : '進化動畫：開'; $('evoToggle').classList.toggle('on', record.evoAnim !== false);
   renderHand();
@@ -659,27 +670,57 @@ function hud() {
 let bagCache = {at: 0, list: []}, placing = null;
 function usableItems() {
   if (performance.now() - bagCache.at < 800 && bagCache.list.length) return bagCache.list;
+  const allow = (id) => (!pk || TACTICAL_BAG.includes(id));
   const list = [
-    ...Object.entries(BAG_ITEMS).map(([id, it]) => ({id, ...it, count: bagCount(id), kind: 'bag'})),
-    ...Object.entries(TRAP_CARDS).map(([id, it]) => ({id, ...it, count: trapStock()[id] || 0, kind: 'trap'})),
-  ];
+    ...Object.entries(BAG_ITEMS).filter(([id]) => allow(id))
+      .map(([id, it]) => ({id, ...it, count: bagCount(id), kind: 'bag'})),
+    ...(!pk ? Object.entries(TRAP_CARDS)
+      .map(([id, it]) => ({id, ...it, count: bagCount(id), kind: 'trap'})) : []),
+  ].filter((u) => u.count > 0); // Never display zero-stock entries.
   bagCache = {at: performance.now(), list};
   return list;
 }
 function renderItems(force = false) {
   const menu = $('itemMenu'); if (force) bagCache.at = 0;
-  const list = usableItems(), sig = list.map((u) => u.id + ':' + u.count).join('|');
+  const list = usableItems(), sig = list.map((u) => u.id + ':' + u.count).join('|') + (pk ? ':pk' : ':islands');
   if (menu.dataset.sig === sig && menu.children.length) return;
   menu.dataset.sig = sig;
-  const row = (u) => `<button class="item ${u.count ? '' : 'cooling'}" data-${u.kind === 'trap' ? 'trap' : 'bag'}="${u.id}"><span class="item-icon">${u.icon}</span><span class="item-text"><b>${esc(u.name)}</b><small>${esc(u.text)}</small></span><span class="item-cd">×${u.count}</span></button>`;
-  menu.innerHTML = '<p class="item-head">補給（轉蛋取得，用完為止）</p>' + list.filter((u) => u.kind === 'bag').map(row).join('') + '<p class="item-head">陷阱卡（點選後再點路上要放的位置）</p>' + list.filter((u) => u.kind === 'trap').map(row).join('');
+  const row = (u) => `<button class="item" data-${u.kind === 'trap' ? 'trap' : 'bag'}="${u.id}"><span class="item-icon">${u.icon}</span><span class="item-text"><b>${esc(u.name)}</b><small>${esc(u.text)}</small></span><span class="item-cd">×${u.count}</span></button>`;
+  if (!list.length) {
+    menu.innerHTML = '<p class="item-empty">目前沒有可使用的道具。前往群島轉蛋機取得補給與戰術道具。</p>';
+    return;
+  }
+  const bag = list.filter((u) => u.kind === 'bag'), traps = list.filter((u) => u.kind === 'trap');
+  menu.innerHTML = (bag.length ? '<p class="item-head">補給與戰術道具</p>' + bag.map(row).join('') : '') +
+    (traps.length ? '<p class="item-head">陷阱卡（點選後放到路上）</p>' + traps.map(row).join('') : '');
 }
 function useBag(id) {
-  if (!game || game.result) return;
-  if (bagCount(id) < 1) return toast('這個道具已經用完了，去群島轉蛋機抽抽看');
-  if (!useBagItem(game, id)) return; takeBagItem(id);
-  bagCache.at = 0; toast(BAG_ITEMS[id].name + '：' + BAG_ITEMS[id].text); handSig = ''; hud(); renderItems(true);
+  if (!game || game.result || !game.started || !BAG_ITEMS[id]) return;
+  if (bagCount(id) < 1) return toast('道具已用完，可到群島轉蛋機抽取');
+  if (pk) {
+    if (!TACTICAL_BAG.includes(id)) return toast('PK 僅開放卡牌戰術道具');
+    if (pk.role === 'guest') {
+      if (pendingPkItems.has(id)) return;
+      if (id === 'card-organize' && !game.hand.length) return toast('手牌空了，無法整理');
+      pendingPkItems.add(id);
+      pk.send({t:'act', a:'item', id});
+      $('itemMenu').hidden = true;
+      toast('已向房主送出道具使用請求');
+      return;
+    }
+  }
+  if (!useBagItem(game, id, 'ally')) {
+    return toast(id === 'card-organize' ? '手牌空了，無法整理' :
+      id === 'deal-boost' ? '疾速發牌仍在持續，請稍後再用' :
+      id === 'deal-jam' ? '發牌干擾仍在持續，請稍後再用' : '目前無法使用此道具');
+  }
+  takeBagItem(id);
+  bagCache.at = 0;
+  $('itemMenu').hidden = true;
+  toast(BAG_ITEMS[id].name + '：' + BAG_ITEMS[id].text);
+  handSig = ''; hud(); renderItems(true);
 }
+
 /* choose a trap card, then tap a spot on the road: the road is dotted and a preview follows the finger */
 function beginPlacing(id) {
   if (!game || game.result) return;
