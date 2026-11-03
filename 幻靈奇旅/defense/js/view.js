@@ -520,7 +520,7 @@ export function createView(canvas, {spirits, catalog}) {
 
   /* ---------- camera: the whole field on screen; portrait phones turn the camera 90° ---------- */
   /* The fitted view (whole field on screen) is the home position; players can zoom (wheel, pinch, buttons) and
-     orbit / tilt (drag on the field); a double click or the 🎥 button returns home. */
+     orbit / tilt (drag on the field); a double click resets the camera. */
   const view3 = {yaw: 0, zoom: 1, tilt: 0.77, dist: 30, target: new THREE.Vector3(), portrait: false};
   function placeCamera() {
     const d = view3.dist * view3.zoom, back = Math.cos(view3.tilt) * d, base = view3.portrait ? new THREE.Vector3(-back, 0, 0) : new THREE.Vector3(0, 0, back);
