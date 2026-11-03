@@ -804,7 +804,7 @@ export function createView(canvas, {spirits, catalog}) {
     update, resize, fire, metrics,
     set cardOrigin(p) { cardOrigin = p; },
     set costume(id) { costumeId = id || 'trainer'; },
-    set rivalCostume(id) { rivalCostumeId = id || 'trainer'; }
+    set rivalCostume(id) { rivalCostumeId = id || 'trainer'; },
     zoomBy, orbitBy, resetCamera,
     debug: () => ({THREE, scene, camera, renderer, crystal, nest, hero, rivalHero, nestBoss, traps}),
     setGame(game) {
