@@ -2,7 +2,7 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_STAGE, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261103-goldfish-egg-v1';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261103-goldfish-egg-v1';
 import {createPkIsland} from './pk-island.js?v=20261109-pk-v1';
 import {createPkLobby} from './pk-lobby.js?v=20261103-pk-seated-heroes-v1';
 import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261103-tactics-v1';
@@ -389,6 +389,14 @@ function showHowTo() {
     <div class="modal-actions center"><button class="primary big" data-close>開始守護戰</button></div>`,'howto');
 }
 
+function loadingPhase(message, percent) {
+  $('loadingText').textContent = message;
+  $('loadingBar').style.width = Math.max(0,Math.min(100,percent)) + '%';
+  $('loadingBar').setAttribute('aria-valuenow', String(Math.round(percent)));
+}
+function nextPaint() {
+  return new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+}
 function openModal(html, kind = 'info') {
   $('modalBody').innerHTML = html; const m = $('modal'); m.className = 'panel panel-' + kind;
   if (!m.open) m.showModal(); m.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => m.close()));
@@ -405,19 +413,32 @@ async function startGame() {
   game = null;
   acc = 0; last = 0; paused = true;
   $('hud').hidden = true;
-  $('loading').hidden = false; $('loadingText').textContent = '正在準備戰場…'; $('loadingBar').style.width = '15%';
+  $('loading').hidden = false; loadingPhase('正在啟動戰鬥引擎…', 8);
+  await nextPaint(); // make the boat/loader visible before any expensive 3D map build
+  if (serial !== startSerial) return;
   try {
     await loadEngine();
+    if (serial !== startSerial) return;
+    loadingPhase('正在搭建島嶼與道路…', 26);
+    await nextPaint();
     if (!view) view = createView($('world'), {spirits: data.spirits, catalog: data.catalog});
     if (!audio) audio = createCombatAudio();
     view.costume = costumeFor(journey()).id;
     game = createGame({stageIndex: record.stage, deck: record.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
     game.runId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
     view.setGame(game); prepareBossPortrait(game.stage);
-    $('loadingBar').style.width = '40%'; $('loadingText').textContent = '幻靈們正在集合…';
-    await Promise.race([view.preload([...record.deck, ...game.stage.groups.map((g) => g.species)]), new Promise((r) => setTimeout(r, 9000))]);
-    $('loadingBar').style.width = '100%';
+    loadingPhase('場景完成，正在準備幻靈素材…', 55);
+    const ids = [...record.deck, ...game.stage.groups.map((g) => g.species), game.stage.boss];
+    const models = view.preload(ids, (done, total) => {
+      if (serial === startSerial && !$('loading').hidden)
+        loadingPhase('正在讀取幻靈素材 ' + done + '/' + total + '…', 55 + done / Math.max(1,total) * 39);
+    });
+    /* Slow networks must not block the first visible battle; missing models
+       continue streaming, using the existing actor placeholders until ready. */
+    await Promise.race([models, new Promise((resolve) => setTimeout(resolve, 4300))]);
     if (serial !== startSerial) return;
+    loadingPhase('戰場準備完成，開始出擊！', 100);
+    await nextPaint();
   } catch (e) {
     if (serial !== startSerial) return;
     console.error(e); toast(e.message); $('loading').hidden = true;
@@ -440,12 +461,17 @@ async function startGame() {
 async function startPkGame(session) {
   const serial = ++startSerial;
   hideBossIntro(); pendingDealingScene = null; visibleSceneFrames = 0; game = null; acc = 0; last = 0; paused = false; speed = 1;
-  pk = session; pk.outbox = []; pk.sentAt = 0; pk.foeLoaded = false; pk.loadedSent = false; pk.waitFrom = 0;
+  pk = session; pk.arena = pkArenaFor(pk.seed); pk.outbox = []; pk.sentAt = 0; pk.foeLoaded = false; pk.loadedSent = false; pk.waitFrom = 0;
   pk.itemStock = {...(pk.foe?.stock || {})}; pendingPkItems.clear(); bagCache.at = 0;
   document.body.classList.add('pk-mode');
-  $('hud').hidden = true; $('loading').hidden = false; $('loadingText').textContent = '前往 PK 競技場…'; $('loadingBar').style.width = '15%';
+  $('hud').hidden = true; $('loading').hidden = false; loadingPhase('正在前往 ' + pk.arena.arenaName + ' 對戰場景…', 8);
+  await nextPaint();
+  if (serial !== startSerial) return;
   try {
     await loadEngine();
+    if (serial !== startSerial) return;
+    loadingPhase('正在搭建隨機 PK 島嶼…', 28);
+    await nextPaint();
     if (!view) view = createView($('world'), {spirits: data.spirits, catalog: data.catalog});
     if (!audio) audio = createCombatAudio();
     view.costume = costumeFor(journey()).id;
@@ -453,7 +479,7 @@ async function startPkGame(session) {
        The wardrobe adapter validates unknown/legacy costume IDs. */
     view.rivalCostume = costumeFor(pk.foe?.costume || 'trainer').id;
     if (pk.role === 'host') {
-      game = createGame({stage: PK_STAGE, deck: pk.me.deck, foeDeck: pk.foe.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, seed: pk.seed, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
+      game = createGame({stage: pk.arena, deck: pk.me.deck, foeDeck: pk.foe.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, seed: pk.seed, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
       pk.on('act', (m) => {
         if (!game || game.result || !game.started) return;
         if (m.a === 'item') {
@@ -473,7 +499,7 @@ async function startPkGame(session) {
       pk.on('loaded', () => { pk.foeLoaded = true; });
       pk.on('quit', () => { if (game && !game.result) { game.nest.hp = 0; pk.foeQuit = true; } });
     } else {
-      game = createMirror(PK_STAGE);
+      game = createMirror(pk.arena);
       pk.on('snap', (m) => { if (game?.mirror) applySnapshot(game, m.d, (f, target, strong) => view.fire(f, target, strong)); });
       pk.on('toast', (m) => toast(m.text));
       pk.on('itemUsed', (m) => {
@@ -490,10 +516,16 @@ async function startPkGame(session) {
     game.runId = 'pk-' + Date.now().toString(36);
     pk.onGone = () => { if (game && !game.result) { toast('對手離線了'); showPkResult({won: true, gone: true, time: game.time}); } };
     view.setGame(game);
-    $('loadingBar').style.width = '40%'; $('loadingText').textContent = '雙方幻靈進場中…';
-    await Promise.race([view.preload([...pk.me.deck, ...pk.foe.deck]), new Promise((r) => setTimeout(r, 9000))]);
-    $('loadingBar').style.width = '100%';
+    loadingPhase('雙方幻靈進場中…', 55);
+    const ids = [...pk.me.deck, ...pk.foe.deck];
+    const models = view.preload(ids, (done,total) => {
+      if (serial === startSerial && !$('loading').hidden)
+        loadingPhase('已準備 ' + done + '/' + total + ' 位幻靈…', 55 + done / Math.max(1,total) * 39);
+    });
+    await Promise.race([models,new Promise((resolve)=>setTimeout(resolve, 4300))]);
     if (serial !== startSerial) return;
+    loadingPhase('PK 戰場已完成！',100);
+    await nextPaint();
   } catch (e) {
     console.error(e); toast(e.message); $('loading').hidden = true; endPk(); return;
   }
@@ -753,7 +785,7 @@ function bindHand() {
 function hud() {
   if (!game) return;
   $('runPoints').textContent = game.stats.points.toLocaleString();
-  if (pk) $('stageName').textContent = '⚔️ vs ' + (pk.foe?.name || '對手') + '・' + pkClock() + (game.time > PK_RAGE_AT ? '・狂暴！' : '');
+  if (pk) $('stageName').textContent = '⚔️ vs ' + (pk.foe?.name || '對手') + '・' + (pk.arena?.arenaName || '競技場') + '・' + pkClock() + (game.time > PK_RAGE_AT ? '・狂暴！' : '');
   const owned = usableItems().reduce((n, u) => n + u.count, 0);
   $('items').classList.toggle('ready', owned > 0);
   $('itemsCount').textContent = owned ? owned + ' 個' : '無道具';
