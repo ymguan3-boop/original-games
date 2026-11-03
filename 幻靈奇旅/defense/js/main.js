@@ -147,8 +147,15 @@ const deckRed = () => record.deck.filter(isRedCard);
 
 function unitButton({id, trial = false}) {
   const n = record.deck.indexOf(id), sup = SUPPORT[id];
-  const line = sup ? `✨ 技能：${esc(sup.skill)}` : `${esc(roleLabel(id))} · ${shapeLabel(id, false)}`;
-  return `<button class="collectionThumb ${n >= 0 ? 'on' : ''}" data-unit="${id}" title="${esc(sup ? sup.text : '大絕：' + shapeLabel(id, true))}">${trial ? '<span class="trial">體驗</span>' : ''}${n >= 0 ? '<span class="order">✓</span>' : ''}${sup ? '<span class="skilltag">輔助</span>' : ''}${cardHtml(id, {line})}</button>`;
+  const line = id === 'jigglypuff' ? '🥚 選擇道路位置固定放置'
+    : id === 'kyogre' ? '🐟 孵出國王＋皇后可合體'
+    : sup ? `✨ 技能：${esc(sup.skill)}` : `${esc(roleLabel(id))} · ${shapeLabel(id, false)}`;
+  const hint = id === 'jigglypuff'
+    ? '點卡牌再點道路，或拖曳到道路放置。三色蛋不移動；無效位置不消耗卡牌'
+    : id === 'kyogre'
+      ? '小金魚同星相鄰合成，隨機進化金魚國王或皇后；一張國王＋一張皇后相鄰才會合體水蛟龍王'
+      : sup ? sup.text : '大絕：' + shapeLabel(id, true);
+  return `<button class="collectionThumb ${n >= 0 ? 'on' : ''}" data-unit="${id}" title="${esc(hint)}">${trial ? '<span class="trial">體驗</span>' : ''}${n >= 0 ? '<span class="order">✓</span>' : ''}${sup ? '<span class="skilltag">輔助</span>' : ''}${cardHtml(id, {line})}</button>`;
 }
 
 let chart = null;
@@ -245,7 +252,18 @@ function openDeck(picked = null, keepScroll = 0) {
   openModal(`${ribbon('出擊卡組', '🃏')}
     <p class="result-sub">基礎幻靈 ${nb}/${DECK_BASE}・技能卡 ${nr}/${DECK_RED}（職業決定攻擊方式，四名出戰角色搭配兩張技能卡）</p>
     <div class="role-legend">${Object.values(ROLE_META).map((r) => `<span>${r.icon} ${r.label}</span>`).join('')}</div>
-    <div class="panel-scroll"><h3 class="roster-group">基礎幻靈 <small>黃卡、紫卡的未進階幻靈與三色蛋</small></h3><div class="roster">${units.base.map(unitButton).join('') || '<p class="muted">還沒有基礎幻靈，先去轉蛋吧！</p>'}</div>
+    <div class="panel-scroll">
+      <div class="deck-special-rules" aria-label="特殊合體與出場規則">
+        <div class="deck-special-rule">
+          <span class="deck-special-icon" aria-hidden="true">🐟</span>
+          <div><b>水蛟龍王特殊合體</b><p>小金魚合成後，隨機成為<strong>金魚國王</strong>或<strong>金魚皇后</strong>。在手牌中將<strong>國王 ×1 ＋ 皇后 ×1</strong>排成相鄰，才能合體成<strong>水蛟龍王 ★★★</strong>；同種金魚只升星。</p></div>
+        </div>
+        <div class="deck-special-rule">
+          <span class="deck-special-icon" aria-hidden="true">🥚</span>
+          <div><b>三色蛋指定路徑出場</b><p>點選<strong>三色蛋卡牌</strong>，再點選路徑上想放的位置；也能拖曳卡牌到道路放開。放置後不移動，選錯位置不會消耗卡牌。</p></div>
+        </div>
+      </div>
+      <h3 class="roster-group">基礎幻靈 <small>黃卡、紫卡的未進階幻靈與三色蛋</small></h3><div class="roster">${units.base.map(unitButton).join('') || '<p class="muted">還沒有基礎幻靈，先去轉蛋吧！</p>'}</div>
     <h3 class="roster-group">紅卡輔助 <small>點擊施放技能，合成升星</small></h3><div class="roster">${units.red.map(unitButton).join('') || '<p class="muted">紅卡可由轉蛋取得（需先在原探索收錄）。</p>'}</div></div>
     <div id="flipLayer" class="flip-layer" hidden></div>
     <div class="modal-actions center"><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto');
@@ -263,7 +281,9 @@ function openDeck(picked = null, keepScroll = 0) {
   };
   const show = (id) => {
     const inDeck = record.deck.includes(id), s = spirit(id), sup = SUPPORT[id];
-    const line = sup ? '技能：' + esc(sup.skill) : esc(roleLabel(id)) + ' · ' + shapeLabel(id, false);
+    const line = id === 'jigglypuff' ? '🥚 點選位置放置'
+      : id === 'kyogre' ? '🐟 國王＋皇后合體'
+      : sup ? '技能：' + esc(sup.skill) : esc(roleLabel(id)) + ' · ' + shapeLabel(id, false);
     layer.innerHTML = '<div class="flip-scene"><div class="flip-card" data-frame="' + (s.cardFrame || 'yellow') + '">'
       + '<div class="flip-face front"><div class="collectionThumb flip-thumb">' + cardHtml(id, {line}) + '</div></div>'
       + '<div class="flip-face back"><div class="flip-info">' + cardBackHtml(id) + '</div>'
@@ -362,7 +382,7 @@ function showHowTo() {
     ${tip('⏳','大絕錯峰施放', `<p>全場同一時間只允許一個重型大絕啟動；每次間隔至少 ${ULTIMATE_SPACING} 秒。其他幻靈繼續普攻，支援技能與塔上魔王同樣排隊，避免特效同時爆發造成卡頓。</p>`)}
     ${tip('🌤️','固定關卡天氣', `<p>每關開始即固定自己的天空和天氣，戰鬥、受傷、技能和暴擊都不改變天色：</p><div class="weather-grid">${weathers}</div>`)}
     ${tip('🏝️','群島航線', '<p>從初光鎮碼頭出發，依序經過十個主題島；通關後可挑戰下一島，已通關島可重複挑戰。</p>')}
-    ${tip('🃏','卡組與升星', `<p>四張基礎幻靈加兩張技能卡，手牌最多 ${HAND_SIZE} 張；相鄰相同卡合成升星，提升專屬技能效果。場上出戰上限 ${20} 隻。</p>`)}
+    ${tip('🃏','卡組與升星', `<p>四張基礎幻靈加兩張技能卡，手牌最多 ${HAND_SIZE} 張；一般相同卡須相鄰才能合成升星。<b>特殊例外：</b>金魚國王 ×1 ＋ 金魚皇后 ×1 相鄰可合體為水蛟龍王 ★★★，兩張同種金魚只升星；<b>三色蛋</b>點卡後可選道路任意有效位置放置，或拖曳到道路，放下後固定不移動。場上出戰上限 ${20} 隻。</p>`)}
     ${tip('🔮','支援技能卡', `<ul class="mini">${supports}</ul>`)}
     ${tip('🎒','道具', `<p>${Object.values(ITEMS).map((it) => `<span class="chip">${it.icon} ${it.name}</span>`).join('')}</p>`)}
     </div>
@@ -623,26 +643,50 @@ function formRows(id, rank, mul) {
   const row = (tag, title, body) => `<div class="ci-row"><span class="ci-tag ${tag}">${title}</span><div>${body}</div></div>`;
   if (sup) return row('t-job', '職業', '<b>輔助</b>　點擊卡片立即施放技能') + row('t-skill', '技能', `<b>${esc(sup.skill)}</b>　${esc(supportText(sup, k))}`);
   const heal = u && /heal|regen|shield/.test(u.kind || ''), passives = passiveLines(s);
+  const special = id === 'jigglypuff'
+    ? row('t-job','出場方式','<b>指定道路位置・固定防守</b>。點選三色蛋卡牌再點道路，或拖曳卡牌到道路放開；三色蛋本體不移動，取消或點錯位置不扣卡牌。進化成其他幻靈後依一般召喚規則。')
+    : id === 'kyogre'
+      ? row('t-ult','進化分支','<b>同星小金魚 ×2</b>，隨機進化成金魚國王或金魚皇后。兩種金魚皆可出現在後續手牌。')
+      : ['groudon','rayquaza'].includes(id)
+        ? row('t-ult','專屬合體','<b>金魚國王 ×1 ＋ 金魚皇后 ×1</b> 相鄰可直接合體為水蛟龍王 ★★★；同種兩張只升星，無法單獨進化成水蛟龍王。')
+        : id === 'mewtwo'
+          ? row('t-ult','合體來源','<b>只能由金魚國王＋金魚皇后</b>在守護戰手牌中相鄰合體取得；兩張國王或兩張皇后都不會產生水蛟龍王。')
+          : '';
   return row('t-job', '職業', `<b>${esc(roleLabel(id))}</b>`)
+    + special
     + row('t-atk', '普攻', `${shapeLabel(id, false)}・距離 ${r.range.toFixed(1)}<br><small>生命 ${Math.round(s.hp * mul)}・攻擊 ${Math.round(s.attack * mul)}${mul > 1 ? '（×' + mul.toFixed(1) + '）' : ''}</small>`)
     + row('t-ult', '大絕', `<b>${esc(u?.name || s.skills?.[1]?.name || '大絕')}</b>　${esc(u?.description || '專屬技能')}<br><small>威力 ${Math.round((1 + 0.3 * k) * 100)}%${heal ? '・治療量 ' + Math.round((1 + 0.2 * k) * 100) + '%' : ''}・冷卻 ${+ultCooldown(s).toFixed(1)} 秒${s.stage ? '・第 ' + s.stage + ' 階段' : ''}</small>`)
     + row('t-pas', '被動', passives.length ? passives.map(esc).join('<br>') : '無被動能力');
 }
 function cardBackHtml(id) {
   const s = spirit(id), sup = SUPPORT[id];
-  /* the forms at each star: evolutions when there are any (a random branch lists every option), else the same spirit */
+  /* The shared cave table lists the dragon as an ordinary King/Queen successor,
+     but Guard Battle requires one of EACH, so never show the old false
+     "two Kings -> Dragon" recipe on the deck card's ★★★ evolution page. */
   const tiers = [[id]];
   for (let r = 1; r < MAX_RANK; r++) {
-    const next = sup ? [] : [...new Set(tiers[r - 1].flatMap((f) => evolutionsOf(data.evolution, f).filter((e) => spirit(e))))];
+    const next = sup ? [] : [...new Set(tiers[r - 1].flatMap((f) =>
+      ['groudon','rayquaza'].includes(f) ? [f] :
+      evolutionsOf(data.evolution, f).filter((e) => spirit(e))))];
     tiers.push(next.length ? next : tiers[r - 1]);
   }
+  if (id === 'kyogre') tiers[2] = ['groudon','rayquaza','mewtwo'];
   const sections = tiers.map((forms, r) => {
     const evolved = r > 0 && forms !== tiers[r - 1];
-    const growth = r === 0 ? '出場時' : '兩張 ' + '★'.repeat(r) + ' 相鄰合成' + (sup ? '' : evolved ? '・進化' : '・生命攻擊 ×' + (1 + 0.5 * r).toFixed(1));
+    const growth = id === 'kyogre' && r === 1
+      ? '同星小金魚 ×2 → 隨機國王／皇后'
+      : id === 'kyogre' && r === 2
+        ? '國王＋皇后 → 水蛟龍王；同種 ×2 僅升星'
+        : r === 0 ? '出場時' : '兩張 ' + '★'.repeat(r) + ' 相鄰合成' + (sup ? '' : evolved ? '・進化' : '・生命攻擊 ×' + (1 + 0.5 * r).toFixed(1));
     const body = forms.map((f) => (forms.length > 1 ? `<p class="form-name">${esc(spiritName(f))}</p>` : '') + formRows(f, r + 1, evolved ? 1 : sup ? 1 : 1 + 0.5 * r)).join('');
     return `<details class="star-sec"${r === 0 ? ' open' : ''}><summary><span class="ci-tag t-star">${'★'.repeat(r + 1)}</span><b>${esc(forms.map(spiritName).join(' 或 '))}</b><small>${growth}</small></summary>${body}</details>`;
   }).join('');
-  return `<div class="ci-head" data-frame="${s.cardFrame || 'yellow'}"><img src="${picture(id)}" alt=""><div><b>${esc(s.name)}</b><small>${esc(sup ? '紅卡輔助' : roleLabel(id))}・點選星級查看該階段能力</small></div></div>` + sections;
+  const special = id === 'jigglypuff'
+    ? '<div class="deck-special-note">🥚 <b>指定出場位置：</b>點三色蛋卡牌再點道路，或拖曳卡牌到道路；蛋放好後不移動，無效位置不消耗。</div>'
+    : id === 'kyogre'
+      ? '<div class="deck-special-note">🐟 <b>水蛟龍王合體條件：</b>國王 ×1 ＋ 皇后 ×1 相鄰 → 水蛟龍王 ★★★；兩張同種金魚只升星。</div>'
+      : '';
+  return `<div class="ci-head" data-frame="${s.cardFrame || 'yellow'}"><img src="${picture(id)}" alt=""><div><b>${esc(s.name)}</b><small>${esc(sup ? '紅卡輔助' : roleLabel(id))}・點選星級查看該階段能力</small></div></div>` + special + sections;
 }
 function showCardInfo(el, card) {
   const box = $('cardInfo'); box.innerHTML = cardInfoHtml(card); box.hidden = false;
