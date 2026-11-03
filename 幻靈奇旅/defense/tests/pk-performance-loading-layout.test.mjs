@@ -185,7 +185,7 @@ test('top points and four action shortcuts share all available width at phone an
   assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
   assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
   assert.match(top,/sortie-base-warning/);
-  assert.match(html,/weather-hud-v14/,'new assets must bypass cached CSS and 3D view');
+  assert.match(html,/allstage-v16/,'main script needs a new version after weather engine changes');
 });
 
 test('win screen keeps Next Stage button in a fixed accessible footer on landscape phones', () => {
@@ -324,4 +324,22 @@ test('all islands retain authored weather and lighting after boss hits, in solo 
   assert.match(view,/hemi\.intensity !== c\.hemiPower/);
   assert.match(view,/sun\.intensity !== c\.sunPower/);
   assert.doesNotMatch(view,/scene\.background\s*=\s*new THREE\.Color\(0x(?:000000|ffffff)\)/);
+});
+
+test('all stages share localized thunder animations and climate cannot flash screen-wide', () => {
+  const sea=read('../js/seascape.js');
+  const rules=read('../js/rules.js');
+  assert.match(fx,/function lightningStrike\(\{x, z\}\)/);
+  assert.match(fx,/bolt\.name = 'road-weather-lightning'/);
+  assert.doesNotMatch(fx,/function lightning\(\{from, to/,'random screen-high flashing bolts must be removed');
+  assert.doesNotMatch(fx,/y: 13/,'bolt must not begin above the camera');
+  assert.match(fx,/lightningStrike\(\{x, z\}\)/);
+  assert.match(fx,/shockwave\(\{x: center\.x, z: center\.z, color: c2, radius: 4/);
+  assert.match(view,/seascape\.lockWeather\(\)/);
+  assert.match(view,/if \(renderer\.toneMapping !== THREE\.NoToneMapping\)/);
+  assert.match(view,/hemi\.intensity !== c\.hemiPower/);
+  assert.match(view,/sun\.intensity !== c\.sunPower/);
+  assert.match(sea,/function lockWeather\(\)/);
+  assert.match(rules,/state\.stage\.id === 'waterfall'/);
+  assert.match(html,/main\.js\?v=20261104-allstage-v16/);
 });
