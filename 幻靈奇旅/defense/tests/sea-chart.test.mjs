@@ -11,7 +11,7 @@ test('the sea chart is one live 3D scene: the old 2D SVG chart is gone', () => {
   assert.ok(sea.includes('ShaderMaterial') && sea.includes('uTime'), 'animated Three.js ocean');
   assert.ok(sea.includes("'wheel'") && sea.includes('pinch') && sea.includes("data-z=\"in\""), 'wheel, pinch and +/- buttons zoom the chart');
   assert.ok(sea.includes("mode: e.button === 2 || e.shiftKey ? 'orbit' : 'pan'"), 'drag pans, right-drag turns');
-  assert.match(css, /orientation: landscape\) and \(max-height: 520px\) \{\s*#lobby \.sea-wrap \{ right: min\(300px, 40vw\); \}/, 'landscape: the sortie panel has its own column');
+  assert.match(css, /orientation: landscape\) and \(max-height: 560px\) \{\s*#lobby \.sea-wrap \{ right: min\(300px, 40vw\); \}/, 'landscape: the sortie panel has its own column');
 });
 
 test('island cards are larger and turn toward the viewer; the dock has no white square', () => {
