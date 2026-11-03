@@ -20,7 +20,7 @@ export function snapshot(state, events) {
     .map((s) => ({i: s.id, f: s.from, t: s.target, p: s.species, g: s.strong ? 1 : 0, tr: r2(s.travel), re: r2(s.release), et: r2(s.eta), ty: s.profile.type, e: s.element, s: s.side === 'ally' ? 0 : 1}));
   return {t: r2(state.time), f, shots, c: [Math.round(state.crystal.hp), state.crystal.maxHp], n: [Math.round(state.nest.hp), state.nest.maxHp],
     fz: [r2(state.freezeUntil), r2(state.freezeAllyUntil)], sh: [r2(state.shieldUntil), r2(state.shieldEnemyUntil)], ha: [r2(state.hasteUntil), r2(state.hasteEnemyUntil)],
-    hand: state.foe.hand.map((c) => [c.uid, c.species, c.rank]), da: r2(state.foe.dealAt), k: [state.stats.kills, state.foe.kills || 0],
+    hand: state.foe.hand.map((c) => [c.uid, c.species, c.rank]), da: r2(state.foe.dealAt), dr: state.foe.dealRate || 1, db: r2(state.foe.dealBoostUntil || 0), ds: r2(state.foe.dealSlowUntil || 0), k: [state.stats.kills, state.foe.kills || 0],
     ev: events.filter((e) => !HAND_EVENTS.has(e.type) || e.side === 'enemy'), res: state.result};
 }
 
@@ -28,7 +28,7 @@ export function snapshot(state, events) {
 export function createMirror(stage) {
   const path = buildPath(stage.path), half = path.length / 2;
   return {stage, stageIndex: 0, path, left: -half, right: half, time: 0, started: true, duel: true, mirror: true, result: null,
-    fighters: [], shots: [], events: [], traps: [], hand: [], dealAt: 0, dragging: false, itemReady: {}, buffs: {attack: 0, guard: 0},
+    fighters: [], shots: [], events: [], traps: [], hand: [], dealAt: 0, dealRate: 1, dealBoostUntil: 0, dealSlowUntil: 0, dragging: false, itemReady: {}, buffs: {attack: 0, guard: 0},
     crystal: {hp: stage.crystal, maxHp: stage.crystal, x: half}, nest: {hp: stage.nest, maxHp: stage.nest, x: -half},
     freezeUntil: 0, shieldUntil: 0, hasteUntil: 0, stats: {summons: 0, kills: 0, merges: 0, skills: 0, points: 0}, foeKills: 0, byId: new Map()};
 }
@@ -64,7 +64,7 @@ export function applySnapshot(m, snap, onFire) {
   m.crystal.hp = snap.n[0]; m.crystal.maxHp = snap.n[1]; m.nest.hp = snap.c[0]; m.nest.maxHp = snap.c[1];
   m.freezeUntil = snap.fz[1]; m.shieldUntil = snap.sh[1]; m.hasteUntil = snap.ha[1];
   m.hand = snap.hand.map(([uid, species, rank]) => ({uid, species, rank, boost: 0}));
-  m.dealAt = snap.da; m.stats.kills = snap.k[1]; m.foeKills = snap.k[0];
+  m.dealAt = snap.da; m.dealRate = snap.dr || 1; m.dealBoostUntil = snap.db || 0; m.dealSlowUntil = snap.ds || 0; m.stats.kills = snap.k[1]; m.foeKills = snap.k[0];
   for (const e of snap.ev) {
     const v = flipEvent(e);
     m.events.push(v);
