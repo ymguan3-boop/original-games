@@ -16,9 +16,9 @@ test('landscape hand uses screen-height cap and preserves collectible 5:7 aspect
 });
 
 test('six cards always fit common phone landscape screen sizes without covering the center', () => {
-  // The CSS cap is min(80px,17dvh,(100dvw-132px-safe-insets)/6).
+  // The CSS cap is min(80px,17dvh,16.6667dvw - 25px), reserving 150px for controls and safe areas.
   for(const [width,height,safe] of [[667,375,0],[740,360,0],[844,390,34],[915,412,0],[1024,600,0]]) {
-    const cardWidth = Math.min(80,0.17*height,(width-132-safe)/6);
+    const cardWidth = Math.min(80,0.17*height,width/6-25);
     const totalWidth = 6*cardWidth+5*4;
     const cardHeight = cardWidth*7/5;
     assert.ok(totalWidth <= width-68-safe,`card row overflow at ${width}x${height}`);
