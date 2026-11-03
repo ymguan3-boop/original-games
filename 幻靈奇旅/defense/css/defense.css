@@ -1332,3 +1332,10 @@ dialog#modal.deck #modalBody > .modal-actions button {
   dialog#modal.deck .modal-actions button {min-height:39px; padding:5px 16px; font-size:13px;}
   dialog#modal.deck .ribbon span {font-size:18px; padding:5px 20px 7px;}
 }
+
+/* Visible seconds during battle assets preloading. */
+.loading-elapsed {margin:9px auto 0; font-size:12px; font-weight:700; color:#345978; line-height:1.5; text-shadow:0 1px #fff8;}
+@media (orientation:landscape) and (max-height:600px) {
+  .loading-elapsed {margin-top:5px; font-size:11px;}
+  .loading-card {max-height:92dvh; overflow:hidden;}
+}
