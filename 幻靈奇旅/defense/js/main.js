@@ -458,7 +458,9 @@ function renderItems() {
 
 /* ---------- merge: fusion effect, card flip glowing in its frame colour, optional evolution overlay ---------- */
 const FRAME_GLOW = {yellow: 'gold', purple: 'violet', red: 'rose'};
-const burstHtml = () => '<i class="fb-glow"></i><i class="fb-ring"></i>' + Array.from({length: 10}, (_, k) => `<s style="--a:${k * 36 + (k % 2) * 14}deg;--d:${k % 2 ? 58 : 84}px;--z:${k % 3 ? 0.7 : 1}"></s>`).join('') + '<b class="fb-star"><em></em></b>';
+/* Merging keeps the subtle flash and circular ripple; remove the large gold star
+   and flying star-shaped sparks (rank badges on the card itself remain intact). */
+const burstHtml = () => '<i class="fb-glow"></i><i class="fb-ring"></i>';
 function fuse(ev) {
   const glow = FRAME_GLOW[spirit(ev.to).cardFrame || 'yellow'] || 'gold';
   fresh.set(ev.uid, 'merged flip glow-' + glow);
