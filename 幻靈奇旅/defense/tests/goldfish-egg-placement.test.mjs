@@ -126,7 +126,7 @@ test('sortie deck editor, flipped card descriptions, and how-to explain actual f
   assert.match(main,/id === 'kyogre'\) tiers\[2\] = \['groudon','rayquaza','mewtwo'\]/);
   assert.match(main,/國王＋皇后 → 水蛟龍王；同種 ×2 僅升星/);
   assert.match(main,/id === 'jigglypuff'\s*\? '<div class="deck-special-note">/);
-  assert.match(main,/卡組與升星',[ 'how-to also updated' ]);
+  assert.match(main,/卡組與升星/,'how-to also updated');
   assert.match(css,/\.deck-special-rules/);
   assert.match(css,/\.deck-special-note/);
   assert.match(html,/deck-special-v2/);
