@@ -13,6 +13,18 @@ export const STARTER_COUNT = 4;
 const COLORS = ['yellow', 'purple', 'red'];
 /* Items: 40% are trap cards (laid on the road in the island fight), 60% supplies (potion, battery, buffs). Both live in the defense record. */
 export const TRAP_SHARE = 0.4, TRAP_IDS = Object.keys(TRAP_CARDS), SUPPLY_IDS = Object.keys(BAG_ITEMS);
+/* New tactical consumables are rarer than routine healing supplies.
+   Total odds stay at spirits 10% / items 90%; traps 40% / supplies 60% of items. */
+export const SUPPLY_WEIGHTS = Object.freeze({
+  potion: 3, revive: 2, battery: 2, 'buff-attack': 2, 'buff-defense': 2,
+  'card-organize': 2, 'deal-boost': 1, 'deal-jam': 1,
+});
+export function pickSupply(rng = Math.random) {
+  const total = SUPPLY_IDS.reduce((sum, id) => sum + (SUPPLY_WEIGHTS[id] || 1), 0);
+  let p = Math.min(0.999999999999, Math.max(0, rng())) * total;
+  for (const id of SUPPLY_IDS) { p -= SUPPLY_WEIGHTS[id] || 1; if (p < 0) return id; }
+  return SUPPLY_IDS[SUPPLY_IDS.length - 1];
+}
 export const isTrapCard = (id) => id in TRAP_CARDS, isDefenseItem = (id) => id in TRAP_CARDS || id in BAG_ITEMS;
 
 /* Red cards that can be played here are the support legends; 三色蛋 (jigglypuff) is red but counts as a base card. */
@@ -53,7 +65,7 @@ export function rollRewards(pool, owned, count = 1, rng = Math.random) {
       }
     }
     if (rng() < TRAP_SHARE) out.push({kind: 'item', category: 'trap', id: pick(TRAP_IDS, rng), quantity: 1, trap: true});
-    else out.push({kind: 'item', category: 'supply', id: pick(SUPPLY_IDS, rng), quantity: 1});
+    else out.push({kind: 'item', category: 'supply', id: pickSupply(rng), quantity: 1});
   }
   return out;
 }
