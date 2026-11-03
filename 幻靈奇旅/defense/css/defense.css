@@ -1339,3 +1339,104 @@ dialog#modal.deck #modalBody > .modal-actions button {
   .loading-elapsed {margin-top:5px; font-size:11px;}
   .loading-card {max-height:92dvh; overflow:hidden;}
 }
+
+/* 2026-11-03 deck preview restoration: single scroll owner, full 5:7 cards. */
+/* Previously BOTH .panel-scroll and .roster were independently scrollable.
+   Together with the modal's constrained height, mobile WebKit clipped the
+   oversized auto grid tracks: only the edges of the card previews remained. */
+dialog#modal.deck #modalBody > .panel-scroll.deck-card-list {
+  display:block;
+  flex:1 1 auto;
+  min-height:0;
+  max-height:none;
+  width:100%;
+  box-sizing:border-box;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:4px 4px 14px;
+}
+dialog#modal.deck .deck-card-list .roster {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(104px,132px));
+  grid-auto-flow:row;
+  grid-auto-rows:max-content;
+  align-content:start;
+  align-items:start;
+  justify-content:center;
+  gap:10px;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow:visible !important;
+  padding:5px 2px 12px;
+}
+dialog#modal.deck .deck-card-list .roster .collectionThumb {
+  display:block;
+  position:relative;
+  box-sizing:border-box;
+  aspect-ratio:5 / 7;
+  width:100%;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  align-self:start;
+  justify-self:stretch;
+  overflow:visible;
+  flex:none;
+}
+dialog#modal.deck .deck-card-list .roster .collectionThumb .collectionCard {
+  display:block;
+  box-sizing:border-box;
+  aspect-ratio:5 / 7;
+  height:auto;
+  width:100%;
+  max-height:none;
+}
+dialog#modal.deck .deck-card-list > .roster-group {
+  display:block;
+  margin:12px 0 5px;
+  line-height:1.4;
+}
+dialog#modal.deck .deck-special-details {
+  display:block;
+  border:2px solid #c8a16d;
+  border-radius:12px;
+  margin:5px 0 12px;
+  background:#fff8e7;
+  color:#684526;
+  overflow:visible;
+}
+dialog#modal.deck .deck-special-details > summary {
+  display:list-item;
+  cursor:pointer;
+  padding:9px 12px;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.35;
+  user-select:none;
+  touch-action:manipulation;
+}
+dialog#modal.deck .deck-special-details .deck-special-rules {
+  margin:0;
+  padding:0 8px 9px;
+}
+/* Fit at least one COMPLETE card row in landscape. Only the list scrolls,
+   never the individual rosters, and the footer remains outside this scroller. */
+@media (orientation:landscape) and (max-height:600px) {
+  dialog#modal.deck .deck-card-list .roster {
+    grid-template-columns:repeat(auto-fill,minmax(83px,108px));
+    gap:7px;
+    padding:3px 2px 7px;
+  }
+  dialog#modal.deck .deck-special-details {margin:2px 0 6px;}
+  dialog#modal.deck .deck-special-details > summary {padding:5px 9px;font-size:11px;}
+  dialog#modal.deck .deck-card-list > .roster-group {margin:7px 0 3px;font-size:12px;}
+}
+@media (orientation:portrait) and (max-width:540px) {
+  dialog#modal.deck .deck-card-list .roster {
+    grid-template-columns:repeat(auto-fill,minmax(104px,132px));
+    gap:9px;
+  }
+}
