@@ -29,7 +29,7 @@ test('the theme song is the defense BGM and the pause sheet can save and go home
 
 test('boarding the speedboat first gets off the bicycle or deer', () => {
   const game = read('../../js/game.js');
-  assert.ok(game.includes("function sailToDefense(open=''){if(battle||throwing||enterBusy||!harbor||harbor.sailing)return;if(riding()||S.state.mountActive){S.state.mountActive=null;overworldMount?.setMount(null);"));
+  assert.ok(game.includes("function sailToDefense(open=''){if(battle||throwing||enterBusy||!harbor||harbor.sailing)return;S.state.boatmanRushDone=true;if(riding()||S.state.mountActive){S.state.mountActive=null;overworldMount?.setMount(null);"));
 });
 
 test('hero and boss health bars only show for a moment after a hit; weather is painted once and never drifts', () => {
@@ -122,4 +122,12 @@ test('the pause sheet has music and attack-sound shortcuts in the same round but
   assert.ok(main.includes('id="pBgm"') && main.includes('id="pSfx"') && main.includes('function toggleAudioPanel(kind)'));
   assert.ok(main.includes('B.setVolume(') && main.includes('B.setSfxVolume(') && main.includes('B.toggleSfx()'), 'uses the shared town audio settings');
   assert.ok(css.includes('.audio-panel {') && css.includes('#modal button.round.on'));
+});
+
+test('town: the old boatman rushes over near the pier and talks the hero onto the speedboat, only until the first voyage', () => {
+  const game = read('../../js/game.js');
+  assert.ok(game.includes('function tickBoatmanRush(dt)') && game.includes('tickLabEvent(dt);tickBoatmanRush(dt);'));
+  assert.ok(game.includes("if(S.state?.boatmanRushDone||!harbor||!hero)return;") && game.includes("localStorage.getItem('phantom-defense-v1')"), 'never again after the islands were visited');
+  assert.ok(game.includes("if(action==='rush_go'){S.state.boatmanRushDone=true;save();closeDialog();boatmanRush=null;return sailToDefense();}"), 'the last line boards the boat');
+  assert.ok(game.includes('S.state.boatmanRushDone=true;') && /BOATMAN_RUSH_LINES=\[[\s\S]{200,}\]/.test(game), 'a short funny script');
 });
