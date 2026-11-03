@@ -29,6 +29,14 @@ export const SHAPES = {
 };
 const RARITY_HP = {普通: 4.5, 進階: 4.6, 稀有: 4.8, 珍稀: 5, 傳說: 5.5};
 export const HAND_SIZE = 6, MAX_ALLIES = 20, MAX_RANK = 3;
+/* Only Guard Battle uses these special fusion/placement rules.
+   Do not mutate the shared cave evolution table for other game modes. */
+export const GOLDFISH_KING = 'groudon', GOLDFISH_QUEEN = 'rayquaza',
+  WATER_DRAGON = 'mewtwo', THREE_COLOR_EGG = 'jigglypuff';
+export const isThreeColorEgg = (id) => id === THREE_COLOR_EGG;
+export const goldfishPair = (a, b) =>
+  (a === GOLDFISH_KING && b === GOLDFISH_QUEEN) ||
+  (a === GOLDFISH_QUEEN && b === GOLDFISH_KING);
 /* Every summoned spirit (and the boss) has its own cave ultimate on a cooldown, by card frame; the first one is
    ready after ULT_FIRST of the cooldown. The cave "技能冷卻" passive shortens it. */
 export const ULT_CD = {yellow: 10, purple: 11, red: 12, boss: 13}, ULT_FIRST = 0.5;
@@ -220,6 +228,11 @@ function deal(state, side = 'ally') {
    random, like the cave), or the same spirit one star stronger when it has no further form. */
 export function mergeResult(state, card) {
   if (card.rank >= MAX_RANK) return null;
+  /* Two kings or two queens may only rank up the SAME fish. Water Dragon King
+     needs one of each. The shared cave evolution.json is intentionally unchanged. */
+  if ([GOLDFISH_KING, GOLDFISH_QUEEN].includes(card.species)) {
+    return {species: card.species, rank: card.rank + 1, boost: card.boost + 1};
+  }
   const next = isSupport(card.species) ? [] : evolutionsOf(state.evolution, card.species).filter((id) => state.spirits.has(id));
   if (next.length) {
     const to = state.evolution[card.species]?.branch === 'random' ? next[Math.floor(state.random() * next.length)] : next[0];
@@ -235,11 +248,19 @@ function mergeHand(state, side = 'ally') {
     again = false;
     for (let i = 0; i + 1 < hand.length; i++) {
       const a = hand[i], b = hand[i + 1];
-      if (a.species !== b.species || a.rank !== b.rank) continue;
-      const r = mergeResult(state, a); if (!r) continue;
+      const crossFish = goldfishPair(a.species, b.species);
+      if (!crossFish && (a.species !== b.species || a.rank !== b.rank)) continue;
+      /* Unlike ordinary same-form merging, the King + Queen fusion consumes
+         exactly one of each and always produces the final ★★★ Dragon King. */
+      const r = crossFish
+        ? {species: WATER_DRAGON, rank: MAX_RANK, boost: Math.max(a.boost || 0, b.boost || 0)}
+        : mergeResult(state, a);
+      if (!r) continue;
       const merged = {uid: state.nextCard++, ...r};
       hand.splice(i, 2, merged); if (side === 'ally') state.stats.merges++;
-      emit(state, 'merge', {uid: merged.uid, a: a.uid, b: b.uid, index: i, from: a.species, to: merged.species, rank: merged.rank, evolved: merged.species !== a.species, side});
+      emit(state, 'merge', {uid: merged.uid, a: a.uid, b: b.uid, index: i, from: a.species,
+        other: b.species, to: merged.species, rank: merged.rank,
+        evolved: merged.species !== a.species, goldfishFusion: crossFish, side});
       again = true; break;
     }
   }
@@ -258,12 +279,20 @@ export function moveCard(state, from, to, side = 'ally') {
 
 export function canPlay(state, i, side = 'ally') { const c = seatOf(state, side).hand[i]; return !!c && (isSupport(c.species) || alliesOnField(state, side) < unitCap(state)); }
 
-export function playCard(state, i, side = 'ally') {
+export function validEggPosition(state, x) {
+  return !!state && Number.isFinite(x) &&
+    x >= state.left + 0.8 && x <= state.right - 0.8;
+}
+export function playCard(state, i, side = 'ally', laneX = null) {
   const hand = seatOf(state, side).hand, card = hand[i]; if (!card) throw Error('沒有這張卡');
+  /* Never consume a placement card until the player taps a valid road point.
+     Same rule on the host and PK guest's host-authoritative lane. */
+  if (isThreeColorEgg(card.species) && !validEggPosition(state, laneX))
+    throw Error('請先點選路徑上要放置三色蛋的位置');
   if (isSupport(card.species)) castSupport(state, {...card, side});
   else {
     if (alliesOnField(state, side) >= unitCap(state)) throw Error(`場上最多 ${unitCap(state)} 隻幻靈`);
-    spawn(state, side, card.species, {boost: card.boost, rank: card.rank});
+    spawn(state, side, card.species, {boost: card.boost, rank: card.rank, laneX});
     if (side === 'ally') state.stats.summons++;
   }
   hand.splice(i, 1);
@@ -322,19 +351,21 @@ function applySupport(state, card) {
 }
 
 /* ---------- fighters ---------- */
-function spawn(state, side, speciesId, {boss = false, boost = 0, rank = 1} = {}) {
+function spawn(state, side, speciesId, {boss = false, boost = 0, rank = 1, laneX = null} = {}) {
   const spec = state.spirits.get(speciesId), st = fighterStats(spec, state.entries.get(speciesId), side, state.stage.scale, boost, state.duel), ally = side === 'ally', player = ally || state.duel;
   const passiveHp = player || boss ? passivesOf(spec).effects.find((e) => e.effect === 'hp')?.value || 0 : 0;
-  const hp = Math.round(st.hp * (boss ? 5 : 1) * (1 + passiveHp)), knocks = boss ? 4 : st.knockbacks;
+  const hp = Math.round(st.hp * (boss ? 5 : 1) * (1 + passiveHp)),
+    stationary = isThreeColorEgg(speciesId), knocks = stationary ? 0 : boss ? 4 : st.knockbacks;
   /* allies (and the boss) carry their cave passives: stat bonuses plus on-hit status chances */
   const pv = player || boss ? passivesOf(spec).effects : [], p = Object.fromEntries(pv.map((e) => [e.effect, e.value]));
   const ultCd = ultCooldown(spec, boss);
   const f = {id: state.nextId++, side, species: speciesId, role: ROLE_SKILLS[speciesId]?.role || 'warrior', type: spec.type, stage: spec.stage, rank, boss, flying: FLYING.test(spec.model + spec.family),
     ultCd, ultAt: state.time + ultCd * ULT_FIRST, critBonus: p.crit || 0, guard: Math.min(0.5, (p.defense || 0) + (p.reduction || 0)), regen: p.regen || 0,
     reachMul: 1 + (p.range || 0), healMul: 1 + (p.heal || 0), procs: pv.filter((e) => e.effect.startsWith('proc-')).map((e) => ({type: e.effect.slice(5), chance: Math.min(0.65, e.value)})),
-    x: ally ? state.right - 1.5 : state.left + 1.5, z: (state.random() - 0.5) * 1.6, hp, maxHp: hp, attack: st.attack * (boss ? 1.2 : 1) * (1 + (p.attack || 0)), speed: st.speed * (boss ? 0.6 : 1) * (1 + (p.speed || 0)),
+    x: stationary && validEggPosition(state, laneX) ? laneX : ally ? state.right - 1.5 : state.left + 1.5,
+    z: stationary ? 0 : (state.random() - 0.5) * 1.6, stationary, hp, maxHp: hp, attack: st.attack * (boss ? 1.2 : 1) * (1 + (p.attack || 0)), speed: st.speed * (boss ? 0.6 : 1) * (1 + (p.speed || 0)),
     rate: st.rate, profile: st.profile, knockTotal: knocks, knockLeft: knocks, nextKnock: hp * knocks / (knocks + 1),
-    cooldown: 0.4, busyUntil: 0, knockUntil: 0, stunUntil: 0, attacks: 0, kills: 0, statuses: {}, moving: true};
+    cooldown: 0.4, busyUntil: 0, knockUntil: 0, stunUntil: 0, attacks: 0, kills: 0, statuses: {}, moving: !stationary};
   state.fighters.push(f);
   emit(state, 'spawn', {id: f.id, side, boss, rank});
   return f;
@@ -370,6 +401,14 @@ function arrangeHand(state, side = 'ally') {
   const key = (c) => c.species + '#' + c.rank;
   const order = [...new Set(hand.map(key))];
   hand.sort((a, b) => order.indexOf(key(a)) - order.indexOf(key(b)));
+  /* Bring one King and one Queen together, even if the organizer was used
+     while other species were originally between them. */
+  const king = hand.findIndex((c) => c.species === GOLDFISH_KING);
+  const queen = hand.findIndex((c) => c.species === GOLDFISH_QUEEN);
+  if (king >= 0 && queen >= 0 && Math.abs(king - queen) !== 1) {
+    const [mate] = hand.splice(queen, 1);
+    hand.splice(Math.min(king + 1, hand.length), 0, mate);
+  }
   mergeHand(state, side);
   emit(state, 'arrange', {side});
   return true;
@@ -712,6 +751,7 @@ export function step(state, dt) {
     }
     const target = findTarget(state, f, f.profile.reach * (f.reachMul || 1));
     if (target) { f.moving = false; if (f.cooldown <= 0) attack(state, f, target); continue; }
+    if (f.stationary) { f.moving = false; continue; }
     const slow = (f.statuses.slow?.until > state.time ? 0.5 : 1) * (f.trapSlow || 1);
     f.x = Math.max(state.left + 0.8, Math.min(state.right - 0.8, f.x + (f.side === 'ally' ? -1 : 1) * f.speed * slow * dt)); f.moving = true;
   }
