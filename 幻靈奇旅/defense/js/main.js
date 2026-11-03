@@ -34,8 +34,8 @@ const THEME_SCENE = 'theme';
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 let data, record, view, audio, game = null, speed = 1, paused = false, last = 0, acc = 0, lastImpact = 0;
 let pendingDealingScene = null, visibleSceneFrames = 0, startSerial = 0, bossIntroTimer = null;
-/* merged cards that are playing their evolution in their own frame: uid -> {from, to, start} */
-const evolvingCards = new Map(), EVO_TIME = 2.4;
+/* Evolution-card overlays are permanently disabled in solo and PK matches.
+   Merge / star promotion mechanics and the short merge-glow effect remain unchanged. */
 /* PK: the live match's session (role 'host' runs the battle, 'guest' shows a mirror of it), and the lobby */
 let pk = null, pkLobby = null;
 
@@ -675,16 +675,9 @@ function renderHand() {
     const line = isThreeColorEgg(c.species) ? '🥚 點選後放在路徑上'
       : ['groudon','rayquaza'].includes(c.species) ? '🐟 國王＋皇后合體水蛟龍王'
       : sup ? `✨ 技能：${esc(sup.skill)}` : `${esc(roleLabel(c.species))} · ${shapeLabel(c.species, false)}`;
-    return `<button class="hand-card ${sup ? 'support' : ''} ${isThreeColorEgg(c.species) ? 'egg-lane-card' : ''} ${placing?.type === 'egg' && placing.uid === c.uid ? 'egg-selected' : ''} ${canPlay(game, i) ? '' : 'disabled'} ${anim}" data-uid="${c.uid}" title="${esc(sup ? sup.text : spirit(c.species).name + '・大絕' + shapeLabel(c.species, true))}"><span class="stars stars-${spirit(c.species).cardFrame || 'yellow'}">${'<i>★</i>'.repeat(c.rank)}</span>${sup ? '<span class="badge">技能</span>' : ''}${cardHtml(c.species, {line})}${evoOverlay(c.uid)}</button>`;
+    return `<button class="hand-card ${sup ? 'support' : ''} ${isThreeColorEgg(c.species) ? 'egg-lane-card' : ''} ${placing?.type === 'egg' && placing.uid === c.uid ? 'egg-selected' : ''} ${canPlay(game, i) ? '' : 'disabled'} ${anim}" data-uid="${c.uid}" title="${esc(sup ? sup.text : spirit(c.species).name + '・大絕' + shapeLabel(c.species, true))}"><span class="stars stars-${spirit(c.species).cardFrame || 'yellow'}">${'<i>★</i>'.repeat(c.rank)}</span>${sup ? '<span class="badge">技能</span>' : ''}${cardHtml(c.species, {line})}</button>`;
   }).join('');
   fresh.clear();
-}
-/* The original evolution beat (old and new form flashing as white silhouettes, then a burst) played over the
-   card art. A negative animation delay keeps it running smoothly when the hand re-renders mid-animation. */
-function evoOverlay(uid) {
-  const e = evolvingCards.get(uid); if (!e) return '';
-  const t = (performance.now() - e.start) / 1000; if (t >= EVO_TIME) { evolvingCards.delete(uid); return ''; }
-  return `<span class="evo-anim" style="--t:-${t.toFixed(2)}s"><img class="evo-old" src="${picture(e.from)}" alt=""><img class="evo-new" src="${picture(e.to)}" alt=""><i class="evo-flash"></i><i class="evo-rays"></i><b class="evo-label">進化！</b></span>`;
 }
 const indexOfUid = (uid) => game.hand.findIndex((c) => c.uid === uid);
 function play(uid) {
@@ -884,7 +877,6 @@ function hud() {
   const fill = $('dealFill').parentElement;
   fill.title = game.dealRate > 1 ? '疾速發牌中（速度加倍）' : game.dealRate < 1 ? '發牌受到干擾（速度減半）' : '正常發牌速度';
   $('speed').textContent = '×' + speed; $('pause').textContent = paused ? '▶' : '❚❚';
-  $('evoToggle').textContent = record.evoAnim === false ? '進化動畫：關' : '進化動畫：開'; $('evoToggle').classList.toggle('on', record.evoAnim !== false);
   renderHand();
 }
 
@@ -1012,7 +1004,7 @@ function bindPlacement() {
   });
 }
 
-/* ---------- merge: fusion effect, card flip glowing in its frame colour, optional evolution overlay ---------- */
+/* ---------- merge: short card fusion glow only, no evolution overlay ---------- */
 const FRAME_GLOW = {yellow: 'gold', purple: 'violet', red: 'rose'};
 /* Merging keeps the subtle flash and circular ripple; remove the large gold star
    and flying star-shaped sparks (rank badges on the card itself remain intact). */
@@ -1035,10 +1027,6 @@ function fuse(ev) {
   } else if (hand.width) {
     const burst = document.createElement('div'); burst.className = 'fusion-burst small glow-' + glow; burst.innerHTML = burstHtml();
     Object.assign(burst.style, {left: hand.left + hand.width / 2 + 'px', top: hand.top + hand.height / 2 + 'px'}); document.body.append(burst); setTimeout(() => burst.remove(), 1100);
-  }
-  if (ev.evolved && record.evoAnim !== false) {
-    evolvingCards.set(ev.uid, {from: ev.from, to: ev.to, start: performance.now()});
-    setTimeout(() => { if (evolvingCards.delete(ev.uid)) $('hand').querySelector(`[data-uid="${ev.uid}"] .evo-anim`)?.remove(); }, EVO_TIME * 1000);
   }
 }
 
@@ -1127,7 +1115,6 @@ function bindHud() {
   addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && placing?.type === 'egg') endPlacing();
   });
-  $('evoToggle').onclick = () => { record.evoAnim = record.evoAnim === false; saveRecord(); hud(); toast(record.evoAnim ? '合成進化時，卡片裡會播放進化動畫' : '已關閉進化動畫，合成時只播放卡片特效'); };
   $('pause').onclick = () => { if (pk) { openPkPause(); return; } paused = true; openPause(); hud(); };
   addEventListener('pointerdown', () => audio?.unlock?.(), {capture: true});
   addEventListener('keydown', (e) => {
@@ -1292,6 +1279,9 @@ async function renderChartArt() {
 async function init() {
   initIcons();
   record = readJson(SAVE_KEY, {}) || {};
+  /* Retire old persisted preference: old save games must never turn
+     the removed animation back on. */
+  if ('evoAnim' in record) { delete record.evoAnim; saveRecord(); }
   if (!Number.isInteger(record.stage)) record.stage = 0;
   record.cleared = record.cleared || {}; record.owned = record.owned || []; record.best = record.best || {};
   /* earlier versions kept trap cards in record.traps and supplies in the cave bag: fold them into the one island bag */
