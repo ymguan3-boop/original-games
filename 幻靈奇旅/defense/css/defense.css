@@ -2063,6 +2063,9 @@ dialog#modal.stage-result .stage-result-actions #nextStage {
   body.pk-mode #hud .hud-top .hud-actions #pause {height:46px;min-height:46px;}
 }
 
+/* PK pauses at normal speed; the speed button remains hidden after layout overrides. */
+body.pk-mode #hud .hud-top #speed {display:none;}
+
 /* Short landscape phones: all controls stay in one fixed top row; preserve
    a readable two-line stage/weather label and 40px minimum touch targets. */
 @media (orientation:landscape) and (max-height:700px) {
