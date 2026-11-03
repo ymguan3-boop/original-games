@@ -1,6 +1,6 @@
 /* One user-supplied soundtrack at a time; gesture-gated mobile playback. */
 (()=>{'use strict';
-const script=document.currentScript,base=new URL('../assets/audio/',script?.src||location.href),tracks={general:'general.mp3',arena:'arena.mp3',challenge:'challenge.mp3'};
+const script=document.currentScript,base=new URL('../assets/audio/',script?.src||location.href),tracks={theme:'theme.mp3',general:'general.mp3',arena:'arena.mp3',challenge:'challenge.mp3'};
 const audio=new Audio();audio.loop=true;audio.preload='metadata';let bgmVolume=27;try{const saved=localStorage.getItem('phantom-bgm-volume');if(saved!==null&&Number.isFinite(+saved))bgmVolume=Math.max(0,Math.min(100,Math.round(+saved)));}catch{}audio.volume=bgmVolume/100;
 let mixGain=1,mixCeiling=1,attackDuck=1,duckTimer=null;
 function mixVolume(){audio.volume=Math.max(0,Math.min(mixCeiling,bgmVolume/100*mixGain))*attackDuck;}

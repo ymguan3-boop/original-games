@@ -55,7 +55,7 @@ md += `## 語音檔
 - 資料欄位（每位魔王的 \`voice\`）：\`voiceName\`、\`voiceKey\`、\`genderFeel\`、\`ageFeel\`、\`tone\`、\`speed\`、\`emotion\`、\`pitch\`、\`rate\`、\`notes\`、\`audioFile\`、\`ttsText\`。
 - 播放：遊戲讀 \`defense/audio/boss/<voiceKey>.mp3\`；播放時 BGM 自動壓低。若檔案不存在，退回瀏覽器內建的 zh-TW 語音朗讀同一句（音調與語速依 pitch / rate 換算）。尊重「音效靜音」設定。
 - 產生：\`defense/tools/make-boss-voices.cjs\` 使用 Edge 神經語音 zh-TW-YunJheNeural（雲哲）產生男聲；水仙子用 zh-TW-HsiaoChenNeural（女聲）。需要先 \`npm i ws\` 再 \`node defense/tools/make-boss-voices.cjs\`（可只指定部分，例如 \`... meadow pond\`）。台詞或聲音改了就重跑一次。
-- 背景音樂：守護戰的選島畫面與戰鬥都播放本遊戲主題曲（\`assets/audio/general.mp3\`）。
+- 背景音樂：守護戰的選島畫面與戰鬥都播放本遊戲主題曲（\`assets/audio/theme.mp3（初光之境）\`）。
 `;
 writeFileSync(join(docs, '十關魔王語音與對話設計.md'), md);
 

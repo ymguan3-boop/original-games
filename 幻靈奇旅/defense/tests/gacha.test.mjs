@@ -44,8 +44,11 @@ test('summons spend the shared cave points, refund duplicates and put items in t
   const res = drawWithStore(store, p, [p.yellow[0]], 1, seq(0.0, 0.0));
   assert.equal(res.value[0].id, p.yellow[0]); assert.ok(res.value[0].duplicate);
   assert.equal(store.state.points, 250 - DRAW_COST + 50, 'yellow duplicate refunds 50 like the cave');
-  const item = drawWithStore(store, p, [], 1, seq(0.5, 0.0)).value[0];
+  const item = drawWithStore(store, p, [], 1, seq(0.5, 0.9, 0.0)).value[0];
   assert.equal(item.kind, 'item'); assert.ok(store.state.inventory[item.id] >= 1);
+  /* a trap card draw is not written to the cave bag: the island fight keeps its own stock */
+  const trap = drawWithStore(store, p, [], 1, seq(0.5, 0.0, 0.0)).value[0];
+  assert.ok(trap.trap && /^trap-/.test(trap.id) && !(trap.id in store.state.inventory), 'trap cards stay out of the cave bag');
   assert.throws(() => drawWithStore(store, p, [], 10), /點數不足/);
 });
 

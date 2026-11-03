@@ -38,6 +38,21 @@ export const TRAPS = {
   geyser: {name: '間歇泉', every: 4.5, radius: 1.5, damage: 0.12, knock: 2},
 };
 export const TRAP_WARN = 0.8;
+/* Road traps are not part of the island any more: they exist only where the player lays a trap card (a gacha item, limited
+   in number) on the road, and they vanish after TRAP_LIFE seconds. At most MAX_TRAPS are active at once. */
+export const TRAP_LIFE = 60, MAX_TRAPS = 6, TRAP_ZONE_HALF = 2.2;
+export const TRAP_CARDS = Object.fromEntries(Object.entries({
+  mud: ['🟤', '範圍內的魔物與幻靈速度減半'], whirl: ['🌀', '範圍內的速度只剩約三分之一'], rune: ['🔯', '範圍內的單位受到的傷害 +20%'],
+  poison: ['🍄', '範圍內的單位持續中毒'], spike: ['📍', '每 3 秒刺傷附近單位'], shock: ['⚡', '每 3.5 秒電擊並短暫暈眩'], geyser: ['⛲', '每 4.5 秒噴發，擊退並重創附近單位'],
+}).map(([kind, [icon, text]]) => ['trap-' + kind, {kind, icon, name: TRAPS[kind].name + '陷阱卡', text: text + '（放置後持續 ' + TRAP_LIFE + ' 秒）'}]));
+/* Gacha supplies usable in the island fight (the rest of the cave bag, such as balls, has no use here). */
+export const BAG_ITEMS = {
+  potion: {icon: '🧪', name: '治療藥水', text: '我方全體幻靈回復 40% 生命，基地回復 8%'},
+  revive: {icon: '💖', name: '緊急復甦藥', text: '我方全體幻靈回復 20% 生命，基地回復 50%'},
+  battery: {icon: '🔋', name: '幻靈大絕電池', text: '我方全體幻靈的大絕立刻充滿'},
+  'buff-attack': {icon: '⚔️', name: '攻擊增幅', text: '本關我方攻擊 +10%（最多 +100%）'},
+  'buff-defense': {icon: '🛡️', name: '防禦增幅', text: '本關我方減傷 +10%（最多 +50%）'},
+};
 const FLYING = /avian-evolution|moon-owl|green-eye-bat|light-phoenix/;
 /* Free trial cards so the mode is playable before the cave collection has enough spirits. */
 export const TRIAL_BASE = ['charmander', 'squirtle', 'bulbasaur', 'cyndaquil', 'piplup'];
@@ -147,7 +162,7 @@ export function createGame({stageIndex = 0, deck, spirits, catalog = {}, evoluti
     deck: deck.filter((id) => spiritMap.has(id)).slice(0, DECK_SIZE), hand: [], dealAt: DEAL_EVERY, nextCard: 1, started: !deferDeal,
     left: -half, right: half, time: 0, itemReady: Object.fromEntries(Object.entries(ITEMS).map(([k, v]) => [k, v.cooldown / 2])), pendingSkills: [], pendingBoss: [], bossSkillAt: BOSS_SKILL_FIRST, nextUltimateAt: 0, freezeUntil: 0, shieldUntil: 0, hasteUntil: 0,
     crystal: {hp: stage.crystal, maxHp: stage.crystal, x: half}, nest: {hp: stage.nest, maxHp: stage.nest, x: -half},
-    traps: (stage.traps || []).map((t, i) => ({...TRAPS[t.kind], kind: t.kind, x: -half + t.at * path.length, half: (t.len || 0) * path.length / 2, next: 3 + i * 0.7})),
+    traps: [], buffs: {attack: 0, guard: 0},
     fighters: [], shots: [], events: [], nextId: 1, spawnAt: stage.groups.map((g) => g.start), spawned: stage.groups.map(() => 0), bossOut: false,
     stats: {summons: 0, kills: 0, merges: 0, skills: 0, points: 0}, result: null,
   };
@@ -303,6 +318,31 @@ function spawn(state, side, speciesId, {boss = false, boost = 0, rank = 1} = {})
   return f;
 }
 
+/* Lay a trap card on the road at lane coordinate x. Returns the trap, or null when the spot or the count is not allowed. */
+export function placeTrap(state, kind, x) {
+  if (!TRAPS[kind] || state.result || !Number.isFinite(x)) return null;
+  if (x < state.left + 1.5 || x > state.right - 1.5) return null;
+  if (state.traps.filter((t) => !t.expired).length >= MAX_TRAPS) return null;
+  const t = {...TRAPS[kind], kind, x, half: TRAPS[kind].zone ? TRAP_ZONE_HALF : 0, next: state.time + 1.5, expires: state.time + TRAP_LIFE, placedAt: state.time};
+  state.traps.push(t); emit(state, 'trapPlaced', {index: state.traps.length - 1, kind, x});
+  return t;
+}
+
+/* Use a gacha supply from the bag. The caller removes one from the bag when this returns true. */
+export function useBagItem(state, id) {
+  if (!BAG_ITEMS[id] || state.result) return false;
+  const allies = state.fighters.filter((f) => f.side === 'ally' && f.hp > 0);
+  if (id === 'potion' || id === 'revive') {
+    const k = id === 'potion' ? 0.4 : 0.2, c = id === 'potion' ? 0.08 : 0.5;
+    for (const a of allies) a.hp = Math.min(a.maxHp, a.hp + a.maxHp * k);
+    state.crystal.hp = Math.min(state.crystal.maxHp, state.crystal.hp + state.crystal.maxHp * c);
+  } else if (id === 'battery') { for (const a of allies) a.ultAt = Math.min(a.ultAt, state.time); state.nextUltimateAt = Math.min(state.nextUltimateAt, state.time); }
+  else if (id === 'buff-attack') state.buffs.attack = Math.min(1, state.buffs.attack + 0.1);
+  else if (id === 'buff-defense') state.buffs.guard = Math.min(0.5, state.buffs.guard + 0.1);
+  emit(state, 'bagItem', {id});
+  return true;
+}
+
 export function itemReady(state, id) { return state.time >= state.itemReady[id]; }
 
 export function useItem(state, id) {
@@ -345,8 +385,8 @@ function knock(state, f, distance = 1.6) {
 function hurt(state, f, amount, element, source, strong = false, crit = false, kind = null) {
   if (f.hp <= 0) return 0;
   if (f.side === 'ally' && state.shieldUntil > state.time) { emit(state, 'hit', {id: f.id, amount: 0, element, blocked: true}); return 0; }
-  let dealt = amount * (f.statuses.weaken?.until > state.time ? 1.2 : 1) *
-    (1 - Math.min(0.75, (f.guard || 0) + (f.extraGuardUntil > state.time ? (f.extraGuard || 0) : 0)));
+  let dealt = amount * (f.statuses.weaken?.until > state.time ? 1.2 : 1) * (source?.side === 'ally' ? 1 + state.buffs.attack : 1) *
+    (1 - Math.min(0.75, (f.guard || 0) + (f.side === 'ally' ? state.buffs.guard : 0) + (f.extraGuardUntil > state.time ? (f.extraGuard || 0) : 0)));
   if (f.barrierHp > 0) { const blocked = Math.min(f.barrierHp, dealt); f.barrierHp -= blocked; dealt -= blocked; }
   f.hp = Math.max(0, f.hp - dealt);
   if (amount >= 1) emit(state, 'hit', {id: f.id, amount: dealt, element, strong, crit, kind});
@@ -513,6 +553,8 @@ function info(shot) { return {from: shot.from, target: shot.target, species: sho
 function runTraps(state, dt) {
   for (const f of state.fighters) f.trapSlow = 1;
   state.traps.forEach((t, i) => {
+    if (t.expired) return;
+    if (state.time >= t.expires) { t.expired = true; emit(state, 'trapGone', {index: i, kind: t.kind}); return; }
     const inside = (f, r) => f.hp > 0 && Math.abs(f.x - t.x) <= r;
     if (t.zone) {
       for (const f of state.fighters) {

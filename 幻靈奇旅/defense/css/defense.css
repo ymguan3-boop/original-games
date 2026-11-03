@@ -324,30 +324,17 @@ button.big { padding: 12px 28px; font-size: 17px; }
 
 /* ---------- 幻靈群島 sea chart lobby ---------- */
 #lobby { padding: 0; overflow: hidden; background: #2a86c4; }
-.sea-wrap { position: absolute; inset: 0; display: grid; place-items: center; }
-.sea-chart { width: 100%; height: 100%; display: block; overflow: visible; }
-.sea-chart .waves-a { animation: seaDrift 9s linear infinite; }
-@keyframes seaDrift { to { transform: translateX(-60px); } }
-.sea-chart .lane { fill: none; stroke: rgba(255, 255, 255, .78); stroke-width: 4; stroke-dasharray: 2 12; stroke-linecap: round; }
-.isle { cursor: pointer; outline: none; }
-.isle .fogged { filter: url(#locked); }
-.isle.is-locked { cursor: not-allowed; opacity: .82; }
-.isle:not(.is-locked):hover > g:first-of-type, .isle:not(.is-locked):focus-visible > g:first-of-type { transform: translateY(-3px); }
-.isle > g { transition: transform .2s; }
-.isle-ring { fill: none; stroke: #fff4a8; stroke-width: 4; stroke-dasharray: 10 8; animation: ringSpin 6s linear infinite; transform-box: fill-box; transform-origin: center; }
-@keyframes ringSpin { to { transform: rotate(360deg); } }
-.isle-icon { font-size: 34px; dominant-baseline: middle; pointer-events: none; }
-.isle-flag { font-size: 22px; pointer-events: none; }
-.isle-boss { pointer-events: none; }
-.isle-label rect { fill: rgba(28, 46, 72, .78); stroke: rgba(255, 255, 255, .7); stroke-width: 1.5; }
-.isle.is-selected .isle-label rect { fill: #f2a516; stroke: #fff; }
-.isle-name { font: 700 14px var(--font); fill: #fff; }
-.home-name { font-size: 13px; fill: #fff; paint-order: stroke; stroke: rgba(28, 46, 72, .8); stroke-width: 4px; }
-.boat-bob { animation: boatBob 1.6s ease-in-out infinite; }
-@keyframes boatBob { 50% { transform: translateY(-3px) rotate(-2deg); } }
-.sea-wrap.sailing .wake { animation: wakePulse .5s ease-out infinite; }
-.wake { opacity: 0; } .sea-wrap.sailing .wake { opacity: 1; }
-@keyframes wakePulse { from { transform: scaleX(.6); opacity: .9; } to { transform: scaleX(1.5); opacity: 0; } }
+.sea-wrap { position: absolute; inset: 0; overflow: hidden; }
+.sea-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; outline: none; user-select: none; -webkit-user-select: none; }
+.sea-tags { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.isle-tag { position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer; white-space: nowrap; padding: 4px 13px; border-radius: 999px; border: 2px solid rgba(255, 255, 255, .75); background: rgba(28, 46, 72, .82); color: #fff; font: 700 14px/1.2 var(--font); box-shadow: 0 3px 8px rgba(8, 30, 60, .35); will-change: transform; touch-action: manipulation; }
+.isle-tag.is-selected { background: #f2a516; border-color: #fff; color: #3a2606; }
+.isle-tag.is-locked { background: rgba(60, 80, 104, .78); color: #dbe6f2; cursor: not-allowed; }
+.isle-tag.home-tag { background: rgba(120, 78, 36, .86); font-size: 13px; }
+.isle-tag:hover:not(.is-locked) { filter: brightness(1.08); }
+.sea-zoom { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; z-index: 3; }
+.sea-zoom button { width: 40px; height: 40px; border-radius: 12px; border: 2px solid #fff; background: rgba(28, 46, 72, .72); color: #fff; font: 700 20px/1 var(--font); cursor: pointer; box-shadow: 0 3px 8px rgba(8, 30, 60, .35); touch-action: manipulation; }
+.sea-zoom button:active { transform: translateY(1px); background: rgba(242, 165, 22, .9); }
 
 .chart-head { position: absolute; left: 12px; right: 12px; top: 10px; display: flex; align-items: center; gap: 10px; pointer-events: none; z-index: 2; }
 .chart-head > * { pointer-events: auto; }
@@ -429,8 +416,6 @@ button.tool.small { padding: 6px 10px; font-size: 13px; }
 .boatman-card { display: flex; gap: 12px; align-items: center; padding: 8px 4px 12px; }
 .boatman-card img { width: 78px; height: 104px; object-fit: cover; border-radius: 14px; box-shadow: 0 0 0 3px #fff, 0 0 0 5px #e0a64c; flex: none; }
 .boatman-card p { margin: 0; line-height: 1.6; font-size: 14px; }
-.home-hit { cursor: pointer; outline: none; }
-.home-hit:hover image, .home-hit:focus-visible image { filter: brightness(1.06); }
 
 
 /* 2026-11-02 mobile portrait chart and warm outlined game controls */
@@ -466,7 +451,6 @@ button.tool.small { padding: 6px 10px; font-size: 13px; }
     left: 0; right: 0;
     overflow: hidden;
   }
-  #lobby .sea-chart { width: 100%; height: 100%; }
   #lobby .chart-head { top: max(8px, env(safe-area-inset-top)); gap: 4px 8px; }
   #lobby .chart-head .logo { width: 40px; }
   #lobby .chart-head h1 { font-size: 19px; }
@@ -494,10 +478,9 @@ button.tool.small { padding: 6px 10px; font-size: 13px; }
   #lobby .isle-deck { grid-area:deck; justify-content:flex-end; }
   #lobby .isle-deck .tool { font-size:11px; white-space:nowrap; padding:7px 8px; }
   #lobby .isle-card > button.wide { grid-area:start; min-height:44px; font-size:19px; padding:6px; border-radius:13px; }
-  .isle.is-locked { opacity:.95; }
-  .isle .fogged { filter: grayscale(.4) brightness(.85); }
 }
 @media (orientation: landscape) and (max-height: 520px) {
+  #lobby .sea-wrap { right: min(300px, 40vw); }
   #lobby .chart-head h1 {font-size:19px;}
   #lobby .isle-panel {bottom:7px;right:7px;max-height:80dvh;overflow:auto;width:min(280px,38vw);}
   #lobby .isle-card {padding:8px;gap:5px;}
@@ -906,4 +889,23 @@ html.pseudo-fs body { position:fixed; inset:0; width:100%; }
   #hud .item-wrap #items small { font-size: 8px; line-height: 1.05; }
   /* The item menu is right-anchored and must fit within a short phone viewport. */
   #hud .item-menu { max-height: 65dvh; overflow-y: auto; overscroll-behavior: contain; }
+}
+button.wide.savehome { width: 100%; flex: none; margin-top: 8px; min-height: 46px; font-size: 17px; background: linear-gradient(#fff6d8, #ffe39a); color: #6a4a1a; border: 2px solid #c79a46; }
+/* Items and trap cards: a scrolling list with counts, and a crosshair while a trap card is being placed. */
+.item-menu { max-height: min(64dvh, 470px); overflow-y: auto; overscroll-behavior: contain; }
+.item-head { margin: 4px 2px 0; font-size: 12px; font-weight: 700; color: #8a6f50; }
+.trap-art { display: grid; place-items: center; width: 100%; height: 100%; font-size: 42px; line-height: 1; }
+body.placing-trap #world { cursor: crosshair; }
+body.placing-trap #items { outline: 3px solid #ffd84a; }
+/* The deal meter, points badge, round buttons and the full-screen toggle in the top bar share one height. */
+#hud .hud-top .stat.deal, #hud .hud-top .stat.pts, #hud .hud-top .hud-actions button, #hud .hud-top .fs-toggle { box-sizing: border-box; height: 40px; min-height: 40px; padding-top: 0; padding-bottom: 0; display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+#hud .hud-top .hud-actions button, #hud .hud-top .fs-toggle { min-width: 40px; }
+@media (max-width: 720px), (max-height: 520px) {
+  #hud .hud-top .stat.deal, #hud .hud-top .stat.pts, #hud .hud-top .hud-actions button, #hud .hud-top .fs-toggle { height: 34px; min-height: 34px; }
+  #hud .hud-top .hud-actions button, #hud .hud-top .fs-toggle { min-width: 34px; }
+}
+@media (max-width: 720px), (max-height: 520px) {
+  .isle-tag { padding: 2px 8px; font-size: 11px; border-width: 1.5px; }
+  .isle-tag.home-tag { font-size: 10px; }
+  .sea-zoom button { width: 34px; height: 34px; font-size: 17px; border-radius: 10px; }
 }

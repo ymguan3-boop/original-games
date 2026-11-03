@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {SPOTS, MOBILE_SPOTS} from '../js/islands.js';
+import {SPOTS, MOBILE_SPOTS} from '../js/sea3d.js';
 
 /* Stage ordering must stay aligned with STAGES; the ferry must never skip an island. */
 test('desktop and portrait maps contain ten reachable stages in the same order', () => {

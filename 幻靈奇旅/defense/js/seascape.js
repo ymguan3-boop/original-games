@@ -34,17 +34,19 @@ export const weatherOf = (theme) => WEATHER[theme] || WEATHER.meadow;
 const CLOUD = {white: ['#ffffff', 9, 1], soft: ['#f4f8fb', 12, .9], few: ['#ffffff', 4, 1], grey: ['#d3dbe2', 15, .95], dusk: ['#ffe2cc', 9, .85], night: ['#5a6494', 5, .55], storm: ['#4a5566', 18, .95]};
 
 /* the painted sky: gradient, sun / moon / stars, layered puffy clouds; tiles horizontally so it can drift */
-function paintSky(w) {
+function paintSky(w, seed = 1) {
+  /* a seeded generator: the same island always paints the very same sky, clouds and stars */
+  let r = seed >>> 0; const rnd = () => { r = (r + 0x6D2B79F5) >>> 0; let t = r; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   const c = document.createElement('canvas'); c.width = 2048; c.height = 1024;
   const g = c.getContext('2d'), grad = g.createLinearGradient(0, 0, 0, c.height);
   grad.addColorStop(0, w.sky[0]); grad.addColorStop(0.55, w.sky[1]); grad.addColorStop(1, w.sky[2]);
   g.fillStyle = grad; g.fillRect(0, 0, c.width, c.height);
-  if (w.stars) for (let i = 0; i < w.stars; i++) { g.fillStyle = `rgba(255,255,255,${0.4 + Math.random() * 0.6})`; const s = Math.random() < 0.1 ? 3 : 1.6; g.fillRect(Math.random() * c.width, Math.random() * c.height * 0.7, s, s); }
+  if (w.stars) for (let i = 0; i < w.stars; i++) { g.fillStyle = `rgba(255,255,255,${0.4 + rnd() * 0.6})`; const s = rnd() < 0.1 ? 3 : 1.6; g.fillRect(rnd() * c.width, rnd() * c.height * 0.7, s, s); }
   if (w.sun) { const sg = g.createRadialGradient(1500, 190, 10, 1500, 190, 170); sg.addColorStop(0, 'rgba(255,252,220,1)'); sg.addColorStop(0.35, 'rgba(255,240,170,.9)'); sg.addColorStop(1, 'rgba(255,240,170,0)'); g.fillStyle = sg; g.fillRect(1300, 0, 400, 400); }
   if (w.moon) { g.fillStyle = '#fff4d0'; g.beginPath(); g.arc(1560, 170, 64, 0, Math.PI * 2); g.fill(); g.fillStyle = w.sky[0]; g.beginPath(); g.arc(1590, 150, 58, 0, Math.PI * 2); g.fill(); }
   const [color, count, alpha] = CLOUD[w.clouds] || CLOUD.white;
   for (let i = 0; i < count; i++) {
-    const x = Math.random() * c.width, y = 80 + Math.random() * c.height * 0.6, s = 0.6 + Math.random() * 0.9;
+    const x = rnd() * c.width, y = 80 + rnd() * c.height * 0.6, s = 0.6 + rnd() * 0.9;
     for (const dx of [0, c.width]) {
       /* a flat-bottomed puff: shaded underside, then the bright body */
       g.globalAlpha = alpha * 0.5; g.fillStyle = w.storm ? '#2c3442' : 'rgba(150,170,195,1)';
@@ -66,7 +68,7 @@ export function createSeascape(THREE, scene, kit) {
     dispose();
     w = weatherOf(theme);
     group = new THREE.Group(); group.name = 'Seascape'; scene.add(group);
-    skyTex = new THREE.CanvasTexture(paintSky(w)); skyTex.encoding = THREE.sRGBEncoding; skyTex.wrapS = THREE.RepeatWrapping; skyTex.repeat.set(0.5, 1);
+    skyTex = new THREE.CanvasTexture(paintSky(w, [...String(theme)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7))); skyTex.encoding = THREE.sRGBEncoding; skyTex.wrapS = THREE.RepeatWrapping; skyTex.repeat.set(0.5, 1);
     scene.background = skyTex; scene.fog = null;
     /* a ring of sea around the island that fades out into the sky (alpha map: solid inside, soft edge) */
     const [rx, rz] = island, sx = rx + 16, sz = rz + 13;
@@ -94,7 +96,7 @@ export function createSeascape(THREE, scene, kit) {
   function update(dt) {
     if (!group) return;
     time += dt;
-    skyTex.offset.x = (skyTex.offset.x + dt * (w.storm ? 0.006 : 0.0025)) % 1;
+    /* the sky is painted once and never drifts: the weather of an island stays exactly as it was */
     const pos = sea.geometry.attributes.position, a = pos.array, amp = w.storm ? 0.4 : 0.18;
     for (let i = 0; i < pos.count; i++) {
       const x = seaBase[i * 3], z = seaBase[i * 3 + 2];

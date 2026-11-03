@@ -2,14 +2,14 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier} from './rules.js?v=20261103-dealing-on-screen-v1';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem} from './rules.js?v=20261105-traps-v1';
 import {loadEngine, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
-import {createIslandRenderer} from './islands3d.js?v=20261104-islands-v1';
-import {createView} from './view.js?v=20261104-country-v1';
-import {createIslandMap} from './islands.js?v=20261102-chart-v4';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT} from './gacha.js';
-import {buildPath} from './stages.js?v=20261103-forge-v2';
+import {createIslandBuilder} from './islands3d.js?v=20261105-traps-v1';
+import {createView} from './view.js?v=20261105-traps-v1';
+import {createSeaChart} from './sea3d.js?v=20261105-traps-v3';
+import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard} from './gacha.js?v=20261105-traps-v1';
+import {buildPath} from './stages.js?v=20261105-traps-v1';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js';
 import {costumeFor} from '../../survivors/js/costume-effects.js';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js';
@@ -17,7 +17,7 @@ import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js';
 import {groupRewards} from '../../survivors/js/reward-groups.js';
 import {itemPicture} from '../../survivors/js/item-pictures.js';
 import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v2';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261103-weather-v1';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261105-weather-v2';
 import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-country-v1';
 import {icon} from '../../survivors/js/ui-art.js';
 import {initFullscreen} from './fullscreen.js?v=20261104-country-v1';
@@ -25,8 +25,8 @@ import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
 
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
-/* the game's theme song (the town's general.mp3) plays in the chart and in battle */
-const THEME_SCENE = 'general';
+/* the game's theme song (assets/audio/theme.mp3, 初光之境) plays in the chart and in battle */
+const THEME_SCENE = 'theme';
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 let data, record, view, audio, game = null, speed = 1, paused = false, last = 0, acc = 0, lastImpact = 0;
 let pendingDealingScene = null, visibleSceneFrames = 0, startSerial = 0, bossIntroTimer = null;
@@ -123,6 +123,18 @@ function availableUnits() {
 }
 /* shared wallet and progress */
 const journey = () => readJson('phantom_journey_v1', {});
+/* ---------- items: gacha supplies from the cave bag, and trap cards kept in the island record (both limited in number) ---------- */
+const STARTER_TRAPS = {'trap-mud': 2, 'trap-spike': 2, 'trap-whirl': 1, 'trap-rune': 1, 'trap-shock': 1};
+function trapStock() { record.traps ||= {}; return record.traps; }
+function addTrapCards(id, n = 1) { const t = trapStock(); t[id] = (t[id] || 0) + n; saveRecord(); }
+function bagCount(id) { try { return caveStore().state.inventory[id] || 0; } catch { return 0; } }
+function takeBagItem(id) {
+  try {
+    const store = caveStore();
+    store.transact(store.newId('defense-item'), (st) => { if (!(st.inventory[id] > 0)) throw new Error('數量不足'); st.inventory[id]--; if (!st.inventory[id]) delete st.inventory[id]; });
+    return true;
+  } catch { return false; }
+}
 function caveStore() { return createStore(globalThis.PhantomCaveBridge.caveStorage(initialState)); }
 function points() { try { return caveStore().state.points; } catch { return 0; } }
 function gachaPool() { return defensePool(data.pool, journey(), new Set(data.spiritMap.keys())); }
@@ -160,7 +172,7 @@ function renderIslePanel() {
   $('islePanel').innerHTML = `<div class="isle-card">
     <div class="isle-title"><small>第 ${i + 1} 島</small><h2>${esc(s.name)}</h2><span class="weather-pill">${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span>${record.cleared[s.id] ? `<span class="cleared-tag">已通關 ${'★'.repeat(best)}<em>可重複挑戰</em></span>` : ''}</div>
     <div class="isle-boss"><img src="${picture(s.boss)}" alt=""><div><small>${i < 5 ? '小魔王' : '大魔王'}・坐鎮酒桶</small><b>${esc(boss.name)}</b><span class="boss-class">${esc(roleLabel(boss.id))}</span></div></div>
-    <div class="isle-facts"><span>${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span><span>🛤️ 路線 ${route}</span><span>${uniq.length ? '⚠️ ' + uniq.join('、') : '🌿 無陷阱'}</span><span>🎟️ 擊倒 +${killPoints(i)}・魔王 +${killPoints(i, true)}</span></div>
+    <div class="isle-facts"><span>${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span><span>🛤️ 路線 ${route}</span><span>🪤 路上沒有障礙・用陷阱卡自己布置</span><span>🎟️ 擊倒 +${killPoints(i)}・魔王 +${killPoints(i, true)}</span></div>
     <div class="isle-deck"><div class="deck-strip">${deck}</div><button class="tool small" data-open="deck">🃏 編組 ${nb + nr}/${DECK_SIZE}</button></div>
     ${nb ? '<button id="start" class="primary wide">⚔️ 出擊！</button>' : '<button class="primary wide" data-open="gacha">🎁 先轉蛋取得幻靈</button>'}
   </div>`;
@@ -206,7 +218,7 @@ function openBoatman() {
 }
 
 function bindLobby() {
-  chart = createIslandMap($('seaChart'), {stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman});
+  chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman});
   $('islePanel').onclick = (e) => {
     if (e.target.closest('#start')) beginStage();
     else if (e.target.closest('[data-open="deck"]')) openDeck();
@@ -254,7 +266,8 @@ function openPanel(title, html, view) {
 function closePanel() { summonController?.dispose(); summonController = null; $('panel').close(); renderLobby(); }
 function panelButton(text, fn, className = '') { const b = document.createElement('button'); b.textContent = text; b.className = className; b.onclick = fn; $('panelBody').append(b); return b; }
 const wallet = () => '<div class="wallet-strip"><span>' + caveArt(icon('points')) + '持有點數・與無盡洞穴共用</span><strong>' + points().toLocaleString() + '<small>點</small></strong></div>';
-const itemName = (id) => CAVE_ITEMS[id]?.name || id;
+const itemName = (id) => TRAP_CARDS[id]?.name || CAVE_ITEMS[id]?.name || id;
+const rewardArt = (id) => (isTrapCard(id) ? '<span class="trap-art">' + TRAP_CARDS[id].icon + '</span>' : caveArt(itemPicture(id)));
 function openGacha() {
   const first = !record.starterClaimed, pts = points(), pool = gachaPool();
   openPanel('群島轉蛋機', wallet() + '<div class="gacha-intro"><button class="gacha-machine compact-summoner" aria-label="轉動轉蛋機">' + caveArt(itemPicture('summon-machine')) + '</button><div><strong>尋找下一位夥伴</strong><p>幻靈・補給・增幅<br>' + (first ? '第一次召喚免費，保底 4 隻黃卡' : '道具放進無盡洞穴背包') + '</p></div></div><div class="draw-actions" id="drawActions"></div>'
@@ -274,7 +287,10 @@ function drawBatch(n) {
   try {
     const rewards = drawWithStore(caveStore(), gachaPool(), record.owned || [], n).value;
     record.owned ||= [];
-    for (const r of rewards) if (r.kind === 'spirit' && !record.owned.includes(r.id)) record.owned.push(r.id);
+    for (const r of rewards) {
+      if (r.kind === 'spirit' && !record.owned.includes(r.id)) record.owned.push(r.id);
+      else if (r.trap) addTrapCards(r.id, r.quantity || 1);
+    }
     saveRecord(); showRewards(rewards, '命運共鳴', n);
   } catch (e) { toast(e.message); }
 }
@@ -292,7 +308,7 @@ function revealRewards(rewards, title, repeat) {
   const groups = groupRewards(rewards), total = rewards.reduce((n, r) => n + (r.quantity || 1), 0);
   openPanel(title === '新手召喚' ? '新手召喚' : '本次獲得', '<div class="reward-summary"><span>獲得 <b>' + total + '</b> 份獎勵 · ' + groups.length + ' 種</span><span>剩餘 <b>' + points().toLocaleString() + '</b> 點</span></div><div class="reward-list">' + groups.map((r) => {
     const sp = r.kind === 'spirit', color = sp ? r.color || 'yellow' : 'supply';
-    return '<article class="reward-entry ' + color + '" data-reward="' + r.id + '"><div class="reward-portrait">' + (sp ? '<img src="' + picture(r.id) + '" alt="' + esc(spirit(r.id).name) + '">' : caveArt(itemPicture(r.id))) + '</div><div class="reward-copy"><small>' + (sp ? {yellow: '黃卡', purple: '紫卡', red: '紅卡'}[color] : '道具') + '</small><strong>' + esc(sp ? spirit(r.id).name : itemName(r.id)) + '</strong><p>' + (sp ? (r.duplicate ? '重複 → 返還 ' + (r.refund || 0) * r.quantity + ' 點' : '新增幻靈・可編入卡組') : '已存入無盡洞穴背包') + '</p></div><b class="reward-qty">×' + r.quantity + '</b></article>';
+    return '<article class="reward-entry ' + color + '" data-reward="' + r.id + '"><div class="reward-portrait">' + (sp ? '<img src="' + picture(r.id) + '" alt="' + esc(spirit(r.id).name) + '">' : rewardArt(r.id)) + '</div><div class="reward-copy"><small>' + (sp ? {yellow: '黃卡', purple: '紫卡', red: '紅卡'}[color] : '道具') + '</small><strong>' + esc(sp ? spirit(r.id).name : itemName(r.id)) + '</strong><p>' + (sp ? (r.duplicate ? '重複 → 返還 ' + (r.refund || 0) * r.quantity + ' 點' : '新增幻靈・可編入卡組') : isTrapCard(r.id) ? '陷阱卡・戰鬥中點「道具」後選擇放置位置' : '已存入無盡洞穴背包') + '</p></div><b class="reward-qty">×' + r.quantity + '</b></article>';
   }).join('') + '</div>', 'rewards');
   if (repeat) { const again = panelButton((repeat === 10 ? '再召喚十次' : '再召喚一次') + ' · ' + (repeat * DRAW_COST).toLocaleString() + ' 點', () => drawBatch(repeat), 'primary reward-confirm'); again.disabled = points() < repeat * DRAW_COST; if (again.disabled) again.textContent += '（點數不足）'; panelButton('返回轉蛋機', openGacha); }
   panelButton('收下全部獎勵', closePanel, repeat ? 'reward-confirm' : 'primary reward-confirm');
@@ -377,7 +393,7 @@ function leaveGame() {
      a battle after the user returns to the island chart. */
   ++startSerial; pendingDealingScene = null; visibleSceneFrames = 0; hideBossIntro();
   creditPoints();
-  game = null; $('hud').hidden = true; $('lobby').hidden = false; $('modal').close();
+  endPlacing(); game = null; $('hud').hidden = true; $('lobby').hidden = false; $('modal').close();
   view?.setGame(null); audio?.stop?.();
   globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
   renderLobby();
@@ -482,8 +498,8 @@ function bindHand() {
 function hud() {
   if (!game) return;
   $('runPoints').textContent = game.stats.points.toLocaleString();
-  const ready = Object.keys(ITEMS).filter((id) => itemReady(game, id)).length;
-  $('items').classList.toggle('ready', ready > 0); $('itemsCount').textContent = ready ? ready + ' 個可用' : '冷卻中';
+  const owned = usableItems().reduce((n, u) => n + u.count, 0);
+  $('items').classList.toggle('ready', owned > 0); $('itemsCount').textContent = owned ? owned + ' 個' : '無道具';
   if (!$('itemMenu').hidden) renderItems();
   $('dealFill').style.width = (game.hand.length >= HAND_SIZE ? 100 : Math.max(0, Math.min(100, (1 - (game.dealAt - game.time) / DEAL_EVERY) * 100))) + '%';
   $('speed').textContent = '×' + speed; $('pause').textContent = paused ? '▶' : '❚❚';
@@ -491,17 +507,57 @@ function hud() {
   renderHand();
 }
 
-/* Item menu: each item shows its icon, effect and remaining cooldown. */
-/* Built once, then only the cooldowns are updated in place (re-creating the buttons would swallow taps). */
-function renderItems() {
-  const menu = $('itemMenu');
-  if (!menu.children.length) menu.innerHTML = Object.entries(ITEMS).map(([id, it]) => `<button class="item" data-item="${id}"><span class="item-icon">${it.icon}</span><span class="item-text"><b>${it.name}</b><small>${it.text}</small></span><span class="item-cd"></span><i></i></button>`).join('');
-  for (const b of menu.children) {
-    const id = b.dataset.item, left = Math.max(0, game.itemReady[id] - game.time);
-    b.classList.toggle('cooling', left > 0);
-    b.querySelector('.item-cd').textContent = left ? Math.ceil(left) + ' 秒' : '可使用';
-    b.querySelector('i').style.width = (left / ITEMS[id].cooldown * 100) + '%';
-  }
+/* Item menu: the gacha supplies and trap cards the player owns, each with its count. Nothing here is unlimited. */
+let bagCache = {at: 0, list: []}, placing = null;
+function usableItems() {
+  if (performance.now() - bagCache.at < 800 && bagCache.list.length) return bagCache.list;
+  const list = [
+    ...Object.entries(BAG_ITEMS).map(([id, it]) => ({id, ...it, count: bagCount(id), kind: 'bag'})),
+    ...Object.entries(TRAP_CARDS).map(([id, it]) => ({id, ...it, count: trapStock()[id] || 0, kind: 'trap'})),
+  ];
+  bagCache = {at: performance.now(), list};
+  return list;
+}
+function renderItems(force = false) {
+  const menu = $('itemMenu'); if (force) bagCache.at = 0;
+  const list = usableItems(), sig = list.map((u) => u.id + ':' + u.count).join('|');
+  if (menu.dataset.sig === sig && menu.children.length) return;
+  menu.dataset.sig = sig;
+  const row = (u) => `<button class="item ${u.count ? '' : 'cooling'}" data-${u.kind === 'trap' ? 'trap' : 'bag'}="${u.id}"><span class="item-icon">${u.icon}</span><span class="item-text"><b>${esc(u.name)}</b><small>${esc(u.text)}</small></span><span class="item-cd">×${u.count}</span></button>`;
+  menu.innerHTML = '<p class="item-head">補給（轉蛋取得，用完為止）</p>' + list.filter((u) => u.kind === 'bag').map(row).join('') + '<p class="item-head">陷阱卡（點選後再點路上要放的位置）</p>' + list.filter((u) => u.kind === 'trap').map(row).join('');
+}
+function useBag(id) {
+  if (!game || game.result) return;
+  if (bagCount(id) < 1) return toast('這個道具已經用完了，去群島轉蛋機抽抽看');
+  if (!useBagItem(game, id) || !takeBagItem(id)) return;
+  bagCache.at = 0; toast(BAG_ITEMS[id].name + '：' + BAG_ITEMS[id].text); handSig = ''; hud(); renderItems(true);
+}
+/* choose a trap card, then tap a spot on the road: the road is dotted and a preview follows the finger */
+function beginPlacing(id) {
+  if (!game || game.result) return;
+  if ((trapStock()[id] || 0) < 1) return toast('這張陷阱卡用完了，去群島轉蛋機抽抽看');
+  if (game.traps.filter((t) => !t.expired).length >= MAX_TRAPS) return toast('路上最多同時放 ' + MAX_TRAPS + ' 個陷阱，等舊的消失再放');
+  placing = {id, kind: TRAP_CARDS[id].kind}; $('itemMenu').hidden = true; document.body.classList.add('placing-trap');
+  view?.placement(placing.kind); banner('點選路上要放「' + TRAP_CARDS[id].name.replace('陷阱卡', '') + '」的位置（再點「道具」或空白處取消）');
+}
+function endPlacing() { if (!placing) return; placing = null; document.body.classList.remove('placing-trap'); view?.placement(null); $('banner').hidden = true; }
+function bindPlacement() {
+  const canvas = $('world'); let down = null;
+  canvas.addEventListener('pointerdown', (e) => { if (placing) down = {x: e.clientX, y: e.clientY, t: performance.now()}; });
+  canvas.addEventListener('pointermove', (e) => { if (placing && e.buttons === 0) { const hit = view?.pickRoad(e.clientX, e.clientY); view?.placement(placing.kind, hit ? hit.x : null); } });
+  canvas.addEventListener('pointerup', (e) => {
+    if (!placing || !down) return;
+    const tap = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 10 && performance.now() - down.t < 700; down = null;
+    if (!tap) return;
+    const hit = view?.pickRoad(e.clientX, e.clientY);
+    if (!hit) { endPlacing(); return; }
+    const t = placeTrap(game, placing.kind, hit.x);
+    if (!t) { toast('這裡不能放（太靠近起點或終點，或路上陷阱已滿）'); return; }
+    const t0 = trapStock(); t0[placing.id] = Math.max(0, (t0[placing.id] || 0) - 1); saveRecord(); bagCache.at = 0;
+    toast(TRAP_CARDS[placing.id].name.replace('陷阱卡', '') + ' 已放置，持續 ' + TRAP_LIFE + ' 秒');
+    const again = (t0[placing.id] || 0) > 0 && game.traps.filter((x) => !x.expired).length < MAX_TRAPS;
+    if (!again) endPlacing(); handSig = ''; hud();
+  });
 }
 
 /* ---------- merge: fusion effect, card flip glowing in its frame colour, optional evolution overlay ---------- */
@@ -602,11 +658,11 @@ function showResult(r) {
 function bindHud() {
   $('dismissBossIntro').onclick = hideBossIntro;
   initFullscreen();
-  $('items').onclick = () => { const menu = $('itemMenu'); menu.hidden = !menu.hidden; if (!menu.hidden) renderItems(); };
+  $('items').onclick = () => { if (placing) { endPlacing(); return; } const menu = $('itemMenu'); menu.hidden = !menu.hidden; if (!menu.hidden) renderItems(true); };
+  bindPlacement();
   $('itemMenu').onclick = (e) => {
-    const b = e.target.closest('[data-item]'); if (!b || !game) return;
-    if (useItem(game, b.dataset.item)) { $('itemMenu').hidden = true; handSig = ''; hud(); }
-    else toast('道具冷卻中');
+    const b = e.target.closest('[data-bag],[data-trap]'); if (!b || !game) return;
+    if (b.dataset.trap) beginPlacing(b.dataset.trap); else useBag(b.dataset.bag);
   };
   $('speed').onclick = () => { speed = speed === 1 ? 2 : 1; hud(); };
   $('camReset').onclick = () => view?.resetCamera();
@@ -631,6 +687,7 @@ function openPause() {
     <p class="result-title">${idx + 1}. ${esc(stage.name)}</p>
     <p class="result-sub">魔王 ${esc(spirit(stage.boss)?.name || '')} 正站在巢穴的酒桶上等你</p>
     <button class="primary wide resume" id="resume">▶ 繼續戰鬥</button>
+    <button class="wide savehome" id="saveHome">💾 存檔回初光鎮</button>
     <div class="sheet-actions">
       <button class="round" id="quit" title="放棄並回海圖"><span>🗺️</span><small>海圖</small></button>
       <button class="round" id="restart" title="重新開始這一關"><span>↻</span><small>重來</small></button>
@@ -639,6 +696,7 @@ function openPause() {
     </div>`, 'pause');
   $('resume').onclick = () => { $('modal').close(); };
   $('quit').onclick = leaveGame;
+  $('saveHome').onclick = () => { saveRecord(); toast('已存檔，搭快艇回初光鎮'); sailHome(); };
   $('restart').onclick = () => { $('modal').close(); startGame(); };
   $('howto2').onclick = showHowTo;
   if ($('nextStage')) $('nextStage').onclick = () => nextVoyage(idx + 1);
@@ -672,16 +730,15 @@ function loop(now) {
   if (game) game.events.length = 0;
 }
 
-/* The chart art is rendered with Three.js once per visit: a small 3D diorama for every island (islands3d.js) and the
-   real speedboat (shared js/harbor.js) with the hero seated at the wheel in the outfit from the town wardrobe. */
+/* The sea chart is a live Three.js scene (sea3d.js): a diorama model for every island (islands3d.js) carrying its boss's dex card,
+   the town pier with the boatman, and the real speedboat (shared js/harbor.js) with the hero seated at the wheel in the outfit
+   from the town wardrobe. They are built one after another so the chart is usable while the models pop in. */
 async function renderChartArt() {
-  await loadEngine();
-  const T = globalThis.THREE, H = globalThis.PhantomHarbor, kit = createToonKit(T), art = createIslandRenderer(T, kit);
-  /* each island carries its boss's dex card */
+  const T = globalThis.THREE, H = globalThis.PhantomHarbor, kit = createToonKit(T), builder = createIslandBuilder(T, kit);
+  chart.addAnimations(builder.animated);
   const card = (id) => { const s = spirit(id); return {art: picture(id), frameImage: '../assets/cards/frame.png', frame: s.cardFrame || 'yellow', name: s.name, number: data.entries.get(id)?.number || '—', info: s.type + " · " + (s.rarity || "普通") + " · 第 " + (s.stage || 1) + " 階段", hp: s.hp, attack: s.attack}; };
-  const pics = []; for (const s of STAGES) pics.push(await art.island(s.scene, card(s.boss)));
-  chart.setIslandArt(pics);
-  try { const gh = await loadGltf('models/hero.glb'); chart.setHomeArt(art.dock(cloneModel(gh.scene))); } catch (e) { console.warn(e); try { chart.setHomeArt(art.dock(null)); } catch {} }
+  for (let i = 0; i < STAGES.length; i++) chart.setIsland(i, await builder.island(STAGES[i].scene, card(STAGES[i].boss)));
+  try { const gh = await loadGltf('models/hero.glb'); chart.setHome(builder.dock(cloneModel(gh.scene))); } catch (e) { console.warn(e); try { chart.setHome(builder.dock(null)); } catch {} }
   if (H?.makeSpeedboat) {
     const {boat, SEAT} = H.makeSpeedboat(T, {mobile: true}); H.toonOutline(T, boat, {thickness: 0.03});
     try {
@@ -692,21 +749,21 @@ async function renderChartArt() {
       const idle = g.animations.find((c) => /idle/i.test(c.name)); if (idle) { const mixer = new T.AnimationMixer(hero); mixer.clipAction(idle).play(); mixer.update(0.4); }
       kit.toonify(hero, {outline: 0.025});
     } catch (e) { console.warn(e); }
-    chart.setBoatImage(art.boat(boat));
+    chart.setBoat(boat);
   }
-  art.dispose();
 }
 
 async function init() {
   record = readJson(SAVE_KEY, {}) || {};
   if (!Number.isInteger(record.stage)) record.stage = 0;
   record.cleared = record.cleared || {}; record.owned = record.owned || []; record.best = record.best || {};
+  if (!record.trapKit) { record.traps = {...STARTER_TRAPS, ...(record.traps || {})}; record.trapKit = true; }
   const fromTown = new URLSearchParams(location.search).has('fromTown');
   /* the town's speedboat handoff card gives way to this page's own speedboat loader */
   globalThis.PhantomTransition?.finish?.();
   if (fromTown || !Number.isInteger(record.boatAt)) record.boatAt = -1;
   $('loadingBar').style.width = '30%';
-  try { data = await loadData(); } catch (e) { toast(e.message); $('loading').hidden = true; return; }
+  try { await loadEngine(); data = await loadData(); } catch (e) { toast(e.message); $('loading').hidden = true; return; }
   $('loadingBar').style.width = '100%';
   bindLobby(); bindHud(); bindHand(); renderLobby();
   renderChartArt().catch((e) => console.warn(e));

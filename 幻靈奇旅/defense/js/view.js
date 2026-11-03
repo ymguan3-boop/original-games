@@ -4,10 +4,10 @@
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
 import {createActor, performSkill, loadGltf, cloneModel} from './actors.js';
 import {createFx} from './fx.js?v=20261103-mobile-fx-v2';
-import {createSeascape} from './seascape.js?v=20261103-weather-v1';
+import {createSeascape} from './seascape.js?v=20261105-weather-v2';
 import {createToonKit} from './style.js';
 import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-islands-v1';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261103-dealing-on-screen-v1';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261105-traps-v1';
 import {pointAt} from './stages.js';
 import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js';
 import {createProjectileView} from '../../survivors/js/projectile-view.js';
@@ -56,6 +56,7 @@ export function createView(canvas, {spirits, catalog}) {
 
   /* ---------- map ---------- */
   function rand(seed) { let s = seed; return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
+  const HIT_BAR_SECONDS = 3;
   function hpBar(width, color = 0x6ee87a) {
     const g = new THREE.Group();
     const back = new THREE.Sprite(new THREE.SpriteMaterial({color: 0x2b1d12, depthTest: false})); back.scale.set(width, 0.2, 1); back.renderOrder = 8;
@@ -170,6 +171,7 @@ export function createView(canvas, {spirits, catalog}) {
   const bossSpot = () => nest.position.clone();
 
   /* The hero (models/hero.glb) sits on the barrel: thighs raised and shins bent after each animation frame. */
+  let placeGuide = null, placeGhost = null;
   let hero = null, nestBoss = null, traps = [], costumeId = 'trainer', costumes = null;
   async function seatHero(game) {
     try {
@@ -301,8 +303,11 @@ export function createView(canvas, {spirits, catalog}) {
 
   /* Road traps: zones are decals on the road; point traps pop when they fire, with a red warning ring just before. */
   const TRAP_LOOK = {mud: 0x7a5530, whirl: 0x3fa9e8, rune: 0xb46cff, poison: 0x7fd65a, spike: 0x9a9aa8, shock: 0xffd23a, geyser: 0x58caff};
-  function buildTraps(game) {
-    traps = game.traps.map((t) => {
+  function buildTraps(game) { for (const tr of traps) disposeTrap(tr); traps = game.traps.map(buildTrap); }
+  function disposeTrap(tr) { tr.g.parent?.remove(tr.g); tr.g.userData.puddles?.parent?.remove(tr.g.userData.puddles); }
+  /* traps appear when the player lays a trap card: the model is built the moment the game state gains it */
+  function buildTrap(t) {
+    const game = state; {
       const g = new THREE.Group(), flat = new THREE.Group(), p = pointAt(game.path, t.x - game.left), color = TRAP_LOOK[t.kind];
       g.position.set(p.x, 0, p.z); g.rotation.y = p.dir;
       if (t.zone) {
@@ -319,7 +324,7 @@ export function createView(canvas, {spirits, catalog}) {
           if (t.kind === 'poison') { const m = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), kit.toon(0x9a4ad9, {emissive: linear(0x5a1a99), emissiveIntensity: 0.5})); m.position.set(q.x + nx * side * 1.25, 0.1, q.z + nz * side * 1.25); kit.toonify(m, {outline: 0.04}); puddles.add(m); }
           if (t.kind === 'mud') { const b = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6), kit.toon(0x5a3a1e)); b.position.set(q.x + nx * side * 0.4, 0.12, q.z + nz * side * 0.4); b.scale.y = 0.4; puddles.add(b); }
         }
-        mapGroup.add(puddles);
+        mapGroup.add(puddles); g.userData.puddles = puddles;
         if (t.kind === 'whirl' || t.kind === 'rune') { const ring = new THREE.Mesh(new THREE.RingGeometry(0.4, 0.9, 24, 1, 0, Math.PI * 1.6), flatMat(0xffffff, 0.6)); ring.material.side = THREE.DoubleSide; ring.rotation.x = -Math.PI / 2; ring.position.y = 0.13; ring.renderOrder = 3; flat.add(ring); g.userData.spin = ring; }
       } else {
         const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.95, 0.08, 20), kit.toon(t.kind === 'geyser' ? 0x2f6f9a : 0x6a6a74)); plate.position.y = 0.06; g.add(plate);
@@ -330,9 +335,16 @@ export function createView(canvas, {spirits, catalog}) {
         const warn = new THREE.Mesh(new THREE.RingGeometry(0.95, 1.15, 28), new THREE.MeshBasicMaterial({color: 0xff4a4a, transparent: true, opacity: 0, depthWrite: false})); warn.rotation.x = -Math.PI / 2; warn.position.y = 0.14; warn.renderOrder = 3; flat.add(warn); g.userData.warn = warn;
       }
       kit.toonify(g, {outline: 0.05}); g.add(flat);
-      mapGroup.add(g);
+      mapGroup.add(g); g.userData.born = clock;
       return {t, g, popT: 0};
-    });
+    }
+  }
+  function syncTraps() {
+    while (traps.length < state.traps.length) traps.push(buildTrap(state.traps[traps.length]));
+    for (const tr of traps) {
+      if (tr.t.expired && !tr.gone) { tr.gone = true; tr.g.visible = false; if (tr.g.userData.puddles) tr.g.userData.puddles.visible = false; }
+      else if (!tr.gone) { const k = Math.min(1, (clock - tr.g.userData.born) * 4), sc = 0.4 + 0.6 * (1 - Math.pow(1 - k, 3)); tr.g.scale.set(sc, sc, sc); }
+    }
   }
   function trapFired(ev) {
     const tr = traps[ev.index]; if (!tr) return;
@@ -345,13 +357,14 @@ export function createView(canvas, {spirits, catalog}) {
     rune: {color: 0xd6a8ff, up: 1.6, gravity: 0.5, size: 0.3}, poison: {color: 0x9be86a, up: 1.2, gravity: 1.2, size: 0.34}};
   function trapWalkFx(f, rec, dt) {
     rec.trapFx = (rec.trapFx || 0) - dt; if (rec.trapFx > 0) return;
-    const zone = state.traps.find((t) => t.zone && Math.abs(f.x - t.x) <= t.half + 0.3); if (!zone) return;
+    const zone = state.traps.find((t) => t.zone && !t.expired && Math.abs(f.x - t.x) <= t.half + 0.3); if (!zone) return;
     rec.trapFx = f.moving ? 0.28 : 0.6;
     const p = rec.deco.position, look = ZONE_FX[zone.kind];
     fx.particles({x: p.x, z: p.z, y: 0.15, count: 6, color: look.color, size: look.size, speed: 1.4, up: look.up, spread: 0.25, life: 0.55, gravity: look.gravity, swirl: look.swirl || 0});
   }
   function tickTraps(dt) {
     for (const tr of traps) {
+      if (tr.gone) continue;
       if (tr.g.userData.spin) tr.g.userData.spin.rotation.z += dt * (tr.t.kind === 'whirl' ? 3 : 1);
       const pop = tr.g.userData.pop, warn = tr.g.userData.warn;
       if (pop) { tr.popT = Math.max(0, tr.popT - dt); pop.scale.y = 0.15 + (tr.popT > 0 ? Math.sin(Math.min(1, (0.5 - tr.popT) * 6) * Math.PI / 2) : 0) * 0.85 * Math.min(1, tr.popT * 4); }
@@ -415,7 +428,7 @@ export function createView(canvas, {spirits, catalog}) {
     const deco = new THREE.Group(), p = world(f.x, f.z); deco.position.set(p.x, 0, p.z);
     const scale = (f.boss ? BOSS_SCALE : SCALE) * (1 + (f.rank - 1) * 0.08);
     const ph = new THREE.Mesh(sphereGeo, glow(ELEMENT_COLORS[f.type] || 0xffffff, 0.85)); ph.scale.setScalar(0.45); ph.position.y = 0.8; deco.add(ph);
-    const bar = hpBar(f.boss ? 2.4 : 1, f.side === 'ally' ? 0x6ee87a : 0xff7a7a); bar.position.y = 0.6 + scale * 2.1; bar.visible = f.boss; deco.add(bar);
+    const bar = hpBar(f.boss ? 2.4 : 1, f.side === 'ally' ? 0x6ee87a : 0xff7a7a); bar.position.y = 0.6 + scale * 2.1; bar.visible = false; deco.add(bar);
     if (f.boss) { const crown = textSprite('魔王', '#ff8a8a', 48); crown.position.y = bar.position.y + 0.6; crown.scale.set(1.8, 0.68, 1); deco.add(crown); }
     const ult = f.side === 'ally' ? hpBar(1, 0xffc93a) : null; if (ult) { ult.position.y = bar.position.y - 0.2; ult.scale.y = 0.6; deco.add(ult); }
     if (f.side === 'ally' && f.rank > 1) { const st = textSprite('★'.repeat(f.rank), '#ffe27a', 50); st.position.y = bar.position.y + 0.1; st.scale.set(1.3, 0.5, 1); deco.add(st); }
@@ -498,6 +511,7 @@ export function createView(canvas, {spirits, catalog}) {
     const d = rec.deco.position, y = 0.5 + rec.scale * 0.8;
     if (ev.blocked) return;
     rec.stop = Math.max(rec.stop, ev.crit || ev.strong ? 0.12 : 0.06);
+    rec.barUntil = clock + HIT_BAR_SECONDS;
     rec.flashT = 0.14; rec.flash.material.color.copy(linear(ev.crit ? 0xffd54a : rec.side === 'ally' ? 0xff8a8a : ev.strong ? ELEMENT_COLORS[ev.element] || 0xffffff : 0xffffff));
     rec.recoil = ev.crit || ev.strong ? 0.3 : 0.14;
     if (numbersThisFrame < 4) fx.hit({x: d.x, y, z: d.z, element: ev.element, crit: ev.crit, kind: ev.kind});
@@ -646,7 +660,7 @@ export function createView(canvas, {spirits, catalog}) {
       }
       else if (ev.type === 'chain') { const a = actorPoint('f' + ev.from), b = actorPoint('f' + ev.to); if (a && b) bolt(a, b, ELEMENT_COLORS[ev.element]); }
       else if (ev.type === 'death') { const r = fighters.get(ev.id); if (r) { r.dying = 0; r.actor?.play('Death', true); combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: '光', strong: true}); } }
-      else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } if (ev.side === 'crystal') { heroPlay('Hurt', true); } }
+      else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.barUntil = clock + HIT_BAR_SECONDS; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } if (ev.side === 'crystal') { heroPlay('Hurt', true); } }
       else if (ev.type === 'trap') trapFired(ev);
       else if (ev.type === 'skillStart') skillStart(ev);
       else if (ev.type === 'bossSkillStart') bossSkillStart(ev);
@@ -673,7 +687,8 @@ export function createView(canvas, {spirits, catalog}) {
           if (a) { a.root.scale.setScalar(Math.max(0.01, 1 - rec.dying * 1.1)); a.root.position.y = d.position.y - rec.dying * 0.6; a.tick(dt * 0.6); }
           continue;
         }
-        rec.bar.visible = !!(f.boss || f.hp < f.maxHp);
+        /* the boss shows its health only for a moment after it is struck; other units while they are hurt */
+        rec.bar.visible = f.boss ? clock < (rec.barUntil || 0) : f.hp < f.maxHp;
         if (rec.bar.visible) rec.bar.userData.fill.scale.x = rec.bar.userData.width * 0.94 * Math.max(0, f.hp) / f.maxHp;
         if (rec.ult) { const k = Math.max(0, Math.min(1, 1 - (f.ultAt - state.time) / f.ultCd)); rec.ult.userData.fill.scale.x = Math.max(0.001, rec.ult.userData.width * 0.94 * k); rec.ult.userData.fill.material.color.setHex(k >= 1 ? (Math.sin(clock * 10) > 0 ? 0xfff2a0 : 0xffc93a) : 0xffc93a); }
         trapWalkFx(f, rec, dt);
@@ -701,13 +716,15 @@ export function createView(canvas, {spirits, catalog}) {
       projectileView.update(projectileRecords(), dt);
       for (const [b, hp] of [[crystal, state.crystal], [nest, state.nest]]) {
         b.userData.bar.userData.fill.scale.x = b.userData.bar.userData.width * 0.94 * hp.hp / hp.maxHp;
+        /* the hero's and the boss's health bars are not kept on screen: they appear for a moment when attacked */
+        b.userData.bar.visible = clock < (b.userData.barUntil || 0); if (b.userData.guardianBar) b.userData.guardianBar.visible = false;
         { const body = b.userData.body; b.userData.flash = Math.max(0, (b.userData.flash || 0) - dt); const k = Math.sin(b.userData.flash / 0.18 * Math.PI) * 0.06; if (body) body.scale.set(1 + k, 1 - k, 1 + k); }
       }
     }
     for (let i = helpers.length - 1; i >= 0; i--) { const hlp = helpers[i]; hlp.a.tick(dt); if (clock > hlp.until) { const k = Math.min(1, (clock - hlp.until) * 3); hlp.a.root.scale.setScalar(Math.max(0.01, 1 - k)); if (k >= 1) { hlp.a.dispose(); helpers.splice(i, 1); } } }
     tickHero(dt); tickCasters(dt);
     tickNestBoss(dt);
-    if (state) tickTraps(dt);
+    if (state) { syncTraps(); tickTraps(dt); }
     if (nest) nest.userData.portal.material.opacity = 0.55 + Math.sin(clock * 3) * 0.2;
     combatVfx.update(dt); fx.update(dt); env?.update(dt); seascape.update(dt);
     for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { scene.remove(e.obj); effects.splice(i, 1); } }
@@ -731,12 +748,40 @@ export function createView(canvas, {spirits, catalog}) {
       for (const id of [...fighters.keys()]) removeFighter(id);
       for (const hlp of helpers.splice(0)) hlp.a.dispose();
       if (nestBoss) { nestBoss.dispose(); nestBoss = null; }
-      hero = null; traps = []; numbersOnScreen = 0;
+      hero = null; traps = []; placeGuide = placeGhost = null; numbersOnScreen = 0;
       for (const c of casters.splice(0)) c.a?.dispose();
       projectileView.clear(); combatVfx.clear(); fx.clear();
       state = game; if (game) buildMap(game);
     },
     async preload(ids) { for (const id of ids) { const spec = spiritMap.get(id); if (spec) try { (await createActor(spec, entries.get(id))).dispose(); } catch {} } },
+    /* Trap placement: while a card is chosen the road is dotted and a preview follows the finger. pick() turns a screen point
+       into the lane coordinate of the nearest road point (null when it is not on the road). */
+    pickRoad(clientX, clientY) {
+      if (!state) return null;
+      const r = canvas.getBoundingClientRect(), ndc = new THREE.Vector2((clientX - r.left) / r.width * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
+      const ray = new THREE.Raycaster(); ray.setFromCamera(ndc, camera);
+      const hit = ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.08), new THREE.Vector3()); if (!hit) return null;
+      const {points, lengths} = state.path; let best = null, bd = 1e9;
+      for (let i = 0; i < points.length - 1; i++) {
+        const [ax, az] = points[i], [bx, bz] = points[i + 1], dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1;
+        const t = Math.max(0, Math.min(1, ((hit.x - ax) * dx + (hit.z - az) * dz) / L2)), px = ax + dx * t, pz = az + dz * t, d = Math.hypot(hit.x - px, hit.z - pz);
+        if (d < bd) { bd = d; best = {x: state.left + lengths[i] + (lengths[i + 1] - lengths[i]) * t, dist: d}; }
+      }
+      return best && best.dist <= 2.2 ? best : null;
+    },
+    placement(kind, x = null) {
+      if (!state) return;
+      if (!kind) { if (placeGuide) { placeGuide.parent?.remove(placeGuide); placeGuide.geometry.dispose(); placeGuide = null; } if (placeGhost) placeGhost.visible = false; return; }
+      if (!placeGuide) {
+        const pts = [], n = Math.floor(state.path.length / 0.8);
+        for (let i = 1; i < n; i++) { const p = pointAt(state.path, i * 0.8); pts.push(p.x, 0.22, p.z); }
+        const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+        placeGuide = new THREE.Points(g, new THREE.PointsMaterial({color: 0xffffff, size: 0.5, transparent: true, opacity: 0.85, depthWrite: false})); placeGuide.renderOrder = 4; mapGroup.add(placeGuide);
+      }
+      if (!placeGhost) { placeGhost = new THREE.Mesh(new THREE.CircleGeometry(1.4, 32).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.55, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2})); placeGhost.renderOrder = 5; mapGroup.add(placeGhost); }
+      placeGhost.material.color.setHex(TRAP_LOOK[kind] || 0xffffff);
+      if (x === null) placeGhost.visible = false; else { const p = pointAt(state.path, x - state.left); placeGhost.position.set(p.x, 0.2, p.z); placeGhost.visible = true; }
+    },
     /* A transparent bust of a spirit's own 3D model, for dialog portraits (docs: GLB 透像). Cached per id and pose. */
     portrait(id, pose = {}) { return renderPortrait(id, pose); },
   };

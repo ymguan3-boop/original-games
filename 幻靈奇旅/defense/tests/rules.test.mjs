@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {STAGES, CRIT, TRAPS, playable, isBaseCard, isRedCard, useItem, itemReady, ITEMS, DECK_BASE, DECK_RED, createGame, step, playCard, moveCard, canPlay, mergeResult, profileFor, caveRoster, elementMultiplier, isSupport, SUPPORT, TRIAL_ROSTER, DECK_SIZE, HAND_SIZE, MAX_ALLIES, beginDealing, DEAL_EVERY} from '../js/rules.js';
+import {placeTrap, TRAP_CARDS, MAX_TRAPS, TRAP_LIFE, BAG_ITEMS, useBagItem, STAGES, CRIT, TRAPS, playable, isBaseCard, isRedCard, useItem, itemReady, ITEMS, DECK_BASE, DECK_RED, createGame, step, playCard, moveCard, canPlay, mergeResult, profileFor, caveRoster, elementMultiplier, isSupport, SUPPORT, TRIAL_ROSTER, DECK_SIZE, HAND_SIZE, MAX_ALLIES, beginDealing, DEAL_EVERY} from '../js/rules.js';
 import {buildPath, pointAt} from '../js/stages.js';
 
 const read = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
@@ -196,23 +196,45 @@ test('enemies follow the cave encounter rules: yellow monsters, purple then red 
     for (const g of s.groups) { assert.equal(frame(g.species), 'yellow', `${s.name} ${g.species}`); assert.ok(!banned.has(g.species)); }
     assert.ok(s.boss, `${s.name} has a boss on the nest`);
     assert.equal(frame(s.boss), i < 5 ? 'purple' : 'red', `${s.name} boss ${s.boss}`);
-    for (const tr of s.traps) assert.ok(TRAPS[tr.kind], `${s.name} trap ${tr.kind}`);
+    assert.deepEqual(s.traps, [], `${s.name} starts with a clear road`);
   });
   assert.ok(new Set(STAGES.map((s) => s.scene)).size === STAGES.length, 'every stage has its own scenery');
 });
 
-test('road traps: zones slow, point traps fire on a timer and hit both sides', () => {
-  const s = game({stageIndex: STAGES.findIndex((x) => x.traps.some((t) => t.kind === 'spike'))});
-  const trap = s.traps.find((t) => t.kind === 'spike');
+test('the road is clear until the player lays a trap card; placed traps slow, hurt, count and expire', () => {
+  const s = game({stageIndex: 1});
+  assert.equal(s.traps.length, 0, 'no obstacle before a trap card is used');
+  assert.equal(placeTrap(s, 'spike', s.left - 5), null, 'cannot place off the road');
+  assert.equal(placeTrap(s, 'nope', 0), null);
+  const trap = placeTrap(s, 'spike', 0); assert.ok(trap && s.traps.length === 1);
   s.hand = [{uid: 1, species: 'squirtle', rank: 3, boost: 2}]; playCard(s, 0);
   const f = s.fighters[0]; f.x = trap.x; const hp = f.hp;
   s.time = trap.next - 0.01; step(s, 1 / 30);
   assert.ok(f.hp < hp, 'the spike trap hurt our spirit');
-  const m = game({stageIndex: 1}), mud = m.traps.find((t) => t.kind === 'mud');
+  const m = game({stageIndex: 1}), mud = placeTrap(m, 'mud', 0);
   m.hand = [{uid: 1, species: 'squirtle', rank: 1, boost: 0}]; playCard(m, 0);
   const g = m.fighters[0]; g.x = mud.x + 0.2; m.spawnAt = m.spawnAt.map(() => 1e9);
   const before = g.x; step(m, 0.5);
   assert.ok(Math.abs(before - g.x) <= g.speed * 0.5 * TRAPS.mud.slow + 1e-6, 'mud halves walking speed');
+  const c = game({stageIndex: 0});
+  for (let i = 0; i < MAX_TRAPS; i++) assert.ok(placeTrap(c, 'mud', -8 + i * 3), 'trap ' + i);
+  assert.equal(placeTrap(c, 'mud', 8), null, 'at most ' + MAX_TRAPS + ' active traps');
+  c.time += TRAP_LIFE + 1; step(c, 1 / 30);
+  assert.ok(c.traps.every((x) => x.expired), 'traps vanish after ' + TRAP_LIFE + ' seconds');
+  assert.ok(placeTrap(c, 'mud', 8), 'expired traps free their slot');
+  assert.equal(Object.keys(TRAP_CARDS).length, Object.keys(TRAPS).length);
+});
+
+test('gacha supplies work in the fight: potion, battery and the two buffs', () => {
+  const s = game({stageIndex: 0});
+  s.hand = [{uid: 1, species: 'squirtle', rank: 1, boost: 0}]; playCard(s, 0);
+  const a = s.fighters[0]; a.hp = a.maxHp * 0.2; s.crystal.hp = s.crystal.maxHp * 0.5;
+  assert.ok(useBagItem(s, 'potion')); assert.ok(a.hp > a.maxHp * 0.55 && s.crystal.hp > s.crystal.maxHp * 0.5);
+  a.ultAt = s.time + 99; assert.ok(useBagItem(s, 'battery')); assert.ok(a.ultAt <= s.time);
+  for (let i = 0; i < 12; i++) useBagItem(s, 'buff-attack'); assert.equal(s.buffs.attack, 1, 'attack buff is capped at +100%');
+  for (let i = 0; i < 12; i++) useBagItem(s, 'buff-defense'); assert.equal(s.buffs.guard, 0.5, 'defense buff is capped at 50%');
+  assert.equal(useBagItem(s, 'ball-basic'), false, 'balls have no use in the island fight');
+  assert.deepEqual(Object.keys(BAG_ITEMS), ['potion', 'revive', 'battery', 'buff-attack', 'buff-defense']);
 });
 
 test('critical hits happen about one in ten and deal extra damage', () => {
@@ -225,9 +247,13 @@ test('critical hits happen about one in ten and deal extra damage', () => {
 
 /* A bot that plays like a careful player: keeps pairs in hand to merge, plays strong cards and unpaired cards,
    casts support skills when the lane is crowded. */
-export function play(stageIndex, deck = TRIAL_ROSTER, bot = true) {
-  const s = game({stageIndex, deck});
-  for (let i = 0; i < 30 * 600 && !s.result; i++) {
+export function play(stageIndex, deck = TRIAL_ROSTER, bot = true, seconds = 600) {
+  const s = game({stageIndex, deck}); let stock = 16; /* the bot owns six trap cards and lays one whenever a slot of the road is free */
+  for (let i = 0; i < 30 * seconds && !s.result; i++) {
+    if (bot && stock > 0 && i % 30 === 0) for (const [kind, at] of [['whirl', 0.3], ['geyser', 0.55], ['whirl', 0.8]]) {
+      const x = s.left + at * s.path.length;
+      if (stock > 0 && !s.traps.some((t) => !t.expired && Math.abs(t.x - x) < 3) && placeTrap(s, kind, x)) stock--;
+    }
     if (bot && i % 6 === 0) {
       const foes = s.fighters.filter((f) => f.side === 'enemy' && f.hp > 0), h = s.hand;
       const support = h.findIndex((c) => isSupport(c.species) && (c.rank >= 2 || foes.length >= 4 || foes.some((f) => s.crystal.x - f.x < 8)));
@@ -252,7 +278,7 @@ test('trial deck clears the early stages; doing nothing loses', () => {
 });
 
 test('a deck with support cards can clear the final stage', () => {
-  assert.ok(play(STAGES.length - 1, SUPPORT_DECK).result?.won);
+  assert.ok(play(STAGES.length - 1, SUPPORT_DECK, true, 900).result?.won, "with its trap cards the support deck clears the last stage");
   assert.notEqual(play(STAGES.length - 1).result?.won, true, 'the trial deck alone should not clear 水蛟深淵');
 });
 

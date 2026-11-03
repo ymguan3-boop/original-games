@@ -1,8 +1,7 @@
 /* Stage list: each stage is one winding path from the monster nest (start) to the hero's bucket base (end), shown
    whole on screen. Enemies follow the cave's encounter rules: normal monsters are yellow cards, the boss sitting on the
    nest is a purple card (small boss) in early stages and a red card (big boss) later; it steps out the first time the
-   nest is hit. `scene` picks the scenery in js/env.js, `traps` sit on the road (at = fraction of the path, len = zone
-   length as a fraction). `path` holds control points (x, z) on a 34 x 20 field, smoothed by buildPath(). */
+   nest is hit. `scene` picks the scenery in js/env.js, `traps` stays empty: road traps only exist where the player lays a trap card (rules.js placeTrap). `path` holds control points (x, z) on a 34 x 20 field, smoothed by buildPath(). */
 export const STAGES = [
   {id: 'meadow', name: '初光草原', scene: 'meadow', element: '森', nest: 900, crystal: 1500, scale: 1.4, boss: 'giratina',
     path: [[-15, -5], [-6, -6], [2, -4], [3, 1], [-4, 3], [-2, 7], [7, 6], [15, 4]],
@@ -11,39 +10,39 @@ export const STAGES = [
   {id: 'pond', name: '青蛙池塘', scene: 'pond', element: '潮', nest: 1300, crystal: 1600, scale: 1.61, boss: 'articuno',
     path: [[-15, -7], [9, -7], [13, -4], [10, -1], [-9, 0], [-13, 3], [-9, 6.5], [15, 7]],
     groups: [{species: 'totodile', every: 6, start: 2, max: 4}, {species: 'kyogre', every: 9, start: 8, max: 3}, {species: 'chikorita', every: 12, start: 16, max: 2}],
-    traps: [{kind: 'mud', at: 0.3, len: 0.06}, {kind: 'mud', at: 0.68, len: 0.06}]},
+    traps: []},
   {id: 'waterfall', name: '水仙瀑布', scene: 'waterfall', element: '潮', nest: 1800, crystal: 1700, scale: 1.82, boss: 'suicune',
     path: [[-15, 7], [-15, -6], [-6, -8], [6, -8], [14, -5], [14, 3], [7, 7], [-6, 7], [-10, 1], [-5, -4], [4, -4], [7, 1], [1, 3]],
     groups: [{species: 'torchic', every: 6, start: 2, max: 4}, {species: 'wartortle', every: 9, start: 8, max: 3}, {species: 'groudon', every: 14, start: 18, max: 2}],
-    traps: [{kind: 'whirl', at: 0.35, len: 0.05}, {kind: 'whirl', at: 0.7, len: 0.05}]},
+    traps: []},
   {id: 'orchard', name: '猴王果園', scene: 'orchard', element: '焰', nest: 2200, crystal: 1800, scale: 2.03, boss: 'zapdos',
     path: [[-15, 7], [-11, 6], [-12, -1], [-12, -6], [-5, -7], [-3, -1], [-6, 4], [1, 7], [6, 2], [3, -4], [9, -7], [13, -3], [11, 3], [15, 6]],
     groups: [{species: 'mudkip', every: 6, start: 2, max: 4}, {species: 'charmander', every: 7, start: 6, max: 3}, {species: 'marshtomp', every: 13, start: 16, max: 2}],
-    traps: [{kind: 'spike', at: 0.28}, {kind: 'spike', at: 0.55}, {kind: 'spike', at: 0.8}]},
+    traps: []},
   {id: 'forge', name: '雷鳴工坊', scene: 'forge', element: '雷', nest: 2900, crystal: 1900, scale: 1.9, boss: 'raichu',
     path: [[-15, 7], [-13, -7], [-8, -7], [-8, 6], [-3, 7], [-3, -6], [2, -7], [2, 6], [7, 7], [7, -6], [12, -7], [12, 4], [15, 6]],
     groups: [{species: 'cyndaquil', every: 6.5, start: 2, max: 4}, {species: 'quilava', every: 14, start: 12, max: 2}, {species: 'marshtomp', every: 13, start: 8, max: 2}],
-    traps: [{kind: 'shock', at: 0.3}, {kind: 'shock', at: 0.62}, {kind: 'spike', at: 0.85}]},
+    traps: []},
   {id: 'desert', name: '牛仔荒野', scene: 'desert', element: '焰', nest: 3400, crystal: 2000, scale: 2.45, boss: 'chimchar',
     path: [[-15, -7], [-3, -8], [9, -7], [14, -2], [10, 4], [-1, 6], [-11, 6], [-14, 1], [-10, -3], [-2, -2.5], [6, 1]],
     groups: [{species: 'charmeleon', every: 6, start: 2, max: 4}, {species: 'marshtomp', every: 9, start: 8, max: 3}, {species: 'combusken', every: 12, start: 15, max: 2}],
-    traps: [{kind: 'mud', at: 0.25, len: 0.08}, {kind: 'spike', at: 0.5}, {kind: 'mud', at: 0.75, len: 0.08}]},
+    traps: []},
   {id: 'observatory', name: '星輝觀星台', scene: 'observatory', element: '念', nest: 4300, crystal: 2100, scale: 1.85, boss: 'monferno',
     path: [[-15, -7], [12, -7], [14, -4.6], [12, -2.3], [-12, -2.3], [-14, 0], [-12, 2.3], [12, 2.3], [14, 4.6], [12, 7], [-15, 7]],
     groups: [{species: 'piplup', every: 5, start: 2, max: 4}, {species: 'prinplup', every: 9, start: 8, max: 3}, {species: 'bayleef', every: 11, start: 12, max: 2}, {species: 'grotle', every: 13, start: 18, max: 2}],
-    traps: [{kind: 'rune', at: 0.22, len: 0.05}, {kind: 'rune', at: 0.5, len: 0.05}, {kind: 'rune', at: 0.78, len: 0.05}]},
+    traps: []},
   {id: 'night', name: '月影森林', scene: 'night', element: '念', nest: 5000, crystal: 2200, scale: 1.75, boss: 'dialga',
     path: [[-15, -3], [-12, 7], [-3, 8], [0, 1], [-5, -3], [-11, -6], [-4, -8], [6, -8], [12, -5], [8, 1], [4, 6], [9, 8], [15, 4]],
     groups: [{species: 'prinplup', every: 7, start: 2, max: 3}, {species: 'ivysaur', every: 8, start: 6, max: 3}, {species: 'grotle', every: 11, start: 12, max: 2}, {species: 'bayleef', every: 13, start: 18, max: 2}],
-    traps: [{kind: 'poison', at: 0.3, len: 0.06}, {kind: 'poison', at: 0.65, len: 0.06}]},
+    traps: []},
   {id: 'tower', name: '星穹塔下', scene: 'tower', element: '雷', nest: 6200, crystal: 2300, scale: 1.85, boss: 'pikachu',
     path: [[-15, 7], [-14, -7], [-7, -8], [-8, 1], [-10.5, 4], [-6, 8], [1, 6], [0, -2], [-2, -7], [6, -8], [11, -5], [6, 0], [9, 6], [15, 7]],
     groups: [{species: 'typhlosion', every: 12, start: 4, max: 2}, {species: 'torterra', every: 14, start: 10, max: 2}, {species: 'empoleon', every: 12, start: 16, max: 2}, {species: 'quilava', every: 8, start: 2, max: 3}],
-    traps: [{kind: 'shock', at: 0.25}, {kind: 'spike', at: 0.5}, {kind: 'shock', at: 0.75}]},
+    traps: []},
   {id: 'abyss', name: '水蛟深淵', scene: 'abyss', element: '潮', nest: 7800, crystal: 2500, scale: 1.95, boss: 'mewtwo',
     path: [[-15, 0], [-13, -7], [-3, -8], [8, -8], [14, -4], [14, 4], [8, 8], [-4, 8], [-12, 6], [-10, -1], [-5, -4], [4, -4], [8, 0], [4, 4], [-4, 4], [-6, 0], [0, 0]],
     groups: [{species: 'feraligatr', every: 12, start: 4, max: 2}, {species: 'blaziken', every: 10, start: 6, max: 2}, {species: 'rayquaza', every: 14, start: 12, max: 2}, {species: 'blastoise', every: 16, start: 20, max: 2}],
-    traps: [{kind: 'whirl', at: 0.3, len: 0.04}, {kind: 'geyser', at: 0.55}, {kind: 'whirl', at: 0.8, len: 0.04}]},
+    traps: []},
 ];
 
 /* Catmull-Rom smoothing of the control points into a dense polyline with cumulative lengths. */

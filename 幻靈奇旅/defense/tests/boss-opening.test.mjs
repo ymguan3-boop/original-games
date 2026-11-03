@@ -51,7 +51,7 @@ test('the dialog shows the boss 3D bust, plays the voice, and the theme song pla
   assert.ok(main.includes('view.portrait(stage.boss, speech.pose)'));
   assert.ok(main.includes("' 關｜' + stage.name"));
   assert.ok(main.includes('playBossVoice(speech)'));
-  assert.match(main, /const THEME_SCENE = 'general'/);
+  assert.match(main, /const THEME_SCENE = 'theme'/);
   assert.ok(!main.includes("setScene?.('arena')"));
   assert.match(html, /bi-title/);
   assert.match(html, /class="fs-toggle hud-fs"/);
