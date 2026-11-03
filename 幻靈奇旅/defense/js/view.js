@@ -7,7 +7,7 @@ import {createFx} from './fx.js?v=20261103-mobile-fx-v2';
 import {createSeascape} from './seascape.js?v=20261105-weather-v2';
 import {createToonKit} from './style.js';
 import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-islands-v1';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261105-traps-v1';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261103-tactics-v1';
 import {pointAt} from './stages.js';
 import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js';
 import {createProjectileView} from '../../survivors/js/projectile-view.js';
