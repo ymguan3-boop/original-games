@@ -187,6 +187,22 @@ function normalizeDeck() {
   });
   record.deck = record.deckSlots.filter(Boolean);
 }
+/* Choose a specific persistent sortie slot; unlike a compact array splice, removing
+   a card leaves its position empty for the next player-selected card. */
+function updateDeckSelection(id) {
+  normalizeDeck();
+  const slot = record.deckSlots.indexOf(id), red = isRedCard(id);
+  if (slot >= 0) record.deckSlots[slot] = null;
+  else {
+    const first = red ? DECK_BASE : 0, limit = red ? DECK_SIZE : DECK_BASE;
+    let target = record.deckSlots.findIndex((value, i) => i >= first && i < limit && !value);
+    if (target < 0) target = first; // Existing full-deck replacement behavior.
+    record.deckSlots[target] = id;
+  }
+  normalizeDeck();
+  saveRecord();
+  return slot < 0;
+}
 function renderLobby() {
   normalizeDeck();
   const open = unlockedStage();
@@ -310,19 +326,10 @@ function openDeck(picked = null, keepScroll = 0) {
   help?.addEventListener('toggle', () => { deckHelpExpanded = help.open; });
   if (scroller) scroller.scrollTop = keepScroll;
   const toggle = (id) => {
-    const k = record.deckSlots.indexOf(id), red = isRedCard(id);
-    if (k >= 0) {
-      record.deckSlots[k] = null; // Keep the ORIGINAL slot blank, no shifting.
-    } else {
-      const first = red ? DECK_BASE : 0, limit = red ? DECK_SIZE : DECK_BASE;
-      let target = record.deckSlots.findIndex((slot, i) => i >= first && i < limit && !slot);
-      if (target < 0) target = first; // Retain the previous full-deck swap behavior.
-      record.deckSlots[target] = id;
-    }
-    normalizeDeck();
-    saveRecord(); renderIslePanel();
+    const added = updateDeckSelection(id);
+    renderIslePanel();
     /* New cards appear in their chosen empty slot; removals keep the gap. */
-    openDeck(null, k < 0 ? 0 : scroller?.scrollTop || 0);
+    openDeck(null, added ? 0 : scroller?.scrollTop || 0);
   };
   const show = (id) => {
     const inDeck = record.deck.includes(id), s = spirit(id), sup = SUPPORT[id];
