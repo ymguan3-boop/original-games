@@ -94,3 +94,25 @@ test('portrait and landscape deck cards keep their 5:7 previews and one scrollin
   assert.match(css,/@media \(orientation:portrait\) and \(max-width:540px\)/);
   assert.match(css,/dialog#modal\.deck #modalBody > \.modal-actions/);
 });
+
+
+test('sortie editor shows selected deck first with visible 出擊 ribbons and no duplicated lower cards', () => {
+  const selectedSection = main.indexOf('class="roster sortie-current"');
+  const selectableSection = main.indexOf('其他基礎幻靈');
+  const redSection = main.indexOf('其他紅卡輔助');
+  assert.ok(selectedSection >= 0 && selectedSection < selectableSection && selectableSection < redSection,
+    'selected deck must appear before all unselected groups');
+  assert.match(main,/const chosen = record\.deck\.map\(\(id\) => unitIndex\.get\(id\)\)\.filter\(Boolean\)/);
+  assert.match(main,/unchosenBase = units\.base\.filter\(\(u\) => !record\.deck\.includes\(u\.id\)\)/);
+  assert.match(main,/unchosenRed = units\.red\.filter\(\(u\) => !record\.deck\.includes\(u\.id\)\)/);
+  assert.match(main,/chosen\.map\(unitButton\)\.join\(''\)/);
+  assert.match(main,/class="sortie-badge">出擊<\/span>/);
+  assert.match(main,/n >= 0 \? '<span class="sortie-badge">出擊<\/span>' : ''/);
+  assert.match(main,/openDeck\(null, k < 0 \? 0 : scroller\?\.scrollTop \|\| 0\)/,
+    'when adding a card, reveal its new position in the selected top row');
+  assert.match(css,/\.roster\.sortie-current/);
+  assert.match(css,/\.collectionThumb\.sortie-picked/);
+  assert.match(css,/\.collectionThumb \.sortie-badge/);
+  assert.match(css,/aspect-ratio:5 \/ 7/,'selected and unselected cards retain the full aspect ratio');
+  assert.match(css,/dialog#modal\.deck #modalBody > \.modal-actions/,'Complete button stays available');
+});
