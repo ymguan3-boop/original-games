@@ -14,6 +14,15 @@ export {STAGES};
    no boss, no items; when time runs out the base with more health left wins. */
 export const PK_STAGE = {id: 'pk', name: 'PK 競技場', scene: 'desert', element: '光', nest: 3600, crystal: 3600, scale: 1, boss: null,
   path: [[-15, -1], [-10, -6], [-1, -7], [-4, 0], [4, 0], [1, 7], [10, 6], [15, 1]], groups: [], traps: []};
+/* A match's random theme is derived from the same seed that both peers receive.
+   Keep one symmetric, balanced PK lane and health values; only the scenery changes.
+   This avoids the two players choosing different maps or gaining a path advantage. */
+export const PK_ARENAS = Object.freeze(STAGES.map(({scene, element, name}) => ({scene, element, name})));
+export function pkArenaFor(seed) {
+  const value = Number.isFinite(Number(seed)) ? Math.abs(Math.trunc(Number(seed))) : 0;
+  const theme = PK_ARENAS[value % PK_ARENAS.length];
+  return {...PK_STAGE, scene: theme.scene, element: theme.element, name: 'PK・' + theme.name, arenaName: theme.name};
+}
 export const PK_TIME = 240, PK_MAX_UNITS = 12, PK_RAGE_AT = 120;
 /* from PK_RAGE_AT on, every hit grows stronger (x2 at 180 s, x3 at 240 s) so a crowded stalemate always breaks */
 export const pkRage = (state) => (state.duel && state.time > PK_RAGE_AT ? 1 + (state.time - PK_RAGE_AT) / 60 : 1);
