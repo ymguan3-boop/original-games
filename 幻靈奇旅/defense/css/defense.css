@@ -193,7 +193,6 @@ dialog p, dialog li { line-height: 1.6; }
 @keyframes cardFlip { 0% { transform: perspective(600px) rotateY(180deg) scale(.6); opacity: 0; } 50% { opacity: 1; } 100% { transform: perspective(600px) rotateY(360deg) scale(1); } }
 @keyframes cardGlow { 0% { filter: brightness(2.6) saturate(.4); } 35% { filter: brightness(1.6) drop-shadow(0 0 12px var(--glow)); } 100% { filter: none; } }
 @keyframes glowFade { 0% { opacity: 1; } 100% { opacity: 0; } }
-#evoToggle.on { background: linear-gradient(180deg, #ffe27a, #ffb938); font-weight: 700; }
 
 /* soft cartoon vignette over the battlefield */
 .vignette { position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(60, 35, 10, .28) 100%); }
@@ -286,23 +285,6 @@ button.big { padding: 12px 28px; font-size: 17px; }
 @keyframes fbSpark { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) scale(.2); } 60% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateY(calc(var(--d) * -1)) scale(var(--z)) rotate(90deg); } }
 @keyframes fbStar { 0% { opacity: 0; transform: scale(.2) rotate(-90deg); } 35% { opacity: 1; transform: scale(1.15) rotate(8deg); } 70% { opacity: 1; transform: scale(1) rotate(0); } 100% { opacity: 0; transform: scale(.9) translateY(-34px); } }
 @keyframes fbShine { from { background-position: 120% 0; } to { background-position: -60% 0; } }
-
-/* ---------- evolution inside the merged card's art window (no overlay, battle keeps going) ---------- */
-.evo-anim { position: absolute; z-index: 4; left: 10%; top: 9%; width: 80%; height: 60%; border-radius: 8%; overflow: hidden; pointer-events: none; background: radial-gradient(circle, #fffbe0, #9fd8ff); }
-.evo-anim img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.evo-anim > * { animation-delay: var(--t, 0s) !important; }
-.evo-old { animation: evoOld 2.4s linear both; }
-.evo-new { animation: evoNew 2.4s linear both; }
-.evo-flash { position: absolute; inset: 0; background: #fff; animation: evoFlash 2.4s linear both; }
-.evo-rays { position: absolute; inset: -60%; background: repeating-conic-gradient(rgba(255, 240, 160, .75) 0 10deg, transparent 10deg 30deg); animation: evoRays 2.4s linear both; mix-blend-mode: screen; }
-.evo-label { position: absolute; left: 0; right: 0; bottom: 4%; text-align: center; font-size: 13px; color: #fff; text-shadow: 0 0 4px #ff9f1a, 0 1px 0 #a35a00; animation: evoLabel 2.4s linear both; }
-/* silhouettes alternate faster and faster, then a white burst reveals the new form in colour */
-@keyframes evoOld { 0% { opacity: 1; filter: none; } 12%, 22%, 40%, 54%, 64%, 71% { opacity: 1; filter: brightness(0) invert(1); } 31%, 47%, 59%, 68%, 74%, 100% { opacity: 0; } }
-@keyframes evoNew { 0%, 22% { opacity: 0; filter: brightness(0) invert(1); } 31%, 47%, 59%, 68%, 74%, 76% { opacity: 1; filter: brightness(0) invert(1); } 40%, 54%, 64%, 71% { opacity: 0; } 86%, 100% { opacity: 1; filter: none; } }
-@keyframes evoFlash { 0%, 74% { opacity: 0; } 78% { opacity: 1; } 92%, 100% { opacity: 0; } }
-@keyframes evoRays { 0% { opacity: 0; transform: rotate(0); } 15% { opacity: .5; } 76% { opacity: .9; } 100% { opacity: 0; transform: rotate(140deg); } }
-@keyframes evoLabel { 0%, 78% { opacity: 0; transform: scale(.4); } 84% { opacity: 1; transform: scale(1.25); } 90%, 96% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
-.hand-card:has(.evo-anim) .collectionCard { box-shadow: 0 0 0 2px #fff, 0 0 18px #ffe27a, 0 0 30px #ffb347; }
 
 /* ---------- long-press card info ---------- */
 .card-info { position: fixed; z-index: 60; width: min(320px, calc(100vw - 16px)); padding: 10px 12px 12px; border-radius: 18px; pointer-events: none;
@@ -2048,7 +2030,7 @@ dialog#modal.stage-result .stage-result-actions #nextStage {
     grid-column:4 / span 9;
     grid-row:2;
     display:grid;
-    grid-template-columns:minmax(0,2.2fr) repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(3,minmax(0,1fr));
     align-items:stretch;
     align-self:stretch;
     gap:4px;
@@ -2079,11 +2061,6 @@ dialog#modal.stage-result .stage-result-actions #nextStage {
     white-space:nowrap;
     word-break:keep-all;
   }
-  #hud .hud-top #evoToggle {
-    padding:0 2px;
-    font-size:clamp(10px,2.7vw,12px);
-    letter-spacing:-.4px;
-  }
   body.pk-mode #hud .hud-top .stat.pts {display:none;}
   body.pk-mode #hud .hud-top .hud-actions {grid-column:1 / -1;}
 }
@@ -2096,5 +2073,4 @@ dialog#modal.stage-result .stage-result-actions #nextStage {
   #hud .hud-top .hud-actions,
   #hud .hud-top .hud-actions button {height:42px;min-height:42px;}
   #hud .hud-top .hud-actions {gap:3px;}
-  #hud .hud-top #evoToggle {font-size:10px;letter-spacing:-.7px;}
 }
