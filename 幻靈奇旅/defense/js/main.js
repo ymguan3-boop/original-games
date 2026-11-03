@@ -2,14 +2,14 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_STAGE, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261103-tactics-v1';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_STAGE, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261103-goldfish-egg-v1';
 import {createPkIsland} from './pk-island.js?v=20261109-pk-v1';
 import {createPkLobby} from './pk-lobby.js?v=20261103-pk-seated-heroes-v1';
 import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261103-tactics-v1';
 import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createChartModels} from './chart-models.js?v=20261106-items-v2';
-import {createView} from './view.js?v=20261103-pk-seated-heroes-v1';
+import {createView} from './view.js?v=20261103-goldfish-egg-v1';
 import {createSeaChart} from './sea3d.js?v=20261109-pk-v1';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261103-tactics-v1';
 import {buildPath} from './stages.js?v=20261105-traps-v1';
