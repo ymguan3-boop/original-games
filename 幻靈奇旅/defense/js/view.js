@@ -44,6 +44,7 @@ export function createView(canvas, {spirits, catalog}) {
   const sphereGeo = new THREE.SphereGeometry(1, 16, 12), ringGeo = new THREE.RingGeometry(0.86, 1, 48);
   const metrics = {};
   let shake = 0, state = null, clock = 0, mapGroup = null, crystal = null, nest = null, camBase = new THREE.Vector3();
+  let lockedClimateLighting = null;
   const fighters = new Map(), effects = [], helpers = [];
   const preloadJobs = new Map();
   const MAX_WORLD_EFFECTS = mobileGpu ? 65 : 110;
@@ -110,6 +111,12 @@ export function createView(canvas, {spirits, catalog}) {
     const r = rand(game.stage.id.length * 7919 + game.stageIndex * 131 + 7), [w, h] = FIELD, theme = themeOf(game.stage), T = THEMES[theme];
     /* theme lighting and sky */
     seascape.build(theme, ISLAND); hemi.color.setHex(T.hemi[0]); hemi.groundColor.setHex(T.hemi[1]); hemi.intensity = T.hemi[2] * 0.62; sun.color.setHex(T.sun[0]); sun.intensity = T.sun[1] * 0.72;
+    /* Snapshot the current island's exact light palette once. Normal hits,
+       boss strikes, ultimates and network PK updates must not change it. */
+    lockedClimateLighting = {
+      hemiColor: hemi.color.clone(), hemiGround: hemi.groundColor.clone(), hemiPower: hemi.intensity,
+      sunColor: sun.color.clone(), sunPower: sun.intensity,
+    };
     const geo = new THREE.PlaneGeometry(w + 40, h + 30, 60, 40).rotateX(-Math.PI / 2), pos = geo.attributes.position, colors = [], c = new THREE.Color();
     const pal = T.ground.map((x) => new THREE.Color(x));
     /* the stage is an island: grass inside, a sand beach near the shore (r = 1 on a wobbly ellipse ISLAND) that slopes
@@ -870,6 +877,17 @@ export function createView(canvas, {spirits, catalog}) {
     if (state) { syncTraps(); tickTraps(dt); }
     if (nest) nest.userData.portal.material.opacity = 0.55 + Math.sin(clock * 3) * 0.2;
     combatVfx.update(dt); fx.update(dt); env?.update(dt); seascape.update(dt);
+    /* Guard against imported skill VFX accidentally modifying climate state.
+       Preserve per-character damage flashes without flickering the whole sky. */
+    seascape.lockWeather();
+    if (lockedClimateLighting) {
+      const c = lockedClimateLighting;
+      if (!hemi.color.equals(c.hemiColor)) hemi.color.copy(c.hemiColor);
+      if (!hemi.groundColor.equals(c.hemiGround)) hemi.groundColor.copy(c.hemiGround);
+      if (hemi.intensity !== c.hemiPower) hemi.intensity = c.hemiPower;
+      if (!sun.color.equals(c.sunColor)) sun.color.copy(c.sunColor);
+      if (sun.intensity !== c.sunPower) sun.intensity = c.sunPower;
+    }
     for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { disposeWorldEffect(e.obj); effects.splice(i, 1); } }
     /* Keep the sky and horizon visually steady when a tower or spirit takes damage.
        Damage feedback remains on the character and tower rather than the camera. */
