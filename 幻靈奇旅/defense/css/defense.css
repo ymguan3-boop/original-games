@@ -1771,3 +1771,102 @@ dialog#modal.deck .deck-card-list .roster.sortie-current .sortie-empty-slot:acti
   }
   #lobby .isle-card .sortie-base-warning {grid-area:warning;padding:3px 5px;font-size:10px;}
 }
+
+
+/* 2026-11-03 stage-clear landscape sheet: always-visible Next Stage footer */
+dialog#modal.stage-result {
+  box-sizing:border-box;
+  width:min(580px,calc(100vw - 24px));
+  max-width:calc(100vw - 24px);
+  max-height:calc(100dvh - 24px);
+  padding:0 14px max(10px,env(safe-area-inset-bottom));
+  margin:auto;
+  overflow:hidden;
+}
+dialog#modal.stage-result #modalBody {
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  max-height:calc(100dvh - 36px);
+  min-height:0;
+  overflow:hidden;
+}
+dialog#modal.stage-result .stage-result-content {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:0 4px 8px;
+}
+dialog#modal.stage-result .stage-result-actions {
+  display:flex;
+  flex:0 0 auto;
+  position:relative;
+  z-index:2;
+  width:100%;
+  margin:0;
+  padding:9px 4px 3px;
+  gap:8px;
+  border-top:2px solid #e4c991;
+  background:linear-gradient(180deg,#fffaf0,#fff3dc);
+  align-items:center;
+}
+dialog#modal.stage-result .stage-result-actions button {
+  touch-action:manipulation;
+  pointer-events:auto;
+}
+dialog#modal.stage-result .stage-result-actions #nextStage {
+  flex:1 1 auto;
+  min-width:0;
+  white-space:normal;
+  padding:5px 9px;
+}
+@media (orientation:landscape) and (max-height:650px) {
+  dialog#modal.stage-result {
+    width:min(610px,calc(100vw - 22px));
+    max-height:calc(100dvh - 14px);
+    padding:0 12px max(5px,env(safe-area-inset-bottom));
+    border-radius:20px;
+  }
+  dialog#modal.stage-result #modalBody {max-height:calc(100dvh - 24px);}
+  dialog#modal.stage-result .stage-result-content {padding:0 3px 4px;}
+  dialog#modal.stage-result .sheet-head {
+    height:clamp(58px,17dvh,88px);
+    min-height:58px;
+    margin:0 -12px 5px;
+    padding-bottom:4px;
+    border-radius:20px 20px 30% 30%/20px 20px 15px 15px;
+  }
+  dialog#modal.stage-result .result-stars {font-size:clamp(25px,7dvh,36px);line-height:.95;}
+  dialog#modal.stage-result .sheet-title {font-size:clamp(18px,5dvh,24px);line-height:1.05;}
+  dialog#modal.stage-result .result-title {font-size:16px;line-height:1.2;margin:1px 0;}
+  dialog#modal.stage-result .result-sub {font-size:11px;margin:1px 0 5px;}
+  dialog#modal.stage-result .stats {padding:4px 3px;border-radius:11px;}
+  dialog#modal.stage-result .stats .stat {min-width:0;gap:0;}
+  dialog#modal.stage-result .stats .stat i {width:24px;height:24px;font-size:12px;}
+  dialog#modal.stage-result .stats .stat b {font-size:15px;}
+  dialog#modal.stage-result .stats .stat small {font-size:10px;}
+  dialog#modal.stage-result .result-points {font-size:12px;margin:5px 0 0;line-height:1.25;}
+  dialog#modal.stage-result .result-points b {font-size:15px;}
+  dialog#modal.stage-result .result-points small {font-size:10px;}
+  dialog#modal.stage-result .result-note {font-size:11px;margin:4px 0 2px;}
+  dialog#modal.stage-result .stage-result-actions {gap:7px;padding:5px 3px 3px;}
+  dialog#modal.stage-result .stage-result-actions button.round {
+    flex:0 0 49px;width:49px;height:43px;min-height:43px;border-radius:12px;
+  }
+  dialog#modal.stage-result .stage-result-actions button.round span {font-size:16px;}
+  dialog#modal.stage-result .stage-result-actions button.round small {font-size:10px;}
+  dialog#modal.stage-result .stage-result-actions button.wide {
+    min-height:43px;height:43px;font-size:16px;border-radius:12px;
+  }
+  dialog#modal.stage-result .stage-result-actions button.wide small {font-size:10px;}
+}
+@media (orientation:landscape) and (max-height:380px) {
+  dialog#modal.stage-result .sheet-head {height:53px;min-height:53px;}
+  dialog#modal.stage-result .result-stars {font-size:24px;}
+  dialog#modal.stage-result .sheet-title {font-size:18px;}
+  dialog#modal.stage-result .stage-result-actions button.round,
+  dialog#modal.stage-result .stage-result-actions button.wide {height:39px;min-height:39px;}
+}
