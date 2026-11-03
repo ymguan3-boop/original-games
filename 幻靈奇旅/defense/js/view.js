@@ -842,7 +842,7 @@ export function createView(canvas, {spirits, catalog}) {
         placeGuide = new THREE.Points(g, new THREE.PointsMaterial({color: 0xffffff, size: 0.5, transparent: true, opacity: 0.85, depthWrite: false})); placeGuide.renderOrder = 4; mapGroup.add(placeGuide);
       }
       if (!placeGhost) { placeGhost = new THREE.Mesh(new THREE.CircleGeometry(1.4, 32).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.55, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2})); placeGhost.renderOrder = 5; mapGroup.add(placeGhost); }
-      placeGhost.material.color.setHex(TRAP_LOOK[kind] || 0xffffff);
+      placeGhost.material.color.setHex(kind === 'egg' ? 0xffdc70 : TRAP_LOOK[kind] || 0xffffff);
       if (x === null) placeGhost.visible = false; else { const p = pointAt(state.path, x - state.left); placeGhost.position.set(p.x, 0.2, p.z); placeGhost.visible = true; }
     },
     /* A transparent bust of a spirit's own 3D model, for dialog portraits (docs: GLB 透像). Cached per id and pose. */
