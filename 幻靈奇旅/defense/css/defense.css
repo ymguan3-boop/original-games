@@ -479,7 +479,7 @@ button.tool.small { padding: 6px 10px; font-size: 13px; }
   #lobby .isle-deck .tool { font-size:11px; white-space:nowrap; padding:7px 8px; }
   #lobby .isle-card > button.wide { grid-area:start; min-height:44px; font-size:19px; padding:6px; border-radius:13px; }
 }
-@media (orientation: landscape) and (max-height: 520px) {
+@media (orientation: landscape) and (max-height: 560px) {
   #lobby .sea-wrap { right: min(300px, 40vw); }
   #lobby .chart-head h1 {font-size:19px;}
   #lobby .isle-panel {bottom:7px;right:7px;max-height:80dvh;overflow:auto;width:min(280px,38vw);}
@@ -923,7 +923,7 @@ body.placing-trap #items { outline: 3px solid #ffd84a; }
 .bm-actions { display: grid; gap: 10px; }
 .bm-actions button { min-height: 52px; font-size: 18px; border-radius: 16px; }
 /* Landscape phones: a slim sortie panel (title, boss, edit deck, sortie) so the islands keep the screen. */
-@media (orientation: landscape) and (max-height: 520px) {
+@media (orientation: landscape) and (max-height: 560px) {
   #lobby .sea-wrap { right: min(212px, 30vw); }
   #lobby .isle-panel { width: min(200px, 29vw); max-height: none; overflow: visible; }
   #lobby .isle-card { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "title title" "boss boss" "deck start"; gap: 6px; padding: 8px; }
@@ -1005,3 +1005,29 @@ button.tool .ico { width: 1.15em; height: 1.15em; }
 .sea-zoom button .ico { width: 1.25em; height: 1.25em; }
 button.fs-toggle { display: inline-grid !important; place-items: center; width: 42px; height: 42px; min-width: 42px; padding: 0 !important; line-height: 1; }
 #lobby .points-badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+
+/* ===== Phones held sideways (also after going full screen and then rotating): the islands get the whole left side; the
+   buttons and the sortie panel share one slim column on the right, so nothing covers an island. ===== */
+@media (orientation: landscape) and (max-height: 560px) {
+  #lobby { --side: min(236px, 33vw); }
+  #lobby .sea-wrap { position: absolute; inset: 0 calc(var(--side) + max(14px, env(safe-area-inset-right))) 0 0; width: auto; height: auto; }
+  #lobby .chart-head { position: absolute; inset: 0 0 auto 0; display: block; padding: 0; margin: 0; background: none; pointer-events: none; }
+  #lobby .chart-head .logo { position: absolute; left: max(8px, env(safe-area-inset-left)); top: 6px; width: 34px; }
+  #lobby .chart-head .title-block { position: absolute; left: calc(max(8px, env(safe-area-inset-left)) + 40px); top: 9px; min-width: 0; pointer-events: none; }
+  #lobby .chart-head .eyebrow { display: none; }
+  #lobby .chart-head h1 { font-size: 16px; margin: 0; -webkit-text-stroke: 4px #1d4f86; }
+  #lobby .chart-tools { position: absolute; top: max(6px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right)); width: var(--side); margin: 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5px; justify-content: stretch; flex-wrap: nowrap; }
+  #lobby .chart-tools .points-badge { grid-column: 1 / -1; justify-content: center; padding: 3px 8px; min-height: 30px; }
+  #lobby .chart-tools .points-badge b { font-size: 15px; }
+  #lobby .chart-tools button.tool { width: 100%; min-width: 0; min-height: 32px; padding: 4px 6px; font-size: 12.5px; gap: 3px; justify-content: center; border-radius: 12px; }
+  #lobby .chart-tools button.tool span { display: inline; white-space: nowrap; }
+  #lobby .chart-head .chart-fs { position: absolute; top: 6px; right: calc(var(--side) + max(20px, env(safe-area-inset-right))); width: 36px; height: 36px; min-width: 36px; }
+  #lobby .isle-panel { position: absolute; top: auto; left: auto; right: max(8px, env(safe-area-inset-right)); bottom: max(6px, env(safe-area-inset-bottom));
+    width: var(--side); max-height: calc(100dvh - 124px); overflow-y: auto; margin: 0; }
+  #lobby .sea-zoom { left: max(8px, env(safe-area-inset-left)); }
+}
+@media (orientation: landscape) and (max-height: 560px) {
+  #lobby .sea-zoom { left: auto; right: 8px; top: auto; bottom: 8px; transform: none; }
+  #lobby .isle-card > button.wide { flex-direction: row; gap: 6px; }
+}

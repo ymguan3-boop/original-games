@@ -94,3 +94,12 @@ test('card back lists the star 1/2/3 effects; icons use a neutral tag so no span
   assert.ok(icons.includes('<x-ico class="ico"') && !icons.includes('<span class="ico"'), 'the icon is not a span');
   assert.ok(read('../tools/audit-centering.js').includes('auditCentering'), 'the centring audit is kept for later screens');
 });
+
+test('landscape phones: the islands keep the left side, buttons and the sortie panel share a slim right column', () => {
+  const css = read('../css/defense.css');
+  const i = css.lastIndexOf('Phones held sideways'), block = css.slice(i);
+  assert.ok(i > 0 && block.includes('(orientation: landscape) and (max-height: 560px)'));
+  assert.ok(block.includes('#lobby .sea-wrap { position: absolute; inset: 0 calc(var(--side)'), 'the sea stops before the right column');
+  assert.ok(block.includes('#lobby .isle-panel { position: absolute; top: auto; left: auto; right:'), 'the panel no longer stretches across from the left');
+  assert.ok(block.includes('#lobby .chart-tools { position: absolute;'), 'the buttons sit above the panel, not over the islands');
+});
