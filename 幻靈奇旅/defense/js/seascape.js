@@ -113,6 +113,15 @@ export function createSeascape(THREE, scene, kit) {
     }
   }
 
+  /* Restore the island's authored sky after every combat frame. No attack,
+     ultimate or PK snapshot may replace the background with an impact tint
+     or introduce fog. Rain/snow exist only for their preselected islands. */
+  function lockWeather() {
+    if (!group || !skyTex) return;
+    if (scene.background !== skyTex) scene.background = skyTex;
+    if (scene.fog !== null) scene.fog = null;
+  }
+
   function dispose() {
     if (!group) return;
     scene.remove(group);
@@ -123,5 +132,5 @@ export function createSeascape(THREE, scene, kit) {
     });
     skyTex?.dispose(); group = null; sea = null; foam = null; fall = null; skyTex = null;
   }
-  return {build, update, dispose, get weather() { return w; }};
+  return {build, update, dispose, lockWeather, get weather() { return w; }};
 }
