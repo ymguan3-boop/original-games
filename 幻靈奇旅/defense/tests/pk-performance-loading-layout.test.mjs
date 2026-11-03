@@ -185,7 +185,7 @@ test('top points and four action shortcuts share all available width at phone an
   assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
   assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
   assert.match(top,/sortie-base-warning/);
-  assert.match(html,/result-road-stable-v11/,'new assets must bypass cached CSS and 3D view');
+  assert.match(html,/portrait-hud-v12/,'new assets must bypass cached CSS and 3D view');
 });
 
 test('win screen keeps Next Stage button in a fixed accessible footer on landscape phones', () => {
