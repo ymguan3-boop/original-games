@@ -3,7 +3,7 @@
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
 import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js';
-import {createFx} from './fx.js?v=20261103-pk-perf-v4';
+import {createFx} from './fx.js?v=20261104-road-thunder-v15';
 import {createSeascape} from './seascape.js?v=20261104-weather-lock-v3';
 import {createToonKit} from './style.js?v=20261103-pk-perf-v3';
 import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-islands-v1';
@@ -811,6 +811,11 @@ export function createView(canvas, {spirits, catalog}) {
       else if (ev.type === 'death') { const r = fighters.get(ev.id); if (r) { r.dying = 0; r.actor?.play('Death', true); combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: '光', strong: true}); } }
       else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.barUntil = clock + HIT_BAR_SECONDS; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } if (ev.side === 'crystal') heroPlay('Hurt', true);
         else if (state?.duel && ev.side === 'nest') rivalPlay('Hurt', true); }
+      else if (ev.type === 'weatherLightning' && state?.stage?.id === 'waterfall' && !state.duel) {
+        /* Damage was resolved by rules.js. Visuals are Three.js only, on the road. */
+        const strike = world(ev.x);
+        fx.lightningStrike({x: strike.x, z: strike.z});
+      }
       else if (ev.type === 'trap') trapFired(ev);
       else if (ev.type === 'skillStart') skillStart(ev);
       else if (ev.type === 'bossSkillStart') bossSkillStart(ev);
@@ -895,6 +900,8 @@ export function createView(canvas, {spirits, catalog}) {
     /* smooth, decaying shake (no per-frame random jumps, which read as flicker) */
     camera.position.set(camBase.x + Math.sin(clock * 38) * s, camBase.y + Math.sin(clock * 47) * s * 0.4, camBase.z + Math.cos(clock * 33) * s * 0.6);
     if (s) camera.lookAt(view3.target);
+    /* Avoid one-frame sky changes from imported model-room hit effects. */
+    seascape.lockWeather();
     renderer.render(scene, camera);
   }
 
