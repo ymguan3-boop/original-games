@@ -159,12 +159,33 @@ function unitButton({id, trial = false}) {
 }
 
 let chart = null;
+/* Preserve fixed card positions, including deliberately emptied slots.
+   Slots 1–4 are base spirits and slots 5–6 are red skill cards. The compact
+   record.deck remains the existing battle/PK API; only the lobby stores holes.
+   Migrate once from earlier saves before these fixed positions existed. */
 function normalizeDeck() {
-  const units = availableUnits(), valid = new Set([...units.base, ...units.red].map((u) => u.id));
-  record.deck = (record.deck || []).filter((id) => valid.has(id));
-  record.deck = [...deckBase().slice(0, DECK_BASE), ...deckRed().slice(0, DECK_RED)];
-  for (const u of units.base) if (deckBase().length < DECK_BASE && !record.deck.includes(u.id)) record.deck.unshift(u.id);
-  for (const u of units.red) if (deckRed().length < DECK_RED && !record.deck.includes(u.id)) record.deck.push(u.id);
+  const units = availableUnits();
+  const baseIds = new Set(units.base.map((u) => u.id));
+  const redIds = new Set(units.red.map((u) => u.id));
+  if (!Array.isArray(record.deckSlots) || record.deckSlots.length !== DECK_SIZE) {
+    const old = Array.isArray(record.deck) ? record.deck : [];
+    const chosenBase = [...new Set(old.filter((id) => baseIds.has(id)))].slice(0, DECK_BASE);
+    const chosenRed = [...new Set(old.filter((id) => redIds.has(id)))].slice(0, DECK_RED);
+    /* Only the initial migration gets automatic starter cards. Never refill
+       a hole once the player explicitly removes a card from a slot. */
+    for (const u of units.base) if (chosenBase.length < DECK_BASE && !chosenBase.includes(u.id)) chosenBase.push(u.id);
+    for (const u of units.red) if (chosenRed.length < DECK_RED && !chosenRed.includes(u.id)) chosenRed.push(u.id);
+    record.deckSlots = [...Array.from({length:DECK_BASE},(_,i)=>chosenBase[i] || null),
+      ...Array.from({length:DECK_RED},(_,i)=>chosenRed[i] || null)];
+  }
+  const used = new Set();
+  record.deckSlots = record.deckSlots.map((id, i) => {
+    const valid = i < DECK_BASE ? baseIds : redIds;
+    if (!id || !valid.has(id) || used.has(id)) return null;
+    used.add(id);
+    return id;
+  });
+  record.deck = record.deckSlots.filter(Boolean);
 }
 function renderLobby() {
   normalizeDeck();
@@ -251,15 +272,20 @@ function openDeck(picked = null, keepScroll = 0) {
   normalizeDeck();
   const units = availableUnits(), nb = deckBase().length, nr = deckRed().length;
   const unitIndex = new Map([...units.base, ...units.red].map((u) => [u.id, u]));
-  const chosen = record.deck.map((id) => unitIndex.get(id)).filter(Boolean);
+  const chosenSlots = record.deckSlots.map((id, i) => {
+    const unit = id && unitIndex.get(id);
+    if (unit) return unitButton(unit);
+    const isBase = i < DECK_BASE, number = isBase ? i + 1 : i - DECK_BASE + 1;
+    return `<button type="button" class="sortie-empty-slot" data-empty-slot="${i}" aria-label="出擊卡組${isBase ? '基礎幻靈' : '技能卡'}第${number}格空位，點擊下方卡牌補入"><span class="slot-plus" aria-hidden="true">＋</span><b>${isBase ? '基礎幻靈' : '技能卡'} ${number}</b><small>空位・點選卡牌補入</small></button>`;
+  });
   const unchosenBase = units.base.filter((u) => !record.deck.includes(u.id));
   const unchosenRed = units.red.filter((u) => !record.deck.includes(u.id));
   openModal(`${ribbon('出擊卡組', '🃏')}
     <p class="result-sub">基礎幻靈 ${nb}/${DECK_BASE}・技能卡 ${nr}/${DECK_RED}（職業決定攻擊方式，四名出戰角色搭配兩張技能卡）</p>
     <div class="role-legend">${Object.values(ROLE_META).map((r) => `<span>${r.icon} ${r.label}</span>`).join('')}</div>
     <div class="panel-scroll deck-card-list">
-      <h3 class="roster-group sortie-heading">⚔️ 已選出擊卡組 <small>${chosen.length}/${DECK_SIZE}・綠框「出擊」即為目前上陣卡牌</small></h3>
-      <div class="roster sortie-current" aria-label="已加入出擊卡組的卡牌">${chosen.map(unitButton).join('') || '<p class="muted">尚未選擇出擊卡牌，請從下方挑選。</p>'}</div>
+      <h3 class="roster-group sortie-heading">⚔️ 已選出擊卡組 <small>${record.deck.length}/${DECK_SIZE}・綠框「出擊」為目前上陣卡牌，空位可自行補入</small></h3>
+      <div class="roster sortie-current" aria-label="六個固定出擊欄位，移除卡牌後原位置保留空格">${chosenSlots.join('')}</div>
       <details class="deck-special-details" ${deckHelpExpanded ? 'open' : ''}>
         <summary>📖 特殊合體與放置規則（點擊展開）</summary>
       <div class="deck-special-rules" aria-label="特殊合體與出場規則">
@@ -284,14 +310,18 @@ function openDeck(picked = null, keepScroll = 0) {
   help?.addEventListener('toggle', () => { deckHelpExpanded = help.open; });
   if (scroller) scroller.scrollTop = keepScroll;
   const toggle = (id) => {
-    const k = record.deck.indexOf(id), red = isRedCard(id);
-    if (k >= 0) record.deck.splice(k, 1);
-    else if (red && deckRed().length >= DECK_RED) record.deck.splice(record.deck.indexOf(deckRed()[0]), 1, id);
-    else if (!red && deckBase().length >= DECK_BASE) record.deck.splice(record.deck.indexOf(deckBase()[0]), 1, id);
-    else record.deck.push(id);
+    const k = record.deckSlots.indexOf(id), red = isRedCard(id);
+    if (k >= 0) {
+      record.deckSlots[k] = null; // Keep the ORIGINAL slot blank, no shifting.
+    } else {
+      const first = red ? DECK_BASE : 0, limit = red ? DECK_SIZE : DECK_BASE;
+      let target = record.deckSlots.findIndex((slot, i) => i >= first && i < limit && !slot);
+      if (target < 0) target = first; // Retain the previous full-deck swap behavior.
+      record.deckSlots[target] = id;
+    }
+    normalizeDeck();
     saveRecord(); renderIslePanel();
-    /* A newly selected card moves to the top group immediately; reveal it.
-       Removing a selected card preserves the user's browsing position. */
+    /* New cards appear in their chosen empty slot; removals keep the gap. */
     openDeck(null, k < 0 ? 0 : scroller?.scrollTop || 0);
   };
   const show = (id) => {
@@ -312,6 +342,15 @@ function openDeck(picked = null, keepScroll = 0) {
     layer.onclick = (e) => { if (e.target === layer) $('flipClose').click(); };
   };
   $('modalBody').querySelectorAll('[data-unit]').forEach((b) => (b.onclick = () => show(b.dataset.unit)));
+  /* Empty placeholders jump to the right candidate category within the same
+     scroll area; they never add, consume, or auto-pick a card themselves. */
+  $('modalBody').querySelectorAll('[data-empty-slot]').forEach((b) => {
+    b.onclick = () => {
+      const n = Number(b.dataset.emptySlot), groups = [...scroller.querySelectorAll('.roster-group')];
+      const heading = groups.find((h) => h.textContent.includes(n < DECK_BASE ? '其他基礎幻靈' : '其他紅卡輔助'));
+      if (heading) scroller.scrollTo({top:heading.offsetTop - scroller.offsetTop, behavior:'smooth'});
+    };
+  });
 }
 
 /* Summons in the endless cave's own gacha dialog (same markup, art and summon film: survivors/js/summon-view.js,
