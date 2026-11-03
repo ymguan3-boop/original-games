@@ -20,7 +20,8 @@ import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleL
 import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261105-weather-v2';
 import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-country-v1';
 import {icon} from '../../survivors/js/ui-art.js';
-import {initFullscreen} from './fullscreen.js?v=20261104-country-v1';
+import {initFullscreen} from './fullscreen.js?v=20261107-icons-v2';
+import {initIcons} from './ui-icons.js?v=20261107-icons-v2';
 import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
 
 const $ = (id) => document.getElementById(id);
@@ -236,11 +237,11 @@ function openDeck(picked = null, keepScroll = 0) {
     <div class="role-legend">${Object.values(ROLE_META).map((r) => `<span>${r.icon} ${r.label}</span>`).join('')}</div>
     <div class="panel-scroll"><h3 class="roster-group">基礎幻靈 <small>黃卡、紫卡的未進階幻靈與三色蛋</small></h3><div class="roster">${units.base.map(unitButton).join('') || '<p class="muted">還沒有基礎幻靈，先去轉蛋吧！</p>'}</div>
     <h3 class="roster-group">紅卡輔助 <small>點擊施放技能，合成升星</small></h3><div class="roster">${units.red.map(unitButton).join('') || '<p class="muted">紅卡可由轉蛋取得（需先在原探索收錄）。</p>'}</div></div>
-    <div id="deckInfo" class="deck-info" hidden></div>
+    <div id="flipLayer" class="flip-layer" hidden></div>
     <div class="modal-actions center"><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto');
   $('deckGacha').onclick = () => { $('modal').close(); openGacha(); };
-  /* tapping a card shows its attack, ultimate and passives; a button then adds it to / removes it from the sortie deck */
-  const scroller = $('modalBody').querySelector('.panel-scroll'), info = $('deckInfo');
+  /* tapping a card turns it over: the back lists its attack, ultimate and passives, with a button to add it to / remove it from the deck */
+  const scroller = $('modalBody').querySelector('.panel-scroll'), layer = $('flipLayer');
   if (scroller) scroller.scrollTop = keepScroll;
   const toggle = (id) => {
     const k = record.deck.indexOf(id), red = isRedCard(id);
@@ -248,16 +249,24 @@ function openDeck(picked = null, keepScroll = 0) {
     else if (red && deckRed().length >= DECK_RED) record.deck.splice(record.deck.indexOf(deckRed()[0]), 1, id);
     else if (!red && deckBase().length >= DECK_BASE) record.deck.splice(record.deck.indexOf(deckBase()[0]), 1, id);
     else record.deck.push(id);
-    saveRecord(); renderIslePanel(); openDeck(id, scroller?.scrollTop || 0);
+    saveRecord(); renderIslePanel(); openDeck(null, scroller?.scrollTop || 0);
   };
   const show = (id) => {
-    const inDeck = record.deck.includes(id);
-    info.innerHTML = `<button class="${inDeck ? 'tool' : 'primary'} wide-btn" id="deckToggle">${inDeck ? '移出出戰卡組' : '加入出戰卡組'}</button>` + cardInfoHtml({species: id, rank: 1});
-    info.hidden = false; $('deckToggle').onclick = () => toggle(id);
-    $('modalBody').querySelectorAll('[data-unit]').forEach((x) => x.classList.toggle('picked', x.dataset.unit === id));
+    const inDeck = record.deck.includes(id), s = spirit(id), sup = SUPPORT[id];
+    const line = sup ? '技能：' + esc(sup.skill) : esc(roleLabel(id)) + ' · ' + shapeLabel(id, false);
+    layer.innerHTML = '<div class="flip-scene"><div class="flip-card" data-frame="' + (s.cardFrame || 'yellow') + '">'
+      + '<div class="flip-face front"><div class="collectionThumb flip-thumb">' + cardHtml(id, {line}) + '</div></div>'
+      + '<div class="flip-face back"><div class="flip-info">' + cardInfoHtml({species: id, rank: 1}) + '</div>'
+      + '<div class="flip-actions"><button class="' + (inDeck ? '' : 'primary') + '" id="deckToggle">' + (inDeck ? '移出出戰卡組' : '加入出戰卡組') + '</button><button id="flipClose">返回</button></div></div></div></div>';
+    layer.hidden = false;
+    const card = layer.querySelector('.flip-card');
+    requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('flipped')));
+    card.querySelector('.front').onclick = () => card.classList.add('flipped');
+    $('deckToggle').onclick = () => toggle(id);
+    $('flipClose').onclick = () => { card.classList.remove('flipped'); setTimeout(() => { layer.hidden = true; layer.innerHTML = ''; }, 520); };
+    layer.onclick = (e) => { if (e.target === layer) $('flipClose').click(); };
   };
   $('modalBody').querySelectorAll('[data-unit]').forEach((b) => (b.onclick = () => show(b.dataset.unit)));
-  if (picked && $('modalBody').querySelector('[data-unit="' + picked + '"]')) show(picked);
 }
 
 /* Summons in the endless cave's own gacha dialog (same markup, art and summon film: survivors/js/summon-view.js,
@@ -783,6 +792,7 @@ async function renderChartArt() {
 }
 
 async function init() {
+  initIcons();
   record = readJson(SAVE_KEY, {}) || {};
   if (!Number.isInteger(record.stage)) record.stage = 0;
   record.cleared = record.cleared || {}; record.owned = record.owned || []; record.best = record.best || {};

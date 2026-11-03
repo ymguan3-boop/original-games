@@ -943,3 +943,55 @@ body.placing-trap #items { outline: 3px solid #ffd84a; }
 .deck-info[hidden] { display: none; }
 .deck-info .wide-btn { width: 100%; margin: 0 0 8px; min-height: 44px; font-size: 16px; }
 .roster .collectionThumb.picked { outline: 3px solid #ffb938; outline-offset: -1px; }
+
+/* ===== One icon style: warm-brown line icons (ui-icons.js), as in the town's round buttons ===== */
+.ico { display: inline-grid; place-items: center; width: 1.2em; height: 1.2em; vertical-align: -.22em; flex: none; }
+.ico svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.ico svg [fill="#ffd45a"] { fill: #f6c64b; }
+.ci-tag .ico, .primary .ico { stroke-width: 2.2; }
+button.fs-toggle, .hud-actions #camReset, #hud .hud-top #pause { color: #6a4423; }
+button.fs-toggle .ico, #camReset .ico { width: 1.5em; height: 1.5em; }
+.side-btn .side-icon .ico { width: 1.15em; height: 1.15em; }
+.trap-art .ico { width: .9em; height: .9em; color: #6a4423; }
+.item-icon .ico { width: 1.3em; height: 1.3em; color: #6a4423; }
+.weather-pill .ico, .weather-chip .ico { width: 1.15em; height: 1.15em; }
+
+/* ===== Country-style buttons: text first, thick wooden outline, cream paper, small brown icon ===== */
+#lobby button, #hud button, #modal button, #panel button, .sea-zoom button {
+  border: 3px solid #7a4a24; color: #5a3719; font-weight: 800; letter-spacing: .02em;
+  background: linear-gradient(180deg, #fff9e8 0%, #f8e5b8 100%);
+  box-shadow: inset 0 0 0 2px #fffdf3, 0 3px 0 #a87040, 0 5px 8px #49301822;
+}
+#lobby button.primary, #hud button.primary, #modal button.primary, #panel button.primary {
+  background: linear-gradient(180deg, #b8e98f, #7cc556); color: #274a1f; border-color: #4f7d2e;
+  box-shadow: inset 0 0 0 2px #dcf7c4, 0 3px 0 #3f6a24, 0 5px 8px #244e2626;
+}
+#lobby button.tool.gacha, #lobby button.tool.home { background: linear-gradient(180deg, #fff9e8 0%, #f8e5b8 100%); border-color: #7a4a24; color: #5a3719; }
+button.tool { gap: 6px; font-size: 15px; }
+button.tool .ico { width: 1.15em; height: 1.15em; }
+#lobby .points-badge { border: 3px solid #7a4a24; background: linear-gradient(180deg, #fff9e8, #f8e5b8); color: #5a3719; box-shadow: inset 0 0 0 2px #fffdf3, 0 3px 0 #a87040; }
+#lobby .points-badge b { font-size: 19px; }
+.chart-head .chart-tools button.tool span { display: inline; }
+@media (orientation: portrait) and (max-width: 720px) {
+  #lobby .chart-tools { gap: 4px; flex-wrap: nowrap; }
+  #lobby button.tool { padding: 6px 7px; min-width: 0; font-size: 12.5px; gap: 3px; border-radius: 12px; }
+  #lobby .points-badge { padding: 4px 8px; } #lobby .points-badge b { font-size: 15px; }
+  #lobby button.tool .ico { width: 1.05em; height: 1.05em; }
+}
+.fs-toggle { border-radius: 50% !important; padding: 0 !important; }
+
+/* ===== Deck: the tapped card turns over to show its details ===== */
+.flip-layer { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; background: rgba(48, 30, 12, .58); }
+.flip-layer[hidden] { display: none; }
+.flip-scene { perspective: 1100px; width: min(84vw, 340px); aspect-ratio: 5 / 7.4; max-height: 86dvh; }
+.flip-card { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .85s cubic-bezier(.3, 1.25, .4, 1); }
+.flip-card.flipped { transform: rotateY(180deg); }
+.flip-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 18px; }
+.flip-face.front .flip-thumb { width: 100%; height: 100%; }
+.flip-face.front .collectionCard { width: 100%; height: 100%; }
+.flip-face.back { transform: rotateY(180deg); display: flex; flex-direction: column; padding: 12px; background: linear-gradient(180deg, #fffaf0, #f8e8c2); border: 4px solid #7a4a24; box-shadow: inset 0 0 0 3px #fff6dc, 0 10px 26px rgba(40, 24, 8, .45); }
+.flip-card[data-frame="purple"] .flip-face.back { border-color: #7a52b8; } .flip-card[data-frame="red"] .flip-face.back { border-color: #b0402e; }
+.flip-info { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.flip-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding-top: 8px; }
+.flip-actions button { min-height: 44px; font-size: 15px; }
+.roster .collectionThumb { cursor: pointer; }

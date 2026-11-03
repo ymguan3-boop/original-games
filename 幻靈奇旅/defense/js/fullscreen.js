@@ -1,3 +1,4 @@
+import {ico} from './ui-icons.js?v=20261107-icons-v2';
 /* The "全畫面" buttons (top right of the chart and of the battle HUD). Uses the Fullscreen API (also the webkit-prefixed
    one); on browsers without it (iPhone Safari) the page fills the visible viewport instead (html.pseudo-fs) and
    scrolls the address bar away. Every button with class .fs-toggle is wired and kept in sync. */
@@ -14,11 +15,12 @@ function sync() {
     b.setAttribute('aria-pressed', String(on));
     b.title = on ? '還原視窗' : '全畫面';
     b.setAttribute('aria-label', b.title);
-    const label = b.querySelector('span');
+    /* a text label (if the button has one) and the line icon */
+    const label = b.querySelector('span:not(.ico)');
     if (label) label.textContent = on ? '還原' : '全畫面';
-    const icon = b.firstChild && b.firstChild.nodeType === 3 ? b.firstChild : null;
-    if (icon) icon.nodeValue = on ? '🗗' : '⛶';
-    else if (!label) b.textContent = on ? '🗗' : '⛶';
+    const icon = b.querySelector('.ico'), mark = ico(on ? 'restore' : 'fullscreen');
+    if (!label) b.innerHTML = mark;
+    else if (icon) icon.outerHTML = mark; else b.insertAdjacentHTML('afterbegin', mark);
   });
   /* layout depends on the viewport size; let the 3D view and HUD re-measure */
   dispatchEvent(new Event('resize'));

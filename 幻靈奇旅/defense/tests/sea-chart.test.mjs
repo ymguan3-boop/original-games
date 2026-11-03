@@ -72,8 +72,18 @@ test('gacha gives this mode own items; the panel, boatman and landscape sortie p
 
 test('the deck sheet shows a card\'s attack, ultimate and passives; boarding the boat puts the weapon away', () => {
   const main = read('../js/main.js'), game = read('../../js/game.js'), css = read('../css/defense.css');
-  assert.ok(main.includes('id="deckInfo"') && main.includes('cardInfoHtml({species: id, rank: 1})') && main.includes("'加入出戰卡組'"));
+  assert.ok(main.includes('id="flipLayer"') && main.includes('cardInfoHtml({species: id, rank: 1})') && main.includes('加入出戰卡組'));
   assert.ok(!main.includes("$('modalBody').querySelectorAll('[data-unit]').forEach((b) => (b.onclick = () => {\n    const id = b.dataset.unit, k"), 'a tap no longer toggles the deck directly');
-  assert.ok(css.includes('.deck-info'));
+  assert.ok(css.includes('.flip-card.flipped'));
   assert.ok(game.includes('&&!riding()&&!harbor?.sailing'), 'the scythe is disabled while the hero boards and sails');
+});
+
+test('one icon style: every emoji in the interface becomes a warm line icon, and buttons are cream wooden text buttons', () => {
+  const main = read('../js/main.js'), icons = read('../js/ui-icons.js'), css = read('../css/defense.css');
+  assert.ok(main.includes('initIcons();'));
+  assert.ok(icons.includes('MutationObserver') && icons.includes('stroke: currentColor') === false);
+  for (const e of ['🎟️', '🎰', '🃏', '📖', '⛵', '🚤', '🎥', '🎒', '⛶', '⚔️', '🛡️', '🌦️', '⛈️', '🟤', '🧪', '🔒', '🚩', '❚❚']) assert.ok(icons.includes("'" + e + "'"), e + ' has an icon');
+  assert.ok(css.includes('.ico svg { width: 100%; height: 100%; fill: none; stroke: currentColor'));
+  assert.ok(css.includes('Country-style buttons') && css.includes('border: 3px solid #7a4a24'));
+  assert.ok(main.includes('class="flip-card"') && main.includes("card.classList.add('flipped')"), 'the tapped deck card flips to its back');
 });
