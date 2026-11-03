@@ -15,8 +15,8 @@ test('the sea chart is one live 3D scene: the old 2D SVG chart is gone', () => {
 });
 
 test('island cards are larger and turn toward the viewer; the dock has no white square', () => {
-  const b = read('../js/islands3d.js');
-  assert.ok(b.includes('w = 1.38, h = 1.93') && b.includes('billboard = true'));
+  const b = read('../js/islands3d.js'), c = read('../js/island-cards.js');
+  assert.ok(c.includes('w = 1.38, h = 1.93') && c.includes('billboard = true'));
   assert.ok(!b.includes('PlaneGeometry(36, 30)'), 'the pale rectangular shallow-water plane under the pier is removed');
 });
 
@@ -45,4 +45,16 @@ test('items are gacha supplies and trap cards with counts; the road has no built
   assert.ok(main.includes('useBagItem(game, id)') && main.includes('beginPlacing') && main.includes('view?.pickRoad'));
   assert.ok(!main.includes('useItem(game, b.dataset.item)'), 'the old unlimited cooldown items are not offered');
   assert.match(css, /#hud \.hud-top \.stat\.deal[\s\S]*?height: 40px/, 'the deal meter has the same height as the other top buttons');
+});
+
+test('islands, pier and speedboat are loaded from GLB files, not built with code at run time', () => {
+  const main = read('../js/main.js'), models = read('../js/chart-models.js');
+  for (const id of ['meadow', 'pond', 'waterfall', 'orchard', 'forge', 'desert', 'observatory', 'night', 'tower', 'abyss']) {
+    const file = new URL('../models/island-' + id + '.glb', import.meta.url);
+    assert.ok(existsSync(file), id + ' island GLB'); assert.equal(readFileSync(file).subarray(0, 4).toString(), 'glTF');
+  }
+  for (const f of ['dock.glb', 'speedboat.glb']) assert.equal(readFileSync(new URL('../models/' + f, import.meta.url)).subarray(0, 4).toString(), 'glTF');
+  assert.ok(models.includes("'defense/models/' + file") && main.includes('createChartModels') && !main.includes('createIslandBuilder') && !main.includes('makeDock'));
+  assert.ok(existsSync(new URL('../assets/card-frame.webp', import.meta.url)) && main.includes("frameImage: 'assets/card-frame.webp'"), 'a small card frame replaces the 1.7 MB png');
+  assert.ok(main.includes('await loadThree()') && !main.includes('try { await loadEngine(); data'), 'the chart no longer waits for the battle scripts');
 });

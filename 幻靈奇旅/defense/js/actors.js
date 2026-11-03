@@ -17,6 +17,13 @@ function script(path, globalName) {
   return scripts.get(path);
 }
 
+/* Just Three.js and its glTF loader: enough for the sea chart, so the chart does not wait for the battle scripts. */
+export async function loadThree() {
+  await script('vendor/three.min.js', 'THREE');
+  if (!globalThis.THREE.GLTFLoader) await script('vendor/GLTFLoader.js');
+  return globalThis.THREE;
+}
+
 /* Same engine scripts the cave loads before building its scene. */
 export async function loadEngine() {
   await script('vendor/three.min.js', 'THREE');

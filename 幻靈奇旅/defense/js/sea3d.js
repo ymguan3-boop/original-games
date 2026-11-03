@@ -150,7 +150,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
     const ok = tagPos.z < 1 && Math.abs(tagPos.x) < 1.25 && Math.abs(tagPos.y) < 1.25;
     el.style.visibility = ok ? 'visible' : 'hidden';
     if (ok) {
-      const k = H / (2 * rig.dist * Math.tan(FOV * Math.PI / 360)), dy = edge * k * Math.sin(rig.pitch) + el.offsetHeight / 2 + 3;
+      const k = H / (2 * rig.dist * Math.tan(FOV * Math.PI / 360)), dy = edge * k * Math.sin(rig.pitch) + (el._h || (el._h = el.offsetHeight || 24)) / 2 + 3;
       el.style.transform = `translate(${((tagPos.x + 1) / 2 * W).toFixed(1)}px, ${((1 - tagPos.y) / 2 * H + dy).toFixed(1)}px) translate(-50%, -50%)`;
     }
   }
@@ -159,7 +159,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
       const locked = i > state.open, el = tagEls[i];
       el.className = 'isle-tag' + (locked ? ' is-locked' : '') + (state.selected === i ? ' is-selected' : '') + (state.cleared[s.id] ? ' is-cleared' : '');
       el.innerHTML = (locked ? '🔒 ' : '') + (state.cleared[s.id] ? '🚩 ' : '') + (i + 1) + '. ' + esc(s.name);
-      el.setAttribute('aria-label', (i + 1) + '. ' + s.name + (locked ? '（尚未解鎖）' : ''));
+      el._h = 0; el.setAttribute('aria-label', (i + 1) + '. ' + s.name + (locked ? '（尚未解鎖）' : ''));
       fogs[i].visible = locked; flags[i].visible = !!state.cleared[s.id];
     });
     const sel = islandRoots[state.selected]; if (sel) { selRing.position.set(sel.position.x, WATER_Y + 0.12, sel.position.z); selRing.visible = true; }
@@ -266,7 +266,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
   }
   function resize() {
     W = host.clientWidth; H = host.clientHeight; if (W < 2 || H < 2) return;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75)); renderer.setSize(W, H, false);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); renderer.setSize(W, H, false);
     camera.aspect = W / H; camera.updateProjectionMatrix();
     const was = {...home0}; fit();
     const untouched = Math.abs(goal.dist - was.dist) < 0.01 || !was.dist || was.dist === 30;
@@ -291,6 +291,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
       group.scale.setScalar(0.01); const t0 = performance.now(), pop = (now) => { const k = Math.min(1, (now - t0) / 450); group.scale.setScalar(0.01 + 0.99 * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(pop); }; requestAnimationFrame(pop);
     },
     setHome(group) { homeRoot.add(group); homeRoot.userData.model = group; },
+    get homeGroup() { return homeRoot.userData.model || null; },
     setBoat(model) { boatModel?.parent?.remove(boatModel); boatModel = model; boat.add(model); },
     addAnimations(list) { animations.push(...list.map((f) => (dt, t) => f(dt, t))); },
     focusSelected() { const r = islandRoots[state.selected]; if (r) { goal.x = r.position.x; goal.z = r.position.z; goal.dist = Math.min(goal.dist, home0.dist * 0.6); clampRig(goal); } },

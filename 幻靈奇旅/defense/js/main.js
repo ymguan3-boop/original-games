@@ -3,11 +3,11 @@
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
 import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem} from './rules.js?v=20261105-traps-v1';
-import {loadEngine, loadGltf, cloneModel} from './actors.js';
+import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
-import {createIslandBuilder} from './islands3d.js?v=20261105-traps-v1';
+import {createChartModels} from './chart-models.js?v=20261105-glb-v1';
 import {createView} from './view.js?v=20261105-traps-v1';
-import {createSeaChart} from './sea3d.js?v=20261105-traps-v3';
+import {createSeaChart} from './sea3d.js?v=20261105-glb-v1';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard} from './gacha.js?v=20261105-traps-v1';
 import {buildPath} from './stages.js?v=20261105-traps-v1';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js';
@@ -730,27 +730,33 @@ function loop(now) {
   if (game) game.events.length = 0;
 }
 
-/* The sea chart is a live Three.js scene (sea3d.js): a diorama model for every island (islands3d.js) carrying its boss's dex card,
-   the town pier with the boatman, and the real speedboat (shared js/harbor.js) with the hero seated at the wheel in the outfit
-   from the town wardrobe. They are built one after another so the chart is usable while the models pop in. */
+/* The sea chart is a live Three.js scene (sea3d.js) whose islands, pier and speedboat are GLB files (chart-models.js). They are
+   loaded in parallel and pop in as they arrive; the heavy hero model (boatman and rider) is fetched last. */
 async function renderChartArt() {
-  const T = globalThis.THREE, H = globalThis.PhantomHarbor, kit = createToonKit(T), builder = createIslandBuilder(T, kit);
-  chart.addAnimations(builder.animated);
-  const card = (id) => { const s = spirit(id); return {art: picture(id), frameImage: '../assets/cards/frame.png', frame: s.cardFrame || 'yellow', name: s.name, number: data.entries.get(id)?.number || '—', info: s.type + " · " + (s.rarity || "普通") + " · 第 " + (s.stage || 1) + " 階段", hp: s.hp, attack: s.attack}; };
-  for (let i = 0; i < STAGES.length; i++) chart.setIsland(i, await builder.island(STAGES[i].scene, card(STAGES[i].boss)));
-  try { const gh = await loadGltf('models/hero.glb'); chart.setHome(builder.dock(cloneModel(gh.scene))); } catch (e) { console.warn(e); try { chart.setHome(builder.dock(null)); } catch {} }
-  if (H?.makeSpeedboat) {
-    const {boat, SEAT} = H.makeSpeedboat(T, {mobile: true}); H.toonOutline(T, boat, {thickness: 0.03});
-    try {
-      const g = await loadGltf('models/hero.glb'), hero = cloneModel(g.scene), box = new T.Box3().setFromObject(hero), s = 2.55 / (box.max.y - box.min.y);
-      hero.scale.setScalar(s); hero.position.y = -box.min.y * s;
-      const seat = new T.Group(); seat.add(hero); seat.position.set(SEAT.x, SEAT.y - H.HERO_HIP, 0); seat.rotation.y = Math.PI / 2; boat.add(seat);
+  const T = globalThis.THREE, H = globalThis.PhantomHarbor, kit = createToonKit(T), models = createChartModels(T, kit, {loadGltf, cloneModel});
+  chart.addAnimations(models.animated);
+  const card = (id) => { const s = spirit(id); return {art: picture(id), frameImage: 'assets/card-frame.webp', frame: s.cardFrame || 'yellow', name: s.name, number: data.entries.get(id)?.number || '—', info: s.type + " · " + (s.rarity || "普通") + " · 第 " + (s.stage || 1) + " 階段", hp: s.hp, attack: s.attack}; };
+  const tasks = [];
+  STAGES.forEach((s, i) => tasks.push(models.island(s.scene, card(s.boss)).then((g) => chart.setIsland(i, g)).catch((e) => console.warn(e))));
+  tasks.push(models.dock().then((g) => chart.setHome(g)).catch((e) => console.warn(e)));
+  const boat = models.boat().then((g) => { chart.setBoat(g); return g; }).catch((e) => { console.warn(e); return null; });
+  await Promise.all([...tasks, boat]);
+  /* last: the hero model, as the boatman on the pier and as the rider at the wheel (outfit from the town wardrobe) */
+  try {
+    const gh = await loadGltf('models/hero.glb'), home = chart.homeGroup, boatGroup = await boat;
+    const fit = (hero) => { const box = new T.Box3().setFromObject(hero), s = 2.55 / (box.max.y - box.min.y); hero.scale.setScalar(s); hero.position.y = -box.min.y * s; };
+    if (home && H?.dressBoatman) {
+      const hero = cloneModel(gh.scene); fit(hero); const man = new T.Group(); man.add(hero); H.dressBoatman(T, hero); kit.toonify(hero, {outline: 0.05});
+      man.position.set(36.6, 0.12, 7.4); man.rotation.y = Math.PI * 0.9; home.add(man);
+    }
+    if (boatGroup) {
+      const SEAT = {x: -0.38, y: 0.62}, hero = cloneModel(gh.scene); fit(hero);
+      const seat = new T.Group(); seat.add(hero); seat.position.set(SEAT.x, SEAT.y - H.HERO_HIP, 0); seat.rotation.y = Math.PI / 2; boatGroup.add(seat);
       try { globalThis.HeroCostumes?.create(T).apply(hero, costumeFor(journey()).id); } catch (e) { console.warn(e); }
-      const idle = g.animations.find((c) => /idle/i.test(c.name)); if (idle) { const mixer = new T.AnimationMixer(hero); mixer.clipAction(idle).play(); mixer.update(0.4); }
+      const idle = gh.animations.find((c) => /idle/i.test(c.name)); if (idle) { const mixer = new T.AnimationMixer(hero); mixer.clipAction(idle).play(); mixer.update(0.4); }
       kit.toonify(hero, {outline: 0.025});
-    } catch (e) { console.warn(e); }
-    chart.setBoat(boat);
-  }
+    }
+  } catch (e) { console.warn(e); }
 }
 
 async function init() {
@@ -763,10 +769,12 @@ async function init() {
   globalThis.PhantomTransition?.finish?.();
   if (fromTown || !Number.isInteger(record.boatAt)) record.boatAt = -1;
   $('loadingBar').style.width = '30%';
-  try { await loadEngine(); data = await loadData(); } catch (e) { toast(e.message); $('loading').hidden = true; return; }
+  try { await loadThree(); data = await loadData(); } catch (e) { toast(e.message); $('loading').hidden = true; return; }
   $('loadingBar').style.width = '100%';
   bindLobby(); bindHud(); bindHand(); renderLobby();
   renderChartArt().catch((e) => console.warn(e));
+  /* the battle scripts load quietly in the background while the player looks at the chart */
+  setTimeout(() => loadEngine().catch((e) => console.warn(e)), 1500);
   /* the boat loader stays a moment so the voyage reads, then the speedboat sails from the town pier to the island */
   setTimeout(async () => {
     $('loading').hidden = true;
