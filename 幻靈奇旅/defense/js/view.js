@@ -4,7 +4,7 @@
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
 import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js';
 import {createFx} from './fx.js?v=20261103-pk-perf-v4';
-import {createSeascape} from './seascape.js?v=20261105-weather-v2';
+import {createSeascape} from './seascape.js?v=20261103-pk-perf-v6';
 import {createToonKit} from './style.js?v=20261103-pk-perf-v3';
 import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-islands-v1';
 import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261103-pk-perf-v3';
@@ -867,7 +867,7 @@ export function createView(canvas, {spirits, catalog}) {
       for (const c of casters.splice(0)) c.a?.dispose();
       projectileView.clear(); combatVfx.clear(); fx.clear();
       if (!game || game.duel) releasePortraitRenderer();
-      state = game; if (game) buildMap(game);
+      state = game; if (game) buildMap(game); else seascape.dispose();
     },
     async preload(ids, onProgress = null) {
       /* Fetch model/assets only. Old code constructed+destroyed every complete
