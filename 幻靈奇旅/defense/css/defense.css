@@ -2062,7 +2062,7 @@ dialog#modal.stage-result .stage-result-actions #nextStage {
     word-break:keep-all;
   }
   body.pk-mode #hud .hud-top .stat.pts {display:none;}
-  body.pk-mode #hud .hud-top .hud-actions {grid-column:1 / -1;}
+  body.pk-mode #hud .hud-top .hud-actions {grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 @media (orientation:portrait) and (max-width:355px) {
   #hud .hud-top {column-gap:3px;row-gap:4px;grid-template-rows:53px 42px;}
