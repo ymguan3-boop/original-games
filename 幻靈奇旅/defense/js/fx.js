@@ -221,7 +221,7 @@ export function createFx(THREE, scene) {
     for (let i = jobs.length - 1; i >= 0; i--) {
       const j = jobs[i]; j.age += dt; const k = Math.min(1, j.age / j.life);
       j.update(k, dt);
-      if (k >= 1) { if (j.obj) { scene.remove(j.obj); j.obj.traverse?.((n) => { n.geometry?.dispose?.(); n.material?.dispose?.(); }); } jobs.splice(i, 1); }
+      if (k >= 1) { if (j.obj) { scene.remove(j.obj); j.obj.traverse?.((n) => { if (!n.isSprite) n.geometry?.dispose?.(); n.material?.dispose?.(); }); } jobs.splice(i, 1); }
     }
   }
   function clear() {
@@ -230,7 +230,7 @@ export function createFx(THREE, scene) {
     for (const j of jobs.splice(0)) if (j.obj) {
       scene.remove(j.obj);
       j.obj.traverse?.((node) => {
-        node.geometry?.dispose?.();
+        if (!node.isSprite) node.geometry?.dispose?.();
         for (const mat of (Array.isArray(node.material) ? node.material : [node.material]))
           mat?.dispose?.();
       });
