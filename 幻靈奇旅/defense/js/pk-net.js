@@ -83,7 +83,13 @@ function loadPeer() {
   });
 }
 function wrapConn(conn, peer) {
-  const ch = makeChannel('peerjs', (o) => conn.send(o), () => { conn.close(); setTimeout(() => peer.destroy(), 300); });
+  const ch = makeChannel('peerjs', (o) => {
+    /* An unstable mobile link must not accumulate megabytes of old frames.
+       Snapshots are replaceable; actions, game-over and room messages are not. */
+    const bytes = conn.dataChannel?.bufferedAmount || 0;
+    if (o?.t === 'snap' && (bytes > 256 * 1024 || (conn._buffer?.length || 0) > 12)) return;
+    conn.send(o);
+  }, () => { conn.close(); setTimeout(() => peer.destroy(), 300); });
   conn.on('data', (o) => ch._recv(o)); conn.on('close', () => ch._gone()); conn.on('error', () => ch._gone());
   peer.on('disconnected', () => { /* the broker link only matters for pairing */ });
   return ch;
