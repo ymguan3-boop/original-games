@@ -52,6 +52,9 @@ const I = {
   trap: '<path d="M3 18h18M5 18a7 7 0 0 1 14 0M9 10.500l-2-4.500M15 10.500l2-4.500"/>',
   flag: '<path d="M6 21V4M6 4h11l-2.500 4L17 12H6"/>',
   fullscreen: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  minus: '<path d="M5 12h14"/>',
+  home: '<path d="M4 11l8-7 8 7M6 10v10h12V10"/><path d="M10 20v-6h4v6"/>',
   restore: '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>',
 };
 const EMOJI = {
@@ -65,7 +68,7 @@ const EMOJI = {
 };
 const RE = new RegExp(Object.keys(EMOJI).sort((a, b) => b.length - a.length).map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
 
-export const ico = (name) => '<span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24">' + (I[name] || I.sparkle) + '</svg></span>';
+export const ico = (name) => '<x-ico class="ico" aria-hidden="true"><svg viewBox="0 0 24 24">' + (I[name] || I.sparkle) + '</svg></x-ico>';
 /* the emoji of a string as icon markup (for strings that are written with innerHTML) */
 export const iconize = (text) => String(text).replace(RE, (m) => ico(EMOJI[m]));
 

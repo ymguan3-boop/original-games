@@ -87,3 +87,10 @@ test('one icon style: every emoji in the interface becomes a warm line icon, and
   assert.ok(css.includes('Country-style buttons') && css.includes('border: 3px solid #7a4a24'));
   assert.ok(main.includes('class="flip-card"') && main.includes("card.classList.add('flipped')"), 'the tapped deck card flips to its back');
 });
+
+test('card back lists the star 1/2/3 effects; icons use a neutral tag so no span rule can distort them', () => {
+  const main = read('../js/main.js'), icons = read('../js/ui-icons.js');
+  assert.ok(main.includes('function starRows(id)') && main.includes('升星效果') && main.includes('大絕威力 '));
+  assert.ok(icons.includes('<x-ico class="ico"') && !icons.includes('<span class="ico"'), 'the icon is not a span');
+  assert.ok(read('../tools/audit-centering.js').includes('auditCentering'), 'the centring audit is kept for later screens');
+});

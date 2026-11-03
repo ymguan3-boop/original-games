@@ -1,4 +1,4 @@
-import {ico} from './ui-icons.js?v=20261107-icons-v2';
+import {ico} from './ui-icons.js?v=20261107-icons-v5';
 /* The "全畫面" buttons (top right of the chart and of the battle HUD). Uses the Fullscreen API (also the webkit-prefixed
    one); on browsers without it (iPhone Safari) the page fills the visible viewport instead (html.pseudo-fs) and
    scrolls the address bar away. Every button with class .fs-toggle is wired and kept in sync. */

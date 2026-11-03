@@ -2,12 +2,12 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem} from './rules.js?v=20261105-traps-v1';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem} from './rules.js?v=20261105-traps-v1';
 import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createChartModels} from './chart-models.js?v=20261106-items-v2';
 import {createView} from './view.js?v=20261105-traps-v1';
-import {createSeaChart} from './sea3d.js?v=20261106-items-v5';
+import {createSeaChart} from './sea3d.js?v=20261107-icons-v5';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261106-items-v1';
 import {buildPath} from './stages.js?v=20261105-traps-v1';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js';
@@ -20,8 +20,8 @@ import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleL
 import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261105-weather-v2';
 import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-country-v1';
 import {icon} from '../../survivors/js/ui-art.js';
-import {initFullscreen} from './fullscreen.js?v=20261107-icons-v2';
-import {initIcons} from './ui-icons.js?v=20261107-icons-v2';
+import {initFullscreen} from './fullscreen.js?v=20261107-icons-v5';
+import {initIcons} from './ui-icons.js?v=20261107-icons-v5';
 import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
 
 const $ = (id) => document.getElementById(id);
@@ -256,7 +256,7 @@ function openDeck(picked = null, keepScroll = 0) {
     const line = sup ? '技能：' + esc(sup.skill) : esc(roleLabel(id)) + ' · ' + shapeLabel(id, false);
     layer.innerHTML = '<div class="flip-scene"><div class="flip-card" data-frame="' + (s.cardFrame || 'yellow') + '">'
       + '<div class="flip-face front"><div class="collectionThumb flip-thumb">' + cardHtml(id, {line}) + '</div></div>'
-      + '<div class="flip-face back"><div class="flip-info">' + cardInfoHtml({species: id, rank: 1}) + '</div>'
+      + '<div class="flip-face back"><div class="flip-info">' + cardInfoHtml({species: id, rank: 1}) + '<h4 class="star-head">升星效果（兩張相同、相鄰的同星卡合成）</h4>' + starRows(id) + '</div>'
       + '<div class="flip-actions"><button class="' + (inDeck ? '' : 'primary') + '" id="deckToggle">' + (inDeck ? '移出出戰卡組' : '加入出戰卡組') + '</button><button id="flipClose">返回</button></div></div></div></div>';
     layer.hidden = false;
     const card = layer.querySelector('.flip-card');
@@ -475,6 +475,41 @@ function cardInfoHtml(card) {
     + rows + row('t-eff','提醒','<small>職業取代屬性剋制；燃燒、減速與控制只來自角色專屬技能或被動。</small>');
 }
 
+/* What each star level changes (merging two identical cards of the same star gives the next star): real numbers from the rules. */
+const spiritName = (id) => spirit(id)?.name || id;
+function starRows(id) {
+  const sup = SUPPORT[id], u = ultimateFor(id), tag = (r) => '★'.repeat(r + 1);
+  const row = (r, body) => `<div class="ci-row star-row"><span class="ci-tag t-star">${tag(r)}</span><div>${body}</div></div>`;
+  const rows = [];
+  if (sup) {
+    const pct = (v) => Math.round(v * 100) + '%', cap = (v, m) => +Math.min(v, m).toFixed(1);
+    for (let r = 0; r < MAX_RANK; r++) {
+      const k = sup.kind;
+      const t = k === 'freeze' ? '全場魔物冰凍 ' + cap(sup.duration[r], 4.5) + ' 秒'
+        : k === 'volley' ? '六發追星彈，每發傷害 ' + sup.power[r] + '（隨關卡提高）'
+        : k === 'quake' ? '全場重擊 ' + sup.power[r] + ' 並擊退'
+        : k === 'plague' ? '中毒＋虛弱 ' + sup.duration[r] + ' 秒，每秒毒傷 ' + sup.power[r]
+        : k === 'beam' ? '光束傷害 ' + sup.power[r] + '，貫穿路上的魔物'
+        : k === 'heal' ? '回復幻靈 ' + pct(Math.min(0.7, sup.power[r])) + ' 生命，基地回復 ' + pct(sup.crystal[r])
+        : k === 'shield' ? '我方幻靈無敵 ' + cap(sup.duration[r], 3.5) + ' 秒'
+        : k === 'haste' ? '我方攻擊速度加倍 ' + cap(sup.duration[r], 5) + ' 秒' : sup.text;
+      rows.push(row(r, esc(t)));
+    }
+    return rows.join('');
+  }
+  const heal = u && /heal|regen|shield/.test(u.kind || ''), power = (r) => Math.round((1 + 0.3 * r) * 100) + '%', healPow = (r) => Math.round((1 + 0.2 * r) * 100) + '%';
+  const chain = [id]; for (let r = 1; r < MAX_RANK; r++) { const nx = evolutionsOf(data.evolution, chain[r - 1]).filter((e) => spirit(e)); chain.push(nx.length ? nx : null); if (!nx.length) break; chain[r] = nx; }
+  const form = (r) => { const c = chain[r]; return Array.isArray(c) ? c.map(spiritName).join(' 或 ') : null; };
+  for (let r = 0; r < MAX_RANK; r++) {
+    const parts = [];
+    if (r === 0) parts.push('基本能力');
+    else if (form(r)) parts.push('合成進化為「' + esc(form(r)) + '」，改用新形態的能力與技能');
+    else parts.push('生命・攻擊 ×' + (1 + 0.5 * r).toFixed(1) + '（沒有更進一步的進化形態）');
+    parts.push('大絕威力 ' + power(r) + (heal ? '、治療／回復量 ' + healPow(r) : ''));
+    rows.push(row(r, parts.join('；')));
+  }
+  return rows.join('');
+}
 function showCardInfo(el, card) {
   const box = $('cardInfo'); box.innerHTML = cardInfoHtml(card); box.hidden = false;
   const r = el.getBoundingClientRect(), w = box.offsetWidth;

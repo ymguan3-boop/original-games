@@ -11,6 +11,8 @@ const WATER_Y = -0.12, PITCH = 0.95, FOV = 38;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
+import {ico} from './ui-icons.js?v=20261107-icons-v5';
+
 export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s) => s}) {
   let state = {open: 0, cleared: {}, selected: 0, boatAt: -1}, sailing = null, portrait = isPortrait();
   const w3 = (p) => [p[0] / UNIT, p[1] / UNIT];
@@ -27,7 +29,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, esc = (s
   const canvas = document.createElement('canvas'); canvas.className = 'sea-canvas'; canvas.setAttribute('aria-label', '幻靈群島 3D 海圖');
   const tags = document.createElement('div'); tags.className = 'sea-tags';
   const tools = document.createElement('div'); tools.className = 'sea-zoom';
-  tools.innerHTML = '<button type="button" data-z="in" title="放大" aria-label="放大">＋</button><button type="button" data-z="out" title="縮小" aria-label="縮小">－</button><button type="button" data-z="reset" title="回到全圖" aria-label="回到全圖">⌂</button>';
+  tools.innerHTML = '<button type="button" data-z="in" title="放大" aria-label="放大">' + ico('plus') + '</button><button type="button" data-z="out" title="縮小" aria-label="縮小">' + ico('minus') + '</button><button type="button" data-z="reset" title="回到全圖" aria-label="回到全圖">' + ico('home') + '</button>';
   host.append(canvas, tags, tools);
   const renderer = new T.WebGLRenderer({canvas, antialias: true, powerPreference: 'high-performance'});
   renderer.outputEncoding = T.sRGBEncoding; renderer.setClearColor(0x2a86c4, 1);
