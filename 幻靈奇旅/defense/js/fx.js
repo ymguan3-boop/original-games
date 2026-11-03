@@ -103,7 +103,9 @@ export function createFx(THREE, scene) {
        neither sunlight nor the painted sky changes when the base takes damage. */
     glowBall({x, y, z, color, size: Math.min(1.4, intensity * 0.24), life});
   }
-  /* Sky-spanning random lightning was removed: all thunder now uses a small\n     steady Three.js road-localized bolt in lightningStrike() below. */\n  function comet({from, to, color, life = 0.45, size = 1.4}) {
+  /* Sky-spanning random lightning was removed: all thunder now uses a small
+     steady Three.js road-localized bolt in lightningStrike() below. */
+  function comet({from, to, color, life = 0.45, size = 1.4}) {
     const head = new THREE.Sprite(new THREE.SpriteMaterial({map: soft, color: linear(color), transparent: true, depthWrite: false, blending: add})); head.scale.set(size, size, 1);
     const trail = [];
     job(life, (k, dt) => {
