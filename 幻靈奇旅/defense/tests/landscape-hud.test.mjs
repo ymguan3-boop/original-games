@@ -32,10 +32,10 @@ test('fusion and evolution no longer create flying yellow stars', () => {
   assert.ok(!burst.includes('fb-star'), 'large yellow star must not be created');
   assert.ok(!burst.includes('<s '), 'star-shaped sparks must not be created');
   assert.ok(main.includes("'<i>★</i>'.repeat(c.rank)"), 'permanent rank stars stay on the card');
-  assert.ok(main.includes('evoOverlay(c.uid)'), 'in-card character evolution remains');
+  assert.ok(!main.includes('evoOverlay(c.uid)'), 'evolution cutscene remains disabled; battle merge still works');
 });
 
 test('published HTML has updated CSS and JS versions to bypass cached old layout', () => {
-  assert.match(html,/defense\.css\?v=20261109-pk-v1/);
-  assert.match(html,/main\.js\?v=20261109-pk-v1/);
+  assert.match(html,/defense\.css\?v=20261104-weather-hud-v14/);
+  assert.match(html,/main\.js\?v=20261104-weather-hud-v14/);
 });
