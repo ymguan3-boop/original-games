@@ -2,14 +2,14 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261103-pk-perf-v3';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261104-allstage-v16';
 import {createPkIsland} from './pk-island.js?v=20261109-pk-v1';
 import {createPkLobby} from './pk-lobby.js?v=20261103-pk-seated-heroes-v1';
 import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261103-tactics-v1';
 import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createChartModels} from './chart-models.js?v=20261106-items-v2';
-import {createView} from './view.js?v=20261104-climate-lock-v12';
+import {createView} from './view.js?v=20261104-allstage-v16';
 import {createSeaChart} from './sea3d.js?v=20261109-pk-v1';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261103-pk-perf-v3';
 import {buildPath} from './stages.js?v=20261105-traps-v1';
@@ -449,7 +449,7 @@ function showHowTo() {
     ${tip('⚔️','職業與基本攻擊', `<p>取消屬性相克。普通攻擊只分近距離、遠距離和法術；牧師優先治療最低血量比例隊友，必要時才施放弱法術。</p><table class="counter-table"><tr><th>職業</th><th>攻擊類型</th><th>距離</th></tr>${roles}</table>`)}
     ${tip('✨','61 隻專屬大絕', '<p>每位幻靈都有自己的大絕招、傷害倍率、範圍或補血效果；依原有角色模型動畫施放。卡牌長按可查看詳細效果。</p>')}
     ${tip('⏳','大絕錯峰施放', `<p>全場同一時間只允許一個重型大絕啟動；每次間隔至少 ${ULTIMATE_SPACING} 秒。其他幻靈繼續普攻，支援技能與塔上魔王同樣排隊，避免特效同時爆發造成卡頓。</p>`)}
-    ${tip('🌤️','固定關卡天氣', `<p>每關開始即固定自己的天空和天氣，戰鬥、受傷、技能和暴擊都不改變天色：</p><div class="weather-grid">${weathers}</div>`)}
+    ${tip('🌤️','固定關卡天氣', `<p>所有關卡與 PK 戰的天氣、天空、日光都固定，不因受到攻擊或施放大絕改變；第三關「水仙瀑布」另有偶發、只落在道路上的閃電，會傷害場上雙方幻靈，不影響天空與基地：</p><div class="weather-grid">${weathers}</div>`)}
     ${tip('🏝️','群島航線', '<p>從初光鎮碼頭出發，依序經過十個主題島；通關後可挑戰下一島，已通關島可重複挑戰。</p>')}
     ${tip('🃏','卡組與升星', `<p>四張基礎幻靈加兩張技能卡，手牌最多 ${HAND_SIZE} 張；一般相同卡須相鄰才能合成升星。<b>特殊例外：</b>金魚國王 ×1 ＋ 金魚皇后 ×1 相鄰可合體為水蛟龍王 ★★★，兩張同種金魚只升星；<b>三色蛋</b>點卡後可選道路任意有效位置放置，或拖曳到道路，放下後固定不移動。場上出戰上限 ${20} 隻。</p>`)}
     ${tip('🔮','支援技能卡', `<ul class="mini">${supports}</ul>`)}
