@@ -2,17 +2,17 @@
    state.events into effects. Every fighter is a cave actor (actors.js); attacks use the cave's model-room scripts,
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
-import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-v19';
-import {createFx} from './fx.js?v=20261107-v19';
-import {createSeascape} from './seascape.js?v=20261107-v19';
-import {createToonKit} from './style.js?v=20261107-v19';
-import {batchStatic, movingMeshes} from './batch.js?v=20261107-v19';
-import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261107-v19';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261107-v19';
-import {pointAt} from './stages.js?v=20261107-v19';
-import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261107-v19';
-import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261107-v19';
-import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261107-v19';
+import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-v21';
+import {createFx} from './fx.js?v=20261107-v21';
+import {createSeascape} from './seascape.js?v=20261107-v21';
+import {createToonKit} from './style.js?v=20261107-v21';
+import {batchStatic, movingMeshes} from './batch.js?v=20261107-v21';
+import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261107-v21';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261107-v21';
+import {pointAt} from './stages.js?v=20261107-v21';
+import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261107-v21';
+import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261107-v21';
+import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261107-v21';
 
 /* spirits on the path are 0.7x of the earlier size */
 const SCALE = 1.26, BOSS_SCALE = 2.1, FIELD = [34, 20], ISLAND = [33, 23.5];
@@ -92,6 +92,8 @@ export function createView(canvas, {spirits, catalog}) {
   const boomerangs = new Set();
   const combatVfx = createCombatVfx(THREE, scene, {metrics, onShake: (a) => { shake = Math.max(shake, a); }});
   const fx = createFx(THREE, scene);
+  /* 共用輕量 3D 粒子：局部、不動天空與燈光；關閉時回到原本的 fx.hit。 */
+  const vfx3d = globalThis.Vfx3D?.create({THREE, parent: scene}) ?? null;
   const kit = createToonKit(THREE), seascape = createSeascape(THREE, scene, kit, canvas);
   let env = null;
   const projectileView = createProjectileView(THREE, scene, {actorPoint: (id) => actorPoint(id, true), targetPoint: (id, fallback) => actorPoint(id, false, fallback), metrics});
@@ -403,6 +405,43 @@ export function createView(canvas, {spirits, catalog}) {
        may animate additional luminous/translucent model parts. */
     b.hurtUntil = clock + 0.8; b.mood.back = 0.6; b.mood.kind = 'flinch'; b.mood.t = 0;
   }
+  /* 魔王大絕的全場畫面：傷害仍由 rules.js 結算，這裡只沿著道路放 3D 粒子與地面衝擊環，全部是局部模型，
+     不動天空、霧與燈光。招式型態依各魔王的絕招設計，場上沒有幻靈時一樣看得到。 */
+  const BOSS_FIELD = {giratina: 'slam', articuno: 'rain', suicune: 'rain', zapdos: 'slam', raichu: 'wave', chimchar: 'volley', monferno: 'rain', dialga: 'volley', pikachu: 'sweep', mewtwo: 'sweep'};
+  const FIELD_POINTS = 14, RING_GROWTH = 3.65, fieldJobs = [];
+  const later = (delay, run) => fieldJobs.push({at: clock + delay, run});
+  function fieldBurst(x, z, element, {y = 0.4, count = 10, speed = 3.4, up = 4, size = 0.2, life = 0.6} = {}) {
+    const colors = globalThis.Vfx3D?.COLORS[element];
+    if (!colors || !vfx3d?.burst({x, y, z}, {count, colors, speed, up, size, life})) fx.particles({x, z, y, count, color: ELEMENT_COLORS[element] || 0xff6b8a, size: size * 2, speed, up, life, gravity: -6});
+  }
+  function fieldRing(x, z, element, reach, life = 0.45) {
+    const color = globalThis.Vfx3D?.COLORS[element]?.[0] ?? ELEMENT_COLORS[element] ?? 0xff6b8a;
+    if (!vfx3d?.ring({x, y: 0.1, z}, {radius: reach / RING_GROWTH, color, life})) fx.shockwave({x, z, color, radius: reach, life, strength: 0.6});
+  }
+  function roadPoints() {
+    const pts = state.path.points, last = pts.length - 1;
+    return Array.from({length: FIELD_POINTS}, (_, i) => { const [x, z] = pts[Math.round(i / (FIELD_POINTS - 1) * last)]; return {x, z}; });
+  }
+  function bossFieldAttack(ev) {
+    const road = roadPoints(), el = ev.element, center = world((state.left + state.right) / 2), kind = BOSS_FIELD[ev.species] || 'slam';
+    if (kind === 'slam') {
+      [0, 0.16, 0.32].forEach((d, i) => later(d, () => fieldRing(center.x, center.z, el, 9 + i * 4.5, 0.5)));
+      road.forEach((p, i) => later(0.06 + (i % 4) * 0.05, () => fieldBurst(p.x, p.z, el, {up: 5.5, speed: 2.4, size: 0.24})));
+    } else if (kind === 'rain') {
+      road.forEach((p, i) => later((i * 7 % FIELD_POINTS) * 0.055, () => { fieldBurst(p.x, p.z, el, {y: 6.5, up: 0.6, speed: 0.8, life: 0.72, count: 8, size: 0.24}); later(0.5, () => fieldRing(p.x, p.z, el, 1.5, 0.3)); }));
+    } else if (kind === 'wave') {
+      [0, 0.26].forEach((d, n) => road.forEach((p, i) => { if (i % 2 === n) later(d + Math.abs(i - FIELD_POINTS / 2) * 0.035, () => { fieldRing(p.x, p.z, el, 3.2, 0.36); fieldBurst(p.x, p.z, el, {count: 5, up: 2.6}); }); }));
+    } else if (kind === 'volley') {
+      const from = nest ? {x: nest.position.x, y: 3, z: nest.position.z} : {x: center.x, y: 3, z: center.z};
+      road.forEach((p, i) => later(i * 0.05, () => { bolt(from, {x: p.x, y: 0.6, z: p.z}, ELEMENT_COLORS[el] || 0xffffff); later(0.14, () => { fieldRing(p.x, p.z, el, 1.7, 0.28); fieldBurst(p.x, p.z, el, {count: 6}); }); }));
+    } else {
+      road.forEach((p, i) => later(i * 0.055, () => { fieldBurst(p.x, p.z, el, {up: 6, speed: 1.8, count: 11, size: 0.25}); fieldRing(p.x, p.z, el, 2.4, 0.32); }));
+    }
+    shake = Math.max(shake, 0.4);
+  }
+  function stepFieldJobs() {
+    for (let i = fieldJobs.length - 1; i >= 0; i--) if (clock >= fieldJobs[i].at) { const job = fieldJobs.splice(i, 1)[0]; job.run(); }
+  }
   function bossSkillStart() {
     const b = nestBoss; if (!b || b.leave) return;
     const r = canvas.getBoundingClientRect(), to = screenToWorld(r.left + r.width / 2, r.top + r.height * 0.5, CASTER_DIST);
@@ -410,7 +449,8 @@ export function createView(canvas, {spirits, catalog}) {
     b.cast = {t: 0, from: b.home.clone(), to, castT: undefined}; b.mood.kind = null; b.play('Idle');
   }
   function bossSkill(ev) {
-    const b = nestBoss, color = ELEMENT_COLORS[ev.element] || 0xff6b8a;
+    const b = nestBoss;
+    bossFieldAttack(ev);
     /* Boss attack remains localized: never tint the entire field/sky. Limit impact draw calls. */
     for (const f of state.fighters.filter((f) => f.side === 'ally' && f.hp > 0).slice(0, 6)) {
       const r = fighters.get(f.id);
@@ -698,7 +738,7 @@ export function createView(canvas, {spirits, catalog}) {
     rec.barUntil = clock + HIT_BAR_SECONDS;
     rec.flashT = 0.14; rec.flash.material.color.copy(linear(ev.crit ? 0xffd54a : rec.side === 'ally' ? 0xff8a8a : ev.strong ? ELEMENT_COLORS[ev.element] || 0xffffff : 0xffffff));
     rec.recoil = ev.crit || ev.strong ? 0.3 : 0.14;
-    if (numbersThisFrame < 4) fx.hit({x: d.x, y, z: d.z, element: ev.element, crit: ev.crit, kind: ev.kind});
+    if (numbersThisFrame < 4 && !vfx3d?.hit({x: d.x, y, z: d.z}, ev.element, !!(ev.crit || ev.strong))) fx.hit({x: d.x, y, z: d.z, element: ev.element, crit: ev.crit, kind: ev.kind});
     numbersThisFrame++;
     const loud = ev.crit || ev.strong || ev.effective;
     rec.pending = (rec.pending || 0) + ev.amount;
@@ -851,6 +891,7 @@ export function createView(canvas, {spirits, catalog}) {
         /* Damage was resolved by rules.js. Visuals are Three.js only, on the road. */
         const strike = world(ev.x);
         fx.lightningStrike({x: strike.x, z: strike.z});
+        vfx3d?.burst({x: strike.x, y: 0.3, z: strike.z}, {count: 14, colors: Vfx3D.COLORS.雷, speed: 3.4, up: 3.2, size: 0.11, life: 0.42});
       }
       else if (ev.type === 'trap') trapFired(ev);
       else if (ev.type === 'skillStart') skillStart(ev);
@@ -917,7 +958,7 @@ export function createView(canvas, {spirits, catalog}) {
     tickNestBoss(dt);
     if (state) { syncTraps(); tickTraps(dt); }
     if (nest) nest.userData.portal.material.opacity = 0.55 + Math.sin(clock * 3) * 0.2;
-    combatVfx.update(dt); fx.update(dt); stepBoomerangs(dt); env?.update(dt); seascape.update(dt);
+    combatVfx.update(dt); fx.update(dt); vfx3d?.update(dt); stepFieldJobs(); stepBoomerangs(dt); env?.update(dt); seascape.update(dt);
     /* Guard against imported skill VFX accidentally modifying climate state.
        Preserve per-character damage flashes without flickering the whole sky. */
     for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { disposeWorldEffect(e.obj); effects.splice(i, 1); } }
@@ -961,7 +1002,7 @@ export function createView(canvas, {spirits, catalog}) {
     set costume(id) { costumeId = id || 'trainer'; },
     set rivalCostume(id) { rivalCostumeId = id || 'trainer'; },
     zoomBy, orbitBy, resetCamera,
-    debug: () => ({THREE, scene, camera, renderer, crystal, nest, hero, rivalHero, nestBoss, traps}),
+    debug: () => ({THREE, scene, camera, renderer, vfx3d, crystal, nest, hero, rivalHero, nestBoss, traps}),
     setGame(game) {
       for (const id of [...fighters.keys()]) removeFighter(id);
       for (const hlp of helpers.splice(0)) hlp.a.dispose();
@@ -970,7 +1011,7 @@ export function createView(canvas, {spirits, catalog}) {
       disposeMap();
       hero = null; rivalHero = null; traps = []; placeGuide = placeGhost = null; numbersOnScreen = 0;
       for (const c of casters.splice(0)) c.a?.dispose();
-      projectileView.clear(); combatVfx.clear(); fx.clear();
+      projectileView.clear(); combatVfx.clear(); fx.clear(); vfx3d?.clear(); fieldJobs.length = 0;
       if (!game || game.duel) releasePortraitRenderer();
       state = game; if (game) buildMap(game); else seascape.dispose();
     },
