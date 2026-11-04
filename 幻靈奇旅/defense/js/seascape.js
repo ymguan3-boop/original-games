@@ -60,16 +60,29 @@ function paintSky(w, seed = 1) {
   return c;
 }
 
-export function createSeascape(THREE, scene, kit) {
+export function createSeascape(THREE, scene, kit, canvas) {
   const linear = (hex) => new THREE.Color(hex).convertSRGBToLinear();
-  let group = null, sea = null, seaBase = null, foam = null, fall = null, skyTex = null, time = 0, w = WEATHER.meadow;
+  let group = null, sea = null, seaBase = null, foam = null, fall = null, skyCss = '', skyColor = '', time = 0, w = WEATHER.meadow;
 
   function build(theme, island) {
     dispose();
     w = weatherOf(theme);
     group = new THREE.Group(); group.name = 'Seascape'; scene.add(group);
-    skyTex = new THREE.CanvasTexture(paintSky(w, [...String(theme)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7))); skyTex.encoding = THREE.sRGBEncoding; skyTex.wrapS = THREE.RepeatWrapping; skyTex.repeat.set(0.5, 1);
-    scene.background = skyTex; scene.fog = null;
+    /* The sky is a CSS layer behind the transparent WebGL canvas, not a
+       Three.js scene texture. Effects, character hurt clips and device WebGL
+       clears can never recolor this independent backdrop. */
+    const painted = paintSky(w, [...String(theme)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7));
+    skyColor = w.sky[1];
+    try { skyCss = 'url("' + painted.toDataURL('image/png') + '")'; }
+    catch (e) { console.warn('Sky background fallback', e); skyCss = 'none'; }
+    if (canvas) {
+      canvas.style.backgroundColor = skyColor;
+      canvas.style.backgroundImage = skyCss;
+      canvas.style.backgroundPosition = 'center';
+      canvas.style.backgroundSize = 'cover';
+      canvas.style.backgroundRepeat = 'no-repeat';
+    }
+    scene.background = null; scene.fog = null;
     /* a ring of sea around the island that fades out into the sky (alpha map: solid inside, soft edge) */
     const [rx, rz] = island, sx = rx + 16, sz = rz + 13;
     const ac = document.createElement('canvas'); ac.width = ac.height = 256; const ag = ac.getContext('2d'), ar = ag.createRadialGradient(128, 128, 0, 128, 128, 128);
@@ -113,13 +126,14 @@ export function createSeascape(THREE, scene, kit) {
     }
   }
 
-  /* Restore the island's authored sky after every combat frame. No attack,
-     ultimate or PK snapshot may replace the background with an impact tint
-     or introduce fog. Rain/snow exist only for their preselected islands. */
+  /* Weather is strictly independent of the 3D framebuffer.
+     Keep the sky as an immutable canvas CSS background. */
   function lockWeather() {
-    if (!group || !skyTex) return;
-    if (scene.background !== skyTex) scene.background = skyTex;
+    if (!group) return;
+    if (scene.background !== null) scene.background = null;
     if (scene.fog !== null) scene.fog = null;
+    if (canvas && canvas.style.backgroundImage !== skyCss) canvas.style.backgroundImage = skyCss;
+    if (canvas && canvas.style.backgroundColor !== skyColor) canvas.style.backgroundColor = skyColor;
   }
 
   function dispose() {
@@ -130,7 +144,12 @@ export function createSeascape(THREE, scene, kit) {
       o.material?.alphaMap?.dispose?.();
       o.material?.dispose?.();
     });
-    skyTex?.dispose(); group = null; sea = null; foam = null; fall = null; skyTex = null;
+    if (canvas) {
+      canvas.style.backgroundImage = '';
+      canvas.style.backgroundColor = '';
+    }
+    skyCss = ''; skyColor = '';
+    group = null; sea = null; foam = null; fall = null;
   }
   return {build, update, dispose, lockWeather, get weather() { return w; }};
 }
