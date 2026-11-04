@@ -1,0 +1,2467 @@
+{
+ "source": "a84159688af3ca37a4be05a0d422b94451b2e24e",
+ "total": 244,
+ "summary": {
+  "已替換使用": 88,
+  "不適用": 139,
+  "可搭配使用": 12,
+  "未來預留": 5
+ },
+ "effects": [
+  {
+   "id": "arcane/arcane-beam",
+   "category": "arcane",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "arcane/arcane-missiles",
+   "category": "arcane",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.release"
+   ],
+   "baked": true
+  },
+  {
+   "id": "arcane/arcane-orb",
+   "category": "arcane",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.shot"
+   ],
+   "baked": true
+  },
+  {
+   "id": "arcane/blink-in",
+   "category": "arcane",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "arcane/blink-out",
+   "category": "arcane",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "arcane/magic-circle-cast",
+   "category": "arcane",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "arena.charge",
+    "arena.release",
+    "arena.start",
+    "cave.spell",
+    "defense.charge",
+    "defense.skill"
+   ],
+   "baked": true
+  },
+  {
+   "id": "arcane/mana-burst",
+   "category": "arcane",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense",
+    "tower",
+    "challenge"
+   ],
+   "events": [
+    "arena.impact",
+    "defense.ultimate",
+    "tower.ultimate",
+    "challenge.wave"
+   ],
+   "baked": true
+  },
+  {
+   "id": "arcane/portal",
+   "category": "arcane",
+   "status": "已替換使用",
+   "modes": [
+    "cave"
+   ],
+   "events": [
+    "cave.boss"
+   ],
+   "baked": true
+  },
+  {
+   "id": "arcane/rune-circle",
+   "category": "arcane",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "arena.charge",
+    "cave.spell",
+    "defense.charge",
+    "defense.trap"
+   ],
+   "baked": true
+  },
+  {
+   "id": "arcane/spell-charge",
+   "category": "arcane",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense"
+   ],
+   "events": [
+    "arena.charge",
+    "defense.charge"
+   ],
+   "baked": true
+  },
+  {
+   "id": "arcane/star-fall",
+   "category": "arcane",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "arcane/time-stop",
+   "category": "arcane",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "critters/bat",
+   "category": "critters",
+   "status": "可搭配使用",
+   "modes": [
+    "cave"
+   ],
+   "events": [
+    "ambient.cave.deep"
+   ],
+   "baked": true
+  },
+  {
+   "id": "critters/bird",
+   "category": "critters",
+   "status": "不適用",
+   "baked": false,
+   "reason": "裝飾生物：規格禁止新增可捕捉目標，僅用於有環境層的場景"
+  },
+  {
+   "id": "critters/butterfly",
+   "category": "critters",
+   "status": "可搭配使用",
+   "modes": [
+    "world",
+    "commerce"
+   ],
+   "events": [
+    "ambient.world.field",
+    "ambient.commerce.forecourt"
+   ],
+   "baked": true
+  },
+  {
+   "id": "critters/eyeball",
+   "category": "critters",
+   "status": "不適用",
+   "baked": false,
+   "reason": "裝飾生物：規格禁止新增可捕捉目標，僅用於有環境層的場景"
+  },
+  {
+   "id": "critters/fish-school",
+   "category": "critters",
+   "status": "不適用",
+   "baked": false,
+   "reason": "裝飾生物：規格禁止新增可捕捉目標，僅用於有環境層的場景"
+  },
+  {
+   "id": "critters/flying-skull",
+   "category": "critters",
+   "status": "不適用",
+   "baked": false,
+   "reason": "裝飾生物：規格禁止新增可捕捉目標，僅用於有環境層的場景"
+  },
+  {
+   "id": "critters/frog",
+   "category": "critters",
+   "status": "不適用",
+   "baked": false,
+   "reason": "裝飾生物：規格禁止新增可捕捉目標，僅用於有環境層的場景"
+  },
+  {
+   "id": "critters/ghost",
+   "category": "critters",
+   "status": "不適用",
+   "baked": false,
+   "reason": "裝飾生物：規格禁止新增可捕捉目標，僅用於有環境層的場景"
+  },
+  {
+   "id": "critters/jellyfish",
+   "category": "critters",
+   "status": "不適用",
+   "baked": false,
+   "reason": "裝飾生物：規格禁止新增可捕捉目標，僅用於有環境層的場景"
+  },
+  {
+   "id": "critters/slime",
+   "category": "critters",
+   "status": "不適用",
+   "baked": false,
+   "reason": "裝飾生物：規格禁止新增可捕捉目標，僅用於有環境層的場景"
+  },
+  {
+   "id": "critters/snake",
+   "category": "critters",
+   "status": "不適用",
+   "baked": false,
+   "reason": "裝飾生物：規格禁止新增可捕捉目標，僅用於有環境層的場景"
+  },
+  {
+   "id": "critters/wisp",
+   "category": "critters",
+   "status": "可搭配使用",
+   "modes": [
+    "defense",
+    "world",
+    "cave"
+   ],
+   "events": [
+    "ambient.defense.night",
+    "ambient.world.night",
+    "ambient.cave.deep"
+   ],
+   "baked": true
+  },
+  {
+   "id": "explosions/barrel-explosion",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/big-explosion",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/cartoon-pow",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/dirt-explosion",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/firework-burst",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/firework-rocket",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/grenade",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/implosion",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/nuke",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/plasma-explosion",
+   "category": "explosions",
+   "status": "已替換使用",
+   "modes": [
+    "cave"
+   ],
+   "events": [
+    "cave.boss"
+   ],
+   "baked": true
+  },
+  {
+   "id": "explosions/small-explosion",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "explosions/smoke-bomb",
+   "category": "explosions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲內沒有對應的實際爆破事件，不憑空加入"
+  },
+  {
+   "id": "fire/brazier",
+   "category": "fire",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；火系招式已由 fireball／flame-pillar／fire-breath 涵蓋"
+  },
+  {
+   "id": "fire/campfire",
+   "category": "fire",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；火系招式已由 fireball／flame-pillar／fire-breath 涵蓋"
+  },
+  {
+   "id": "fire/candle",
+   "category": "fire",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；火系招式已由 fireball／flame-pillar／fire-breath 涵蓋"
+  },
+  {
+   "id": "fire/fire-breath",
+   "category": "fire",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.release"
+   ],
+   "baked": true
+  },
+  {
+   "id": "fire/fire-ring",
+   "category": "fire",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；火系招式已由 fireball／flame-pillar／fire-breath 涵蓋"
+  },
+  {
+   "id": "fire/fire-tornado",
+   "category": "fire",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；火系招式已由 fireball／flame-pillar／fire-breath 涵蓋"
+  },
+  {
+   "id": "fire/fireball",
+   "category": "fire",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "room"
+   ],
+   "events": [
+    "arena.shot",
+    "arena.impact",
+    "room.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "fire/flame-pillar",
+   "category": "fire",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense"
+   ],
+   "events": [
+    "arena.impact",
+    "defense.ultimate"
+   ],
+   "baked": true
+  },
+  {
+   "id": "fire/flamethrower",
+   "category": "fire",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；火系招式已由 fireball／flame-pillar／fire-breath 涵蓋"
+  },
+  {
+   "id": "fire/meteor",
+   "category": "fire",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；火系招式已由 fireball／flame-pillar／fire-breath 涵蓋"
+  },
+  {
+   "id": "fire/spirit-flame",
+   "category": "fire",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；火系招式已由 fireball／flame-pillar／fire-breath 涵蓋"
+  },
+  {
+   "id": "fire/torch",
+   "category": "fire",
+   "status": "可搭配使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "ambient.defense.forge"
+   ],
+   "baked": true
+  },
+  {
+   "id": "holy/blessing",
+   "category": "holy",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "holy/divine-shield",
+   "category": "holy",
+   "status": "已替換使用",
+   "modes": [
+    "world"
+   ],
+   "events": [
+    "world.egg"
+   ],
+   "baked": true
+  },
+  {
+   "id": "holy/feather-burst",
+   "category": "holy",
+   "status": "已替換使用",
+   "modes": [
+    "challenge"
+   ],
+   "events": [
+    "challenge.feather"
+   ],
+   "baked": true
+  },
+  {
+   "id": "holy/halo",
+   "category": "holy",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "holy/heal-aoe",
+   "category": "holy",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "defense"
+   ],
+   "events": [
+    "world.heal",
+    "defense.buff"
+   ],
+   "baked": true
+  },
+  {
+   "id": "holy/heal",
+   "category": "holy",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "world.heal",
+    "world.status",
+    "arena.status",
+    "cave.status",
+    "cave.heal",
+    "defense.status"
+   ],
+   "baked": true
+  },
+  {
+   "id": "holy/holy-pillar",
+   "category": "holy",
+   "status": "已替換使用",
+   "modes": [
+    "world"
+   ],
+   "events": [
+    "world.egg"
+   ],
+   "baked": true
+  },
+  {
+   "id": "holy/resurrection",
+   "category": "holy",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "holy/smite",
+   "category": "holy",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense"
+   ],
+   "events": [
+    "arena.impact",
+    "defense.ultimate"
+   ],
+   "baked": true
+  },
+  {
+   "id": "holy/sunburst",
+   "category": "holy",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "ice/blizzard-vortex",
+   "category": "ice",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前僅少數冰凍事件，由 status/frozen 與 snowflake-burst 涵蓋"
+  },
+  {
+   "id": "ice/freeze",
+   "category": "ice",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前僅少數冰凍事件，由 status/frozen 與 snowflake-burst 涵蓋"
+  },
+  {
+   "id": "ice/frost-breath",
+   "category": "ice",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前僅少數冰凍事件，由 status/frozen 與 snowflake-burst 涵蓋"
+  },
+  {
+   "id": "ice/frost-nova",
+   "category": "ice",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前僅少數冰凍事件，由 status/frozen 與 snowflake-burst 涵蓋"
+  },
+  {
+   "id": "ice/ice-crystal",
+   "category": "ice",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前僅少數冰凍事件，由 status/frozen 與 snowflake-burst 涵蓋"
+  },
+  {
+   "id": "ice/ice-lance",
+   "category": "ice",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前僅少數冰凍事件，由 status/frozen 與 snowflake-burst 涵蓋"
+  },
+  {
+   "id": "ice/ice-shatter",
+   "category": "ice",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前僅少數冰凍事件，由 status/frozen 與 snowflake-burst 涵蓋"
+  },
+  {
+   "id": "ice/ice-spikes",
+   "category": "ice",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前僅少數冰凍事件，由 status/frozen 與 snowflake-burst 涵蓋"
+  },
+  {
+   "id": "ice/icicle-fall",
+   "category": "ice",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前僅少數冰凍事件，由 status/frozen 與 snowflake-burst 涵蓋"
+  },
+  {
+   "id": "ice/snowflake-burst",
+   "category": "ice",
+   "status": "可搭配使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "ambient.defense.tower"
+   ],
+   "baked": true
+  },
+  {
+   "id": "impacts/blunt-hit",
+   "category": "impacts",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "arena.impact",
+    "cave.impact",
+    "defense.hit",
+    "defense.baseHit"
+   ],
+   "baked": true
+  },
+  {
+   "id": "impacts/bullet-impact",
+   "category": "impacts",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave"
+   ],
+   "events": [
+    "arena.impact",
+    "cave.bullet"
+   ],
+   "baked": true
+  },
+  {
+   "id": "impacts/crit-hit",
+   "category": "impacts",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "arena.impact",
+    "cave.impact",
+    "defense.hit"
+   ],
+   "baked": true
+  },
+  {
+   "id": "impacts/ground-slam",
+   "category": "impacts",
+   "status": "已替換使用",
+   "modes": [
+    "cave",
+    "defense",
+    "tower",
+    "challenge"
+   ],
+   "events": [
+    "cave.heroUltimate",
+    "defense.boss",
+    "tower.bossCue",
+    "challenge.slam"
+   ],
+   "baked": true
+  },
+  {
+   "id": "impacts/heavy-landing",
+   "category": "impacts",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "impacts/hit-flash",
+   "category": "impacts",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "impacts/hit-spark",
+   "category": "impacts",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense",
+    "tower",
+    "room"
+   ],
+   "events": [
+    "world.captureThrow",
+    "world.captureHit",
+    "arena.impact",
+    "arena.secondHit",
+    "arena.boomerangHit",
+    "arena.boomerangCatch",
+    "cave.heroNormal",
+    "cave.impact",
+    "defense.hit",
+    "defense.trap",
+    "tower.hit",
+    "room.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "impacts/impact-frame",
+   "category": "impacts",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "impacts/parry",
+   "category": "impacts",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "impacts/ricochet",
+   "category": "impacts",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "arena.impact",
+    "arena.boomerangHit",
+    "cave.impact",
+    "defense.ultimate"
+   ],
+   "baked": true
+  },
+  {
+   "id": "impacts/shield-block",
+   "category": "impacts",
+   "status": "已替換使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "defense.baseHit"
+   ],
+   "baked": true
+  },
+  {
+   "id": "lightning/ball-lightning",
+   "category": "lightning",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.shot"
+   ],
+   "baked": true
+  },
+  {
+   "id": "lightning/chain-lightning",
+   "category": "lightning",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；雷系一律使用局部 zap-hit／charge-up，避免全場閃爍"
+  },
+  {
+   "id": "lightning/charge-up",
+   "category": "lightning",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense"
+   ],
+   "events": [
+    "arena.charge",
+    "defense.charge"
+   ],
+   "baked": true
+  },
+  {
+   "id": "lightning/electrified",
+   "category": "lightning",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；雷系一律使用局部 zap-hit／charge-up，避免全場閃爍"
+  },
+  {
+   "id": "lightning/lightning-strike",
+   "category": "lightning",
+   "status": "已替換使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "defense.lightning"
+   ],
+   "baked": true
+  },
+  {
+   "id": "lightning/plasma-ball",
+   "category": "lightning",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；雷系一律使用局部 zap-hit／charge-up，避免全場閃爍"
+  },
+  {
+   "id": "lightning/spark-arc",
+   "category": "lightning",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；雷系一律使用局部 zap-hit／charge-up，避免全場閃爍"
+  },
+  {
+   "id": "lightning/storm-cloud",
+   "category": "lightning",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；雷系一律使用局部 zap-hit／charge-up，避免全場閃爍"
+  },
+  {
+   "id": "lightning/tesla-coil",
+   "category": "lightning",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；雷系一律使用局部 zap-hit／charge-up，避免全場閃爍"
+  },
+  {
+   "id": "lightning/thunderclap",
+   "category": "lightning",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；雷系一律使用局部 zap-hit／charge-up，避免全場閃爍"
+  },
+  {
+   "id": "lightning/zap-hit",
+   "category": "lightning",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "arena.impact",
+    "cave.impact",
+    "defense.ultimate",
+    "defense.hit",
+    "defense.trap",
+    "defense.lightning"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/claw-swipe",
+   "category": "melee",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/dagger-flurry",
+   "category": "melee",
+   "status": "已替換使用",
+   "modes": [
+    "cave",
+    "tower"
+   ],
+   "events": [
+    "cave.heroNormal",
+    "tower.normal"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/double-slash",
+   "category": "melee",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.impact",
+    "arena.secondHit"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/hammer-smash",
+   "category": "melee",
+   "status": "不適用",
+   "baked": false,
+   "reason": "沒有對應武器"
+  },
+  {
+   "id": "melee/heavy-cleave",
+   "category": "melee",
+   "status": "已替換使用",
+   "modes": [
+    "cave",
+    "tower"
+   ],
+   "events": [
+    "cave.heroUltimate",
+    "tower.ultimate"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/scythe-reap",
+   "category": "melee",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave"
+   ],
+   "events": [
+    "arena.impact",
+    "cave.reaper"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/spear-sweep",
+   "category": "melee",
+   "status": "不適用",
+   "baked": false,
+   "reason": "沒有對應武器"
+  },
+  {
+   "id": "melee/spin-slash",
+   "category": "melee",
+   "status": "已替換使用",
+   "modes": [
+    "cave",
+    "tower"
+   ],
+   "events": [
+    "cave.heroNormal",
+    "cave.heroUltimate",
+    "tower.ultimate"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/sword-slash",
+   "category": "melee",
+   "status": "已替換使用",
+   "modes": [
+    "cave",
+    "defense",
+    "tower"
+   ],
+   "events": [
+    "cave.heroNormal",
+    "defense.hit",
+    "tower.normal"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/thrust",
+   "category": "melee",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "tower"
+   ],
+   "events": [
+    "arena.impact",
+    "tower.normal"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/uppercut",
+   "category": "melee",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "melee/whip-crack",
+   "category": "melee",
+   "status": "不適用",
+   "baked": false,
+   "reason": "沒有對應武器"
+  },
+  {
+   "id": "moves/arrow-shot",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/dash-strike",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/earth-stomp",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/fireball-throw",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/ground-pound",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/holy-smite",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/ice-lance-throw",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/lightning-call",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/meteor-call",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/pistol-shots",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/rocket-launcher",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "moves/sword-combo",
+   "category": "moves",
+   "status": "不適用",
+   "baked": false,
+   "reason": "完整招式含假人與 3–7 秒演出，規格禁止取代原生 3D 動作；只取其效果層時改用對應的 melee／impacts"
+  },
+  {
+   "id": "nature/acid-splash",
+   "category": "nature",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "nature/boulder",
+   "category": "nature",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "nature/earth-spike",
+   "category": "nature",
+   "status": "已替換使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "defense.trap"
+   ],
+   "baked": true
+  },
+  {
+   "id": "nature/healing-bloom",
+   "category": "nature",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "nature/leaf-storm",
+   "category": "nature",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense",
+    "room"
+   ],
+   "events": [
+    "arena.boomerangTrail",
+    "defense.ultimate",
+    "defense.boomerangTrail",
+    "room.boomerangTrail"
+   ],
+   "baked": true
+  },
+  {
+   "id": "nature/poison-cloud",
+   "category": "nature",
+   "status": "已替換使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "defense.trap"
+   ],
+   "baked": true
+  },
+  {
+   "id": "nature/quake",
+   "category": "nature",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "challenge"
+   ],
+   "events": [
+    "arena.impact",
+    "challenge.slam"
+   ],
+   "baked": true
+  },
+  {
+   "id": "nature/root-snare",
+   "category": "nature",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "nature/spore-burst",
+   "category": "nature",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "nature/thorns",
+   "category": "nature",
+   "status": "已替換使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "defense.trap"
+   ],
+   "baked": true
+  },
+  {
+   "id": "nature/tornado",
+   "category": "nature",
+   "status": "已替換使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "defense.trap"
+   ],
+   "baked": true
+  },
+  {
+   "id": "nature/toxic-puddle",
+   "category": "nature",
+   "status": "已替換使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "defense.trap"
+   ],
+   "baked": true
+  },
+  {
+   "id": "nature/vine-whip",
+   "category": "nature",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "pickups/chest-open",
+   "category": "pickups",
+   "status": "已替換使用",
+   "modes": [
+    "tower"
+   ],
+   "events": [
+    "tower.loot"
+   ],
+   "baked": true
+  },
+  {
+   "id": "pickups/coin-spin",
+   "category": "pickups",
+   "status": "可搭配使用",
+   "modes": [
+    "commerce"
+   ],
+   "events": [
+    "ambient.commerce.forecourt"
+   ],
+   "baked": true
+  },
+  {
+   "id": "pickups/collect-burst",
+   "category": "pickups",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "cave",
+    "defense",
+    "commerce"
+   ],
+   "events": [
+    "world.captureSuccess",
+    "world.pickup",
+    "cave.loot",
+    "defense.mergeUi",
+    "commerce.door"
+   ],
+   "baked": true
+  },
+  {
+   "id": "pickups/crystal-shard",
+   "category": "pickups",
+   "status": "未來預留",
+   "events": [
+    "commerce.restock"
+   ],
+   "baked": false,
+   "reason": "初光商會店內尚未開放，規則預設停用"
+  },
+  {
+   "id": "pickups/gem-spin",
+   "category": "pickups",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "cave"
+   ],
+   "events": [
+    "world.pickup",
+    "cave.loot"
+   ],
+   "baked": true
+  },
+  {
+   "id": "pickups/heart-pickup",
+   "category": "pickups",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應的道具事件"
+  },
+  {
+   "id": "pickups/key-glint",
+   "category": "pickups",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應的道具事件"
+  },
+  {
+   "id": "pickups/loot-beam",
+   "category": "pickups",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "cave",
+    "tower"
+   ],
+   "events": [
+    "world.pickup",
+    "cave.loot",
+    "tower.loot"
+   ],
+   "baked": true
+  },
+  {
+   "id": "pickups/potion",
+   "category": "pickups",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應的道具事件"
+  },
+  {
+   "id": "pickups/power-star",
+   "category": "pickups",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應的道具事件"
+  },
+  {
+   "id": "pickups/xp-orb",
+   "category": "pickups",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應的道具事件"
+  },
+  {
+   "id": "projectiles/arrow",
+   "category": "projectiles",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此武器或投射物"
+  },
+  {
+   "id": "projectiles/bullet-tracer",
+   "category": "projectiles",
+   "status": "已替換使用",
+   "modes": [
+    "tower"
+   ],
+   "events": [
+    "tower.normal"
+   ],
+   "baked": true
+  },
+  {
+   "id": "projectiles/cannonball",
+   "category": "projectiles",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此武器或投射物"
+  },
+  {
+   "id": "projectiles/energy-disc",
+   "category": "projectiles",
+   "status": "已替換使用",
+   "modes": [
+    "world"
+   ],
+   "events": [
+    "world.captureThrow"
+   ],
+   "baked": true
+  },
+  {
+   "id": "projectiles/flare",
+   "category": "projectiles",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此武器或投射物"
+  },
+  {
+   "id": "projectiles/homing-missile",
+   "category": "projectiles",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此武器或投射物"
+  },
+  {
+   "id": "projectiles/laser-bolt",
+   "category": "projectiles",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此武器或投射物"
+  },
+  {
+   "id": "projectiles/magic-missile",
+   "category": "projectiles",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.shot",
+    "arena.release"
+   ],
+   "baked": true
+  },
+  {
+   "id": "projectiles/muzzle-pistol",
+   "category": "projectiles",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.release"
+   ],
+   "baked": true
+  },
+  {
+   "id": "projectiles/muzzle-shotgun",
+   "category": "projectiles",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此武器或投射物"
+  },
+  {
+   "id": "projectiles/muzzle-smg",
+   "category": "projectiles",
+   "status": "已替換使用",
+   "modes": [
+    "cave"
+   ],
+   "events": [
+    "cave.heroNormal"
+   ],
+   "baked": true
+  },
+  {
+   "id": "projectiles/plasma-shot",
+   "category": "projectiles",
+   "status": "已替換使用",
+   "modes": [
+    "cave"
+   ],
+   "events": [
+    "cave.heroUltimate"
+   ],
+   "baked": true
+  },
+  {
+   "id": "projectiles/rocket",
+   "category": "projectiles",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此武器或投射物"
+  },
+  {
+   "id": "scifi/emp-blast",
+   "category": "scifi",
+   "status": "已替換使用",
+   "modes": [
+    "cave"
+   ],
+   "events": [
+    "cave.heroUltimate"
+   ],
+   "baked": true
+  },
+  {
+   "id": "scifi/energy-core",
+   "category": "scifi",
+   "status": "不適用",
+   "baked": false,
+   "reason": "場景風格不符或無對應事件"
+  },
+  {
+   "id": "scifi/force-field",
+   "category": "scifi",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "world.status",
+    "world.egg",
+    "arena.status",
+    "cave.status",
+    "defense.buff",
+    "defense.status"
+   ],
+   "baked": true
+  },
+  {
+   "id": "scifi/glitch",
+   "category": "scifi",
+   "status": "不適用",
+   "baked": false,
+   "reason": "場景風格不符或無對應事件"
+  },
+  {
+   "id": "scifi/hologram",
+   "category": "scifi",
+   "status": "不適用",
+   "baked": false,
+   "reason": "場景風格不符或無對應事件"
+  },
+  {
+   "id": "scifi/jetpack",
+   "category": "scifi",
+   "status": "不適用",
+   "baked": false,
+   "reason": "場景風格不符或無對應事件"
+  },
+  {
+   "id": "scifi/laser-grid",
+   "category": "scifi",
+   "status": "已替換使用",
+   "modes": [
+    "tower"
+   ],
+   "events": [
+    "tower.ultimate"
+   ],
+   "baked": true
+  },
+  {
+   "id": "scifi/scanner",
+   "category": "scifi",
+   "status": "不適用",
+   "baked": false,
+   "reason": "場景風格不符或無對應事件"
+  },
+  {
+   "id": "scifi/teleporter-pad",
+   "category": "scifi",
+   "status": "不適用",
+   "baked": false,
+   "reason": "場景風格不符或無對應事件"
+  },
+  {
+   "id": "scifi/tractor-beam",
+   "category": "scifi",
+   "status": "不適用",
+   "baked": false,
+   "reason": "場景風格不符或無對應事件"
+  },
+  {
+   "id": "scifi/warp-in",
+   "category": "scifi",
+   "status": "已替換使用",
+   "modes": [
+    "world"
+   ],
+   "events": [
+    "world.arrive"
+   ],
+   "baked": true
+  },
+  {
+   "id": "scifi/warp-out",
+   "category": "scifi",
+   "status": "不適用",
+   "baked": false,
+   "reason": "場景風格不符或無對應事件"
+  },
+  {
+   "id": "shadow/black-hole",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/curse",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/dark-explosion",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/eclipse",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/grasping-hands",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/hex-sigil",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/life-steal",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/necro-skulls",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/shadow-flames",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/shadow-tendrils",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "shadow/soul-drain",
+   "category": "shadow",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave"
+   ],
+   "events": [
+    "arena.release",
+    "cave.reaper"
+   ],
+   "baked": true
+  },
+  {
+   "id": "shadow/void-orb",
+   "category": "shadow",
+   "status": "不適用",
+   "baked": false,
+   "reason": "目前角色屬性沒有暗系，沒有 gameplay 事件可觸發"
+  },
+  {
+   "id": "spawn/coin-drop",
+   "category": "spawn",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "spawn/disintegrate",
+   "category": "spawn",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "spawn/dissolve-burn",
+   "category": "spawn",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense"
+   ],
+   "events": [
+    "arena.defeat",
+    "defense.death"
+   ],
+   "baked": true
+  },
+  {
+   "id": "spawn/egg-hatch",
+   "category": "spawn",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "spawn/poof",
+   "category": "spawn",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "world.spawn",
+    "world.dash",
+    "arena.benchIn",
+    "arena.switch",
+    "cave.dash",
+    "cave.spawn",
+    "cave.death",
+    "defense.death"
+   ],
+   "baked": true
+  },
+  {
+   "id": "spawn/respawn-beam",
+   "category": "spawn",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "spawn/shatter-death",
+   "category": "spawn",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "cave"
+   ],
+   "events": [
+    "arena.defeat",
+    "cave.death"
+   ],
+   "baked": true
+  },
+  {
+   "id": "spawn/soul-rise",
+   "category": "spawn",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件"
+  },
+  {
+   "id": "spawn/spawn-portal",
+   "category": "spawn",
+   "status": "已替換使用",
+   "modes": [
+    "world"
+   ],
+   "events": [
+    "world.spawn"
+   ],
+   "baked": true
+  },
+  {
+   "id": "spawn/summon-rise",
+   "category": "spawn",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "world.captureSuccess",
+    "cave.spawn",
+    "defense.boss",
+    "defense.skill"
+   ],
+   "baked": true
+  },
+  {
+   "id": "status/bleeding",
+   "category": "status",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此異常狀態"
+  },
+  {
+   "id": "status/burning",
+   "category": "status",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "world.status",
+    "arena.status",
+    "cave.status",
+    "defense.status"
+   ],
+   "baked": true
+  },
+  {
+   "id": "status/charmed",
+   "category": "status",
+   "status": "未來預留",
+   "events": [
+    "commerce.customer"
+   ],
+   "baked": false,
+   "reason": "初光商會店內尚未開放，規則預設停用"
+  },
+  {
+   "id": "status/confused",
+   "category": "status",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此異常狀態"
+  },
+  {
+   "id": "status/cursed",
+   "category": "status",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此異常狀態"
+  },
+  {
+   "id": "status/frozen",
+   "category": "status",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "world.status",
+    "arena.status",
+    "cave.status",
+    "defense.status"
+   ],
+   "baked": true
+  },
+  {
+   "id": "status/haste",
+   "category": "status",
+   "status": "已替換使用",
+   "modes": [
+    "cave"
+   ],
+   "events": [
+    "cave.dash"
+   ],
+   "baked": true
+  },
+  {
+   "id": "status/petrified",
+   "category": "status",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此異常狀態"
+  },
+  {
+   "id": "status/poisoned",
+   "category": "status",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "world.status",
+    "arena.status",
+    "cave.status",
+    "defense.status"
+   ],
+   "baked": true
+  },
+  {
+   "id": "status/rage",
+   "category": "status",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "world.status",
+    "arena.status",
+    "cave.status",
+    "defense.status"
+   ],
+   "baked": true
+  },
+  {
+   "id": "status/sleep",
+   "category": "status",
+   "status": "不適用",
+   "baked": false,
+   "reason": "遊戲沒有此異常狀態"
+  },
+  {
+   "id": "status/slowed",
+   "category": "status",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense"
+   ],
+   "events": [
+    "world.status",
+    "arena.status",
+    "cave.status",
+    "defense.status"
+   ],
+   "baked": true
+  },
+  {
+   "id": "status/stunned",
+   "category": "status",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense",
+    "challenge"
+   ],
+   "events": [
+    "world.status",
+    "arena.status",
+    "cave.status",
+    "defense.trap",
+    "defense.status",
+    "challenge.beam"
+   ],
+   "baked": true
+  },
+  {
+   "id": "transitions/blinds",
+   "category": "transitions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "全畫面轉場會造成黑白閃屏且現有 scene-loading 已負責過場"
+  },
+  {
+   "id": "transitions/burn-away",
+   "category": "transitions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "全畫面轉場會造成黑白閃屏且現有 scene-loading 已負責過場"
+  },
+  {
+   "id": "transitions/crt-off",
+   "category": "transitions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "全畫面轉場會造成黑白閃屏且現有 scene-loading 已負責過場"
+  },
+  {
+   "id": "transitions/diamond-wipe",
+   "category": "transitions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "全畫面轉場會造成黑白閃屏且現有 scene-loading 已負責過場"
+  },
+  {
+   "id": "transitions/glitch-wipe",
+   "category": "transitions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "全畫面轉場會造成黑白閃屏且現有 scene-loading 已負責過場"
+  },
+  {
+   "id": "transitions/iris",
+   "category": "transitions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "全畫面轉場會造成黑白閃屏且現有 scene-loading 已負責過場"
+  },
+  {
+   "id": "transitions/pixel-dissolve",
+   "category": "transitions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "全畫面轉場會造成黑白閃屏且現有 scene-loading 已負責過場"
+  },
+  {
+   "id": "transitions/shatter-wipe",
+   "category": "transitions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "全畫面轉場會造成黑白閃屏且現有 scene-loading 已負責過場"
+  },
+  {
+   "id": "transitions/slash-wipe",
+   "category": "transitions",
+   "status": "不適用",
+   "baked": false,
+   "reason": "全畫面轉場會造成黑白閃屏且現有 scene-loading 已負責過場"
+  },
+  {
+   "id": "transitions/star-iris",
+   "category": "transitions",
+   "status": "未來預留",
+   "events": [
+    "commerce.expand"
+   ],
+   "baked": false,
+   "reason": "初光商會店內尚未開放，規則預設停用"
+  },
+  {
+   "id": "ui/achievement",
+   "category": "ui",
+   "status": "已替換使用",
+   "modes": [
+    "ui"
+   ],
+   "events": [
+    "ui.victory",
+    "ui.firstCapture"
+   ],
+   "baked": true
+  },
+  {
+   "id": "ui/coin-collect",
+   "category": "ui",
+   "status": "未來預留",
+   "events": [
+    "commerce.sale"
+   ],
+   "baked": false,
+   "reason": "初光商會店內尚未開放，規則預設停用"
+  },
+  {
+   "id": "ui/combo-counter",
+   "category": "ui",
+   "status": "不適用",
+   "baked": false,
+   "reason": "會顯示固定文字或數字，與遊戲實際數值不符；保留現有 HTML 傷害數字與提示"
+  },
+  {
+   "id": "ui/confetti",
+   "category": "ui",
+   "status": "已替換使用",
+   "modes": [
+    "ui"
+   ],
+   "events": [
+    "ui.victory"
+   ],
+   "baked": true
+  },
+  {
+   "id": "ui/countdown",
+   "category": "ui",
+   "status": "不適用",
+   "baked": false,
+   "reason": "會顯示固定文字或數字，與遊戲實際數值不符；保留現有 HTML 傷害數字與提示"
+  },
+  {
+   "id": "ui/crit-number",
+   "category": "ui",
+   "status": "不適用",
+   "baked": false,
+   "reason": "會顯示固定文字或數字，與遊戲實際數值不符；保留現有 HTML 傷害數字與提示"
+  },
+  {
+   "id": "ui/damage-number",
+   "category": "ui",
+   "status": "不適用",
+   "baked": false,
+   "reason": "會顯示固定文字或數字，與遊戲實際數值不符；保留現有 HTML 傷害數字與提示"
+  },
+  {
+   "id": "ui/exclamation",
+   "category": "ui",
+   "status": "已替換使用",
+   "modes": [
+    "commerce"
+   ],
+   "events": [
+    "commerce.notice"
+   ],
+   "baked": true
+  },
+  {
+   "id": "ui/health-bar-hit",
+   "category": "ui",
+   "status": "不適用",
+   "baked": false,
+   "reason": "會顯示固定文字或數字，與遊戲實際數值不符；保留現有 HTML 傷害數字與提示"
+  },
+  {
+   "id": "ui/heart-lost",
+   "category": "ui",
+   "status": "未來預留",
+   "events": [
+    "commerce.customer"
+   ],
+   "baked": false,
+   "reason": "初光商會店內尚未開放，規則預設停用"
+  },
+  {
+   "id": "ui/level-up",
+   "category": "ui",
+   "status": "已替換使用",
+   "modes": [
+    "defense",
+    "commerce"
+   ],
+   "events": [
+    "defense.mergeUi",
+    "commerce.level"
+   ],
+   "baked": true
+  },
+  {
+   "id": "ui/quest-complete",
+   "category": "ui",
+   "status": "已替換使用",
+   "modes": [
+    "ui"
+   ],
+   "events": [
+    "ui.quest"
+   ],
+   "baked": true
+  },
+  {
+   "id": "water/bubbles",
+   "category": "water",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.release",
+    "arena.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "water/drip",
+   "category": "water",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；水系招式已由 geyser／splash／water-orb 等涵蓋"
+  },
+  {
+   "id": "water/fountain",
+   "category": "water",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；水系招式已由 geyser／splash／water-orb 等涵蓋"
+  },
+  {
+   "id": "water/geyser",
+   "category": "water",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense"
+   ],
+   "events": [
+    "arena.impact",
+    "defense.ultimate",
+    "defense.trap"
+   ],
+   "baked": true
+  },
+  {
+   "id": "water/rain-splash",
+   "category": "water",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense"
+   ],
+   "events": [
+    "arena.impact",
+    "ambient.defense.pond",
+    "ambient.defense.waterfall",
+    "ambient.defense.abyss"
+   ],
+   "baked": true
+  },
+  {
+   "id": "water/ripples",
+   "category": "water",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena"
+   ],
+   "events": [
+    "world.fishing",
+    "arena.release",
+    "arena.impact",
+    "arena.start",
+    "ambient.world.water"
+   ],
+   "baked": true
+  },
+  {
+   "id": "water/splash",
+   "category": "water",
+   "status": "已替換使用",
+   "modes": [
+    "world",
+    "arena",
+    "cave",
+    "defense",
+    "room"
+   ],
+   "events": [
+    "world.fishing",
+    "arena.impact",
+    "cave.impact",
+    "defense.hit",
+    "defense.trap",
+    "room.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "water/water-jet",
+   "category": "water",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.release"
+   ],
+   "baked": true
+  },
+  {
+   "id": "water/water-orb",
+   "category": "water",
+   "status": "已替換使用",
+   "modes": [
+    "arena"
+   ],
+   "events": [
+    "arena.shot",
+    "arena.release",
+    "arena.impact"
+   ],
+   "baked": true
+  },
+  {
+   "id": "water/waterfall",
+   "category": "water",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；水系招式已由 geyser／splash／water-orb 等涵蓋"
+  },
+  {
+   "id": "water/wave-crash",
+   "category": "water",
+   "status": "已替換使用",
+   "modes": [
+    "arena",
+    "defense"
+   ],
+   "events": [
+    "arena.impact",
+    "ambient.defense.abyss"
+   ],
+   "baked": true
+  },
+  {
+   "id": "water/whirlpool",
+   "category": "water",
+   "status": "不適用",
+   "baked": false,
+   "reason": "無對應事件；水系招式已由 geyser／splash／water-orb 等涵蓋"
+  },
+  {
+   "id": "weather/aurora",
+   "category": "weather",
+   "status": "不適用",
+   "baked": false,
+   "reason": "守護戰以現有 seascape 固定天氣為主控，此款不加入，避免改變既定天氣"
+  },
+  {
+   "id": "weather/blizzard",
+   "category": "weather",
+   "status": "不適用",
+   "baked": false,
+   "reason": "守護戰以現有 seascape 固定天氣為主控，此款不加入，避免改變既定天氣"
+  },
+  {
+   "id": "weather/cherry-blossoms",
+   "category": "weather",
+   "status": "不適用",
+   "baked": false,
+   "reason": "守護戰以現有 seascape 固定天氣為主控，此款不加入，避免改變既定天氣"
+  },
+  {
+   "id": "weather/clouds",
+   "category": "weather",
+   "status": "可搭配使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "ambient.defense.forge"
+   ],
+   "baked": true
+  },
+  {
+   "id": "weather/falling-leaves",
+   "category": "weather",
+   "status": "可搭配使用",
+   "modes": [
+    "defense",
+    "world"
+   ],
+   "events": [
+    "ambient.defense.meadow",
+    "ambient.defense.orchard",
+    "ambient.world.field"
+   ],
+   "baked": true
+  },
+  {
+   "id": "weather/fireflies",
+   "category": "weather",
+   "status": "可搭配使用",
+   "modes": [
+    "defense",
+    "world"
+   ],
+   "events": [
+    "ambient.defense.night",
+    "ambient.world.night"
+   ],
+   "baked": true
+  },
+  {
+   "id": "weather/fog",
+   "category": "weather",
+   "status": "可搭配使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "ambient.defense.pond",
+    "ambient.defense.waterfall"
+   ],
+   "baked": true
+  },
+  {
+   "id": "weather/god-rays",
+   "category": "weather",
+   "status": "可搭配使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "ambient.defense.meadow",
+    "ambient.defense.orchard",
+    "ambient.defense.desert"
+   ],
+   "baked": true
+  },
+  {
+   "id": "weather/rain",
+   "category": "weather",
+   "status": "不適用",
+   "baked": false,
+   "reason": "守護戰以現有 seascape 固定天氣為主控，此款不加入，避免改變既定天氣"
+  },
+  {
+   "id": "weather/shooting-stars",
+   "category": "weather",
+   "status": "可搭配使用",
+   "modes": [
+    "defense"
+   ],
+   "events": [
+    "ambient.defense.observatory"
+   ],
+   "baked": true
+  },
+  {
+   "id": "weather/snow",
+   "category": "weather",
+   "status": "不適用",
+   "baked": false,
+   "reason": "守護戰以現有 seascape 固定天氣為主控，此款不加入，避免改變既定天氣"
+  },
+  {
+   "id": "weather/storm",
+   "category": "weather",
+   "status": "不適用",
+   "baked": false,
+   "reason": "守護戰以現有 seascape 固定天氣為主控，此款不加入，避免改變既定天氣"
+  }
+ ]
+}
