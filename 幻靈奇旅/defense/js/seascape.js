@@ -132,8 +132,9 @@ export function createSeascape(THREE, scene, kit, canvas) {
     if (!group) return;
     if (scene.background !== null) scene.background = null;
     if (scene.fog !== null) scene.fog = null;
-    if (canvas && canvas.style.backgroundImage !== skyCss) canvas.style.backgroundImage = skyCss;
-    if (canvas && canvas.style.backgroundColor !== skyColor) canvas.style.backgroundColor = skyColor;
+    /* Do not rewrite CSS background styles each frame: CSS normalizes hex
+       colors to rgb(), and unnecessary writes themselves trigger repaint. */
+    
   }
 
   function dispose() {
