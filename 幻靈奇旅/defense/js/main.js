@@ -2,32 +2,32 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261104-v23';
-import {createPkIsland} from './pk-island.js?v=20261104-v23';
-import {createPkLobby} from './pk-lobby.js?v=20261104-v23';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261104-v23';
-import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js?v=20261104-v23';
-import {createToonKit} from './style.js?v=20261104-v23';
-import {createChartModels} from './chart-models.js?v=20261104-v23';
-import {createView} from './view.js?v=20261104-v23';
-import {createSeaChart} from './sea3d.js?v=20261104-v23';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261104-v23';
-import {buildPath} from './stages.js?v=20261104-v23';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261104-v23';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261104-v23';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261104-v27';
+import {createPkIsland} from './pk-island.js?v=20261104-v27';
+import {createPkLobby} from './pk-lobby.js?v=20261104-v27';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261104-v27';
+import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js?v=20261104-v27';
+import {createToonKit} from './style.js?v=20261104-v27';
+import {createChartModels} from './chart-models.js?v=20261104-v27';
+import {createView} from './view.js?v=20261104-v27';
+import {createSeaChart} from './sea3d.js?v=20261104-v27';
+import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261104-v27';
+import {buildPath} from './stages.js?v=20261104-v27';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261104-v27';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261104-v27';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261104-v23';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261104-v23';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261104-v27';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261104-v27';
 import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261104-v23';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261104-v23';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-v23';
-import {icon} from '../../survivors/js/ui-art.js?v=20261104-v23';
-import {initFullscreen} from './fullscreen.js?v=20261104-v23';
-import {initIcons, ico} from './ui-icons.js?v=20261104-v23';
-import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js?v=20261104-v23';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261104-v27';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261104-v27';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-v27';
+import {icon} from '../../survivors/js/ui-art.js?v=20261104-v27';
+import {initFullscreen} from './fullscreen.js?v=20261104-v27';
+import {initIcons, ico} from './ui-icons.js?v=20261104-v27';
+import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js?v=20261104-v27';
 
-import {autoDeck, validPkDeck} from './deck-rules.js?v=20261104-v23';
+import {autoDeck, validPkDeck} from './deck-rules.js?v=20261104-v27';
 
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
@@ -97,6 +97,7 @@ function showBossIntro(stage) {
   const [lo, hi] = OPENING_SECONDS;
   bossIntroTimer = setTimeout(hideBossIntro, clamp(lo + (speech.line.length - 8) * 0.1, lo, hi) * 1000);
 }
+function bossPortrait(stage) { const file = openingFor(stage)?.portrait; return file ? new URL('../' + file, import.meta.url).href : picture(stage.boss); }
 function spirit(id) { return data.spiritMap.get(id); }
 function shapeLabel(id, strong) {
   const p = profileFor(spirit(id), data.entries.get(id), strong);
@@ -470,12 +471,13 @@ function nextPaint() {
   return new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
 }
 function openModal(html, kind = 'info') {
-  if (!kind.includes('deck') && !kind.includes('stage-result')) {
+  if (!kind.includes('deck') && !html.includes('class="stage-result-content"')) {
     const heading = html.match(/^<div class="ribbon">[\s\S]*?<\/div>/)?.[0] || '';
     html = html.slice(heading.length);
     const footer = html.match(/<div class="modal-actions[^"]*">[\s\S]*<\/div>\s*$/);
     html = heading + '<div class="modal-scroll">' + (footer ? html.slice(0, footer.index) : html) + '</div>' + (footer ? footer[0] : '');
   }
+  if (!html.includes('class="stage-result-content"') && !kind.includes('pk')) html += '<button class="modal-dismiss" data-close aria-label="關閉視窗">×</button>';
   $('modalBody').innerHTML = html; $('modalBody').scrollTop = 0; const m = $('modal'); m.className = 'panel panel-' + kind;
   if (!m.open) m.showModal(); m.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => m.close()));
 }
@@ -862,21 +864,24 @@ function bindHand() {
   addEventListener('pointercancel', (e) => { if (drag && e.pointerId === drag.id) { clearTimeout(drag.hold); hideCardInfo(); drag = null; if (game) game.dragging = false; handSig = ''; hud(); } });
 }
 
-/* Stage name and fixed weather are separate no-break text units. On small
-   phones they stack inside one wooden label; never orphan the last character
-   of a Chinese place name or split the weather into single-character rows. */
+/* Separate compact, non-breaking stage and weather chips at every screen size. */
 function setBattleStageHeading(stageText, weatherText = '') {
-  const heading = $('stageName'), label = $('hudStageLabel'), weather = $('hudWeatherLabel');
+  const heading = $('stageName'), label = $('hudStageLabel'), weather = $('hudWeatherLabel'), chip = $('hudWeatherChip');
   label.textContent = stageText;
   weather.textContent = weatherText;
   weather.hidden = !weatherText;
-  heading.setAttribute('aria-label', stageText + (weatherText ? '，' + weatherText : ''));
-  heading.title = stageText + (weatherText ? '・' + weatherText : '');
+  chip.hidden = !weatherText;
+  chip.title = weatherText;
+  chip.setAttribute('aria-label', '天氣／場景：' + weatherText);
+  heading.setAttribute('aria-label', stageText);
+  heading.title = stageText;
 }
 
 function hud() {
   if (!game) return;
-  $('runPoints').textContent = game.stats.points.toLocaleString();
+  const points = game.stats.points;
+  $('runPoints').textContent = points >= 10000 ? (points / 10000).toFixed(1).replace(/\.0$/, '') + '萬' : points >= 1000 ? (points / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(points);
+  $('runPoints').parentElement.title = '本場轉蛋點數：' + points.toLocaleString();
   if (pk) setBattleStageHeading('⚔️ vs ' + (pk.foe?.name || '對手'),
     (pk.arena?.arenaName || '競技場') + '・' + pkClock() + (game.time > PK_RAGE_AT ? '・狂暴！' : ''));
   const owned = usableItems().reduce((n, u) => n + u.count, 0);
@@ -1068,7 +1073,7 @@ function handleEvents() {
     else if (ev.type === 'hit' && ev.amount > 0 && (ev.crit || performance.now() - lastImpact > 90)) { lastImpact = performance.now(); audio?.play({kind: weaponSound(ev.kind), element: ev.element, pet: false, phase: 'impact', strong: ev.strong || ev.crit, critical: ev.crit, final: ev.crit && ev.strong}); }
     else if (ev.type === 'trap') audio?.play({kind: ev.kind === 'shock' ? 'guns' : 'blades', element: ev.kind === 'shock' ? '雷' : ev.kind === 'geyser' ? '潮' : '光', pet: false, phase: 'impact', strong: true});
     else if (ev.type === 'deal') fresh.set(ev.uid, 'dealt');
-    else if (ev.type === 'merge') { fuse(ev); audio?.play({phase: 'impact', strong: true, final: ev.rank >= 3}); toast(ev.goldfishFusion ? '🐟 金魚國王＋金魚皇后合體進化成水蛟龍王！' : ev.evolved ? `${spirit(ev.from).name} 合成進化成 ${spirit(ev.to).name}！` : isSupport(ev.to) ? `${spirit(ev.to).name} 升到 ${'★'.repeat(ev.rank)}，技能加強！` : `${spirit(ev.to).name} 升到 ${'★'.repeat(ev.rank)}，能力提升！`); }
+    else if (ev.type === 'merge') { fuse(ev); audio?.play({phase: 'impact', strong: true, final: ev.rank >= 3});  }
     else if (ev.type === 'skillStart') { skillBanner(ev); audio?.play({speciesId: ev.species, element: ev.element, pet: true, phase: 'start', strong: true}); }
     else if (ev.type === 'bossSkillStart') { banner(`魔王 ${spirit(ev.species).name}・${spirit(ev.species).skills?.[1]?.name || '大絕'}！`, true); audio?.play({speciesId: ev.species, element: ev.element, pet: true, phase: 'start', strong: true}); }
     else if (ev.type === 'bossSkill') audio?.play({speciesId: ev.species, element: ev.element, pet: true, phase: 'release', strong: true, final: true});
@@ -1089,7 +1094,7 @@ function showResult(r) {
   const stat = (icon, value, label, tone) => `<div class="stat"><i class="tone-${tone}">${icon}</i><b>${value}</b><small>${label}</small></div>`;
   openModal(`<div class="stage-result-content"><header class="sheet-head">
       <div class="sunburst"></div>
-      ${r.won ? `<div class="result-stars">${[0, 1, 2].map((i) => `<span class="${i < stars ? 'on' : 'off'}" style="--i:${i}">★</span>`).join('')}</div>` : `<img class="boss-face" src="${picture(stage.boss)}" alt="">`}
+      ${r.won ? `<div class="result-stars">${[0, 1, 2].map((i) => `<span class="${i < stars ? 'on' : 'off'}" style="--i:${i}">★</span>`).join('')}</div>` : `<img class="boss-face" src="${bossPortrait(stage)}" alt="">`}
       <h2 class="sheet-title">${r.won ? '過關！' : '挑戰失敗'}</h2>
     </header>
     <p class="result-title">${idx + 1}. ${esc(stage.name)}</p>
@@ -1156,7 +1161,7 @@ function openPause() {
   const stage = game.stage, idx = STAGES.indexOf(stage), next = record.cleared[stage.id] && STAGES[idx + 1];
   openModal(`<header class="sheet-head">
       <div class="sunburst"></div>
-      <img class="boss-face" src="${picture(stage.boss)}" alt="">
+      <img class="boss-face" src="${bossPortrait(stage)}" alt="">
       <h2 class="sheet-title">暫停中</h2>
     </header>
     <p class="result-title">${idx + 1}. ${esc(stage.name)}</p>

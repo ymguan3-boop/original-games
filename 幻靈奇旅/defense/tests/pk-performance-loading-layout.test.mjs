@@ -74,7 +74,7 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/20261104-v23/);
+  assert.match(html,/20261104-v27/);
 });
 
 
@@ -185,7 +185,7 @@ test('top points and four action shortcuts share all available width at phone an
   assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
   assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
   assert.match(top,/sortie-base-warning/);
-  assert.match(html,/20261104-v23/,'main script needs a new version after hit isolation');
+  assert.match(html,/20261104-v27/,'main script needs a new version after hit isolation');
 });
 
 test('win screen keeps Next Stage button in a fixed accessible footer on landscape phones', () => {
@@ -239,14 +239,14 @@ test('all ten stages use continuous non-overlapping road mesh strips instead of 
 });
 
 
-test('portrait HUD uses two compact top rows without orphaned stage/weather words', () => {
-  assert.match(html,/id="stageName"[^>]+><span class="hud-stage-label" id="hudStageLabel"><\/span><span class="hud-weather-label" id="hudWeatherLabel"><\/span>/);
+test('stage and weather use separate content-sized chips without orphaned words', () => {
+  assert.match(html,/id="stageName"[^>]+><span class="hud-stage-label" id="hudStageLabel"><\/span><\/div><div class="stat weather" id="hudWeatherChip"[^>]+><span class="hud-weather-label" id="hudWeatherLabel"><\/span>/);
   assert.match(main,/setBattleStageHeading\(\x60\$\{record\.stage \+ 1\}\. \$\{game\.stage\.name\}\x60/);
   assert.match(main,/if \(pk\) setBattleStageHeading\(/);
   const begin=main.indexOf('function setBattleStageHeading(stageText, weatherText');
   const end=main.indexOf('function hud() {',begin);
   assert.ok(begin>=0 && end>begin);
-  const nodes=Object.fromEntries(['stageName','hudStageLabel','hudWeatherLabel']
+  const nodes=Object.fromEntries(['stageName','hudStageLabel','hudWeatherLabel','hudWeatherChip']
     .map(id=>[id,{textContent:'',hidden:false,title:'',setAttribute(name,value){this[name]=value;}}]));
   const setHeading=new Function('$',main.slice(begin,end)+'return setBattleStageHeading;')(id=>nodes[id]);
   for(let i=0;i<STAGES.length;i++) {
@@ -254,36 +254,25 @@ test('portrait HUD uses two compact top rows without orphaned stage/weather word
     setHeading(title,'☀️ 晴朗暖陽');
     assert.equal(nodes.hudStageLabel.textContent,title);
     assert.equal(nodes.hudWeatherLabel.textContent,'☀️ 晴朗暖陽');
-    assert.equal(nodes.stageName['aria-label'],title+'，☀️ 晴朗暖陽');
+    assert.equal(nodes.stageName['aria-label'],title);
     assert.equal(nodes.hudWeatherLabel.hidden,false);
   }
   setHeading('⚔️ vs 旅人70','PK・猴王果園・2:57');
   assert.equal(nodes.hudWeatherLabel.textContent,'PK・猴王果園・2:57');
   setHeading('單獨標題');
   assert.equal(nodes.hudWeatherLabel.hidden,true);
-  const styles=css.slice(css.indexOf('2026-11-04 v14: compact weather-safe HUD'));
-  assert.ok(styles.length>4000);
+  assert.equal(nodes.hudWeatherChip.hidden,true);
+  const styles=css.slice(css.indexOf('/* Single-row HUD:'));
   assert.match(styles,/white-space:nowrap/);
   assert.match(styles,/text-overflow:ellipsis/);
   assert.match(styles,/word-break:keep-all/);
-  assert.match(styles,/@media \(orientation:portrait\) and \(max-width:720px\)/);
-  assert.match(styles,/grid-template-columns:repeat\(12,minmax\(0,1fr\)\)/);
-  assert.match(styles,/grid-template-rows:56px 44px/);
-  assert.match(styles,/grid-column:1 \/ span 6/);
-  assert.match(styles,/grid-column:7 \/ span 4/);
-  assert.match(styles,/grid-column:11 \/ span 2/);
-  assert.match(styles,/grid-column:1 \/ span 4/);
-  assert.match(styles,/grid-column:5 \/ span 8/);
-  assert.match(styles,/@media \(orientation:portrait\) and \(max-width:355px\)/);
-  for(const width of [320,351,390,430,720]) {
-    const inner=width-14, gap=4, unit=(inner-11*gap)/12;
-    const span=n=>unit*n+(n-1)*gap;
-    assert.ok(span(5)>0 && span(3)>0,'all PK tracks remain usable');
-    assert.ok(Math.abs(span(6)+span(4)+span(2)+2*gap-inner)<.01);
-    assert.ok(Math.abs(span(4)+span(8)+gap-inner)<.01);
-    assert.ok(Math.abs(span(5)+span(3)+span(2)+span(2)+3*gap-inner)<.01);
-  }
-  assert.match(html,/20261104-v23/);
+  assert.match(styles,/width:max-content/);
+  assert.match(styles,/height:30px;min-height:30px/);
+  assert.match(styles,/grid-template-rows:28px/);
+  assert.match(styles,/flex-wrap:nowrap/);
+  assert.match(main,/!html\.includes\('class="stage-result-content"'\)/,'result navigation must remain outside content scroller');
+  assert.match(styles,/height:30px;min-height:30px/);
+  assert.match(html,/20261104-v27/);
 });
 
 test('evolution cutscene and obsolete camera button stay removed in solo and PK', () => {
@@ -295,14 +284,11 @@ test('evolution cutscene and obsolete camera button stay removed in solo and PK'
   assert.doesNotMatch(main,/camReset|evoToggle|evoOverlay\(|evolvingCards|EVO_TIME|\.evo-anim/);
   assert.doesNotMatch(css,/#evoToggle|\.evo-anim|\.evo-old|\.evo-new|\.evo-flash|\.evo-rays/);
   assert.match(main,/if \('evoAnim' in record\) \{ delete record\.evoAnim; saveRecord\(\); \}/);
-  const source=css.slice(css.indexOf('2026-11-04 v14: compact weather-safe HUD'));
-  assert.match(source,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,
-    'solo HUD divides space evenly between speed and pause');
-  assert.match(source,/body\.pk-mode #hud \.hud-top \.hud-actions \{\s*grid-column:9 \/ span 2;/,
-    'PK gives pause a compact control in the top row');
-  assert.match(source,/@media \(orientation:landscape\) and \(max-height:700px\)/);
-  assert.match(source,/body\.pk-mode #hud \.hud-top \.hud-actions \{\s*grid-column:3;/,
-    'landscape PK gives the pause button its own top-row track');
+  const source=css.slice(css.indexOf('/* Single-row HUD:'));
+  assert.match(source,/body\.pk-mode #hud \.hud-top #speed/);
+  assert.match(source,/\.hud-actions button,#hud \.hud-top \.hud-fs/);
+  const merge=main.slice(main.indexOf("else if (ev.type === 'merge')"),main.indexOf("else if (ev.type === 'skillStart')"));
+  assert.doesNotMatch(merge,/toast\(/,'merging no longer displays a text toast');
   assert.match(main,/else if \(ev\.type === 'merge'\) \{ fuse\(ev\)/,
     'card merging is not disabled by cutscene removal');
 });
@@ -341,7 +327,7 @@ test('all stages share localized thunder animations and climate cannot flash scr
   assert.match(view,/sun\.intensity !== c\.sunPower/);
   assert.match(sea,/function lockWeather\(\)/);
   assert.match(rules,/state\.stage\.id === 'waterfall'/);
-  assert.match(html,/main\.js\?v=20261104-v23/);
+  assert.match(html,/main\.js\?v=20261104-v27/);
 });
 
 test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local barrel feedback', () => {
@@ -362,6 +348,6 @@ test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local
   assert.match(view,/body\.scale\.set\(1 \+ k, 1 - k, 1 \+ k\)/,'local barrel squash remains');
   assert.match(view,/Math\.sin\(b\.userData\.flash \/ 0\.18 \* Math\.PI\) \* 0\.018/);
   assert.match(css,/#world \{[^}]+background-position: center; background-size: cover;/);
-  assert.match(html,/defense\.css\?v=20261104-v23/);
-  assert.match(html,/main\.js\?v=20261104-v23/);
+  assert.match(html,/defense\.css\?v=20261104-v27/);
+  assert.match(html,/main\.js\?v=20261104-v27/);
 });

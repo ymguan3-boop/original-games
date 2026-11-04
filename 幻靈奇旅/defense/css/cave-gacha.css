@@ -63,3 +63,11 @@ dialog#panel h2{margin:10px 0 16px;font-size:21px}
 #panel .reward-entry strong{font-size:13px}
 }
 #panel .wallet-strip{position:sticky;top:-19px;z-index:3}
+
+/* Keep the gacha shortcut in the same compact viewport budget. */
+dialog#panel {width:min(480px,86vw);max-height:72dvh;padding:14px;}
+dialog#panel h2 {font-size:18px;margin:7px 0;}
+dialog#panel #panelBody {min-height:0;max-height:calc(72dvh - 88px);overflow-y:auto;overscroll-behavior:contain;}
+dialog#panel[data-view="summon"] #panelBody {display:flex;flex-direction:column;overflow:hidden;}
+dialog#panel[data-view="summon"] .summon-v07 {min-height:0;flex:1 1 auto;}
+dialog#panel #skipSummon {flex:0 0 auto;min-height:38px;padding:7px;font-size:12px;}

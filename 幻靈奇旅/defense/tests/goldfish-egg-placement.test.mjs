@@ -129,5 +129,5 @@ test('sortie deck editor, flipped card descriptions, and how-to explain actual f
   assert.match(main,/卡組與升星/,'how-to also updated');
   assert.match(css,/\.deck-special-rules/);
   assert.match(css,/\.deck-special-note/);
-  assert.match(html,/20261104-v23/);
+  assert.match(html,/20261104-v27/);
 });

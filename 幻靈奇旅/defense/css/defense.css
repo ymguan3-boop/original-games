@@ -1848,314 +1848,30 @@ dialog#modal.stage-result .stage-result-actions #nextStage {
 }
 
 
-/* 2026-11-04 v14: compact weather-safe HUD, identical solo/PK controls.
-   Chinese stage names and weather are separate non-breaking units; the entire
-   unit may truncate with an ellipsis but must never leave one glyph on a line. */
-#hud .hud-top #stageName {
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  min-width:0;
-  max-width:none;
-  box-sizing:border-box;
-  padding:3px 7px;
-  gap:1px;
-  overflow:hidden;
-  text-align:center;
-  word-break:keep-all;
-  overflow-wrap:normal;
-  line-break:strict;
-}
-#hud .hud-top #stageName .hud-stage-label,
-#hud .hud-top #stageName .hud-weather-label {
-  display:block;
-  flex:none;
-  min-width:0;
-  max-width:100%;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  word-break:keep-all;
-  overflow-wrap:normal;
-  line-break:strict;
-  line-height:1.2;
-}
-#hud .hud-top #stageName .hud-stage-label {font-weight:900;}
-#hud .hud-top #stageName .hud-weather-label {font-weight:800;}
-#hud .hud-top #stageName .hud-weather-label[hidden] {display:none;}
-
-/* Portrait phones: two top-aligned rows; camera/evolution toggle removed.
-   Row one = stage 6/12 | deal 4/12 | fullscreen 2/12.
-   Row two = points 4/12 | speed + pause 8/12.
-   PK requires no points or speed, so all its controls use one row. */
-@media (orientation:portrait) and (max-width:720px) {
-  #hud .hud-top {
-    position:fixed;
-    z-index:12;
-    top:max(8px,env(safe-area-inset-top));
-    left:max(7px,env(safe-area-inset-left));
-    right:max(7px,env(safe-area-inset-right));
-    width:auto;
-    max-width:none;
-    padding:0;
-    margin:0;
-    display:grid;
-    grid-template-columns:repeat(12,minmax(0,1fr));
-    grid-template-rows:56px 44px;
-    column-gap:4px;
-    row-gap:5px;
-    align-items:stretch;
-    justify-items:stretch;
-    flex-wrap:nowrap;
-    pointer-events:none;
-  }
-  #hud .hud-top #stageName {
-    grid-column:1 / span 6;
-    grid-row:1;
-    width:100%;
-    height:56px;
-    min-height:56px;
-    margin:0;
-    padding:3px 5px;
-    border-radius:15px;
-  }
-  #hud .hud-top #stageName .hud-stage-label {
-    font-size:clamp(11px,3.25vw,14px);
-    letter-spacing:-.2px;
-  }
-  #hud .hud-top #stageName .hud-weather-label {
-    font-size:clamp(10px,2.95vw,12px);
-    letter-spacing:-.3px;
-  }
-  #hud .hud-top .stat.deal {
-    grid-column:7 / span 4;
-    grid-row:1;
-    display:flex;
-    flex-flow:row nowrap;
-    justify-content:center;
-    align-items:center;
-    box-sizing:border-box;
-    width:100%;
-    height:56px;
-    min-height:56px;
-    min-width:0;
-    margin:0;
-    padding:0 3px;
-    gap:4px;
-    border-radius:16px;
-  }
-  #hud .hud-top .stat.deal span {
-    flex:none;
-    white-space:nowrap;
-    font-size:clamp(11px,3vw,13px);
-  }
-  #hud .hud-top .stat.deal i {
-    display:block;
-    flex:0 1 42px;
-    min-width:16px;
-    max-width:42px;
-    height:11px;
-    box-sizing:border-box;
-    margin:0;
-  }
-  #hud .hud-top .hud-fs {
-    position:static;
-    grid-column:11 / span 2;
-    grid-row:1;
-    align-self:center;
-    justify-self:center;
-    display:grid;
-    place-items:center;
-    box-sizing:border-box;
-    width:min(100%,52px);
-    height:52px;
-    min-height:0;
-    min-width:0;
-    margin:0;
-    padding:0;
-    font-size:20px;
-    pointer-events:auto;
-  }
-  #hud .hud-top .stat.pts {
-    grid-column:1 / span 4;
-    grid-row:2;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-sizing:border-box;
-    width:100%;
-    min-width:0;
-    height:44px;
-    min-height:44px;
-    margin:0;
-    padding:0 2px;
-    gap:3px;
-    border-radius:15px;
-    font-size:clamp(11px,2.9vw,14px);
-    white-space:nowrap;
-  }
-  #hud .hud-top .stat.pts b {font-size:clamp(12px,3.45vw,16px);line-height:1;}
-  #hud .hud-top .hud-actions {
-    grid-column:5 / span 8;
-    grid-row:2;
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    align-items:stretch;
-    box-sizing:border-box;
-    width:100%;
-    min-width:0;
-    height:44px;
-    min-height:44px;
-    margin:0;
-    padding:0;
-    gap:4px;
-  }
-  #hud .hud-top .hud-actions button {
-    display:grid;
-    place-items:center;
-    box-sizing:border-box;
-    width:100%;
-    min-width:0;
-    max-width:none;
-    height:44px;
-    min-height:44px;
-    margin:0;
-    padding:0 2px;
-    border-radius:15px;
-    font-size:clamp(12px,3vw,15px);
-    line-height:1;
-    overflow:hidden;
-    white-space:nowrap;
-  }
-  body.pk-mode #hud .hud-top {grid-template-rows:56px;}
-  body.pk-mode #hud .hud-top #stageName {grid-column:1 / span 5;}
-  body.pk-mode #hud .hud-top .stat.deal {grid-column:6 / span 3;}
-  body.pk-mode #hud .hud-top .stat.pts {display:none;}
-  body.pk-mode #hud .hud-top .hud-actions {
-    grid-column:9 / span 2;
-    grid-row:1;
-    grid-template-columns:minmax(0,1fr);
-    height:56px;
-    min-height:56px;
-    align-items:center;
-  }
-  body.pk-mode #hud .hud-top .hud-actions #pause {height:52px;min-height:52px;}
-  body.pk-mode #hud .hud-top .hud-fs {grid-column:11 / span 2;}
-}
-@media (orientation:portrait) and (max-width:355px) {
-  #hud .hud-top {grid-template-rows:53px 42px;column-gap:3px;row-gap:4px;}
-  #hud .hud-top #stageName,
-  #hud .hud-top .stat.deal {height:53px;min-height:53px;}
-  #hud .hud-top .hud-fs {height:46px;}
-  #hud .hud-top .stat.pts,
-  #hud .hud-top .hud-actions,
-  #hud .hud-top .hud-actions button {height:42px;min-height:42px;}
-  #hud .hud-top .hud-actions {gap:3px;}
-  body.pk-mode #hud .hud-top {grid-template-rows:53px;}
-  body.pk-mode #hud .hud-top .hud-actions {height:53px;min-height:53px;}
-  body.pk-mode #hud .hud-top .hud-actions #pause {height:46px;min-height:46px;}
+/* Single-row HUD: split stage/weather chips, compact controls at all sizes. */
+#hud .hud-top {position:fixed;top:max(5px,env(safe-area-inset-top));left:max(6px,env(safe-area-inset-left));right:auto;display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:4px;width:max-content;max-width:calc(100vw - 12px - env(safe-area-inset-left) - env(safe-area-inset-right));padding:0;margin:0;pointer-events:none;z-index:12;}
+#hud .hud-top .hud-summary,#hud .hud-top .hud-tools,#hud .hud-top .hud-actions {display:contents;}
+#hud .hud-top .stat,#hud .hud-top #stageName {display:flex;flex:0 1 auto;align-items:center;justify-content:center;box-sizing:border-box;min-width:0;width:auto;max-width:100%;height:30px;min-height:30px;margin:0;padding:1px 6px;border-width:2px;border-radius:9px;font-size:11px;line-height:1.15;gap:3px;}
+#hud .hud-top .hud-stage-label,#hud .hud-top .hud-weather-label {display:block;min-width:0;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;word-break:keep-all;line-height:1.15;font-size:11px;font-weight:800;}
+#hud .hud-top .stat.deal span,#hud .hud-top .stat.pts b {font-size:11px;line-height:1;}
+#hud .hud-top .stat.deal i {width:28px;height:7px;border-width:1px;}
+#hud .hud-top .hud-actions button,#hud .hud-top .hud-fs {position:static;display:grid;place-items:center;box-sizing:border-box;flex:0 0 auto;width:30px;min-width:30px;max-width:30px;height:30px;min-height:30px;margin:0;padding:1px 3px;border-width:2px;border-radius:9px;font-size:11px;line-height:1;pointer-events:auto;}
+#hud .hud-top .hud-fs .ico {width:17px;height:17px;}
+body.pk-mode #hud .hud-top #speed,body.pk-mode #hud .hud-top .stat.pts {display:none;}
+@media(orientation:portrait) and (max-width:720px){
+ #hud .hud-top {display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1.5fr) minmax(38px,1fr) minmax(26px,.65fr) 26px 26px 26px;grid-template-rows:28px;gap:3px;left:max(7px,env(safe-area-inset-left));right:max(7px,env(safe-area-inset-right));width:auto;max-width:none;}
+ #hud .hud-top .stat,#hud .hud-top #stageName {width:100%;height:28px;min-height:28px;padding:1px 3px;gap:2px;font-size:clamp(9px,2.6vw,11px);border-radius:8px;}
+ #hud .hud-top .hud-stage-label,#hud .hud-top .hud-weather-label {font-size:clamp(9px,2.6vw,11px);max-width:100%;}
+ #hud .hud-top .stat.deal span {font-size:9px;}
+ #hud .hud-top .stat.deal i {width:clamp(12px,4vw,24px);height:6px;}
+ #hud .hud-top .stat.pts {padding:1px 2px;gap:1px;font-size:9px;overflow:hidden;}
+ #hud .hud-top .stat.pts .ico {width:9px;height:9px;}
+ #hud .hud-top .stat.pts b {font-size:9px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+ #hud .hud-top .hud-actions button,#hud .hud-top .hud-fs {width:26px;min-width:26px;max-width:26px;height:28px;min-height:28px;padding:1px;font-size:10px;border-radius:8px;}
+ #hud .hud-top .hud-fs .ico {width:15px;height:15px;}
+ body.pk-mode #hud .hud-top {grid-template-columns:minmax(0,1.5fr) minmax(0,1.5fr) minmax(38px,1fr) 26px 26px;}
 }
 
-/* PK pauses at normal speed; the speed button remains hidden after layout overrides. */
-body.pk-mode #hud .hud-top #speed {display:none;}
-
-/* Short landscape phones: all controls stay in one fixed top row; preserve
-   a readable two-line stage/weather label and 40px minimum touch targets. */
-@media (orientation:landscape) and (max-height:700px) {
-  #hud .hud-top {
-    position:fixed;
-    z-index:12;
-    top:max(6px,env(safe-area-inset-top));
-    left:max(7px,env(safe-area-inset-left));
-    right:max(7px,env(safe-area-inset-right));
-    display:grid;
-    grid-template-columns:minmax(140px,2.1fr) minmax(92px,1.2fr) minmax(52px,.6fr) minmax(90px,1.1fr) 42px;
-    grid-template-rows:44px;
-    column-gap:5px;
-    align-items:stretch;
-    flex-wrap:nowrap;
-    padding:0;
-    margin:0;
-    pointer-events:none;
-  }
-  #hud .hud-top #stageName {
-    grid-column:1;
-    grid-row:1;
-    height:44px;
-    min-height:44px;
-    max-width:none;
-    margin:0;
-    border-radius:12px;
-  }
-  #hud .hud-top #stageName .hud-stage-label {font-size:clamp(11px,1.8vw,14px);}
-  #hud .hud-top #stageName .hud-weather-label {font-size:clamp(10px,1.6vw,12px);}
-  #hud .hud-top .stat.deal,
-  #hud .hud-top .stat.pts {
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-width:0;
-    width:100%;
-    height:44px;
-    min-height:44px;
-    box-sizing:border-box;
-    margin:0;
-    padding:0 5px;
-    gap:4px;
-    border-radius:13px;
-  }
-  #hud .hud-top .stat.deal {grid-column:2;grid-row:1;}
-  #hud .hud-top .stat.deal i {width:clamp(20px,6vw,52px);}
-  #hud .hud-top .stat.pts {grid-column:3;grid-row:1;}
-  #hud .hud-top .hud-actions {
-    grid-column:4;
-    grid-row:1;
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    align-items:stretch;
-    min-width:0;
-    width:100%;
-    height:44px;
-    margin:0;
-    gap:5px;
-  }
-  #hud .hud-top .hud-actions button {
-    display:grid;
-    place-items:center;
-    box-sizing:border-box;
-    min-width:0;
-    width:100%;
-    height:44px;
-    min-height:44px;
-    margin:0;
-    padding:0 2px;
-    border-radius:12px;
-    font-size:14px;
-  }
-  #hud .hud-top .hud-fs {
-    position:static;
-    grid-column:5;
-    grid-row:1;
-    width:42px;
-    height:44px;
-    min-width:0;
-    min-height:44px;
-    margin:0;
-    padding:0;
-    border-radius:12px;
-    justify-self:end;
-  }
-  body.pk-mode #hud .hud-top {
-    grid-template-columns:minmax(150px,2.2fr) minmax(95px,1.3fr) minmax(44px,.5fr) 42px;
-  }
-  body.pk-mode #hud .hud-top .stat.pts {display:none;}
-  body.pk-mode #hud .hud-top .hud-actions {
-    grid-column:3;
-    grid-template-columns:minmax(0,1fr);
-  }
-  body.pk-mode #hud .hud-top .hud-fs {grid-column:4;}
-}
 /* Every modal keeps its navigation footer inside the dynamic viewport. */
 dialog#modal.panel {box-sizing:border-box;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);}
 dialog#modal.panel #modalBody {display:flex;flex-direction:column;min-height:0;max-height:calc(100dvh - 100px);}
@@ -2180,3 +1896,60 @@ dialog#modal.panel .modal-scroll .sheet-head {margin:0 0 12px;width:100%;}
 dialog#modal.deck #modalBody > .modal-actions button {min-height:44px;}
 #hud .bi-portrait img {object-fit:cover;}
 @media(max-height:500px){dialog#modal.panel .ribbon{margin:0 auto 6px;}dialog#modal.panel .ribbon span{font-size:16px;padding:4px 16px;}}
+
+/* The bag button never exceeds one hand card; solo and PK share the same sizing. */
+#hud {--defense-card-size:min(92px,calc((100vw - 56px)/7));--defense-bag-size:min(60px,var(--defense-card-size));}
+#hud .hand-card {width:var(--defense-card-size);aspect-ratio:5/7;}
+#hud .hud-bottom,body.pk-mode #hud .hud-bottom {grid-template-columns:minmax(0,1fr) var(--defense-bag-size);align-items:end;gap:6px;}
+#hud .item-wrap,body.pk-mode #hud .item-wrap {width:var(--defense-bag-size);min-width:0;}
+#hud .item-wrap #items,body.pk-mode #hud .item-wrap #items {display:flex!important;flex-direction:column;align-items:center;justify-content:center;width:var(--defense-bag-size);max-width:var(--defense-card-size);height:min(64px,calc(var(--defense-card-size)*1.4 - 1px));min-width:0;min-height:0;margin:0;padding:2px;border-width:2px;border-radius:10px;gap:1px;font-size:11px;line-height:1.1;}
+#hud .item-wrap #items b {font-size:11px;white-space:nowrap;line-height:1.1;}
+#hud .item-wrap #items small {font-size:8px;line-height:1;white-space:nowrap;}
+#hud .item-wrap .side-icon {font-size:15px;line-height:1;}
+@media(orientation:portrait) and (max-width:720px){#hud {--defense-card-size:min(72px,13vw,calc((100vw - 56px)/7));--defense-bag-size:var(--defense-card-size);}}
+@media(orientation:landscape) and (max-height:700px){#hud {--defense-card-size:min(80px,17dvh,calc((100vw - 56px)/7));--defense-bag-size:min(52px,var(--defense-card-size));}}
+
+/* Compact dialogs: scroll only content, retain every navigation action. */
+dialog#modal.panel {width:min(440px,86vw);max-width:86vw;max-height:70dvh;padding:14px 12px 10px;border-radius:22px;}
+dialog#modal.panel.deck {width:min(720px,88vw);max-width:88vw;}
+dialog#modal.panel #modalBody {max-height:calc(70dvh - 36px);min-height:0;overflow:hidden;}
+dialog#modal.panel #modalBody>.modal-scroll {flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;}
+dialog#modal.panel .sheet-head,dialog#modal.panel.stage-result .sheet-head {height:62px;min-height:62px;margin:0 0 8px;padding-bottom:7px;border-radius:14px;}
+dialog#modal.panel .boss-face {width:42px;height:42px;top:-2px;}
+dialog#modal.panel .sheet-title {font-size:20px;}
+dialog#modal.panel .result-title {font-size:17px;margin:6px 0;}
+dialog#modal.panel .result-sub {font-size:11px;line-height:1.4;margin:4px 0;}
+dialog#modal.panel .ribbon {margin:0 auto 8px;max-width:calc(100% - 28px);}
+dialog#modal.panel .ribbon span {font-size:16px;padding:5px 12px;}
+dialog#modal.panel .sheet-actions {gap:6px;margin:8px 0;}
+dialog#modal.panel .round {width:42px;height:46px;min-width:42px;font-size:15px;padding:3px;}
+dialog#modal.panel .round small {font-size:10px;}
+dialog#modal.panel #modalBody>.modal-actions {margin-top:6px;padding:6px 0 2px;gap:5px;}
+dialog#modal.panel .modal-actions button {min-height:38px;padding:5px 7px;font-size:12px;}
+dialog#modal.panel.deck #modalBody>.modal-actions button {min-height:38px;}
+dialog#modal.panel.stage-result #modalBody>.stage-result-content {flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;}
+dialog#modal.panel.stage-result #modalBody>.stage-result-actions {display:grid;grid-template-columns:42px 42px minmax(0,1fr);flex:0 0 auto;gap:6px;padding:6px 0 2px;margin:6px 0 0;border-top:1px solid #d0a06a;}
+dialog#modal.panel.stage-result .stage-result-actions button {min-width:0;width:100%;height:42px;min-height:42px;margin:0;padding:3px;font-size:13px;}
+dialog#modal.panel.stage-result .stage-result-actions small {font-size:10px;}
+dialog#modal.panel.stage-result .stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:6px;}
+dialog#modal.panel.stage-result .stats .stat {min-width:0;gap:1px;}
+dialog#modal.panel.stage-result .stats .stat i {width:24px;height:24px;font-size:12px;}
+dialog#modal.panel.stage-result .stats .stat b {font-size:14px;}
+dialog#modal.panel.stage-result .stats .stat small {font-size:10px;}
+dialog#modal.panel .modal-dismiss {position:absolute;top:5px;right:6px;width:26px;height:26px;min-width:0;padding:0;z-index:8;font-size:18px;border:1px solid #b99c6d;background:#fff8e8;}
+dialog#modal.panel::backdrop {background:#14231e66;backdrop-filter:blur(1px);}
+@media(max-height:450px){dialog#modal.panel {max-height:74dvh;padding:10px;}dialog#modal.panel #modalBody {max-height:calc(74dvh - 28px);}dialog#modal.panel .sheet-head,dialog#modal.panel.stage-result .sheet-head{height:44px;min-height:44px;}dialog#modal.panel .sheet-title{font-size:18px;}}
+
+dialog#modal.panel .flip-scene {width:min(250px,72vw,calc(60dvh * 5 / 7.4));max-height:60dvh;}
+dialog#modal.panel .flip-actions button {min-height:36px;padding:5px;font-size:12px;}
+#hud .card-info {width:min(280px,80vw);max-height:38dvh;overflow:hidden;font-size:11px;}
+
+#hud .hud-top .stat.deal,#hud .hud-top .stat.pts {height:30px;min-height:30px;border-width:2px;padding:1px 6px;}
+@media(orientation:portrait) and (max-width:720px){#hud .hud-top .stat.deal,#hud .hud-top .stat.pts{width:100%;height:28px;min-height:28px;padding:1px 3px;}#hud .hud-top .stat.pts{padding:1px 2px;}}
+
+/* Head portraits and result stars share a horizontal header with the title. */
+dialog#modal.panel .sheet-head,dialog#modal.panel.stage-result .sheet-head {display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;height:60px;min-height:60px;padding:7px 28px 7px 8px;}
+dialog#modal.panel .sheet-head .boss-face {position:relative;top:auto;bottom:auto;flex:0 0 40px;width:40px;height:40px;min-width:40px;min-height:40px;margin:0;border-width:2px;object-fit:cover;}
+dialog#modal.panel .sheet-head .sheet-title {flex:0 1 auto;min-width:0;line-height:1.15;font-size:20px;margin:0;letter-spacing:1px;}
+dialog#modal.panel .result-stars {font-size:24px;flex:0 0 auto;margin:0;}
+@media(max-height:450px){dialog#modal.panel .sheet-head,dialog#modal.panel.stage-result .sheet-head{height:52px;min-height:52px;padding:5px 26px 5px 7px;gap:8px;}dialog#modal.panel .sheet-head .boss-face{flex-basis:36px;width:36px;height:36px;min-width:36px;min-height:36px;}dialog#modal.panel .sheet-head .sheet-title{font-size:18px;}}

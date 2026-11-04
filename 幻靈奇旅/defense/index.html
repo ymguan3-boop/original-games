@@ -7,7 +7,7 @@
   <link rel="icon" href="data:,">
   <title>幻靈守護戰｜幻靈奇旅</title>
   <link rel="stylesheet" href="../css/collection-card.css?v=20261020-avian-v1">
-  <link rel="stylesheet" href="css/defense.css?v=20261104-v23">
+  <link rel="stylesheet" href="css/defense.css?v=20261104-v27">
   <!-- the endless cave gacha look (summon film, wallet, reward list); cave.css itself is global, so its gacha rules are
        copied into css/cave-gacha.css scoped to dialog#panel -->
   <link rel="stylesheet" href="../survivors/css/v06.css">
@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="../survivors/css/v10.css">
   <link rel="stylesheet" href="../survivors/css/v14.css?v=20261024-v14">
   <link rel="stylesheet" href="../survivors/css/v16.css?v=20261025-v16">
-  <link rel="stylesheet" href="css/cave-gacha.css?v=20261103-gacha1">
+  <link rel="stylesheet" href="css/cave-gacha.css?v=20261104-v27">
 </head>
 <body>
   <canvas id="world" aria-label="幻靈守護戰 戰場"></canvas>
@@ -42,14 +42,15 @@
 
   <div id="hud" hidden>
     <div class="hud-top">
-      <div class="stat stage" id="stageName" role="group" aria-label="關卡與天氣"><span class="hud-stage-label" id="hudStageLabel"></span><span class="hud-weather-label" id="hudWeatherLabel"></span></div>
+      <div class="hud-summary"><div class="stat stage" id="stageName" role="status" aria-label="關卡"><span class="hud-stage-label" id="hudStageLabel"></span></div><div class="stat weather" id="hudWeatherChip" role="status" aria-label="天氣"><span class="hud-weather-label" id="hudWeatherLabel"></span></div></div>
+      <div class="hud-tools">
       <div class="stat deal" title="下一張牌"><span>發牌</span><i><b id="dealFill"></b></i></div>
       <div class="stat pts" title="本場擊倒獲得的轉蛋點數（與無盡洞穴共用）">🎟️ <b id="runPoints">0</b></div>
       <div class="hud-actions">
         <button id="speed" title="遊戲速度">×1</button>
         <button id="pause" title="暫停">❚❚</button>
       </div>
-      <button class="fs-toggle hud-fs" title="全畫面／還原" aria-label="全畫面">⛶</button>
+      <button class="fs-toggle hud-fs" title="全畫面／還原" aria-label="全畫面">⛶</button></div>
     </div>
     <div class="hud-bottom">
       <div id="hand" class="hand"></div>
@@ -82,6 +83,6 @@
   <script src="../js/harbor.js?v=20261105-deck-v6"></script>
   <script src="../js/fx/boomerang-chain.js?v=20261107-boomerang-v1"></script>
   <script src="../js/fx/vfx3d.js?v=20261107-vfx3d-v1"></script>
-  <script type="module" src="js/main.js?v=20261104-v23"></script>
+  <script type="module" src="js/main.js?v=20261104-v27"></script>
 </body>
 </html>
