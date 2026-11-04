@@ -129,7 +129,7 @@ function buildHall(T,level){
  else{const w=level===2?2.2:2;planter(-S.w/2+.45,w,front+.92,level===2);planter(S.w/2-.45,w,front+.92,level===2);}
  /* chalkboard with the cart */
  const bt=boardTexture(T);textures.push(bt);const bx=doorW/2+1.1,bz=front+(level>=4?1.55:1.15);box(1,1.34,.1,m(WOOD),bx,.34+.72,bz);const board=add(new T.PlaneGeometry(.8,.96),new T.MeshBasicMaterial({map:bt}),bx,.34+.82,bz+.06);board.userData.soft=true;board.castShadow=false;box(.08,.3,.08,m(WOOD),bx-.4,.46,bz);box(.08,.3,.08,m(WOOD),bx+.4,.46,bz);
- window.PhantomHarbor?.toonOutline?.(T,root,{thickness:.022});
+ window.PhantomHarbor?.toonOutline?.(T,root,{thickness:.075});
  /* the town's lights run hot (authored for its pale models): take the lit colours down so reds stay red */
  const seen=new Set();root.traverse(o=>{const x=o.material;if(!x||seen.has(x)||o.userData.isOutline||x.isMeshBasicMaterial)return;seen.add(x);x.color.multiplyScalar(LIT);});
  return {root,doors,doorW,anim,halfW:baseW/2,dispose(){root.traverse(o=>{o.geometry?.dispose?.();});mats.forEach(x=>x.dispose());roofMat.dispose();glass.dispose();textures.forEach(t=>t.dispose());}};
