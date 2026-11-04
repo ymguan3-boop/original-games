@@ -701,7 +701,3 @@ Three.js 與 GLTFLoader 採 MIT 授權，詳見 vendor 內原始碼授權註記�
 ### 無盡洞穴 v0.24（2026-10-25）
 
 冒險衣櫃逐套顯示一般模式與無盡洞穴效果，共用服裝資料並驗證鹹蛋超人對寵物普攻及大絕加成20%、小飯團每波全隊存活幻靈回血等能力。[規則與驗證](survivors/docs/validation-v24.md)。
-
-## 像素特效系統
-
-全模式特效統一由 pixelfx 精靈圖提供，說明、建置與回退方式見 [docs/pixelfx-effects.md](docs/pixelfx-effects.md)。

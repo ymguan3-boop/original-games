@@ -161,22 +161,20 @@ function makePerson(T,shared){
  root.scale.setScalar(scale);return {root,body,legs,arms,phase:Math.random()*6,scale};
 }
 
-function create({THREE:T,scene,fx}){
+function create({THREE:T,scene}){
  const root=new T.Group();root.name='CommerceHall';scene.add(root);root.add(buildLot(T));
  const hallRoot=new T.Group();hallRoot.position.z=0;root.add(hallRoot);
  const shared=new Map();shared.geo={torso:new T.CylinderGeometry(.24,.32,.86,10),head:new T.SphereGeometry(.27,12,10),hair:new T.SphereGeometry(.285,12,8,0,Math.PI*2,0,Math.PI*.55),brim:new T.CylinderGeometry(.4,.4,.04,14),crown:new T.CylinderGeometry(.2,.24,.2,12),bag:new T.BoxGeometry(.16,.3,.26),leg:new T.CylinderGeometry(.095,.085,.62,8),shoe:new T.BoxGeometry(.17,.1,.3),arm:new T.CylinderGeometry(.07,.065,.52,8),hand:new T.SphereGeometry(.08,8,6)};
- let hall=null,level=0,people=[],time=0,leaveAt=0,doorOpen=0,ambientOn=false;
+ let hall=null,level=0,people=[],time=0,leaveAt=0,doorOpen=0;
  const slotAt=i=>({x:Math.sin(i*.7)*.28,z:FIRST_SLOT+i*SLOT_GAP});
  const spawnFor=i=>{const s=slotAt(i),side=Math.random()<.5?-1:1;return {x:side*(9+Math.random()*3),z:Math.min(LOT.maxZ-1.2,s.z+1.5)};};
  function clearPeople(){for(const p of people)root.remove(p.root);people=[];}
  function setLevel(n){
-  n=Math.max(1,Math.min(MAX_LEVEL,Math.round(n)||1));if(n===level)return;const upgraded=level>0;level=n;
+  n=Math.max(1,Math.min(MAX_LEVEL,Math.round(n)||1));if(n===level)return;level=n;
   if(hall){hallRoot.remove(hall.root);hall.dispose();}
   hall=buildHall(T,n);hallRoot.add(hall.root);hall.root.scale.setScalar(HALL_SCALE);hall.root.position.z=FRONT_Z-SIZE[n].d/2*HALL_SCALE;clearPeople();
   for(let i=0;i<QUEUE[n];i++){const p=makePerson(T,shared),s=slotAt(i);p.slot=i;p.state='wait';p.root.position.set(s.x,.03,s.z);p.root.rotation.y=Math.PI;root.add(p.root);people.push(p);}
   leaveAt=time+3+Math.random()*2;
-  /* 只有實際換外觀才放升級光；招牌光點不擋字 */
-  if(upgraded)fx?.emit({mode:'commerce',event:'level',at:{x:0,y:0,z:FRONT_Z},force:true});
  }
  /* one step toward a point, never closer than a body width to anyone ahead */
  function walk(p,tx,tz,dt,speed=1.9){
@@ -186,7 +184,7 @@ function create({THREE:T,scene,fx}){
   r.x=nx;r.z=nz;p.root.rotation.y=Math.atan2(dx,dz);p.moving=true;return false;
  }
  function update(dt,player){
-  const near=!!player&&Math.hypot(player.x,player.z-52)<46;root.visible=near;if(fx&&near!==ambientOn){ambientOn=near;if(near)fx.ambientFrom('commerce','commerce.forecourt',()=>({x:0,y:0,z:FRONT_Z+4}));else fx.clearAmbient('commerce');}if(!near||!hall)return;
+  const near=!!player&&Math.hypot(player.x,player.z-52)<46;root.visible=near;if(!near||!hall)return;
   time+=dt;for(const f of hall.anim)f(time);
   /* the front of the line goes in now and then; everyone steps up; a newcomer joins the back */
   if(time>=leaveAt&&people.length){const f=people.find(p=>p.slot===0&&p.state==='wait'&&Math.hypot(p.root.position.x-slotAt(0).x,p.root.position.z-slotAt(0).z)<.1);if(f){f.state='inside';f.slot=-1;for(const p of people)if(p.slot>0)p.slot--;leaveAt=time+3.2+Math.random()*2.8;}}
@@ -198,7 +196,7 @@ function create({THREE:T,scene,fx}){
    else{const s=slotAt(p.slot);if(p.state==='arrive'){p.grow=Math.min(1,p.grow+dt*2.2);p.root.scale.setScalar(p.scale*Math.max(.01,p.grow));}if(walk(p,s.x,s.z,dt)){p.state='wait';p.root.rotation.y=Math.PI;}}
    p.phase+=dt*(p.moving?9:1.4);const sw=p.moving?Math.sin(p.phase)*.55:0;p.legs[0].rotation.x=sw;p.legs[1].rotation.x=-sw;p.arms[0].rotation.x=-sw*.8;p.arms[1].rotation.x=sw*.8;p.body.position.y=p.moving?Math.abs(Math.sin(p.phase))*.05:Math.sin(p.phase)*.012;
   }
-  const wasOpen=doorOpen;doorOpen=Math.max(0,Math.min(1,doorOpen+(wantOpen?dt*2.6:-dt*1.8)));if(wasOpen<.05&&doorOpen>=.05)fx?.emit({mode:'commerce',event:'door',at:{x:0,y:1.5,z:FRONT_Z+.6}});for(const d of hall.doors)d.leaf.position.x=d.s*(hall.doorW/4+doorOpen*hall.doorW*.42);
+  doorOpen=Math.max(0,Math.min(1,doorOpen+(wantOpen?dt*2.6:-dt*1.8)));for(const d of hall.doors)d.leaf.position.x=d.s*(hall.doorW/4+doorOpen*hall.doorW*.42);
  }
  const inLot=(x,z)=>z>LOT.minZ-.6&&z<LOT.maxZ+1&&x>LOT.minX-1&&x<LOT.maxX+1;
  function blocked(x,z,m=.42){
