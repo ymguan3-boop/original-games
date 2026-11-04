@@ -9,6 +9,7 @@ import {spawnSync} from 'node:child_process';
 const worktree=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const args=process.argv.slice(2),option=(key,fallback)=>{const i=args.indexOf(key);return i<0?fallback:args[i+1];};
 const source=path.resolve(option('--source',path.join(worktree,'../original-games/初光商會')));
+try{await fs.access(path.join(source,'runtime-manifest.json'));throw Error('This is a packaged runtime. Pass --source pointing to the preserved authoring project.');}catch(error){if(error.code!=='ENOENT')throw error;}
 const destination=path.resolve(option('--dest',path.join(worktree,'初光商會')));
 const mainPath=option('--main-path','../幻靈奇旅/').replace(/\/?$/,'/');
 const dryRun=args.includes('--dry-run');

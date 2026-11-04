@@ -8,7 +8,7 @@ node tools/package-merchant.mjs --dest sites/public/shop --main-path ../game/
 node tools/package-merchant.mjs --dest sites/public/shop --main-path ../game/ --dry-run
 ```
 
-預設來源為同層 `original-games/初光商會`，可用 `--source` 改指定。路徑參數相對於執行時工作目錄。主遊戲必須另行交付到對應的 sibling 資料夾；此工具不複製主遊戲。
+發布後 `original-games/初光商會` 為精簡 runtime。本機完整開發來源保留在工作區 `archives/初光商會-開發原始檔-20261105`；重新打包時請明確傳入 `--source ../archives/初光商會-開發原始檔-20261105`，不要把壓縮後的 runtime 當原稿再次打包。路徑參數相對於執行時工作目錄。主遊戲必須另行交付到對應的 sibling 資料夾；此工具不複製主遊戲。
 
 工具以 index 的 HTML/CSS 與 ES module import 建立閉包，追蹤靜態圖像及 GLB 外部 buffer/image。動態路徑由現行貨架、裝潢、商品、牆面 registry 枚舉，再補上樓地板、內裝、任務、事件、HTML 功能圖示等有限變體。新增動態載入種類時，請同步更新腳本 Dynamic adapters 區塊。腳本僅 import 無副作用的宣告模組，不載入 app/scene。
 
