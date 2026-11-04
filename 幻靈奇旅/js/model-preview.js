@@ -5,7 +5,7 @@
 PhantomLoading.install();const T=THREE,C=ModelRoomSettings,$=id=>document.getElementById(id),host=$('stage');
 const scene=new T.Scene();
 const renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.domElement.setAttribute('aria-label','可拖曳旋轉與縮放的立體幻靈家族');host.prepend(renderer.domElement);
-const camera=new T.PerspectiveCamera(30,1,.05,200);
+const camera=new T.PerspectiveCamera(30,1,.05,200);const pfx=window.PixelFX?.create({THREE:T,parent:scene,camera,sceneId:"room"})??null;pfx?.preload("room");
 scene.add(new T.HemisphereLight(0xf2f6fa,0xb9b2a4,.95));
 const key=new T.DirectionalLight(0xffffff,1.55);key.position.set(-5,9,8);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-9,right:9,top:9,bottom:-4,near:1,far:40});key.shadow.bias=-.0005;scene.add(key,key.target);
 const rim=new T.DirectionalLight(0xbfdcff,.6);rim.position.set(4,5,-6);scene.add(rim);
@@ -73,8 +73,11 @@ function resolve(p,canon){
 const LOOP=new Set(['Idle','Walk','Run']);
 function duration(p,mode){const clip=p.clips.find(c=>c.name===mode);if(clip)return clip.duration;return p.durations[mode]||catalog?.get(p.s)?.skills?.find(k=>k.animation===mode)?.duration||2.4;}
 function nativeSeek(p,mode,t){const c=p.controller;if(p.path==='avian://jigglypuff'){c.setMode(mode);c.seek(t);}else if(typeof c.seek==='function')c.seek(mode,t);else c.setMode(mode);}
+/* 冒險蛙迴旋鏢：模型室只有木頭人一個目標，飛出、命中、回手的完整流程與擂台共用 boomerang-chain.js。 */
+function armBoomerang(p){p.trailAt=0;const rig=p.controller.boomerangRig,tmp=new T.Vector3();rig.external(true);p.chain=BoomerangChain.create({attackId:p.id+':'+last,targets:[dummy],idOf:()=>'dummy',hand:()=>rig.hand(tmp),targetPoint:()=>dummy.g.position.clone().add(new T.Vector3(0,1.3,0)),onFrame:({position,angle})=>{rig.place(position,angle);if(last>=p.trailAt){p.trailAt=last+90;pfx?.emit({mode:'room',event:'boomerangTrail',at:position,intensity:.45});}},onHit:()=>{p.hitDone=true;hitDummy(p);}});p.hitDone=true;}
 function start(p,canon){
  const plan=resolve(p,canon);p.plan=plan;p.canon=canon;p.time=0;p.hitDone=false;p.outomanFx?.stop();p.dur=Math.max(.4,duration(p,plan.mode)/(plan.speed||1));if(p.k0)p.root.scale.copy(p.k0);p.fx=null;p.fxT=0;if(plan.procedural)p.dur=canon==='Ultimate'?1.15:.55;
+ p.controller?.boomerangRig?.external(false);p.chain=null;if(plan.mode==='Boomerang'&&p.controller?.boomerangRig){p.dur=BoomerangChain.WINDUP+BoomerangChain.DURATION+BoomerangChain.FOLLOW+.5;armBoomerang(p);}
  if(plan.proc==='greet'||plan.proc==='cheer')p.dur=1.8;if(plan.proc==='hurt')p.dur=.9;
  if(p.controller){p.controller.setMode(plan.mode);nativeSeek(p,plan.mode,0);return;}
  p.mixer.stopAllAction();const clip=p.clips.find(c=>c.name===plan.mode);if(!clip)return;
@@ -120,7 +123,7 @@ const dummy=(()=>{const m=(c,r=.85)=>new T.MeshStandardMaterial({color:c,roughne
 const texts=[];
 function damageText(n,strong){const c=document.createElement('canvas');c.width=200;c.height=90;const g=c.getContext('2d');g.font='800 60px "Noto Sans TC",system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.lineWidth=9;g.strokeStyle='#4a2a12';g.strokeText('-'+n,100,46);g.fillStyle=strong?'#FFE27A':'#fff';g.fillText('-'+n,100,46);
  const sp=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(c),transparent:true,depthTest:false}));sp.position.copy(dummy.g.position).add(new T.Vector3((Math.random()-.5)*.6,2.5,0));sp.scale.set(1.3,.6,1);scene.add(sp);texts.push({sp,age:0});}
-function hitDummy(p){const sk=p.s?.skills?.[p.plan.attack]||{};dummy.t=0;dummy.flash=.22;dummy.power=p.plan.attack?1.5:1;damageText(sk.effect?0:Math.round((sk.power||p.s?.attack||20)*(.9+Math.random()*.2)),p.plan.attack===1);}
+function hitDummy(p){const sk=p.s?.skills?.[p.plan.attack]||{};pfx?.emit({mode:'room',event:'impact',element:p.s?.type,at:dummy.g.position.clone().add(new T.Vector3(0,1.4,0)),force:true,intensity:.5});dummy.t=0;dummy.flash=.22;dummy.power=p.plan.attack?1.5:1;damageText(sk.effect?0:Math.round((sk.power||p.s?.attack||20)*(.9+Math.random()*.2)),p.plan.attack===1);}
 function stepDummy(dt){dummy.t+=dt;const k=Math.exp(-3*dummy.t),w=Math.cos(17*dummy.t)*.55*k*dummy.power;dummy.body.rotation.x=w;dummy.body.position.z=.22*Math.exp(-4.5*dummy.t)*dummy.power;dummy.flash=Math.max(0,dummy.flash-dt);dummy.mats.forEach(m=>m.emissive.setScalar(dummy.flash>0?.45:0));
  for(let i=texts.length-1;i>=0;i--){const t=texts[i];t.age+=dt;t.sp.position.y+=.9*dt;t.sp.material.opacity=Math.min(1,(1-t.age)*2.2);if(t.age>1){scene.remove(t.sp);t.sp.material.map.dispose();t.sp.material.dispose();texts.splice(i,1);}}}
 
@@ -194,9 +197,10 @@ cv.addEventListener('wheel',e=>{e.preventDefault();zoom=T.MathUtils.clamp(zoom*M
 $('snapshot').onclick=()=>{renderer.render(scene,camera);const a=document.createElement('a');a.download=(family?.label||'模型室')+'-'+motion+'.png';a.href=cv.toDataURL('image/png');a.click();};
 
 /* ---------- 主迴圈 ---------- */
-function frame(now){requestAnimationFrame(frame);const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;if(dead)return;
+function frame(now){requestAnimationFrame(frame);const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;if(dead)return;pfx?.update(dt);
  try{if(!paused)for(const p of activePacks()){p.time+=dt;const t=p.time,u=(t%p.dur)/p.dur;
-   if(p.controller){let left=dt;while(left>1e-8){const s=Math.min(1/60,left);p.controller.update(s);left-=s;}
+   if(p.chain){if(t>=BoomerangChain.WINDUP)p.chain.update(t-BoomerangChain.WINDUP);if(p.chain.finished)p.controller.boomerangRig.external(false);nativeSeek(p,'Boomerang',BoomerangChain.nativeTime(t));if(t>=p.dur){p.time=0;armBoomerang(p);}}
+   else if(p.controller){let left=dt;while(left>1e-8){const s=Math.min(1/60,left);p.controller.update(s);left-=s;}
     if(!LOOP.has(p.plan.mode)&&t>=p.dur){p.time=0;p.hitDone=false;nativeSeek(p,p.plan.mode,0);}}
    else p.mixer.update(dt);
    if(p.plan.attack!=null){if(u<.05)p.hitDone=false;if(!p.hitDone&&u>=p.plan.release){p.hitDone=true;hitDummy(p);}}
