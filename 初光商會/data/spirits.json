@@ -1,0 +1,2168 @@
+[
+  {
+    "id": "bulbasaur",
+    "speciesId": "bulbasaur",
+    "name": "青螺靈",
+    "element": "grass",
+    "type": "森",
+    "stage": 1,
+    "family": "spiral-snail",
+    "form": "snail",
+    "color": 1473682,
+    "role": "starter",
+    "previous": null,
+    "next": "ivysaur",
+    "model": "models/spirits/spiral-snail-1.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "ivysaur",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "殼光輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "青螺共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "青螺靈以柔軟腹足波浪般蠕動，青藍螺殼隨步伐輕輕彈動。喜歡雨後的草地與苔蘚。"
+  },
+  {
+    "id": "ivysaur",
+    "speciesId": "ivysaur",
+    "name": "紫羽螺",
+    "element": "grass",
+    "type": "森",
+    "stage": 2,
+    "family": "spiral-snail",
+    "form": "snail",
+    "color": 9654241,
+    "role": "starter",
+    "previous": "bulbasaur",
+    "next": "venusaur",
+    "model": "models/spirits/spiral-snail-2.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "venusaur",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "紫羽切波",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "紫羽共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "紫羽螺的螺殼進化為亮紫金屬，層疊羽片隨身體蠕動自然擺動，能以殼光守護森林夥伴。"
+  },
+  {
+    "id": "venusaur",
+    "speciesId": "venusaur",
+    "name": "赤鎧螺王",
+    "element": "grass",
+    "type": "森",
+    "stage": 3,
+    "family": "spiral-snail",
+    "form": "snail",
+    "color": 12400939,
+    "role": "starter",
+    "previous": "ivysaur",
+    "next": null,
+    "model": "models/spirits/spiral-snail-3.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "赤鎧旋刃",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "赤鎧共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "赤鎧螺王披著赤紅銅金螺旋甲，繁密的金屬羽片以不同節奏擺動。身軀沉穩，能凝聚強大的螺旋力量。"
+  },
+  {
+    "id": "charmander",
+    "speciesId": "charmander",
+    "name": "剝皮辣椒雞",
+    "element": "fire",
+    "type": "焰",
+    "stage": 1,
+    "family": "pepper-chick",
+    "form": "chick",
+    "color": 16762941,
+    "role": "starter",
+    "previous": null,
+    "next": "charmeleon",
+    "model": "models/spirits/pepper-chick-1.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "charmeleon",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "啄擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "辣椒投擲",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "剝皮辣椒雞總背著一根剝皮辣椒，走路時搖頭晃腦、好奇張望，偶爾會停下來拿辣椒細細品嚐。",
+    "pepperCount": 1
+  },
+  {
+    "id": "charmeleon",
+    "speciesId": "charmeleon",
+    "name": "雙椒辣椒雞",
+    "element": "fire",
+    "type": "焰",
+    "stage": 2,
+    "family": "pepper-chick",
+    "form": "chick",
+    "color": 16762941,
+    "role": "starter",
+    "previous": "charmander",
+    "next": "charizard",
+    "model": "models/spirits/pepper-chick-2.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "charizard",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "啄擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "雙翼連投",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "雙椒辣椒雞背著兩根剝皮辣椒，喜歡一邊張望一邊踏步，休息時會坐下數辣椒，再一起抱到嘴邊享用。",
+    "pepperCount": 2
+  },
+  {
+    "id": "charizard",
+    "speciesId": "charizard",
+    "name": "豐椒辣椒雞王",
+    "element": "fire",
+    "type": "焰",
+    "stage": 3,
+    "family": "pepper-chick",
+    "form": "chick",
+    "color": 16762941,
+    "role": "starter",
+    "previous": "charmeleon",
+    "next": null,
+    "model": "models/spirits/pepper-chick-3.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "啄擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "烈焰辣椒雨",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "豐椒辣椒雞王背著五根剝皮辣椒，蓬鬆羽毛藏著滿滿椒香，能同時抱起三根品嚐，也愛坐下仔細清點珍藏。",
+    "pepperCount": 5
+  },
+  {
+    "id": "squirtle",
+    "speciesId": "squirtle",
+    "name": "小芝麻",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "sesame-spirit",
+    "form": "woolball",
+    "color": 7482268,
+    "role": "starter",
+    "previous": null,
+    "next": "wartortle",
+    "model": "models/spirits/sesame-spirit-1.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "wartortle",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "芝麻輕撞",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "淨帽共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "小芝麻是愛乾淨的紫色毛球，戴著奶油白帽子。散步時偶爾輕跳，休息時會摘帽仔細檢查。"
+  },
+  {
+    "id": "wartortle",
+    "speciesId": "wartortle",
+    "name": "絨芝麻",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "sesame-spirit",
+    "form": "woolball",
+    "color": 8402846,
+    "role": "starter",
+    "previous": "squirtle",
+    "next": "blastoise",
+    "model": "models/spirits/sesame-spirit-2.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "blastoise",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "絨毛旋舞",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "絨芝共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "絨芝麻長出更綿密的葡萄紫捲毛，湖水綠帽子繡著月亮與星紋，總會停下來確認帽子乾乾淨淨。"
+  },
+  {
+    "id": "blastoise",
+    "speciesId": "blastoise",
+    "name": "星冠芝麻",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "sesame-spirit",
+    "form": "woolball",
+    "color": 9917364,
+    "role": "starter",
+    "previous": "wartortle",
+    "next": null,
+    "model": "models/spirits/sesame-spirit-3.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "星冠躍擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "星冠共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "星冠芝麻披著蓬鬆的淡紫捲毛，戴著珊瑚橘星冠帽。牠喜歡輕快跳躍，也愛向旅人展示整理好的帽子。"
+  },
+  {
+    "id": "chikorita",
+    "speciesId": "chikorita",
+    "name": "沒花鹿",
+    "element": "grass",
+    "type": "森",
+    "stage": 1,
+    "family": "floral-deer",
+    "form": "deer",
+    "color": 9348961,
+    "role": "starter",
+    "previous": null,
+    "next": "bayleef",
+    "model": "floral-deer://chikorita",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "bayleef",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "花芽輕擊",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "金蕊共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "有著奶油白瀏海與金色花飾的小鹿，眼睛與嘴巴會自然開合。踏著短短四肢，喜歡親近旅人。"
+  },
+  {
+    "id": "bayleef",
+    "speciesId": "bayleef",
+    "name": "花鹿米",
+    "element": "grass",
+    "type": "森",
+    "stage": 2,
+    "family": "floral-deer",
+    "form": "deer",
+    "color": 9348961,
+    "role": "starter",
+    "previous": "chikorita",
+    "next": "meganium",
+    "model": "floral-deer://bayleef",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "meganium",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "櫻花輕舞",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "花葉共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "花葉枝角與金色白斑映著陽光，身旁固定有八片櫻花環繞，腳步輕盈而溫柔。"
+  },
+  {
+    "id": "meganium",
+    "speciesId": "meganium",
+    "name": "藏鏡鹿",
+    "element": "grass",
+    "type": "森",
+    "stage": 3,
+    "family": "floral-deer",
+    "form": "deer",
+    "color": 9348961,
+    "role": "starter",
+    "previous": "bayleef",
+    "next": null,
+    "model": "floral-deer://meganium",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "櫻鏡流光",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "花冠映照",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "長頸承托金花冠角，白金葉披隨步伐搖曳，兩面櫻花造型鏡子持續環繞守護。"
+  },
+  {
+    "id": "cyndaquil",
+    "speciesId": "cyndaquil",
+    "name": "A1",
+    "element": "electric",
+    "type": "雷",
+    "stage": 1,
+    "family": "robot-evolution",
+    "form": "robot",
+    "color": 12090456,
+    "role": "starter",
+    "previous": null,
+    "next": "quilava",
+    "model": "robot-evolution://cyndaquil",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "quilava",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "集能小光波",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "集能大光波",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "以圓形核心蓄能出拳，向前發出小光波；集能後可釋放大型光波。"
+  },
+  {
+    "id": "quilava",
+    "speciesId": "quilava",
+    "name": "A傑特",
+    "element": "electric",
+    "type": "雷",
+    "stage": 2,
+    "family": "robot-evolution",
+    "form": "robot",
+    "color": 12090456,
+    "role": "starter",
+    "previous": "cyndaquil",
+    "next": "typhlosion",
+    "model": "robot-evolution://quilava",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "typhlosion",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "胸口紅色光束",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "紅色能量球",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "藍色推進器帶動前傾飛行；半跪蓄能時雙眼轉為銳利，從胸口射出紅光或大型能量球。"
+  },
+  {
+    "id": "typhlosion",
+    "speciesId": "typhlosion",
+    "name": "假維斯",
+    "element": "electric",
+    "type": "雷",
+    "stage": 3,
+    "family": "robot-evolution",
+    "form": "robot",
+    "color": 12090456,
+    "role": "starter",
+    "previous": "quilava",
+    "next": null,
+    "model": "robot-evolution://typhlosion",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "掌心藍色光束",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "藍色能量球",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "白金裝甲與大型背翼的成熟型機器人；以分腿半跪承受後座力，掌心發射藍光或大型能量球。"
+  },
+  {
+    "id": "totodile",
+    "speciesId": "totodile",
+    "name": "小肥象",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "crystal-newt",
+    "form": "elephant",
+    "color": 6666684,
+    "role": "starter",
+    "previous": null,
+    "next": "croconaw",
+    "model": "native://totodile",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "croconaw",
+    "rarity": "普通",
+    "motionType": "native-cycle",
+    "skills": [
+      {
+        "name": "大耳拍動",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "大耳飛翔",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "小肥象是初光之境的潮屬性幻靈。牠會擺動象鼻散步、坐下休息，蓄力後用大耳朵拍動飛翔。"
+  },
+  {
+    "id": "croconaw",
+    "speciesId": "croconaw",
+    "name": "小飛",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "crystal-newt",
+    "form": "elephant",
+    "color": 6666684,
+    "role": "starter",
+    "previous": "totodile",
+    "next": "feraligatr",
+    "model": "native://croconaw",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "feraligatr",
+    "rarity": "進階",
+    "motionType": "native-cycle",
+    "skills": [
+      {
+        "name": "大耳拍動",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "大耳飛翔",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "小飛是初光之境的潮屬性幻靈。牠會擺動象鼻散步、坐下休息，蓄力後用大耳朵拍動飛翔。"
+  },
+  {
+    "id": "feraligatr",
+    "speciesId": "feraligatr",
+    "name": "阿拉肥",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "crystal-newt",
+    "form": "elephant",
+    "color": 6666684,
+    "role": "starter",
+    "previous": "croconaw",
+    "next": null,
+    "model": "native://feraligatr",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "native-cycle",
+    "skills": [
+      {
+        "name": "大耳拍動",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "大耳飛翔",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "阿拉肥是初光之境的潮屬性幻靈。牠會擺動象鼻散步、坐下休息，蓄力後用大耳朵拍動飛翔。"
+  },
+  {
+    "id": "treecko",
+    "speciesId": "treecko",
+    "name": "小麻",
+    "element": "fairy",
+    "type": "光",
+    "stage": 1,
+    "family": "avian-evolution",
+    "form": "bird",
+    "color": 5020791,
+    "role": "special",
+    "previous": "jigglypuff",
+    "next": "grovyle",
+    "model": "avian://treecko",
+    "height": 1.08,
+    "hp": 108,
+    "attack": 33,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "好奇啄擊",
+        "power": 33,
+        "cost": 1
+      },
+      {
+        "name": "絨羽小旋風",
+        "power": 66,
+        "cost": 3
+      }
+    ],
+    "description": "三色蛋捕捉失敗時可能隨機變成小麻。灰紫色短翼快速振翅，平時收翼踱步，好奇地啄擊，並以絨羽旋風自我保護。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "captureEvolutionOnly": true,
+    "captureEvolutionSource": "jigglypuff"
+  },
+  {
+    "id": "grovyle",
+    "speciesId": "grovyle",
+    "name": "咕咕",
+    "element": "fairy",
+    "type": "光",
+    "stage": 2,
+    "family": "avian-evolution",
+    "form": "bird",
+    "color": 5020791,
+    "role": "special",
+    "previous": "treecko",
+    "next": "sceptile",
+    "model": "avian://grovyle",
+    "height": 1.5,
+    "hp": 143,
+    "attack": 47,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "雞冠衝撞",
+        "power": 47,
+        "cost": 1
+      },
+      {
+        "name": "晨曦啼鳴",
+        "power": 94,
+        "cost": 3
+      }
+    ],
+    "description": "三色蛋捕捉失敗時可能隨機變成咕咕。紅雞冠與大鐮尾昂然挺立，短程撲飛、雞冠衝撞，以晨曦啼鳴送出聲波。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "captureEvolutionOnly": true,
+    "captureEvolutionSource": "jigglypuff"
+  },
+  {
+    "id": "sceptile",
+    "speciesId": "sceptile",
+    "name": "小鷹",
+    "element": "fairy",
+    "type": "光",
+    "stage": 3,
+    "family": "avian-evolution",
+    "form": "bird",
+    "color": 5020791,
+    "role": "special",
+    "previous": "grovyle",
+    "next": "palkia",
+    "model": "avian://sceptile",
+    "height": 1.85,
+    "hp": 178,
+    "attack": 61,
+    "evolvesTo": "palkia",
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "銳喙啄擊",
+        "power": 61,
+        "cost": 1
+      },
+      {
+        "name": "幼鷹撲擊",
+        "power": 122,
+        "cost": 3
+      }
+    ],
+    "description": "三色蛋捕捉失敗時可能隨機變成小鷹。需持有 3 張小鷹卡才能進階成大朋；抬頭收爪飛行，以銳喙啄擊或拍翼撲擊。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "captureEvolutionOnly": true,
+    "captureEvolutionSource": "jigglypuff"
+  },
+  {
+    "id": "torchic",
+    "speciesId": "torchic",
+    "name": "汪汪犬",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "water-dog",
+    "form": "dog",
+    "color": 3439064,
+    "role": "starter",
+    "previous": null,
+    "next": "combusken",
+    "model": "models/spirits/water-dog-1.glb",
+    "height": 1.2,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "combusken",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "撲咬",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "汪汪水彈",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "大頭垂耳的水系幼犬，頭頂三根藍呆毛、尾巴是一道捲起的水流。開心時會仰頭汪汪叫，吐出一顆顆水彈。"
+  },
+  {
+    "id": "combusken",
+    "speciesId": "combusken",
+    "name": "浪鳴犬",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "water-dog",
+    "form": "dog",
+    "color": 3439064,
+    "role": "starter",
+    "previous": "torchic",
+    "next": "blaziken",
+    "model": "models/spirits/water-dog-2.glb",
+    "height": 1.75,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "blaziken",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "雙頭連咬",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "雙頭激流",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "兩顆狼頭的水系犬，一顆沉著、一顆好鬥。兩頭同時噴出水柱交叉掃射，甩尾還能劈出弧形水刃。"
+  },
+  {
+    "id": "blaziken",
+    "speciesId": "blaziken",
+    "name": "三瀾犬",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "water-dog",
+    "form": "dog",
+    "color": 3439064,
+    "role": "starter",
+    "previous": "combusken",
+    "next": null,
+    "model": "models/spirits/water-dog-3.glb",
+    "height": 2.8,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "三頭連咬",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "三瀾海嘯",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "三頭的水系守護犬，胸前淺藍鬃毛會發光。蹲低蓄力後人立長嚎，喚來捲起的海嘯，三顆頭再各喚一道水柱。"
+  },
+  {
+    "id": "mudkip",
+    "speciesId": "mudkip",
+    "name": "小熊",
+    "element": "fire",
+    "type": "焰",
+    "stage": 1,
+    "family": "fire-bear",
+    "form": "bear",
+    "color": 7058851,
+    "role": "starter",
+    "previous": null,
+    "next": "marshtomp",
+    "model": "models/spirits/fire-bear-1.glb",
+    "height": 1.6575,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "marshtomp",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "火爪拍",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "烈焰咆哮",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "頭頂龐克火焰頭的小火熊，拍擊時爪子會燃起火焰；大絕招後仰吸氣，朝前方噴出一道烈焰。"
+  },
+  {
+    "id": "marshtomp",
+    "speciesId": "marshtomp",
+    "name": "壯熊",
+    "element": "fire",
+    "type": "焰",
+    "stage": 2,
+    "family": "fire-bear",
+    "form": "bear",
+    "color": 7058851,
+    "role": "starter",
+    "previous": "mudkip",
+    "next": "swampert",
+    "model": "models/spirits/fire-bear-2.glb",
+    "height": 2.15475,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "swampert",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "火焰衝撞",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "熔岩震地",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "四肢粗壯、背上與頸邊都燒著火焰的壯熊；會壓低身體蓄力後猛烈衝撞，大絕招立起雙掌怒吼再重重拍地，震出一圈火柱。"
+  },
+  {
+    "id": "swampert",
+    "speciesId": "swampert",
+    "name": "大熊",
+    "element": "fire",
+    "type": "焰",
+    "stage": 3,
+    "family": "fire-bear",
+    "form": "bear",
+    "color": 7058851,
+    "role": "starter",
+    "previous": "marshtomp",
+    "next": null,
+    "model": "models/spirits/fire-bear-3.glb",
+    "height": 2.801175,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "霸體",
+        "buff": {
+          "atk": 0.3,
+          "def": 0.3,
+          "turns": 2
+        },
+        "power": 27,
+        "cost": 1
+      },
+      {
+        "name": "熔岩大劍",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "微蹲著身子、背著熔岩大劍的火焰巨熊。普通攻擊「霸體」會讓全身發光，攻擊與防禦各提升 30%，持續 2 回合；大絕招拔出大劍躍起劈下，震出一排火柱。"
+  },
+  {
+    "id": "turtwig",
+    "speciesId": "turtwig",
+    "name": "小貓娘",
+    "element": "grass",
+    "type": "森",
+    "stage": 1,
+    "family": "cat-girl",
+    "form": "catgirl",
+    "color": 9473636,
+    "role": "starter",
+    "previous": null,
+    "next": "grotle",
+    "model": "models/spirits/cat-girl-1.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "grotle",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "貓貓拳",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "貓爪亂舞",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "戴著小鈴鐺領巾、頭髮蓬鬆的小貓娘。普通攻擊是蓋下一個肉球印的貓貓拳；大絕招連抓四下後撲向前方，拍出大肉球印。"
+  },
+  {
+    "id": "grotle",
+    "speciesId": "grotle",
+    "name": "靈貓姬",
+    "element": "grass",
+    "type": "森",
+    "stage": 2,
+    "family": "cat-girl",
+    "form": "catgirl",
+    "color": 9473636,
+    "role": "starter",
+    "previous": "turtwig",
+    "next": "torterra",
+    "model": "models/spirits/cat-girl-2.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "torterra",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "疾風斬",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "月牙三連斬",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "高馬尾、手持彎刀的貓娘劍士。普通攻擊由右往左橫斬；大絕招是橫斬、反手回斬、弓步突刺的月牙三連斬。"
+  },
+  {
+    "id": "torterra",
+    "speciesId": "torterra",
+    "name": "雙刃貓女",
+    "element": "grass",
+    "type": "森",
+    "stage": 3,
+    "family": "cat-girl",
+    "form": "catgirl",
+    "color": 9473636,
+    "role": "starter",
+    "previous": "grotle",
+    "next": null,
+    "model": "models/spirits/cat-girl-3.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "雙刃橫斬",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "影刃旋風",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "身形高挑、腿長腰細的雙刀貓女。普通攻擊雙刀一起水平橫掃；大絕招是旋身一圈、雙刀交叉斬的影刃旋風。"
+  },
+  {
+    "id": "chimchar",
+    "speciesId": "chimchar",
+    "name": "阿宏牛仔",
+    "element": "electric",
+    "type": "雷",
+    "stage": 1,
+    "family": "ahong-cowboy",
+    "form": "cowboy",
+    "color": 13532505,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/ahong-cowboy.glb",
+    "height": 1.7,
+    "hp": 135,
+    "attack": 46,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "雙槍快射",
+        "power": 46,
+        "cost": 1
+      },
+      {
+        "name": "六芒追星連射",
+        "power": 100,
+        "cost": 3
+      }
+    ],
+    "description": "靈巧的雷屬性雙槍牛仔。雙槍快射交替開火；六芒追星連射以六發星光彈壓制對手。",
+    "stageLabel": "魔王",
+    "cardFrame": "red",
+    "acquisition": "tower",
+    "acquisitionText": "於星穹挑戰塔擊敗阿宏牛仔取得卡牌；獨立幻靈，無進階關係。",
+    "category": "tower"
+  },
+  {
+    "id": "monferno",
+    "speciesId": "monferno",
+    "name": "藍金星輝法師",
+    "element": "psychic",
+    "type": "念",
+    "stage": 1,
+    "family": "starlight-mage",
+    "form": "starlight-mage",
+    "color": 13532505,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/starlight-mage.glb",
+    "height": 2.332,
+    "hp": 145,
+    "attack": 50,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "星芒矢",
+        "power": 50,
+        "cost": 1
+      },
+      {
+        "name": "天穹星陣",
+        "power": 112,
+        "cost": 3
+      }
+    ],
+    "description": "戴著金框眼鏡的念屬性星輝法師。右手持星辰法杖、左手凝聚星芒矢；天穹星陣展開星環，連續射出藍金星束。",
+    "stageLabel": "魔王",
+    "cardFrame": "red",
+    "acquisition": "tower",
+    "acquisitionText": "於星穹挑戰塔擊敗藍金星輝法師取得卡牌；獨立幻靈，無進階關係。",
+    "category": "tower"
+  },
+  {
+    "id": "infernape",
+    "speciesId": "infernape",
+    "name": "官胖",
+    "element": "psychic",
+    "type": "念",
+    "stage": 1,
+    "family": "guanpang",
+    "form": "armored-warrior",
+    "color": 9902335,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/guanpang.glb",
+    "height": 2.7,
+    "hp": 195,
+    "attack": 68,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "震地斧擊",
+        "power": 68,
+        "cost": 1
+      },
+      {
+        "name": "天墜裂地",
+        "power": 136,
+        "cost": 3
+      }
+    ],
+    "description": "官胖是身披紫紋尖刺重甲的念屬性傳說魔王。以震地斧擊迅速砸地；天墜裂地則雙手持斧、開腿深蹲後高跳前劈，落地釋放紫色震波。",
+    "stageLabel": "魔王",
+    "cardFrame": "red",
+    "acquisition": "tower",
+    "acquisitionText": "於星穹挑戰塔擊敗官胖取得卡牌；獨立幻靈，無進階關係。",
+    "category": "tower"
+  },
+  {
+    "id": "piplup",
+    "speciesId": "piplup",
+    "name": "雛鳥",
+    "element": "fairy",
+    "type": "光",
+    "stage": 1,
+    "family": "moon-owl",
+    "form": "bird",
+    "color": 8691131,
+    "role": "starter",
+    "previous": null,
+    "next": "prinplup",
+    "model": "native://piplup",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "prinplup",
+    "rarity": "普通",
+    "motionType": "native-cycle",
+    "skills": [
+      {
+        "name": "振翅拍動",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "振翅飛翔",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "雛鳥是初光之境的潮屬性幻靈。牠會在地面散步、坐下休息，蓄力後振翅飛翔。"
+  },
+  {
+    "id": "prinplup",
+    "speciesId": "prinplup",
+    "name": "青羽鳥",
+    "element": "fairy",
+    "type": "光",
+    "stage": 2,
+    "family": "moon-owl",
+    "form": "bird",
+    "color": 8691131,
+    "role": "starter",
+    "previous": "piplup",
+    "next": "empoleon",
+    "model": "native://prinplup",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "empoleon",
+    "rarity": "進階",
+    "motionType": "native-cycle",
+    "skills": [
+      {
+        "name": "振翅拍動",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "振翅飛翔",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "青羽鳥是初光之境的潮屬性幻靈。牠會在地面散步、坐下休息，蓄力後振翅飛翔。"
+  },
+  {
+    "id": "empoleon",
+    "speciesId": "empoleon",
+    "name": "天翼王",
+    "element": "fairy",
+    "type": "光",
+    "stage": 3,
+    "family": "moon-owl",
+    "form": "bird",
+    "color": 8691131,
+    "role": "starter",
+    "previous": "prinplup",
+    "next": null,
+    "model": "native://empoleon",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "native-cycle",
+    "skills": [
+      {
+        "name": "振翅拍動",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "振翅飛翔",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "天翼王是初光之境的潮屬性幻靈。牠會在地面散步、坐下休息，蓄力後振翅飛翔。"
+  },
+  {
+    "id": "articuno",
+    "speciesId": "articuno",
+    "name": "大眼蛙",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "leaf-frog",
+    "form": "frog",
+    "color": 10211141,
+    "role": "legendary",
+    "previous": null,
+    "next": "moltres",
+    "model": "leaf-frog://articuno",
+    "height": 1.85,
+    "hp": 108,
+    "attack": 33,
+    "evolvesTo": "moltres",
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "普通撞擊",
+        "power": 33,
+        "cost": 1
+      },
+      {
+        "name": "泡泡連彈",
+        "power": 66,
+        "cost": 3
+      }
+    ],
+    "description": "戴著放大圓眼鏡的葉芽守護者，普通攻擊會蓄力前衝撞擊，並能吐出晶亮泡泡。加入隊伍連續完成 3 場幻靈競技擂台戰鬥後，可進階為冒險蛙（勝敗皆計；未參戰或中途離開會中斷）。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
+  },
+  {
+    "id": "zapdos",
+    "speciesId": "zapdos",
+    "name": "C老猴",
+    "element": "fire",
+    "type": "焰",
+    "stage": 2,
+    "family": "fire-monkey",
+    "form": "monkey",
+    "color": 12412475,
+    "role": "legendary",
+    "previous": "raikou",
+    "next": null,
+    "model": "models/spirits/fire-monkey-elder.glb",
+    "height": 2.65,
+    "hp": 143,
+    "attack": 47,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "伸棍打",
+        "power": 47,
+        "cost": 1
+      },
+      {
+        "name": "三連棍",
+        "power": 94,
+        "cost": 3
+      }
+    ],
+    "description": "歷練成長的火猴守護者，戴著金箍、披著赤紅領巾，手持金箍棒。普通攻擊會過肩劈下並讓金箍棒伸長；大絕招是旋身橫掃、躍起劈地、伸棍突刺的三連棍。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
+  },
+  {
+    "id": "moltres",
+    "speciesId": "moltres",
+    "name": "冒險蛙",
+    "element": "grass",
+    "type": "森",
+    "stage": 2,
+    "family": "leaf-frog",
+    "form": "frog",
+    "color": 10211141,
+    "role": "legendary",
+    "previous": "articuno",
+    "next": null,
+    "model": "leaf-frog://moltres",
+    "height": 2.65,
+    "hp": 143,
+    "attack": 47,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "普通側踢",
+        "power": 47,
+        "cost": 1
+      },
+      {
+        "name": "迴旋葉風",
+        "power": 94,
+        "cost": 3
+      }
+    ],
+    "description": "擁有雙葉耳飾與銳利眼神的冒險守護者。右手握住深咖啡色回力鏢，左手能揮手招呼；擅長前傾忍者跑步，以及腰身配合平衡的高側踢。由大眼蛙連續擂台參戰 3 場進階而來。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
+  },
+  {
+    "id": "raikou",
+    "speciesId": "raikou",
+    "name": "C囝仔",
+    "element": "fire",
+    "type": "焰",
+    "stage": 1,
+    "family": "fire-monkey",
+    "form": "monkey",
+    "color": 12412475,
+    "role": "legendary",
+    "previous": null,
+    "next": "zapdos",
+    "model": "models/spirits/fire-monkey-kid.glb",
+    "height": 1.85,
+    "hp": 108,
+    "attack": 33,
+    "evolvesTo": "zapdos",
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "小火球",
+        "power": 33,
+        "cost": 1
+      },
+      {
+        "name": "大火球",
+        "power": 66,
+        "cost": 3
+      }
+    ],
+    "description": "調皮靈敏的小火猴，缺一顆門牙的壞笑是牠的招牌。普通攻擊從手上丟出小火球；大絕招先蹲下集氣，把大火球聚在頭頂，再雙手奮力擲出。尾尖火焰隨動作搖曳。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
+  },
+  {
+    "id": "entei",
+    "speciesId": "entei",
+    "name": "水毛蟲",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "water-sprite",
+    "form": "caterpillar",
+    "color": 6471150,
+    "role": "legendary",
+    "previous": null,
+    "next": "suicune",
+    "model": "models/spirits/water-caterpillar.glb",
+    "height": 1.25,
+    "hp": 108,
+    "attack": 33,
+    "evolvesTo": "suicune",
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "頭槌水彈",
+        "power": 33,
+        "cost": 1
+      },
+      {
+        "name": "吐絲結網",
+        "power": 66,
+        "cost": 3
+      }
+    ],
+    "description": "半透明水凝膠做成的大頭毛毛蟲，頭頂一對水滴觸角、尾巴是一顆水滴。在參戰隊伍連續完成 3 場幻靈競技擂台後，會蛻變成水仙子。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
+  },
+  {
+    "id": "suicune",
+    "speciesId": "suicune",
+    "name": "水仙子",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "water-sprite",
+    "form": "fairy",
+    "color": 8374512,
+    "role": "legendary",
+    "previous": "entei",
+    "next": null,
+    "model": "models/spirits/water-fairy.glb",
+    "height": 2.1,
+    "hp": 143,
+    "attack": 47,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "泡泡彈",
+        "power": 47,
+        "cost": 1
+      },
+      {
+        "name": "潮汐花綻",
+        "power": 94,
+        "cost": 3
+      }
+    ],
+    "description": "以人形骨架重製的水仙子：鳳眼、捲捲鬢角與馬尾，水滴形透明翅膀，全程在半空飛行、身邊有水球環繞。普攻捧出水泡推向對手，大絕旋身衝上高空，水波如花綻放並喚出水柱。",
+    "stageLabel": "守護者",
+    "cardFrame": "purple"
+  },
+  {
+    "id": "kyogre",
+    "speciesId": "kyogre",
+    "name": "小金魚",
+    "element": "water",
+    "type": "潮",
+    "stage": 1,
+    "family": "goldfish",
+    "form": "goldfish",
+    "color": 15222331,
+    "role": "wild",
+    "previous": null,
+    "next": "groudon",
+    "model": "models/spirits/goldfish-1.glb",
+    "height": 1.2,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "groudon",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "水彈",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "翻身細水柱",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "圓滾滾的紅色小金魚，只在河畔釣魚擂台獲勝後於河道現身。集滿 3 張卡片會隨機進化成金魚國王或金魚皇后。"
+  },
+  {
+    "id": "groudon",
+    "speciesId": "groudon",
+    "name": "金魚國王",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "goldfish",
+    "form": "goldfish",
+    "color": 15049534,
+    "role": "wild",
+    "previous": "kyogre",
+    "next": null,
+    "model": "models/spirits/goldfish-king.glb",
+    "height": 1.6,
+    "hp": 143,
+    "attack": 47,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "水球",
+        "power": 47,
+        "cost": 1
+      },
+      {
+        "name": "金色水光束砲",
+        "power": 94,
+        "cost": 3
+      }
+    ],
+    "description": "由小金魚隨機進化而來，工作熟練度 Lv.8 可進化為水蛟龍王。"
+  },
+  {
+    "id": "rayquaza",
+    "speciesId": "rayquaza",
+    "name": "金魚皇后",
+    "element": "water",
+    "type": "潮",
+    "stage": 2,
+    "family": "goldfish",
+    "form": "goldfish",
+    "color": 12170674,
+    "role": "wild",
+    "previous": "kyogre",
+    "next": null,
+    "model": "models/spirits/goldfish-queen.glb",
+    "height": 1.6,
+    "hp": 143,
+    "attack": 47,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "水球",
+        "power": 47,
+        "cost": 1
+      },
+      {
+        "name": "珍珠水光束砲",
+        "power": 94,
+        "cost": 3
+      }
+    ],
+    "description": "由小金魚隨機進化而來，工作熟練度 Lv.8 可進化為水蛟龍王。"
+  },
+  {
+    "id": "dialga",
+    "speciesId": "dialga",
+    "name": "綠眼蝙怪",
+    "element": "psychic",
+    "type": "念",
+    "stage": 1,
+    "family": "green-eye-bat",
+    "form": "bat",
+    "color": 9093191,
+    "role": "special",
+    "previous": null,
+    "next": null,
+    "model": "green-eye-bat://dialga",
+    "height": 2.1,
+    "hp": 178,
+    "attack": 61,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "hover",
+    "skills": [
+      {
+        "name": "迷幻光波",
+        "power": 61,
+        "cost": 1
+      },
+      {
+        "name": "毒光雷彈",
+        "status": {
+          "type": "poison",
+          "turns": 3,
+          "damageRatio": 0.04,
+          "stacking": "refresh"
+        },
+        "power": 122,
+        "cost": 3
+      }
+    ],
+    "description": "四片蝠翼環繞圓潤綠色獨眼身軀的特殊基礎幻靈。迷幻光波向前擴散；毒光雷彈纏繞電光，命中附加中毒：持續 3 回合，每回合扣除最大 HP 4%，重複命中刷新時間、不疊加。",
+    "stageLabel": "特殊基礎",
+    "cardFrame": "red"
+  },
+  {
+    "id": "palkia",
+    "speciesId": "palkia",
+    "name": "大朋",
+    "element": "fairy",
+    "type": "光",
+    "stage": 4,
+    "family": "avian-evolution",
+    "form": "bird",
+    "color": 11963323,
+    "role": "special",
+    "previous": "sceptile",
+    "next": null,
+    "model": "avian://palkia",
+    "height": 2.55,
+    "hp": 195,
+    "attack": 68,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "強力拍翼",
+        "power": 68,
+        "cost": 1
+      },
+      {
+        "name": "高空衝撞",
+        "power": 136,
+        "cost": 3
+      }
+    ],
+    "description": "由 3 張小鷹卡進階而來的稀有特殊幻靈。行走收翼，強力拍翼時先蹲低直立起飛，邊前拍射羽邊後退；大絕招升至高空，再向前俯衝撞擊。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "evolutionOnly": true
+  },
+  {
+    "id": "giratina",
+    "speciesId": "giratina",
+    "name": "小黃",
+    "element": "electric",
+    "type": "雷",
+    "stage": 1,
+    "family": "rabbit-evolution",
+    "form": "rabbit",
+    "color": 15712085,
+    "role": "special",
+    "previous": null,
+    "next": "raichu",
+    "model": "rabbit-evolution://giratina",
+    "height": 1.65,
+    "hp": 108,
+    "attack": 33,
+    "evolvesTo": "raichu",
+    "rarity": "稀有",
+    "motionType": "hop",
+    "skills": [
+      {
+        "name": "投擲胡蘿蔔",
+        "power": 33,
+        "cost": 1
+      },
+      {
+        "name": "跳撞",
+        "power": 66,
+        "cost": 3
+      }
+    ],
+    "description": "垂耳小黃兔先蹲低再向前蹦跳，從背後取出胡蘿蔔投擲，也能蓄力跳撞。加入隊伍完成累計 3 場幻靈競技擂台戰鬥後進階為龐克兔；勝敗皆計，不需連續參賽，未參戰或中途離開不計次。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "evolutionCondition": {
+      "type": "arena-participation",
+      "required": 3,
+      "consecutive": false,
+      "requiresWin": false
+    }
+  },
+  {
+    "id": "pikachu",
+    "speciesId": "pikachu",
+    "name": "歐頭慢",
+    "element": "electric",
+    "type": "雷",
+    "stage": 1,
+    "family": "pikachu",
+    "form": "armored-hero",
+    "color": 13053233,
+    "role": "gym",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/outoman-v2.glb",
+    "height": 1.275,
+    "hp": 178,
+    "attack": 61,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "白色光波",
+        "power": 61,
+        "cost": 1
+      },
+      {
+        "name": "彩虹光束",
+        "power": 122,
+        "cost": 3
+      }
+    ],
+    "description": "歐頭慢是虎紋身軀、身穿銀紅裝甲的雷屬性傳說守護者；雙尖角與貼臉眼罩是牠的特徵，胸前藍燈閃爍。牠從手腕蓄力發射白色光波，並能放出分離色帶的彩虹光束；遭遇投球時會向前翻滾閃避。",
+    "stageLabel": "守護者",
+    "cardFrame": "red"
+  },
+  {
+    "id": "mew",
+    "speciesId": "mew",
+    "name": "小飯團",
+    "element": "psychic",
+    "type": "念",
+    "stage": 1,
+    "family": "riceball-spirit",
+    "form": "riceball",
+    "color": 13019357,
+    "role": "gym",
+    "previous": null,
+    "next": null,
+    "model": "riceball://mew",
+    "height": 1.275,
+    "hp": 178,
+    "attack": 61,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "roll",
+    "skills": [
+      {
+        "name": "飯團滾擊",
+        "power": 61,
+        "cost": 1
+      },
+      {
+        "name": "紫波連環",
+        "power": 122,
+        "cost": 3
+      }
+    ],
+    "description": "散發紫色光波的傳說守護者。小飯團以橫向翻滾移動，偶爾卡住時會露出 >_< 的表情，並釋放連續光波。",
+    "stageLabel": "守護者",
+    "cardFrame": "red"
+  },
+  {
+    "id": "wigglytuff",
+    "speciesId": "wigglytuff",
+    "name": "小山",
+    "element": "fairy",
+    "type": "光",
+    "stage": 1,
+    "family": "xiaoshan-spirit",
+    "form": "mountain",
+    "color": 10213212,
+    "role": "gym",
+    "previous": null,
+    "next": null,
+    "model": "xiaoshan://wigglytuff",
+    "height": 1.275,
+    "hp": 178,
+    "attack": 61,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "木頭人驚跳",
+        "power": 61,
+        "cost": 1
+      },
+      {
+        "name": "小山震地",
+        "power": 122,
+        "cost": 3
+      }
+    ],
+    "description": "小山是戴著紫色蝴蝶髮飾的傳說守護者，平時總愛打瞌睡。在木頭人試煉中，牠聽完倒數便會驚醒躍起；震地落下後驚恐的三秒，才願意回應旅人的靈核球。",
+    "stageLabel": "守護者",
+    "cardFrame": "red"
+  },
+  {
+    "id": "blissey",
+    "speciesId": "blissey",
+    "name": "光鳳鷹",
+    "element": "fairy",
+    "type": "光",
+    "stage": 1,
+    "family": "light-phoenix",
+    "form": "phoenix",
+    "color": 14003854,
+    "role": "gym",
+    "previous": null,
+    "next": null,
+    "model": "light-phoenix://blissey",
+    "height": 3.8,
+    "hp": 178,
+    "attack": 61,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "fly",
+    "skills": [
+      {
+        "name": "振翼光波",
+        "power": 61,
+        "cost": 1
+      },
+      {
+        "name": "鳳羽連射",
+        "power": 122,
+        "cost": 3
+      }
+    ],
+    "description": "白金羽翼與七條流光長尾閃耀著守護之光。初光挑戰中交替施放全場振翼光波與鳳羽連射；在受擊時翻滾可打斷攻擊，露出三秒破綻。",
+    "stageLabel": "守護者",
+    "cardFrame": "red"
+  },
+  {
+    "id": "raichu",
+    "speciesId": "raichu",
+    "name": "龐克兔",
+    "element": "electric",
+    "type": "雷",
+    "stage": 2,
+    "family": "rabbit-evolution",
+    "form": "rabbit",
+    "color": 12625488,
+    "role": "special",
+    "previous": "giratina",
+    "next": null,
+    "model": "rabbit-evolution://raichu",
+    "height": 2.05,
+    "hp": 143,
+    "attack": 47,
+    "evolvesTo": null,
+    "rarity": "稀有",
+    "motionType": "run",
+    "skills": [
+      {
+        "name": "投擲胡蘿蔔",
+        "power": 47,
+        "cost": 1
+      },
+      {
+        "name": "電吉他二連擊",
+        "power": 94,
+        "cost": 3
+      }
+    ],
+    "description": "小黃累計擂台參戰 3 場後的進階型態。黑色鉚釘背心搭配紅色電吉他，跑步時向外擺臂；從背後抓住琴柄沿身體外側取出，先前刺再橫掃，迸出音符電光。",
+    "stageLabel": "特殊",
+    "cardFrame": "purple",
+    "evolutionOnly": true
+  },
+  {
+    "id": "caterpie",
+    "speciesId": "caterpie",
+    "name": "銅寶箱",
+    "element": "fairy",
+    "type": "光",
+    "stage": 1,
+    "family": "chest-spirit",
+    "form": "chest",
+    "color": 11894090,
+    "role": "wild",
+    "previous": null,
+    "next": "metapod",
+    "model": "models/spirits/chest-spirit-1.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "metapod",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "銅箱輕撞",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "銅寶共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "銅寶箱藏著一條靈活的舌頭與兩顆金色眼睛。牠會搖動箱身慢慢前進，遇見旅人時掀起箱蓋回應。"
+  },
+  {
+    "id": "metapod",
+    "speciesId": "metapod",
+    "name": "銀寶箱",
+    "element": "fairy",
+    "type": "光",
+    "stage": 2,
+    "family": "chest-spirit",
+    "form": "chest",
+    "color": 12176085,
+    "role": "wild",
+    "previous": "caterpie",
+    "next": "butterfree",
+    "model": "models/spirits/chest-spirit-2.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "butterfree",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "銀箱震擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "銀寶共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "銀寶箱換上帶著銀色飾邊的箱殼，喜歡一邊散步一邊晃動舌頭。牠用明亮的雙眼觀察值得信任的夥伴。"
+  },
+  {
+    "id": "butterfree",
+    "speciesId": "butterfree",
+    "name": "金寶箱",
+    "element": "fairy",
+    "type": "光",
+    "stage": 3,
+    "family": "chest-spirit",
+    "form": "chest",
+    "color": 15252299,
+    "role": "wild",
+    "previous": "metapod",
+    "next": null,
+    "model": "models/spirits/chest-spirit-3.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "金箱猛撞",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "金寶共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "金寶箱披著華麗的金色箱殼與寶石裝飾。牠會昂起箱蓋、擺動長舌，向熟悉的旅人展示活潑的心情。"
+  },
+  {
+    "id": "weedle",
+    "speciesId": "weedle",
+    "name": "破書",
+    "element": "psychic",
+    "type": "念",
+    "stage": 1,
+    "family": "book-spirit",
+    "form": "book",
+    "color": 8545093,
+    "role": "wild",
+    "previous": null,
+    "next": "kakuna",
+    "model": "models/spirits/book-spirit-1.glb",
+    "height": 1.275,
+    "hp": 90,
+    "attack": 26,
+    "evolvesTo": "kakuna",
+    "rarity": "普通",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "書角輕撞",
+        "power": 26,
+        "cost": 1
+      },
+      {
+        "name": "破書共鳴",
+        "power": 52,
+        "cost": 3
+      }
+    ],
+    "description": "破書帶著磨損的書封與厚實書頁，在地面輕輕搖擺前進。牠會眨動雙眼、翻動書頁，回應願意陪伴牠的旅人。"
+  },
+  {
+    "id": "kakuna",
+    "speciesId": "kakuna",
+    "name": "論語",
+    "element": "psychic",
+    "type": "念",
+    "stage": 2,
+    "family": "book-spirit",
+    "form": "book",
+    "color": 9726530,
+    "role": "wild",
+    "previous": "weedle",
+    "next": "beedrill",
+    "model": "models/spirits/book-spirit-2.glb",
+    "height": 1.6575,
+    "hp": 125,
+    "attack": 40,
+    "evolvesTo": "beedrill",
+    "rarity": "進階",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "書卷震擊",
+        "power": 40,
+        "cost": 1
+      },
+      {
+        "name": "論語共鳴",
+        "power": 80,
+        "cost": 3
+      }
+    ],
+    "description": "論語披著典雅書封，戴著眼鏡閱讀旅途中的故事。牠以沉穩的步伐搖晃前進，開合書封與書頁傳達心情。"
+  },
+  {
+    "id": "beedrill",
+    "speciesId": "beedrill",
+    "name": "辭海",
+    "element": "psychic",
+    "type": "念",
+    "stage": 3,
+    "family": "book-spirit",
+    "form": "book",
+    "color": 4684690,
+    "role": "wild",
+    "previous": "kakuna",
+    "next": null,
+    "model": "models/spirits/book-spirit-3.glb",
+    "height": 2.15475,
+    "hp": 160,
+    "attack": 54,
+    "evolvesTo": null,
+    "rarity": "珍稀",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "辭海重擊",
+        "power": 54,
+        "cost": 1
+      },
+      {
+        "name": "辭海共鳴",
+        "power": 108,
+        "cost": 3
+      }
+    ],
+    "description": "辭海收藏著豐富的旅途知識，厚重書身搭配醒目的眼鏡。牠能靈活翻動層層書頁，以溫和的目光守護夥伴。"
+  },
+  {
+    "id": "mewtwo",
+    "speciesId": "mewtwo",
+    "name": "水蛟龍王",
+    "element": "water",
+    "type": "潮",
+    "stage": 3,
+    "family": "water-dragon",
+    "form": "waterdragon",
+    "color": 3043266,
+    "role": "legendary",
+    "previous": null,
+    "next": null,
+    "model": "models/spirits/water-dragon-king.glb",
+    "height": 3.2,
+    "hp": 195,
+    "attack": 68,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "walk",
+    "skills": [
+      {
+        "name": "龍咬水彈",
+        "power": 68,
+        "cost": 1
+      },
+      {
+        "name": "盤旋怒濤龍息",
+        "power": 136,
+        "cost": 3
+      }
+    ],
+    "description": "頭戴金冠藍寶石的水蛟龍王，平時在河底盤踞成 S 形。帶著魚飼料靠近河邊召喚，牠才會破浪而出；大絕招會盤旋立起，吐出環繞水滴的巨型水柱。",
+    "stageLabel": "特殊進階",
+    "cardFrame": "red"
+  },
+  {
+    "id": "jigglypuff",
+    "speciesId": "jigglypuff",
+    "name": "三色蛋",
+    "element": "fairy",
+    "type": "光",
+    "stage": 1,
+    "family": "avian-evolution",
+    "form": "egg",
+    "color": 14921146,
+    "role": "reward",
+    "previous": null,
+    "next": "treecko",
+    "model": "avian://jigglypuff",
+    "height": 1.3,
+    "hp": 178,
+    "attack": 61,
+    "evolvesTo": null,
+    "rarity": "傳說",
+    "motionType": "stationary",
+    "skills": [
+      {
+        "name": "武裝",
+        "effect": "eggArmour",
+        "power": 0,
+        "cost": 1
+      },
+      {
+        "name": "回滿",
+        "effect": "eggRecover",
+        "cooldownTurns": 2,
+        "power": 0,
+        "cost": 3
+      }
+    ],
+    "description": "靜止不移動的傳說三色蛋，依最新版固定捕捉率 30%。每次捕捉失敗時，會隨機當場變為小麻、咕咕或小鷹。武裝使對手本場攻擊減半，回滿恢復最大 HP 的 90%，每 2 回合可用 1 次。",
+    "stageLabel": "特殊基礎",
+    "cardFrame": "red",
+    "captureRate": 0.3,
+    "stationary": true,
+    "captureEvolution": [
+      "treecko",
+      "grovyle",
+      "sceptile"
+    ],
+    "captureEvolutionMethod": "random-on-failure"
+  }
+]

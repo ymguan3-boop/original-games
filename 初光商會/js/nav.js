@@ -1,0 +1,16 @@
+export const ENTRANCE={x:6,z:10}, CHECKOUT={x:10,z:3}, WAREHOUSE={x:2,z:3};
+// Conservative occupied cells include the real furniture silhouette plus actor clearance.
+export const FIXED_CELLS=['9,2','10,2','11,2'];
+export const ACTOR_DIAMETER=.82;
+export const dimensions=(level=1)=>({width:14+(level-1)*2,height:12});
+export function blocked(shelves=[]){return new Set([...FIXED_CELLS,...shelves.map(s=>`${s.x},${s.z}`)]);}
+export function walkable(p,shelves=[],level=1){const {width,height}=dimensions(level);if(!(p.x>=1&&p.z>=1&&p.x<=width-2&&p.z<=height-2))return false;for(const key of blocked(shelves)){const [x,z]=key.split(',').map(Number),dx=Math.max(Math.abs(p.x-x)-.5,0),dz=Math.max(Math.abs(p.z-z)-.5,0);if(Math.hypot(dx,dz)<ACTOR_DIAMETER/2-.00001)return false;}return true;}
+export function findPath(start,end,shelves=[],level=1){
+ const {width,height}=dimensions(level),walls=blocked(shelves),key=p=>`${p.x},${p.z}`,a={x:Math.round(start.x),z:Math.round(start.z)},b={x:Math.round(end.x),z:Math.round(end.z)};
+ const valid=p=>p.x>0&&p.z>0&&p.x<width-1&&p.z<height-1&&!walls.has(key(p));if(!valid(a)||!valid(b))return null;
+ const open=[a],cost=new Map([[key(a),0]]),prev=new Map();
+ while(open.length){open.sort((p,q)=>(cost.get(key(p))+Math.abs(p.x-b.x)+Math.abs(p.z-b.z))-(cost.get(key(q))+Math.abs(q.x-b.x)+Math.abs(q.z-b.z)));const p=open.shift(),k=key(p);if(k===key(b)){const path=[];let q=p;while(key(q)!==key(a)){path.unshift(q);q=prev.get(key(q));}return path;}
+ for(const [dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){const q={x:p.x+dx,z:p.z+dz},qk=key(q),n=cost.get(k)+1;if(!valid(q)||n>=(cost.get(qk)??Infinity))continue;cost.set(qk,n);prev.set(qk,p);open.push(q);}}
+ return null;
+}
+export function isLayoutValid(shelves,level=1){const seen=new Set([...FIXED_CELLS,'6,10','2,3',...Array.from({length:6},(_,i)=>`10,${3+i}`)]);for(const s of shelves){const k=`${s.x},${s.z}`;if(!Number.isInteger(s.x)||!Number.isInteger(s.z)||!walkable(s,[],level)||seen.has(k))return false;seen.add(k);}return [CHECKOUT,WAREHOUSE,...shelves.filter(s=>!s.decoration).map(s=>({x:s.x,z:s.z+1}))].every(p=>findPath(ENTRANCE,p,shelves,level)!==null);}

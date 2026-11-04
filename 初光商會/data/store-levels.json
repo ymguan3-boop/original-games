@@ -1,0 +1,52 @@
+[
+  {
+    "level": 1,
+    "name": "初光雜貨鋪",
+    "cost": 0,
+    "capacity": 2,
+    "revenue": 0,
+    "satisfaction": 0,
+    "days": 0,
+    "upgradeSeconds": 0
+  },
+  {
+    "level": 2,
+    "name": "冒險者商店",
+    "cost": 2000,
+    "capacity": 4,
+    "revenue": 400,
+    "satisfaction": 75,
+    "days": 1,
+    "upgradeSeconds": 30
+  },
+  {
+    "level": 3,
+    "name": "工匠商會",
+    "cost": 8000,
+    "capacity": 6,
+    "revenue": 4000,
+    "satisfaction": 80,
+    "days": 2,
+    "upgradeSeconds": 60
+  },
+  {
+    "level": 4,
+    "name": "星穹裝備館",
+    "cost": 25000,
+    "capacity": 8,
+    "revenue": 16000,
+    "satisfaction": 82,
+    "days": 3,
+    "upgradeSeconds": 90
+  },
+  {
+    "level": 5,
+    "name": "傳奇初光商會",
+    "cost": 60000,
+    "capacity": 12,
+    "revenue": 45000,
+    "satisfaction": 85,
+    "days": 5,
+    "upgradeSeconds": 150
+  }
+]

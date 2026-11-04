@@ -1,0 +1,6 @@
+.catalog-tile .furnishing-preview{float:left;width:84px;height:90px;object-fit:contain;grid-row:1/5;align-self:center;margin-right:6px;filter:drop-shadow(0 3px 2px #59422222)}
+.catalog-tile{display:grid;grid-template-columns:84px minmax(0,1fr);column-gap:7px}
+.catalog-tile>strong,.catalog-tile>small,.catalog-tile>button{grid-column:2}
+.shelf-row>.furnishing-preview{float:left;width:66px;height:74px;object-fit:contain;margin:0 8px 4px 0}
+.shelf-row .actions{clear:both}.shelf-row:after{content:'';display:block;clear:both}
+@media(max-width:480px){.catalog-tile{grid-template-columns:60px minmax(0,1fr);padding:8px!important;column-gap:4px}.catalog-tile .furnishing-preview{width:60px;height:82px;margin:0}.catalog-tile>strong{font-size:12px}.catalog-tile>small{font-size:10px}.catalog-tile>button{font-size:11px;padding:6px 3px}.shelf-row>.furnishing-preview{width:52px;height:62px}}

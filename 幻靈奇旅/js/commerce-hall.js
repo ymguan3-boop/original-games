@@ -1,14 +1,19 @@
-/* 幻靈奇旅 — 初光商會：中央道路南端的新街區。五個等級的外觀（Three.js 程序建模，比照參考圖），門口有路人排隊進店。
-   商會目前不開放入內；等級會隨 DUNGEONS 增加而自動提升，也可輸入管理碼預覽各等級外觀。 */
+/* 初光商會：沿用五階建築，外觀只讀取獨立商會的實際存檔等級。 */
 (() => {
 'use strict';
-/* 新增副本時在這裡加一筆，商會就會自動升一級（最高 5 級）。目前三個副本對應最小的 1 級。 */
-const DUNGEONS=['tower','cave','defense'],BASE_DUNGEONS=3,MAX_LEVEL=5;
-const autoLevel=()=>Math.max(1,Math.min(MAX_LEVEL,1+DUNGEONS.length-BASE_DUNGEONS));
-const PREVIEW_KEY='phantom-commerce-preview',PREVIEW_CODE='741216';
-const readPreview=()=>{try{const v=Number(localStorage.getItem(PREVIEW_KEY));return v>=1&&v<=MAX_LEVEL?v:0;}catch{return 0;}};
-const savePreview=v=>{try{if(v)localStorage.setItem(PREVIEW_KEY,String(v));else localStorage.removeItem(PREVIEW_KEY);}catch{}};
-const currentLevel=()=>readPreview()||autoLevel();
+const MAX_LEVEL=5,SHOP_SAVE_KEY='firstlight_shop_v1',LEVEL_META_KEY='firstlight-commerce-level-v1';
+function savedLevel(key){try{const data=JSON.parse(localStorage.getItem(key));return data&&Number.isInteger(data.level)?Math.max(1,Math.min(MAX_LEVEL,data.level)):null;}catch{return null;}}
+const currentLevel=()=>savedLevel(SHOP_SAVE_KEY)??savedLevel(LEVEL_META_KEY)??1;
+function shopURL(href=location.href){
+ const page=new URL(href);if(/\/game(?:\/guest)?$/.test(page.pathname))page.pathname+='/';const home=new URL('./',page);
+ if(!['http:','https:'].includes(home.protocol))throw Error('請透過本機伺服器或網站開啟商會');
+ const guest=home.pathname.endsWith('/game/guest/');
+ const shop=new URL(guest?'../../shop/':home.pathname.endsWith('/game/')?'../shop/':'../初光商會/',home);
+ if(guest)shop.searchParams.set('guest','1');
+ // Derive the return destination from this page, never from an inbound parameter.
+ if(shop.origin!==home.origin)throw Error('商會入口必須與主遊戲同源');
+ shop.searchParams.set('return',guest?home.pathname:home.href);return shop.href;
+}
 
 /* 街區：z 向南。ROOT_Z 是建築中心，FRONT_Z 是門面，北側只有中央道路接進來。 */
 const LOT={minX:-17,maxX:17,minZ:36,maxZ:68,gate:3.6},ROOT_Z=46,FRONT_Z=50.5,DOOR_Z=FRONT_Z+.25;
@@ -206,8 +211,11 @@ function create({THREE:T,scene}){
   for(const p of people){if(p.state==='inside')continue;const a=p.root.position;if(Math.hypot(a.x-x,a.z-z)<.5+m)return true;}
   return false;
  }
- setLevel(currentLevel());
- return {root,update,setLevel,blocked,inLot,get level(){return level;},get people(){return people;},nearDoor(p){return Math.abs(p.x)<3.4&&p.z>FRONT_Z+1.2&&p.z<FRONT_Z+5.2;}};
+ const refresh=()=>setLevel(currentLevel());
+ const onStorage=e=>{if(e.key===null||e.key===SHOP_SAVE_KEY||e.key===LEVEL_META_KEY)refresh();};
+ window.addEventListener('focus',refresh);window.addEventListener('pageshow',refresh);window.addEventListener('storage',onStorage);
+ refresh();
+ return {root,update,setLevel,refresh,blocked,inLot,dispose(){window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',onStorage);hall?.dispose();root.traverse(o=>o.geometry?.dispose());for(const material of shared.values())material.dispose();scene.remove(root);},get level(){return level;},get people(){return people;},nearDoor(p){return Math.abs(p.x)<3.4&&p.z>FRONT_Z+1.2&&p.z<FRONT_Z+5.2;}};
 }
-window.PhantomCommerce={create,currentLevel,autoLevel,readPreview,savePreview,PREVIEW_CODE,QUEUE,MAX_LEVEL,LOT,DUNGEONS};
+window.PhantomCommerce={create,currentLevel,shopURL,SHOP_SAVE_KEY,LEVEL_META_KEY,QUEUE,MAX_LEVEL,LOT};
 })();

@@ -1,0 +1,21 @@
+import {addIllustratedOutline} from './illustrated-outline.js';
+import {addProductEdges} from './product-outlines.js';
+export function stockCount(available,capacity=30){return Math.max(0,Math.min(capacity,Math.floor(available||0)));}
+export function productSlot(index,capacity=30,definition={}){if(definition.productLayout==='orb-v3')return {x:(index%5-2)*.12,y:.505+Math.floor(index/10)*.26,z:(Math.floor(index%10/5)-.5)*.20};const cols=definition.columns||(capacity===36?6:5),depth=definition.depth||2,layer=cols*depth;return {x:(index%cols-(cols-1)/2)*(.70/cols),y:.23+Math.floor(index/layer)*(definition.spacing||.51),z:(Math.floor(index%layer/cols)-(depth-1)/2)*(depth===3?.22:.30)};}
+export function productPath(sku){
+ if(sku==='potion')return '@shop/assets/art-v9/potion-craft-v5/potion-craft-v5.glb';
+ if(sku==='ball-basic')return 'models/props/core.glb';
+ if(sku==='ball-great')return 'models/props/great_core.glb';
+ if(sku==='ball-ultra')return 'models/props/master_core.glb';
+ if(/sword|knife|blade|weapon|guns/.test(sku))return 'models/tower/kid-'+(/knife/.test(sku)?'knife':/blade/.test(sku)?'blade':'sword')+'.glb';
+ return /berry/.test(sku)?'models/props/berry.glb':/shop-|stone/.test(sku)?'models/props/evolution-stone.glb':'models/props/potion.glb';
+}
+// Shared source models, one instance per unit. The display count is exact, not a fullness bucket.
+export function buildProducts(T,assets,gltf,capacity=30,definition={}){
+ const group=new T.Group(),unit=assets.clone(gltf.scene);assets.normalize(unit,definition.productMaxSize||(capacity>=36?.10:.13),true);unit.updateMatrixWorld(true);
+ const center=new T.Box3().setFromObject(unit).getCenter(new T.Vector3());unit.position.x-=center.x;unit.position.z-=center.z;unit.updateMatrixWorld(true);
+ unit.traverse(o=>{if(!o.isMesh)return;const batch=new T.InstancedMesh(o.geometry.clone(),o.material,capacity);batch.userData.ownedGeometry=true;batch.frustumCulled=false;batch.castShadow=true;for(let i=0;i<capacity;i++){const p=productSlot(i,capacity,definition),matrix=new T.Matrix4().makeTranslation(p.x,p.y,p.z).multiply(o.matrixWorld);batch.setMatrixAt(i,matrix);}batch.count=0;group.add(batch);});
+ const contour=addIllustratedOutline(T,group,{thickness:.0015,color:0x573b29}),edges=addProductEdges(T,group);group.userData.release=()=>{edges.dispose();contour.dispose();};
+ return group;
+}
+export function setProductCount(group,count){for(const batch of group.children){batch.count=count;batch.traverse(o=>{if(o.userData.instancedProductEdges)o.geometry.instanceCount=count;});}}

@@ -1,0 +1,15 @@
+{
+  "dayDuration": 180,
+  "spawnInterval": 5,
+  "maxCustomers": 10,
+  "warehouseCapacity": 1000,
+  "restockInterval": 8,
+  "checkoutSeconds": 2.5,
+  "xpPerLevel": 25,
+  "trainCost": 160,
+  "trainXp": 80,
+  "rent": 30,
+  "shelfCost": 160,
+  "priceMin": 0.6,
+  "priceMax": 2.5
+}

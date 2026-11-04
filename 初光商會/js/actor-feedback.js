@@ -1,0 +1,8 @@
+export function feedbackBubble(T){
+ const canvas=document.createElement('canvas');canvas.width=256;canvas.height=132;const ctx=canvas.getContext('2d'),texture=new T.CanvasTexture(canvas);texture.encoding=T.sRGBEncoding;const material=new T.SpriteMaterial({map:texture,transparent:true,depthTest:false}),sprite=new T.Sprite(material);sprite.scale.set(.66,.34,1);sprite.renderOrder=30;sprite.visible=false;let last='';
+ const labels={training:'專心練習！',proud:'謝謝主管 ♥',stressed:'忙不過來啦',bored:'客人在哪裡…',sleep:'休息一下',angry:'等太久了！',happy:'買到了！',work:'收到！'};
+ return {sprite,update(kind,height){sprite.visible=!!labels[kind];sprite.position.y=height+1.1;if(last===kind)return;last=kind;ctx.clearRect(0,0,256,132);if(!sprite.visible)return;ctx.fillStyle=kind==='angry'||kind==='stressed'?'#ffe0ce':'#fff4cf';ctx.strokeStyle='#684121';ctx.lineWidth=4;ctx.beginPath();ctx.roundRect(5,5,246,116,28);ctx.fill();ctx.stroke();ctx.strokeStyle=kind==='angry'?'#af3824':'#684121';ctx.lineWidth=5;ctx.beginPath();
+ if(kind==='proud'||kind==='happy'){ctx.arc(106,39,7,Math.PI,Math.PI*2);ctx.moveTo(143,39);ctx.arc(136,39,7,Math.PI,Math.PI*2);ctx.moveTo(141,47);ctx.arc(123,47,18,0,Math.PI);}
+ else if(['angry','training','stressed'].includes(kind)){ctx.moveTo(94,29);ctx.lineTo(111,37);ctx.moveTo(151,29);ctx.lineTo(134,37);ctx.moveTo(101,44);ctx.lineTo(111,44);ctx.moveTo(135,44);ctx.lineTo(145,44);ctx.moveTo(112,62);ctx.lineTo(135,62);}
+ else{ctx.moveTo(96,40);ctx.lineTo(112,40);ctx.moveTo(135,40);ctx.lineTo(151,40);ctx.moveTo(116,59);ctx.lineTo(132,59);}ctx.stroke();ctx.fillStyle='#684121';ctx.font='bold 23px sans-serif';ctx.textAlign='center';ctx.fillText(labels[kind],128,100);texture.needsUpdate=true;},dispose(){texture.dispose();material.dispose();}};
+}

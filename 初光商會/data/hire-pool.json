@@ -1,0 +1,223 @@
+[
+  {
+    "id": "bulbasaur",
+    "name": "青螺靈",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "charmander",
+    "name": "剝皮辣椒雞",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "squirtle",
+    "name": "小芝麻",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "chikorita",
+    "name": "沒花鹿",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "cyndaquil",
+    "name": "A1",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "totodile",
+    "name": "小肥象",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "torchic",
+    "name": "汪汪犬",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "mudkip",
+    "name": "小熊",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "turtwig",
+    "name": "小貓娘",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "piplup",
+    "name": "雛鳥",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": false,
+    "requiredSales": 0
+  },
+  {
+    "id": "kyogre",
+    "name": "小金魚",
+    "rarity": "yellow",
+    "level": 1,
+    "cost": 450,
+    "wage": 25,
+    "special": true,
+    "requiredSales": 20
+  },
+  {
+    "id": "articuno",
+    "name": "大眼蛙",
+    "rarity": "purple",
+    "level": 3,
+    "cost": 3200,
+    "wage": 110,
+    "special": true,
+    "requiredSales": 60
+  },
+  {
+    "id": "raikou",
+    "name": "C囝仔",
+    "rarity": "purple",
+    "level": 3,
+    "cost": 3200,
+    "wage": 110,
+    "special": true,
+    "requiredSales": 60
+  },
+  {
+    "id": "entei",
+    "name": "水毛蟲",
+    "rarity": "purple",
+    "level": 3,
+    "cost": 3200,
+    "wage": 110,
+    "special": true,
+    "requiredSales": 60
+  },
+  {
+    "id": "giratina",
+    "name": "小黃",
+    "rarity": "purple",
+    "level": 3,
+    "cost": 3200,
+    "wage": 110,
+    "special": true,
+    "requiredSales": 60
+  },
+  {
+    "id": "dialga",
+    "name": "綠眼蝙怪",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 300,
+    "special": true,
+    "requiredSales": 150
+  },
+  {
+    "id": "pikachu",
+    "name": "歐頭慢",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 300,
+    "special": true,
+    "requiredSales": 150
+  },
+  {
+    "id": "mew",
+    "name": "小飯團",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 300,
+    "special": true,
+    "requiredSales": 150
+  },
+  {
+    "id": "wigglytuff",
+    "name": "小山",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 300,
+    "special": true,
+    "requiredSales": 150
+  },
+  {
+    "id": "blissey",
+    "name": "光鳳鷹",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 300,
+    "special": true,
+    "requiredSales": 150
+  },
+  {
+    "id": "mewtwo",
+    "name": "水蛟龍王",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 300,
+    "special": true,
+    "requiredSales": 150,
+    "evolutionOnly": true
+  },
+  {
+    "id": "jigglypuff",
+    "name": "三色蛋",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 300,
+    "special": true,
+    "requiredSales": 150
+  }
+]
