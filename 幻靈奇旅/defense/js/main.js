@@ -9,7 +9,7 @@ import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js
 import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js';
 import {createToonKit} from './style.js';
 import {createChartModels} from './chart-models.js?v=20261106-items-v2';
-import {createView} from './view.js?v=20261104-allstage-v16';
+import {createView} from './view.js?v=20261104-sky-composite-v17';
 import {createSeaChart} from './sea3d.js?v=20261109-pk-v1';
 import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261103-pk-perf-v3';
 import {buildPath} from './stages.js?v=20261105-traps-v1';
