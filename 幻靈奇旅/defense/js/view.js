@@ -4,7 +4,7 @@
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
 import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js';
 import {createFx} from './fx.js?v=20261104-allstage-v16';
-import {createSeascape} from './seascape.js?v=20261104-weather-lock-v3';
+import {createSeascape} from './seascape.js?v=20261104-sky-composite-v17';
 import {createToonKit} from './style.js?v=20261103-pk-perf-v3';
 import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-islands-v1';
 import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261104-allstage-v16';
@@ -20,17 +20,23 @@ export function createView(canvas, {spirits, catalog}) {
   const THREE = globalThis.THREE;
   const spiritMap = new Map(spirits.map((s) => [s.id, s]));
   const entries = new Map((catalog.entries || []).map((e) => [e.id, e]));
-  const renderer = new THREE.WebGLRenderer({canvas, antialias: true, powerPreference: 'high-performance'});
+  const renderer = new THREE.WebGLRenderer({canvas, alpha: true, antialias: true, powerPreference: 'high-performance'});
   /* Two Three.js contexts (chart + battle) can coexist on a phone. A 2x
    framebuffer + 2048² shadows is too costly in a long PK match. */
   const mobileGpu = typeof matchMedia === 'function' &&
     (matchMedia('(pointer: coarse)').matches || matchMedia('(max-width: 820px)').matches);
   renderer.setPixelRatio(Math.min(mobileGpu ? 1.25 : 1.75, devicePixelRatio || 1));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  /* Static shadow map: a base being hit or a hero hurt pose cannot move a
+     scene-sized dark patch across the island. Refresh once per stage. */
+  renderer.shadowMap.autoUpdate = false;
+  renderer.shadowMap.needsUpdate = true;
   /* no film tone mapping: cartoon colours stay saturated */
   renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.NoToneMapping;
+  /* Clear the WebGL surface to transparency, revealing the immutable CSS sky. */
+  renderer.setClearColor(0x000000, 0);
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xbfe8ff);
+  scene.background = null; /* never paint the sky inside the hit-effect scene */
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 700);
   const hemi = new THREE.HemisphereLight(0xe8f6ff, 0x4d6b3a, 0.8); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff1d6, 1.05);
@@ -84,7 +90,7 @@ export function createView(canvas, {spirits, catalog}) {
   let numbersThisFrame = 0;
   const combatVfx = createCombatVfx(THREE, scene, {metrics, onShake: (a) => { shake = Math.max(shake, a); }});
   const fx = createFx(THREE, scene);
-  const kit = createToonKit(THREE), seascape = createSeascape(THREE, scene, kit);
+  const kit = createToonKit(THREE), seascape = createSeascape(THREE, scene, kit, canvas);
   let env = null;
   const projectileView = createProjectileView(THREE, scene, {actorPoint: (id) => actorPoint(id, true), targetPoint: (id, fallback) => actorPoint(id, false, fallback), metrics});
 
@@ -215,6 +221,7 @@ export function createView(canvas, {spirits, catalog}) {
     nestBody.rotation.y = faceTo(nest.position, crystal.position);
     if (game.duel) seatRivalHero(game); else seatBoss(game);
     buildTraps(game);
+    renderer.shadowMap.needsUpdate = true; /* one static shadow bake */
     resize();
   }
 
@@ -386,7 +393,9 @@ export function createView(canvas, {spirits, catalog}) {
      and the final leap onto the path */
   function bossFlinch() {
     const b = nestBoss; if (!b || b.cast || b.leave || clock < b.hurtUntil) return;
-    b.hurtUntil = clock + 0.8; b.play('Hurt', true); b.mood.back = 0.6; b.mood.kind = 'flinch'; b.mood.t = 0;
+    /* The boss still flinches locally; avoid the imported Hurt clip, which
+       may animate additional luminous/translucent model parts. */
+    b.hurtUntil = clock + 0.8; b.mood.back = 0.6; b.mood.kind = 'flinch'; b.mood.t = 0;
   }
   function bossSkillStart() {
     const b = nestBoss; if (!b || b.leave) return;
@@ -809,8 +818,9 @@ export function createView(canvas, {spirits, catalog}) {
       }
       else if (ev.type === 'chain') { const a = actorPoint('f' + ev.from), b = actorPoint('f' + ev.to); if (a && b) bolt(a, b, ELEMENT_COLORS[ev.element]); }
       else if (ev.type === 'death') { const r = fighters.get(ev.id); if (r) { r.dying = 0; r.actor?.play('Death', true); combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: '光', strong: true}); } }
-      else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.barUntil = clock + HIT_BAR_SECONDS; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } if (ev.side === 'crystal') heroPlay('Hurt', true);
-        else if (state?.duel && ev.side === 'nest') rivalPlay('Hurt', true); }
+      else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.barUntil = clock + HIT_BAR_SECONDS; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } /* Barrel squash and local damage number are the entire hit reaction.
+           Do not play a model-wide Hurt clip at the same time: this created
+           camera-visible bursts when the host/rival trainer was struck. */ }
       else if (ev.type === 'weatherLightning' && state?.stage?.id === 'waterfall' && !state.duel) {
         /* Damage was resolved by rules.js. Visuals are Three.js only, on the road. */
         const strike = world(ev.x);
@@ -873,7 +883,7 @@ export function createView(canvas, {spirits, catalog}) {
         b.userData.bar.userData.fill.scale.x = b.userData.bar.userData.width * 0.94 * hp.hp / hp.maxHp;
         /* the hero's and the boss's health bars are not kept on screen: they appear for a moment when attacked */
         b.userData.bar.visible = clock < (b.userData.barUntil || 0); if (b.userData.guardianBar) b.userData.guardianBar.visible = false;
-        { const body = b.userData.body; b.userData.flash = Math.max(0, (b.userData.flash || 0) - dt); const k = Math.sin(b.userData.flash / 0.18 * Math.PI) * 0.06; if (body) body.scale.set(1 + k, 1 - k, 1 + k); }
+        { const body = b.userData.body; b.userData.flash = Math.max(0, (b.userData.flash || 0) - dt); const k = Math.sin(b.userData.flash / 0.18 * Math.PI) * 0.018; if (body) body.scale.set(1 + k, 1 - k, 1 + k); }
       }
     }
     for (let i = helpers.length - 1; i >= 0; i--) { const hlp = helpers[i]; hlp.a.tick(dt); if (clock > hlp.until) { const k = Math.min(1, (clock - hlp.until) * 3); hlp.a.root.scale.setScalar(Math.max(0.01, 1 - k)); if (k >= 1) { hlp.a.dispose(); helpers.splice(i, 1); } } }
@@ -904,6 +914,9 @@ export function createView(canvas, {spirits, catalog}) {
       if (sun.intensity !== c.sunPower) sun.intensity = c.sunPower;
     }
     if (renderer.toneMapping !== THREE.NoToneMapping) renderer.toneMapping = THREE.NoToneMapping;
+    /* Keep both the real GPU clear and the sky in separate compositing
+       layers, even if a shared combat effect touches renderer state. */
+    if (renderer.getClearAlpha() !== 0) renderer.setClearAlpha(0);
     renderer.render(scene, camera);
   }
 
