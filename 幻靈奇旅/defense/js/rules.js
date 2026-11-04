@@ -4,9 +4,9 @@
    evolutions from the cave table (survivors/data/evolution.json). The view's hooks.fire plays the cave attack and
    reports when the hit releases, so damage lands on the animation frame.
    Lane coordinate x runs from state.left (monster nest, path start) to state.right (crystal, path end). */
-import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js';
-import {STAGES, buildPath} from './stages.js?v=20261103-forge-v2';
-import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v2';
+import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261105-v18';
+import {STAGES, buildPath} from './stages.js?v=20261105-v18';
+import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261105-v18';
 
 export {STAGES};
 /* PK (duel): two players on one road. The host's spirits start at the crystal end (side 'ally'), the guest's at the
@@ -87,11 +87,16 @@ export const BAG_ITEMS = {
   battery: {icon: '🔋', name: '幻靈大絕電池', text: '我方全體幻靈的大絕立刻充滿'},
   'buff-attack': {icon: '⚔️', name: '攻擊增幅', text: '本關我方攻擊 +10%（最多 +100%）'},
   'buff-defense': {icon: '🛡️', name: '防禦增幅', text: '本關我方減傷 +10%（最多 +50%）'},
+  'trap-clear': {icon: '🧹', name: '清除陷阱卡', text: '立刻清除路上所有陷阱'},
+  'foe-redeal': {icon: '🔁', name: '重新換牌卡', text: 'PK 專用：對手手牌全部退回發牌區，重發同樣張數'},
   'card-organize': {icon: '🗂️', name: '速整卡牌', text: '立即整理手牌，讓同名同星卡靠在一起並自動合成'},
   'deal-boost': {icon: '⏩', name: '疾速發牌', text: '12 秒內我方發牌速度加倍（3.2 秒→1.6 秒）'},
   'deal-jam': {icon: '🕸️', name: '發牌干擾', text: '10 秒內讓對手發牌減半；單人關卡則延緩敵方出兵'},
 
 };
+/* What each mode's item bag may use: PK has no road traps, so only hand-control items; 重新換牌卡 needs an opponent's hand. */
+export const PK_ITEMS = ['card-organize', 'deal-boost', 'deal-jam', 'foe-redeal'];
+export const PK_ONLY_ITEMS = ['foe-redeal'];
 const FLYING = /avian-evolution|moon-owl|green-eye-bat|light-phoenix/;
 /* Free trial cards so the mode is playable before the cave collection has enough spirits. */
 export const TRIAL_BASE = ['charmander', 'squirtle', 'bulbasaur', 'cyndaquil', 'piplup'];
@@ -438,9 +443,11 @@ export function useBagItem(state, id, side = 'ally') {
   if (!BAG_ITEMS[id] || state.result || !state.started || state.mirror) return false;
   if (side !== 'ally' && (!state.duel || side !== 'enemy')) return false;
   const seat = seatOf(state, side), otherSeat = seatOf(state, other(side));
-  /* The three hand-control items can be used by either PK participant.
+  /* The hand-control items can be used by either PK participant.
      Existing healing/buff items remain ordinary single-player supplies. */
-  if (state.duel && !['card-organize','deal-boost','deal-jam'].includes(id)) return false;
+  if (state.duel ? !PK_ITEMS.includes(id) : PK_ONLY_ITEMS.includes(id)) return false;
+  if (id === 'trap-clear' && !state.traps.some((t) => !t.expired)) return false;
+  if (id === 'foe-redeal' && !otherSeat.hand.length) return false;
   if (id === 'card-organize' && !seat.hand.length) return false;
   if (id === 'deal-boost' && seat.dealBoostUntil > state.time) return false;
   if (id === 'deal-jam' && (state.duel ? otherSeat.dealSlowUntil : state.spawnSlowUntil) > state.time) return false;
@@ -453,6 +460,13 @@ export function useBagItem(state, id, side = 'ally') {
   else if (id === 'buff-attack') state.buffs.attack = Math.min(1, state.buffs.attack + 0.1);
   else if (id === 'buff-defense') state.buffs.guard = Math.min(0.5, state.buffs.guard + 0.1);
   else if (id === 'card-organize') arrangeHand(state, side);
+  else if (id === 'trap-clear') state.traps.forEach((t, i) => { if (!t.expired) { t.expired = true; emit(state, 'trapGone', {index: i, kind: t.kind}); } });
+  else if (id === 'foe-redeal') {
+    /* the opponent's cards go back to the deck (stars and evolutions are lost) and the same number is dealt again */
+    const foeSide = other(side), n = otherSeat.hand.length;
+    otherSeat.hand.length = 0;
+    for (let i = 0; i < n; i++) deal(state, foeSide);
+  }
   else if (id === 'deal-boost') {
     seat.dealBoostUntil = state.time + DEAL_BOOST_SECONDS;
     syncDealRate(state, seat);

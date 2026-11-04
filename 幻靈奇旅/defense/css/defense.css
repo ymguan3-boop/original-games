@@ -1160,12 +1160,6 @@ body.pk-mode #hud .item-wrap .item-menu {
   overscroll-behavior: contain;
 }
 body.pk-mode #hud .item-wrap .item-menu[hidden] {display: none !important;}
-body.pk-mode #hud .item-wrap .item.pk-item-locked {
-  opacity: 0.6;
-  filter: grayscale(.3);
-  cursor: not-allowed;
-}
-body.pk-mode #hud .item-wrap .item.pk-item-locked:active {transform:none;}
 body.pk-mode #hud .item-wrap .pk-item-tip {
   margin: 2px 0 5px;
   color: #785231;

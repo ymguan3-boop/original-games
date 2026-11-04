@@ -204,8 +204,11 @@ function build({THREE:T,group,mobile=false,config}){
   boat.position.y=-.1+Math.sin(time*1.4)*.05;if(!voyage){boat.rotation.z=Math.sin(time*1.1)*.02;wakeMat.opacity=0;}
  }
  const onPier=(x,z,m=0)=>x>=C.pierStart-.5&&x<=C.pierEnd-m&&Math.abs(z-C.pierZ)<=C.pierHalf-m;
+ /* the height of the walking surface: the top of the planks on the pier, reached by a short ramp from the shore */
+ const DECK_TOP=.2,smooth=k=>{k=Math.max(0,Math.min(1,k));return k*k*(3-2*k);};
+ const deckY=(x,z)=>DECK_TOP*smooth((x-C.pierStart+.8)/.8)*smooth((C.pierHalf+.3-Math.abs(z-C.pierZ))/.3);
  return {
-  root,boat,config:C,update,
+  root,boat,config:C,update,deckY,
   /* anything past the waterline is blocked unless it is on the pier */
   blocked(x,z,margin=.42){if(x>C.pierEnd-margin)return true;if(x>C.shoreX-.3&&!onPier(x,z,margin))return true;return false;},
   atDock(p){return onPier(p.x,p.z)&&p.x>C.pierEnd-3.2;},

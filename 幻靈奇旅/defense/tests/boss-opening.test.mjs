@@ -21,7 +21,7 @@ test('opening and first three cards are gated by the rendered, visible battle sc
   const main=readFileSync(new URL('../js/main.js',import.meta.url),'utf8');
   const rules=readFileSync(new URL('../js/rules.js',import.meta.url),'utf8');
   assert.match(main,/deferDeal: true/);
-  assert.match(main,/view\?\.update\(running \? dt \* speed : 0\);[\s\S]*?beginDealing\(game\)/);
+  assert.match(main,/view\.update\(running \? dt \* speed : 0\);[\s\S]*?beginDealing\(game\)/);
   assert.match(main,/if \(launched\) \{ handleEvents\(\); handSig = ''; hud\(\); if \(!pk\) showBossIntro\(game\.stage\);/);
   assert.match(main,/const running = visibleBattle &&/);
   assert.match(main,/if \(\+\+visibleSceneFrames >= 2\)/,'battle must paint before initial cards');

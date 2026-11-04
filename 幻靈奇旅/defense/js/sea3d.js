@@ -13,7 +13,7 @@ const WATER_Y = -0.12, PITCH = 0.95, FOV = 38;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-import {ico} from './ui-icons.js?v=20261108-audio-v1';
+import {ico} from './ui-icons.js?v=20261105-v18';
 
 export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, esc = (s) => s}) {
   let state = {open: 0, cleared: {}, selected: 0, boatAt: -1}, sailing = null, portrait = isPortrait();
@@ -159,10 +159,11 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, es
   function projectTag(el, x, y, z, edge = 2.1) {
     tagPos.set(x, y, z).project(camera);
     const ok = tagPos.z < 1 && Math.abs(tagPos.x) < 1.25 && Math.abs(tagPos.y) < 1.25;
-    el.style.visibility = ok ? 'visible' : 'hidden';
+    if (el._ok !== ok) { el._ok = ok; el.style.visibility = ok ? 'visible' : 'hidden'; }
     if (ok) {
       const k = H / (2 * rig.dist * Math.tan(FOV * Math.PI / 360)), dy = edge * k * Math.sin(rig.pitch) + (el._h || (el._h = el.offsetHeight || 24)) / 2 + 3;
-      el.style.transform = `translate(${((tagPos.x + 1) / 2 * W).toFixed(1)}px, ${((1 - tagPos.y) / 2 * H + dy).toFixed(1)}px) translate(-50%, -50%)`;
+      const tf = `translate(${((tagPos.x + 1) / 2 * W).toFixed(1)}px, ${((1 - tagPos.y) / 2 * H + dy).toFixed(1)}px) translate(-50%, -50%)`;
+      if (el._tf !== tf) { el._tf = tf; el.style.transform = tf; }
     }
   }
   function refreshTags() {
@@ -257,9 +258,11 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, es
 
   /* ---------- frame loop ---------- */
   let raf = 0, last = 0, time = 0, alive = true;
+  const lowPower = typeof matchMedia === 'function' && matchMedia('(pointer:coarse)').matches;
   function frame(now) {
     if (!alive) return; raf = requestAnimationFrame(frame);
     if (host.clientWidth < 2 || host.clientHeight < 2 || document.hidden) { last = now; return; }
+    if (lowPower && now - last < 30) return;
     if (host.clientWidth !== W || host.clientHeight !== H) resize();
     const dt = Math.min(0.1, (now - (last || now)) / 1000); last = now; time += dt; oceanUniforms.uTime.value = time;
     sailing?.step(now);

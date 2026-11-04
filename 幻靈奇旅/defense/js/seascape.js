@@ -62,7 +62,7 @@ function paintSky(w, seed = 1) {
 
 export function createSeascape(THREE, scene, kit, canvas) {
   const linear = (hex) => new THREE.Color(hex).convertSRGBToLinear();
-  let group = null, sea = null, seaBase = null, foam = null, fall = null, skyCss = '', skyColor = '', time = 0, w = WEATHER.meadow;
+  let group = null, sea = null, seaBase = null, foam = null, fall = null, skyCss = '', skyColor = '', time = 0, waveWait = 0, w = WEATHER.meadow;
 
   function build(theme, island) {
     dispose();
@@ -87,7 +87,7 @@ export function createSeascape(THREE, scene, kit, canvas) {
     const [rx, rz] = island, sx = rx + 16, sz = rz + 13;
     const ac = document.createElement('canvas'); ac.width = ac.height = 256; const ag = ac.getContext('2d'), ar = ag.createRadialGradient(128, 128, 0, 128, 128, 128);
     ar.addColorStop(0, '#fff'); ar.addColorStop(0.78, '#fff'); ar.addColorStop(1, '#000'); ag.fillStyle = ar; ag.fillRect(0, 0, 256, 256);
-    const seaGeo = new THREE.PlaneGeometry(sx * 2, sz * 2, 90, 70).rotateX(-Math.PI / 2);
+    const seaGeo = new THREE.PlaneGeometry(sx * 2, sz * 2, 46, 36).rotateX(-Math.PI / 2);
     seaBase = Float32Array.from(seaGeo.attributes.position.array);
     sea = new THREE.Mesh(seaGeo, new THREE.MeshToonMaterial({color: linear(w.sea), gradientMap: kit.gradientMap, alphaMap: new THREE.CanvasTexture(ac), transparent: true}));
     sea.position.y = -0.55; sea.receiveShadow = true; sea.renderOrder = -1; group.add(sea);
@@ -110,6 +110,9 @@ export function createSeascape(THREE, scene, kit, canvas) {
     if (!group) return;
     time += dt;
     /* the sky is painted once and never drifts: the weather of an island stays exactly as it was */
+    /* the swell is slow: 20 updates a second look the same as 60 and cost a third of the CPU */
+    if ((waveWait -= dt) > 0) { updateFall(dt); return; }
+    waveWait = 0.05;
     const pos = sea.geometry.attributes.position, a = pos.array, amp = w.storm ? 0.4 : 0.18;
     for (let i = 0; i < pos.count; i++) {
       const x = seaBase[i * 3], z = seaBase[i * 3 + 2];
@@ -118,6 +121,10 @@ export function createSeascape(THREE, scene, kit, canvas) {
     pos.needsUpdate = true; sea.geometry.computeVertexNormals();
     /* the foam ring breathes in and out with the swell */
     const k = 1 + Math.sin(time * 1.4) * 0.012; foam.material.opacity = 0.45 + Math.sin(time * 1.4) * 0.2; foam.scale.set(foam.userData.rx * k, 1, foam.userData.rz * k);
+    updateFall(dt);
+  }
+
+  function updateFall(dt) {
     if (fall) {
       const p = fall.geometry.attributes.position.array;
       if (w.snow) for (let i = 0; i < p.length; i += 3) { p[i + 1] -= 3 * dt; p[i] += Math.sin(time + i) * 0.6 * dt; if (p[i + 1] < -0.5) p[i + 1] += 40; }

@@ -2,16 +2,17 @@
    state.events into effects. Every fighter is a cave actor (actors.js); attacks use the cave's model-room scripts,
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
-import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js';
-import {createFx} from './fx.js?v=20261104-allstage-v16';
-import {createSeascape} from './seascape.js?v=20261104-sky-composite-v17';
-import {createToonKit} from './style.js?v=20261103-pk-perf-v3';
-import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-islands-v1';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261104-allstage-v16';
-import {pointAt} from './stages.js';
-import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js';
-import {createProjectileView} from '../../survivors/js/projectile-view.js';
-import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js';
+import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261105-v18';
+import {createFx} from './fx.js?v=20261105-v18';
+import {createSeascape} from './seascape.js?v=20261105-v18';
+import {createToonKit} from './style.js?v=20261105-v18';
+import {batchStatic, movingMeshes} from './batch.js?v=20261105-v18';
+import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261105-v18';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261105-v18';
+import {pointAt} from './stages.js?v=20261105-v18';
+import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261105-v18';
+import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261105-v18';
+import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261105-v18';
 
 /* spirits on the path are 0.7x of the earlier size */
 const SCALE = 1.26, BOSS_SCALE = 2.1, FIELD = [34, 20], ISLAND = [33, 23.5];
@@ -196,7 +197,11 @@ export function createView(canvas, {spirits, catalog}) {
     }
     /* themed cartoon scenery (js/env.js) */
     const start = pts[0], end = pts[pts.length - 1];
+    const beforeEnv = new Set(mapGroup.children);
     env = buildEnvironment(THREE, mapGroup, {theme, path: game.path, start, end, rand: r, kit});
+    /* the scenery never moves except what its own animation drives: bake the rest (about 2,000 draw calls down to a few dozen) */
+    const scenery = mapGroup.children.filter((c) => !beforeEnv.has(c));
+    batchStatic(THREE, scenery, mapGroup, {moving: movingMeshes(scenery, (t) => env.update(t)), outlineMaterialFor: kit.bakedOutline});
     /* our base at the path end: the hero sitting on an oak wine barrel; the boss stands on a dark one at the nest */
     crystal = new THREE.Group(); crystal.position.set(end[0], 0, end[1]); crystal.scale.setScalar(1.3);
     const baseBody = makeBarrel(0xc0874a, 0x4f5560); crystal.add(baseBody);

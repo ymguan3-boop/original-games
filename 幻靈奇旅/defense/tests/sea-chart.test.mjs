@@ -42,7 +42,7 @@ test('hero and boss health bars only show for a moment after a hit; weather is p
 
 test('items are gacha supplies and trap cards with counts; the road has no built-in obstacles', () => {
   const main = read('../js/main.js'), css = read('../css/defense.css');
-  assert.ok(main.includes('useBagItem(game, id)') && main.includes('beginPlacing') && main.includes('view?.pickRoad'));
+  assert.ok(main.includes("useBagItem(game, id, 'ally')") && main.includes('beginPlacing') && main.includes('view?.pickRoad'));
   assert.ok(!main.includes('useItem(game, b.dataset.item)'), 'the old unlimited cooldown items are not offered');
   assert.match(css, /#hud \.hud-top \.stat\.deal[\s\S]*?height: 40px/, 'the deal meter has the same height as the other top buttons');
 });
@@ -65,7 +65,7 @@ test('gacha gives this mode own items; the panel, boatman and landscape sortie p
   assert.ok(main.includes('class="dg-machine"'), 'own gacha layout with the machine picture');
   assert.ok(main.includes('const filmRewards'), 'the summon film still plays for this mode');
   assert.ok(main.includes('chart.snap(record.stage)') && !main.includes('await sailTo(record.stage);' + String.fromCharCode(10) + '  startGame'), 'sortie starts at once');
-  assert.ok(main.includes('async function warmBattle') && main.includes('if (game) view?.update('), 'battle scripts and models are warmed; the battle view is idle in the lobby');
+  assert.ok(main.includes('async function warmBattle') && main.includes('if (game && view) {'), 'battle scripts and models are warmed; the battle view is idle in the lobby');
   assert.ok(main.includes('class="bm-line">要去哪裡？'), 'short boatman dialog');
   assert.ok(css.includes('#lobby .isle-panel { width: min(200px, 29vw)'));
 });

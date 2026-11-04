@@ -1,7 +1,8 @@
 /* PK 競技場 lobby: pick a name, create a room (shows a 4-character code) or join one by typing the code, see both
    decks, and press 確認出戰 on both sides to start. Each player fights with their own current 出擊卡組. The lobby owns the
    room channel and hands it to the battle as a session: {role, ch, me, foe, seed, on(type, fn)}. */
-import {hostRoom, joinRoom, normalizeCode, validCode, transportKind} from './pk-net.js?v=20261103-pk-perf-v3';
+import {hostRoom, joinRoom, normalizeCode, validCode, transportKind} from './pk-net.js?v=20261105-v18';
+import {PK_ITEMS} from './rules.js?v=20261105-v18';
 
 export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spirit, deck, inventory = () => ({}), costume = () => 'trainer', name, setName, toast, onStart}) {
   let session = null, hosting = null;
@@ -73,7 +74,7 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
     ch.onclose = () => { const s = session; session = null; if (s?.inBattle) s.onGone?.(); else home('對手已離開房間'); };
     session.on('hello', (m) => {
       const stock = {};
-      for (const id of ['card-organize','deal-boost','deal-jam'])
+      for (const id of PK_ITEMS)
         stock[id] = Math.min(99, Math.max(0, Math.floor(Number(m.stock?.[id]) || 0)));
       session.foe = {name: String(m.name || '對手').slice(0, 8),
         deck: (m.deck || []).filter((id) => spirit(id)).slice(0, 6), stock,
@@ -82,7 +83,7 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
     });
     session.on('stock', (m) => {
       if (!session.foe) return;
-      for (const id of ['card-organize','deal-boost','deal-jam'])
+      for (const id of PK_ITEMS)
         session.foe.stock[id] = Math.min(99, Math.max(0, Math.floor(Number(m.stock?.[id]) || 0)));
       if (typeof m.costume === 'string' && /^[a-zA-Z0-9_-]{1,48}$/.test(m.costume)) session.foe.costume = m.costume;
     });

@@ -87,7 +87,7 @@ test('zero-stock filtering, new item metadata and host-authoritative PK actions 
   const main=readFileSync(new URL('../js/main.js',import.meta.url),'utf8');
   const css=readFileSync(new URL('../css/defense.css',import.meta.url),'utf8');
   const lobby=readFileSync(new URL('../js/pk-lobby.js',import.meta.url),'utf8');
-  assert.match(main,/\.filter\(\(u\) => u\.count > 0\)/,'empty items never render');
+  assert.match(main,/\.filter\(\(u\) => u\.count > 0 &&/,'empty items never render');
   assert.match(main,/pk\.itemStock\[id\]--/,'the host debits guest tactical stock');
   assert.match(main,/pk\.send\(\{t:'itemUsed',id\}\)/,'guest is charged only after host approves');
   assert.match(lobby,/stock: session\.me\.stock/,'guest inventory announced in room handshake');

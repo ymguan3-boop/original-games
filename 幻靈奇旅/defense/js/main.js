@@ -2,30 +2,30 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261104-allstage-v16';
-import {createPkIsland} from './pk-island.js?v=20261109-pk-v1';
-import {createPkLobby} from './pk-lobby.js?v=20261103-pk-seated-heroes-v1';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261103-tactics-v1';
-import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js';
-import {createToonKit} from './style.js';
-import {createChartModels} from './chart-models.js?v=20261106-items-v2';
-import {createView} from './view.js?v=20261104-sky-composite-v17';
-import {createSeaChart} from './sea3d.js?v=20261109-pk-v1';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261103-pk-perf-v3';
-import {buildPath} from './stages.js?v=20261105-traps-v1';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js';
-import {costumeFor} from '../../survivors/js/costume-effects.js';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261105-v18';
+import {createPkIsland} from './pk-island.js?v=20261105-v18';
+import {createPkLobby} from './pk-lobby.js?v=20261105-v18';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261105-v18';
+import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js?v=20261105-v18';
+import {createToonKit} from './style.js?v=20261105-v18';
+import {createChartModels} from './chart-models.js?v=20261105-v18';
+import {createView} from './view.js?v=20261105-v18';
+import {createSeaChart} from './sea3d.js?v=20261105-v18';
+import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261105-v18';
+import {buildPath} from './stages.js?v=20261105-v18';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261105-v18';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261105-v18';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js';
-import {groupRewards} from '../../survivors/js/reward-groups.js';
-import {itemPicture} from '../../survivors/js/item-pictures.js';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261103-roles-v2';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261104-weather-lock-v3';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-country-v1';
-import {icon} from '../../survivors/js/ui-art.js';
-import {initFullscreen} from './fullscreen.js?v=20261108-audio-v1';
-import {initIcons, ico} from './ui-icons.js?v=20261108-audio-v1';
-import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261105-v18';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261105-v18';
+import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261105-v18';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261105-v18';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261105-v18';
+import {icon} from '../../survivors/js/ui-art.js?v=20261105-v18';
+import {initFullscreen} from './fullscreen.js?v=20261105-v18';
+import {initIcons, ico} from './ui-icons.js?v=20261105-v18';
+import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js?v=20261105-v18';
 
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
@@ -38,6 +38,7 @@ let pendingDealingScene = null, visibleSceneFrames = 0, startSerial = 0, bossInt
    Merge / star promotion mechanics and the short merge-glow effect remain unchanged. */
 /* PK: the live match's session (role 'host' runs the battle, 'guest' shows a mirror of it), and the lobby */
 let pk = null, pkLobby = null;
+const LOW_POWER = typeof matchMedia === 'function' && (matchMedia('(pointer:coarse)').matches || matchMedia('(max-width:820px)').matches);
 
 function readJson(key, fallback) { try { return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback; } catch { return fallback; } }
 function saveRecord() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(record)); } catch {} }
@@ -131,7 +132,7 @@ function availableUnits() {
 const journey = () => readJson('phantom_journey_v1', {});
 /* ---------- items: supplies and trap cards from this mode's gacha, kept in the island record (limited in number) ---------- */
 const STARTER_ITEMS = {'trap-mud': 2, 'trap-spike': 2, 'trap-whirl': 1, 'trap-rune': 1, 'trap-shock': 1, potion: 2, revive: 1, battery: 1, 'buff-attack': 1, 'buff-defense': 1};
-const TACTICAL_BAG = ['card-organize','deal-boost','deal-jam'];
+const TACTICAL_BAG = PK_ITEMS;
 const tacticalInventory = () => Object.fromEntries(TACTICAL_BAG.map((id) => [id, Math.max(0, Math.min(99, bagCount(id)))]));
 const pendingPkItems = new Set();
 function trapStock() { record.bag ||= {}; return record.bag; }
@@ -395,7 +396,7 @@ function openGacha() {
     <div class="dg-intro"><button class="dg-machine" aria-label="轉動轉蛋機"><img src="../survivors/assets/gacha-machine-v03.png" alt=""></button>
       <div class="dg-copy"><strong>尋找下一位夥伴</strong><p>基礎幻靈・戰術道具・陷阱卡</p><p class="dg-note">${first ? '第一次召喚免費，保底 4 隻黃卡' : '可抽幻靈：黃 ' + pool.yellow.length + '・紫 ' + pool.purple.length + '・紅 ' + pool.red.length}</p></div></div>
     <div class="draw-actions" id="drawActions"></div>
-    <details class="pool-details"><summary>獎池與機率</summary><p>幻靈 10%（黃 6%・紫 3%・紅 1%）<br>道具 90%：陷阱卡約四成（泥沼、漩渦、符文陣、毒蘑菇、尖刺、電擊板、間歇泉），補給約六成（治療藥水、緊急復甦藥、大絕電池、攻擊增幅、防禦增幅、速整卡牌、疾速發牌、發牌干擾）。新戰術道具較稀有；發牌干擾在 PK 中降低對手發牌速度，單人關卡則延緩敵方出兵。<br>道具存在守護戰道具包，戰鬥中點「道具」使用。重複黃／紫／紅卡返還 50／100／500 點。</p></details>`, 'gacha');
+    <details class="pool-details"><summary>獎池與機率</summary><p>幻靈 10%（黃 6%・紫 3%・紅 1%）<br>道具 90%：陷阱卡約四成（泥沼、漩渦、符文陣、毒蘑菇、尖刺、電擊板、間歇泉），補給約六成（治療藥水、緊急復甦藥、大絕電池、攻擊增幅、防禦增幅、速整卡牌、疾速發牌、發牌干擾、清除陷阱卡、PK 專用重新換牌卡）。新戰術道具較稀有；發牌干擾在 PK 中降低對手發牌速度，單人關卡則延緩敵方出兵。<br>道具存在守護戰道具包，戰鬥中點「道具」使用。重複黃／紫／紅卡返還 50／100／500 點。</p></details>`, 'gacha');
   const actions = $('drawActions'), add = (text, fn, cls, disabled) => { const b = document.createElement('button'); b.textContent = text; b.className = cls; b.disabled = disabled; b.onclick = fn; actions.append(b); return b; };
   if (first) add('新手召喚 · 免費（保底 4 隻黃卡）', claimStarter, 'primary', false);
   else for (const n of [1, 10]) add((n === 1 ? '召喚一次' : '召喚十次') + ' · ' + (n * DRAW_COST).toLocaleString() + ' 點', () => drawBatch(n), n === 10 ? 'primary' : '', pts < n * DRAW_COST);
@@ -562,7 +563,7 @@ async function startPkGame(session) {
           const id = String(m.id || '');
           if (!TACTICAL_BAG.includes(id) || !(pk.itemStock[id] > 0) ||
               !useBagItem(game, id, 'enemy')) {
-            pk.send({t:'itemDenied',id,text:'目前無法使用這項道具（可能已用完或效果尚在持續）'});
+            pk.send({t:'itemDenied',id,text:id === 'foe-redeal' ? '對手目前沒有手牌' : '目前無法使用這項道具（可能已用完或效果尚在持續）'});
             return;
           }
           pk.itemStock[id]--;
@@ -576,7 +577,12 @@ async function startPkGame(session) {
       pk.on('quit', () => { if (game && !game.result) { game.nest.hp = 0; pk.foeQuit = true; } });
     } else {
       game = createMirror(pk.arena);
-      pk.on('snap', (m) => { if (game?.mirror) applySnapshot(game, m.d, (f, target, strong) => view.fire(f, target, strong)); });
+      pk.on('snap', (m) => {
+        if (!game?.mirror) return;
+        applySnapshot(game, m.d, (f, target, strong) => view.fire(f, target, strong));
+        /* no frames run in the background to drain these: keep only the latest */
+        if (game.events.length > 200) game.events.splice(0, game.events.length - 200);
+      });
       pk.on('toast', (m) => toast(m.text));
       pk.on('itemUsed', (m) => {
         if (!TACTICAL_BAG.includes(m.id) || !pendingPkItems.has(m.id)) return;
@@ -884,14 +890,14 @@ function hud() {
 let bagCache = {at: 0, list: []}, placing = null;
 function usableItems() {
   if (performance.now() - bagCache.at < 800 && bagCache.list.length) return bagCache.list;
-  /* Show all OWNED items even during PK. Unsupported supplies/traps
-     remain visible with a clear explanation rather than disappearing. */
+  /* The bag lists what can be used in this fight and is owned: PK shows only the PK items,
+     an island fight everything except the PK-only cards. */
   const list = [
     ...Object.entries(BAG_ITEMS)
       .map(([id, it]) => ({id, ...it, count: bagCount(id), kind: 'bag'})),
     ...Object.entries(TRAP_CARDS)
       .map(([id, it]) => ({id, ...it, count: bagCount(id), kind: 'trap'})),
-  ].filter((u) => u.count > 0); // Never display zero-stock entries.
+  ].filter((u) => u.count > 0 && (pk ? TACTICAL_BAG.includes(u.id) : !PK_ONLY_ITEMS.includes(u.id))); // Never display zero-stock entries.
   bagCache = {at: performance.now(), list};
   return list;
 }
@@ -901,17 +907,15 @@ function renderItems(force = false) {
   if (menu.dataset.sig === sig && menu.children.length) return;
   menu.dataset.sig = sig;
   const row = (u) => {
-    const locked = !!pk && (u.kind === 'trap' || !TACTICAL_BAG.includes(u.id));
-    return `<button class="item${locked ? ' pk-item-locked' : ''}" data-${u.kind === 'trap' ? 'trap' : 'bag'}="${u.id}"${locked ? ' disabled title="PK 對戰僅開放三種卡牌戰術道具"' : ''}><span class="item-icon">${u.icon}</span><span class="item-text"><b>${esc(u.name)}</b><small>${locked ? '目前僅能在一般守護戰使用' : esc(u.text)}</small></span><span class="item-cd">×${u.count}</span></button>`;
+    return `<button class="item" data-${u.kind === 'trap' ? 'trap' : 'bag'}="${u.id}"><span class="item-icon">${u.icon}</span><span class="item-text"><b>${esc(u.name)}</b><small>${esc(u.text)}</small></span><span class="item-cd">×${u.count}</span></button>`;
   };
   if (!list.length) {
-    menu.innerHTML = '<p class="item-empty">目前沒有持有道具。請前往群島轉蛋機抽取補給與戰術道具。</p>';
+    menu.innerHTML = '<p class="item-empty">' + (pk ? '目前沒有 PK 可用的道具。' : '目前沒有持有道具。') + '請前往群島轉蛋機抽取補給與戰術道具。</p>';
     return;
   }
   const bag = list.filter((u) => u.kind === 'bag'), traps = list.filter((u) => u.kind === 'trap');
-  menu.innerHTML = (pk ? '<p class="item-head pk-item-tip">⚔️ PK 可使用：速整卡牌、疾速發牌、發牌干擾</p>' : '') +
-    (bag.length ? '<p class="item-head">補給與戰術道具</p>' + bag.map(row).join('') : '') +
-    (traps.length ? '<p class="item-head">' + (pk ? '其他持有陷阱（PK 暫不開放）' : '陷阱卡（點選後放到路上）') + '</p>' + traps.map(row).join('') : '');
+  menu.innerHTML = (bag.length ? '<p class="item-head">' + (pk ? 'PK 戰術道具' : '補給與戰術道具') + '</p>' + bag.map(row).join('') : '') +
+    (traps.length ? '<p class="item-head">陷阱卡（點選後放到路上）</p>' + traps.map(row).join('') : '');
 }
 function useBag(id) {
   if (!game || game.result || !game.started || !BAG_ITEMS[id]) return;
@@ -930,6 +934,8 @@ function useBag(id) {
   }
   if (!useBagItem(game, id, 'ally')) {
     return toast(id === 'card-organize' ? '手牌空了，無法整理' :
+      id === 'trap-clear' ? '路上沒有陷阱可以清除' :
+      id === 'foe-redeal' ? '對手目前沒有手牌' :
       id === 'deal-boost' ? '疾速發牌仍在持續，請稍後再用' :
       id === 'deal-jam' ? '發牌干擾仍在持續，請稍後再用' : '目前無法使用此道具');
   }
@@ -1048,6 +1054,7 @@ const weaponSound = (kind) => WEAPON_SOUND[kind] || 'knife';
 /* Events -> sounds (the shared combat audio the cave uses) and hand animations. */
 function handleEvents() {
   for (const ev of game.events) {
+    if (pk && ev.type === 'bagItem' && ev.id === 'foe-redeal' && ev.side === 'enemy') { banner('對手使用重新換牌卡，你的手牌全部換新！'); fresh.clear(); handSig = ''; }
     if (pk && ev.side === 'enemy' && (ev.type === 'deal' || ev.type === 'merge' || ev.type === 'play' || ev.type === 'move')) continue;
     if (pk && ev.type === 'finish') { setTimeout(() => showPkResult({...ev, foeQuit: pk?.foeQuit}), 900); continue; }
     if (pk && ev.type === 'skillStart' && ev.side === 'enemy') { banner('對手施放 ' + spirit(ev.species).name + '・' + ev.skill + '！'); continue; }
@@ -1171,6 +1178,17 @@ function openPause() {
   $('modal').onclose = () => { paused = false; if (game) hud(); };
 }
 
+/* A hidden page gets no animation frames. The room's host runs the battle for both players, so while hidden it steps
+   on a timer (browsers allow about one tick a second) and keeps sending snapshots; the opponent's game never freezes. */
+let hiddenAt = 0;
+setInterval(() => {
+  if (!document.hidden || pk?.role !== 'host' || !game?.started || game.result) { hiddenAt = 0; return; }
+  const now = performance.now(), dt = hiddenAt ? Math.min(2, (now - hiddenAt) / 1000) : 0; hiddenAt = now;
+  for (let i = Math.round(dt * 30); i > 0 && !game.result; i--) step(game, 1 / 30);
+  pk.outbox.push(...game.events); game.events.length = 0;
+  pk.send({t: 'snap', d: snapshot(game, pk.outbox)}); pk.outbox = [];
+}, 500);
+
 function loop(now) {
   requestAnimationFrame(loop);
   if (!$('loading').hidden && now - (loop.loadingUiAt || 0) > 500) {
@@ -1191,12 +1209,9 @@ function loop(now) {
   if (game && game.events.length) { handleEvents(); hud(); }
   else if (running && now - (loop.hudAt || 0) > 100) { hud(); loop.hudAt = now; }
   if (game && view) {
-    /* Long PK battles generate many WebGL draw calls. On touch phones cap
-       battle rendering near 30 FPS; the deterministic rules clock still runs
-       at 30 Hz and all attacks retain their real damage and timings. */
-    const mobilePk = !!pk && typeof matchMedia === 'function' &&
-      (matchMedia('(pointer:coarse)').matches || matchMedia('(max-width:820px)').matches);
-    if (mobilePk && !pendingDealingScene) {
+    /* On touch phones every battle renders near 30 FPS to save battery and heat; the rules clock
+       still runs at 30 Hz, so attacks keep their real damage and timings. */
+    if (LOW_POWER && !pendingDealingScene) {
       loop.renderBank = Math.min(0.1, (loop.renderBank || 0) + (running ? dt * speed : 0));
       if (now - (loop.lastRenderAt || 0) >= 32 || !running) {
         view.update(loop.renderBank); loop.renderBank = 0; loop.lastRenderAt = now;
@@ -1294,9 +1309,9 @@ async function init() {
   try { await loadThree(); data = await loadData(); } catch (e) { toast(e.message); $('loading').hidden = true; return; }
   $('loadingBar').style.width = '100%';
   bindLobby(); bindHud(); bindHand(); renderLobby();
-  renderChartArt().catch((e) => console.warn(e));
+  /* the battle assets wait for the chart's models, and are skipped on a data-saving connection */
+  renderChartArt().catch((e) => console.warn(e)).finally(() => { if (!navigator.connection?.saveData) warmBattle(); });
   /* the battle scripts load quietly in the background while the player looks at the chart */
-  setTimeout(() => warmBattle(), 600);
   /* the boat loader stays a moment so the voyage reads, then the speedboat sails from the town pier to the island */
   setTimeout(async () => {
     $('loading').hidden = true;

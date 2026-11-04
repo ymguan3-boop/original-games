@@ -3,8 +3,8 @@
    purple/red cards only after the original game unlocks them). Points come from the shared cave wallet, so
    spending here spends cave points; items land in the shared cave bag. Spirits drawn here join the
    defense collection (record.owned), which is what the deck is built from. */
-import {eligiblePool, DRAW_COST, DUPLICATE_POINTS} from '../../survivors/js/gacha.js';
-import {SUPPORT, TRAP_CARDS, BAG_ITEMS} from './rules.js?v=20261103-pk-perf-v3';
+import {eligiblePool, DRAW_COST, DUPLICATE_POINTS} from '../../survivors/js/gacha.js?v=20261105-v18';
+import {SUPPORT, TRAP_CARDS, BAG_ITEMS} from './rules.js?v=20261105-v18';
 
 export {DRAW_COST, DUPLICATE_POINTS};
 /* 10% spirits (yellow 6%, purple 3%, red 1%); the other 90% are this mode's own items: supplies and trap cards (kept in the island record). */
@@ -17,7 +17,7 @@ export const TRAP_SHARE = 0.4, TRAP_IDS = Object.keys(TRAP_CARDS), SUPPLY_IDS = 
    Total odds stay at spirits 10% / items 90%; traps 40% / supplies 60% of items. */
 export const SUPPLY_WEIGHTS = Object.freeze({
   potion: 3, revive: 2, battery: 2, 'buff-attack': 2, 'buff-defense': 2,
-  'card-organize': 2, 'deal-boost': 1, 'deal-jam': 1,
+  'card-organize': 2, 'deal-boost': 1, 'deal-jam': 1, 'trap-clear': 1, 'foe-redeal': 1,
 });
 export function pickSupply(rng = Math.random) {
   const total = SUPPLY_IDS.reduce((sum, id) => sum + (SUPPLY_WEIGHTS[id] || 1), 0);

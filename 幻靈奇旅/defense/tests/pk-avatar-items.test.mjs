@@ -56,12 +56,8 @@ test('the own item button is fixed and visible in PK mobile portrait and landsca
   assert.match(main, /\$\('items'\)\.onclick =/);
 });
 
-test('zero-stock items stay hidden, but owned solo-only items appear disabled in PK', () => {
-  assert.match(main, /\.filter\(\(u\) => u\.count > 0\)/);
-  assert.ok(!main.includes("Object.entries(BAG_ITEMS).filter(([id]) => allow(id))"),
-    'do not hide the entire bag if the player owns no tactical items yet');
-  assert.match(main, /pk-item-locked/);
-  assert.match(main, /PK 對戰僅開放三種卡牌戰術道具/);
-  assert.match(main, /目前僅能在一般守護戰使用/);
+test('the bag lists only what this fight can use: PK hides everything that is not a PK item', () => {
+  assert.match(main, /\.filter\(\(u\) => u\.count > 0 && \(pk \? TACTICAL_BAG\.includes\(u\.id\) : !PK_ONLY_ITEMS\.includes\(u\.id\)\)\)/);
+  assert.ok(!main.includes('pk-item-locked'), 'nothing unusable is drawn disabled any more');
   assert.match(main, /pk\.send\(\{t:'act', a:'item', id\}\)/);
 });

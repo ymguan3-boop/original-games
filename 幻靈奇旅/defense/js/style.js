@@ -1,6 +1,16 @@
 /* Cartoon look for 幻靈守護戰: stepped (toon) shading and dark outlines, applied to the existing spirit models and
    to every prop, without remaking any model. Outlines are inverted hulls; skinned and morphing meshes keep animating. */
 
+/* Local hull thickness for a wanted world thickness. Expression parts (mouth and eye shapes, effect sockets) rest at a
+   0.0001 scale until an animation swaps them in: dividing by that would give a hull 10,000 times too thick, a dark sheet
+   that covers the screen for the frames the part is shown. Those hiding scales are left out of the sum. */
+export const HIDDEN_SCALE = 0.02;
+export function outlineThickness(mesh, worldThickness) {
+  let scale = 1;
+  for (let o = mesh; o; o = o.parent) { const k = (Math.abs(o.scale.x) + Math.abs(o.scale.y) + Math.abs(o.scale.z)) / 3; if (k >= HIDDEN_SCALE) scale *= k; }
+  return worldThickness / Math.max(1e-3, scale);
+}
+
 export function createToonKit(THREE) {
   /* three light bands: shadow, mid, lit */
   const tones = new Uint8Array([110, 190, 255]);
@@ -36,14 +46,27 @@ export function createToonKit(THREE) {
 
   /* inverted-hull outline: the mesh's own geometry pushed out along its normals, drawn back-face in ink colour */
   function outlineMaterial(mesh, worldThickness) {
-    const s = new THREE.Vector3(); mesh.getWorldScale(s);
-    const thickness = worldThickness / Math.max(1e-4, (Math.abs(s.x) + Math.abs(s.y) + Math.abs(s.z)) / 3);
+    const thickness = outlineThickness(mesh, worldThickness);
     const mat = new THREE.MeshBasicMaterial({color: INK, side: THREE.BackSide, skinning: !!mesh.isSkinnedMesh, morphTargets: !!mesh.morphTargetInfluences});
     mat.onBeforeCompile = (shader) => {
       shader.uniforms.outlineThickness = {value: thickness};
       shader.vertexShader = 'uniform float outlineThickness;\n' + shader.vertexShader.replace('#include <begin_vertex>', 'vec3 transformed = vec3( position ) + normalize( normal ) * outlineThickness;');
     };
     mat.customProgramCacheKey = () => 'outline-' + thickness.toFixed(4) + (mesh.isSkinnedMesh ? 's' : '') + (mesh.morphTargetInfluences ? 'm' : '');
+    return mat;
+  }
+
+  /* hull material for geometry baked into world space (batch.js): the thickness is simply the world thickness */
+  const baked = new Map();
+  function bakedOutline(t) {
+    if (baked.has(t)) return baked.get(t);
+    const mat = new THREE.MeshBasicMaterial({color: INK, side: THREE.BackSide});
+    mat.onBeforeCompile = (shader) => {
+      shader.uniforms.outlineThickness = {value: t};
+      shader.vertexShader = 'uniform float outlineThickness;\n' + shader.vertexShader.replace('#include <begin_vertex>', 'vec3 transformed = vec3( position ) + normalize( normal ) * outlineThickness;');
+    };
+    mat.customProgramCacheKey = () => 'outline-baked-' + t;
+    sharedMaterials.add(mat); baked.set(t, mat);
     return mat;
   }
 
@@ -54,7 +77,7 @@ export function createToonKit(THREE) {
     if (mesh.isSkinnedMesh) { line = new THREE.SkinnedMesh(mesh.geometry, mat); line.bind(mesh.skeleton, mesh.bindMatrix); line.bindMode = mesh.bindMode; }
     else line = new THREE.Mesh(mesh.geometry, mat);
     if (mesh.morphTargetInfluences) { line.morphTargetInfluences = mesh.morphTargetInfluences; line.morphTargetDictionary = mesh.morphTargetDictionary; }
-    line.userData.isOutline = true; line.frustumCulled = false; line.castShadow = false; line.renderOrder = -1;
+    line.userData.isOutline = true; line.userData.outlineWorld = worldThickness; line.frustumCulled = false; line.castShadow = false; line.renderOrder = -1;
     mesh.add(line);
   }
 
@@ -74,5 +97,5 @@ export function createToonKit(THREE) {
     return root;
   }
 
-  return {toon, toonify, gradientMap, linear, isSharedMaterial: (m) => sharedMaterials.has(m)};
+  return {toon, toonify, bakedOutline, gradientMap, linear, isSharedMaterial: (m) => sharedMaterials.has(m)};
 }
