@@ -8,3 +8,9 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## pixelfx（像素特效）
+
+- 來源：https://github.com/patch-gg/pixelfx（MIT，固定版本 a84159688af3ca37a4be05a0d422b94451b2e24e）
+- 使用範圍：`assets/fx/pixelfx/` 的離線精靈圖；授權全文與聲明在同目錄 `LICENSE`、`NOTICE.md`
+- 排除：Patch Pixel 字型未收錄
