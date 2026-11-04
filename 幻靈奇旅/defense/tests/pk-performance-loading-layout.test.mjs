@@ -74,7 +74,7 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/weather-hud-v14/);
+  assert.match(html,/sky-composite-v17/);
 });
 
 
@@ -185,7 +185,7 @@ test('top points and four action shortcuts share all available width at phone an
   assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
   assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
   assert.match(top,/sortie-base-warning/);
-  assert.match(html,/allstage-v16/,'main script needs a new version after weather engine changes');
+  assert.match(html,/sky-composite-v17/,'main script needs a new version after hit isolation');
 });
 
 test('win screen keeps Next Stage button in a fixed accessible footer on landscape phones', () => {
@@ -283,7 +283,7 @@ test('portrait HUD uses two compact top rows without orphaned stage/weather word
     assert.ok(Math.abs(span(4)+span(8)+gap-inner)<.01);
     assert.ok(Math.abs(span(5)+span(3)+span(2)+span(2)+3*gap-inner)<.01);
   }
-  assert.match(html,/evo-off-v13|weather-hud-v14/);
+  assert.match(html,/sky-composite-v17/);
 });
 
 test('evolution cutscene and obsolete camera button stay removed in solo and PK', () => {
@@ -317,7 +317,7 @@ test('all islands retain authored weather and lighting after boss hits, in solo 
     assert.equal(stageWeather(arena.scene).fixed,true,'PK climate must be stage-controlled');
   }
   assert.match(sea,/function lockWeather\(\)/);
-  assert.match(sea,/scene\.background !== skyTex/);
+  assert.match(sea,/scene\.background !== null/);
   assert.match(sea,/scene\.fog !== null/);
   assert.match(view,/lockedClimateLighting = \{/);
   assert.match(view,/seascape\.lockWeather\(\)/);
@@ -341,5 +341,27 @@ test('all stages share localized thunder animations and climate cannot flash scr
   assert.match(view,/sun\.intensity !== c\.sunPower/);
   assert.match(sea,/function lockWeather\(\)/);
   assert.match(rules,/state\.stage\.id === 'waterfall'/);
-  assert.match(html,/main\.js\?v=20261104-allstage-v16/);
+  assert.match(html,/main\.js\?v=20261104-sky-composite-v17/);
+});
+
+test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local barrel feedback', () => {
+  const sea=read('../js/seascape.js');
+  assert.match(view,/WebGLRenderer\(\{canvas, alpha: true/);
+  assert.match(view,/renderer\.setClearColor\(0x000000, 0\)/);
+  assert.match(view,/renderer\.shadowMap\.autoUpdate = false/);
+  assert.match(view,/renderer\.shadowMap\.needsUpdate = true/);
+  assert.match(view,/createSeascape\(THREE, scene, kit, canvas\)/);
+  assert.match(sea,/painted\.toDataURL\('image\/png'\)/);
+  assert.match(sea,/canvas\.style\.backgroundImage = skyCss/);
+  assert.match(sea,/scene\.background = null/);
+  assert.match(sea,/scene\.background !== null/);
+  assert.doesNotMatch(sea,/skyTex/,'stage sky must never be a renderable WebGL background');
+  assert.doesNotMatch(view,/heroPlay\('Hurt'/);
+  assert.doesNotMatch(view,/rivalPlay\('Hurt'/);
+  assert.doesNotMatch(view,/b\.play\('Hurt'/);
+  assert.match(view,/body\.scale\.set\(1 \+ k, 1 - k, 1 \+ k\)/,'local barrel squash remains');
+  assert.match(view,/Math\.sin\(b\.userData\.flash \/ 0\.18 \* Math\.PI\) \* 0\.018/);
+  assert.match(css,/#world \{[^}]+background-position: center; background-size: cover;/);
+  assert.match(html,/defense\.css\?v=20261104-sky-composite-v17/);
+  assert.match(html,/main\.js\?v=20261104-sky-composite-v17/);
 });
