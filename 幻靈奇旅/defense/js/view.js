@@ -2,17 +2,17 @@
    state.events into effects. Every fighter is a cave actor (actors.js); attacks use the cave's model-room scripts,
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
-import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261105-v18';
-import {createFx} from './fx.js?v=20261105-v18';
-import {createSeascape} from './seascape.js?v=20261105-v18';
-import {createToonKit} from './style.js?v=20261105-v18';
-import {batchStatic, movingMeshes} from './batch.js?v=20261105-v18';
-import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261105-v18';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261105-v18';
-import {pointAt} from './stages.js?v=20261105-v18';
-import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261105-v18';
-import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261105-v18';
-import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261105-v18';
+import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261106-v19';
+import {createFx} from './fx.js?v=20261106-v19';
+import {createSeascape} from './seascape.js?v=20261106-v19';
+import {createToonKit} from './style.js?v=20261106-v19';
+import {batchStatic, movingMeshes} from './batch.js?v=20261106-v19';
+import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261106-v19';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261106-v19';
+import {pointAt} from './stages.js?v=20261106-v19';
+import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261106-v19';
+import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261106-v19';
+import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261106-v19';
 
 /* spirits on the path are 0.7x of the earlier size */
 const SCALE = 1.26, BOSS_SCALE = 2.1, FIELD = [34, 20], ISLAND = [33, 23.5];
@@ -89,8 +89,12 @@ export function createView(canvas, {spirits, catalog}) {
     mapGroup = null; env = null; crystal = nest = null;
   }
   let numbersThisFrame = 0;
+  const boomerangs = new Set();
   const combatVfx = createCombatVfx(THREE, scene, {metrics, onShake: (a) => { shake = Math.max(shake, a); }});
   const fx = createFx(THREE, scene);
+  /* pixelfx 層：所有呼叫都是局部精靈，不動天空、霧、燈光與曝光；載入失敗時 ok 為 false，回到原特效。 */
+  const pfx = globalThis.PixelFX?.create({THREE, parent: scene, camera, sceneId: 'defense'}) ?? null;
+  const pixel = (ev) => pfx?.emit({mode: 'defense', ...ev}) ?? {ok: false};
   const kit = createToonKit(THREE), seascape = createSeascape(THREE, scene, kit, canvas);
   let env = null;
   const projectileView = createProjectileView(THREE, scene, {actorPoint: (id) => actorPoint(id, true), targetPoint: (id, fallback) => actorPoint(id, false, fallback), metrics});
@@ -509,6 +513,7 @@ export function createView(canvas, {spirits, catalog}) {
   function trapFired(ev) {
     const tr = traps[ev.index]; if (!tr) return;
     tr.popT = 0.5; const p = tr.g.position;
+    if (pixel({event: 'trap', kind: ev.kind, at: {x: p.x, y: 0, z: p.z}, key: String(ev.index), force: true}).ok) return;
     if (ev.kind === 'shock') { fx.particles({x: p.x, z: p.z, y: 0.3, count: 26, color: 0xffe23a, size: 0.4, speed: 4, up: 3, spread: 0.3, life: 0.5, gravity: -4}); fx.shockwave({x: p.x, z: p.z, color: 0xffe23a, radius: 1.6, life: 0.4}); }
     else if (ev.kind === 'geyser') { fx.particles({x: p.x, z: p.z, y: 0.2, count: 60, color: 0xbff0ff, size: 0.5, speed: 1.6, up: 9, spread: 0.3, life: 1.1, gravity: -12}); fx.shockwave({x: p.x, z: p.z, color: 0x58caff, radius: 2, life: 0.6}); }
     else fx.particles({x: p.x, z: p.z, y: 0.3, count: 14, color: 0xe8e8f0, size: 0.3, speed: 2.5, up: 2, spread: 0.3, life: 0.4, gravity: -6});
@@ -634,7 +639,8 @@ export function createView(canvas, {spirits, catalog}) {
     const info = performSkill(THREE, scene, a, spiritMap.get(f.species), entries.get(f.species), strong, () => targetState(target));
     rec.lastSkill = info;
     /* ultimates charge up with a magic circle under the spirit */
-    if (strong) { const pt = rec.deco.position; fx.charge({x: pt.x, z: pt.z, element: spiritMap.get(f.species).type, duration: info.release}); }
+    if (strong) { const pt = rec.deco.position; if (!pixel({event: 'charge', element: spiritMap.get(f.species).type, at: {x: pt.x, y: 1, z: pt.z}, force: true}).ok) fx.charge({x: pt.x, z: pt.z, element: spiritMap.get(f.species).type, duration: info.release}); }
+    if (strong && f.species === 'moltres' && a.controller?.boomerangRig) { startBoomerang(rec, f, target); return {release: BoomerangChain.WINDUP + BoomerangChain.HIT_TIMES[0], hold: rec.boomerang.total}; }
     return {release: info.release, hold: info.hold};
   }
 
@@ -669,6 +675,42 @@ export function createView(canvas, {spirits, catalog}) {
      ultimates and super-effective hits always show, bigger. Damage to our own spirits only shows on crits. */
   const NUMBER_CAP = 6;
   let numbersOnScreen = 0;
+  /* 冒險蛙大絕：傷害仍由 rules.js 的扇形判定結算，這裡只讓同一把原生鏢依序飛過範圍內真實魔物再回右手。 */
+  function startBoomerang(rec, f, target) {
+    const rig = rec.actor.controller.boomerangRig, tmp = new THREE.Vector3(), foes = state.fighters.filter((o) => o.side !== f.side && o.hp > 0 && fighters.get(o.id)), primary = foes.find((o) => o.id === target?.id) || foes[0];
+    const dist = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.z - b.z), point = (o) => { const r = fighters.get(o.id), p = r.deco.position; return {x: p.x, y: 0.6 + r.scale * 0.6, z: p.z}; };
+    rig.external(true);
+    const chain = BoomerangChain.create({attackId: 'f' + f.id + ':' + clock, targets: BoomerangChain.selectTargets({primary, candidates: foes, distance: dist, idOf: (o) => o.id}), idOf: (o) => o.id, hand: () => rig.hand(tmp), targetPoint: point, isValid: (o) => o.hp > 0 && !!fighters.get(o.id),
+      onFrame: ({position, angle}) => { rig.place(position, angle); if (clock >= rec.trailAt) { rec.trailAt = clock + 0.09; pixel({event: 'boomerangTrail', at: {x: position.x, y: position.y, z: position.z}, key: 'trail' + f.id}); } }, onHit: ({hitPoint}) => pixel({event: 'ultimate', speciesId: 'moltres', element: '森', at: hitPoint, force: true})});
+    rec.trailAt = 0; rec.boomerang = {chain, rig, t: 0, total: BoomerangChain.WINDUP + BoomerangChain.DURATION + BoomerangChain.FOLLOW};
+    boomerangs.add(rec);
+  }
+  function stepBoomerangs(dt) {
+    for (const rec of boomerangs) {
+      const b = rec.boomerang; b.t += dt;
+      if (!rec.actor?.controller || b.t >= b.total) { b.rig.external(false); b.chain.cancel(); rec.boomerang = null; boomerangs.delete(rec); continue; }
+      if (b.t >= BoomerangChain.WINDUP) b.chain.update(b.t - BoomerangChain.WINDUP);
+      rec.actor.controller.seek('Boomerang', BoomerangChain.nativeTime(b.t));
+    }
+  }
+  /* 常駐狀態：同一隻同類只留一個實例，5 Hz 檢查，狀態到期即淡出。 */
+  let statusClock = 0;
+  const STATUS_FX = {poison: 'poison', burn: 'burn', freeze: 'freeze', slow: 'slow', stun: 'stun'}, statusShown = new Map();
+  function syncStatusFx(dt) {
+    statusClock += dt; if (statusClock < 0.2 || !state || !pfx) return; statusClock = 0;
+    const seen = new Set();
+    for (const f of state.fighters) {
+      const rec = fighters.get(f.id); if (!rec || f.hp <= 0) continue;
+      for (const key of Object.keys(f.statuses || {})) {
+        if (!STATUS_FX[key] || !(f.statuses[key].until > state.time)) continue;
+        const tag = 'f' + f.id + ':' + key; seen.add(tag);
+        if (statusShown.has(tag)) continue;
+        statusShown.set(tag, f.id);
+        pixel({event: 'status', status: key, key: 'f' + f.id, at: {x: rec.deco.position.x, y: 0.5 + rec.scale, z: rec.deco.position.z}, force: true, follow: () => (fighters.get(f.id) ? {x: rec.deco.position.x, y: 0.5 + rec.scale, z: rec.deco.position.z} : null)});
+      }
+    }
+    for (const tag of [...statusShown.keys()]) if (!seen.has(tag)) { statusShown.delete(tag); pfx.detach(tag); }
+  }
   function hit(ev) {
     const rec = fighters.get(ev.id); if (!rec) return;
     const d = rec.deco.position, y = 0.5 + rec.scale * 0.8;
@@ -677,7 +719,7 @@ export function createView(canvas, {spirits, catalog}) {
     rec.barUntil = clock + HIT_BAR_SECONDS;
     rec.flashT = 0.14; rec.flash.material.color.copy(linear(ev.crit ? 0xffd54a : rec.side === 'ally' ? 0xff8a8a : ev.strong ? ELEMENT_COLORS[ev.element] || 0xffffff : 0xffffff));
     rec.recoil = ev.crit || ev.strong ? 0.3 : 0.14;
-    if (numbersThisFrame < 4) fx.hit({x: d.x, y, z: d.z, element: ev.element, crit: ev.crit, kind: ev.kind});
+    if (numbersThisFrame < 4 && !pixel({event: 'hit', element: ev.element, crit: !!ev.crit, kind: ev.kind, at: {x: d.x, y, z: d.z}, key: String(ev.id)}).ok) fx.hit({x: d.x, y, z: d.z, element: ev.element, crit: ev.crit, kind: ev.kind});
     numbersThisFrame++;
     const loud = ev.crit || ev.strong || ev.effective;
     rec.pending = (rec.pending || 0) + ev.amount;
@@ -703,7 +745,7 @@ export function createView(canvas, {spirits, catalog}) {
     if (ev.species === 'mewtwo') combatVfx.nativeSpirit({...spell});
     if (ev.strong) {
       /* ultimates: the spirit's own model-room script plays as before, and the defense-map layer replaces the old fallback burst */
-      fx.ultimate({from, to, element: ev.element, kind: ev.kind, radius: Math.min(3.5, ev.radius || 2.4)});
+      if (!pixel({event: 'ultimate', speciesId: ev.species, element: ev.element, kind: ev.kind, at: {x: to.x, y: 1, z: to.z}, from, to, force: true}).ok) fx.ultimate({from, to, element: ev.element, kind: ev.kind, radius: Math.min(3.5, ev.radius || 2.4)});
       shake = Math.max(shake, 0.35);
       return;
     }
@@ -791,7 +833,7 @@ export function createView(canvas, {spirits, catalog}) {
         fx.particles({x: px, z: pz, y: 0.3, count: 2, color, size: 0.35, speed: 1, up: 1.2, life: 0.7, gravity: -2});
       }
     }
-    fx.skill({center, element: ev.element, kind: ev.kind,
+    if (!pixel({event: 'skill', at: {x: center.x, y: 0, z: center.z}, force: true}).ok) fx.skill({center, element: ev.element, kind: ev.kind,
       targets: state.fighters.filter((f) => f.side === side && f.hp > 0).slice(0, 6).map((f) => fighters.get(f.id)?.deco.position).filter(Boolean)});
     shake = Math.max(shake, 0.5);
     const enemies = () => state.fighters.filter((f) => f.side === 'enemy' && f.hp > 0);
@@ -810,7 +852,7 @@ export function createView(canvas, {spirits, catalog}) {
       else if (ev.type === 'heal') {
         const rec = fighters.get(ev.id), t = rec?.deco?.position;
         if (t) {
-          burst(t.x, t.z, 0x83ffc5, 1.15, 0.5);
+          if (!pixel({event: 'buff', kind: 'heal', at: {x: t.x, y: 0.8, z: t.z}, key: String(ev.id)}).ok) burst(t.x, t.z, 0x83ffc5, 1.15, 0.5);
           if (numbersOnScreen < NUMBER_CAP) {
             numbersOnScreen++;
             floatText(t.x, 2 + rec.scale, t.z, '+' + Math.round(ev.amount), '#a5ffcd', 43, 0.65, () => numbersOnScreen--);
@@ -822,21 +864,21 @@ export function createView(canvas, {spirits, catalog}) {
         if (t) fx.particles({x:t.x,y:0.8,z:t.z,count:8,color:0x83ffc5,size:0.24,speed:0.6,up:1.3,life:0.45,gravity:0});
       }
       else if (ev.type === 'chain') { const a = actorPoint('f' + ev.from), b = actorPoint('f' + ev.to); if (a && b) bolt(a, b, ELEMENT_COLORS[ev.element]); }
-      else if (ev.type === 'death') { const r = fighters.get(ev.id); if (r) { r.dying = 0; r.actor?.play('Death', true); combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: '光', strong: true}); } }
-      else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; b.userData.flash = 0.18; b.userData.barUntil = clock + HIT_BAR_SECONDS; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } /* Barrel squash and local damage number are the entire hit reaction.
+      else if (ev.type === 'death') { const r = fighters.get(ev.id); if (r) { r.dying = 0; r.actor?.play('Death', true); pfx?.detachPrefix('f' + ev.id + ':'); if (!pixel({event: 'death', side: r.side, at: {x: r.deco.position.x, y: 0, z: r.deco.position.z}, key: String(ev.id)}).ok) combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: '光', strong: true}); } }
+      else if (ev.type === 'baseHit') { if (ev.side === 'nest') bossFlinch(); const b = ev.side === 'nest' ? nest : crystal; pixel({event: 'baseHit', at: {x: b.position.x, y: 2, z: b.position.z}, key: ev.side}); b.userData.flash = 0.18; b.userData.barUntil = clock + HIT_BAR_SECONDS; b.userData.pending = (b.userData.pending || 0) + ev.amount; if (clock - (b.userData.lastNumber || 0) > 0.8) { floatText(b.position.x, 4.2, b.position.z, String(Math.round(b.userData.pending)), ev.side === 'nest' ? '#ffe27a' : '#ff6b6b', 58, 1.1); b.userData.pending = 0; b.userData.lastNumber = clock; } /* Barrel squash and local damage number are the entire hit reaction.
            Do not play a model-wide Hurt clip at the same time: this created
            camera-visible bursts when the host/rival trainer was struck. */ }
       else if (ev.type === 'weatherLightning' && state?.stage?.id === 'waterfall' && !state.duel) {
         /* Damage was resolved by rules.js. Visuals are Three.js only, on the road. */
         const strike = world(ev.x);
-        fx.lightningStrike({x: strike.x, z: strike.z});
+        if (!pixel({event: 'lightning', at: {x: strike.x, y: 0, z: strike.z}, force: true}).ok) fx.lightningStrike({x: strike.x, z: strike.z});
       }
       else if (ev.type === 'trap') trapFired(ev);
       else if (ev.type === 'skillStart') skillStart(ev);
       else if (ev.type === 'bossSkillStart') bossSkillStart(ev);
       else if (ev.type === 'bossSkill') bossSkill(ev);
       else if (ev.type === 'skill') supportSkill(ev);
-      else if (ev.type === 'boss') { shake = Math.max(shake, 0.7); releaseNestBoss(); }
+      else if (ev.type === 'boss') { shake = Math.max(shake, 0.7); releaseNestBoss(); if (nest) pixel({event: 'boss', at: {x: nest.position.x, y: 0, z: nest.position.z}, force: true}); }
       else if (ev.type === 'ultimate') { const rec = fighters.get(ev.id), name = spiritMap.get(ev.species)?.skills?.[1]?.name; if (rec && name && numbersOnScreen < NUMBER_CAP) { const d = rec.deco.position; numbersOnScreen++; floatText(d.x, 2.2 + rec.scale, d.z, '大絕・' + name, ev.side === 'ally' ? '#fff0a8' : '#ffb0b0', 40, 0.9, () => numbersOnScreen--); } }
       else if (ev.type === 'finish') { heroPlay(ev.won ? 'JumpCelebrate' : 'Disappointed', true); if (state?.duel) rivalPlay(ev.won ? 'Disappointed' : 'JumpCelebrate', true); }
     }
@@ -896,7 +938,7 @@ export function createView(canvas, {spirits, catalog}) {
     tickNestBoss(dt);
     if (state) { syncTraps(); tickTraps(dt); }
     if (nest) nest.userData.portal.material.opacity = 0.55 + Math.sin(clock * 3) * 0.2;
-    combatVfx.update(dt); fx.update(dt); env?.update(dt); seascape.update(dt);
+    combatVfx.update(dt); fx.update(dt); pfx?.update(dt); stepBoomerangs(dt); syncStatusFx(dt); env?.update(dt); seascape.update(dt);
     /* Guard against imported skill VFX accidentally modifying climate state.
        Preserve per-character damage flashes without flickering the whole sky. */
     for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { disposeWorldEffect(e.obj); effects.splice(i, 1); } }
@@ -940,7 +982,7 @@ export function createView(canvas, {spirits, catalog}) {
     set costume(id) { costumeId = id || 'trainer'; },
     set rivalCostume(id) { rivalCostumeId = id || 'trainer'; },
     zoomBy, orbitBy, resetCamera,
-    debug: () => ({THREE, scene, camera, renderer, crystal, nest, hero, rivalHero, nestBoss, traps}),
+    debug: () => ({pfx, THREE, scene, camera, renderer, crystal, nest, hero, rivalHero, nestBoss, traps}),
     setGame(game) {
       for (const id of [...fighters.keys()]) removeFighter(id);
       for (const hlp of helpers.splice(0)) hlp.a.dispose();
@@ -949,9 +991,9 @@ export function createView(canvas, {spirits, catalog}) {
       disposeMap();
       hero = null; rivalHero = null; traps = []; placeGuide = placeGhost = null; numbersOnScreen = 0;
       for (const c of casters.splice(0)) c.a?.dispose();
-      projectileView.clear(); combatVfx.clear(); fx.clear();
+      projectileView.clear(); combatVfx.clear(); fx.clear(); pfx?.clear(); statusShown.clear();
       if (!game || game.duel) releasePortraitRenderer();
-      state = game; if (game) buildMap(game); else seascape.dispose();
+      state = game; if (game) { buildMap(game); pfx?.preload('defense'); pfx?.ambientFrom('stage', 'defense.' + game.stage.id, () => world((state.left + state.right) / 2)); } else seascape.dispose();
     },
     async preload(ids, onProgress = null) {
       /* Fetch model/assets only. Old code constructed+destroyed every complete
