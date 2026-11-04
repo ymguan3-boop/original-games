@@ -1,5 +1,5 @@
 /* Guard Battle deployment rules shared by the editor and both PK peers. */
-import {isBaseCard, isRedCard, fighterStats, SUPPORT} from './rules.js?v=20261104-v22';
+import {isBaseCard, isRedCard, fighterStats, SUPPORT} from './rules.js?v=20261104-v23';
 
 export function validPkDeck(ids, evolution, spirit) {
   if (!Array.isArray(ids) || ids.length < 4 || ids.length > 6 || new Set(ids).size !== ids.length) return false;

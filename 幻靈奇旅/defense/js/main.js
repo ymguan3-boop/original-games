@@ -2,32 +2,32 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261104-v22';
-import {createPkIsland} from './pk-island.js?v=20261104-v22';
-import {createPkLobby} from './pk-lobby.js?v=20261104-v22';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261104-v22';
-import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js?v=20261104-v22';
-import {createToonKit} from './style.js?v=20261104-v22';
-import {createChartModels} from './chart-models.js?v=20261104-v22';
-import {createView} from './view.js?v=20261104-v22';
-import {createSeaChart} from './sea3d.js?v=20261104-v22';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261104-v22';
-import {buildPath} from './stages.js?v=20261104-v22';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261104-v22';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261104-v22';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261104-v23';
+import {createPkIsland} from './pk-island.js?v=20261104-v23';
+import {createPkLobby} from './pk-lobby.js?v=20261104-v23';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261104-v23';
+import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js?v=20261104-v23';
+import {createToonKit} from './style.js?v=20261104-v23';
+import {createChartModels} from './chart-models.js?v=20261104-v23';
+import {createView} from './view.js?v=20261104-v23';
+import {createSeaChart} from './sea3d.js?v=20261104-v23';
+import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261104-v23';
+import {buildPath} from './stages.js?v=20261104-v23';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261104-v23';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261104-v23';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261104-v22';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261104-v22';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261104-v23';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261104-v23';
 import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261104-v22';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261104-v22';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-v22';
-import {icon} from '../../survivors/js/ui-art.js?v=20261104-v22';
-import {initFullscreen} from './fullscreen.js?v=20261104-v22';
-import {initIcons, ico} from './ui-icons.js?v=20261104-v22';
-import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js?v=20261104-v22';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261104-v23';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261104-v23';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-v23';
+import {icon} from '../../survivors/js/ui-art.js?v=20261104-v23';
+import {initFullscreen} from './fullscreen.js?v=20261104-v23';
+import {initIcons, ico} from './ui-icons.js?v=20261104-v23';
+import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js?v=20261104-v23';
 
-import {autoDeck, validPkDeck} from './deck-rules.js?v=20261104-v22';
+import {autoDeck, validPkDeck} from './deck-rules.js?v=20261104-v23';
 
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';

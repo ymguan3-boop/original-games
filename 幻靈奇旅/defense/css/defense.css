@@ -2173,10 +2173,10 @@ dialog#modal.panel .sheet-actions {flex-wrap:wrap;}
 }
 
 /* Titles stay in the panel instead of projecting above a small phone screen. */
-dialog#modal.panel .ribbon {position:relative;top:auto;left:auto;transform:none;white-space:normal;flex-shrink:0;margin:-10px auto 10px;text-align:center;}
+dialog#modal.panel .ribbon {position:relative;top:auto;left:auto;transform:none;white-space:normal;flex-shrink:0;margin:0 auto 10px;text-align:center;}
 dialog#modal.panel .ribbon span {font-size:clamp(16px,3vw,22px);padding:7px 20px;}
 dialog#modal.panel .modal-scroll {overflow-x:hidden;}
 dialog#modal.panel .modal-scroll .sheet-head {margin:0 0 12px;width:100%;}
 dialog#modal.deck #modalBody > .modal-actions button {min-height:44px;}
 #hud .bi-portrait img {object-fit:cover;}
-@media(max-height:500px){dialog#modal.panel .ribbon{margin:-16px auto 6px;}dialog#modal.panel .ribbon span{font-size:16px;padding:4px 16px;}}
+@media(max-height:500px){dialog#modal.panel .ribbon{margin:0 auto 6px;}dialog#modal.panel .ribbon span{font-size:16px;padding:4px 16px;}}
