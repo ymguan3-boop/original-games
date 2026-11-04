@@ -73,8 +73,11 @@ function resolve(p,canon){
 const LOOP=new Set(['Idle','Walk','Run']);
 function duration(p,mode){const clip=p.clips.find(c=>c.name===mode);if(clip)return clip.duration;return p.durations[mode]||catalog?.get(p.s)?.skills?.find(k=>k.animation===mode)?.duration||2.4;}
 function nativeSeek(p,mode,t){const c=p.controller;if(p.path==='avian://jigglypuff'){c.setMode(mode);c.seek(t);}else if(typeof c.seek==='function')c.seek(mode,t);else c.setMode(mode);}
+/* 冒險蛙迴旋鏢：模型室只有木頭人一個目標，飛出、命中、回手的完整流程與擂台共用 boomerang-chain.js。 */
+function armBoomerang(p){const rig=p.controller.boomerangRig,tmp=new T.Vector3();rig.external(true);p.chain=BoomerangChain.create({attackId:p.id+':'+last,targets:[dummy],idOf:()=>'dummy',hand:()=>rig.hand(tmp),targetPoint:()=>dummy.g.position.clone().add(new T.Vector3(0,1.3,0)),onFrame:({position,angle})=>rig.place(position,angle),onHit:()=>{p.hitDone=true;hitDummy(p);}});p.hitDone=true;}
 function start(p,canon){
  const plan=resolve(p,canon);p.plan=plan;p.canon=canon;p.time=0;p.hitDone=false;p.outomanFx?.stop();p.dur=Math.max(.4,duration(p,plan.mode)/(plan.speed||1));if(p.k0)p.root.scale.copy(p.k0);p.fx=null;p.fxT=0;if(plan.procedural)p.dur=canon==='Ultimate'?1.15:.55;
+ p.controller?.boomerangRig?.external(false);p.chain=null;if(plan.mode==='Boomerang'&&p.controller?.boomerangRig){p.dur=BoomerangChain.WINDUP+BoomerangChain.DURATION+BoomerangChain.FOLLOW+.5;armBoomerang(p);}
  if(plan.proc==='greet'||plan.proc==='cheer')p.dur=1.8;if(plan.proc==='hurt')p.dur=.9;
  if(p.controller){p.controller.setMode(plan.mode);nativeSeek(p,plan.mode,0);return;}
  p.mixer.stopAllAction();const clip=p.clips.find(c=>c.name===plan.mode);if(!clip)return;
@@ -196,7 +199,8 @@ $('snapshot').onclick=()=>{renderer.render(scene,camera);const a=document.create
 /* ---------- 主迴圈 ---------- */
 function frame(now){requestAnimationFrame(frame);const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;if(dead)return;
  try{if(!paused)for(const p of activePacks()){p.time+=dt;const t=p.time,u=(t%p.dur)/p.dur;
-   if(p.controller){let left=dt;while(left>1e-8){const s=Math.min(1/60,left);p.controller.update(s);left-=s;}
+   if(p.chain){if(t>=BoomerangChain.WINDUP)p.chain.update(t-BoomerangChain.WINDUP);if(p.chain.finished)p.controller.boomerangRig.external(false);nativeSeek(p,'Boomerang',BoomerangChain.nativeTime(t));if(t>=p.dur){p.time=0;armBoomerang(p);}}
+   else if(p.controller){let left=dt;while(left>1e-8){const s=Math.min(1/60,left);p.controller.update(s);left-=s;}
     if(!LOOP.has(p.plan.mode)&&t>=p.dur){p.time=0;p.hitDone=false;nativeSeek(p,p.plan.mode,0);}}
    else p.mixer.update(dt);
    if(p.plan.attack!=null){if(u<.05)p.hitDone=false;if(!p.hitDone&&u>=p.plan.release){p.hitDone=true;hitDummy(p);}}

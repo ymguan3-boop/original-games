@@ -2,17 +2,17 @@
    state.events into effects. Every fighter is a cave actor (actors.js); attacks use the cave's model-room scripts,
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
-import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261105-v18';
-import {createFx} from './fx.js?v=20261105-v18';
-import {createSeascape} from './seascape.js?v=20261105-v18';
-import {createToonKit} from './style.js?v=20261105-v18';
-import {batchStatic, movingMeshes} from './batch.js?v=20261105-v18';
-import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261105-v18';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261105-v18';
-import {pointAt} from './stages.js?v=20261105-v18';
-import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261105-v18';
-import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261105-v18';
-import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261105-v18';
+import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-v19';
+import {createFx} from './fx.js?v=20261107-v19';
+import {createSeascape} from './seascape.js?v=20261107-v19';
+import {createToonKit} from './style.js?v=20261107-v19';
+import {batchStatic, movingMeshes} from './batch.js?v=20261107-v19';
+import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261107-v19';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261107-v19';
+import {pointAt} from './stages.js?v=20261107-v19';
+import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261107-v19';
+import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261107-v19';
+import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261107-v19';
 
 /* spirits on the path are 0.7x of the earlier size */
 const SCALE = 1.26, BOSS_SCALE = 2.1, FIELD = [34, 20], ISLAND = [33, 23.5];
@@ -89,6 +89,7 @@ export function createView(canvas, {spirits, catalog}) {
     mapGroup = null; env = null; crystal = nest = null;
   }
   let numbersThisFrame = 0;
+  const boomerangs = new Set();
   const combatVfx = createCombatVfx(THREE, scene, {metrics, onShake: (a) => { shake = Math.max(shake, a); }});
   const fx = createFx(THREE, scene);
   const kit = createToonKit(THREE), seascape = createSeascape(THREE, scene, kit, canvas);
@@ -635,6 +636,7 @@ export function createView(canvas, {spirits, catalog}) {
     rec.lastSkill = info;
     /* ultimates charge up with a magic circle under the spirit */
     if (strong) { const pt = rec.deco.position; fx.charge({x: pt.x, z: pt.z, element: spiritMap.get(f.species).type, duration: info.release}); }
+    if (strong && f.species === 'moltres' && a.controller?.boomerangRig) { startBoomerang(rec, f, target); return {release: BoomerangChain.WINDUP + BoomerangChain.HIT_TIMES[0], hold: rec.boomerang.total}; }
     return {release: info.release, hold: info.hold};
   }
 
@@ -669,6 +671,25 @@ export function createView(canvas, {spirits, catalog}) {
      ultimates and super-effective hits always show, bigger. Damage to our own spirits only shows on crits. */
   const NUMBER_CAP = 6;
   let numbersOnScreen = 0;
+  /* 冒險蛙大絕：傷害由 rules.js 的扇形判定結算，這裡只讓同一把原生鏢依序飛過範圍內真實魔物再回右手。 */
+  function startBoomerang(rec, f, target) {
+    const rig = rec.actor.controller.boomerangRig, tmp = new THREE.Vector3(), foes = state.fighters.filter((o) => o.side !== f.side && o.hp > 0 && fighters.get(o.id)), primary = foes.find((o) => o.id === target?.id) || foes[0];
+    const dist = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.z - b.z), point = (o) => { const r = fighters.get(o.id), p = r.deco.position; return {x: p.x, y: 0.6 + r.scale * 0.6, z: p.z}; };
+    rig.external(true);
+    const chain = BoomerangChain.create({attackId: 'f' + f.id + ':' + clock, targets: BoomerangChain.selectTargets({primary, candidates: foes, distance: dist, idOf: (o) => o.id}), idOf: (o) => o.id, hand: () => rig.hand(tmp), targetPoint: point, isValid: (o) => o.hp > 0 && !!fighters.get(o.id),
+      onFrame: ({position, angle}) => rig.place(position, angle), onHit: ({hitPoint}) => fx.hit({x: hitPoint.x, y: hitPoint.y, z: hitPoint.z, element: '森', kind: 'melee'})});
+    rec.boomerang = {chain, rig, t: 0, total: BoomerangChain.WINDUP + BoomerangChain.DURATION + BoomerangChain.FOLLOW};
+    boomerangs.add(rec);
+  }
+  function stepBoomerangs(dt) {
+    for (const rec of boomerangs) {
+      const b = rec.boomerang; b.t += dt;
+      if (!rec.actor?.controller || b.t >= b.total) { b.rig.external(false); b.chain.cancel(); rec.boomerang = null; boomerangs.delete(rec); continue; }
+      if (b.t >= BoomerangChain.WINDUP) b.chain.update(b.t - BoomerangChain.WINDUP);
+      rec.actor.controller.seek('Boomerang', BoomerangChain.nativeTime(b.t));
+    }
+  }
+
   function hit(ev) {
     const rec = fighters.get(ev.id); if (!rec) return;
     const d = rec.deco.position, y = 0.5 + rec.scale * 0.8;
@@ -896,7 +917,7 @@ export function createView(canvas, {spirits, catalog}) {
     tickNestBoss(dt);
     if (state) { syncTraps(); tickTraps(dt); }
     if (nest) nest.userData.portal.material.opacity = 0.55 + Math.sin(clock * 3) * 0.2;
-    combatVfx.update(dt); fx.update(dt); env?.update(dt); seascape.update(dt);
+    combatVfx.update(dt); fx.update(dt); stepBoomerangs(dt); env?.update(dt); seascape.update(dt);
     /* Guard against imported skill VFX accidentally modifying climate state.
        Preserve per-character damage flashes without flickering the whole sky. */
     for (let i = effects.length - 1; i >= 0; i--) { const e = effects[i]; e.age += dt; const k = Math.min(1, e.age / e.life); e.update(e.obj, k); if (k >= 1) { disposeWorldEffect(e.obj); effects.splice(i, 1); } }
