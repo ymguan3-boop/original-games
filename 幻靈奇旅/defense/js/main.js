@@ -2,33 +2,36 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261104-v27';
-import {createPkIsland} from './pk-island.js?v=20261104-v27';
-import {createPkLobby} from './pk-lobby.js?v=20261104-v27';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261104-v27';
-import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js?v=20261104-v27';
-import {createToonKit} from './style.js?v=20261104-v27';
-import {createChartModels} from './chart-models.js?v=20261104-v27';
-import {createView} from './view.js?v=20261104-v27';
-import {createSeaChart} from './sea3d.js?v=20261104-v27';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261104-v27';
-import {buildPath} from './stages.js?v=20261104-v27';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261104-v27';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261104-v27';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261104-v28';
+import {createPkIsland} from './pk-island.js?v=20261104-v28';
+import {createPkLobby} from './pk-lobby.js?v=20261104-v28';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261104-v28';
+import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261104-v28';
+import {createToonKit} from './style.js?v=20261104-v28';
+import {createChartModels} from './chart-models.js?v=20261104-v28';
+import {createView} from './view.js?v=20261104-v28';
+import {createSeaChart} from './sea3d.js?v=20261104-v28';
+import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261104-v28';
+import {buildPath} from './stages.js?v=20261104-v28';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261104-v28';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261104-v28';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261104-v27';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261104-v27';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261104-v28';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261104-v28';
 import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261104-v27';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261104-v27';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-v27';
-import {icon} from '../../survivors/js/ui-art.js?v=20261104-v27';
-import {initFullscreen} from './fullscreen.js?v=20261104-v27';
-import {initIcons, ico} from './ui-icons.js?v=20261104-v27';
-import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js?v=20261104-v27';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261104-v28';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261104-v28';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-v28';
+import {icon} from '../../survivors/js/ui-art.js?v=20261104-v28';
+import {initFullscreen} from './fullscreen.js?v=20261104-v28';
+import {initIcons, ico} from './ui-icons.js?v=20261104-v28';
+import {createCombatAudio} from './combat-audio.js?v=20261104-v28';
 
-import {autoDeck, validPkDeck} from './deck-rules.js?v=20261104-v27';
+import {autoDeck, validPkDeck} from './deck-rules.js?v=20261104-v28';
 
+import {streamAssets} from './asset-stream.js?v=20261104-v28';
+import {CARD_PREVIEWS} from './card-previews.js?v=20261104-v28';
+const ASSET_BASE = new URL('../../', import.meta.url);
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
 /* the game's theme song (assets/audio/theme.mp3, 初光之境) plays in the chart and in battle */
@@ -45,7 +48,7 @@ const LOW_POWER = typeof matchMedia === 'function' && (matchMedia('(pointer:coar
 function readJson(key, fallback) { try { return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback; } catch { return fallback; } }
 function saveRecord() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(record)); } catch {} }
 function toast(text) { const t = $('toast'); t.textContent = text; t.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), 2200); }
-function picture(id) { const a = data.art[id]; return '../' + (a?.image || 'portraits/' + id + '.png'); }
+function picture(id) { const a = data.art[id]; return new URL(CARD_PREVIEWS[id] || a?.image || 'portraits/' + id + '.png', ASSET_BASE).href; }
 /* ---------- boss opening: one short line, a 2D comic portrait, the voice file and the country-style frame ---------- */
 let bossVoice = null;
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -107,7 +110,7 @@ function shapeLabel(id, strong) {
 }
 
 async function loadData() {
-  const get = (p) => fetch(new URL('../' + p, location.href)).then((r) => { if (!r.ok) throw Error('讀取失敗：' + p); return r.json(); });
+  const get = (p) => fetch(new URL(p, ASSET_BASE)).then((r) => { if (!r.ok) throw Error('讀取失敗：' + p); return r.json(); });
   const [spirits, art, catalog, evolution, pool] = await Promise.all([get('data/spirits.json'), get('data/card-art.json'), get('data/spirit-catalog.json'), get('survivors/data/evolution.json'), get('survivors/data/gacha-pool.json')]);
   return {spirits, art, catalog, evolution, pool, excluded: pool.excludedIds || [], spiritMap: new Map(spirits.map((s) => [s.id, s])), entries: new Map((catalog.entries || []).map((e) => [e.id, e]))};
 }
@@ -116,7 +119,7 @@ async function loadData() {
 function cardHtml(id, {line} = {}) {
   const s = spirit(id), number = data.entries.get(id)?.number || '—';
   const info = line || `${esc(roleLabel(id))} · ${esc(s.rarity || '普通')} · 第 ${s.stage || 1} 階段`;
-  return `<article class="collectionCard" data-frame="${s.cardFrame || 'yellow'}"><span class="collectionNumber">No.${number}</span><span class="class-medal role-${roleFor(id).basic}" title="${esc(roleLabel(id))}">${roleFor(id).icon}</span><img class="collectionArt" src="${picture(id)}" alt="${esc(s.name)}" decoding="async"><img class="collectionFrame" src="../assets/cards/frame.png" alt="" decoding="async"><h3 class="collectionName">${esc(s.name)}</h3><div class="collectionInfo"><div class="collectionType">${info}</div><div class="collectionStats"><span>HP ${s.hp}</span><span>攻擊 ${s.attack}</span></div></div></article>`;
+  return `<article class="collectionCard" data-frame="${s.cardFrame || 'yellow'}"><span class="collectionNumber">No.${number}</span><span class="class-medal role-${roleFor(id).basic}" title="${esc(roleLabel(id))}">${roleFor(id).icon}</span><img class="collectionArt" src="${picture(id)}" alt="${esc(s.name)}" decoding="async"><img class="collectionFrame" src="${new URL('defense/assets/collection-frame.webp', ASSET_BASE).href}" alt="" decoding="async"><h3 class="collectionName">${esc(s.name)}</h3><div class="collectionInfo"><div class="collectionType">${info}</div><div class="collectionStats"><span>HP ${s.hp}</span><span>攻擊 ${s.attack}</span></div></div></article>`;
 }
 
 /* ---------- lobby ---------- */
@@ -1260,12 +1263,20 @@ function loop(now) {
 /* While the player looks at the chart: load the battle scripts, build the battle view and fetch the models of the deck and of the
    selected island, so pressing sortie goes straight into the fight. */
 async function warmBattle() {
+  if (game || navigator.connection?.saveData) return;
   try {
     await loadEngine();
-    if (!view) view = createView($('world'), {spirits: data.spirits, catalog: data.catalog});
-    if (!audio) audio = createCombatAudio();
-    await view.preload([...record.deck, ...STAGES[record.stage].groups.map((g) => g.species)]);
-  } catch (e) { console.warn(e); }
+    const ids = [...new Set([...record.deck, ...STAGES[record.stage].groups.map(g => g.species)])];
+    await streamAssets(ids.map(id => async () => {
+      if (game) return;
+      const spec = spirit(id); if (!spec?.model) return;
+      await (spec.model.includes('://') ? nativeAsset(spec.model) : loadGltf(spec.model));
+    }), 2);
+  } catch (error) { console.warn(error); }
+}
+function whenIdle(work) {
+  if (typeof requestIdleCallback === 'function') requestIdleCallback(() => void work(), {timeout: 2500});
+  else setTimeout(() => void work(), 500);
 }
 
 /* The sea chart is a live Three.js scene (sea3d.js) whose islands, pier and speedboat are GLB files (chart-models.js). They are
@@ -1273,16 +1284,32 @@ async function warmBattle() {
 async function renderChartArt() {
   const T = globalThis.THREE, H = globalThis.PhantomHarbor, kit = createToonKit(T), models = createChartModels(T, kit, {loadGltf, cloneModel});
   chart.addAnimations(models.animated);
-  try { const isle = createPkIsland(T, kit); chart.setPk(isle.group); chart.addAnimations([isle.animate]); } catch (e) { console.warn(e); }
   const card = (id) => { const s = spirit(id); return {art: picture(id), frameImage: 'assets/card-frame.webp', frame: s.cardFrame || 'yellow', name: s.name, number: data.entries.get(id)?.number || '—', info: s.type + " · " + (s.rarity || "普通") + " · 第 " + (s.stage || 1) + " 階段", hp: s.hp, attack: s.attack}; };
-  const tasks = [];
-  STAGES.forEach((s, i) => tasks.push(models.island(s.scene, card(s.boss)).then((g) => chart.setIsland(i, g)).catch((e) => console.warn(e))));
-  tasks.push(models.dock().then((g) => chart.setHome(g)).catch((e) => console.warn(e)));
-  const boat = models.boat().then((g) => { chart.setBoat(g); return g; }).catch((e) => { console.warn(e); return null; });
-  await Promise.all([...tasks, boat]);
+  const loadIsland = async i => {
+    const stage = STAGES[i], group = await models.island(stage.scene);
+    chart.setIsland(i, group);
+    // Card artwork streams independently: a slow picture never hides the island.
+    void models.card(card(stage.boss)).then(pivot => chart.addIslandCard(i, pivot)).catch(console.warn);
+  };
+  let boatGroup = null;
+  await streamAssets([
+    () => loadIsland(record.stage),
+    () => models.dock().then(group => chart.setHome(group)),
+    () => models.boat().then(group => { boatGroup = group; chart.setBoat(group); }),
+  ], 3);
+  // Remaining islands and the cosmetic rider do not block the first usable chart.
+  whenIdle(async () => {
+    try { const isle = createPkIsland(T, kit); chart.setPk(isle.group); chart.addAnimations([isle.animate]); } catch (e) { console.warn(e); }
+    await streamAssets(STAGES.map((_, i) => i).filter(i => i !== record.stage).map(i => async () => {
+      // Pause optional map work while fighting or while the tab is hidden.
+      while (game || document.hidden) await new Promise(resolve => setTimeout(resolve, 500));
+      await loadIsland(i);
+    }), 2);
+    if (!navigator.connection?.saveData) whenIdle(warmBattle);
+    if (navigator.connection?.saveData) return;
   /* last: the hero model, as the boatman on the pier and as the rider at the wheel (outfit from the town wardrobe) */
   try {
-    const gh = await loadGltf('models/hero.glb'), home = chart.homeGroup, boatGroup = await boat;
+    const gh = await loadGltf('models/hero.glb'), home = chart.homeGroup;
     const fit = (hero) => { const box = new T.Box3().setFromObject(hero), s = 2.55 / (box.max.y - box.min.y); hero.scale.setScalar(s); hero.position.y = -box.min.y * s; };
     if (home && H?.dressBoatman) {
       const hero = cloneModel(gh.scene); fit(hero); const man = new T.Group(); man.add(hero); H.dressBoatman(T, hero); kit.toonify(hero, {outline: 0.05});
@@ -1296,6 +1323,7 @@ async function renderChartArt() {
       kit.toonify(hero, {outline: 0.025});
     }
   } catch (e) { console.warn(e); }
+  });
 }
 
 async function init() {
@@ -1310,24 +1338,25 @@ async function init() {
   record.bag ||= {}; if (record.traps) { for (const [k, v] of Object.entries(record.traps)) record.bag[k] = (record.bag[k] || 0) + v; delete record.traps; }
   if (!record.itemKit) { for (const [k, v] of Object.entries(STARTER_ITEMS)) if (!record.trapKit || !k.startsWith('trap-')) record.bag[k] = (record.bag[k] || 0) + v; record.itemKit = true; }
   const fromTown = new URLSearchParams(location.search).has('fromTown');
-  /* the town's speedboat handoff card gives way to this page's own speedboat loader */
-  globalThis.PhantomTransition?.finish?.();
+  // Retain an incoming handoff until the actual chart is ready.
+  globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
+  globalThis.PhantomBgm?.setMix?.({gain: 1, ceiling: 1});
   if (fromTown || !Number.isInteger(record.boatAt)) record.boatAt = -1;
   $('loadingBar').style.width = '30%';
-  try { await loadThree(); data = await loadData(); } catch (e) { toast(e.message); $('loading').hidden = true; return; }
-  $('loadingBar').style.width = '100%';
+  try { [, data] = await Promise.all([loadThree(), loadData()]); } catch (e) { toast(e.message); $('loading').hidden = true; globalThis.PhantomTransition?.fail?.(e); return; }
+  loadingPhase('正在準備海島、碼頭與快艇…', 35);
   bindLobby(); bindHud(); bindHand(); renderLobby();
-  /* the battle assets wait for the chart's models, and are skipped on a data-saving connection */
-  renderChartArt().catch((e) => console.warn(e)).finally(() => { if (!navigator.connection?.saveData) warmBattle(); });
-  /* the battle scripts load quietly in the background while the player looks at the chart */
-  /* the boat loader stays a moment so the voyage reads, then the speedboat sails from the town pier to the island */
-  setTimeout(async () => {
-    $('loading').hidden = true;
-    if (record.boatAt !== record.stage) await sailTo(record.stage);
-    if (!record.starterClaimed || new URLSearchParams(location.search).get('open') === 'gacha') openGacha();
-  }, fromTown ? 1300 : 300);
-  globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
   requestAnimationFrame(loop);
+  document.body.dataset.chartLoading = 'true';
+  try { await renderChartArt(); } catch (error) { $('loading').hidden = true; globalThis.PhantomTransition?.fail?.(error); toast(error.message); return; }
+  loadingPhase('群島準備完成！', 100);
+  $('loading').hidden = true;
+  await nextPaint();
+  document.body.dataset.chartReadyMs = String(Math.round(performance.now()));
+  document.body.dataset.chartLoading = 'false';
+  await globalThis.PhantomTransition?.finish?.();
+  if (record.boatAt !== record.stage) await sailTo(record.stage);
+  if (!record.starterClaimed || new URLSearchParams(location.search).get('open') === 'gacha') openGacha();
   globalThis.PhantomDefense = {get game() { return game; }, get view() { return view; }, startGame, leaveGame, showBossIntro, elementMultiplier, isSupport};
 }
 init();

@@ -1,9 +1,9 @@
 /* Spirit actors for the defense mode, built the same way as the cave's pets (survivors/js/scene.js):
    same models and clips, the same special effects (阿宏牛仔/藍金星輝法師, 官胖, 歐頭慢), and attacks planned by
    SpiritCombat.attackPlan + the model room's SpiritVfx scripts, so moves and ultimates look identical. */
-import {modelHeight} from '../../survivors/js/actor-layout.js?v=20261104-v27';
-import {modelRoomPlan, originalPresentation, createModelRoomEffect} from '../../survivors/js/model-room-effects.js?v=20261104-v27';
-import {attackProfile} from '../../survivors/js/combat-profile.js?v=20261104-v27';
+import {modelHeight} from '../../survivors/js/actor-layout.js?v=20261104-v28';
+import {modelRoomPlan, originalPresentation, createModelRoomEffect} from '../../survivors/js/model-room-effects.js?v=20261104-v28';
+import {attackProfile} from '../../survivors/js/combat-profile.js?v=20261104-v28';
 
 const BASE = new URL('../../', import.meta.url);
 const scripts = new Map(), gltfs = new Map();
@@ -12,7 +12,7 @@ function script(path, globalName) {
   if (globalName && globalThis[globalName]) return Promise.resolve();
   if (!scripts.has(path)) scripts.set(path, new Promise((resolve, reject) => {
     const el = document.createElement('script'); el.src = new URL(path, BASE).href;
-    el.onload = resolve; el.onerror = () => reject(Error('無法載入遊戲素材：' + path)); document.head.append(el);
+    el.onload = resolve; el.onerror = () => { scripts.delete(path); el.remove(); reject(Error('無法載入遊戲素材：' + path)); }; document.head.append(el);
   }));
   return scripts.get(path);
 }
@@ -35,7 +35,7 @@ export async function loadEngine() {
 }
 
 export function loadGltf(path) {
-  if (!gltfs.has(path)) gltfs.set(path, new Promise((resolve, reject) => new THREE.GLTFLoader().load(new URL(path + '?v=20261023-starspire-v1', BASE).href, resolve, undefined, () => reject(Error('模型讀取失敗：' + path)))));
+  if (!gltfs.has(path)) gltfs.set(path, new Promise((resolve, reject) => new THREE.GLTFLoader().load(new URL(path + '?v=20261023-starspire-v1', BASE).href, resolve, undefined, () => { gltfs.delete(path); reject(Error('模型讀取失敗：' + path)); })));
   return gltfs.get(path);
 }
 

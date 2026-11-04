@@ -2,17 +2,17 @@
    state.events into effects. Every fighter is a cave actor (actors.js); attacks use the cave's model-room scripts,
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
-import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261104-v27';
-import {createFx} from './fx.js?v=20261104-v27';
-import {createSeascape} from './seascape.js?v=20261104-v27';
-import {createToonKit} from './style.js?v=20261104-v27';
-import {batchStatic, movingMeshes} from './batch.js?v=20261104-v27';
-import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-v27';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261104-v27';
-import {pointAt} from './stages.js?v=20261104-v27';
-import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261104-v27';
-import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261104-v27';
-import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261104-v27';
+import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261104-v28';
+import {createFx} from './fx.js?v=20261104-v28';
+import {createSeascape} from './seascape.js?v=20261104-v28';
+import {createToonKit} from './style.js?v=20261104-v28';
+import {batchStatic, movingMeshes} from './batch.js?v=20261104-v28';
+import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-v28';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261104-v28';
+import {pointAt} from './stages.js?v=20261104-v28';
+import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261104-v28';
+import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261104-v28';
+import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261104-v28';
 
 /* spirits on the path are 0.7x of the earlier size */
 const SCALE = 1.26, BOSS_SCALE = 2.1, FIELD = [34, 20], ISLAND = [33, 23.5];

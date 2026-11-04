@@ -13,7 +13,7 @@ const WATER_Y = -0.12, PITCH = 0.95, FOV = 38;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-import {ico} from './ui-icons.js?v=20261104-v27';
+import {ico} from './ui-icons.js?v=20261104-v28';
 
 export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, esc = (s) => s}) {
   let state = {open: 0, cleared: {}, selected: 0, boatAt: -1}, sailing = null, portrait = isPortrait();
@@ -82,7 +82,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, es
       for (let k = 1; k < n; k++) { const p = c.getPointAt(k / n); pts.push(p.x, WATER_Y + 0.22, p.z); }
     }
     const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(pts, 3));
-    laneDots = new T.Points(geo, new T.PointsMaterial({map: dotTex, size: 7 * Math.min(window.devicePixelRatio || 1, 1.5), sizeAttenuation: false, color: 0xffffff, transparent: true, opacity: 1, depthWrite: false, alphaTest: 0.2}));
+    laneDots = new T.Points(geo, new T.PointsMaterial({map: dotTex, size: 7 * Math.min(window.devicePixelRatio || 1, lowPower ? 1.25 : 1.5), sizeAttenuation: false, color: 0xffffff, transparent: true, opacity: 1, depthWrite: false, alphaTest: 0.2}));
     laneDots.frustumCulled = false; scene.add(laneDots);
   }
 
@@ -281,7 +281,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, es
   }
   function resize() {
     W = host.clientWidth; H = host.clientHeight; if (W < 2 || H < 2) return;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); renderer.setSize(W, H, false);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1.25 : 1.5)); renderer.setSize(W, H, false);
     camera.aspect = W / H; camera.updateProjectionMatrix();
     const was = {...home0}; fit();
     const untouched = Math.abs(goal.dist - was.dist) < 0.01 || !was.dist || was.dist === 30;
@@ -305,6 +305,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, es
       group.traverse((o) => { if (o.userData.billboard) billboards.push(o); });
       group.scale.setScalar(0.01); const t0 = performance.now(), pop = (now) => { const k = Math.min(1, (now - t0) / 450); group.scale.setScalar(0.01 + 0.99 * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(pop); }; requestAnimationFrame(pop);
     },
+    addIslandCard(i, pivot) { islandModels[i]?.add(pivot); pivot.traverse(o => { if (o.userData.billboard) billboards.push(o); }); },
     setPk(group) { pkRoot.add(group); group.traverse((o) => { if (o.userData.billboard) billboards.push(o); }); },
     setHome(group) { homeRoot.add(group); homeRoot.userData.model = group; },
     get homeGroup() { return homeRoot.userData.model || null; },

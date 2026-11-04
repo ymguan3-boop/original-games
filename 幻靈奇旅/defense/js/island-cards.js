@@ -1,8 +1,9 @@
 /* The boss dex card that stands on each island of the sea chart: drawn like css/collection-card.css (frame image hue-shifted
    for purple / red, art window, name, number, type line and stats) on a canvas, then put on a card that turns toward the viewer. */
+import {createImageCache} from './asset-stream.js?v=20261104-v28';
 export function createCardMaker(THREE, kit) {
   const T = THREE, {toon} = kit;
-  const loadImage = (src) => new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
+  const loadImage = createImageCache();
   const FRAME_FILTER = {red: 'hue-rotate(315deg) saturate(2.3) brightness(.98)', purple: 'hue-rotate(245deg) saturate(1.8) brightness(1.09)', yellow: 'none'};
   const FRAME_BG = {red: ['#ffdfdc', '#b52635'], purple: ['#f3e3ff', '#b380db'], yellow: ['#fff6dc', '#e8c46a']};
   async function cardTexture(card) {

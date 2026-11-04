@@ -1953,3 +1953,11 @@ dialog#modal.panel .sheet-head .boss-face {position:relative;top:auto;bottom:aut
 dialog#modal.panel .sheet-head .sheet-title {flex:0 1 auto;min-width:0;line-height:1.15;font-size:20px;margin:0;letter-spacing:1px;}
 dialog#modal.panel .result-stars {font-size:24px;flex:0 0 auto;margin:0;}
 @media(max-height:450px){dialog#modal.panel .sheet-head,dialog#modal.panel.stage-result .sheet-head{height:52px;min-height:52px;padding:5px 26px 5px 7px;gap:8px;}dialog#modal.panel .sheet-head .boss-face{flex-basis:36px;width:36px;height:36px;min-width:36px;min-height:36px;}dialog#modal.panel .sheet-head .sheet-title{font-size:18px;}}
+
+/* Imported cave/gacha styles must not pad or reflow the island toolbar. */
+body.defense-scene #lobby {padding:0;overflow:hidden;background:#2a86c4;}
+body.defense-scene #lobby .chart-head {box-sizing:border-box;max-width:100%;}
+body.defense-scene #lobby .chart-head .chart-tools {align-items:stretch;min-width:0;}
+body.defense-scene #lobby .chart-head .chart-tools button.tool {margin:0;letter-spacing:0;overflow:hidden;}
+body.defense-scene #lobby .chart-head .chart-tools .ico {flex:0 0 auto;width:16px;height:16px;}
+body.defense-scene #lobby .chart-head .chart-tools span:not(.ico) {font-size:inherit;line-height:1.2;word-break:keep-all;white-space:nowrap;}

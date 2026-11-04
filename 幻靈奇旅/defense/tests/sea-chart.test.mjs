@@ -56,7 +56,7 @@ test('islands, pier and speedboat are loaded from GLB files, not built with code
   for (const f of ['dock.glb', 'speedboat.glb']) assert.equal(readFileSync(new URL('../models/' + f, import.meta.url)).subarray(0, 4).toString(), 'glTF');
   assert.ok(models.includes("'defense/models/' + file") && main.includes('createChartModels') && !main.includes('createIslandBuilder') && !main.includes('makeDock'));
   assert.ok(existsSync(new URL('../assets/card-frame.webp', import.meta.url)) && main.includes("frameImage: 'assets/card-frame.webp'"), 'a small card frame replaces the 1.7 MB png');
-  assert.ok(main.includes('await loadThree()') && !main.includes('try { await loadEngine(); data'), 'the chart no longer waits for the battle scripts');
+  assert.ok(main.includes('Promise.all([loadThree(), loadData()])') && !main.includes('try { await loadEngine(); data'), 'the chart no longer waits for the battle scripts');
 });
 
 test('gacha gives this mode own items; the panel, boatman and landscape sortie panel are slim; sortie does not wait for a voyage', () => {
