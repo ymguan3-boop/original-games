@@ -58,7 +58,7 @@ test('long PK mobile rendering, network buffers and VFX queues are bounded', () 
   assert.match(view,/MAX_WORLD_EFFECTS = mobileGpu \? 65 : 110/);
   assert.match(view,/disposeWorldEffect\(e\.obj\)/);
   assert.match(view,/disposeMap\(\)/);
-  assert.match(view,/releasePortraitRenderer\(\)/,'unused third WebGL context must be released in PK');
+  assert.doesNotMatch(view,/portraitRig|renderPortrait/,'2D dialogue portraits must not allocate another WebGL renderer');
   assert.match(view,/else seascape\.dispose\(\)/,'ocean GPU resources must be released on exit');
   assert.match(style,/sharedMaterials\.has\(m\)/);
   assert.match(fx,/function clear\(\)/);
@@ -74,7 +74,7 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/20261107-v21/);
+  assert.match(html,/20261104-v22/);
 });
 
 
@@ -185,7 +185,7 @@ test('top points and four action shortcuts share all available width at phone an
   assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
   assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
   assert.match(top,/sortie-base-warning/);
-  assert.match(html,/20261107-v21/,'main script needs a new version after hit isolation');
+  assert.match(html,/20261104-v22/,'main script needs a new version after hit isolation');
 });
 
 test('win screen keeps Next Stage button in a fixed accessible footer on landscape phones', () => {
@@ -283,7 +283,7 @@ test('portrait HUD uses two compact top rows without orphaned stage/weather word
     assert.ok(Math.abs(span(4)+span(8)+gap-inner)<.01);
     assert.ok(Math.abs(span(5)+span(3)+span(2)+span(2)+3*gap-inner)<.01);
   }
-  assert.match(html,/20261107-v21/);
+  assert.match(html,/20261104-v22/);
 });
 
 test('evolution cutscene and obsolete camera button stay removed in solo and PK', () => {
@@ -341,7 +341,7 @@ test('all stages share localized thunder animations and climate cannot flash scr
   assert.match(view,/sun\.intensity !== c\.sunPower/);
   assert.match(sea,/function lockWeather\(\)/);
   assert.match(rules,/state\.stage\.id === 'waterfall'/);
-  assert.match(html,/main\.js\?v=20261107-v21/);
+  assert.match(html,/main\.js\?v=20261104-v22/);
 });
 
 test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local barrel feedback', () => {
@@ -362,6 +362,6 @@ test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local
   assert.match(view,/body\.scale\.set\(1 \+ k, 1 - k, 1 \+ k\)/,'local barrel squash remains');
   assert.match(view,/Math\.sin\(b\.userData\.flash \/ 0\.18 \* Math\.PI\) \* 0\.018/);
   assert.match(css,/#world \{[^}]+background-position: center; background-size: cover;/);
-  assert.match(html,/defense\.css\?v=20261107-v21/);
-  assert.match(html,/main\.js\?v=20261107-v21/);
+  assert.match(html,/defense\.css\?v=20261104-v22/);
+  assert.match(html,/main\.js\?v=20261104-v22/);
 });

@@ -2,17 +2,17 @@
    state.events into effects. Every fighter is a cave actor (actors.js); attacks use the cave's model-room scripts,
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
-import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-v21';
-import {createFx} from './fx.js?v=20261107-v21';
-import {createSeascape} from './seascape.js?v=20261107-v21';
-import {createToonKit} from './style.js?v=20261107-v21';
-import {batchStatic, movingMeshes} from './batch.js?v=20261107-v21';
-import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261107-v21';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261107-v21';
-import {pointAt} from './stages.js?v=20261107-v21';
-import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261107-v21';
-import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261107-v21';
-import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261107-v21';
+import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261104-v22';
+import {createFx} from './fx.js?v=20261104-v22';
+import {createSeascape} from './seascape.js?v=20261104-v22';
+import {createToonKit} from './style.js?v=20261104-v22';
+import {batchStatic, movingMeshes} from './batch.js?v=20261104-v22';
+import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261104-v22';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261104-v22';
+import {pointAt} from './stages.js?v=20261104-v22';
+import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261104-v22';
+import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261104-v22';
+import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261104-v22';
 
 /* spirits on the path are 0.7x of the earlier size */
 const SCALE = 1.26, BOSS_SCALE = 2.1, FIELD = [34, 20], ISLAND = [33, 23.5];
@@ -987,15 +987,6 @@ export function createView(canvas, {spirits, catalog}) {
     renderer.render(scene, camera);
   }
 
-  const portraits = new Map(); let portraitRig = null;
-  function releasePortraitRenderer() {
-    /* The optional GLB dialogue portrait uses a third WebGL context.
-       Free it outside boss dialogue scenes, particularly during long PK
-       sessions, rather than keeping a spare 384px renderer alive forever. */
-    if (!portraitRig) return;
-    try { portraitRig.r.dispose(); portraitRig.r.forceContextLoss?.(); } catch {}
-    portraitRig = null;
-  }
   return {
     update, resize, fire, metrics,
     set cardOrigin(p) { cardOrigin = p; },
@@ -1012,7 +1003,6 @@ export function createView(canvas, {spirits, catalog}) {
       hero = null; rivalHero = null; traps = []; placeGuide = placeGhost = null; numbersOnScreen = 0;
       for (const c of casters.splice(0)) c.a?.dispose();
       projectileView.clear(); combatVfx.clear(); fx.clear(); vfx3d?.clear(); fieldJobs.length = 0;
-      if (!game || game.duel) releasePortraitRenderer();
       state = game; if (game) buildMap(game); else seascape.dispose();
     },
     async preload(ids, onProgress = null) {
@@ -1064,47 +1054,5 @@ export function createView(canvas, {spirits, catalog}) {
       placeGhost.material.color.setHex(kind === 'egg' ? 0xffdc70 : TRAP_LOOK[kind] || 0xffffff);
       if (x === null) placeGhost.visible = false; else { const p = pointAt(state.path, x - state.left); placeGhost.position.set(p.x, 0.2, p.z); placeGhost.visible = true; }
     },
-    /* A transparent bust of a spirit's own 3D model, for dialog portraits (docs: GLB 透像). Cached per id and pose. */
-    portrait(id, pose = {}) { return renderPortrait(id, pose); },
   };
-
-  function renderPortrait(id, pose) {
-    const key = id + JSON.stringify(pose);
-    if (!portraits.has(key)) portraits.set(key, buildPortrait(id, pose).catch((e) => { console.warn(e); portraits.delete(key); return null; }));
-    return portraits.get(key);
-  }
-  async function buildPortrait(id, pose) {
-    const spec = spiritMap.get(id); if (!spec) return null;
-    const T = THREE, S = 384;
-    if (!portraitRig) {
-      const r = new T.WebGLRenderer({antialias: true, alpha: true, preserveDrawingBuffer: true});
-      r.setPixelRatio(1); r.setSize(S, S, false); r.outputEncoding = T.sRGBEncoding; r.toneMapping = T.NoToneMapping; r.setClearColor(0x000000, 0);
-      const sc = new T.Scene(); sc.add(new T.HemisphereLight(0xffffff, 0xb8a47a, 0.95));
-      const key = new T.DirectionalLight(0xfff3dc, 1.0); key.position.set(-3, 5, 6); sc.add(key);
-      const rim = new T.DirectionalLight(0xbfe0ff, 0.5); rim.position.set(4, 2, -5); sc.add(rim);
-      portraitRig = {r, sc, cam: new T.PerspectiveCamera(26, 1, 0.05, 200)};
-    }
-    const {r, sc, cam} = portraitRig;
-    const a = await createActor(spec, entries.get(id), 1);
-    try {
-      kit.toonify(a.object, {outline: 0.03});
-      a.root.rotation.y = pose.yaw || 0; sc.add(a.root);
-      a.play(pose.action || 'Idle'); a.tick(0.001); a.tick(pose.action === 'Idle' || !pose.action ? 0.25 : 0.32);
-      sc.updateMatrixWorld(true);
-      /* the body only: skip hidden parts and effect meshes, like the actor's own height fit */
-      const box = new T.Box3(); a.root.traverse((n) => { if (!n.isMesh) return; for (let p = n; p; p = p.parent) if (!p.visible || p.userData?.isEffect) return; const b = new T.Box3().setFromObject(n); if (!b.isEmpty()) box.union(b); });
-      /* skinned models can be authored in other units, so their mesh box under-reports; the bones are in true world space */
-      const bones = new T.Box3(), bp = new T.Vector3(); a.root.traverse((n) => { if (n.isBone) { n.getWorldPosition(bp); bones.expandByPoint(bp); } });
-      if (!bones.isEmpty() && bones.max.y - bones.min.y > (box.max.y - box.min.y) * 1.2) { bones.max.y += (bones.max.y - bones.min.y) * 0.14; bones.min.y -= 0.01; box.copy(bones); box.expandByVector(new T.Vector3((bones.max.y - bones.min.y) * 0.18, 0, (bones.max.y - bones.min.y) * 0.18)); }
-      const size = box.getSize(new T.Vector3()), ctr = box.getCenter(new T.Vector3());
-      /* head and shoulders: aim at about the upper third of the body, wide models get a looser crop */
-      const focusY = box.max.y - size.y * (pose.focus ?? 0.3) + (pose.lift || 0) * size.y;
-      const half = Math.max(size.y * 0.36, Math.min(Math.max(size.x, size.z) * 0.5, size.y * 0.62)) / (pose.zoom || 1);
-      const dist = half / Math.tan(T.MathUtils.degToRad(cam.fov / 2));
-      const pitch = pose.pitch || 0;
-      cam.position.set(ctr.x, focusY + Math.sin(pitch) * dist, ctr.z + Math.cos(pitch) * dist); cam.lookAt(ctr.x, focusY, ctr.z);
-      r.render(sc, cam);
-      return r.domElement.toDataURL('image/png');
-    } finally { a.dispose(); }
-  }
 }

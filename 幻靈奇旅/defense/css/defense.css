@@ -2156,3 +2156,27 @@ body.pk-mode #hud .hud-top #speed {display:none;}
   }
   body.pk-mode #hud .hud-top .hud-fs {grid-column:4;}
 }
+/* Every modal keeps its navigation footer inside the dynamic viewport. */
+dialog#modal.panel {box-sizing:border-box;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);}
+dialog#modal.panel #modalBody {display:flex;flex-direction:column;min-height:0;max-height:calc(100dvh - 100px);}
+dialog#modal.panel .modal-scroll {flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:2px 3px;}
+dialog#modal.panel #modalBody > .modal-actions {flex:0 0 auto;flex-wrap:wrap;background:#fff0d0;padding:8px 2px max(8px,env(safe-area-inset-bottom));margin-top:8px;}
+dialog#modal.panel .modal-actions button {min-height:44px;min-width:0;flex:1 1 80px;}
+dialog#modal.panel .sheet-actions {flex-wrap:wrap;}
+@media (max-height:500px) {
+  dialog#modal.panel {padding:28px 12px 8px;max-height:calc(100dvh - 16px);}
+  dialog#modal.panel #modalBody {max-height:calc(100dvh - 62px);}
+  dialog#modal.panel .sheet-head {height:70px;min-height:70px;}
+  dialog#modal.panel .sheet-head .boss-face {width:65px;height:65px;}
+  dialog#modal.panel .result-title {font-size:20px;margin:6px 0;}
+  dialog#modal.panel .modal-actions {gap:6px;}
+}
+
+/* Titles stay in the panel instead of projecting above a small phone screen. */
+dialog#modal.panel .ribbon {position:relative;top:auto;left:auto;transform:none;white-space:normal;flex-shrink:0;margin:-10px auto 10px;text-align:center;}
+dialog#modal.panel .ribbon span {font-size:clamp(16px,3vw,22px);padding:7px 20px;}
+dialog#modal.panel .modal-scroll {overflow-x:hidden;}
+dialog#modal.panel .modal-scroll .sheet-head {margin:0 0 12px;width:100%;}
+dialog#modal.deck #modalBody > .modal-actions button {min-height:44px;}
+#hud .bi-portrait img {object-fit:cover;}
+@media(max-height:500px){dialog#modal.panel .ribbon{margin:-16px auto 6px;}dialog#modal.panel .ribbon span{font-size:16px;padding:4px 16px;}}

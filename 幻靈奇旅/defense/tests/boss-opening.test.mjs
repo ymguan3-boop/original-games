@@ -29,7 +29,7 @@ test('opening and first three cards are gated by the rendered, visible battle sc
 });
 
 
-test('each boss has a voice profile, a country-style colour theme and a 3D bust pose', () => {
+test('each boss has a voice profile, a country-style colour theme and a generated 2D comic portrait', () => {
   for (const [id, b] of Object.entries(BOSS_OPENINGS)) {
     const v = b.voice;
     for (const k of ['voiceName', 'voiceKey', 'genderFeel', 'ageFeel', 'tone', 'speed', 'emotion', 'pitch', 'rate', 'notes', 'audioFile', 'ttsText']) assert.ok(v[k], id + ' voice.' + k);
@@ -37,18 +37,21 @@ test('each boss has a voice profile, a country-style colour theme and a 3D bust 
     assert.equal(v.audioFile, 'audio/boss/' + id + '.mp3');
     assert.match(v.voiceName, /^zh-TW-(YunJhe|HsiaoChen)Neural$/);
     for (const k of ['wood', 'paper', 'accent', 'ink', 'glow']) assert.match(b.theme[k], /^#[0-9a-f]{6}$/i, id + ' theme.' + k);
-    assert.ok(typeof b.pose.yaw === 'number' && b.pose.zoom > 0);
+    assert.equal(b.portrait, 'assets/boss-portraits/' + id + '.webp');
+    const image = readFileSync(new URL('../' + b.portrait, import.meta.url));
+    assert.equal(image.toString('ascii', 8, 12), 'WEBP');
+    assert.ok(image.length > 10000);
   }
   assert.deepEqual(OPENING_SECONDS, [3.2, 4.2]);
   assert.equal(new Set(Object.values(BOSS_OPENINGS).map((b) => b.theme.wood)).size, 10, 'every boss gets its own frame colour');
 });
 
-test('the dialog shows the boss 3D bust, plays the voice, and the theme song plays in the chart and the battle', () => {
+test('the dialog shows the boss 2D comic portrait, plays the voice, and the theme song plays in the chart and the battle', () => {
   const main = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
   const view = readFileSync(new URL('../js/view.js', import.meta.url), 'utf8');
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-  assert.ok(view.includes('portrait(id, pose = {})'));
-  assert.ok(main.includes('view.portrait(stage.boss, speech.pose)'));
+  assert.ok(!view.includes('renderPortrait') && !view.includes('portraitRig'));
+  assert.ok(main.includes("new URL('../' + speech.portrait, import.meta.url).href"));
   assert.ok(main.includes("' 關｜' + stage.name"));
   assert.ok(main.includes('playBossVoice(speech)'));
   assert.match(main, /const THEME_SCENE = 'theme'/);

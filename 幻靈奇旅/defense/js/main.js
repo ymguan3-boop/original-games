@@ -2,30 +2,32 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-v21';
-import {createPkIsland} from './pk-island.js?v=20261107-v21';
-import {createPkLobby} from './pk-lobby.js?v=20261107-v21';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-v21';
-import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js?v=20261107-v21';
-import {createToonKit} from './style.js?v=20261107-v21';
-import {createChartModels} from './chart-models.js?v=20261107-v21';
-import {createView} from './view.js?v=20261107-v21';
-import {createSeaChart} from './sea3d.js?v=20261107-v21';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-v21';
-import {buildPath} from './stages.js?v=20261107-v21';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-v21';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-v21';
+import {STAGES, SHAPES, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261104-v22';
+import {createPkIsland} from './pk-island.js?v=20261104-v22';
+import {createPkLobby} from './pk-lobby.js?v=20261104-v22';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261104-v22';
+import {loadEngine, loadThree, loadGltf, cloneModel} from './actors.js?v=20261104-v22';
+import {createToonKit} from './style.js?v=20261104-v22';
+import {createChartModels} from './chart-models.js?v=20261104-v22';
+import {createView} from './view.js?v=20261104-v22';
+import {createSeaChart} from './sea3d.js?v=20261104-v22';
+import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261104-v22';
+import {buildPath} from './stages.js?v=20261104-v22';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261104-v22';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261104-v22';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-v21';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-v21';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261104-v22';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261104-v22';
 import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-v21';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-v21';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-v21';
-import {icon} from '../../survivors/js/ui-art.js?v=20261107-v21';
-import {initFullscreen} from './fullscreen.js?v=20261107-v21';
-import {initIcons, ico} from './ui-icons.js?v=20261107-v21';
-import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js?v=20261107-v21';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261104-v22';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261104-v22';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261104-v22';
+import {icon} from '../../survivors/js/ui-art.js?v=20261104-v22';
+import {initFullscreen} from './fullscreen.js?v=20261104-v22';
+import {initIcons, ico} from './ui-icons.js?v=20261104-v22';
+import {createCombatAudio} from '../../survivors/js/combat-audio-v17.js?v=20261104-v22';
+
+import {autoDeck, validPkDeck} from './deck-rules.js?v=20261104-v22';
 
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
@@ -44,8 +46,8 @@ function readJson(key, fallback) { try { return JSON.parse(localStorage.getItem(
 function saveRecord() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(record)); } catch {} }
 function toast(text) { const t = $('toast'); t.textContent = text; t.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), 2200); }
 function picture(id) { const a = data.art[id]; return '../' + (a?.image || 'portraits/' + id + '.png'); }
-/* ---------- boss opening: one short line, a 3D bust, the voice file and the country-style frame ---------- */
-let bossVoice = null, portraitJob = null;
+/* ---------- boss opening: one short line, a 2D comic portrait, the voice file and the country-style frame ---------- */
+let bossVoice = null;
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 function stopBossVoice() {
   try { bossVoice?.pause(); } catch {}
@@ -70,27 +72,22 @@ function playBossVoice(speech) {
   a.onerror = fallback;
   a.play().then(() => globalThis.PhantomBgm?.duckFor?.(0.3, Math.min(4200, (a.duration || 3) * 1000 + 400))).catch((e) => { if (e?.name !== 'NotAllowedError' && e?.name !== 'AbortError') fallback(); });
 }
-function prepareBossPortrait(stage) {
-  const speech = openingFor(stage);
-  portraitJob = speech && view?.portrait ? view.portrait(stage.boss, speech.pose).catch(() => null) : Promise.resolve(null);
-}
 function hideBossIntro() {
   clearTimeout(bossIntroTimer);
   bossIntroTimer = null;
   stopBossVoice();
   $('bossIntro').hidden = true;
 }
-async function showBossIntro(stage) {
+function showBossIntro(stage) {
   const speech = openingFor(stage);
   if (!speech) return;
   hideBossIntro();
-  const serial = startSerial, shot = await Promise.race([portraitJob, new Promise((r) => setTimeout(() => r(null), 700))]);
-  if (serial !== startSerial || !game) return;
+  if (!game) return;
   const box = $('bossIntro'), t = speech.theme;
   for (const [k, v] of Object.entries({wood: t.wood, paper: t.paper, accent: t.accent, ink: t.ink, glow: t.glow})) box.style.setProperty('--bi-' + k, v);
   box.dataset.boss = stage.id;
-  $('bossIntroPortrait').src = shot || picture(stage.boss);
-  box.classList.toggle('is-card', !shot);
+  $('bossIntroPortrait').src = new URL('../' + speech.portrait, import.meta.url).href;
+  box.classList.remove('is-card');
   $('bossIntroPortrait').alt = speech.name;
   $('bossIntroStage').textContent = '第 ' + (STAGES.indexOf(stage) + 1) + ' 關｜' + stage.name + '｜' + speech.name;
   $('bossIntroName').textContent = speech.name;
@@ -275,8 +272,8 @@ function openBoatman() {
 }
 
 function bindLobby() {
-  chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman, onPk: () => pkLobby.open()});
-  pkLobby = createPkLobby({openModal, closeModal: () => $('modal').close(), ribbon, esc, picture, spirit, deck: () => (normalizeDeck(), record.deck.slice()), inventory: tacticalInventory, costume: () => costumeFor(journey()).id,
+  chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman, onPk: () => { if (requireCompleteSortie()) pkLobby.open(); else openDeck(); }});
+  pkLobby = createPkLobby({openModal, closeModal: () => $('modal').close(), ribbon, esc, picture, spirit, validateDeck: (ids) => validPkDeck(ids, data.evolution, spirit), deck: () => (normalizeDeck(), record.deck.slice()), inventory: tacticalInventory, costume: () => costumeFor(journey()).id,
     name: () => record.pkName || (record.pkName = '旅人' + String(Math.floor(Math.random() * 90) + 10)), setName: (n) => { record.pkName = n; saveRecord(); }, toast, onStart: startPkGame});
   $('islePanel').onclick = (e) => {
     if (e.target.closest('#start')) beginStage();
@@ -327,7 +324,8 @@ function openDeck(picked = null, keepScroll = 0) {
       <h3 class="roster-group">其他基礎幻靈 <small>點卡牌可加入出擊卡組（黃卡、紫卡與三色蛋）</small></h3><div class="roster">${unchosenBase.map(unitButton).join('') || '<p class="muted">沒有其他可選的基礎幻靈。</p>'}</div>
       <h3 class="roster-group">其他紅卡輔助 <small>點卡牌可加入出擊卡組</small></h3><div class="roster">${unchosenRed.map(unitButton).join('') || '<p class="muted">沒有其他可選的紅卡輔助，仍可透過轉蛋取得。</p>'}</div></div>
     <div id="flipLayer" class="flip-layer" hidden></div>
-    <div class="modal-actions center"><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto deck');
+    <div class="modal-actions center"><button class="tool" id="autoDeck">⚡ 一鍵編組</button><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto deck');
+  $('autoDeck').onclick = () => { record.deckSlots = autoDeck(record.owned, data.evolution, spirit, id => data.entries.get(id)); record.deck = record.deckSlots.filter(Boolean); normalizeDeck(); saveRecord(); renderIslePanel(); openDeck(); toast(`已依綜合戰力編組：基礎幻靈 ${deckBase().length}/4、技能卡 ${deckRed().length}/2${deckBase().length < 4 ? '；請先轉蛋補足四位再出擊' : ''}`); };
   $('deckGacha').onclick = () => { $('modal').close(); openGacha(); };
   /* tapping a card turns it over: the back lists its attack, ultimate and passives, with a button to add it to / remove it from the deck */
   const scroller = $('modalBody').querySelector('.panel-scroll'), layer = $('flipLayer');
@@ -472,7 +470,13 @@ function nextPaint() {
   return new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
 }
 function openModal(html, kind = 'info') {
-  $('modalBody').innerHTML = html; const m = $('modal'); m.className = 'panel panel-' + kind;
+  if (!kind.includes('deck') && !kind.includes('stage-result')) {
+    const heading = html.match(/^<div class="ribbon">[\s\S]*?<\/div>/)?.[0] || '';
+    html = html.slice(heading.length);
+    const footer = html.match(/<div class="modal-actions[^"]*">[\s\S]*<\/div>\s*$/);
+    html = heading + '<div class="modal-scroll">' + (footer ? html.slice(0, footer.index) : html) + '</div>' + (footer ? footer[0] : '');
+  }
+  $('modalBody').innerHTML = html; $('modalBody').scrollTop = 0; const m = $('modal'); m.className = 'panel panel-' + kind;
   if (!m.open) m.showModal(); m.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => m.close()));
 }
 const ribbon = (text, icon = '') => `<div class="ribbon"><span>${icon ? `<i>${icon}</i>` : ''}${text}</span></div>`;
@@ -502,7 +506,7 @@ async function startGame() {
     view.costume = costumeFor(journey()).id;
     game = createGame({stageIndex: record.stage, deck: record.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
     game.runId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-    view.setGame(game); prepareBossPortrait(game.stage);
+    view.setGame(game);
     loadingPhase('場景完成，正在準備幻靈素材…', 55);
     const ids = [...record.deck, ...game.stage.groups.map((g) => g.species), game.stage.boss];
     const models = view.preload(ids, (done, total) => {
@@ -536,6 +540,7 @@ async function startGame() {
 
 /* ---------- PK battle: the host runs rules.js in duel mode and streams snapshots; the guest shows the mirror ---------- */
 async function startPkGame(session) {
+  if (!requireCompleteSortie() || !validPkDeck(session?.me?.deck, data.evolution, spirit) || !validPkDeck(session?.foe?.deck, data.evolution, spirit)) { toast('雙方都需編滿四位基礎幻靈才可 PK'); pkLobby.leave(); return; }
   const serial = ++startSerial;
   hideBossIntro(); pendingDealingScene = null; visibleSceneFrames = 0; game = null; acc = 0; last = 0; loop.renderBank = 0; loop.lastRenderAt = 0; paused = false; speed = 1;
   pk = session; pk.arena = pkArenaFor(pk.seed); pk.outbox = []; pk.sentAt = 0; pk.foeLoaded = false; pk.loadedSent = false; pk.waitFrom = 0;
@@ -1156,17 +1161,15 @@ function openPause() {
     </header>
     <p class="result-title">${idx + 1}. ${esc(stage.name)}</p>
     <p class="result-sub">魔王 ${esc(spirit(stage.boss)?.name || '')} 正站在巢穴的酒桶上等你</p>
-    <button class="primary wide resume" id="resume">▶ 繼續戰鬥</button>
     <button class="wide savehome" id="saveHome">💾 存檔回初光鎮</button>
     <div class="sheet-actions">
-      <button class="round" id="quit" title="放棄並回海圖"><span>🗺️</span><small>海圖</small></button>
       <button class="round" id="restart" title="重新開始這一關"><span>↻</span><small>重來</small></button>
       <button class="round" id="howto2" title="玩法說明"><span>?</span><small>說明</small></button>
       ${next ? `<button class="round" id="nextStage" title="直接玩下一關：${esc(next.name)}"><span>⏭</span><small>下一關</small></button>` : ''}
       <button class="round" id="pBgm" title="背景音樂音量"><span>${ico('music')}</span><small>音樂</small></button>
       <button class="round" id="pSfx" title="攻擊音效音量"><span>${ico('speaker')}</span><small>音效</small></button>
     </div>
-    <div class="audio-panel" id="audioPanel" hidden></div>`, 'pause');
+    <div class="audio-panel" id="audioPanel" hidden></div><div class="modal-actions center"><button id="quit" class="tool">🗺️ 返回海圖</button><button class="primary resume" id="resume">▶ 繼續戰鬥</button></div>`, 'pause');
   $('resume').onclick = () => { $('modal').close(); };
   $('quit').onclick = leaveGame;
   $('saveHome').onclick = () => { saveRecord(); toast('已存檔，搭快艇回初光鎮'); sailHome(); };
@@ -1320,6 +1323,6 @@ async function init() {
   }, fromTown ? 1300 : 300);
   globalThis.PhantomBgm?.setScene?.(THEME_SCENE);
   requestAnimationFrame(loop);
-  globalThis.PhantomDefense = {get game() { return game; }, get view() { return view; }, startGame, leaveGame, showBossIntro, prepareBossPortrait, elementMultiplier, isSupport};
+  globalThis.PhantomDefense = {get game() { return game; }, get view() { return view; }, startGame, leaveGame, showBossIntro, elementMultiplier, isSupport};
 }
 init();
