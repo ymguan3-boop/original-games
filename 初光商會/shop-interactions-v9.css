@@ -56,3 +56,7 @@ dialog#panel.compact-goods #panel-content,dialog#panel.compact-quests #panel-con
 /* The view button indicates whether touch drag pans or rotates the 3D camera. */
 .camera-controls #camera-drag-mode[aria-pressed="true"]{color:#fff;background:#5e8641;border-color:#476730}
 @media(prefers-reduced-motion:reduce){dialog#panel .panel-head{scroll-behavior:auto}}
+
+/* A visible drag grip provides a clear touch affordance without consuming tap targets. */
+dialog#panel .panel-drag-grip{color:#a57945;flex:0 0 18px;text-align:center;font-size:20px;line-height:1;pointer-events:none;user-select:none}
+@media(max-width:360px){dialog#panel .panel-drag-grip{display:none}}
