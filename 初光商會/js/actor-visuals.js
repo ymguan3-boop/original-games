@@ -11,7 +11,7 @@ export const REACTIONS={
  'event-sales':['!','推銷事件','warning'],'event-smith':['⚒','鍛造事件','warning'],
  'event-warehouse':['▤','庫房事件','warning'],'event-security':['!','保全事件','warning'],
  'event-cleaner':['✧','清潔事件','warning'],'event-host':['♫','迎賓事件','warning'],
- silly:['😂','搞笑狀況','funny'],laugh:['😄','笑翻了','funny'],surprised:['!','嚇一跳','warning']
+ silly:['😂','搞笑狀況','funny'],laugh:['😄','笑翻了','funny'],surprised:['!','嚇一跳','warning'],wake:['‼','驚醒了！','warning']
 };
 export function moodTone(kind){return REACTIONS[kind]?.[2]||'neutral';}
 export function createActorVisuals(host,{onEventClick=()=>{},onComplaintClick=()=>{}}={}){
