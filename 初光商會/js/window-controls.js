@@ -24,7 +24,7 @@ export function installWindowControls(panel,{onClose=()=>{}}={}){
  const viewport=()=>({width:window.innerWidth,height:window.innerHeight});
  let geometry=null,drag=null;
  const freshRect=()=>{if(panel.id!=='confirm')return defaultWindowRect(viewport());const v=viewport(),width=Math.min(420,v.width-18),height=Math.min(260,v.height-24);return clampWindowRect({width,height,left:(v.width-width)/2,top:(v.height-height)/2},v);};
- function apply(rect){geometry=clampWindowRect(rect,viewport());for(const [key,value]of Object.entries(geometry))panel.style[key]=Math.round(value)+'px';return {...geometry};}
+ function apply(rect){const v=viewport(),isConfirm=panel.id==='confirm',capW=Math.max(1,Math.min(v.width-16,(isConfirm?.84:.83)*v.width,isConfirm?440:600)),capH=Math.max(1,Math.min(v.height-16,(isConfirm?.52:.68)*v.height,isConfirm?335:555));geometry=clampWindowRect({...rect,width:Math.min(rect.width,capW),height:Math.min(rect.height,capH)},v);for(const [key,value]of Object.entries(geometry))panel.style[key]=Math.round(value)+'px';return {...geometry};}
  function open(){if(!panel.open)panel.show();apply(geometry||freshRect());}
  function close(){if(panel.open)panel.close();onClose();}
  function reset(){apply(freshRect());}
