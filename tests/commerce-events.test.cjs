@@ -46,5 +46,5 @@ test('one-time incident coach, mobile return placement and achievement notice ar
  assert.match(text('js/shop-navigation.js'),/mobileBar\.append\(button\)/);
  assert.match(text('navigation.css'),/grid-area:return/);
  assert.match(text('js/core.js'),/case 'ackTutorial'/);
- assert.match(text('js/scene.js'),/floatingNotice/);
+ assert.match(text('js/scene.js'),/onActorVisuals/);assert.match(text('js/app.js'),/createActorVisuals/);
 });
