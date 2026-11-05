@@ -5,7 +5,7 @@
 }
 @media(max-width:700px){
  :root{--shop-header-bottom:139px}
- .topbar{display:grid!important;grid-template-columns:minmax(90px,1fr) minmax(0,1.45fr) auto!important;grid-template-areas:"brand stats controls" "quick quick quick";align-items:center;column-gap:7px;row-gap:5px;min-height:0!important;padding:8px 10px!important;top:8px!important;left:8px!important;right:8px!important;border-radius:19px!important;z-index:21}
+ .topbar{display:grid!important;grid-template-columns:minmax(104px,1fr) minmax(0,1.45fr) auto!important;grid-template-areas:"brand stats controls" "quick quick quick";align-items:center;column-gap:7px;row-gap:5px;min-height:0!important;padding:8px 10px!important;top:8px!important;left:8px!important;right:8px!important;border-radius:19px!important;z-index:21}
  .topbar .brand{grid-area:brand;min-width:0;gap:5px;overflow:hidden}
  .topbar .brand-seal{width:32px;height:34px;flex:0 0 32px;font-size:19px}
  .topbar .brand h1{font-size:15px!important;line-height:1.14;letter-spacing:0;white-space:nowrap}
