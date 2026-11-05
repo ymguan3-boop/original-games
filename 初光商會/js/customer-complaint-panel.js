@@ -8,7 +8,7 @@ export function customerComplaintPanel(game,customerId,escape,button){
  const image=gifs[info.kind]||'question';
  const choices=info.options.map((o,i)=>`<div class="incident-choice">
  ${button(escape(o.label)+(o.cost?' · '+o.cost+' G':''),'resolveCustomerComplaint',{customerId:c.id,choice:o.id},'primary',!!o.disabled)}
- <small>${escape(o.disabled?o.reason:o.detail)}</small></div>`).join('');
+ <small>${escape(o.disabled?o.reason:o.detail+(o.cost===0?' · 疲勞 +5／其他 +1':''))}</small></div>`).join('');
  return `<article class="incident-presentation customer-incident" data-customer="${escape(c.id)}">
   <div class="incident-media" aria-label="顧客事件動畫">
    <img class="incident-gif" src="./assets/event-gifs/${image}.gif" alt="${escape(info.title)}動態示意" loading="eager">
