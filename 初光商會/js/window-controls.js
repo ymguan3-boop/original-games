@@ -37,7 +37,7 @@ export function installWindowControls(panel,{onClose=()=>{}}={}){
  const move=e=>{if(!drag||drag.pointer!==e.pointerId)return;e.preventDefault();apply({...drag.start,left:drag.start.left+e.clientX-drag.x,top:drag.start.top+e.clientY-drag.y});};
  const release=e=>{if(!drag||drag.pointer!==e.pointerId)return;drag=null;if(header.hasPointerCapture?.(e.pointerId))header.releasePointerCapture(e.pointerId);};
  const onViewportResize=()=>{if(!geometry)return;apply(geometry);};
- const onKeyDown=e=>{if(e.key==='Escape'&&panel.open&&!document.getElementById('confirm')?.open){e.preventDefault();close();}if(!panel.open||!e.altKey||!e.shiftKey)return;const delta={ArrowLeft:[-22,0],ArrowRight:[22,0],ArrowUp:[0,-22],ArrowDown:[0,22]}[e.key];if(delta){e.preventDefault();apply({...geometry,left:geometry.left+delta[0],top:geometry.top+delta[1]});}};
+ const onKeyDown=e=>{if(e.key==='Escape'&&panel.open&&(panel.id==='confirm'||!document.getElementById('confirm')?.open)){e.preventDefault();close();}if(!panel.open||!e.altKey||!e.shiftKey)return;const delta={ArrowLeft:[-22,0],ArrowRight:[22,0],ArrowUp:[0,-22],ArrowDown:[0,22]}[e.key];if(delta){e.preventDefault();apply({...geometry,left:geometry.left+delta[0],top:geometry.top+delta[1]});}};
  header.addEventListener('pointerdown',down);header.addEventListener('pointermove',move);header.addEventListener('pointerup',release);header.addEventListener('pointercancel',release);
  minimize.addEventListener('click',()=>resize(.83));maximize.addEventListener('click',()=>resize(1.20));resetButton.addEventListener('click',reset);
  window.addEventListener('resize',onViewportResize);window.addEventListener('keydown',onKeyDown);
