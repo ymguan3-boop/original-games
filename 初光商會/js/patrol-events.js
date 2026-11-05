@@ -4,6 +4,9 @@ export function eventEmployee(s,ev){
  return s.employees.find(e=>e.id===ev.employeeId)||s.employees.find(e=>e.role===ev.role)||null;
 }
 export function managerNearEmployee(s,ev,distance=1.65){
+ // Inventory shortage and missing cashier require a real management action;
+ // approaching an employee must never silently dismiss these problems.
+ if(['stockout','queue-complaint','no-cashier'].includes(ev?.id))return false;
  const employee=eventEmployee(s,ev),manager=s.manager;
  return !!(employee&&manager&&Number.isFinite(employee.x)&&Number.isFinite(employee.z)&&Number.isFinite(manager.x)&&Number.isFinite(manager.z)&&Math.hypot(manager.x-employee.x,manager.z-employee.z)<=distance);
 }
