@@ -2,6 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const root=path.resolve(__dirname,'../初光商會'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 function complaints(){
  const ctx={shelfCapacity:()=>10,ENTRANCE:{x:6,z:10}};
+ vm.runInNewContext(read('js/patrol-events.js').replace(/\bexport\s+(?=function)/g,'')+';this.applyFreeEventFatigue=applyFreeEventFatigue;',ctx);
  vm.runInNewContext(read('js/customer-complaints.js').replace(/^import [^\n]*\n/gm,'').replace(/\bexport\s+(?=function)/g,'')+';this.exports={getCustomerComplaint,complaintKind,resolveCustomerComplaint};',ctx);
  return ctx.exports;
 }
@@ -28,7 +29,7 @@ test('queue waits can be eased without payment and angry losses can be recovered
  const {getCustomerComplaint,resolveCustomerComplaint}=complaints(),{c,s,g}=fixture('Queue');
  c.wait=18;assert.equal(getCustomerComplaint(s,c,g).kind,'queue');
  resolveCustomerComplaint(g,s,{customerId:c.id,choice:'reassure'});
- assert.equal(c.wait,0);assert.equal(s.satisfaction,76);assert.equal(s.gold,100);
+ assert.equal(c.wait,0);assert.equal(s.satisfaction,76);assert.equal(s.gold,100);assert.equal(s.employees[0].fatigue,5);
  c.state='Angry';c.helpedChoices=[];s.stats.lost=1;
  resolveCustomerComplaint(g,s,{customerId:c.id,choice:'retry'});
  assert.equal(c.state,'Browse');assert.equal(s.stats.lost,0);assert.equal(s.satisfaction,77);
