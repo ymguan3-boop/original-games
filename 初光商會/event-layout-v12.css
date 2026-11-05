@@ -79,3 +79,8 @@ body dialog#panel.compact-incident #panel-content::-webkit-scrollbar,body dialog
 .event-coach .event-coach-scroll>p{font-size:11px!important;line-height:1.4!important;margin:0!important}
 .event-coach .event-coach-copy h3{font-size:14px!important;margin:2px 0!important}
 @media(max-height:650px){.event-coach .event-coach-figure{max-height:65px!important}.event-coach .event-coach-scroll>p{font-size:10px!important;line-height:1.3!important}}
+
+/* Make every customer complaint badge an obvious touch target. */
+#actor-reactions .actor-reaction[data-complaint-id]{pointer-events:auto!important;cursor:pointer;touch-action:manipulation;z-index:26;box-shadow:0 0 0 2px #fff0a6,0 4px 12px #49322588}
+#actor-reactions .actor-reaction[data-complaint-id] .actor-reaction-text{text-decoration:underline;text-underline-offset:2px}
+#actor-reactions .actor-reaction[data-complaint-id]:focus-visible{outline:3px solid #f4bb32;outline-offset:3px}
