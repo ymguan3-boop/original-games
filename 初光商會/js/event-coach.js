@@ -17,15 +17,15 @@ export function installEventCoach({game,openPanel}){
   const ev=s.event;
   if(ev&&!s.tutorialSeen?.['event-'+ev.id]){
    const [icon,group,help]=ROLES[ev.role]||['!','商會事件','查看主管巡查並選擇對應處理方式。'];
-   const shortage=ev.id==='stockout',commission=false;
-   return {id:'event-'+ev.id,icon,title:'第一次遇到｜'+ev.title,desc:shortage?'顧客頭上的問號代表缺貨。先檢查「商品採購」和貨架庫存，並指派補貨員；再到「主管巡查」處理待辦事件。':group+'：'+help,panel:shortage?'goods':'manager',button:shortage?'前往商品採購':'前往主管巡查'};
+   const shortage=ev.id==='stockout';
+   return {id:'event-'+ev.id,icon,gif:shortage?'question':ev.id==='queue-complaint'?'angry':ROLES[ev.role]?ev.role:'question',title:'第一次遇到｜'+ev.title,desc:shortage?'顧客頭上的問號代表缺貨。先檢查「商品採購」和貨架庫存，並指派補貨員；再到「主管巡查」處理待辦事件。':group+'：'+help,panel:shortage?'goods':'manager',button:shortage?'前往商品採購':'前往主管巡查'};
   }
   const board=s.commissionBoard;
   if(board?.entries?.some(q=>q.status==='active')&&!s.tutorialSeen?.['first-commission'])
-   return {id:'first-commission',icon:'✉',title:'首次限時委託',desc:'商會聯絡簿收到限時訂單。點「商會委託」查看指定商品或成交數，達成後記得手動領獎；逾期沒有罰款。',panel:'quests',button:'查看商會委託'};
+   return {id:'first-commission',icon:'✉',gif:'host',title:'首次限時委託',desc:'商會聯絡簿收到限時訂單。點「商會委託」查看指定商品或成交數，達成後記得手動領獎；逾期沒有罰款。',panel:'quests',button:'查看商會委託'};
   const claimable=game.questList().some(q=>q.done&&!s.quests[q.id]);
   if(claimable&&!s.tutorialSeen?.['first-achievement'])
-   return {id:'first-achievement',icon:'★',title:'首次商會成就可領獎',desc:'你的商會已經達成一項成就。打開「商會委託」的「商會成就」分頁，點擊領取金幣，獎勵只能領取一次。',panel:'quests',button:'查看商會成就'};
+   return {id:'first-achievement',icon:'★',gif:'sales',title:'首次商會成就可領獎',desc:'你的商會已經達成一項成就。打開「商會委託」的「商會成就」分頁，點擊領取金幣，獎勵只能領取一次。',panel:'quests',button:'查看商會成就'};
   return null;
  }
  function acknowledge(open){
@@ -39,7 +39,7 @@ export function installEventCoach({game,openPanel}){
   if(document.querySelector('dialog[open]')||document.hidden){box.hidden=true;box.classList.remove('active');return;}
   const item=select(s);if(!item){current=null;box.hidden=true;box.classList.remove('active');document.querySelectorAll('.tutorial-focus').forEach(el=>el.classList.remove('tutorial-focus'));return;}
   if(current?.id===item.id&&!box.hidden)return;
-  current=item;figure.textContent=item.icon;title.textContent=item.title;desc.textContent=item.desc;go.textContent=item.button;box.hidden=false;box.classList.add('active');
+  current=item;figure.textContent='';const img=document.createElement('img');img.src='./assets/event-gifs/'+item.gif+'.gif';img.alt='';img.setAttribute('aria-hidden','true');figure.append(img);title.textContent=item.title;desc.textContent=item.desc;go.textContent=item.button;box.hidden=false;box.classList.add('active');
   document.querySelectorAll('.tutorial-focus').forEach(el=>el.classList.remove('tutorial-focus'));
   document.querySelector('.toolbar [data-panel="'+item.panel+'"]')?.classList.add('tutorial-focus');
  }
