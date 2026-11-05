@@ -1,0 +1,109 @@
+/* Compact, draggable event UI and native-resolution actor reactions. */
+#actor-reactions{position:fixed;inset:0;pointer-events:none;z-index:12;overflow:hidden;contain:layout paint}
+.actor-reaction{position:absolute;display:flex;align-items:center;gap:5px;transform:translate(-50%,-100%);padding:5px 9px;border-radius:999px;border:2px solid currentColor;box-shadow:0 2px 0 #3c271a38,0 3px 9px #342a1840;background:#f8fbec;color:#3b7738;font:800 13px/1.15 "Microsoft JhengHei","PingFang TC",sans-serif;letter-spacing:0;text-shadow:0 1px #fff;white-space:nowrap;max-width:min(210px,55vw);animation:reaction-rise 1.25s ease-in-out infinite alternate;will-change:transform}
+.actor-reaction[hidden]{display:none!important}
+.actor-reaction-icon{font-size:19px;line-height:1;flex:none}
+.actor-reaction-text{font-size:13px;overflow:hidden;text-overflow:ellipsis}
+.actor-reaction[data-tone="angry"],.actor-reaction[data-tone="bad"]{color:#9d2724;background:#ffe1d8}
+.actor-reaction[data-tone="warning"]{color:#955011;background:#fff0bd}
+.actor-reaction[data-tone="question"]{color:#886016;background:#fff6d5}
+.actor-reaction[data-tone="tired"]{color:#615384;background:#eeeafd}
+.actor-reaction[data-tone="training"]{color:#315d9c;background:#e0f0ff}
+.actor-reaction[data-tone="happy"]{color:#286c37;background:#e3f7d8}
+.actor-reaction[data-tone="funny"]{color:#893aa2;background:#f4e3ff}
+.actor-floating-number{position:absolute;transform:translate(-50%,-100%);font:900 16px/1.15 "Microsoft JhengHei","PingFang TC",sans-serif;white-space:nowrap;color:#26643c;text-shadow:-2px -2px #fff,2px -2px #fff,-2px 2px #fff,2px 2px #fff,0 3px 5px #3a261b80;pointer-events:none}
+.actor-floating-number[data-tone="bad"]{color:#c02629}.actor-floating-number[data-tone="xp"]{color:#2054b1}.actor-floating-number[data-tone="level"]{color:#a96a06}.actor-floating-number[data-tone="funny"]{color:#8935a3}
+@keyframes reaction-rise{from{transform:translate(-50%,-100%) translateY(0)}to{transform:translate(-50%,-100%) translateY(-4px)}}
+/* DOM staff tags remain legible even on small Android phones and convey mood. */
+.staff-head-label,.staff-head-label b{font-size:12px!important;line-height:1.35;letter-spacing:0;text-shadow:0 1px #fff}
+.staff-head-label{width:125px;max-width:145px;overflow-wrap:normal}
+.staff-head-label>span{font-size:11px!important}
+.staff-head-label[data-mood="happy"]{border-color:#4f893e;background:#eff9e1}
+.staff-head-label[data-mood="tired"]{border-color:#8e80a3;background:#f1edfa}
+.staff-head-label[data-mood="angry"]{border-color:#bd5545;background:#ffe9e3}
+.staff-head-label[data-mood="training"]{border-color:#5883b6;background:#e7f0ff}
+.staff-head-label .staff-emotion.training{color:#2c5ea0}.staff-head-label .staff-emotion.proud{color:#368345}
+.staff-head-label .staff-emotion.stressed{color:#a0392e}.staff-head-label .staff-emotion.bored{color:#706082}
+.staff-head-label .staff-event-icon{color:#b53e2c}
+@media(max-width:700px){
+ .actor-reaction{padding:5px 7px;font-size:12px;max-width:54vw}
+ .actor-reaction-text{font-size:12px}
+ .actor-reaction-icon{font-size:18px}
+ .staff-head-label{width:118px;max-width:132px;padding:4px 6px}
+ .staff-head-label b{font-size:11.5px!important}
+ .staff-head-label>span{font-size:10.5px!important}
+}
+/* A scalable vector/text animation scene replaces tiny enlarged GIF frames. */
+.incident-scene{display:flex;flex-direction:column;flex:0 0 auto;width:min(100%,212px);min-width:116px;max-width:100%;height:125px;padding:7px 8px;border:2px solid #c59459;border-radius:15px;background:radial-gradient(ellipse at 50% 30%,#fff4cc,#f4d2a6 85%);color:#75502a;box-shadow:inset 0 1px #fff8ec;overflow:hidden;contain:layout paint}
+.incident-scene-stage{position:relative;flex:1;min-height:75px;isolation:isolate}
+.incident-sprite{position:absolute;font-size:clamp(26px,3.8vw,43px);line-height:1.2;filter:drop-shadow(0 3px 0 #9c724955);will-change:transform;animation-duration:1.7s;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+.incident-sprite--a{left:9%;top:22%;animation-name:comic-hop}
+.incident-sprite--b{left:43%;top:12%;animation-name:comic-bob;animation-delay:-.45s}
+.incident-sprite--c{right:5%;top:24%;animation-name:comic-wobble;animation-delay:-.8s}
+.incident-spark{position:absolute;font-size:18px;color:#ec9a36;animation:comic-spark 1.3s ease-out infinite;pointer-events:none}
+.incident-spark--left{left:13%;top:4%}.incident-spark--right{right:11%;top:7%;animation-delay:-.65s}
+.incident-scene-caption{overflow:hidden;text-align:center;white-space:nowrap;text-overflow:ellipsis;font-size:11px;line-height:1.4;font-weight:800;color:#835a34}
+.incident-scene--chase .incident-sprite--a{animation-name:comic-chase}
+.incident-scene--chase .incident-sprite--b{animation-name:comic-chase;animation-delay:-.7s}
+.incident-scene--stack .incident-sprite--a,.incident-scene--stack .incident-sprite--b{animation-name:comic-stack}
+.incident-scene--dance .incident-sprite{animation-name:comic-dance}
+.incident-scene--spin .incident-sprite--b,.incident-scene--spin .incident-sprite--a{animation-name:comic-spin}
+.incident-scene--jelly .incident-sprite{animation-name:comic-jelly}
+.incident-scene--float .incident-sprite{animation-name:comic-float}
+.incident-scene--flutter .incident-sprite{animation-name:comic-flutter}
+.incident-scene--pop .incident-sprite{animation-name:comic-pop}
+.incident-scene--sneak .incident-sprite{animation-name:comic-sneak}
+.incident-scene--sparkle .incident-sprite{animation-name:comic-sparkle}
+@keyframes comic-hop{0%,100%{transform:translateY(0) rotate(-6deg)}45%{transform:translateY(-18px) rotate(8deg)}}
+@keyframes comic-bob{0%,100%{transform:translateY(5px)}50%{transform:translateY(-14px)}}
+@keyframes comic-wobble{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(14deg)}}
+@keyframes comic-chase{0%,100%{transform:translateX(-15px) rotate(-12deg)}50%{transform:translateX(24px) rotate(18deg)}}
+@keyframes comic-stack{0%,100%{transform:translateY(10px) scale(.9)}60%{transform:translateY(-20px) scale(1.15)}}
+@keyframes comic-dance{0%,100%{transform:rotate(-16deg) translateY(0)}33%{transform:rotate(18deg) translateY(-9px)}66%{transform:rotate(-8deg) translateY(-15px)}}
+@keyframes comic-spin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(175deg) scale(1.12)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes comic-jelly{0%,100%{transform:scale(1,1)}35%{transform:scale(1.24,.73)}70%{transform:scale(.78,1.28)}}
+@keyframes comic-float{0%,100%{transform:translateY(7px)}50%{transform:translateY(-22px) rotate(7deg)}}
+@keyframes comic-flutter{0%,100%{transform:translate(-10px,6px) rotate(-22deg)}50%{transform:translate(19px,-16px) rotate(18deg)}}
+@keyframes comic-pop{0%,100%{transform:scale(.65);opacity:.5}40%,70%{transform:scale(1.22);opacity:1}}
+@keyframes comic-sneak{0%,100%{transform:translateX(-14px) scale(.87)}50%{transform:translateX(23px) scale(1.08)}}
+@keyframes comic-sparkle{0%,100%{transform:scale(.82) rotate(-9deg)}50%{transform:scale(1.3) rotate(12deg)}}
+@keyframes comic-spark{0%,100%{opacity:0;transform:scale(.5) translateY(14px)}45%{opacity:1;transform:scale(1.1) translateY(-8px)}}
+.patrol-event{display:flex!important;align-items:flex-start;flex-wrap:wrap;gap:9px;max-width:100%;padding:10px;border-radius:16px;background:#fff5e0;border:1px solid #cfaa76}
+.patrol-event .incident-scene{width:min(44%,200px);height:128px}
+.patrol-event-text{flex:1 1 135px;min-width:0;line-height:1.55}
+.patrol-event-text strong{display:block;font-size:14px;margin:5px 0;overflow-wrap:anywhere}
+.patrol-event-text p{font-size:12px;line-height:1.6}
+.patrol-event .actions{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.patrol-event .actions button{flex:1 1 145px;min-width:0;padding:8px 7px;font-size:12px;white-space:normal;line-height:1.4}
+@media(max-width:430px){.patrol-event .incident-scene{width:100%;height:106px}.incident-sprite{font-size:31px}.patrol-event-text{flex-basis:100%}}
+/* Event lessons are compact, fully movable and scalable; no full-screen overlay. */
+.event-coach[hidden],#confirm-shield[hidden]{display:none!important}
+.event-coach{display:flex!important;flex-direction:column;position:fixed;left:auto;top:auto;transform:none!important;margin:0!important;padding:0!important;width:300px;min-width:0!important;min-height:0!important;max-height:calc(100dvh - 16px)!important;max-width:calc(100dvw - 16px)!important;border:3px solid #86572e;border-radius:17px;background:#fff5df;box-shadow:0 7px 0 #53321955,0 12px 28px #34221940;overflow:hidden;z-index:35;touch-action:auto;pointer-events:auto;grid-template-columns:none}
+.event-coach-head{flex:0 0 auto;min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:5px;padding:4px 7px;border-bottom:1px dashed #c69a62;background:#ffe7b6;cursor:grab;user-select:none;touch-action:none}
+.event-coach-head strong{font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#7b4f2a}
+.event-coach-tools{display:flex;align-items:center;gap:3px;flex:none;touch-action:manipulation}
+.event-coach-tools button{min-width:27px;width:27px;height:29px;min-height:29px;display:grid;place-items:center;padding:1px;font-size:16px;border-radius:7px;border:1px solid #ab7c42;box-shadow:none;background:#fff7df}
+.event-coach-scroll{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding:8px;display:grid;grid-template-columns:1fr;gap:6px}
+.event-coach .event-coach-figure{grid-row:auto;display:block;min-height:95px;height:auto;max-height:116px;padding:0;overflow:hidden;animation:none!important;border:0;background:transparent}
+.event-coach .event-coach-figure .incident-scene{width:100%;height:100%;max-height:116px}
+.event-coach .event-coach-copy{width:100%}
+.event-coach .event-coach-copy h3{font-size:15px;margin:3px 0}
+.event-coach .event-coach-scroll>p{grid-column:1;font-size:12px;line-height:1.65;margin:0;color:#593b28}
+.event-coach .event-coach-actions{grid-column:1;display:flex;gap:5px;flex-wrap:wrap}
+.event-coach .event-coach-actions button{flex:1 1 105px;min-width:0;min-height:33px;padding:5px;font-size:12px}
+@media(max-width:700px){.event-coach{max-height:calc(100dvh - 16px)!important}.event-coach-head strong{max-width:114px}.event-coach-scroll{padding:7px}.event-coach .event-coach-figure{height:90px}.event-coach .event-coach-figure .incident-scene{height:90px}}
+/* Manager, ledger, commission and confirmation panels must not obscure the entire game. */
+dialog#panel[open]{max-width:min(83dvw,600px)!important;max-height:min(68dvh,555px)!important}
+#confirm-shield{position:fixed;inset:0;background:#34201513;z-index:40;pointer-events:auto}
+dialog#confirm{position:fixed;inset:auto;margin:0!important;width:300px;min-width:240px;min-height:174px;max-width:min(84dvw,440px)!important;max-height:min(52dvh,335px)!important;display:none;flex-direction:column;overflow:hidden;z-index:41;border:3px solid #82512b;border-radius:17px;background:#fff4d9;box-shadow:0 10px 35px #241b1566}
+dialog#confirm[open]{display:flex}
+dialog#confirm .panel-head{cursor:grab;touch-action:none;user-select:none;display:flex;align-items:center;padding:7px!important;gap:8px;flex:0 0 auto}
+dialog#confirm .panel-heading{min-width:0;flex:1}
+dialog#confirm .panel-heading h2{margin:0;font-size:17px}
+dialog#confirm .panel-window-tools{display:flex;gap:3px}
+dialog#confirm .panel-window-tools button{width:30px;min-width:30px;height:31px;min-height:31px;padding:0;font-size:16px}
+dialog#confirm .confirm-content{min-height:0;flex:1;overflow:auto;padding:12px}
+dialog#confirm .confirm-content p{font-size:13px;line-height:1.6}
+dialog#confirm .confirm-content .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+dialog#confirm .confirm-content .actions button{flex:1;min-width:90px}
+@media(prefers-reduced-motion:reduce){.actor-reaction,.incident-sprite,.incident-spark{animation:none!important}}
