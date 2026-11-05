@@ -24,7 +24,7 @@ import {shelfTypes,shelfKind,accepts} from './furniture.js';
 let staffOverlay;
 import {installPatrolControls} from './patrol-controls.js';
 let patrolControls;
-import {createScene} from './scene.js?v=20261105-layout2';
+import {createScene} from './scene.js?v=20261105-camera3';
 const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=v=>Math.round(Number(v)||0).toLocaleString('zh-TW'), money=v=>`${fmt(v)} G`;
 const rarity={yellow:'黃卡',purple:'紫卡',red:'紅卡'}, cat={item:'補給道具',weapon:'冒險武器',material:'經營素材'};
