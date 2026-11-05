@@ -1,5 +1,7 @@
 /* One-time, persisted explanations of store incidents and limited commissions. */
 import {incidentSketch} from './incident-sketch.js';
+import {requiresManagerPatrol} from './event-routing.js';
+import {activeCommissions} from './commissions.js?v=20261105-commissions2';
 import {clampWindowRect,resizeWindowRect} from './window-controls.js?v=20261105-customer1';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function movableCoach(box){
@@ -36,14 +38,14 @@ export function installEventCoach({game,openPanel,openAchievements=()=>openPanel
  function select(s){
   const ev=s.event;
   // Customer shortages and queue complaints use the compact actionable guide instead.
-  if(ev&&['stockout','queue-complaint'].includes(ev.id))return null;
+  if(ev&&(['stockout','queue-complaint'].includes(ev.id)||requiresManagerPatrol(ev)))return null;
   if(ev&&!s.tutorialSeen?.['event-'+ev.id]){
    const [icon,group,help]=ROLES[ev.role]||['!','商會事件','查看主管巡查並選擇對應處理方式。'];
    const shortage=ev.id==='stockout';
    return {id:'event-'+ev.id,event:ev,icon,gif:shortage?'question':ev.id==='queue-complaint'?'angry':ROLES[ev.role]?ev.role:'question',title:'第一次遇到｜'+ev.title,desc:shortage?'顧客頭上的問號代表缺貨。先檢查「商品採購」和貨架庫存，並指派補貨員；再到「主管巡查」處理待辦事件。':group+'：'+help,panel:shortage?'goods':'manager',button:shortage?'前往商品採購':'前往主管巡查'};
   }
   const board=s.commissionBoard;
-  if(board?.entries?.some(q=>q.status==='active')&&!s.tutorialSeen?.['first-commission'])
+  if(activeCommissions(s).length&&!s.tutorialSeen?.['first-commission'])
    return {id:'first-commission',event:{title:'首件商會委託',role:'host',emoji:['✉️','📦','🎉'],animation:'float',effect:'reputation',effectText:'委託達成可領獎'},icon:'✉',gif:'host',title:'首次限時委託',desc:'商會聯絡簿收到限時訂單。點「商會委託」查看指定商品或成交數，達成後記得手動領獎；逾期沒有罰款。',panel:'quests',button:'查看商會委託'};
   const claimable=game.questList().some(q=>q.done&&!s.quests[q.id]);
   if(claimable&&!s.tutorialSeen?.['first-achievement'])
