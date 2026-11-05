@@ -4,7 +4,7 @@ let shopNavigation,eventCoach,readyCommissionIds=null;
 const panelWindow=installWindowControls(document.getElementById('panel'));
 const confirmWindow=installWindowControls(document.getElementById('confirm'),{onClose:()=>{document.getElementById('confirm-shield').hidden=true;}});
 import {commissionNotice,commissionProgress} from './commissions.js?v=20261105-commissions2';
-import {installEventCoach} from './event-coach.js?v=20261105-commissions2';
+import {installEventCoach} from './event-coach.js?v=20261105-evolution-patrol1';
 import {createActorVisuals} from './actor-visuals.js?v=20261105-chase-daily1';
 let questTab='messages';let focusPurchaseSku=null,seenChapterClear=null;
 import {goodsPanel} from './goods-panel.js?v=20261105-chapters1';
@@ -104,14 +104,14 @@ function syncPatrolSolved(){
  const info=game?.state?.recentPatrolResolution;
  if(!info||seenPatrolResolution===info.id)return;
  seenPatrolResolution=info.id;
- if(info.focused&&scene?.metrics.mode==='follow'){scene.setMode('play');$('#patrol-focus-hint').hidden=true;document.body.classList.remove('patrol-focus');}
+ if(info.focused&&scene?.metrics.mode==='follow'){scene.setMode('play');$('#patrol-focus-hint').hidden=true;document.body.classList.remove('patrol-focus');document.body.classList.add('patrol-recovering');}
  const popup=$('#patrol-solved');
  clearTimeout(patrolResolutionTimer);clearTimeout(patrolResolutionDelay);popup.hidden=true;
  patrolResolutionDelay=setTimeout(()=>{
   $('#patrol-solved-title').textContent=info.awakening?'✨ 員工驚醒，問題已解決！':'✅ 主管巡查，問題已解決！';
   $('#patrol-solved-message').textContent=`${info.employeeName}｜${info.title}｜疲勞 +${info.extraFatigue}（其他員工 +1）`;
   popup.hidden=false;
-  patrolResolutionTimer=setTimeout(()=>popup.hidden=true,4200);
+  patrolResolutionTimer=setTimeout(()=>{popup.hidden=true;document.body.classList.remove('patrol-recovering');},4200);
  },850);
 }
 function syncChapterClear(){
@@ -140,7 +140,7 @@ function syncShopEventGuide(){
  const s=game.state,host=$('#shop-event-guide');
  const result=s.customerChaseResult;
  if(result&&seenChaseResult!==result.id){seenChaseResult=result.id;toast((result.success?'追客成功！':'追客挑戰結束：')+result.reason,!result.success);}
- if(s.patrolFocus){host.hidden=true;return;}
+ if(s.patrolFocus||document.body.classList.contains('patrol-recovering')){host.hidden=true;return;}
  const info=describeShopIssue(s,{patrol:scene?.metrics?.mode==='follow'});
  if(!info||currentPanel||!$('#daily-start').hidden||!$('#daily-settlement').hidden||dismissedGuideId===info.id){host.hidden=true;return;}
  host.hidden=false;host.classList.toggle('chase-active',info.kind==='chase');host.dataset.issueId=info.id;
