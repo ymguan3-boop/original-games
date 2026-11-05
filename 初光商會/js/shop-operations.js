@@ -2,6 +2,7 @@ import {decorEffects,obstacles} from './decorations.js';
 import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js';
 import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT} from './nav.js';
 import {resolveCustomerComplaint} from './customer-complaints.js';
+import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150][level]??30;}
@@ -10,7 +11,7 @@ export function shopAction(g,s,type,p){
  s.shelfStorage||=[];
  if(type==='resolveCustomerComplaint')return resolveCustomerComplaint(g,s,p);
  if(type==='upgrade'){
-  check(!s.upgradeProject,'店面正在施工');const l=g.data.levels[s.level];check(l,'商會已達最高級');check(s.phase==='closed','請先打烊並完成日結，再安排施工');check(s.totals.revenue>=l.revenue&&s.satisfaction>=l.satisfaction&&s.totals.days>=l.days,`需營業額 ${l.revenue} G、滿意度 ${l.satisfaction}、日結 ${l.days} 次`);g.pay(s,l.cost);s.stats.expenses+=l.cost;const duration=l.upgradeSeconds||upgradeSeconds(l.level);s.upgradeProject={from:s.level,to:l.level,duration,remaining:duration,cost:l.cost};g.log(s,`開始升級 ${l.name}，工期 ${duration} 秒。`);return '已安排施工，倒數完成後店面才會升級';
+  check(!s.upgradeProject,'店面正在施工');const l=g.data.levels[s.level];check(l,'商會已達最高級');check(s.phase==='closed','請先打烊並完成日結，再安排施工');check(chapterObjectives(s,g.data.levels).ready,'尚未完成本章主線營業目標');check(s.totals.revenue>=l.revenue&&s.satisfaction>=l.satisfaction&&s.totals.days>=l.days,`需營業額 ${l.revenue} G、滿意度 ${l.satisfaction}、日結 ${l.days} 次`);g.pay(s,l.cost);s.stats.expenses+=l.cost;const duration=l.upgradeSeconds||upgradeSeconds(l.level);s.upgradeProject={from:s.level,to:l.level,duration,remaining:duration,cost:l.cost};g.log(s,`開始升級 ${l.name}，工期 ${duration} 秒。`);return '已安排施工，倒數完成後店面才會升級';
  }
  if(!['purchaseShelf','storeShelf','placeShelf','sellShelf'].includes(type))return null;
  check(s.phase!=='open','請打烊後調整家具');
@@ -27,8 +28,9 @@ export function shopAction(g,s,type,p){
  check(s.shelves.length<2+s.level*2,'店內貨架已滿');check(s.level>=shelfDefinition(sh).level,'請先提升商會等級');const placed={...sh,x:p.x,z:p.z,rotation:p.rotation||0};validLayout(g,s,[...s.shelves,placed]);s.shelves.push(placed);s.shelfStorage=s.shelfStorage.filter(x=>x!==sh);s.undo=null;for(const a of g.actors(s))a.path=[];return '貨架已放置，未重複扣款';
 }
 export function operationsTick(g,s,dt){
+ if(s.phase==='closed'&&!s.upgradeProject)autoChapterConstruction(g,s);
  if(s.phase==='open')s.satisfaction=clamp(s.satisfaction+decorEffects(s).satisfaction*dt);
- if(s.upgradeProject){s.upgradeProject.remaining=Math.max(0,s.upgradeProject.remaining-dt);if(!s.upgradeProject.remaining){s.level=s.upgradeProject.to;s.upgradeProject=null;g.log(s,`裝修完成！商會升至 Lv.${s.level} ${g.data.levels[s.level-1].name}。`);}}
+ if(s.upgradeProject){s.upgradeProject.remaining=Math.max(0,s.upgradeProject.remaining-dt);if(!s.upgradeProject.remaining){const previous=s.level;s.level=s.upgradeProject.to;s.upgradeProject=null;finishChapterConstruction(g,s,previous);g.log(s,`裝修完成！商會升至 Lv.${s.level} ${g.data.levels[s.level-1].name}。`);}}
  for(const e of s.employees)if(e.reactionUntil&&e.reactionUntil<=s.totalTime){e.reaction='idle';e.feedbackKind=null;e.reactionUntil=0;}
 }
 function operationalEvent(g,s,id,title,description,role='cashier'){
