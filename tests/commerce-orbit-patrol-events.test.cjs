@@ -1,31 +1,26 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'../初光商會'),read=name=>fs.readFileSync(path.join(root,name),'utf8');
 
-test('mobile view controls are visible and rotation is the default',()=>{
- const html=read('index.html'),scene=read('js/scene.js'),css=read('commerce-controls-v11.css');
- assert.match(html,/id="camera-drag-mode"[^>]+aria-pressed="false"[^>]+>拖曳：旋轉/);
- assert.match(scene,/touchDragMode='rotate'/);
- assert.match(css,/body:not\(\.camera-locked\) \.camera-controls button:not\(#camera-mode\)\{display:grid!important/);
- assert.match(css,/body:not\(\.patrol-active\):not\(\.camera-locked\) \.camera-controls/);
+test('mobile uses touch gestures with no camera shortcut palette',()=>{
+ const html=read('index.html'),scene=read('js/scene.js'),css=read('event-layout-v12.css');
+ assert.match(scene,/touchDragMode='rotate'/);assert.match(scene,/getTouchGesture/);
+ assert.doesNotMatch(html,/class="camera-controls"/);
+ assert.match(css,/\.camera-controls\{display:none!important/);
  assert.match(scene,/down\.shelfCandidate=found\.id;return;/);
- assert.match(scene,/down\.shelfCandidate&&Math\.hypot/);
 });
-test('the top bar contains exactly one patrol shortcut and the old bottom one is gone',()=>{
- const html=read('index.html');
+test('patrol button sits next to settings in mobile header without duplicating it',()=>{
+ const html=read('index.html'),nav=read('js/shop-navigation.js'),css=read('event-layout-v12.css');
  assert.equal((html.match(/id="camera-mode"/g)||[]).length,1);
- assert.ok(html.indexOf('id="camera-mode"')>html.indexOf('class="time-controls"'));
- assert.ok(html.indexOf('id="camera-mode"')<html.indexOf('id="pause"'));
- const camera=html.match(/<div class="camera-controls">([\s\S]*?)<\/div>/)[1];
- assert.doesNotMatch(camera,/camera-mode/);
- const css=read('commerce-controls-v11.css');
- assert.match(css,/width:86px!important/);assert.match(css,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
- const app=read('js/app.js');assert.match(app,/textContent=active\?'退':'巡'/);
+ assert.match(html,/data-panel="settings">設定<\/button><button id="camera-mode"/);
+ assert.match(css,/grid-template-areas:"info summary settings patrol return"/);
+ assert.match(nav,/target\.after\(patrol\)/);
+ const app=read('js/app.js');assert.match(app,/textContent=active\?'退出巡店':'主管巡店'/);
 });
-test('manager joystick stays left and view controls move right during patrol',()=>{
- const css=read('commerce-controls-v11.css');
- assert.match(css,/body\.patrol-active:not\(\.camera-locked\) \.camera-controls/);
- assert.match(css,/right:10px!important;top:calc\(var\(--shop-header-bottom/);
- assert.match(css,/body\.patrol-active #patrol-controls #joystick\{left:14px!important/);
+test('manager movement remains on joystick while camera is controlled by touch',()=>{
+ const html=read('index.html'),scene=read('js/scene.js');
+ assert.match(html,/id="joystick"/);
+ assert.match(scene,/getTouchGesture/);assert.match(scene,/yaw-=dx\*\.007/);
+ assert.doesNotMatch(html,/id="zoom-in"/);
 });
 test('patrol movement speed is exactly doubled for manual and auto paths',()=>{
  const core=read('js/core.js');assert.match(core,/this\.safeMove\(s,s\.manager,step\*2\.7,step\)/);
