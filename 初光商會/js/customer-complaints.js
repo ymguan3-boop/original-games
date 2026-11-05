@@ -1,6 +1,7 @@
 /* Click-to-resolve customer problems. Uses normal shop transactions; never grants a free sale. */
 import {shelfCapacity} from './furniture.js';
 import {ENTRANCE} from './nav.js';
+import {applyFreeEventFatigue} from './patrol-events.js';
 const clamp=n=>Math.max(0,Math.min(100,n));
 const stockShelf=(g,s)=>s.shelves.find(sh=>{const product=g.data.catalog.find(p=>p.sku===sh.sku);return product&&product.unlockStoreLevel<=s.level&&sh.stock<shelfCapacity(sh);});
 const availableShelf=(g,s)=>s.shelves.find(sh=>g.available(s,sh)>0);
@@ -62,6 +63,15 @@ export function resolveCustomerComplaint(g,s,p){
  const option=info.options.find(o=>o.id===p.choice);
  if(!option||option.disabled)throw Error(option?.reason||'無效或無法使用的解決方法');
  const cost=option.cost||0;if(cost){g.pay(s,cost);s.stats.expenses=(s.stats.expenses||0)+cost;}
+ else{
+  const leadRole=info.kind==='stockout'?'stocker':'cashier';
+  const lead=s.employees.find(e=>e.role===leadRole)||s.employees[0]||null;
+  for(const change of applyFreeEventFatigue(s,lead,{direct:5,team:1})){
+   const worker=s.employees.find(e=>e.id===change.id);
+   if(worker&&typeof g.efficiency==='function')worker.efficiency=g.efficiency(worker);
+   g.notice(s,change.id,'疲勞 +'+change.delta,'bad');
+  }
+ }
  const previous=s.satisfaction;
  const mood=(n)=>{s.satisfaction=clamp(s.satisfaction+n);const delta=Math.round((s.satisfaction-previous)*10)/10;if(delta>0)g.notice(s,c.id,'滿意 +'+delta,'good');};
  const retry=()=>{c.state='Browse';c.timer=0;c.wait=0;c.angerReason=null;c.emotion='happy';c.visited=[];c.path=[];c.patience=Math.max(c.patience||30,35)+15;g.route(s,c,{x:c.x,z:c.z});};
