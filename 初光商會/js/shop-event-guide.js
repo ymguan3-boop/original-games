@@ -2,6 +2,7 @@
  * The customer mini-game is entirely optional; the normal remedies remain available. */
 import {customerNeedingHelp,chaseDistance} from './customer-chase.js';
 import {requiresManagerPatrol,patrolEventInstructions} from './event-routing.js';
+import {commissionOverview,commissionInstruction} from './commission-guidance.js';
 const eventKey=e=>e?.instanceId||e?.id||'';
 export function describeShopIssue(s,{patrol=false}={}){
  const mission=s.customerChase;
@@ -19,6 +20,22 @@ export function describeShopIssue(s,{patrol=false}={}){
     ?'你已在主管巡店視角：點顧客頭頂「缺貨」可直接選擇補貨／推薦／安撫；也可開始追客，用左下搖桿追到顧客身旁。'
     :'目前是店鋪總覽：點顧客頭頂「缺貨」直接選擇補貨／安撫；或按「進入巡店追客」，讓主角在店內追上顧客。',
    primary:'選擇解決方法',primaryAction:'complaint',secondary:patrol?'開始追客':'進入巡店追客',secondaryAction:'start-chase',targetId:c.id};
+ }
+ const activeOrders=commissionOverview(s);
+ if(activeOrders.count&&(activeOrders.unread||!s.event)){
+  const instruction=commissionInstruction(s,activeOrders.active[0]);
+  if(instruction)return {
+   id:'commission-'+instruction.id+'-'+instruction.kind,
+   kind:'commission',
+   title:instruction.title,
+   message:instruction.body,
+   primary:instruction.primary,
+   primaryAction:instruction.action,
+   secondary:instruction.kind==='purchase'?'查看委託訊息':null,
+   secondaryAction:instruction.kind==='purchase'?'commission':null,
+   targetId:instruction.id,
+   sku:instruction.sku
+  };
  }
  if(s.event){
   if(requiresManagerPatrol(s.event))return {
