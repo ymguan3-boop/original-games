@@ -8,7 +8,7 @@ function movableCoach(box){
  const initial=()=>{const v=viewport(),w=Math.min(v.width-16,350),h=Math.min(v.height-16,300);
   const headerBottom=document.querySelector('.topbar')?.getBoundingClientRect().bottom||0;
   return clampWindowRect({width:w,height:h,left:(v.width-w)/2,top:Math.min(Math.max(10,headerBottom+8),v.height-h-8)},v);};
- const apply=value=>{rect=clampWindowRect(value,viewport());for(const k of ['left','top','width','height'])box.style[k]=Math.round(rect[k])+'px';};
+ const apply=value=>{const v=viewport(),maxW=Math.max(1,Math.min(v.width-16,v.width*.82,390)),maxH=Math.max(1,Math.min(v.height-16,v.height*.43,360));rect=clampWindowRect({...value,width:Math.min(value.width,maxW),height:Math.min(value.height,maxH)},v);for(const k of ['left','top','width','height'])box.style[k]=Math.round(rect[k])+'px';};
  const down=e=>{if(e.button!==0||e.target.closest('button'))return;e.preventDefault();drag={id:e.pointerId,x:e.clientX,y:e.clientY,start:{...rect}};header.setPointerCapture?.(e.pointerId);};
  const move=e=>{if(!drag||drag.id!==e.pointerId)return;e.preventDefault();apply({...drag.start,left:drag.start.left+e.clientX-drag.x,top:drag.start.top+e.clientY-drag.y});};
  const end=e=>{if(!drag||drag.id!==e.pointerId)return;drag=null;header.hasPointerCapture?.(e.pointerId)&&header.releasePointerCapture(e.pointerId);};
