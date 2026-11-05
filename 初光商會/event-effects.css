@@ -1,0 +1,24 @@
+/* Animations are CSS-driven rather than loading full video/GIF decoders on phones. */
+.event-coach[hidden]{display:none}
+.event-coach{position:fixed;top:clamp(160px,28vh,300px);left:50%;transform:translateX(-50%);width:min(390px,calc(100vw - 24px));max-height:calc(100dvh - 190px);overflow:auto;z-index:35;padding:17px;border:3px solid #86572e;border-radius:20px;background:#fff6df;color:#654326;box-shadow:0 8px 0 #53321966,0 14px 30px #34221955;display:grid;grid-template-columns:62px minmax(0,1fr);gap:5px 12px}
+.event-coach-figure{grid-row:1/3;display:flex;justify-content:center;align-items:center;min-height:68px;font-size:37px;border:2px solid #dba55f;border-radius:16px;background:#ffebc1;animation:shop-bounce 1.2s ease-in-out infinite}
+.event-coach-copy{min-width:0}.event-coach small{color:#98713c}.event-coach h3{font-size:17px;margin:3px 0 6px;line-height:1.35;overflow-wrap:anywhere}.event-coach p{font-size:12px;line-height:1.65;grid-column:1/-1;margin:4px 0 8px}
+.event-coach-actions{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}.event-coach-actions button{flex:1;min-width:105px;font-size:12px;min-height:42px}
+.event-coach .primary{background:#618945;color:white;border-color:#507034}
+.tutorial-focus{outline:4px solid #ffd657!important;outline-offset:3px;animation:shop-focus 1.4s infinite}
+.event-illustration{position:relative;display:grid;place-items:center;isolation:isolate;width:100px;height:95px;flex:0 0 100px;border-radius:18px;background:radial-gradient(circle at 55% 38%,#fff4b5,#f1c27b);border:2px solid #c59355;overflow:hidden}
+.event-illustration img{width:84px;height:84px;object-fit:contain;animation:shop-event-wiggle 1.7s ease-in-out infinite}
+.event-illustration-mark{position:absolute;right:1px;top:2px;font-size:23px;filter:drop-shadow(0 2px 0 white);animation:shop-bounce 1.1s ease-in-out infinite}
+.event-illustration-spark{position:absolute;left:4px;top:5px;font-size:20px;color:#bf6625;animation:shop-spark 1.1s ease-in-out infinite}
+.event-illustration-cashier,.event-illustration-security{background:radial-gradient(circle,#ffe9bf,#f9c9a9)}
+.event-illustration-stocker,.event-illustration-warehouse{background:radial-gradient(circle,#fff2c7,#dfcb9c)}
+.event-illustration-cleaner,.event-illustration-host{background:radial-gradient(circle,#e8ffdb,#b9d9c4)}
+.patrol-event{align-items:center}.patrol-event .actions{grid-column:1/-1;display:flex;gap:7px;flex-wrap:wrap}.patrol-event .actions button{flex:1;min-width:160px}
+.incident-history{margin-top:15px;padding:12px;border:1px solid #cfab75;background:#fff8e7;border-radius:12px;font-size:12px}.incident-history summary{cursor:pointer;font-weight:bold}.incident-history ol{padding:0 0 0 18px;margin:9px 0}.incident-history li{margin:6px 0;line-height:1.6}.incident-history span{display:block;color:#856a48}
+.staff-event-icon{display:inline-block;margin:0 3px 4px 0;color:#a34e2f;font-weight:900;animation:shop-bounce 1.3s ease-in-out infinite}
+@keyframes shop-bounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.07)}}
+@keyframes shop-event-wiggle{0%,100%{transform:rotate(-4deg) scale(.97)}50%{transform:rotate(6deg) scale(1.06)}}
+@keyframes shop-spark{0%,100%{transform:translateY(9px);opacity:.3}50%{transform:translateY(-12px);opacity:1}}
+@keyframes shop-focus{0%,100%{box-shadow:0 0 0 0 #e9a72c33}50%{box-shadow:0 0 0 8px #e9a72c55}}
+@media(max-width:700px){.event-coach{top:183px;max-height:min(52dvh,390px);padding:12px;grid-template-columns:53px minmax(0,1fr);gap:4px 9px}.event-coach-figure{font-size:30px;min-height:55px}.event-coach h3{font-size:15px}.event-coach p{font-size:12px}.event-illustration{width:76px;height:76px;flex-basis:76px}.event-illustration img{width:70px;height:70px}.patrol-event .actions button{min-width:125px}}
+@media(prefers-reduced-motion:reduce){.event-coach-figure,.tutorial-focus,.event-illustration img,.event-illustration-mark,.event-illustration-spark,.staff-event-icon{animation:none}}
