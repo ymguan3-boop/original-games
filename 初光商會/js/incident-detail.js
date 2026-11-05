@@ -6,7 +6,7 @@ export function incidentDetailPanel(game,escape,button){
  const person=game.state.employees.find(e=>e.role===event.role),who=person?.name||roleName[event.role]||'商會夥伴';
  const image=['cashier','stocker','sales','smith','warehouse','security','cleaner','host'].includes(event.role)?event.role:'question';
  const options=(event.choices||[]).slice(0,3).map(c=>`<div class="incident-choice">
-  ${button(escape(c.label),'event',{id:event.id,choice:c.id},'primary',!!(c.cost>game.state.gold))}
+  ${button(escape(c.label),'resolveEvent',{choice:c.id},'primary',!!(c.cost>game.state.gold))}
   <small>${c.cost>game.state.gold?'金幣不足':escape(c.cost?'費用 '+c.cost+' G':'免費處理')}</small></div>`).join('');
  return `<article class="incident-presentation" data-incident-id="${escape(event.instanceId||event.id)}">
  <div class="incident-media" aria-label="事件動畫">
