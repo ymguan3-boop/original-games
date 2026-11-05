@@ -25,7 +25,7 @@ export function createActorVisuals(host,{onEventClick=()=>{},onComplaintClick=()
  node.addEventListener('click',()=>{if(node.dataset.complaintId)onComplaintClick(node.dataset.complaintId);else if(node.dataset.eventId)onEventClick(node.dataset.eventId);});
  node.addEventListener('keydown',e=>{if((node.dataset.complaintId||node.dataset.eventId)&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(node.dataset.complaintId)onComplaintClick(node.dataset.complaintId);else onEventClick(node.dataset.eventId);}});
  statuses.set(a.id,node);}
-   const spec=REACTIONS[a.kind];if(node.dataset.kind!==a.kind){node.dataset.kind=a.kind;node.dataset.tone=spec[2];node.children[0].textContent=spec[0];node.children[1].textContent=spec[1];}
+   const spec=REACTIONS[a.kind];if(node.dataset.kind!==a.kind){node.dataset.kind=a.kind;node.dataset.tone=spec[2];node.children[0].textContent=spec[0];node.children[1].textContent=spec[1];}node.children[0].textContent=a.chaseTarget?'🏃':spec[0];if(a.chaseTarget)node.dataset.chaseTarget='true';else delete node.dataset.chaseTarget;
    const eventId=a.eventId||'',complaintId=a.complaintId||'';
    if(complaintId||eventId){
     if(complaintId){node.dataset.complaintId=complaintId;delete node.dataset.eventId;}
