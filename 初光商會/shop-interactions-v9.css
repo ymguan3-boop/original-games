@@ -1,0 +1,58 @@
+/* 2026-11-05: one compact status header and non-modal, draggable shop workspaces. */
+#panel[hidden],#level-quick[hidden],#level-menu[hidden]{display:none!important}
+@media(min-width:701px){
+ .topbar>.mobile-strip{display:none}
+}
+@media(max-width:700px){
+ :root{--shop-header-bottom:139px}
+ .topbar{display:grid!important;grid-template-columns:minmax(90px,1fr) minmax(0,1.45fr) auto!important;grid-template-areas:"brand stats controls" "quick quick quick";align-items:center;column-gap:7px;row-gap:5px;min-height:0!important;padding:8px 10px!important;top:8px!important;left:8px!important;right:8px!important;border-radius:19px!important;z-index:21}
+ .topbar .brand{grid-area:brand;min-width:0;gap:5px;overflow:hidden}
+ .topbar .brand-seal{width:32px;height:34px;flex:0 0 32px;font-size:19px}
+ .topbar .brand h1{font-size:15px!important;line-height:1.14;letter-spacing:0;white-space:nowrap}
+ .topbar .status-row{grid-area:stats;margin:0!important;justify-content:center;align-items:center;gap:7px;min-width:0;flex-wrap:nowrap}
+ .topbar .stat{min-width:0}
+ .topbar .stat small{display:block;font-size:9px!important;letter-spacing:0;white-space:nowrap}
+ .topbar .stat strong{display:block;font-size:15px!important;line-height:1.1;white-space:nowrap}
+ .topbar .stat.satisfaction{display:none}
+ .topbar .time-controls{grid-area:controls;justify-self:end;align-items:center;min-width:0;gap:3px;padding:0;border:none}
+ .topbar .time-controls button{min-width:33px;min-height:36px;padding:2px 5px}
+ .topbar .time-controls [data-panel="settings"]{display:none}
+ .topbar .mobile-strip{grid-area:quick;display:grid!important;position:static!important;top:auto!important;left:auto!important;right:auto!important;width:auto;min-height:34px;max-width:100%;padding:4px 0 0!important;margin:0!important;border:0!important;border-radius:0!important;border-top:1px dashed #c69a60!important;box-shadow:none!important;background:transparent!important;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"info summary settings return";gap:4px;align-items:center;z-index:auto}
+ .topbar .mobile-strip button{font-size:10px!important;line-height:1.2;min-height:32px;padding:4px 7px!important;border:1px solid #c29663!important;white-space:nowrap;box-shadow:none!important;background:#fff8e7!important;border-radius:9px!important}
+ .topbar .mobile-strip #mobile-info{grid-area:info}
+ .topbar .mobile-strip #mobile-summary{grid-area:summary;white-space:normal;text-align:center;margin:0;min-width:0;font-size:10px;line-height:1.25;color:#627d34;overflow-wrap:anywhere}
+ .topbar .mobile-strip [data-panel="settings"]{grid-area:settings;justify-self:end}
+ .topbar .mobile-strip .return-to-game{grid-area:return;position:static!important;top:auto!important;left:auto!important;right:auto!important;min-width:0;min-height:32px!important;padding:4px 7px!important;max-width:100%;font-size:10px!important;color:#6b4a26}
+ .staff-dock,.activity,.show-info .staff-dock,.show-info .activity{top:calc(var(--shop-header-bottom) + 8px)!important;z-index:22}
+ .event-coach{top:calc(var(--shop-header-bottom) + 10px)!important}
+ .camera-controls #camera-drag-mode{display:block;grid-column:1/-1;width:100%;font-size:10px;min-height:33px}
+}
+@media(max-width:360px){
+ .topbar{grid-template-columns:minmax(0,1fr) auto!important;grid-template-areas:"brand controls" "stats stats" "quick quick";row-gap:4px}
+ .topbar .brand-seal{display:grid}
+ .topbar .status-row{justify-content:space-between;padding:0 3px}
+ .topbar .mobile-strip{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"info summary settings" "return return return"}
+ .topbar .mobile-strip .return-to-game{justify-self:start}
+}
+/* Allow a real view of the 3D store while the shop window stays open. */
+dialog#panel{position:fixed;inset:auto!important;margin:0!important;max-width:calc(100dvw - 12px)!important;max-height:calc(100dvh - 12px)!important;min-width:230px;min-height:180px;padding:0;overflow:hidden;border:3px solid #82512b;border-radius:18px;box-shadow:0 5px 0 #55361e55,0 15px 46px #2d271d77;background:#fff3d6;z-index:31;overscroll-behavior:contain}
+dialog#panel[open]{display:flex;flex-direction:column}
+dialog#panel .panel-head{position:relative;flex:0 0 auto;display:flex;align-items:center;gap:6px;justify-content:space-between;min-height:53px;padding:7px 9px!important;top:auto;cursor:grab;touch-action:none;user-select:none;border-bottom:2px solid #c79a66}
+dialog#panel .panel-head:active{cursor:grabbing}
+dialog#panel .panel-heading{flex:1;min-width:0}
+dialog#panel .panel-heading small{display:none}
+dialog#panel .panel-heading h2{margin:0!important;font-size:clamp(14px,3.6vw,19px)!important;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+dialog#panel .panel-window-tools{display:flex;flex:0 0 auto;gap:4px;align-items:center;touch-action:manipulation}
+dialog#panel .panel-window-tools button{width:33px;min-width:33px;height:35px;min-height:35px;padding:1px!important;font-size:17px;display:grid;place-items:center;border:1px solid #ac7b46;border-radius:9px;box-shadow:none;background:#fff0cc;touch-action:manipulation;cursor:pointer}
+dialog#panel .panel-window-tools #panel-close{color:#864231;background:#f8e0d3}
+dialog#panel #panel-content{flex:1 1 auto;min-height:0;max-height:none!important;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:12px!important}
+dialog#panel.compact-goods #panel-content,dialog#panel.compact-quests #panel-content,dialog#panel.compact-report #panel-content,dialog#panel.compact-staff #panel-content{flex:1 1 auto;min-height:0;max-height:none!important}
+@media(max-width:700px){
+ dialog#panel{border:2px solid #82512b!important;border-bottom:2px solid #82512b!important;border-radius:16px!important;max-width:calc(100dvw - 12px)!important;max-height:calc(100dvh - 12px)!important}
+ dialog#panel .panel-head{min-height:48px;padding:6px 8px!important}
+ dialog#panel .panel-window-tools button{min-width:36px;width:36px;min-height:36px;height:36px}
+ dialog#panel #panel-content{padding:9px!important;padding-bottom:12px!important}
+}
+/* The view button indicates whether touch drag pans or rotates the 3D camera. */
+.camera-controls #camera-drag-mode[aria-pressed="true"]{color:#fff;background:#5e8641;border-color:#476730}
+@media(prefers-reduced-motion:reduce){dialog#panel .panel-head{scroll-behavior:auto}}
