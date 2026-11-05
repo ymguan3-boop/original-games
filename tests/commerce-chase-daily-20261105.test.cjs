@@ -16,7 +16,7 @@ function state(){
 }
 test('shop event guide explains both perspectives and never tells a current patroller to enter patrol',()=>{
  const customerNeedingHelp=s=>s.customers.find(c=>c.state==='OutOfStock')||null,chaseDistance=()=>3.7;
- const {describeShopIssue}=load('js/shop-event-guide.js',['describeShopIssue'],{customerNeedingHelp,chaseDistance});
+ const {describeShopIssue}=load('js/shop-event-guide.js',['describeShopIssue'],{customerNeedingHelp,chaseDistance,commissionOverview:()=>({count:0,active:[],unread:false}),commissionInstruction:()=>null});
  const s=state(),overview=describeShopIssue(s,{patrol:false}),patrol=describeShopIssue(s,{patrol:true});
  assert.match(overview.message,/店鋪總覽/);assert.equal(overview.secondaryAction,'start-chase');
  assert.match(patrol.message,/已在主管巡店視角/);assert.doesNotMatch(patrol.message,/請開啟主管巡查/);
