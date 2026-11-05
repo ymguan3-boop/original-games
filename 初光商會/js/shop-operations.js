@@ -75,8 +75,8 @@ export function stepCustomers(g,s,dt){
   }else if(c.state==='Checkout'){
    if(!cashier){c.timer=0;continue;}const duration=g.data.config.checkoutSeconds/g.efficiency(cashier)/(s.buffs.show>s.totalTime||s.buffs.checkout>s.totalTime?1.6:1);if(c.timer>=duration&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1)pay(g,s,c,cashier);
   }else if(c.state==='Paid'&&c.timer>.6)leave(g,s,c);
-  else if(c.state==='Angry'&&c.timer>14)leave(g,s,c);
-  else if(['OutOfStock','UnhappyExit','AbandonCart'].includes(c.state)){if(c.timer>=16)angry(g,s,c,c.state==='OutOfStock'?'想買的商品缺貨':'沒有買到合適商品');else c.emotion=c.state==='OutOfStock'?'question':'confused';}
+  else if(c.state==='Angry'&&c.timer>14&&s.customerChase?.customerId!==c.id)leave(g,s,c);
+  else if(['OutOfStock','UnhappyExit','AbandonCart'].includes(c.state)){if(c.timer>=16&&s.customerChase?.customerId!==c.id)angry(g,s,c,c.state==='OutOfStock'?'想買的商品缺貨':'沒有買到合適商品');else c.emotion=c.state==='OutOfStock'?'question':'confused';}
   else if(c.state==='Leave'&&c.timer>=(c.exitRerouteAt||0)){c.exitRerouteAt=c.timer+2;g.route(s,c,ENTRANCE);}
  }
 }
