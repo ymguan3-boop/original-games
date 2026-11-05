@@ -35,6 +35,8 @@ export function installEventCoach({game,openPanel,openAchievements=()=>openPanel
  let current=null;const floating=movableCoach(box);
  function select(s){
   const ev=s.event;
+  // Customer shortages and queue complaints use the compact actionable guide instead.
+  if(ev&&['stockout','queue-complaint'].includes(ev.id))return null;
   if(ev&&!s.tutorialSeen?.['event-'+ev.id]){
    const [icon,group,help]=ROLES[ev.role]||['!','商會事件','查看主管巡查並選擇對應處理方式。'];
    const shortage=ev.id==='stockout';
