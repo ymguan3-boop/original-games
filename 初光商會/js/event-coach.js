@@ -60,7 +60,7 @@ export function installEventCoach({game,openPanel,openAchievements=()=>openPanel
  }
  go.addEventListener('click',()=>acknowledge(true));later.addEventListener('click',()=>acknowledge(false));box.querySelector('[data-coach-close]').addEventListener('click',()=>acknowledge(false));
  function sync(s=game.state){
-  if(document.querySelector('dialog[open]')||document.hidden){box.hidden=true;box.classList.remove('active');return;}
+  if(s.patrolFocus||document.querySelector('dialog[open]')||document.hidden){box.hidden=true;box.classList.remove('active');return;}
   const item=select(s);if(!item){current=null;box.hidden=true;box.classList.remove('active');document.querySelectorAll('.tutorial-focus').forEach(el=>el.classList.remove('tutorial-focus'));return;}
   if(current?.id===item.id&&!box.hidden)return;
   current=item;figure.innerHTML=item.event?incidentSketch(item.event,esc):'';if(!item.event){const img=document.createElement('img');img.src='./assets/event-gifs/'+item.gif+'.gif';img.alt='';img.setAttribute('aria-hidden','true');figure.append(img);}title.textContent=item.title;desc.textContent=item.desc;go.textContent=item.button;box.hidden=false;box.classList.add('active');floating.show();
