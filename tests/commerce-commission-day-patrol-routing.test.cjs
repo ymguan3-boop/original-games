@@ -21,7 +21,7 @@ test('active count exactly matches current unexpired message, hides expired and 
  const quest=load('js/quest-view.js',['questPanel'],{commissionVisibleEntries:c.commissionVisibleEntries,activeCommissions:c.activeCommissions,commissionProgress:(s,q)=>q.kind==='delivery'?(s.inventory[q.sku]||0):0,chapterMissionPanel:()=>''}).questPanel;
  const html=quest({state:s,data:{},questList:()=>[]},x=>x,v=>v+' G',(label,type,p,cls,disabled)=>'<button '+(disabled?'disabled':'')+'>'+label+'</button>','messages');
  assert.match(html,/1 件限時委託/);
- assert.match(html,/普通靈核球/);
+ assert.match(html,/普通靈核球/);assert.match(html,/data-commission-buy="potion"/);assert.doesNotMatch(html,/請開啟主管巡店/);
  assert.doesNotMatch(html,/昨日行商/);
  assert.doesNotMatch(html,/漏計逾時/);
 });
@@ -94,7 +94,7 @@ test('message tab opens first, expired count and single choice are visible in ph
  assert.match(app,/let questTab='messages'/);
  assert.match(app,/if\(b\.dataset\.panel==='quests'\)questTab='messages'/);
  assert.match(app,/secondary\.hidden=!info\.secondaryAction/);
- assert.match(app,/id==='patrol-required-go'/);
+ assert.match(app,/id==='patrol-required-go'/);assert.match(app,/if\(b\.dataset\.commissionBuy\)\{openPurchaseGuidance\(b\.dataset\.commissionBuy\)/);
  assert.match(core,/resetCommissionsForNewDay\(s\)/);
  assert.match(html,/commission-patrol-v17\.css/);
  assert.match(css,/#shop-event-secondary\[hidden\]\{display:none!important\}/);
