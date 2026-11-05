@@ -34,13 +34,13 @@ function operationalEvent(g,s,id,title,description,role='cashier'){
  const event={id,title,description,role,instanceId:`op-${++s.serial}`,cooldown:45,effect:'clean',effectValue:1,choices:[{id:'help',label:'協助安撫 · 40 G，滿意度 +4',cost:40,mood:8,satisfaction:4,xp:6},{id:'coach',label:'免費溝通與排班提醒',cost:0,mood:3,satisfaction:1,xp:2}]};if(!s.event)s.event=event;else{ s.incidents||=[];if(s.incidents.length<6&&!s.incidents.some(e=>e.id===id))s.incidents.push(event);}
 }
 function angry(g,s,c,reason){
- if(c.state==='Angry'||c.state==='Leave')return;c.basket=[];c.state='Angry';c.path=[];c.timer=0;c.emotion='angry';c.angerReason=reason;s.stats.lost++;s.satisfaction=clamp(s.satisfaction-2);s.memories[c.personality]={day:s.day,satisfied:false,reason};operationalEvent(g,s,'queue-complaint','顧客生氣了',`${c.name}：${reason}。商品已退回陳列，不會計為收入。`);
+ if(c.state==='Angry'||c.state==='Leave')return;c.basket=[];c.state='Angry';c.path=[];c.timer=0;c.emotion='angry';c.angerReason=reason;s.stats.lost++;const old=s.satisfaction;s.satisfaction=clamp(s.satisfaction-1);if(old>s.satisfaction)g.notice(s,c.id,'滿意 -1','bad');s.memories[c.personality]={day:s.day,satisfied:false,reason};const shortage=reason.includes('缺貨');operationalEvent(g,s,shortage?'stockout':'queue-complaint',shortage?'顧客找不到商品':'顧客生氣了',`${c.name}：${reason}。商品已退回陳列，不會計為收入。`,shortage?'stocker':'cashier');
 }
-function leave(g,s,c){c.state='Leave';c.timer=0;const side={x:9,z:3};if(Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.2&&walkable(side,obstacles(s),s.level)){const a=findPath(c,side,obstacles(s),s.level),b=findPath(side,ENTRANCE,obstacles(s),s.level);c.path=a&&b?[...a,...b]:[];}else g.route(s,c,ENTRANCE);}
+function leave(g,s,c){c.state='Leave';c.timer=0;c.exitRerouteAt=2;c.path=[];const side={x:9,z:3};if(Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.2&&walkable(side,obstacles(s),s.level)){const a=findPath(c,side,obstacles(s),s.level),b=findPath(side,ENTRANCE,obstacles(s),s.level);if(a&&b)c.path=[...a,...b];}if(!c.path.length)g.route(s,c,ENTRANCE);}
 function cashierAt(g,s){return s.employees.find(e=>e.role==='cashier'&&e.fatigue<95&&Math.hypot(e.x-10,e.z-1)<.45)||null;}
 function pay(g,s,c,e){
  const sale=c.basket.reduce((n,b)=>n+b.price*b.qty,0),cost=Math.round(c.basket.reduce((n,b)=>n+b.cost*b.qty,0)*100)/100;check(c.budget>=sale,'顧客預算不足');for(const b of c.basket){const sh=s.shelves.find(x=>x.id===b.shelfId);check(sh&&sh.stock>=b.qty,'結帳庫存不足');sh.stock-=b.qty;}
- c.budget-=sale;s.gold+=sale;s.stats.revenue+=sale;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.stats.sales++;s.stats.served++;s.totals.revenue+=sale;s.totals.sales++;s.ledger.push({id:`sale-${c.id}`,day:s.day,revenue:sale,cogs:cost,items:structuredClone(c.basket)});s.ledger=s.ledger.slice(-200);c.purchaseItems=structuredClone(c.basket);c.basket=[];c.state='Paid';c.timer=0;c.emotion='happy';s.satisfaction=clamp(s.satisfaction+.3+(g.role(s,'cleaner')?.4:0));g.xp(s,e,5);g.xp(s,g.role(s,'cleaner'),3);g.xp(s,g.role(s,'security'),2);e.fatigue=clamp(e.fatigue+.5);if(!(e.reactionUntil>s.totalTime&&['training','proud','stressed'].includes(e.feedbackKind)))react(s,e,'work',2);g.log(s,`${c.name}在收銀台完成付款 +${sale} G`);s.memories[c.personality]={day:s.day,satisfied:true,spent:sale};
+ c.budget-=sale;s.gold+=sale;s.stats.revenue+=sale;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.stats.sales++;s.stats.served++;s.totals.revenue+=sale;s.totals.sales++;s.ledger.push({id:`sale-${c.id}`,day:s.day,revenue:sale,cogs:cost,items:structuredClone(c.basket)});s.ledger=s.ledger.slice(-200);c.purchaseItems=structuredClone(c.basket);c.basket=[];c.state='Paid';c.timer=0;c.emotion='happy';{const previous=s.satisfaction,bonus=g.role(s,'cleaner')?2:1;s.satisfaction=clamp(s.satisfaction+bonus);const gained=Math.round((s.satisfaction-previous)*10)/10;if(gained>0)g.notice(s,c.id,`滿意 +${gained}`,'good');}g.xp(s,e,5);g.xp(s,g.role(s,'cleaner'),3);g.xp(s,g.role(s,'security'),2);e.fatigue=clamp(e.fatigue+.5);if(!(e.reactionUntil>s.totalTime&&['training','proud','stressed'].includes(e.feedbackKind)))react(s,e,'work',2);g.log(s,`${c.name}在收銀台完成付款 +${sale} G`);s.memories[c.personality]={day:s.day,satisfied:true,spent:sale};
 }
 export function stepCustomers(g,s,dt){
  const queue=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));
@@ -54,10 +54,12 @@ export function stepCustomers(g,s,dt){
  }
  for(const c of [...s.customers]){
   c.timer+=dt;
+  // Never leave a departing customer stuck in the shop when a path is blocked.
+  if(c.state==='Leave'&&(Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.48||c.timer>=20)){s.customers=s.customers.filter(x=>x.id!==c.id);continue;}
   if(['Cart','Queue','Checkout'].includes(c.state)){c.wait=(c.wait||0)+dt;if(c.wait>c.patience){angry(g,s,c,cashier?'排隊等太久':'沒有收銀員服務');continue;}}
   g.safeMove(s,c,dt*2.2,dt);if(c.path.length)continue;
   if(c.state==='Enter'||c.state==='Browse'){
-   const eligible=s.shelves.filter(sh=>g.available(s,sh)>0&&!c.visited.includes(sh.id));eligible.sort((a,b)=>{const ca=g.data.catalog.find(x=>x.sku===a.sku),cb=g.data.catalog.find(x=>x.sku===b.sku),preferred=['item','weapon','item','material','item','item','weapon','material'][c.personality];return Number(cb.category===preferred)-Number(ca.category===preferred);});const sh=eligible[0];if(!sh){c.state='OutOfStock';c.timer=0;continue;}c.targetShelf=sh.id;c.visited.push(sh.id);c.state='Evaluate';c.timer=0;g.route(s,c,{x:sh.x,z:sh.z+1});
+   const eligible=s.shelves.filter(sh=>g.available(s,sh)>0&&!c.visited.includes(sh.id));eligible.sort((a,b)=>{const ca=g.data.catalog.find(x=>x.sku===a.sku),cb=g.data.catalog.find(x=>x.sku===b.sku),preferred=['item','weapon','item','material','item','item','weapon','material'][c.personality];return Number(cb.category===preferred)-Number(ca.category===preferred);});const sh=eligible[0];if(!sh){c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}c.targetShelf=sh.id;c.visited.push(sh.id);c.state='Evaluate';c.timer=0;g.route(s,c,{x:sh.x,z:sh.z+1});
   }else if(c.state==='Evaluate'&&c.timer>1){
    const target=s.shelves.find(sh=>sh.id===c.targetShelf);if(target&&Math.hypot(c.x-target.x,c.z-(target.z+1))>.15){g.route(s,c,{x:target.x,z:target.z+1});continue;}
    const sh=s.shelves.find(x=>x.id===c.targetShelf),item=g.data.catalog.find(x=>x.sku===sh?.sku),price=sh?Math.round(s.prices[sh.sku]*shelfDefinition(sh).premium*(1+decorEffects(s).premium)):0,tolerance=(c.personality===4?1.1:1.4)+(g.role(s,'sales')?.3:0)+(s.buffs.sales>s.totalTime?.2:0)+(c.memory?.satisfied?.1:c.memory?-.15:0);
@@ -70,7 +72,7 @@ export function stepCustomers(g,s,dt){
    if(!cashier){c.timer=0;continue;}const duration=g.data.config.checkoutSeconds/g.efficiency(cashier)/(s.buffs.show>s.totalTime||s.buffs.checkout>s.totalTime?1.6:1);if(c.timer>=duration&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1)pay(g,s,c,cashier);
   }else if(c.state==='Paid'&&c.timer>.6)leave(g,s,c);
   else if(c.state==='Angry'&&c.timer>2)leave(g,s,c);
-  else if(['OutOfStock','UnhappyExit','AbandonCart'].includes(c.state))angry(g,s,c,c.state==='OutOfStock'?'想買的商品缺貨':'沒有買到合適商品');
-  else if(c.state==='Leave'){if(Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)>.15)g.route(s,c,ENTRANCE);else s.customers=s.customers.filter(x=>x.id!==c.id);}
+  else if(['OutOfStock','UnhappyExit','AbandonCart'].includes(c.state)){if(c.timer>=2.2)angry(g,s,c,c.state==='OutOfStock'?'想買的商品缺貨':'沒有買到合適商品');else c.emotion=c.state==='OutOfStock'?'question':'confused';}
+  else if(c.state==='Leave'&&c.timer>=(c.exitRerouteAt||0)){c.exitRerouteAt=c.timer+2;g.route(s,c,ENTRANCE);}
  }
 }
