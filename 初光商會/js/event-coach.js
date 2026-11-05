@@ -9,7 +9,7 @@ const ROLES={
  cleaner:['🧹','清潔狀況','安排清潔員維護環境，在「主管巡查」選擇協助或指導。'],
  host:['♫','迎賓狀況','看看迎賓員疲勞與現場客流，前往「主管巡查」協助。']
 };
-export function installEventCoach({game,openPanel}){
+export function installEventCoach({game,openPanel,openAchievements=()=>openPanel('quests')}){
  const box=document.getElementById('event-coach');if(!box)return {sync(){}};
  const figure=box.querySelector('.event-coach-figure'),title=box.querySelector('h3'),desc=box.querySelector('p'),go=box.querySelector('[data-coach-go]'),later=box.querySelector('[data-coach-later]');
  let current=null;
@@ -32,7 +32,7 @@ export function installEventCoach({game,openPanel}){
   if(!current)return;const target=current;current=null;box.hidden=true;
   box.classList.remove('active');document.querySelectorAll('.tutorial-focus').forEach(el=>el.classList.remove('tutorial-focus'));
   const result=game.act('ackTutorial',{id:target.id});
-  if(result.ok&&open){if(target.id==='first-achievement')document.querySelector('[data-panel="quests"]')?.click();else openPanel(target.panel);}
+  if(result.ok&&open){if(target.id==='first-achievement')openAchievements();else openPanel(target.panel);}
  }
  go.addEventListener('click',()=>acknowledge(true));later.addEventListener('click',()=>acknowledge(false));
  function sync(s=game.state){
