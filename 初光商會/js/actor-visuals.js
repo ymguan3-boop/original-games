@@ -26,7 +26,7 @@ export function createActorVisuals(host,{onEventClick=()=>{}}={}){
  node.addEventListener('keydown',e=>{if(node.dataset.eventId&&(e.key==='Enter'||e.key===' ')){e.preventDefault();onEventClick(node.dataset.eventId);}});
  statuses.set(a.id,node);}
    const spec=REACTIONS[a.kind];if(node.dataset.kind!==a.kind){node.dataset.kind=a.kind;node.dataset.tone=spec[2];node.children[0].textContent=spec[0];node.children[1].textContent=spec[1];}
-   const eventId=a.eventId||'';if(eventId){node.dataset.eventId=eventId;node.children[1].textContent=a.eventTitle||spec[1];node.title='查看事件：'+(a.eventTitle||spec[1]);node.setAttribute('role','button');node.setAttribute('tabindex','0');node.setAttribute('aria-label','開啟'+(a.eventTitle||'商會事件')+'說明');}else{if(node.dataset.eventId){node.children[1].textContent=spec[1];delete node.dataset.eventId;}node.removeAttribute('role');node.removeAttribute('tabindex');node.removeAttribute('aria-label');node.removeAttribute('title');}
+   const eventId=a.eventId||'';if(eventId){node.dataset.eventId=eventId;node.children[1].textContent=a.eventTitle||spec[1];node.title='查看事件：'+(a.eventTitle||spec[1]);node.setAttribute?.('role','button');node.setAttribute?.('tabindex','0');node.setAttribute?.('aria-label','開啟'+(a.eventTitle||'商會事件')+'說明');}else{if(node.dataset.eventId){node.children[1].textContent=spec[1];delete node.dataset.eventId;}node.removeAttribute?.('role');node.removeAttribute?.('tabindex');node.removeAttribute?.('aria-label');node.removeAttribute?.('title');}
    node.style.left=a.x+'px';node.style.top=(a.y-6)+'px';node.hidden=false;
   }
   for(const [id,node]of statuses)if(!positions.has(id)||!positions.get(id).kind||!visible(positions.get(id)))node.hidden=true;
