@@ -39,7 +39,7 @@ test('nextDay clears all old message rows and unread markers but not ledger or u
  assert.equal(c.activeCommissions(s).length,0);
  assert.equal(s.gold,5300);
 });
-test('a new day's commission is marked for that day and can be fulfilled only before expiry',()=>{
+test('a new commission belongs to its business day and expires correctly',()=>{
  const s=state(),c=comm();s.day=8;c.resetCommissionsForNewDay(s);const g={random:()=>.1,data:{catalog:[{sku:'potion',displayName:'普通靈核球',unlockStoreLevel:1,isSellable:true,isRestricted:false,buyCost:11}]},log:()=>{}};
  c.commissionsTick(g,s,13);
  assert.equal(s.commissionBoard.entries.length,1);
