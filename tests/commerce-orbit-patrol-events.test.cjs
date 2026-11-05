@@ -28,8 +28,8 @@ test('patrol movement speed is exactly doubled for manual and auto paths',()=>{
 });
 test('clicking event words on staff and 3D actor labels opens a focused detail',()=>{
  const staff=read('js/staff-overlay.js'),actors=read('js/actor-visuals.js'),scene=read('js/scene.js'),app=read('js/app.js'),detail=read('js/incident-detail.js');
- assert.match(staff,/⚠ \$\{esc\(s\.event\.title\)\}/);
- assert.match(staff,/onEventClick\(game\.state\.event\.instanceId\|\|game\.state\.event\.id\)/);
+ assert.doesNotMatch(staff,/staff-event-icon/);
+ assert.match(staff,/staff-compact-fatigue/);
  assert.match(scene,/eventId:ev\.instanceId\|\|ev\.id,eventTitle:ev\.title/);
  assert.match(actors,/onEventClick\(node\.dataset\.eventId\)/);
  assert.match(app,/openPanel\('incident'\)/);
