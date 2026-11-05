@@ -1,0 +1,39 @@
+/* Hotfix: orbit controls, click-to-open events and compact manager patrol UI.
+ * Keep this AFTER previous stylesheets: older countryside CSS hid rotation buttons. */
+@media(max-width:700px){
+  /* Three top actions fit the original shortcut slot; never enlarge the header box. */
+  .topbar .time-controls{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:3px!important;width:86px!important;min-width:86px!important;max-width:86px!important;padding:0!important;margin:0!important;box-sizing:border-box}
+  .topbar .time-controls #camera-mode,.topbar .time-controls #pause,.topbar .time-controls #speed{display:grid!important;place-items:center;min-width:0!important;width:100%!important;max-width:100%!important;min-height:34px!important;height:34px!important;padding:1px 0!important;line-height:1;font-size:12px!important;border-radius:10px!important}
+  .topbar .time-controls #camera-mode{font-size:14px!important;background:#e7f3d5!important;color:#466b32!important}
+  .topbar .time-controls #camera-mode[aria-pressed=true]{background:#6b914b!important;color:#fff!important}
+  .topbar .time-controls #level-quick,.topbar .time-controls [data-panel=settings]{display:none!important}
+  /* Show orbit controls also outside patrol; legacy CSS used display:none on them. */
+  body:not(.camera-locked) .camera-controls{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:140px!important;max-width:42vw!important;min-width:0!important;padding:5px!important;box-sizing:border-box;z-index:18!important;background:#fff2d9e8;border:2px solid #90683b;border-radius:14px;box-shadow:0 3px 8px #3e251b44}
+  body:not(.camera-locked) .camera-controls button:not(#camera-mode){display:grid!important;place-items:center;min-width:0!important;width:100%!important;height:33px!important;min-height:33px!important;padding:2px!important;font-size:17px!important}
+  body:not(.camera-locked) .camera-controls #camera-drag-mode{grid-column:1/-1!important;font-size:11px!important;height:32px!important;min-height:32px!important}
+  body:not(.patrol-active):not(.camera-locked) .camera-controls{left:10px!important;right:auto!important;top:auto!important;bottom:calc(166px + env(safe-area-inset-bottom))!important}
+  /* Stop overlap: manager joystick lives left-bottom, orbit controls move right-top. */
+  body.patrol-active:not(.camera-locked) .camera-controls{position:fixed!important;left:auto!important;right:10px!important;top:calc(var(--shop-header-bottom, 138px) + 14px)!important;bottom:auto!important;max-width:42vw!important}
+  body.patrol-active #patrol-controls #joystick{left:14px!important;right:auto!important;bottom:calc(113px + env(safe-area-inset-bottom))!important;width:116px!important;height:116px!important}
+  body.patrol-active #patrol-controls .patrol-help{left:12px!important;right:auto!important;bottom:calc(97px + env(safe-area-inset-bottom))!important;max-width:140px!important}
+}
+@media(max-width:360px){
+  .topbar .time-controls{width:75px!important;min-width:75px!important;max-width:75px!important;gap:2px!important}
+  .topbar .time-controls #camera-mode,.topbar .time-controls #pause,.topbar .time-controls #speed{min-height:31px!important;height:31px!important}
+  body:not(.camera-locked) .camera-controls{width:128px!important;max-width:42vw!important}
+}
+/* The real patrol entry is in the header, never duplicated in the camera palette. */
+.time-controls #camera-mode{cursor:pointer}
+.time-controls #camera-mode:disabled{opacity:.5;cursor:not-allowed}
+body.camera-locked .camera-controls{display:none!important}
+/* Event names on employee / customer icons are real tappable targets. */
+#actor-reactions .actor-reaction[data-event-id]{pointer-events:auto;cursor:pointer;touch-action:manipulation;z-index:25;box-shadow:0 0 0 2px #ffe4ab,0 4px 10px #412c1b66}
+#actor-reactions .actor-reaction[data-event-id]:focus-visible,
+.staff-head-label[data-event-id]:focus-visible{outline:3px solid #edb037;outline-offset:3px}
+#actor-reactions .actor-reaction[data-event-id] .actor-reaction-text{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+.staff-head-label[data-event-id]{cursor:pointer;z-index:18!important;box-shadow:0 0 0 2px #f5c869,0 2px 7px #55331f55}
+.staff-head-label .staff-event-icon{display:block;color:#a73720;font-weight:900;line-height:1.4;font-size:12px!important;text-decoration:underline;text-underline-offset:2px}
+#panel.compact-incident{max-width:min(80vw,420px)!important;max-height:min(54dvh,420px)!important}
+#panel.compact-incident .patrol-event{padding:8px;gap:6px}
+#panel.compact-incident .patrol-event .incident-scene{height:95px;max-width:100%}
+@media(prefers-reduced-motion:reduce){#actor-reactions .actor-reaction{animation:none!important}}
