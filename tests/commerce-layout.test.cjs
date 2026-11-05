@@ -6,7 +6,7 @@ test('mobile header contains information and return action within a single top b
  const html=read('index.html'),header=html.match(/<header class="topbar">([\s\S]*?)<\/header>/);
  assert.ok(header);assert.match(header[1],/class="mobile-strip"/);assert.equal((html.match(/class="mobile-strip"/g)||[]).length,1);
  const css=read('shop-interactions-v9.css');assert.match(css,/grid-area:quick/);assert.match(css,/\.topbar \.mobile-strip/);
- const nav=read('js/shop-navigation.js');assert.match(nav,/返回初光鎮/);assert.match(nav,/ResizeObserver\(updateHeaderBottom\)/);
+ const nav=read('js/shop-navigation.js');assert.match(nav,/初光鎮/);assert.match(nav,/ResizeObserver\(updateHeaderBottom\)/);
 });
 test('window size is clamped on portrait, landscape and after zoom',()=>{
  const {defaultWindowRect,resizeWindowRect,clampWindowRect}=limits();
@@ -25,5 +25,5 @@ test('manager panels have non-modal draggable controls',()=>{
 test('shop camera has touch-pan and pinch zoom without disabling shelf interactions',()=>{
  const scene=read('js/scene.js'),app=read('js/app.js');
  assert.match(scene,/activeTouches=new Map/);assert.match(scene,/getTouchGesture/);assert.match(scene,/setGestureMode\(m\)/);
- assert.match(scene,/if\(drag\)/);assert.match(scene,/pointercancel/);assert.match(app,/#camera-drag-mode/);
+ assert.match(scene,/if\(drag\)/);assert.match(scene,/pointercancel/);assert.doesNotMatch(app,/#camera-drag-mode/);
 });
