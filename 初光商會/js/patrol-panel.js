@@ -1,14 +1,11 @@
-import {incidentSketch} from './incident-sketch.js';
+import {incidentDetailPanel} from './incident-detail.js';
 /* Manager incident board: each role has a lightweight animated scene and recent actions. */
 const ICONS={cashier:'🧾',stocker:'📦',sales:'💬',smith:'⚒',warehouse:'📋',security:'⚠',cleaner:'✨',host:'♫'};
 const IMAGE={cashier:'queue',stocker:'boxes',sales:'praise',smith:'magic',warehouse:'boxes',security:'shoplift',cleaner:'cleaning',host:'praise'};
 export function patrolPanel(game,esc,btn){
  const s=game.state,ev=s.event,roles={cashier:'收銀員',stocker:'補貨員',sales:'銷售員',smith:'鍛造師',warehouse:'倉管員',security:'保全員',cleaner:'清潔員',host:'迎賓員'};
  const icons={flow:'event-boxes.webp',show:'',forge:'event-magic.webp',shine:'event-cleaning.webp'};
- const active=ev?`<article class="patrol-event">
-  ${incidentSketch(ev,esc)}
-<div class="patrol-event-text"><span class="badge">${ev.funny?'😂 搞笑事件':'待處理事件'}</span><strong>${esc(ev.title||ev.id)}</strong><p>${esc(ev.dialogue||ev.description||'請選擇處理方式。')}</p></div>
-  <div class="actions">${(ev.choices||[]).map(c=>btn(esc(c.label),'resolveEvent',{choice:c.id},'primary')).join('')}</div></article>`:'<div class="note">目前沒有待處理事件。</div>';
+ const active=ev?incidentDetailPanel(game,esc,btn):'<div class="note">目前沒有待處理事件。</div>';
  const history=(s.incidentHistory||[]).slice(-8).reverse().map(i=>`<li><b>${esc(i.title)}</b><span>第 ${i.day} 天 · ${esc(i.choice)}</span></li>`).join('');
  return `<div class="patrol-start"><img src="./assets/art-v5/quest-patrol.webp" alt="巡店羅盤"><div><strong>走訪商會，照顧夥伴</strong><small>點員工查看狀態；WASD／手機搖桿移動</small></div><button id="walk-mode" class="primary">巡店 →</button></div>
  ${active}
