@@ -23,7 +23,7 @@ const questSignature=s=>[s.level,s.patrols,s.totals.sales,s.totals.days,Object.k
 import {questPanel} from './quest-view.js';
 import {loadSpiritCards,spiritCard} from './spirit-cards.js';
 import {upgradeSeconds} from './shop-operations.js';
-import {createGame} from './core.js?v=20261105-patrol5';
+import {createGame} from './core.js?v=20261105-customer1';
 import {createStaffOverlay} from './staff-overlay.js?v=20261105-patrol5';
 import {shelfTypes,shelfKind,accepts} from './furniture.js';
 let staffOverlay,actorVisuals;
