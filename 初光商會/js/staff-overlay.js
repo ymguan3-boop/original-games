@@ -1,10 +1,10 @@
 import {spiritCard} from './spirit-cards.js';
-export function createStaffOverlay({game,labels,card,onAction,escape}){
+export function createStaffOverlay({game,labels,card,onAction,escape,onEventClick=()=>{}}){
  const nodes=new Map(),anchors=new Map();let selected=null,detached=false,staffDrag=null;
  const esc=escape;
  function render(){
   const s=game.state;for(const [id,node]of nodes)if(!s.employees.some(e=>e.id===id)){node.remove();nodes.delete(id);}
-  for(const e of s.employees){let node=nodes.get(e.id);if(!node){node=document.createElement('button');node.className='staff-head-label';node.hidden=true;node.dataset.staffId=e.id;labels.append(node);nodes.set(e.id,node);}node.setAttribute('aria-label',`${e.name}，熟練度等級 ${e.workLevel}，疲勞 ${Math.round(e.fatigue)}%`);const feedback=e.reactionUntil>s.totalTime?({training:'•̀_•́　專心練習',proud:'≧▽≦　謝謝主管',stressed:'＞﹏＜　忙不過來',bored:'－_－　等客中'})[e.feedbackKind]:null;node.innerHTML=`${s.event?.role===e.role?'<span class="staff-event-icon" aria-label="有事件待處理">⚠ 待處理</span>':''}${feedback?`<span class="staff-emotion ${e.feedbackKind}">${feedback}</span>`:''}<b>${esc(e.name)} · Lv.${e.workLevel}</b><span>疲勞 ${Math.round(e.fatigue)}%<i><em style="width:${e.fatigue}%"></em></i></span>`;node.classList.toggle('selected',e.id===selected);node.dataset.mood=s.event?.role===e.role?'angry':e.reactionUntil>s.totalTime&&e.feedbackKind==='training'?'training':e.fatigue>=75?'tired':e.mood>=65?'happy':e.mood<35?'angry':'neutral';}
+  for(const e of s.employees){let node=nodes.get(e.id);if(!node){node=document.createElement('button');node.className='staff-head-label';node.hidden=true;node.dataset.staffId=e.id;labels.append(node);nodes.set(e.id,node);}node.setAttribute('aria-label',`${e.name}，熟練度等級 ${e.workLevel}，疲勞 ${Math.round(e.fatigue)}%`);const feedback=e.reactionUntil>s.totalTime?({training:'•̀_•́　專心練習',proud:'≧▽≦　謝謝主管',stressed:'＞﹏＜　忙不過來',bored:'－_－　等客中'})[e.feedbackKind]:null;node.innerHTML=`${s.event?.role===e.role?`<span class="staff-event-icon" title="點擊查看事件說明" aria-label="點擊查看${esc(s.event.title)}事件說明">⚠ ${esc(s.event.title)}</span>`:''}${feedback?`<span class="staff-emotion ${e.feedbackKind}">${feedback}</span>`:''}<b>${esc(e.name)} · Lv.${e.workLevel}</b><span>疲勞 ${Math.round(e.fatigue)}%<i><em style="width:${e.fatigue}%"></em></i></span>`;node.classList.toggle('selected',e.id===selected);node.dataset.mood=s.event?.role===e.role?'angry':e.reactionUntil>s.totalTime&&e.feedbackKind==='training'?'training':e.fatigue>=75?'tired':e.mood>=65?'happy':e.mood<35?'angry':'neutral';}
   if(selected&&!staffDrag)renderCard();
  }
  function renderCard(){const e=game.state.employees.find(e=>e.id===selected);if(!e)return close();if(card.contains(document.activeElement)&&document.activeElement.tagName==='SELECT')return;
@@ -21,7 +21,7 @@ export function createStaffOverlay({game,labels,card,onAction,escape}){
  card.addEventListener('pointermove',e=>{if(!staffDrag||staffDrag.id!==e.pointerId)return;const w=card.offsetWidth,h=card.offsetHeight;card.style.left=Math.max(8,Math.min(innerWidth-w-8,staffDrag.left+e.clientX-staffDrag.x))+'px';card.style.top=Math.max(8,Math.min(innerHeight-h-8,staffDrag.top+e.clientY-staffDrag.y))+'px';});
  const endDrag=e=>{if(!staffDrag||staffDrag.id!==e.pointerId)return;staffDrag=null;if(card.hasPointerCapture?.(e.pointerId))card.releasePointerCapture(e.pointerId);};
  card.addEventListener('pointerup',endDrag);card.addEventListener('pointercancel',endDrag);
- labels.addEventListener('click',e=>{const b=e.target.closest('[data-staff-id]');if(b)show(b.dataset.staffId);});
+ labels.addEventListener('click',e=>{const b=e.target.closest('[data-staff-id]');if(!b)return;if(e.target.closest('.staff-event-icon')&&game.state.event){onEventClick(game.state.event.instanceId||game.state.event.id);return;}show(b.dataset.staffId);});
  card.addEventListener('click',e=>{if(e.target.closest('[data-close-staff]'))close();
   if(e.target.closest('[data-staff-smaller]'))scale(.83);
   if(e.target.closest('[data-staff-larger]'))scale(1.2);
