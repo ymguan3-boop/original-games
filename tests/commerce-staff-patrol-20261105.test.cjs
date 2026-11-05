@@ -15,6 +15,9 @@ test('single event selects only its assigned employee, even with multiple same-r
  s.employees.push({id:'worker-c',name:'另一位收銀員',role:'cashier',x:9,z:3,fatigue:0});
  assert.equal(eventEmployee(s,s.event).id,'worker-a');
  assert.equal(managerNearEmployee(s,s.event),true);
+ assert.equal(managerNearEmployee(s,{id:'stockout',role:'stocker'}),false);
+ assert.equal(managerNearEmployee(s,{id:'queue-complaint',role:'cashier'}),false);
+ assert.equal(managerNearEmployee(s,{id:'no-cashier',role:'cashier'}),false);
  s.manager.x=2;s.manager.z=1;
  assert.equal(managerNearEmployee(s,s.event),false);
 });
