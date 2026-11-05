@@ -7,6 +7,7 @@ export function patrolPanel(game,esc,btn){
  const active=ev?`<article class="patrol-event">
   <div class="event-illustration event-illustration-${esc(ev.role)}" role="img" aria-label="${esc(ev.title)}動畫示意">
    <img src="./assets/ui-generated/event-${IMAGE[ev.role]||'boxes'}.webp" alt="商會事件">
+   <img class="event-illustration-gif" src="./assets/event-gifs/${ev.id==='stockout'?'question':ev.id==='queue-complaint'?'angry':ev.role in ICONS?ev.role:'question'}.gif" alt="" aria-hidden="true">
    <span class="event-illustration-mark">${ICONS[ev.role]||'!'}</span>
    <span class="event-illustration-spark">✦</span>
   </div><div><span class="badge">待處理事件</span><strong>${esc(ev.title||ev.id)}</strong><p>${esc(ev.dialogue||ev.description||'請選擇處理方式。')}</p></div>
