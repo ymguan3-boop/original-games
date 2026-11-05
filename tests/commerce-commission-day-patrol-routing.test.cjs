@@ -67,7 +67,7 @@ test('only physical intervention events require supervisor patrol; customer comp
 });
 test('patrol-only customer-facing guide has just one clickable choice, other incidents retain independent options',()=>{
  const policy=load('js/event-routing.js',['requiresManagerPatrol','patrolEventInstructions']);
- const guide=load('js/shop-event-guide.js',['describeShopIssue'],{requiresManagerPatrol:policy.requiresManagerPatrol,patrolEventInstructions:policy.patrolEventInstructions,customerNeedingHelp:()=>null,chaseDistance:()=>null}).describeShopIssue;
+ const guide=load('js/shop-event-guide.js',['describeShopIssue'],{requiresManagerPatrol:policy.requiresManagerPatrol,patrolEventInstructions:policy.patrolEventInstructions,customerNeedingHelp:()=>null,chaseDistance:()=>null,commissionOverview:()=>({count:0,unread:false,active:[]}),commissionInstruction:()=>null}).describeShopIssue;
  const s=state();s.customers=[];s.event={id:'cashier-idle',title:'收銀員閒得打瞌睡',role:'cashier'};
  let info=guide(s,{patrol:true});
  assert.equal(info.primary,'主管巡店');assert.equal(info.secondary,null);assert.equal(info.secondaryAction,null);
@@ -94,7 +94,7 @@ test('message tab opens first, expired count and single choice are visible in ph
  assert.match(app,/let questTab='messages'/);
  assert.match(app,/if\(b\.dataset\.panel==='quests'\)questTab='messages'/);
  assert.match(app,/secondary\.hidden=!info\.secondaryAction/);
- assert.match(app,/id==='patrol-required-go'/);assert.match(app,/if\(b\.dataset\.commissionBuy\)\{openPurchaseGuidance\(b\.dataset\.commissionBuy\)/);
+ assert.match(app,/id==='patrol-required-go'/);assert.match(app,/if\(b\.dataset\.commissionBuy\)\{guidedCommissionId=b\.dataset\.commissionId/);
  assert.match(core,/resetCommissionsForNewDay\(s\)/);
  assert.match(html,/commission-patrol-v17\.css/);
  assert.match(css,/#shop-event-secondary\[hidden\]\{display:none!important\}/);
