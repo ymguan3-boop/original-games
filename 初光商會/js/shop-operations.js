@@ -33,7 +33,7 @@ export function operationsTick(g,s,dt){
 }
 function operationalEvent(g,s,id,title,description,role='cashier'){
  if((s.cooldowns[id]||0)>s.totalTime)return;s.cooldowns[id]=s.totalTime+45;g.log(s,title+'：'+description);
- const event={id,title,description,role,instanceId:`op-${++s.serial}`,cooldown:45,effect:'clean',effectValue:1,choices:[{id:'help',label:'協助安撫 · 40 G，滿意度 +4',cost:40,mood:8,satisfaction:4,xp:6},{id:'coach',label:'免費溝通與排班提醒',cost:0,mood:3,satisfaction:1,xp:2}]};if(!s.event)s.event=event;else{ s.incidents||=[];if(s.incidents.length<6&&!s.incidents.some(e=>e.id===id))s.incidents.push(event);}
+ const event={id,title,description,role,employeeId:g.role(s,role)?.id,instanceId:`op-${++s.serial}`,cooldown:45,effect:'clean',effectValue:1,choices:[{id:'help',label:'協助安撫 · 40 G，滿意度 +4',cost:40,mood:8,satisfaction:4,xp:6},{id:'coach',label:'免費溝通與排班提醒',cost:0,mood:3,satisfaction:1,xp:2}]};if(!s.event)s.event=event;else{ s.incidents||=[];if(s.incidents.length<6&&!s.incidents.some(e=>e.id===id))s.incidents.push(event);}
 }
 function angry(g,s,c,reason){
  if(c.state==='Angry'||c.state==='Leave')return;c.basket=[];c.state='Angry';c.path=[];c.timer=0;c.emotion='angry';c.angerReason=reason;s.stats.lost++;const old=s.satisfaction;s.satisfaction=clamp(s.satisfaction-1);if(old>s.satisfaction)g.notice(s,c.id,'滿意 -1','bad');s.memories[c.personality]={day:s.day,satisfied:false,reason};const shortage=reason.includes('缺貨');operationalEvent(g,s,shortage?'stockout':'queue-complaint',shortage?'顧客找不到商品':'顧客生氣了',`${c.name}：${reason}。商品已退回陳列，不會計為收入。`,shortage?'stocker':'cashier');
