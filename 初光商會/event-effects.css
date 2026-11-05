@@ -22,3 +22,7 @@
 @keyframes shop-focus{0%,100%{box-shadow:0 0 0 0 #e9a72c33}50%{box-shadow:0 0 0 8px #e9a72c55}}
 @media(max-width:700px){.event-coach{top:183px;max-height:min(52dvh,390px);padding:12px;grid-template-columns:53px minmax(0,1fr);gap:4px 9px}.event-coach-figure{font-size:30px;min-height:55px}.event-coach h3{font-size:15px}.event-coach p{font-size:12px}.event-illustration{width:76px;height:76px;flex-basis:76px}.event-illustration img{width:70px;height:70px}.patrol-event .actions button{min-width:125px}}
 @media(prefers-reduced-motion:reduce){.event-coach-figure,.tutorial-focus,.event-illustration img,.event-illustration-mark,.event-illustration-spark,.staff-event-icon{animation:none}}
+
+.event-coach-figure img{width:52px;height:52px;object-fit:contain;image-rendering:pixelated;border-radius:10px}
+.event-illustration .event-illustration-gif{position:absolute;right:1px;bottom:1px;z-index:2;width:40px;height:40px;object-fit:contain;image-rendering:pixelated;border-radius:8px;border:2px solid #fff5de;background:#fff8e8;animation:none}
+@media(max-width:700px){.event-illustration .event-illustration-gif{width:32px;height:32px}.event-coach-figure img{width:45px;height:45px}}
