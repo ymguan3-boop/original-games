@@ -69,7 +69,7 @@ test('manager proximity event result appears after wake and does not replay old 
  assert.match(html,/id="patrol-solved"/);
  assert.match(app,/seenPatrolResolution=game\.state\.recentPatrolResolution\?\.id\|\|null/);
  assert.match(app,/patrolResolutionDelay=setTimeout/);
- assert.match(app,/事件已解決/);
+ assert.match(app,/問題已解決/);
  assert.match(scene,/feedback==='wake'/);
  assert.match(read('js/actor-visuals.js'),/wake:\['‼'/);
 });
