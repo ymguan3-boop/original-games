@@ -14,7 +14,7 @@ export const REACTIONS={
  silly:['😂','搞笑狀況','funny'],laugh:['😄','笑翻了','funny'],surprised:['!','嚇一跳','warning']
 };
 export function moodTone(kind){return REACTIONS[kind]?.[2]||'neutral';}
-export function createActorVisuals(host,{onEventClick=()=>{}}={}){
+export function createActorVisuals(host,{onEventClick=()=>{},onComplaintClick=()=>{}}={}){
  const statuses=new Map(),popups=new Map(),seen=new Set();let initialized=false;
  const make=(cls)=>{const el=document.createElement('div');el.className=cls;host.append(el);return el;};
  const visible=p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y)&&p.x>=-30&&p.x<=innerWidth+30&&p.y>=0&&p.y<=innerHeight+30&&p.inFront!==false;
@@ -22,11 +22,23 @@ export function createActorVisuals(host,{onEventClick=()=>{}}={}){
   const positions=new Map(actors.map(a=>[a.id,a]));
   for(const a of actors){if(!a.kind||!REACTIONS[a.kind]||!visible(a))continue;
    let node=statuses.get(a.id);if(!node){node=make('actor-reaction');const glyph=document.createElement('span'),caption=document.createElement('b');glyph.className='actor-reaction-icon';caption.className='actor-reaction-text';node.append(glyph,caption);
- node.addEventListener('click',()=>{if(node.dataset.eventId)onEventClick(node.dataset.eventId);});
- node.addEventListener('keydown',e=>{if(node.dataset.eventId&&(e.key==='Enter'||e.key===' ')){e.preventDefault();onEventClick(node.dataset.eventId);}});
+ node.addEventListener('click',()=>{if(node.dataset.complaintId)onComplaintClick(node.dataset.complaintId);else if(node.dataset.eventId)onEventClick(node.dataset.eventId);});
+ node.addEventListener('keydown',e=>{if((node.dataset.complaintId||node.dataset.eventId)&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(node.dataset.complaintId)onComplaintClick(node.dataset.complaintId);else onEventClick(node.dataset.eventId);}});
  statuses.set(a.id,node);}
    const spec=REACTIONS[a.kind];if(node.dataset.kind!==a.kind){node.dataset.kind=a.kind;node.dataset.tone=spec[2];node.children[0].textContent=spec[0];node.children[1].textContent=spec[1];}
-   const eventId=a.eventId||'';if(eventId){node.dataset.eventId=eventId;node.children[1].textContent=a.eventTitle||spec[1];node.title='查看事件：'+(a.eventTitle||spec[1]);node.setAttribute?.('role','button');node.setAttribute?.('tabindex','0');node.setAttribute?.('aria-label','開啟'+(a.eventTitle||'商會事件')+'說明');}else{if(node.dataset.eventId){node.children[1].textContent=spec[1];delete node.dataset.eventId;}node.removeAttribute?.('role');node.removeAttribute?.('tabindex');node.removeAttribute?.('aria-label');node.removeAttribute?.('title');}
+   const eventId=a.eventId||'',complaintId=a.complaintId||'';
+   if(complaintId||eventId){
+    if(complaintId){node.dataset.complaintId=complaintId;delete node.dataset.eventId;}
+    else{node.dataset.eventId=eventId;delete node.dataset.complaintId;}
+    const title=complaintId?a.complaintTitle||spec[1]:a.eventTitle||spec[1];
+    node.children[1].textContent=title;node.title='點擊查看並解決：'+title;
+    node.setAttribute?.('role','button');node.setAttribute?.('tabindex','0');
+    node.setAttribute?.('aria-label','查看並處理'+title);
+   }else{
+    if(node.dataset.eventId||node.dataset.complaintId)node.children[1].textContent=spec[1];
+    delete node.dataset.eventId;delete node.dataset.complaintId;
+    node.removeAttribute?.('role');node.removeAttribute?.('tabindex');node.removeAttribute?.('aria-label');node.removeAttribute?.('title');
+   }
    node.style.left=a.x+'px';node.style.top=(a.y-6)+'px';node.hidden=false;
   }
   for(const [id,node]of statuses)if(!positions.has(id)||!positions.get(id).kind||!visible(positions.get(id)))node.hidden=true;
