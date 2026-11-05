@@ -13,3 +13,6 @@
  .show-info .staff-dock,.show-info .activity{top:177px}
 }
 @media(prefers-reduced-motion:reduce){.return-loader{animation:none}}
+
+/* Do not show trial controls in public or for browsers whose button styles override [hidden]. */
+#level-quick[hidden],#level-menu[hidden]{display:none!important}
