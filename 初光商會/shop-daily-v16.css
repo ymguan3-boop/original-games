@@ -1,0 +1,35 @@
+/* Compact store opening briefing and staggered ledger settlement; original CSS animation. */
+.shop-daily-shield[hidden]{display:none!important}
+.shop-daily-shield{position:fixed;inset:0;z-index:68;display:grid;place-items:center;padding:12px;background:#2a1b0fa1;backdrop-filter:blur(2px)}
+.shop-daily-stage{box-sizing:border-box;width:min(92vw,460px);max-height:min(84dvh,690px);overflow:hidden;display:flex;flex-direction:column;gap:9px;padding:15px;border:4px solid #8d603b;border-radius:20px;background:linear-gradient(155deg,#fff9e6,#f2d6a4);color:#633e24;box-shadow:0 8px 0 #56351c66,0 15px 30px #23150888}
+.shop-daily-stage>header{text-align:center;font-size:13px;color:#8b633e;font-weight:900;letter-spacing:1px}
+.shop-daily-stage>main{overflow:auto;min-height:0;scrollbar-width:thin;flex:1 1 auto}
+.shop-daily-stage>footer{display:grid;gap:6px;flex:none}
+.shop-daily-stage>footer button{width:100%;min-height:42px;padding:8px;color:white;background:#658b43;border:3px solid #497039;border-radius:12px;font-weight:900;font-size:14px;box-shadow:0 3px 0 #3c592d}
+.shop-daily-stage>footer button.secondary{background:#fff8e7;color:#705232;border-color:#b59264}
+.daily-card-title{font-size:clamp(18px,5.5vw,26px);font-weight:900;text-align:center;margin:6px 0 9px}
+.daily-chapter{text-align:center;font-size:12px;font-weight:800;padding-bottom:7px;border-bottom:1px dashed #b39767}
+.daily-goal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0 13px}
+.daily-goal{background:#fff7df;border:2px solid #bc9865;border-radius:12px;text-align:center;display:grid;align-items:center;gap:5px;padding:10px 4px;min-width:0;animation:daily-appear .4s ease-out both;animation-delay:calc(.12s * var(--step))}
+.daily-goal small{font-size:10px;font-weight:800}.daily-goal strong{font-size:clamp(13px,3.8vw,18px);color:#916125;white-space:nowrap}.daily-goal span{font-size:10px;color:#816a51}
+.shop-daily-stage main p{font-size:12px;line-height:1.5;margin:8px 3px 0}
+.daily-calculator-title{text-align:center;font-size:11px;font-weight:800;margin:2px 0 6px;color:#84603b}
+.daily-receipt-lines{border-radius:11px;background:#fff9e8;border:2px solid #b99b74;padding:8px 11px;display:grid;gap:5px}
+.daily-receipt-line{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:12px;padding:6px 2px;border-bottom:1px dashed #d9bc93;animation:daily-appear .35s ease-out both;animation-delay:calc(.3s + .24s * var(--step))}
+.daily-receipt-line b{font-size:13px;white-space:nowrap;color:#538048}
+.daily-receipt-line .negative{color:#9b4d42}
+.daily-receipt-line.total{border-top:2px double #986c3b;border-bottom:none;font-size:15px;font-weight:900;padding:9px 2px}
+.daily-receipt-line.total b{font-size:16px}
+.daily-goal-result{margin:10px 0;padding:8px;background:#fff4d1;border-radius:12px;font-size:12px}
+.daily-goal-result strong{display:block;text-align:center;font-size:13px;margin-bottom:6px}
+.daily-goal-result div{display:grid;gap:4px}
+.daily-goal-result span{padding:5px 7px;border-radius:7px;background:#f9e5c4}
+.daily-goal-result span.met{background:#e2f0d2;color:#3f742e}
+.daily-goal-result span.missed{background:#f6e2c7;color:#885f33}
+.daily-closing-balance{text-align:center;font-size:12px;padding:7px}
+.daily-closing-balance b{font-size:15px;color:#785124}
+.daily-closing-balance small{display:block;color:#9b493c;margin-top:4px}
+@keyframes daily-appear{0%{opacity:0;transform:translateY(8px) scale(.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-height:700px){.shop-daily-stage{max-height:88dvh;padding:9px;gap:5px}.daily-card-title{font-size:17px;margin:1px 0 4px}.daily-goal-grid{margin:5px 0 6px}.daily-goal{padding:6px 3px}.daily-receipt-line{padding:3px 2px}.daily-goal-result{margin:4px 0}}
+@media(max-width:360px){.daily-goal-grid{grid-template-columns:1fr}.daily-goal{display:flex;justify-content:space-between;gap:4px}.daily-goal strong{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.daily-goal,.daily-receipt-line{animation:none!important}}
