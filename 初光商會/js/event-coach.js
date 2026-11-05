@@ -1,6 +1,6 @@
 /* One-time, persisted explanations of store incidents and limited commissions. */
 import {incidentSketch} from './incident-sketch.js';
-import {clampWindowRect,resizeWindowRect} from './window-controls.js?v=20261105-comic1';
+import {clampWindowRect,resizeWindowRect} from './window-controls.js?v=20261105-customer1';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function movableCoach(box){
  const header=box.querySelector('.event-coach-head'),viewport=()=>({width:innerWidth,height:innerHeight});
