@@ -37,3 +37,11 @@ test('event coach, management, confirmation and staff cards remain compact and m
  assert.match(css,/max-height:min\(68dvh,555px\)/);assert.match(css,/max-height:min\(52dvh,335px\)/);
  assert.match(css,/event-coach-scroll/);
 });
+
+test('running manager comic animation is not recreated every second',()=>{
+ const app=read('js/app.js');
+ assert.match(app,/function refreshManagerButtons\(\)/);
+ assert.match(app,/lastManagerEventId/);
+ assert.match(app,/if\(\(game\.state\.event\?\.instanceId\|\|null\)!==lastManagerEventId\)renderPanel\(\);else refreshManagerButtons\(\)/);
+ assert.doesNotMatch(app,/currentPanel==='manager'&&Math\.floor\(game\.state\.totalTime\)!==lastManagerSecond/);
+});
