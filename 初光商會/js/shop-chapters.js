@@ -1,0 +1,46 @@
+/* Five self-contained shop chapters. Main objectives gate automatic construction.
+ * Side quests grant optional gold but never silently bypass the original level fee. */
+const LEVELS={
+ 1:{title:'初光開張',story:'讓冒險者安心找到第一件補給，完成第一天營業。',sales:1,sides:[['patrol','完成一次主管巡店',s=>s.patrols||0,1,120],['staff','擁有兩位夥伴',s=>s.employees.length,2,100]]},
+ 2:{title:'冒險者的採購站',story:'服務更多冒險者，打造有口碑的商品供應。',sales:25,sides:[['staff','聘用三位員工',s=>s.employees.length,3,280],['stock','庫房存貨至少20件',s=>Object.values(s.inventory).reduce((a,n)=>a+n,0),20,180]]},
+ 3:{title:'工匠與夥伴',story:'讓工匠、補貨員與收銀夥伴合作，擴大商會交易。',sales:70,sides:[['staff','擁有四位員工',s=>s.employees.length,4,420],['incident','解決三件員工事件',s=>s.incidentHistory?.length||0,3,350]]},
+ 4:{title:'星穹裝備展',story:'使裝備館成為傳奇旅人的熱門補給地。',sales:140,sides:[['training','一位員工熟練達到Lv.5',s=>Math.max(0,...s.employees.map(e=>e.workLevel)),5,650],['stock','庫房存貨至少60件',s=>Object.values(s.inventory).reduce((a,n)=>a+n,0),60,480]]},
+ 5:{title:'傳奇初光商會',story:'成為所有幻靈與冒險者都知道的傳奇商會。',sales:250,revenue:100000,satisfaction:88,days:8,sides:[['staff','僱用八位員工',s=>s.employees.length,8,1500],['incident','解決十件商會事件',s=>s.incidentHistory?.length||0,10,1200]]}
+};
+export const chapterConfig=LEVELS;
+export function chapterObjectives(s,levels){
+ const chapter=LEVELS[s.level]||LEVELS[5],next=levels[s.level],last=s.level===5;
+ const revenue=last?chapter.revenue:next.revenue,satisfaction=last?chapter.satisfaction:next.satisfaction,days=last?chapter.days:next.days;
+ const goals=[
+  {id:'sales',title:'完成真實顧客成交',value:s.totals.sales||0,target:chapter.sales},
+  {id:'revenue',title:'累計營業額（G）',value:s.totals.revenue||0,target:revenue},
+  {id:'satisfaction',title:'顧客滿意度（%）',value:s.satisfaction||0,target:satisfaction},
+  {id:'days',title:'完成營業日結',value:s.totals.days||0,target:days}
+ ].map(g=>({...g,done:g.value>=g.target}));
+ const side=chapter.sides.map(([id,title,read,target,reward],i)=>({id:`lv${s.level}-${id}`,title,value:read(s),target,reward,done:read(s)>=target,claimed:!!s.chapterRewards?.[`lv${s.level}-${id}`]}));
+ const ready=goals.every(g=>g.done),cost=last?0:next.cost;
+ return {level:s.level,title:chapter.title,story:chapter.story,goals,side,ready,last,cost,canConstruct:ready&&!last&&s.phase==='closed'&&!s.upgradeProject&&s.gold>=cost,construction:!!s.upgradeProject};
+}
+export function autoChapterConstruction(g,s){
+ const info=chapterObjectives(s,g.data.levels);
+ if(!info.canConstruct)return false;
+ const next=g.data.levels[s.level],duration=next.upgradeSeconds||30;
+ g.pay(s,next.cost);s.stats.expenses=(s.stats.expenses||0)+next.cost;
+ s.upgradeProject={from:s.level,to:next.level,duration,remaining:duration,cost:next.cost,chapter:true};
+ s.chapterConstruction=`lv${s.level}-to-${next.level}`;
+ g.log(s,`主線完成：${info.title}！自動投入 ${next.cost} G，開始升至 Lv.${next.level}（${duration} 秒）。`);
+ return true;
+}
+export function awardSideChapter(g,s,id){
+ const mission=chapterObjectives(s,g.data.levels).side.find(x=>x.id===id);
+ if(!mission||!mission.done||mission.claimed)throw Error('支線任務尚未完成或獎勵已領取');
+ s.chapterRewards??={};s.chapterRewards[id]=true;
+ s.gold+=mission.reward;s.stats.rewards=(s.stats.rewards||0)+mission.reward;
+ g.log(s,`支線完成：${mission.title}，獲得 ${mission.reward} G`);
+ return `支線完成：獲得 ${mission.reward} G`;
+}
+export function finishChapterConstruction(g,s,from){
+ const name=g.data.levels[s.level-1]?.name||'新商會';
+ s.chapterClear={id:`chapter-${from}-${s.level}`,from,level:s.level,title:name,day:s.day};
+ g.log(s,`恭喜通過第 ${from} 章！新的 Lv.${s.level} ${name} 已完成。`);
+}
