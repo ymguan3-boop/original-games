@@ -4,7 +4,7 @@ import {employeePath,actorPath} from './staff-routing.js';
 import {autoAssign,staffAutomation} from './staff-automation.js';
 import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js';
 import {decorEffects,decorTypes,obstacles} from './decorations.js';
-import {shopAction,operationsTick,stepCustomers,react} from './shop-operations.js';
+import {shopAction,operationsTick,stepCustomers,react} from './shop-operations.js?v=20261105-customer1';
 import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js';
 import {pointSegmentDistance,segmentDistance} from './motion.js';
 import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER} from './nav.js';
