@@ -1,6 +1,7 @@
 /* Short, actionable directions in both shop and walk-through views.
  * The customer mini-game is entirely optional; the normal remedies remain available. */
 import {customerNeedingHelp,chaseDistance} from './customer-chase.js';
+import {requiresManagerPatrol,patrolEventInstructions} from './event-routing.js';
 const eventKey=e=>e?.instanceId||e?.id||'';
 export function describeShopIssue(s,{patrol=false}={}){
  const mission=s.customerChase;
@@ -20,6 +21,11 @@ export function describeShopIssue(s,{patrol=false}={}){
    primary:'選擇解決方法',primaryAction:'complaint',secondary:patrol?'開始追客':'進入巡店追客',secondaryAction:'start-chase',targetId:c.id};
  }
  if(s.event){
+  if(requiresManagerPatrol(s.event))return {
+   id:'patrol-required-'+eventKey(s.event),kind:'patrol-only',title:'⚠ '+s.event.title,
+   message:patrolEventInstructions(s.event,{patrol}),
+   primary:'主管巡店',primaryAction:'patrol',secondary:null,secondaryAction:null,targetId:null
+  };
   const stockout=s.event.id==='stockout',message=stockout
    ?'缺貨顧客可能已離開。請先進入商品採購補充庫存，避免下一位客人遇到相同問題；亦可查看事件處理方式。'
    :patrol
