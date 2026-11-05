@@ -20,14 +20,15 @@ export function resizeWindowRect(rect,multiplier,viewport){
  return clampWindowRect({width,height,left:rect.left+(rect.width-width)/2,top:rect.top+(rect.height-height)/2},viewport);
 }
 export function installWindowControls(panel,{onClose=()=>{}}={}){
- const header=panel.querySelector('.panel-head'),minimize=panel.querySelector('#panel-smaller'),maximize=panel.querySelector('#panel-larger'),resetButton=panel.querySelector('#panel-reset');
+ const header=panel.querySelector('.panel-head'),minimize=panel.querySelector('#panel-smaller,[data-window="smaller"]'),maximize=panel.querySelector('#panel-larger,[data-window="larger"]'),resetButton=panel.querySelector('#panel-reset,[data-window="reset"]');
  const viewport=()=>({width:window.innerWidth,height:window.innerHeight});
  let geometry=null,drag=null;
+ const freshRect=()=>{if(panel.id!=='confirm')return defaultWindowRect(viewport());const v=viewport(),width=Math.min(420,v.width-18),height=Math.min(260,v.height-24);return clampWindowRect({width,height,left:(v.width-width)/2,top:(v.height-height)/2},v);};
  function apply(rect){geometry=clampWindowRect(rect,viewport());for(const [key,value]of Object.entries(geometry))panel.style[key]=Math.round(value)+'px';return {...geometry};}
- function open(){if(!panel.open)panel.show();apply(geometry||defaultWindowRect(viewport()));}
+ function open(){if(!panel.open)panel.show();apply(geometry||freshRect());}
  function close(){if(panel.open)panel.close();onClose();}
- function reset(){apply(defaultWindowRect(viewport()));}
- function resize(multiplier){if(!panel.open)return;apply(resizeWindowRect(geometry||defaultWindowRect(viewport()),multiplier,viewport()));}
+ function reset(){apply(freshRect());}
+ function resize(multiplier){if(!panel.open)return;apply(resizeWindowRect(geometry||freshRect(),multiplier,viewport()));}
  const down=e=>{
   if(e.button!==0||e.target.closest('button,a,input,select,textarea,[role="button"]')||!panel.open)return;
   e.preventDefault();drag={pointer:e.pointerId,x:e.clientX,y:e.clientY,start:{...geometry}};
