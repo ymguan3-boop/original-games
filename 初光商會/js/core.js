@@ -6,7 +6,7 @@ import {autoAssign,staffAutomation,restingPositions,sendToRest} from './staff-au
 import {chapterObjectives,autoChapterConstruction,awardSideChapter} from './shop-chapters.js';
 import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js';
 import {decorEffects,decorTypes,obstacles} from './decorations.js';
-import {shopAction,operationsTick,stepCustomers,react} from './shop-operations.js?v=20261105-customer1';
+import {shopAction,operationsTick,stepCustomers,react} from './shop-operations.js?v=20261105-chapter-bootfix2';
 import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js';
 import {pointSegmentDistance,segmentDistance} from './motion.js';
 import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER} from './nav.js';
