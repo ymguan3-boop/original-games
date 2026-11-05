@@ -1,1 +1,15 @@
-.return-to-game{position:fixed;top:94px;left:18px;z-index:22;min-height:36px;padding:7px 12px;border:1px solid #b48e59;border-radius:12px;background:#fff8e8eb;color:#6b4a26;font-size:12px;box-shadow:0 2px 5px #56331a14}.return-loading{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff6da;color:#6e4c28;text-align:center;padding:24px}.return-loading[hidden]{display:none}.return-loading strong{font-size:23px}.return-loading p{font-size:13px;line-height:1.7}.return-loader{width:34px;height:34px;margin-bottom:20px;border:4px solid #e3d2ac;border-top-color:#a7783b;border-radius:50%;animation:return-spin .8s linear infinite}@keyframes return-spin{to{transform:rotate(360deg)}}@media(max-width:700px){.return-to-game{top:119px;left:10px;min-height:32px;padding:5px 9px;font-size:11px}}@media(prefers-reduced-motion:reduce){.return-loader{animation:none}}
+
+/* The return control shares the mobile header flow instead of overlapping it. */
+.return-to-game{position:fixed;top:111px;left:24px;z-index:22;min-height:38px;padding:7px 12px;border:2px solid #b48e59;border-radius:13px;background:#fff8e8;color:#6b4a26;font-size:12px;font-weight:800;box-shadow:0 2px 5px #56331a14}
+.return-loading{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff6da;color:#6e4c28;text-align:center;padding:24px}
+.return-loading[hidden]{display:none}.return-loading strong{font-size:23px}.return-loading p{font-size:13px;line-height:1.7}
+.return-loader{width:34px;height:34px;margin-bottom:20px;border:4px solid #e3d2ac;border-top-color:#a7783b;border-radius:50%;animation:return-spin .8s linear infinite}
+@keyframes return-spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){
+ .mobile-strip{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"info summary settings" "return return return";gap:3px 6px;align-items:center;padding:5px 8px;z-index:22}
+ .mobile-strip #mobile-info{grid-area:info}.mobile-strip #mobile-summary{grid-area:summary;min-width:0;margin:0;text-align:center;font-size:10px;white-space:normal;line-height:1.25}
+ .mobile-strip [data-panel="settings"]{grid-area:settings;justify-self:end}
+ .mobile-strip .return-to-game{grid-area:return;position:static;top:auto;left:auto;z-index:auto;justify-self:start;min-height:32px;padding:4px 10px;font-size:11px;line-height:1.2;border:1px solid #b48e59;background:#fff3d4;box-shadow:0 1px 2px #56331a14}
+ .show-info .staff-dock,.show-info .activity{top:177px}
+}
+@media(prefers-reduced-motion:reduce){.return-loader{animation:none}}
