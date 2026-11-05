@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const ROOT=path.resolve(__dirname,'../初光商會'),read=p=>fs.readFileSync(path.join(ROOT,p),'utf8');
-const load=(file,expression,context={})=>vm.runInNewContext(read(file).replace(/^import .*?;\n/gm,'').replace(/\bexport\s+(?=(?:function|const|class))/g,'')+';this.output='+expression,context).output;
+const load=(file,expression,context={})=>{vm.runInNewContext(read(file).replace(/^import .*?;\n/gm,'').replace(/\bexport\s+(?=(?:function|const|class))/g,'')+';this.output='+expression,context);return context.output;};
 test('24 new funny events are unique and retain free resolution routes',()=>{
  const events=load('js/funny-events.js','funnyEvents');
  assert.equal(events.length,24);
