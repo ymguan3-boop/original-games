@@ -1,4 +1,4 @@
-import {installShopNavigation} from './shop-navigation.js';
+import {installShopNavigation} from './shop-navigation.js?v=20261105-layout2';
 import {installWindowControls} from './window-controls.js';
 let shopNavigation,eventCoach,readyCommissionIds=null;
 const panelWindow=installWindowControls(document.getElementById('panel'));
