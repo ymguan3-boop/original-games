@@ -1,8 +1,32 @@
+/* Lightweight canvas billboards: one texture per actor, no GIF downloads or model changes. */
+const STATUS={
+ question:['?','缺貨了','#fff1cb','#a07024'],confused:['？','找不到商品','#fff1cb','#a07024'],
+ impatient:['⌛','等好久','#ffe7b1','#a66b25'],angry:['💢','等太久了！','#ffddd0','#b43c29'],
+ happy:['♥','買到了！','#e7f7d8','#437b39'],training:['✦','職能訓練','#e5ecff','#526baf'],
+ proud:['★','謝謝主管','#edfae2','#477d36'],stressed:['!','忙不過來','#ffdfd2','#a74832'],
+ bored:['Zzz','等客中','#edf1fc','#73758e'],sleep:['☾','休息中','#edf1fc','#73758e'],
+ work:['✓','努力工作','#e3f5da','#47723c'],restock:['📦','補貨中','#f1e6d1','#826342'],
+ tired:['💤','需要休息','#f4e7e0','#a05e45'],event:['!','事件待處理','#ffe2d6','#ae3928'],
+ 'event-cashier':['!','收銀事件','#ffe2d6','#ae3928'],'event-stocker':['📦','補貨事件','#fff0d1','#9b5b29'],
+ 'event-sales':['💬','推銷事件','#ffedda','#9b5b29'],'event-smith':['⚒','鍛造事件','#fff0d1','#9b5b29'],
+ 'event-warehouse':['📋','庫房事件','#fff0d1','#9b5b29'],'event-security':['⚠','保全事件','#ffe2d6','#ae3928'],
+ 'event-cleaner':['✧','清潔事件','#e2f8eb','#438466'],'event-host':['♫','迎賓事件','#e8f3ff','#536fb2']
+};
 export function feedbackBubble(T){
- const canvas=document.createElement('canvas');canvas.width=256;canvas.height=132;const ctx=canvas.getContext('2d'),texture=new T.CanvasTexture(canvas);texture.encoding=T.sRGBEncoding;const material=new T.SpriteMaterial({map:texture,transparent:true,depthTest:false}),sprite=new T.Sprite(material);sprite.scale.set(.66,.34,1);sprite.renderOrder=30;sprite.visible=false;let last='';
- const labels={training:'專心練習！',proud:'謝謝主管 ♥',stressed:'忙不過來啦',bored:'客人在哪裡…',sleep:'休息一下',angry:'等太久了！',happy:'買到了！',work:'收到！'};
- return {sprite,update(kind,height){sprite.visible=!!labels[kind];sprite.position.y=height+1.1;if(last===kind)return;last=kind;ctx.clearRect(0,0,256,132);if(!sprite.visible)return;ctx.fillStyle=kind==='angry'||kind==='stressed'?'#ffe0ce':'#fff4cf';ctx.strokeStyle='#684121';ctx.lineWidth=4;ctx.beginPath();ctx.roundRect(5,5,246,116,28);ctx.fill();ctx.stroke();ctx.strokeStyle=kind==='angry'?'#af3824':'#684121';ctx.lineWidth=5;ctx.beginPath();
- if(kind==='proud'||kind==='happy'){ctx.arc(106,39,7,Math.PI,Math.PI*2);ctx.moveTo(143,39);ctx.arc(136,39,7,Math.PI,Math.PI*2);ctx.moveTo(141,47);ctx.arc(123,47,18,0,Math.PI);}
- else if(['angry','training','stressed'].includes(kind)){ctx.moveTo(94,29);ctx.lineTo(111,37);ctx.moveTo(151,29);ctx.lineTo(134,37);ctx.moveTo(101,44);ctx.lineTo(111,44);ctx.moveTo(135,44);ctx.lineTo(145,44);ctx.moveTo(112,62);ctx.lineTo(135,62);}
- else{ctx.moveTo(96,40);ctx.lineTo(112,40);ctx.moveTo(135,40);ctx.lineTo(151,40);ctx.moveTo(116,59);ctx.lineTo(132,59);}ctx.stroke();ctx.fillStyle='#684121';ctx.font='bold 23px sans-serif';ctx.textAlign='center';ctx.fillText(labels[kind],128,100);texture.needsUpdate=true;},dispose(){texture.dispose();material.dispose();}};
+ const canvas=document.createElement('canvas');canvas.width=256;canvas.height=144;const ctx=canvas.getContext('2d'),texture=new T.CanvasTexture(canvas);texture.encoding=T.sRGBEncoding;
+ const material=new T.SpriteMaterial({map:texture,transparent:true,depthTest:false,depthWrite:false}),sprite=new T.Sprite(material);sprite.scale.set(.91,.51,1);sprite.renderOrder=35;sprite.visible=false;let last='';
+ return {sprite,update(kind,height,t=0){const item=STATUS[kind];sprite.visible=!!item;if(!item){last='';return;}sprite.position.set(0,height+.87+Math.sin(t*5)*.045,0);
+  if(last===kind)return;last=kind;ctx.clearRect(0,0,256,144);
+  ctx.shadowColor='#452e2855';ctx.shadowBlur=7;ctx.shadowOffsetY=3;
+  ctx.fillStyle=item[2];ctx.strokeStyle=item[3];ctx.lineWidth=6;ctx.beginPath();ctx.roundRect(8,8,240,124,29);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=item[3];ctx.font='900 48px "Noto Sans TC",system-ui,sans-serif';ctx.fillText(item[0],128,57);
+  ctx.font='bold 22px "Noto Sans TC",system-ui,sans-serif';ctx.fillText(item[1],128,105);texture.needsUpdate=true;
+ },dispose(){texture.dispose();material.dispose();}};
+}
+export function floatingNotice(T,text,tone='good'){
+ const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const ctx=canvas.getContext('2d'),texture=new T.CanvasTexture(canvas);texture.encoding=T.sRGBEncoding;
+ const positive=tone!=='bad',color=tone==='xp'?'#3b64b5':tone==='level'?'#ab7219':positive?'#31764c':'#c74337';
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 48px "Noto Sans TC",system-ui,sans-serif';ctx.lineWidth=13;ctx.lineJoin='round';ctx.strokeStyle='#fff9e8';ctx.strokeText(String(text).slice(0,30),256,65,496);ctx.fillStyle=color;ctx.fillText(String(text).slice(0,30),256,65,496);
+ const material=new T.SpriteMaterial({map:texture,transparent:true,depthTest:false,depthWrite:false}),sprite=new T.Sprite(material);sprite.renderOrder=40;sprite.scale.set(1.8,.45,1);
+ return {sprite,update(age,height,lane=0){const elapsed=Math.max(0,age);sprite.position.set(0,height+1.16+Math.min(elapsed,2)*.39+lane*.40,0);material.opacity=elapsed<1.2?1:Math.max(0,(2.1-elapsed)/.9);const pulse=1+.08*Math.sin(Math.min(elapsed/.35,1)*Math.PI);sprite.scale.set(1.8*pulse,.45*pulse,1);},dispose(){texture.dispose();material.dispose();}};
 }
