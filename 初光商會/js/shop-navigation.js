@@ -18,12 +18,13 @@ export function installShopNavigation({game,storage=globalThis.localStorage,docu
  const stop=watchShopLevel(game,storage,Date.now,onError),button=document.getElementById('return-to-game'),overlay=document.getElementById('return-loading');let leaving=false;
  // Keep one real return button and move it into the mobile information bar.
  const originalParent=button.parentNode,originalNext=button.nextSibling,mobileBar=document.querySelector('.mobile-strip');
- const topbar=document.querySelector('.topbar');
+ const topbar=document.querySelector('.topbar'),patrol=document.getElementById('camera-mode'),mobileSettings=mobileBar?.querySelector('[data-panel="settings"]'),desktopSettings=topbar?.querySelector('.time-controls [data-panel="settings"]');
  const updateHeaderBottom=()=>{if(topbar)document.documentElement.style.setProperty('--shop-header-bottom',Math.ceil(topbar.getBoundingClientRect().bottom)+'px');};
  const reposition=()=>{if(!mobileBar)return;const mobile=window.matchMedia('(max-width:700px)').matches;
   if(mobile&&button.parentNode!==mobileBar)mobileBar.append(button);
   else if(!mobile&&button.parentNode!==originalParent)originalParent.insertBefore(button,originalNext);
-  button.textContent=mobile?'← 返回初光鎮':'← 返回幻靈奇旅';
+  button.textContent=mobile?'← 初光鎮':'← 返回幻靈奇旅';
+  if(patrol){const target=mobile?mobileSettings:desktopSettings;if(target&&patrol.previousElementSibling!==target)target.after(patrol);}
   updateHeaderBottom();};
  const headerObserver=typeof ResizeObserver!=='undefined'&&topbar?new ResizeObserver(updateHeaderBottom):null;
  headerObserver?.observe(topbar);window.addEventListener('resize',reposition);reposition();
