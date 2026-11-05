@@ -35,7 +35,7 @@
  .topbar .mobile-strip .return-to-game{justify-self:start}
 }
 /* Allow a real view of the 3D store while the shop window stays open. */
-dialog#panel{position:fixed;inset:auto!important;margin:0!important;max-width:calc(100dvw - 12px)!important;max-height:calc(100dvh - 12px)!important;min-width:230px;min-height:180px;padding:0;overflow:hidden;border:3px solid #82512b;border-radius:18px;box-shadow:0 5px 0 #55361e55,0 15px 46px #2d271d77;background:#fff3d6;z-index:31;overscroll-behavior:contain}
+dialog#panel{position:fixed;inset:auto;margin:0!important;max-width:calc(100dvw - 12px)!important;max-height:calc(100dvh - 12px)!important;min-width:230px;min-height:180px;padding:0;overflow:hidden;border:3px solid #82512b;border-radius:18px;box-shadow:0 5px 0 #55361e55,0 15px 46px #2d271d77;background:#fff3d6;z-index:31;overscroll-behavior:contain}
 dialog#panel[open]{display:flex;flex-direction:column}
 dialog#panel .panel-head{position:relative;flex:0 0 auto;display:flex;align-items:center;gap:6px;justify-content:space-between;min-height:53px;padding:7px 9px!important;top:auto;cursor:grab;touch-action:none;user-select:none;border-bottom:2px solid #c79a66}
 dialog#panel .panel-head:active{cursor:grabbing}
