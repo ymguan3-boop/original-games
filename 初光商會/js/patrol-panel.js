@@ -16,5 +16,5 @@ export function patrolPanel(game,esc,btn){
  return `<div class="patrol-start"><img src="./assets/art-v5/quest-patrol.webp" alt="巡店羅盤"><div><strong>走訪商會，照顧夥伴</strong><small>點員工查看狀態；WASD／手機搖桿移動</small></div><button id="walk-mode" class="primary">巡店 →</button></div>
  ${active}
  <h3>搭檔合作</h3><div class="cooperation-list">${game.data.combos.map(c=>{const ready=c.roles.every(r=>game.role(s,r)),cooldown=Math.max(0,Math.ceil((s.cooldowns[c.id]||s.cooldowns['combo-'+c.id]||0)-s.totalTime));return `<article class="cooperation-row"><img src="${c.id==='show'?'./assets/art-v6/welcome-bell.webp':'./assets/ui-generated/'+icons[c.id]}" alt="${esc(c.name)}"><div><strong>${esc(c.name)}</strong><small>${c.roles.map(r=>roles[r]).join('＋')}</small><span>${esc(c.description)}</span></div>${btn(!ready?'缺少職務':cooldown?`${cooldown}秒`:'發動','combo',{id:c.id},'primary',!ready||!!cooldown)}</article>`;}).join('')}</div>
- <details class="incident-history"><summary>最近處理紀錄（${(s.incidentHistory||[]).length}）</summary><ol>${history||'<li>尚無完成紀錄。</li>'}</ol></details>`;
+ <details class="incident-history" data-commerce-detail="incident-history"><summary>最近處理紀錄（${(s.incidentHistory||[]).length}）</summary><ol>${history||'<li>尚無完成紀錄。</li>'}</ol></details>`;
 }
