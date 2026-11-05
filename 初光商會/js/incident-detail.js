@@ -1,13 +1,14 @@
 /* Full event explanation and genuine in-game choice buttons, kept inside a compact window. */
 import {incidentSketch} from './incident-sketch.js';
+import {eventEmployee,freeResolutionText} from './patrol-events.js';
 const roleName={cashier:'收銀員',stocker:'補貨員',sales:'推銷員',smith:'鍛造師',warehouse:'倉管員',security:'保全員',cleaner:'清潔員',host:'迎賓員'};
 export function incidentDetailPanel(game,escape,button){
  const event=game.state.event;if(!event)return '<p class="note">事件已結束，請點擊新的事件名稱查看。</p>';
- const person=game.state.employees.find(e=>e.role===event.role),who=person?.name||roleName[event.role]||'商會夥伴';
+ const person=eventEmployee(game.state,event),who=person?.name||roleName[event.role]||'商會夥伴';
  const image=['cashier','stocker','sales','smith','warehouse','security','cleaner','host'].includes(event.role)?event.role:'question';
  const options=(event.choices||[]).slice(0,3).map(c=>`<div class="incident-choice">
-  ${button(escape(c.label),'resolveEvent',{choice:c.id},'primary',!!(c.cost>game.state.gold))}
-  <small>${c.cost>game.state.gold?'金幣不足':escape(c.cost?'費用 '+c.cost+' G':'免費處理')}</small></div>`).join('');
+  ${button(escape(c.label+(c.cost===0?' · 疲勞 +8':' ')),'resolveEvent',{choice:c.id},'primary',!!(c.cost>game.state.gold))}
+  <small>${c.cost>game.state.gold?'金幣不足':escape(c.cost?'費用 '+c.cost+' G':freeResolutionText(c))}</small></div>`).join('');
  return `<article class="incident-presentation" data-incident-id="${escape(event.instanceId||event.id)}">
  <div class="incident-media" aria-label="事件動畫">
    <img class="incident-gif" src="./assets/event-gifs/${image}.gif" alt="${escape(event.title)}動態示意" loading="eager">
