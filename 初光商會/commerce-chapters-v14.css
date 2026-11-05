@@ -1,0 +1,28 @@
+/* Chapter goals and a lightweight original CSS victory animation, no external assets. */
+.chapter-missions{display:grid;gap:9px;margin:9px 0 14px;padding:11px;border:2px solid #a97d4d;border-radius:16px;background:#fff9e9;color:#624122;min-width:0}
+.chapter-header{display:flex;gap:9px;align-items:center}
+.chapter-number{flex:none;display:grid;place-items:center;width:56px;min-height:54px;border-radius:13px;border:3px solid #a57d3b;background:linear-gradient(140deg,#ffebb5,#f4c96a);font-weight:900;font-size:14px}
+.chapter-header h3{font-size:18px;margin-bottom:3px}
+.chapter-header p{line-height:1.35;font-size:11px}
+.chapter-main-head{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;border-top:1px dashed #cba978;padding-top:7px}
+.chapter-main-head b{font-size:13px}.chapter-main-head small{font-size:10px}
+.chapter-goals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.chapter-goal{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px;align-items:center;min-width:0;padding:7px 6px;background:#fff4d5;border:1px solid #dec294;border-radius:9px}
+.chapter-goal.done{background:#eef7db;border-color:#a4bf78}
+.chapter-goal span{font-size:11px;font-weight:700;overflow-wrap:anywhere}.chapter-goal strong{font-size:10px;white-space:nowrap}
+.chapter-goal progress{grid-column:1/-1;width:100%;height:6px;accent-color:#699849}
+.chapter-readiness{font-size:11px;line-height:1.4;padding:7px 9px;background:#faebcf;border-radius:9px}.chapter-readiness.ready{background:#dceecf;color:#3d622d}
+.chapter-side-head{font-size:14px!important}.chapter-sides{display:grid;gap:5px}.chapter-side{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e1c69a;border-radius:9px;padding:6px 8px}.chapter-side div{min-width:0}.chapter-side strong{display:block;font-size:11px}.chapter-side small{display:block;margin-top:3px;font-size:10px}.chapter-side button{min-height:35px;font-size:11px;padding:5px 8px;flex:none}.chapter-side.claimed{opacity:.65}
+.chapter-compact{padding:8px;margin:5px 0}.chapter-compact .chapter-header{display:none}
+@media(max-width:400px){.chapter-goals{grid-template-columns:1fr}.chapter-header h3{font-size:16px}.chapter-main-head{font-size:11px}.chapter-side button{padding:5px;min-width:72px}}
+#chapter-clear[hidden]{display:none!important}
+#chapter-clear{position:fixed;inset:0;z-index:65;display:grid;place-items:center;padding:16px;background:#291c1280;backdrop-filter:blur(3px)}
+.chapter-stage{position:relative;width:min(92vw,440px);max-height:86dvh;overflow:hidden;border:4px solid #89512a;border-radius:24px;background:linear-gradient(145deg,#fff9db,#f7d79f 62%,#eab76c);box-shadow:0 13px 0 #5b3a2777,0 22px 38px #2d140e77;padding:22px 15px 17px;text-align:center;color:#62391c;isolation:isolate}
+.chapter-stage::before,.chapter-stage::after{content:'✦ ✧ ★ ✦ ★';position:absolute;left:0;width:100%;text-align:center;color:#f4a72a;letter-spacing:12px;font-size:21px;z-index:-1;animation:chapter-confetti 3s infinite ease-in-out}
+.chapter-stage::before{top:12px}.chapter-stage::after{bottom:95px;animation-delay:1.3s}
+.chapter-seal{display:grid;place-items:center;margin:5px auto 11px;width:112px;height:112px;border-radius:50%;border:7px double #a46c26;background:radial-gradient(circle,#fff6bb 8%,#ffd96d 60%,#e6a444);font:900 57px/1 sans-serif;color:#98561c;box-shadow:0 0 35px #f4ba52;animation:chapter-seal-rise .8s cubic-bezier(.17,.9,.25,1.3) both}
+.chapter-stage>small{font-size:12px;font-weight:900;color:#94632b}.chapter-stage h2{font-size:clamp(20px,6vw,27px);margin:8px 0}.chapter-stage p{font-size:13px;line-height:1.55;margin:6px 0 16px}
+.chapter-stage button{display:block;width:100%;max-width:300px;margin:6px auto 0;border:3px solid #537438;background:#638c42;color:#fff;box-shadow:0 4px 0 #3f592c;border-radius:14px;font-weight:900}
+@keyframes chapter-seal-rise{0%{transform:translateY(55px) rotate(-35deg) scale(.5);opacity:0}70%{transform:rotate(8deg) scale(1.12)}100%{transform:scale(1);opacity:1}}
+@keyframes chapter-confetti{0%,100%{opacity:.45;transform:translateY(5px) scale(.85)}50%{opacity:1;transform:translateY(-12px) scale(1.15)}}
+@media(prefers-reduced-motion:reduce){.chapter-stage::before,.chapter-stage::after,.chapter-seal{animation:none!important}}
