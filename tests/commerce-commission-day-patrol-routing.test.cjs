@@ -9,7 +9,7 @@ const active={id:'commission-7',client:'小鎮公會',kind:'delivery',sku:'potio
 const claimed={id:'commission-6',client:'晨星旅團',kind:'sales',qty:4,reward:100,level:2,startSales:4,createdAt:60,expiresAt:160,status:'claimed',createdDay:7};
 const expired={id:'commission-5',client:'昨日行商',kind:'delivery',sku:'potion',name:'靈核球',qty:3,reward:100,level:2,startSales:0,createdAt:15,expiresAt:90,status:'expired',createdDay:7};
 const staleActive={id:'commission-4',client:'漏計逾時',kind:'delivery',sku:'potion',name:'靈核球',qty:3,reward:100,level:2,startSales:0,createdAt:25,expiresAt:99,status:'active',createdDay:7};
-function state(){return {day:7,level:2,phase:'open',inventory:{potion:0},totals:{sales:8,revenue:5000,days:6},employees:[],shelves:[],gold:5300,stats:{revenue:0,cogs:0,expenses:0,rewards:0},satisfaction:93,commissionBoard:{clock:100,nextAt:155,serial:7,unread:true,entries:structuredClone([active,claimed,expired,staleActive])},quests:{},patrols:1,chapterRewards:{},log:[],ledger:[],history:[]};}
+function state(){return {day:7,level:2,phase:'open',inventory:{potion:0},totals:{sales:8,revenue:5000,days:6},employees:[],shelves:[],gold:5300,stats:{revenue:0,cogs:0,expenses:0,rewards:0},satisfaction:93,commissionBoard:{clock:100,nextAt:155,serial:7,unread:true,entries:[active,claimed,expired,staleActive].map(x=>({...x}))},quests:{},patrols:1,chapterRewards:{},log:[],ledger:[],history:[]};}
 const comm=()=>load('js/commissions.js',['commissionState','commissionVisibleEntries','activeCommissions','commissionNotice','resetCommissionsForNewDay','commissionsTick','commissionAction','validateCommissions']);
 test('active count exactly matches current unexpired message, hides expired and stale tasks',()=>{
  const s=state(),c=comm(),seen=c.commissionVisibleEntries(s);
