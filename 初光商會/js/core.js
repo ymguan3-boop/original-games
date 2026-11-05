@@ -5,6 +5,7 @@ import {employeePath,actorPath} from './staff-routing.js';
 import {autoAssign,staffAutomation,restingPositions,sendToRest} from './staff-automation.js';
 import {chapterObjectives,autoChapterConstruction,awardSideChapter} from './shop-chapters.js';
 import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './customer-chase.js';
+import {ensureDailyGoals} from './daily-objectives.js';
 import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js';
 import {decorEffects,decorTypes,obstacles} from './decorations.js';
 import {shopAction,operationsTick,stepCustomers,react} from './shop-operations.js?v=20261105-chapter-bootfix2';
@@ -68,7 +69,7 @@ export class Game{
  case 'save':return '進度已儲存';
  case 'pause':s.paused=!s.paused;return s.paused?'已暫停':'繼續營業';
  case 'speed':assert([1,2].includes(p.value),'速度僅支援 1 或 2 倍');s.speed=p.value;break;
- case 'open':s.undo=null;assert(s.phase==='closed','目前不能開店');s.phase='open';s.dayStartGold=s.gold;s.spawnTimer=4;this.log(s,'開門營業！顧客開始挑選商品。');break;
+ case 'open':s.undo=null;assert(s.phase==='closed','目前不能開店');ensureDailyGoals(s,this.data.levels);s.phase='open';s.dayStartGold=s.gold;s.spawnTimer=4;this.log(s,'開門營業！顧客開始挑選商品。');break;
  case 'close':assert(s.phase==='open','尚未開店');if(s.customerChase)cancelCustomerChase(this,s);this.close(s);break;
  case 'nextDay':assert(s.phase==='report','請先完成日結');s.day++;s.phase='closed';s.time=0;s.stats=this.emptyStats();s.report=null;s.demand=(s.day-1)%7;s.customers=[];s.spawnTimer=0;for(const e of s.employees){e.fatigue=Math.max(0,e.fatigue-45);e.xpToday=0;}autoChapterConstruction(this,s);if(s.level===5&&chapterObjectives(s,this.data.levels).ready&&!s.chapterLegendCleared){s.chapterLegendCleared=true;s.chapterClear={id:'chapter-legendary',from:5,level:5,title:'傳奇初光商會・最終章',day:s.day};this.log(s,'傳奇初光商會：五章全部完成！');}break;
  case 'buy':assert(c&&c.isSellable&&!c.isRestricted&&s.level>=c.unlockStoreLevel,'商品未解鎖或禁止交易');assert(Number.isInteger(p.qty)&&p.qty>0&&p.qty<=500,'數量須為 1 至 500');assert(Object.values(s.inventory).reduce((a,b)=>a+b,0)+p.qty<=cfg.warehouseCapacity+(this.role(s,'warehouse')?500:0),'倉庫容量不足');{const discount=(this.role(s,'warehouse')?.05:0)+(s.buffs.storage>s.totalTime?.05:0)+(c.category==='weapon'&&this.role(s,'smith')?.08:0)+(s.buffs.forge>s.totalTime?.1:0);const cost=Math.ceil(c.buyCost*p.qty*(1-discount));this.pay(s,cost);const owned=s.inventory[c.sku]+s.shelves.filter(sh=>sh.sku===c.sku).reduce((n,sh)=>n+sh.stock,0);s.averageCosts||={};s.averageCosts[c.sku]=((s.averageCosts[c.sku]??c.buyCost)*owned+cost)/(owned+p.qty);s.inventory[c.sku]+=p.qty;s.stats.purchases+=cost;this.xp(s,this.role(s,'warehouse'),4);if(c.category==='weapon')this.xp(s,this.role(s,'smith'),8);this.log(s,`${c.displayName}到貨 ${p.qty} 件，支付 ${cost} G`);}break;
