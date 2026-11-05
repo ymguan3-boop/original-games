@@ -36,8 +36,8 @@ test('proximity method completes the active event once and persists resolved rec
   code=read('js/core.js'),start=code.indexOf('resolveNearbyEvent(s){'),end=code.indexOf('setManagerActive(active)',start);
  assert.ok(start>0&&end>start);
  const method=code.slice(start,end).trim();
- const make=new Function('eventEmployee','managerNearEmployee','sleepEvent','applyFreeEventFatigue','react',`return ({${method}}).resolveNearbyEvent;`);
- const reactions=[],resolved=make(eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue,(s,e,kind,seconds)=>{reactions.push(kind);e.feedbackKind=kind;e.reactionUntil=s.totalTime+seconds;});
+ const make=new Function('eventEmployee','managerNearEmployee','sleepEvent','applyFreeEventFatigue','react','requiresManagerPatrol',`return ({${method}}).resolveNearbyEvent;`);
+ const reactions=[],resolved=make(eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue,(s,e,kind,seconds)=>{reactions.push(kind);e.feedbackKind=kind;e.reactionUntil=s.totalTime+seconds;},()=>false);
  const s=fakeState(),notices=[],logs=[],g={managerActive:true,
   applyEventEffect:(s,ev)=>{s.effectApplied=(s.effectApplied||0)+1},
   efficiency:e=>1-e.fatigue/200,
