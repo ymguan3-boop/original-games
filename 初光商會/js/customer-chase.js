@@ -64,6 +64,16 @@ export function tickCustomerChase(g,s,dt){
   // The established resolution path charges fatigue for a no-gold choice,
   // and only redirects a shopper when real purchasable stock exists.
   const message=resolveCustomerComplaint(g,s,{customerId:c.id,choice});
+  // Resolve the customer-service incident associated with this shopper, not
+  // the physical stock shortage. Any missing inventory still must be purchased.
+  if(s.event?.id==='stockout'&&s.event.description?.includes(name)){
+   const incident=s.event;
+   s.incidentHistory??=[];s.incidentHistory.push({id:incident.instanceId||incident.id,title:incident.title,choice:'主管追客協助顧客（缺貨仍需進貨）',day:s.day,at:s.totalTime,method:'customer-chase'});
+   s.incidentHistory=s.incidentHistory.slice(-30);
+   s.cooldowns??={};s.cooldowns[incident.id]=s.totalTime+(incident.cooldown||45);
+   s.event=s.incidents?.shift()||null;
+   g.log(s,'顧客抱怨已透過追客處理；貨架庫存仍須另外補充。');
+  }
   endChase(g,s,true,`${name} 已被主管追上：${message}。${choice==='apologize'||choice==='farewell'?'貨架仍缺貨，請至商品採購補足。':'可繼續引導挑選現貨。'}`);
   return true;
  }
