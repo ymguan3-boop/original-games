@@ -2,6 +2,7 @@ import {installShopNavigation} from './shop-navigation.js?v=20261105-layout2';
 import {installWindowControls} from './window-controls.js';
 let shopNavigation,eventCoach,readyCommissionIds=null;
 const panelWindow=installWindowControls(document.getElementById('panel'));
+const confirmWindow=installWindowControls(document.getElementById('confirm'),{onClose:()=>{document.getElementById('confirm-shield').hidden=true;}});
 import {commissionNotice,commissionProgress} from './commissions.js';
 import {installEventCoach} from './event-coach.js';
 import {createActorVisuals} from './actor-visuals.js';
@@ -33,8 +34,8 @@ let game,scene,currentPanel='',staffTab='roster',goodsTab='all',toastTimer,lastP
 function beep(ok=true){if(!settings.sound)return;try{audioCtx??=new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=ok?660:180;g.gain.setValueAtTime(.035,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.12);o.start();o.stop(audioCtx.currentTime+.12);}catch{}}
 function toast(message,error=false){$('#toast').textContent=message;$('#toast').className=error?'error':'';$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',4200);beep(!error);}
 function action(type,payload={}){let r;try{r=game.act(type,payload);}catch(e){r={ok:false,message:e.message};}if(r?.message)toast(r.message,!r.ok);renderHUD();if(currentPanel)renderPanel();staffOverlay?.render();return r;}
-function confirmAction(message,fn){$('#confirm-message').textContent=message;$('#confirm').showModal();$('#confirm-yes').onclick=()=>{$('#confirm').close();fn();};}
-$('#confirm-no').onclick=()=>$('#confirm').close();
+function confirmAction(message,fn){$('#confirm-message').textContent=message;$('#confirm-shield').hidden=false;confirmWindow.open();$('#confirm-yes').onclick=()=>{confirmWindow.close();fn();};}
+$('#confirm-no').onclick=()=>confirmWindow.close();
 const btn=(text,action,data={},cls='',disabled=false)=>`<button class="${cls}" data-action="${action}" data-payload="${esc(JSON.stringify(data))}" ${disabled?'disabled':''}>${text}</button>`;
 const metric=(title,value)=>`<div class="metric"><small>${title}</small><strong>${value}</strong></div>`;
 const item=sku=>game.data.catalog.find(p=>p.sku===sku);
