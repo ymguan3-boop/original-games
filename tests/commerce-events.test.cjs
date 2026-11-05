@@ -18,7 +18,7 @@ test('customers with no stock display question before becoming angry',()=>{
  s.shelves[0].stock=0;
  stepCustomers(g,s,.25);assert.equal(c.state,'OutOfStock');assert.equal(c.emotion,'question');
  stepCustomers(g,s,1);assert.equal(c.state,'OutOfStock');assert.equal(s.stats.lost,0);
- stepCustomers(g,s,1.5);assert.equal(c.state,'Angry');assert.equal(s.satisfaction,74);
+ stepCustomers(g,s,1.5);assert.equal(c.state,'OutOfStock');stepCustomers(g,s,15);assert.equal(c.state,'Angry');assert.equal(s.satisfaction,74);
  assert.equal(notices[0].message,'滿意 -1');assert.equal(s.event.id,'stockout');
 });
 test('paid customer generates satisfaction and exits safely even when path is blocked',()=>{
