@@ -14,9 +14,9 @@ test('every chapterObjectives call in app.js has a named ES module import', () =
 
 test('mobile page and core use fresh chapter-aware boot modules', () => {
   const html = read('index.html'), app = read('js/app.js'), core = read('js/core.js');
-  assert.match(html, /app\.js\?v=20261105-(?:chapter-bootfix2|customer-chase1|commissions2)/);
-  assert.match(app, /core\.js\?v=20261105-(?:chapter-bootfix2|chase-daily1|commissions2)/);
-  assert.match(core, /shop-operations\.js\?v=20261105-(?:chapter-bootfix2|chase-daily1|commissions2)/);
+  assert.match(html, /app\.js\?v=20261105-(?:chapter-bootfix2|customer-chase1|commissions2|evolution-patrol1)/);
+  assert.match(app, /core\.js\?v=20261105-(?:chapter-bootfix2|chase-daily1|commissions2|evolution-patrol1)/);
+  assert.match(core, /shop-operations\.js\?v=20261105-(?:chapter-bootfix2|chase-daily1|commissions2|evolution-patrol1)/);
   assert.match(core, /import\s*\{[^}]*chapterObjectives[^}]*\}\s*from\s*['"]\.\/shop-chapters\.js['"]/);
   assert.match(read('js/shop-operations.js'), /import\s*\{[^}]*chapterObjectives[^}]*\}\s*from\s*['"]\.\/shop-chapters\.js['"]/);
 });
