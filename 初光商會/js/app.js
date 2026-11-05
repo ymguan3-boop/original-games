@@ -10,6 +10,7 @@ let questTab='messages';let focusPurchaseSku=null,seenChapterClear=null;
 import {goodsPanel} from './goods-panel.js?v=20261105-chapters1';
 import {chapterMissionPanel} from './chapter-view.js';
 import {chapterObjectives} from './shop-chapters.js';
+import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js';
 import {ledgerPanel} from './ledger-panel.js';
 let lastManagerSecond=-1,lastManagerEventId=null;
 import {furnishingPanel} from './furnishing-panel.js';
@@ -27,7 +28,7 @@ const questSignature=s=>[s.day,s.level,s.patrols,s.totals.sales,s.totals.days,Ob
 import {questPanel} from './quest-view.js?v=20261105-commissions2';
 import {loadSpiritCards,spiritCard} from './spirit-cards.js';
 import {upgradeSeconds} from './shop-operations.js';
-import {createGame} from './core.js?v=20261105-commissions2';
+import {createGame} from './core.js?v=20261105-evolution-patrol1';
 import {createStaffOverlay} from './staff-overlay.js?v=20261105-patrol-solved1';
 import {shelfTypes,shelfKind,accepts} from './furniture.js';
 let staffOverlay,actorVisuals;
@@ -37,6 +38,7 @@ import {createScene} from './scene.js?v=20261105-chase-daily1';
 const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=v=>Math.round(Number(v)||0).toLocaleString('zh-TW'), money=v=>`${fmt(v)} G`;
 const rarity={yellow:'黃卡',purple:'紫卡',red:'紅卡'}, cat={item:'補給道具',weapon:'冒險武器',material:'經營素材'};
+let evolutionInProgress=false,evolutionTimer=null;
 let game,scene,seenPatrolResolution=null,patrolResolutionTimer=null,patrolResolutionDelay=null,seenChaseResult=null,dismissedGuideId=null,seenDailyReportDay=null,currentPanel='',selectedComplaintId=null,staffTab='roster',goodsTab='all',toastTimer,lastPanelRender=0,seenEvent='',frames=0,fps=0,frameTime=0,settings={sound:false,quality:'low',diagnostics:false},audioCtx;
 function beep(ok=true){if(!settings.sound)return;try{audioCtx??=new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=ok?660:180;g.gain.setValueAtTime(.035,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.12);o.start();o.stop(audioCtx.currentTime+.12);}catch{}}
 function toast(message,error=false){$('#toast').textContent=message;$('#toast').className=error?'error':'';$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',4200);beep(!error);}
@@ -48,10 +50,61 @@ const metric=(title,value)=>`<div class="metric"><small>${title}</small><strong>
 const item=sku=>game.data.catalog.find(p=>p.sku===sku);
 const spirit=id=>Array.isArray(game.data.spirits)?game.data.spirits.find(p=>p.id===id):game.data.spirits[id];
 const roleLabel=id=>{const j=game.data.jobs;return (Array.isArray(j)?j.find(x=>x.id===id):j[id])?.name||id;};
+function startExclusivePatrol(){
+ const ev=game.state.event;
+ if(!ev||['stockout','queue-complaint','no-cashier'].includes(ev.id)){
+  toast('這個事件需要實際補貨、安排收銀或顧客服務，不能靠走近員工完成。',true);return false;
+ }
+ if(game.state.phase!=='open'){toast('請先開門營業，再進行這項主管巡店任務。',true);return false;}
+ const wasFollow=scene.metrics.mode==='follow';
+ if(!wasFollow){const entered=scene.setMode('follow');if(!entered?.ok){toast(entered?.message||'無法進入主管巡店',true);return false;}}
+ const eventId=ev.instanceId||ev.id;
+ const started=action('startPatrolFocus',{eventId});
+ if(!started.ok){if(!wasFollow)scene.setMode('play');return false;}
+ closePanel();$('#shop-event-guide').hidden=true;
+ $('#patrol-focus-hint').hidden=false;
+ toast('已開始主管專屬巡店：請使用左下搖桿走到指定員工身邊。');return true;
+}
+function beginStaffEvolution(employeeId){
+ if(evolutionInProgress)return;
+ const emp=game.state.employees.find(e=>e.id===employeeId);
+ const rule=staffEvolutionInfo(game.data,emp);
+ if(!rule.eligible){toast('這位員工尚未達到進化門檻，或已是最終形態。',true);return;}
+ evolutionInProgress=true;
+ const stage=$('#staff-evolution-stage'),dialog=$('#staff-evolution-dialog');
+ $('#staff-evolution-title').textContent='✨ '+emp.name+' · 開始進化';
+ $('#staff-evolution-art').innerHTML=spiritCard(spirit(emp.spiritId),emp.rarity,esc);
+ $('#staff-evolution-status').textContent='白光正在聚集，幻靈卡片開始旋轉…';
+ $('#staff-evolution-finish').hidden=true;
+ dialog.classList.remove('is-evolving','is-done');stage.hidden=false;
+ // Give the browser one paint before beginning the CSS rotation and flashes.
+ requestAnimationFrame(()=>{if(!stage.hidden)dialog.classList.add('is-evolving');});
+ clearTimeout(evolutionTimer);
+ evolutionTimer=setTimeout(()=>{
+  const result=action('evolveEmployee',{employeeId});
+  dialog.classList.remove('is-evolving');dialog.classList.add('is-done');
+  if(result.ok){
+   const evolved=game.state.employees.find(e=>e.id===employeeId);
+   $('#staff-evolution-art').innerHTML=spiritCard(spirit(evolved.spiritId),evolved.rarity,esc);
+   $('#staff-evolution-title').textContent='✨ 進化成功！';
+   $('#staff-evolution-status').textContent=result.message+'　熟練度及員工資料永久保留。';
+  }else{
+   $('#staff-evolution-title').textContent='進化尚未完成';
+   $('#staff-evolution-status').textContent=result.message;
+  }
+  $('#staff-evolution-finish').hidden=false;
+ },2400);
+}
+function finishStaffEvolution(){
+ clearTimeout(evolutionTimer);$('#staff-evolution-stage').hidden=true;
+ $('#staff-evolution-dialog').classList.remove('is-evolving','is-done');
+ evolutionInProgress=false;if(currentPanel==='staff')renderPanel();renderHUD();
+}
 function syncPatrolSolved(){
  const info=game?.state?.recentPatrolResolution;
  if(!info||seenPatrolResolution===info.id)return;
  seenPatrolResolution=info.id;
+ if(info.focused&&scene?.metrics.mode==='follow'){scene.setMode('play');$('#patrol-focus-hint').hidden=true;document.body.classList.remove('patrol-focus');}
  const popup=$('#patrol-solved');
  clearTimeout(patrolResolutionTimer);clearTimeout(patrolResolutionDelay);popup.hidden=true;
  patrolResolutionDelay=setTimeout(()=>{
@@ -87,6 +140,7 @@ function syncShopEventGuide(){
  const s=game.state,host=$('#shop-event-guide');
  const result=s.customerChaseResult;
  if(result&&seenChaseResult!==result.id){seenChaseResult=result.id;toast((result.success?'追客成功！':'追客挑戰結束：')+result.reason,!result.success);}
+ if(s.patrolFocus){host.hidden=true;return;}
  const info=describeShopIssue(s,{patrol:scene?.metrics?.mode==='follow'});
  if(!info||currentPanel||!$('#daily-start').hidden||!$('#daily-settlement').hidden||dismissedGuideId===info.id){host.hidden=true;return;}
  host.hidden=false;host.classList.toggle('chase-active',info.kind==='chase');host.dataset.issueId=info.id;
@@ -108,7 +162,12 @@ function runShopGuideAction(type,id){
   if(result.ok)toast('追客開始！使用左下搖桿追上頭頂有「🏃 追上我」的顧客。');
  }
 }
-function renderHUD(){if(!game)return;syncPatrolSolved();syncChapterClear();const s=game.state;if(s.phase==='report'&&s.report&&seenDailyReportDay!==s.day){seenDailyReportDay=s.day;showDailySettlement();}const questButton=document.querySelector('.toolbar [data-panel=quests]');if(questButton){const chapter=chapterObjectives(s,game.data.levels),notice=commissionNotice(s)||game.questList().some(q=>q.done&&!s.quests[q.id])||chapter.side.some(q=>q.done&&!q.claimed)||chapter.ready&&s.phase==='closed'&&!s.upgradeProject&&!chapter.last;questButton.classList.toggle('commission-notify',notice);questButton.setAttribute('aria-label',notice?'商會委託，有新訊息或可完成委託':'商會委託');}$('#mobile-summary').textContent=`Lv.${s.level} · ${s.customers.length}客 · 滿意${Math.round(s.satisfaction)}%`;$('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#day').textContent=`第 ${s.day} 天 · ${{closed:'準備中',open:'營業中',report:'今日結算'}[s.phase]||s.phase}`;const mins=Math.floor((s.time||0)/(game.data.config.dayDuration||180)*600);$('#clock').textContent=`${String(9+Math.floor(mins/60)).padStart(2,'0')}:${String(mins%60).padStart(2,'0')}`;$('#satisfaction').innerHTML=`${Math.round(s.satisfaction??75)} <em>/100</em>`;$('#pause').textContent=s.paused?'▶':'Ⅱ';$('#speed').textContent=`${s.speed||1}×`;$('#level-quick').textContent=`Lv.${s.level} ▾`;$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels.find(x=>x.level===s.level)?.name||''}`;$('#customer-count').textContent=`${s.customers.length} 位顧客`;$('#business-state').textContent=s.phase==='open'?`今日成交 ${s.stats.sales||0} 筆`:'準備好就開門吧';$('#business').innerHTML=s.phase==='open'?'打烊結算 →':s.phase==='report'?'迎接新的一天 →':'開門營業 →';$('#staff-mini').innerHTML=s.employees.slice(0,4).map(e=>`<div class="mini-staff"><span class="staff-dot">${esc(e.name.slice(0,1))}</span><div><strong>${esc(e.name)}</strong><small>${esc(roleLabel(e.role))} · Lv.${e.workLevel} · ${rarity[e.rarity]}</small></div><span class="work-mark">${e.fatigue>70?'疲勞':'在班'}</span></div>`).join('');$('#activity-log').innerHTML=s.log.slice(-3).reverse().map(l=>`<div>${esc(l.text||l.message||'')}</div>`).join('')||'<div>貨架已備妥，兩位夥伴正等你一起開張。</div>';if(settings.diagnostics){$('#diagnostics').textContent=`FPS ${fps} | 顧客 ${s.customers.length}\n存檔 revision ${s.revision}\n${s.customers.map(c=>`${c.name}: ${c.state}`).join('\n')}\n${JSON.stringify(scene?.metrics||{})}`;}$('#diagnostics').hidden=!settings.diagnostics;if(s.event&&(s.event.instanceId||s.event.id)!==seenEvent){seenEvent=s.event.instanceId||s.event.id;}const ready=(s.commissionBoard?.entries||[]).filter(q=>q.status==='active'&&q.expiresAt>s.commissionBoard.clock&&commissionProgress(s,q)>=q.qty).map(q=>q.id);if(readyCommissionIds===null)readyCommissionIds=new Set(ready);else{const fresh=ready.filter(id=>!readyCommissionIds.has(id));if(fresh.length)toast(`有 ${fresh.length} 件限時委託已達成！請前往商會委託領獎。`);readyCommissionIds=new Set(ready);}eventCoach?.sync(s);syncShopEventGuide();}
+function renderHUD(){if(!game)return;syncPatrolSolved();syncChapterClear();const s=game.state;
+ const staffButton=document.querySelector('.toolbar [data-panel="staff"]'),ready=readyStaffEvolutions(game.data,s.employees).length;
+ if(staffButton){staffButton.classList.toggle('staff-evolution-ready',ready>0&&!s.patrolFocus);staffButton.setAttribute('aria-label',ready?('員工夥伴，有 '+ready+' 位幻靈可進化'):'員工夥伴');}
+ document.body.classList.toggle('patrol-focus',!!s.patrolFocus);
+ $('#patrol-focus-hint').hidden=!s.patrolFocus;
+ if(s.patrolFocus)$('#patrol-focus-hint').textContent='主管專屬巡店：'+s.patrolFocus.title+'｜使用搖桿靠近事件員工，完成後自動返回商店。';if(s.phase==='report'&&s.report&&seenDailyReportDay!==s.day){seenDailyReportDay=s.day;showDailySettlement();}const questButton=document.querySelector('.toolbar [data-panel=quests]');if(questButton){const chapter=chapterObjectives(s,game.data.levels),notice=commissionNotice(s)||game.questList().some(q=>q.done&&!s.quests[q.id])||chapter.side.some(q=>q.done&&!q.claimed)||chapter.ready&&s.phase==='closed'&&!s.upgradeProject&&!chapter.last;questButton.classList.toggle('commission-notify',notice&&!s.patrolFocus);questButton.setAttribute('aria-label',notice?'商會委託，有新訊息或可完成委託':'商會委託');}$('#mobile-summary').textContent=`Lv.${s.level} · ${s.customers.length}客 · 滿意${Math.round(s.satisfaction)}%`;$('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#day').textContent=`第 ${s.day} 天 · ${{closed:'準備中',open:'營業中',report:'今日結算'}[s.phase]||s.phase}`;const mins=Math.floor((s.time||0)/(game.data.config.dayDuration||180)*600);$('#clock').textContent=`${String(9+Math.floor(mins/60)).padStart(2,'0')}:${String(mins%60).padStart(2,'0')}`;$('#satisfaction').innerHTML=`${Math.round(s.satisfaction??75)} <em>/100</em>`;$('#pause').textContent=s.paused?'▶':'Ⅱ';$('#speed').textContent=`${s.speed||1}×`;$('#level-quick').textContent=`Lv.${s.level} ▾`;$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels.find(x=>x.level===s.level)?.name||''}`;$('#customer-count').textContent=`${s.customers.length} 位顧客`;$('#business-state').textContent=s.phase==='open'?`今日成交 ${s.stats.sales||0} 筆`:'準備好就開門吧';$('#business').innerHTML=s.phase==='open'?'打烊結算 →':s.phase==='report'?'迎接新的一天 →':'開門營業 →';$('#staff-mini').innerHTML=s.employees.slice(0,4).map(e=>`<div class="mini-staff"><span class="staff-dot">${esc(e.name.slice(0,1))}</span><div><strong>${esc(e.name)}</strong><small>${esc(roleLabel(e.role))} · Lv.${e.workLevel} · ${rarity[e.rarity]}</small></div><span class="work-mark">${e.fatigue>70?'疲勞':'在班'}</span></div>`).join('');$('#activity-log').innerHTML=s.log.slice(-3).reverse().map(l=>`<div>${esc(l.text||l.message||'')}</div>`).join('')||'<div>貨架已備妥，兩位夥伴正等你一起開張。</div>';if(settings.diagnostics){$('#diagnostics').textContent=`FPS ${fps} | 顧客 ${s.customers.length}\n存檔 revision ${s.revision}\n${s.customers.map(c=>`${c.name}: ${c.state}`).join('\n')}\n${JSON.stringify(scene?.metrics||{})}`;}$('#diagnostics').hidden=!settings.diagnostics;if(s.event&&(s.event.instanceId||s.event.id)!==seenEvent){seenEvent=s.event.instanceId||s.event.id;}const ready=(s.commissionBoard?.entries||[]).filter(q=>q.status==='active'&&q.expiresAt>s.commissionBoard.clock&&commissionProgress(s,q)>=q.qty).map(q=>q.id);if(readyCommissionIds===null)readyCommissionIds=new Set(ready);else{const fresh=ready.filter(id=>!readyCommissionIds.has(id));if(fresh.length)toast(`有 ${fresh.length} 件限時委託已達成！請前往商會委託領獎。`);readyCommissionIds=new Set(ready);}eventCoach?.sync(s);syncShopEventGuide();}
 const titles={goods:'商品與採購',shelves:'貨架與店面裝潢',staff:'商會的好夥伴',manager:'主管巡查日誌',incident:'商會事件說明',complaint:'顧客抱怨處理',quests:'商會委託',report:'每一枚金幣，都有來處',upgrade:'讓小店，長成大夢想',settings:'遊戲設定',tutorial:'歡迎來到初光商會',customer:'顧客購物觀察'};
 function showEventDetail(eventId){const ev=game?.state?.event;if(!ev||(ev.instanceId||ev.id)!==eventId){toast('這個事件已經結束，請查看目前待辦事件。');return;}openPanel('incident');}
  function showCustomerComplaint(customerId){const c=game?.state?.customers?.find(c=>c.id===customerId);if(!c||!getCustomerComplaint(game.state,c,game)){toast('顧客已離開或問題已解決');return;}selectedComplaintId=customerId;openPanel('complaint');}
@@ -119,7 +178,7 @@ function renderPanel(){if(!currentPanel||!game)return;const s=game.state,d=game.
 if(currentPanel==='goods'){html=goodsPanel(game,goodsTab,esc,money,btn,focusPurchaseSku);}
 if(currentPanel==='shelves'){html=furnishingPanel(game,furnitureTab,esc,money,btn);}
 if(currentPanel==='staff'){const jobs=Array.isArray(d.jobs)?d.jobs:Object.entries(d.jobs).map(([id,v])=>({id,...v}));html=`<div class="crew-schedule">${btn('一鍵分配職務','autoAssign',{},'primary')}<small>優先收銀與補貨 · 高疲勞安排休息</small></div><div class="tabs"><button data-stafftab="roster" class="${staffTab==='roster'?'active':''}">員工與培育 (${s.employees.length})</button><button data-stafftab="hire" class="${staffTab==='hire'?'active':''}">招聘市場</button></div><div class="crew-grid">`;
-if(staffTab==='roster')html+=s.employees.map(e=>`<article class="employee-card ${e.rarity}">${spiritCard(spirit(e.spiritId),e.rarity,esc)}<div class="crew-status"><b>熟練 Lv.${e.workLevel}</b><small>${rarity[e.rarity]} · 日薪 ${money(e.wage||d.hirePool.find(h=>h.id===e.baseId)?.wage)}</small></div><div class="progress" title="工作經驗 ${e.xp}/${e.workLevel*25}"><span style="width:${Math.min(100,e.xp/(e.workLevel*25)*100)}%"></span></div><div class="crew-stats">經驗 ${e.xp}/${e.workLevel*25} · 士氣 ${Math.round(e.mood)} · 疲勞 ${Math.round(e.fatigue)}</div><label class="crew-job">職務<select aria-label="${esc(e.name)}職務" data-role="${esc(e.id)}">${jobs.map(j=>`<option value="${esc(j.id)}" ${j.id===e.role?'selected':''}>${esc(j.name)}</option>`).join('')}</select></label><div class="crew-actions">${btn(`訓練 ${d.config.trainCost}G`,'train',{employeeId:e.id})}${btn('表揚','praise',{employeeId:e.id})}${btn('休息','rest',{employeeId:e.id})}</div><details><summary>能力與進化</summary><p>${esc(jobs.find(j=>j.id===e.role)?.description||jobs.find(j=>j.id===e.role)?.effect||'職務技能影響工作效率。')}<br>被動欄 ${e.rarity==='red'?3:e.rarity==='purple'?2:1} · ${d.evolution[e.spiritId]?.next?.length?`進化 Lv.${d.evolution[e.spiritId].level}`:'最終型態'}</p></details></article>`).join('');
+if(staffTab==='roster')html+=s.employees.map(e=>{const ev=staffEvolutionInfo(d,e);return `<article class="employee-card ${e.rarity} ${ev.eligible?'evolution-ready':''}">${ev.eligible?`<button type="button" class="staff-evolve-card" data-evolve-employee="${esc(e.id)}" aria-label="${esc(e.name)} 熟練度達標，點擊卡片進化">${spiritCard(spirit(e.spiritId),e.rarity,esc)}<span class="evolve-ready-label">✨ 可進化 · 點擊卡片</span></button>`:spiritCard(spirit(e.spiritId),e.rarity,esc)}<div class="crew-status"><b>熟練 Lv.${e.workLevel}</b><small>${rarity[e.rarity]} · 日薪 ${money(e.wage||d.hirePool.find(h=>h.id===e.baseId)?.wage)}</small></div><div class="progress" title="工作經驗 ${e.xp}/${e.workLevel*25}"><span style="width:${Math.min(100,e.xp/(e.workLevel*25)*100)}%"></span></div><div class="crew-stats">經驗 ${e.xp}/${e.workLevel*25} · 士氣 ${Math.round(e.mood)} · 疲勞 ${Math.round(e.fatigue)}</div><label class="crew-job">職務<select aria-label="${esc(e.name)}職務" data-role="${esc(e.id)}">${jobs.map(j=>`<option value="${esc(j.id)}" ${j.id===e.role?'selected':''}>${esc(j.name)}</option>`).join('')}</select></label><div class="crew-actions">${btn(`訓練 ${d.config.trainCost}G`,'train',{employeeId:e.id})}${btn('表揚','praise',{employeeId:e.id})}${btn('休息','rest',{employeeId:e.id})}</div><details><summary>能力與進化</summary><p>${esc(jobs.find(j=>j.id===e.role)?.description||jobs.find(j=>j.id===e.role)?.effect||'職務技能影響工作效率。')}<br>被動欄 ${e.rarity==='red'?3:e.rarity==='purple'?2:1} · ${d.evolution[e.spiritId]?.next?.length?`進化 Lv.${d.evolution[e.spiritId].level}`:'最終型態'}</p></details></article>`}).join('');
 else html+=d.hirePool.filter(h=>!h.evolutionOnly).map(h=>{const owned=s.employees.some(e=>e.baseId===h.id),locked=s.level<h.level,needsSales=h.special&&(s.totals.sales||0)<h.requiredSales;return `<article class="employee-card ${h.rarity}">${spiritCard(spirit(h.id),h.rarity,esc)}<div class="crew-status"><b>${money(h.cost)}</b><small>${rarity[h.rarity]} · 日薪 ${money(h.wage)}</small></div><small class="hire-requirement">商會 Lv.${h.level}${h.special?` · 成交 ${h.requiredSales} 筆`:''}</small><div class="crew-actions">${btn(owned?'已加入':locked?`Lv.${h.level} 解鎖`:needsSales?'成交不足':'聘用夥伴','hire',{id:h.id},'primary',owned||locked||needsSales)}</div></article>`;}).join('');html+='</div>';}
 if(currentPanel==='manager'){lastManagerSecond=Math.floor(s.totalTime);lastManagerEventId=s.event?.instanceId||null;html=patrolPanel(game,esc,btn);}if(currentPanel==='incident'){lastManagerEventId=s.event?.instanceId||null;html=incidentDetailPanel(game,esc,btn);}if(currentPanel==='complaint'){html=customerComplaintPanel(game,selectedComplaintId,esc,btn);}
 if(currentPanel==='quests'){lastQuestSignature=questSignature(s);html=questPanel(game,esc,money,btn,questTab);}
