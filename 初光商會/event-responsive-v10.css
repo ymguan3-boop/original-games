@@ -107,3 +107,11 @@ dialog#confirm .confirm-content p{font-size:13px;line-height:1.6}
 dialog#confirm .confirm-content .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 dialog#confirm .confirm-content .actions button{flex:1;min-width:90px}
 @media(prefers-reduced-motion:reduce){.actor-reaction,.incident-sprite,.incident-spark{animation:none!important}}
+
+/* Employee detail is also a small movable work window, not a blocking popup. */
+.staff-world-card{max-width:min(72dvw,360px)!important;max-height:min(48dvh,340px)!important;z-index:20}
+.staff-world-card .staff-card-head{cursor:grab;touch-action:none;user-select:none;min-height:35px}
+.staff-world-card .staff-window-tools{display:flex;align-items:center;gap:2px;flex:0 0 auto}
+.staff-world-card .staff-window-tools button{width:25px!important;min-width:25px;min-height:27px!important;height:27px!important;padding:0!important;border-radius:6px;box-shadow:none}
+.staff-world-card.staff-card-detached{transform:none!important;margin:0!important;overflow:auto}
+@media(max-width:700px){.staff-world-card .staff-window-tools button{width:27px!important;min-width:27px;min-height:28px!important}}
