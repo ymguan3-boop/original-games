@@ -109,3 +109,27 @@ test('ready commission auto returns to claim window, and manual evolution remain
  assert.match(app,/data-evolve-employee/);
  assert.match(html,/commission-flow-event-v19\.css/);
 });
+
+test('manual staff evolution updates species only after an explicit action; white-flash animation remains installed',()=>{
+ const evo=load('js/staff-evolution.js',['staffEvolutionInfo','readyStaffEvolutions','evolveStaffOnce']);
+ const data={evolution:{tiny:{level:3,next:['big'],branch:'linear'},big:{level:9,next:[],branch:'terminal'}},
+  spirits:[{id:'tiny',name:'小幻靈',stage:1},{id:'big',name:'大幻靈',stage:2}]};
+ const employee={id:'worker-1',name:'小幻靈',spiritId:'tiny',workLevel:2,evolutionHistory:[],fatigue:8,rarity:'yellow'};
+ const game={data,random:()=>0,efficiency:()=>1.5,log:()=>{},notice:()=>{}},state={day:9,seed:1200};
+ assert.equal(evo.staffEvolutionInfo(data,employee).eligible,false);
+ assert.equal(employee.spiritId,'tiny');
+ assert.throws(()=>evo.evolveStaffOnce(game,state,employee));
+ employee.workLevel=3;
+ assert.equal(evo.staffEvolutionInfo(data,employee).eligible,true);
+ assert.equal(evo.readyStaffEvolutions(data,[employee]).length,1);
+ assert.equal(employee.spiritId,'tiny'); // level-up is only eligibility
+ const message=evo.evolveStaffOnce(game,state,employee);
+ assert.match(message,/進化成/);
+ assert.equal(employee.spiritId,'big');
+ assert.equal(employee.workLevel,3);
+ assert.equal(employee.evolutionHistory.length,1);
+ assert.equal(evo.staffEvolutionInfo(data,employee).eligible,false);
+ const animation=read('commerce-evolution-patrol-v18.css');
+ assert.match(animation,/@keyframes staff-evo-spin/);
+ assert.match(animation,/@keyframes staff-evo-flash/);
+});
