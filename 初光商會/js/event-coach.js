@@ -45,8 +45,8 @@ export function installEventCoach({game,openPanel,openAchievements=()=>openPanel
    return {id:'event-'+ev.id,event:ev,icon,gif:shortage?'question':ev.id==='queue-complaint'?'angry':ROLES[ev.role]?ev.role:'question',title:'第一次遇到｜'+ev.title,desc:shortage?'顧客頭上的問號代表缺貨。先檢查「商品採購」和貨架庫存，並指派補貨員；再到「主管巡查」處理待辦事件。':group+'：'+help,panel:shortage?'goods':'manager',button:shortage?'前往商品採購':'前往主管巡查'};
   }
   const board=s.commissionBoard;
-  if(activeCommissions(s).length&&!s.tutorialSeen?.['first-commission'])
-   return {id:'first-commission',event:{title:'首件商會委託',role:'host',emoji:['✉️','📦','🎉'],animation:'float',effect:'reputation',effectText:'委託達成可領獎'},icon:'✉',gif:'host',title:'首次限時委託',desc:'商會聯絡簿收到限時訂單。點「商會委託」查看指定商品或成交數，達成後記得手動領獎；逾期沒有罰款。',panel:'quests',button:'查看商會委託'};
+  // Live commission guidance is now handled by the compact actionable event card.
+  // Do not stack the old first-commission coach over the new mission prompt.
   const claimable=game.questList().some(q=>q.done&&!s.quests[q.id]);
   if(claimable&&!s.tutorialSeen?.['first-achievement'])
    return {id:'first-achievement',event:{title:'首次商會成就',role:'sales',emoji:['⭐','🎁','🥳'],animation:'pop',effect:'morale',effectText:'完成成就可領獎'},icon:'★',gif:'sales',title:'首次商會成就可領獎',desc:'你的商會已經達成一項成就。打開「商會委託」的「商會成就」分頁，點擊領取金幣，獎勵只能領取一次。',panel:'quests',button:'查看商會成就'};
