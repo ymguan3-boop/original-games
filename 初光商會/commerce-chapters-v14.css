@@ -26,3 +26,9 @@
 @keyframes chapter-seal-rise{0%{transform:translateY(55px) rotate(-35deg) scale(.5);opacity:0}70%{transform:rotate(8deg) scale(1.12)}100%{transform:scale(1);opacity:1}}
 @keyframes chapter-confetti{0%,100%{opacity:.45;transform:translateY(5px) scale(.85)}50%{opacity:1;transform:translateY(-12px) scale(1.15)}}
 @media(prefers-reduced-motion:reduce){.chapter-stage::before,.chapter-stage::after,.chapter-seal{animation:none!important}}
+
+/* Three readable quest tabs on narrow phones instead of a two-column layout. */
+.chat-tabs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px!important}
+.chat-tabs button{min-width:0!important;white-space:normal!important;font-size:11px!important;padding:8px 3px!important}
+.product-row.purchase-focus{outline:3px solid #e6a548!important;outline-offset:2px;background:#fff4cd!important;box-shadow:0 0 0 6px #fff3ae75}
+.purchase-shortage-hint{background:#fff1c5!important;border:1px solid #d49438!important;padding:9px 11px!important;border-radius:10px;color:#7a4c18!important;font-weight:700}
