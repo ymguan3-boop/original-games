@@ -14,7 +14,7 @@ export function activeCommissions(s){
 }
 export function commissionNotice(s){
  const b=s.commissionBoard,active=activeCommissions(s);
- return !!b&&active.length>0&&(b.unread||active.some(q=>commissionProgress(s,q)>=q.qty));
+ return !!b&&active.length>0; // Keep the toolbar badge consistent with the actual live commission count.
 }
 export function resetCommissionsForNewDay(s){
  const b=commissionState(s);
