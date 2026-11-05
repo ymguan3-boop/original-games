@@ -1,12 +1,14 @@
 import {decorEffects,obstacles} from './decorations.js';
 import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js';
 import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT} from './nav.js';
+import {resolveCustomerComplaint} from './customer-complaints.js';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150][level]??30;}
 function validLayout(g,s,shelves){const all=obstacles({...s,shelves});check(isLayoutValid(all,s.level),'配置重疊物件或阻擋通路');check(g.actors(s).every(a=>walkable(a,all,s.level)),'位置與角色重疊');if(s.forge)check(findPath(ENTRANCE,s.forge.station,all,s.level)!==null,'請保留鍛造工作位置與通路');}
 export function shopAction(g,s,type,p){
  s.shelfStorage||=[];
+ if(type==='resolveCustomerComplaint')return resolveCustomerComplaint(g,s,p);
  if(type==='upgrade'){
   check(!s.upgradeProject,'店面正在施工');const l=g.data.levels[s.level];check(l,'商會已達最高級');check(s.phase==='closed','請先打烊並完成日結，再安排施工');check(s.totals.revenue>=l.revenue&&s.satisfaction>=l.satisfaction&&s.totals.days>=l.days,`需營業額 ${l.revenue} G、滿意度 ${l.satisfaction}、日結 ${l.days} 次`);g.pay(s,l.cost);s.stats.expenses+=l.cost;const duration=l.upgradeSeconds||upgradeSeconds(l.level);s.upgradeProject={from:s.level,to:l.level,duration,remaining:duration,cost:l.cost};g.log(s,`開始升級 ${l.name}，工期 ${duration} 秒。`);return '已安排施工，倒數完成後店面才會升級';
  }
@@ -71,8 +73,8 @@ export function stepCustomers(g,s,dt){
   }else if(c.state==='Checkout'){
    if(!cashier){c.timer=0;continue;}const duration=g.data.config.checkoutSeconds/g.efficiency(cashier)/(s.buffs.show>s.totalTime||s.buffs.checkout>s.totalTime?1.6:1);if(c.timer>=duration&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1)pay(g,s,c,cashier);
   }else if(c.state==='Paid'&&c.timer>.6)leave(g,s,c);
-  else if(c.state==='Angry'&&c.timer>2)leave(g,s,c);
-  else if(['OutOfStock','UnhappyExit','AbandonCart'].includes(c.state)){if(c.timer>=2.2)angry(g,s,c,c.state==='OutOfStock'?'想買的商品缺貨':'沒有買到合適商品');else c.emotion=c.state==='OutOfStock'?'question':'confused';}
+  else if(c.state==='Angry'&&c.timer>14)leave(g,s,c);
+  else if(['OutOfStock','UnhappyExit','AbandonCart'].includes(c.state)){if(c.timer>=16)angry(g,s,c,c.state==='OutOfStock'?'想買的商品缺貨':'沒有買到合適商品');else c.emotion=c.state==='OutOfStock'?'question':'confused';}
   else if(c.state==='Leave'&&c.timer>=(c.exitRerouteAt||0)){c.exitRerouteAt=c.timer+2;g.route(s,c,ENTRANCE);}
  }
 }
