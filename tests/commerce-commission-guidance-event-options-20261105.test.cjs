@@ -102,7 +102,7 @@ test('ready commission auto returns to claim window, and manual evolution remain
  assert.match(app,/function syncCommissionCompletion\(s\)/);
  assert.match(app,/openCommissionMessage\(target\.id\)/);
  assert.match(app,/commissionClaimWindow/);
- assert.match(app,/data-commission-continue/);
+ assert.match(read('js/quest-view.js'),/data-commission-continue/);
  assert.match(app,/if\(result\?\.ok&&type==='claimCommission'\)/);
  assert.match(core,/if\(type==='evolveEmployee'\)/);
  assert.doesNotMatch(core,/while\(\(rule=this\.data\.evolution/);
