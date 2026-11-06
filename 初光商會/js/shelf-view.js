@@ -1,8 +1,8 @@
-import {shelfTypes,shelfKind,shelfModel} from './furniture.js?v=20261106-fx2';
+import {shelfTypes,shelfKind,shelfModel} from './furniture.js?v=20261106-fx3';
 import {decorDefinition,decorModel} from './decorations.js';
 import {addIllustratedOutline} from './illustrated-outline.js';
 import {createSphericalOrbRuntime} from './orb-spherical-runtime-v2.js';
-import {armoryRack} from './product-models.js?v=20261106-fx2';
+import {armoryRack} from './product-models.js?v=20261106-fx3';
 export function createShelfView({T,assets,level=1,sh,label,box,onReady,onError}){
  if(sh.decoration){const root=new T.Group(),products=new T.Group(),definition=decorDefinition(sh),hit=box(definition.span||.92,definition.height,definition.span||.86,new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),0,definition.height/2,0,root);hit.userData.ownedMaterial=true;hit.userData.pick={type:'shelf',id:sh.id};const view={root,products,kind:'decor:'+sh.type+(sh.type==='carpet'?':'+level:''),hit,tints:[],alive:true};assets.load(decorModel(sh.type,level)).then(g=>{if(!view.alive)return;const model=assets.clone(g.scene);root.add(model);if(!definition.ground){root.updateMatrixWorld(true);model.position.y+=.042-new T.Box3().setFromObject(model).min.y;}view.contour=addIllustratedOutline(T,model,{thickness:definition.ground?.002:.012});model.traverse(n=>{if(n.isMesh&&!n.userData.illustratedOutline)for(const material of Array.isArray(n.material)?n.material:[n.material])view.tints.push({material,color:material.color.clone(),emissive:material.emissive?.clone()});});onReady?.(view);}).catch(onError);return view;}
  const root=new T.Group(),products=new T.Group(),kind=shelfKind(sh),definition=shelfTypes.find(t=>t.id===kind);root.add(products);

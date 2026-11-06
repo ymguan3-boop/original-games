@@ -233,6 +233,8 @@ function entry(path){return registry[String(path).replace(/^native:\/\//,'')];}
 
 // Merge only rigid siblings sharing a material AND nearest animated pivot.
 // No topology reduction or cross-joint merging; every supplied articulation survives.
+/* 小肥象、雛鳥兩家族用細的咖啡色線，臉部小零件才不會被線條蓋住 */
+const OUTLINE_WIDTH=.0026,OUTLINE_BROWN=0x7a4a2a;
 function batchRigidParts(root){
  root.updateMatrixWorld(true);const groups=new Map();
  root.traverse(mesh=>{if(!mesh.isMesh)return;let pivot=mesh.parent;while(pivot!==root&&!pivot.name)pivot=pivot.parent;
@@ -250,7 +252,7 @@ function batchRigidParts(root){
 function build(path){
  const spec=entry(path);if(!spec)throw Error('未知原生模型：'+path);
  const bp=spec[0]==='bird'?BIRD_BLUEPRINT:ELEPHANT_BLUEPRINT, source=(bp.BIRDS||bp.ELEPHANTS).find(v=>v.id===spec[1]);
- geometryProfile=spec[0];const scene=buildBird(source);batchRigidParts(scene);window.ToonOutline?.add(THREE,scene);const clips=Object.values(buildClips(bp.ACTIONS,scene));
+ geometryProfile=spec[0];const scene=buildBird(source);batchRigidParts(scene);window.ToonOutline?.add(THREE,scene,{width:OUTLINE_WIDTH,color:OUTLINE_BROWN});const clips=Object.values(buildClips(bp.ACTIONS,scene));
  clips.forEach(c=>{c.userData={sourceAction:c.name};c.name=clipNames[c.name]||c.name;});
  // Birds have a breathing sitting rest; expose the complete source Sit as well.
  if(!clips.some(c=>c.name==='Idle')){const idle=clips.find(c=>c.name==='Sit').clone();idle.name='Idle';clips.push(idle);}

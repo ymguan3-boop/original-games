@@ -2,7 +2,7 @@
 (() => {
 'use strict';
 const WOOD=0xb8682a,WOOD_D=0x8a4a1c,STONE=0xe6d6bb,STONE_D=0xc8b596,VINE=0x5f9c2c,LEAF=0x86c43a,PETAL=0xfff6e2,YOLK=0xf4c42a,RED=0xd8301f,RED_D=0xa81f14,GOLD=0xf2b81e,COAT=0xf6c63d,CREAM=0xfdeccb,INK=0x2a1a12,BROWN=0x8a4f22,PINK=0xf0707a,WHITE=0xffffff;
-const PANEL=2.9,HEIGHT=1.5,LIT=.62,GATE_DEPTH=.9;
+const PANEL=2.9,HEIGHT=1.5,LIT=.62,GATE_DEPTH=.9,FACE_DOOR=Math.atan2(2.6,-3.4);
 /* 依顏色寫入頂點色，所有零件併成一個 BufferGeometry。 */
 function builder(T){
  const pos=[],nor=[],col=[],m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),c=new T.Color(),n3=new T.Matrix3();
@@ -66,11 +66,11 @@ function create({THREE:T,parent,LOT,frontZ}){
  window.ToonOutline?.add(T,fence);window.ToonOutline?.add(T,gateRoot);window.ToonOutline?.add(T,dog.root);
  Object.values(S).forEach(g=>g.dispose());
  /* 帶路：從大門沿西側步道繞到店門口旁等玩家 */
- const route=[[0,LOT.minZ+2.6],[-12.4,LOT.minZ+3.2],[-12.4,frontZ+3.4],[-4.4,frontZ+3.4]];
- let phase='guard',open=0,time=0,leg=0;
- function setPhase(next){phase=next;leg=0;dog.root.visible=next!=='gone';}
+ const route=[[0,LOT.minZ+2.6],[-12.4,LOT.minZ+3.2],[-12.4,frontZ+3.4],[-2.6,frontZ+3.4]],door={x:0,z:frontZ+2.6},trail=[];
+ let phase='guard',open=0,time=0,leg=0,leash=15;
+ function setPhase(next){phase=next;leg=0;trail.length=0;dog.root.visible=next!=='gone';if(next==='lead')trail.push({x:dog.root.position.x,z:dog.root.position.z});if(next==='wait'){const[x,z]=route[route.length-1];dog.root.position.set(x,0,z);dog.root.rotation.y=FACE_DOOR;}}
  function step(dt,player){
-  if(phase==='lead'){const [x,z]=route[leg],p=dog.root.position,dx=x-p.x,dz=z-p.z,d=Math.hypot(dx,dz),waiting=player&&Math.hypot(player.x-p.x,player.z-p.z)>15;if(d<.2){if(++leg>=route.length){phase='wait';dog.root.rotation.y=Math.atan2(4.4,-.6);}}else if(!waiting){const k=Math.min(d,5.6*dt);p.x+=dx/d*k;p.z+=dz/d*k;dog.root.rotation.y=Math.atan2(dx,dz);p.y=Math.abs(Math.sin(time*11))*.16;}}
+  if(phase==='lead'){const [x,z]=route[leg],p=dog.root.position,dx=x-p.x,dz=z-p.z,d=Math.hypot(dx,dz),waiting=player&&Math.hypot(player.x-p.x,player.z-p.z)>leash;if(d<.2){trail.push({x:p.x,z:p.z});if(++leg>=route.length){phase='wait';dog.root.rotation.y=FACE_DOOR;}}else if(!waiting){const k=Math.min(d,5.6*dt),last=trail[trail.length-1];p.x+=dx/d*k;p.z+=dz/d*k;if(!last||Math.hypot(last.x-p.x,last.z-p.z)>.6)trail.push({x:p.x,z:p.z});dog.root.rotation.y=Math.atan2(dx,dz);p.y=Math.abs(Math.sin(time*11))*.16;}}
  }
  function update(dt,player,{unlocked}){time+=dt;
   const near=!!player&&Math.hypot(player.x,player.z-(LOT.minZ+GATE_DEPTH))<6.5,want=near&&unlocked;open=Math.max(0,Math.min(1,open+(want?dt*2.4:-dt*1.8)));for(const l of gate.leaves)l.h.rotation.y=l.s*open*1.5;
@@ -78,7 +78,7 @@ function create({THREE:T,parent,LOT,frontZ}){
  }
  const gateZ=LOT.minZ+GATE_DEPTH;
  function blocked(x,z,m=.42){if(Math.abs(x)<LOT.gate&&Math.abs(z-gateZ)<.5+m&&open<.7)return true;if(phase==='guard'&&Math.hypot(x-post.x,z-post.z)<.85+m)return true;if(Math.abs(Math.abs(x)-(LOT.gate+.42))<.55+m&&Math.abs(z-gateZ)<.55+m)return true;return false;}
- return{update,blocked,setPhase,post,get phase(){return phase;},get open(){return open;},dog:dog.root,dispose(){gate.glass.dispose();}};
+ return{update,blocked,setPhase,setLeash(v){leash=v;},post,door,trail,get phase(){return phase;},get open(){return open;},dog:dog.root,dispose(){gate.glass.dispose();}};
 }
 window.PhantomCommerceGate={create};
 })();

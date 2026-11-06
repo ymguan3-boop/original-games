@@ -3,14 +3,14 @@ import {finishes,windows,floorFinish} from './architecture-v6.js';
 import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js';
 import {decorateInterior} from './interior-v5.js';
 import {addIllustratedOutline} from './illustrated-outline.js';
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261106-fx2';
-import {createAssets} from './asset-resolver.js?v=20261106-fx2';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261106-fx3';
+import {createAssets} from './asset-resolver.js?v=20261106-fx3';
 import {isLayoutValid,ENTRANCE} from './nav.js';
 import {sampleTrail,turnToward} from './motion.js';
 import {getCustomerComplaint} from './customer-complaints.js';
 import {eventEmployee} from './patrol-events.js';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261106-fx2';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261106-fx2';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261106-fx3';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261106-fx3';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;

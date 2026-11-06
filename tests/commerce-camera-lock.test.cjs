@@ -32,3 +32,8 @@ test('mobile cache includes new scene version so browsers receive the change',()
  assert.match(read('js/app.js'),/scene\.js\?v=\d{8}-/);
  assert.match(read('index.html'),/shop-interactions-v9\.css\?v=20261105-camera3/);
 });
+test('focused patrol keeps the {actors,notices} shape for the overlay',()=>{
+ const app=read('js/app.js');
+ assert.doesNotMatch(app,/rows\.filter\(v=>v\.id===game\.state\.patrolFocus/);
+ assert.match(app,/actors:view\.actors\.filter\(v=>v\.id===focus\),notices:view\.notices\.filter\(n=>n\.targetId===focus\)/);
+});

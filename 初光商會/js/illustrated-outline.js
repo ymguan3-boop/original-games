@@ -3,7 +3,7 @@
 const activeRefs=new Set();
 function reserveRef(){for(let i=1;i<255;i++)if(!activeRefs.has(i)){activeRefs.add(i);return i;}throw Error('輪廓群組超出上限');}
 export function addIllustratedOutline(T,root,{color=0x503822,thickness=.016,perMesh=false}={}){
- const meshes=[];root.traverse(o=>{if(o.isMesh&&!o.userData.illustratedOutline&&!o.userData.noOutline)meshes.push(o)});
+ const meshes=[];root.traverse(o=>{if(o.isMesh&&!o.userData.illustratedOutline&&!o.userData.noOutline&&!o.userData.isOutline&&!o.userData.toonOutlined)meshes.push(o)});
  // Stencil masks all original surfaces before the hull pass. Fine surface
  // details do not acquire noisy internal rings: only the outer silhouette shows.
  const material=new T.MeshBasicMaterial({color,side:T.BackSide,depthWrite:true,stencilWrite:true,stencilWriteMask:0,stencilRef:1,stencilFunc:T.NotEqualStencilFunc});

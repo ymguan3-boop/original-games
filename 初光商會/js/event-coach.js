@@ -1,5 +1,5 @@
 /* One-time, persisted explanations of store incidents and limited commissions. */
-import {incidentSketch} from './incident-sketch.js?v=20261106-fx2';
+import {incidentSketch} from './incident-sketch.js?v=20261106-fx3';
 import {requiresManagerPatrol} from './event-routing.js';
 import {activeCommissions} from './commissions.js?v=20261105-commissions2';
 import {clampWindowRect,resizeWindowRect} from './window-controls.js?v=20261105-customer1';

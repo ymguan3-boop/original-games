@@ -16,7 +16,7 @@ float d=(1.-exp(-uDrag*t))/uDrag;vec3 c=aOrigin+aVel*d;c.y+=-.5*uGravity*t*t*aTi
 float size=aTime.z*(uGrow>.5?(.25+k*uGrow):(1.-k*k));vec3 n=normal,p=position*size;
 if(uGrow>.5){p.xy*=1.;p.z*=1.-k;p=vec3(p.x,p.z,p.y);n=vec3(0.,1.,0.);}else{float a=t*(4.+aTime.w*7.)+aVel.x,b=t*3.+aVel.z;p=spin(p,a,b);n=spin(n,a,b);}
 vColor=aColor;vShade=.72+.28*max(0.,dot(normalize(mat3(modelMatrix)*n),vec3(.32,.84,.42)));
-gl_Position=projectionMatrix*modelViewMatrix*vec4(c+p,1.);if(uInk>.5){vec2 o=(projectionMatrix*vec4(normalize(mat3(viewMatrix)*mat3(modelMatrix)*n),0.)).xy;float l=length(o);if(l>1e-4)gl_Position.xy+=o/l*.0052*gl_Position.w*vec2(projectionMatrix[0][0]/projectionMatrix[1][1],1.);vColor=vec3(.17,.1,.07);vShade=1.;}}`;
+gl_Position=projectionMatrix*modelViewMatrix*vec4(c+p,1.);if(uInk>.5){vec2 o=(projectionMatrix*vec4(normalize(mat3(viewMatrix)*mat3(modelMatrix)*n),0.)).xy;float l=length(o);if(l>1e-4)gl_Position.xy+=o/l*.0026*gl_Position.w*vec2(projectionMatrix[0][0]/projectionMatrix[1][1],1.);vColor=vec3(.17,.1,.07);vShade=1.;}}`;
 const FRAG=`precision mediump float;varying vec3 vColor;varying float vShade;void main(){gl_FragColor=vec4(vColor*vShade,1.);}`;
 function pool(T,geo,cap,gravity,drag,grow,parent,order,outline){
  const g=new T.InstancedBufferGeometry();g.index=geo.index;g.setAttribute('position',geo.attributes.position);g.setAttribute('normal',geo.attributes.normal);g.instanceCount=cap;
