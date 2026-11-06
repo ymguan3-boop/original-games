@@ -10,6 +10,7 @@ const routes=[
  {kind:'deer',test:p=>p.startsWith('floral-deer://'),scripts:[N+'floral-deer.js'],create:p=>FloralDeer.create({stage:p.endsWith('meganium')?3:p.endsWith('bayleef')?2:1,inPlace:true}),labels:()=>({Greet:'點頭招呼',Pulse:'花光共鳴'})},
  {kind:'phoenix',test:p=>p==='light-phoenix://blissey',scripts:[N+'light-phoenix.js'],create:()=>LightPhoenix.create({inPlace:true}),labels:()=>({Idle:'展翼待機',Walk:'收翼行走',WingBurst:'振翼光波',FeatherVolley:'鳳羽連射'}),durations:{Takeoff:2.1,Land:2.1,WingBurst:2.4,FeatherVolley:2.7}},
  {kind:'xiaoshan',test:p=>p==='xiaoshan://wigglytuff',scripts:[N+'xiaoshan.js'],create:()=>XiaoshanSpirit.create({inPlace:true}),modes:['Idle','Walk','Sleep','Wake','Jump','Scared','React'],labels:()=>({Sleep:'打瞌睡',Wake:'醒來',Scared:'驚恐表情'}),durations:{Wake:1.2,Jump:2.2,Scared:3}},
+ {kind:'zhaocai',test:p=>p==='zhaocai://mascot',scripts:['js/commerce-gate.js','js/fx/zhaocai-coins.js'],create:()=>PhantomCommerceGate.mascot(THREE),labels:()=>({Attack:'丟金幣',Ultimate:'金幣雨'})},
  {kind:'riceball',test:p=>p==='riceball://mew',scripts:[N+'riceball.js'],create:()=>RiceballSpirit.create({inPlace:true}),modes:['Auto','Idle','Roll','Stuck','Wave'],labels:()=>({Auto:'自動翻滾與卡住',Roll:'橫向翻滾',Stuck:'卡住 >_<',Wave:'紫色光波'})},
  {kind:'family',test:p=>p.startsWith('native://'),scripts:[N+'birds-blueprint.js',N+'elephants-blueprint.js',N+'families.js'],build:p=>NativeFamilies.build(p),labels:p=>NativeFamilies.labelsFor(p)}
 ];
@@ -35,5 +36,5 @@ function evolution(s,byId){
  if(['raikou','entei','articuno'].includes(s.id))return '連續擂台參戰 3 場 → '+name(next);
  return (Number(s.stage)===1?5:10)+' 份羈絆 → '+name(next);
 }
-window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261027-v30'};
+window.ModelRoomSettings={routes,route,labels,phaseLabels,loops,suits,frameLabels,evolution,revision:'20261106-zhaocai1'};
 })();

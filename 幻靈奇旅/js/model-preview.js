@@ -25,7 +25,7 @@ addEventListener('unhandledrejection',e=>error(e.reason));
 function script(path){if(scriptCache.has(path))return scriptCache.get(path);const p=new Promise((res,rej)=>{const n=document.createElement('script');n.src=path+'?v='+C.revision;n.onload=res;n.onerror=()=>{scriptCache.delete(path);n.remove();rej(Error('程式載入失敗：'+path));};document.head.append(n);});scriptCache.set(path,p);return p;}
 async function scripts(paths){for(const p of paths)await script(p);}
 function owned(root){const r=new Set();root.traverse(n=>{if(n.geometry)r.add(n.geometry);if(n.skeleton?.boneTexture)r.add(n.skeleton.boneTexture);for(const m of Array.isArray(n.material)?n.material:n.material?[n.material]:[]){r.add(m);for(const v of Object.values(m))if(v?.isTexture)r.add(v);}});return r;}
-function release(p){if(!p)return;p.guanpangFx?.dispose();p.duoFx?.dispose();p.outomanFx?.dispose();p.mixer?.stopAllAction();p.mixer?.uncacheRoot(p.root);if(p.hero&&heroCostumes)heroCostumes.dispose(p.root);try{p.controller?.dispose?.();}catch{}for(const r of p.resources||[])r.dispose?.();p.display?.parent?.remove(p.display);}
+function release(p){if(!p)return;p.guanpangFx?.dispose();p.duoFx?.dispose();p.outomanFx?.dispose();p.mixer?.stopAllAction();p.mixer?.uncacheRoot(p.root);if(p.hero&&heroCostumes)heroCostumes.dispose(p.root);p.coins?.dispose();try{p.controller?.dispose?.();}catch{}for(const r of p.resources||[])r.dispose?.();p.display?.parent?.remove(p.display);}
 function excluded(n,root){for(let x=n;x;x=x.parent){if(!x.visible||x.userData?.isEffect||x.userData?.effect||/^(Effects|ReusableEffects|ReusableLightEffects|CombatEffects|ReusableFireball)$/.test(x.name))return true;if(x===root)break;}return false;}
 function bounds(root){const box=new T.Box3(),temp=new T.Box3();root.updateMatrixWorld(true);root.traverse(n=>{if(!n.isMesh||!n.geometry||excluded(n,root))return;const ms=Array.isArray(n.material)?n.material:[n.material];if(ms.every(m=>m?.isMeshBasicMaterial&&m.transparent&&m.depthWrite===false))return;const g=n.geometry;if(!g.boundingBox)g.computeBoundingBox();if(g.boundingBox)box.union(temp.copy(g.boundingBox).applyMatrix4(n.matrixWorld));});if(box.isEmpty())throw Error('模型沒有可見幾何');return box;}
 const cardNumber=value=>catalog.number(value)!=='—'?catalog.number(value):catalog.towerNumber(typeof value==='string'?value:value?.id);
@@ -43,6 +43,7 @@ async function build(id){
  const state=controller?.getState?.()||{},modes=controller?(Array.isArray(state.modes)?state.modes:route?.modes||[]).slice():clips.map(c=>c.name);
  const p={id,s,path,root,display,controller,mixer,clips,resources,route,modes,duoFx,guanpangFx,outomanFx,hero:id==='hero',durations:Object.assign({},typeof route?.durations==='function'?route.durations():route?.durations,state.durations),base:new T.Vector3(),scale:1,current:null,time:0,plan:null};
  if(p.hero){heroCostumes??=HeroCostumes.create(T);heroCostumes.apply(root,suit);}
+ if(route?.kind==='zhaocai'){const coins=p.coins=ZhaocaiCoins.create({THREE:T,parent:scene}),from=new T.Vector3(),jolt=()=>{dummy.t=0;dummy.flash=.16;dummy.power=.7;};controller.onRelease=m=>{controller.hand(from);if(m==='Attack')coins.toss(from.clone(),dummy.g.position.clone().setY(1.3));else coins.spray(p.display.position.clone().setY(1.6),{count:360,radius:5.5,hit:[{root:dummy.g}],onHit:jolt});};}
  return p;
 }
 
@@ -55,6 +56,7 @@ function resolve(p,canon){
  const names=p.modes;
  if(canon==='Attack'||canon==='Ultimate'){
   if(p.route?.kind==='tower')return{mode:canon,release:.48,attack:canon==='Ultimate'?1:0};
+  if(p.route?.kind==='zhaocai')return{mode:canon,release:canon==='Attack'?.68:.45,attack:canon==='Ultimate'?1:0};
   if(p.hero)return{mode:find(names,canon==='Attack'?'Attack':'Throw')||'Idle'};
   const i=canon==='Attack'?0:1,skill=p.s.skills?.[i]||{cost:i?3:1};let plan;
   try{plan=SpiritCombat.attackPlan(p.s,{path:p.path,actions:Object.fromEntries(names.map(n=>[n,null])),controller:p.controller},skill,catalog.skill(p.s.id,i)||{});}catch{plan=null;}
@@ -164,6 +166,7 @@ function pressed(){document.querySelectorAll('[data-motion]').forEach(b=>b.setAt
 function play(canon){motion=canon;paused=false;fxClear();for(const p of packs)start(p,canon);pressed();}
 function info(p){selected=p;if(packs.length)scope(single);document.querySelectorAll('#members button').forEach(b=>{const active=b.dataset.id===p.id;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));});const s=p.s;
  if(!s){$('card-name').textContent='初光旅人';$('card-tag').textContent='主角 · 六種造型';$('element').textContent='—';$('matchup').textContent='—';$('stats').textContent='—';$('skill0').textContent='Attack';$('skill1').textContent='Throw';$('evolution').textContent=C.evolution(null,byId);$('description').textContent='沿用遊戲目前造型；在這裡試穿不會改動存檔。';$('cardPortrait').hidden=true;buttons();return;}
+ if(s.category==='npc'){$('card-name').textContent=s.name;$('card-tag').textContent='NPC · 初光商會看門狗';$('element').textContent='—';$('matchup').textContent='—';$('stats').textContent='—';$('skill0').textContent='丟金幣';$('skill1').textContent='金幣雨';$('evolution').textContent='劇情角色，不列入幻靈圖鑑與轉蛋。';$('description').textContent=s.description;$('cardPortrait').hidden=true;buttons();pressed();return;}
  $('card-name').textContent=s.name;$('card-tag').textContent='No.'+cardNumber(s)+' · '+(s.category==='tower'?'星穹挑戰塔魔物':'幻靈')+' · '+(s.type||'')+' · '+(s.stageLabel||'第 '+s.stage+' 階段')+' · '+(s.rarity||'普通');
  $('element').textContent=s.type;$('matchup').textContent='剋制 '+(BEATS[s.type]||'—')+'・被 '+(Object.keys(BEATS).find(k=>BEATS[k]===s.type)||'—')+' 剋制';
  $('stats').textContent='HP '+s.hp+'・攻擊 '+s.attack;
@@ -206,7 +209,7 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.max(0,Math.min(.0
    if(p.plan.attack!=null){if(u<.05)p.hitDone=false;if(!p.hitDone&&u>=p.plan.release){p.hitDone=true;hitDummy(p);}}
    if(p.outomanFx){p.outomanFx.setTarget(dummy.g.position.clone().add(new T.Vector3(0,1.3,0)));p.outomanFx.update(p.plan.mode,p.current?.time||0);}
    p.guanpangFx?.update(p.plan.mode,p.current?.time||0);p.duoFx?.update(p.plan.mode,p.current?.time||0);if(p.hero)heroCostumes.update(p.root,dt);
-   proc(p,u,t);fxStep(p,dt);}
+   proc(p,u,t);fxStep(p,dt);if(p.coins){p.coins.update(dt);const to=dummy.g.position.clone().sub(p.display.position);p.display.rotation.y=p.plan.mode==='Attack'?Math.atan2(to.x,to.z):0;}}
   fxTick(paused?0:dt);stepDummy(dt);renderer.render(scene,camera);}catch(e){paused=true;pressed();error(e);}}
 requestAnimationFrame(frame);
 window.HeroReview={get packs(){return packs;},renderer,scene,camera,play,select,getState:()=>({family:family?.id,motion,single,coverage:spirits.length,families:families.length,membersVisible:activePacks().map(p=>p.id),members:packs.map(p=>({id:p.id,mode:p.plan?.mode,proc:p.plan?.proc||null,modes:p.modes}))})};
@@ -219,11 +222,12 @@ try{const [data,def,art,tower]=await Promise.all(['data/spirits.json','data/spir
  const seen=new Set(groups.flatMap(g=>g.ids));for(const s of catalog.sort(spirits))if(!seen.has(s.id))groups.push({id:s.id,ids:[s.id]});
  groups.sort((a,b)=>Number(cardNumber(a.ids[0]))-Number(cardNumber(b.ids[0])));
  // 家族成員超過 3 隻時（三色蛋＋鳥族）拆成兩組，避免舞台太擠
- families=[{id:'hero',ids:['hero'],label:'主角 · 初光旅人'}];
+ families=[{id:'hero',ids:['hero'],label:'主角 · 初光旅人'},{id:'zhaocai',ids:['zhaocai'],label:'NPC · 看門狗招財'}];
  for(const g of groups){const chunks=g.ids.length>3?[g.ids.slice(0,Math.ceil(g.ids.length/2)),g.ids.slice(Math.ceil(g.ids.length/2))]:[g.ids];chunks.forEach((ids,i)=>families.push({id:chunks.length>1?g.id+'-'+i:g.id,ids,label:ids.map(id=>byId[id].name).join(' → ')}));}
  const regularOptions=document.createElement('optgroup'),towerOptions=document.createElement('optgroup');regularOptions.label='幻靈 · 001–058';towerOptions.label='星穹挑戰塔魔物 · 059–064';$('subject').append(regularOptions,towerOptions);
  for(const f of families){const o=document.createElement('option');o.value=f.id;const nums=f.ids.filter(id=>byId[id]).map(id=>cardNumber(id));o.textContent=(nums.length?'No.'+nums[0]+(nums.length>1?'–'+nums[nums.length-1]:'')+' ':'')+f.label;o.dataset.search=[o.textContent,...f.ids.map(id=>[byId[id]?.type,byId[id]?.rarity].join(' '))].join(' ').toLowerCase();(byId[f.ids[0]]?.category==='tower'?towerOptions:regularOptions).append(o);}
- $('coverage').textContent='主角 ＋ 58 種幻靈 ＋ 6 種塔魔物 · 共 64 張卡牌 · 依圖鑑編號排序';
+ byId.zhaocai={id:'zhaocai',name:'招財',category:'npc',model:'zhaocai://mascot',height:2.3,description:'把初光商會硬塞給主角的看門狗。招式：丟金幣、金幣雨。'};
+ $('coverage').textContent='主角 ＋ 招財 ＋ 58 種幻靈 ＋ 6 種塔魔物 · 共 64 張卡牌 · 依圖鑑編號排序';
  const q=new URLSearchParams(location.search).get('subject');const fam=families.find(f=>f.id===q)||families.find(f=>f.ids.includes(q))||families[1]||families[0];
  resize();buttons();await select(fam.id,false);
 }catch(e){error(e);}

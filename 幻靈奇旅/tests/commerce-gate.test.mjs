@@ -54,6 +54,16 @@ test('the gate opens only on approach, and the fence and gate block the way unti
   assert.match(hall, /gate\?\.blocked\(x,z,m\)/);
 });
 
+test('招財 uses the hero joint set and smooth surfaces', () => {
+  for (const j of ['hips', 'chest', 'head', 'upperArm', 'forearm', 'hand', 'thigh', 'shin', 'foot', 'ear', 'tail1', 'tail2', 'tail3']) assert.ok(gate.includes("'" + j), j);
+  const dog = gate.slice(gate.indexOf('function buildDog'), gate.indexOf('function poseDog'));
+  assert.ok(!dog.includes('BoxGeometry') && !dog.includes('S.box'));
+  assert.ok(gate.includes('poseDog(dog,time,stride,act)'));
+  assert.ok(gate.includes("const FACES=['idle','blink','happy','talk','shout','star','sad','wow']"));
+  assert.ok(gate.includes('attack:{length:1.15') && gate.includes('ultimate:{length:3.3'));
+  assert.ok(game.includes("g?.setTalking(dialog?.data?.id==='zhaocai')"));
+});
+
 test('fence and gate are outlined, 招財 has none, and all stay cheap', () => {
   assert.match(gate, /ToonOutline\?\.add\(T,fence,thin\)/);
   assert.doesNotMatch(gate, /ToonOutline\?\.add\(T,dog\.root\)/);
@@ -70,4 +80,10 @@ test('radar marks the cave, pier and commerce, and 回復藥 cleanses the whole 
 test('special-spirit broadcasts outrank traveller tips and never show together', () => {
   assert.match(game, /channel==='general'&&!guardian\.hidden\)\{pendingBroadcast=text;return;\}/);
   assert.match(game, /channel==='guardian'&&!general\.hidden/);
+});
+
+test('招財 is in the model room only, not the dex or gacha data', () => {
+  assert.ok(src('js/model-preview.js').includes("id:'zhaocai',name:'招財',category:'npc'"));
+  assert.ok(src('js/model-preview-settings.js').includes("kind:'zhaocai'"));
+  for (const f of ['data/spirits.json', 'data/spirit-catalog.json', 'data/card-art.json', 'js/game.js']) assert.ok(!/zhaocai:\/\/|"zhaocai"/.test(src(f)), f);
 });

@@ -1,4 +1,4 @@
-import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261106-fx9';
+import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261106-fx10';
 import {requiresManagerPatrol} from './event-routing.js';
 import {funnyEvents,comicEventEligible} from './funny-events.js';
 import {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue} from './patrol-events.js';
@@ -10,8 +10,8 @@ import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './custom
 import {ensureDailyGoals} from './daily-objectives.js';
 import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js';
 import {decorEffects,decorTypes,obstacles} from './decorations.js';
-import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261106-fx9';
-import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js?v=20261106-fx9';
+import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261106-fx10';
+import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js?v=20261106-fx10';
 import {pointSegmentDistance,segmentDistance} from './motion.js';
 import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER} from './nav.js';
 export const jobs=[['cashier','收銀員','加速結帳'],['stocker','補貨員','自動搬貨'],['sales','推銷員','提高價格接受度'],['smith','鍛造師','走到鍛爐製作武器，並降低武器進貨成本'],['warehouse','倉管員','提高倉儲容量並折減進貨成本'],['security','保全員','提高排隊耐心'],['cleaner','清潔員','成交後改善滿意度'],['host','招待員','增加客流'],['standby','待命','休息恢復疲勞']].map(([id,name,description])=>({id,name,description}));

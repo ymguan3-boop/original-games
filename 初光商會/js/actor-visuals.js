@@ -15,9 +15,9 @@ export const REACTIONS={
 };
 export function moodTone(kind){return REACTIONS[kind]?.[2]||'neutral';}
 export function createActorVisuals(host,{onEventClick=()=>{},onComplaintClick=()=>{}}={}){
- const statuses=new Map(),popups=new Map(),seen=new Set();let initialized=false;
+ const statuses=new Map(),popups=new Map(),seen=new Set();let initialized=false,vw=innerWidth,vh=innerHeight;globalThis.addEventListener?.('resize',()=>{vw=innerWidth;vh=innerHeight;});
  const make=(cls)=>{const el=document.createElement('div');el.className=cls;host.append(el);return el;};
- const visible=p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y)&&p.x>=-30&&p.x<=innerWidth+30&&p.y>=0&&p.y<=innerHeight+30&&p.inFront!==false;
+ const visible=p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y)&&p.x>=-30&&p.x<=vw+30&&p.y>=0&&p.y<=vh+30&&p.inFront!==false;
  function render({actors=[],notices=[]}={}){
   const positions=new Map(actors.map(a=>[a.id,a]));
   for(const a of actors){if(!a.kind||!REACTIONS[a.kind]||!visible(a))continue;

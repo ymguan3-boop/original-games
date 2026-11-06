@@ -9,6 +9,8 @@ function RoundedBoxGeometry(w,h,d,segments,radius){
 }
 // 用 Three.js 依參數藍圖建出角色（Y 軸向上，面向 +Z）；零件格式與鳥族共用
 const geoCache = new Map();let geometryProfile='elephant';
+/* 手機再降一級；曲面用平滑法線，這個密度近看也不會有稜角 */
+const SEG=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?.75:1,seg=n=>Math.max(6,Math.round(n*SEG));
 
 // 不織布纖維紋理：細顆粒雜訊 + 短纖維線，當凹凸貼圖與粗糙度貼圖
 let feltTex = null;
@@ -139,10 +141,10 @@ function geometryFor(n) {
   if (geoCache.has(key)) return geoCache.get(key);
   let g;
   switch (n.t) {
-    case 'ell': g = small ? new THREE.SphereGeometry(1, 14, 10) : geometryProfile==='bird'?new THREE.SphereGeometry(1,64,40):new THREE.SphereGeometry(1,48,32); break;
+    case 'ell': g = small ? new THREE.SphereGeometry(1, 12, 8) : geometryProfile==='bird'?new THREE.SphereGeometry(1,seg(32),seg(22)):new THREE.SphereGeometry(1,seg(28),seg(20)); break;
     case 'torus': {
       const full = n.arc >= Math.PI * 2 - 1e-6;
-      g = new THREE.TorusGeometry(n.R, n.tube, 24, 96, n.arc);
+      g = new THREE.TorusGeometry(n.R, n.tube, seg(12), seg(44), n.arc);
       if (!full) g.rotateZ(Math.PI / 2 - n.arc / 2); // 弧形置中對稱於 +Y
       break;
     }
@@ -151,7 +153,7 @@ function geometryFor(n) {
     case 'shell': g = shellGeometry(n); break;
     case 'star': g = starGeometry(n); break;
     case 'lathe':
-      g = new THREE.LatheGeometry(n.pts.map(([r, y]) => new THREE.Vector2(r, y)), 128, n.phiStart, n.phiLength);
+      g = new THREE.LatheGeometry(n.pts.map(([r, y]) => new THREE.Vector2(r, y)), seg(44), n.phiStart, n.phiLength);
       break;
   }
   geoCache.set(key, g);
