@@ -1,6 +1,6 @@
 /* Shared compact, no-scroll customer event stage with real in-game choices. */
 import {getCustomerComplaint} from './customer-complaints.js';
-import {incidentSketch} from './incident-sketch.js?v=20261106-fx8';
+import {incidentSketch} from './incident-sketch.js?v=20261106-fx9';
 export function customerComplaintPanel(game,customerId,escape,button){
  const c=game.state.customers.find(c=>c.id===customerId),info=getCustomerComplaint(game.state,c,game);
  if(!info)return '<p class="note">顧客已離開或問題已解決，請關閉此視窗。</p>';

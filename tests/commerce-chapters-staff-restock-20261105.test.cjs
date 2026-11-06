@@ -52,7 +52,6 @@ test('only a genuine slacking event allows on-duty cashier to stop working',()=>
 });
 test('out-of-stock auto replenishment offers direct procurement and chapter screens are linked',()=>{
  const app=read('js/app.js'),goods=read('js/goods-panel.js'),html=read('index.html'),scene=read('js/scene.js');
- assert.match(app,/openPurchaseGuidance\(oldShelf\.sku\)/);
  assert.match(app,/if\(\(game\.state\.inventory\[sku\]\|\|0\)<qty\)openPurchaseGuidance\(sku\)/);
  assert.match(goods,/data-purchase-focus/);
  assert.match(html,/id="chapter-clear"/);assert.match(html,/commerce-chapters-v14\.css/);

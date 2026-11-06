@@ -65,7 +65,7 @@ function create({THREE:T,parent,LOT,frontZ}){
  const S=shapes(T),fence=buildFence(T,LOT,S);parent.add(fence);
  const gateRoot=new T.Group();parent.add(gateRoot);const gate=buildGate(T,LOT,S,gateRoot);
  const dog=buildDog(T,S),post={x:0,z:LOT.minZ-.3};dog.root.position.set(post.x,DOG_Y,post.z);dog.root.rotation.y=Math.PI;dog.root.scale.setScalar(.92);parent.add(dog.root);
- window.ToonOutline?.add(T,fence);window.ToonOutline?.add(T,gateRoot);
+ const thin={width:(window.ToonOutline?.WIDTH||0)/2};window.ToonOutline?.add(T,fence,thin);window.ToonOutline?.add(T,gateRoot,thin);
  Object.values(S).forEach(g=>g.dispose());
  /* 帶路：從大門沿西側步道繞到店門口旁等玩家 */
  const route=[[0,LOT.minZ+2.6],[-12.4,LOT.minZ+3.2],[-12.4,frontZ+3.4],[-2.6,frontZ+3.4]],door={x:0,z:frontZ+2.6},trail=[];

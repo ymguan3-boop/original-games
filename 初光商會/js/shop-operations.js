@@ -1,5 +1,5 @@
 import {decorEffects,obstacles} from './decorations.js';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261106-fx8';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261106-fx9';
 import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT} from './nav.js';
 import {resolveCustomerComplaint} from './customer-complaints.js';
 import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js';
@@ -33,7 +33,7 @@ export function operationsTick(g,s,dt){
  if(s.upgradeProject){s.upgradeProject.remaining=Math.max(0,s.upgradeProject.remaining-dt);if(!s.upgradeProject.remaining){const previous=s.level;s.level=s.upgradeProject.to;s.upgradeProject=null;finishChapterConstruction(g,s,previous);g.log(s,`裝修完成！商會升至 Lv.${s.level} ${g.data.levels[s.level-1].name}。`);}}
  for(const e of s.employees)if(e.reactionUntil&&e.reactionUntil<=s.totalTime){e.reaction='idle';e.feedbackKind=null;e.reactionUntil=0;}
 }
-function operationalEvent(g,s,id,title,description,role='cashier'){
+export function operationalEvent(g,s,id,title,description,role='cashier'){
  if((s.cooldowns[id]||0)>s.totalTime)return;s.cooldowns[id]=s.totalTime+45;g.log(s,title+'：'+description);
  const event={id,title,description,role,employeeId:g.role(s,role)?.id,instanceId:`op-${++s.serial}`,cooldown:45,effect:'clean',effectValue:1,choices:[{id:'help',label:'協助安撫 · 40 G，滿意度 +4',cost:40,mood:8,satisfaction:4,xp:6},{id:'coach',label:'免費溝通與排班提醒',cost:0,mood:3,satisfaction:1,xp:2}]};if(!s.event)s.event=event;else{ s.incidents||=[];if(s.incidents.length<6&&!s.incidents.some(e=>e.id===id))s.incidents.push(event);}
 }

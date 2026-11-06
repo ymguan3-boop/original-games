@@ -55,7 +55,7 @@ test('the gate opens only on approach, and the fence and gate block the way unti
 });
 
 test('fence and gate are outlined, 招財 has none, and all stay cheap', () => {
-  assert.match(gate, /ToonOutline\?\.add\(T,fence\)/);
+  assert.match(gate, /ToonOutline\?\.add\(T,fence,thin\)/);
   assert.doesNotMatch(gate, /ToonOutline\?\.add\(T,dog\.root\)/);
   assert.match(gate, /DOG_Y=\.1/);
   assert.match(gate, /vertexColors:true/);

@@ -40,3 +40,12 @@ test('choice notes sit inside the green option button',()=>{
  assert.ok(read('js/incident-detail.js').includes('(hint?`<small class="incident-choice-hint">'));
  assert.ok(/<small class="incident-choice-hint">.*'resolveCustomerComplaint'/.test(read('js/customer-complaint-panel.js')));
 });
+test('placing a rack previews the procedural model instead of downloading it',()=>{
+ assert.ok(read('js/scene.js').includes('!decoration&&hasRackModel(type)?Promise.resolve(rackModel(T,type))'));
+});
+test('auto restock buys for the shelf, and only money or space problems raise a warning',()=>{
+ const core=read('js/core.js');
+ assert.ok(core.includes('const r=this.autoStock(s,sh);return r.problem||'));
+ assert.ok(core.includes("operationalEvent(this,s,'stockout','貨架缺貨了'"));
+ assert.ok(!read('js/app.js').includes('if(oldShelf&&(game.state.inventory[oldShelf.sku]||0)===0)openPurchaseGuidance'));
+});
