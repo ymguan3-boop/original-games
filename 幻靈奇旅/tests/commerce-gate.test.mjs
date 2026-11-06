@@ -19,9 +19,25 @@ test('after the talk 招財 walks the player to the door and straight into the s
   assert.match(gate, /setLeash\(v\)/);
 });
 
+test('a spirit auto-joined on capture still reads as joined', () => {
+  assert.match(game, /team\.includes\(d\.add\)\)return toast\('已加入隊伍'\)/);
+  assert.doesNotMatch(game, /這位夥伴已在隊伍中/);
+});
+
 test('toasts over a modal live on body, so the card cannot cover 隊伍已滿', () => {
   assert.match(game, /host=overModal\?document\.body:\$\('game'\)/);
   assert.match(game, /return toast\('隊伍已滿'\)/);
+});
+
+test('arena and fishing outlines stay on the outer silhouette only', () => {
+  const outline = src('js/fx/toon-outline.js'), vfx = src('js/fx/vfx3d.js');
+  assert.match(outline, /stencilFunc:T\.NotEqualStencilFunc/);
+  assert.match(outline, /hull\.renderOrder=mesh\.renderOrder\+1/);
+  assert.match(game, /ToonOutline\.silhouette\(T,battleGroup,\{skipRoots:\[battle\.arena\]\}\)/);
+  assert.match(game, /\(!battle\|\|battle\.gym\)&&ToonOutline\.active\)ToonOutline\.release\(\)/);
+  assert.match(vfx, /stencilFunc:T\.NotEqualStencilFunc/);
+  assert.match(outline, /o\.userData\.ownOutline\)return;/);
+  assert.match(src('models/native/families.js'), /scene\.userData\.ownOutline=true/);
 });
 
 test('arena spirits stand on the discs, with half-width lines', () => {
@@ -38,9 +54,10 @@ test('the gate opens only on approach, and the fence and gate block the way unti
   assert.match(hall, /gate\?\.blocked\(x,z,m\)/);
 });
 
-test('fence, gate and dog are outlined and merged so they stay cheap', () => {
+test('fence and gate are outlined, 招財 has none, and all stay cheap', () => {
   assert.match(gate, /ToonOutline\?\.add\(T,fence\)/);
-  assert.match(gate, /ToonOutline\?\.add\(T,dog\.root\)/);
+  assert.doesNotMatch(gate, /ToonOutline\?\.add\(T,dog\.root\)/);
+  assert.match(gate, /DOG_Y=\.1/);
   assert.match(gate, /vertexColors:true/);
 });
 

@@ -37,3 +37,10 @@ test('focused patrol keeps the {actors,notices} shape for the overlay',()=>{
  assert.doesNotMatch(app,/rows\.filter\(v=>v\.id===game\.state\.patrolFocus/);
  assert.match(app,/actors:view\.actors\.filter\(v=>v\.id===focus\),notices:view\.notices\.filter\(n=>n\.targetId===focus\)/);
 });
+test('pinch and wheel zoom work during manager patrol',()=>{
+ const scene=read('js/scene.js');
+ assert.doesNotMatch(scene,/Math\.min\(distance,8\)/);
+ assert.match(scene,/mode==='follow'\?followDistance:/);
+ assert.match(scene,/zoomView\(gesture\.distance\/next\.distance\)/);
+ assert.match(scene,/if\(mode==='follow'\)followDistance=Math\.max\(4\.5,Math\.min\(16,/);
+});

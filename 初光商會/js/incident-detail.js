@@ -1,5 +1,5 @@
 /* Full event explanation and genuine in-game choice buttons, kept inside a compact window. */
-import {incidentSketch} from './incident-sketch.js?v=20261106-fx3';
+import {incidentSketch} from './incident-sketch.js?v=20261106-fx4';
 import {eventEmployee} from './patrol-events.js';
 import {requiresManagerPatrol,patrolEventInstructions} from './event-routing.js';
 const roleName={cashier:'收銀員',stocker:'補貨員',sales:'推銷員',smith:'鍛造師',warehouse:'倉管員',security:'保全員',cleaner:'清潔員',host:'迎賓員'};

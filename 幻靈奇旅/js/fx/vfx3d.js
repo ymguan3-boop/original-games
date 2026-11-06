@@ -26,7 +26,7 @@ function pool(T,geo,cap,gravity,drag,grow,parent,order,outline){
  const material=new T.ShaderMaterial({vertexShader:VERT,fragmentShader:FRAG,uniforms,fog:false,toneMapped:false,side:grow?T.DoubleSide:T.FrontSide});
  const mesh=new T.Mesh(g,material);mesh.frustumCulled=false;mesh.renderOrder=order;mesh.visible=false;parent.add(mesh);
  /* 輪廓是同一批實例再畫一次背面：多 1 個 draw call，手機也負擔得起 */
- let ink=null;if(outline&&!grow){const inkUniforms={...uniforms,uInk:{value:1}},inkMaterial=new T.ShaderMaterial({vertexShader:VERT,fragmentShader:FRAG,uniforms:inkUniforms,fog:false,toneMapped:false,side:T.BackSide});ink=new T.Mesh(g,inkMaterial);ink.frustumCulled=false;ink.renderOrder=order;mesh.add(ink);}
+ let ink=null;if(outline&&!grow){const inkUniforms={...uniforms,uInk:{value:1}},inkMaterial=new T.ShaderMaterial({vertexShader:VERT,fragmentShader:FRAG,uniforms:inkUniforms,fog:false,toneMapped:false,side:T.BackSide,stencilWrite:true,stencilWriteMask:0,stencilRef:1,stencilFunc:T.NotEqualStencilFunc});material.stencilWrite=true;material.stencilRef=1;material.stencilFunc=T.AlwaysStencilFunc;material.stencilZPass=T.ReplaceStencilOp;ink=new T.Mesh(g,inkMaterial);ink.frustumCulled=false;ink.renderOrder=order+.5;mesh.add(ink);}
  let head=0,liveUntil=0,dirty=false;
  return{cap,mesh,uniforms,attrs:[origin,vel,color,time],spawn(now,x,y,z,vx,vy,vz,r,gb,b,life,size,w){const i=head;head=(head+1)%cap;origin.setXYZ(i,x,y,z);vel.setXYZ(i,vx,vy,vz);color.setXYZ(i,r,gb,b);time.setXYZW(i,now,life,size,w);dirty=true;liveUntil=Math.max(liveUntil,now+life);},
   sync(now){uniforms.uTime.value=now;mesh.visible=now<liveUntil;if(dirty){dirty=false;for(const a of [origin,vel,color,time])a.needsUpdate=true;}},

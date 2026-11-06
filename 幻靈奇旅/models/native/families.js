@@ -252,7 +252,7 @@ function batchRigidParts(root){
 function build(path){
  const spec=entry(path);if(!spec)throw Error('未知原生模型：'+path);
  const bp=spec[0]==='bird'?BIRD_BLUEPRINT:ELEPHANT_BLUEPRINT, source=(bp.BIRDS||bp.ELEPHANTS).find(v=>v.id===spec[1]);
- geometryProfile=spec[0];const scene=buildBird(source);batchRigidParts(scene);window.ToonOutline?.add(THREE,scene,{width:OUTLINE_WIDTH,color:OUTLINE_BROWN});const clips=Object.values(buildClips(bp.ACTIONS,scene));
+ geometryProfile=spec[0];const scene=buildBird(source);batchRigidParts(scene);window.ToonOutline?.add(THREE,scene,{width:OUTLINE_WIDTH,color:OUTLINE_BROWN});scene.userData.ownOutline=true;const clips=Object.values(buildClips(bp.ACTIONS,scene));
  clips.forEach(c=>{c.userData={sourceAction:c.name};c.name=clipNames[c.name]||c.name;});
  // Birds have a breathing sitting rest; expose the complete source Sit as well.
  if(!clips.some(c=>c.name==='Idle')){const idle=clips.find(c=>c.name==='Sit').clone();idle.name='Idle';clips.push(idle);}

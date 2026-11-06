@@ -2,7 +2,7 @@
 (() => {
 'use strict';
 const WOOD=0xb8682a,WOOD_D=0x8a4a1c,STONE=0xe6d6bb,STONE_D=0xc8b596,VINE=0x5f9c2c,LEAF=0x86c43a,PETAL=0xfff6e2,YOLK=0xf4c42a,RED=0xd8301f,RED_D=0xa81f14,GOLD=0xf2b81e,COAT=0xf6c63d,CREAM=0xfdeccb,INK=0x2a1a12,BROWN=0x8a4f22,PINK=0xf0707a,WHITE=0xffffff;
-const PANEL=2.9,HEIGHT=1.5,LIT=.62,GATE_DEPTH=.9,FACE_DOOR=Math.atan2(2.6,-3.4);
+const PANEL=2.9,HEIGHT=1.5,LIT=.62,GATE_DEPTH=.9,FACE_DOOR=Math.atan2(2.6,-3.4),DOG_Y=.1;
 /* 依顏色寫入頂點色，所有零件併成一個 BufferGeometry。 */
 function builder(T){
  const pos=[],nor=[],col=[],m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),c=new T.Color(),n3=new T.Matrix3();
@@ -42,6 +42,8 @@ function buildGate(T,LOT,S,root){
 /* 招財：比照設定圖的金毛柴犬＋紅帽紅袍，頭身分開才能點頭、搖尾巴 */
 function coinTexture(T){const c=document.createElement('canvas');c.width=c.height=96;const g=c.getContext('2d');g.fillStyle='#f6bf1f';g.beginPath();g.arc(48,48,47,0,7);g.fill();g.lineWidth=7;g.strokeStyle='#a56a10';g.beginPath();g.arc(48,48,40,0,7);g.stroke();g.fillStyle='#8a4f10';g.font='900 30px "Microsoft JhengHei",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('招',48,32);g.fillText('財',48,64);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;return t;}
 function buildDog(T,S){
+ /* 招財沒有輪廓線，靠深紅、橘毛、奶白的明暗差把部位分開 */
+ const RED=0xc4140c,RED_D=0x6a0806,GOLD=0xffd21f,COAT=0xe8820e,CREAM=0xfffaf0,BROWN=0x54290c;
  const root=new T.Group(),body=builder(T),head=builder(T),tail=builder(T);root.name='招財';
  body.put(S.ball,RED,0,.72,0,.46,.5,.4);body.put(S.ball,COAT,0,.22,0,.3,.22,.28);body.put(S.ball,CREAM,0,.8,.3,.22,.26,.14);
  body.put(S.box,GOLD,0,.42,.32,.72,.1,.08);body.put(S.box,RED_D,0,.42,0,.86,.26,.68);body.put(S.box,GOLD,0,.29,.34,.86,.05,.03);
@@ -62,19 +64,19 @@ function buildDog(T,S){
 function create({THREE:T,parent,LOT,frontZ}){
  const S=shapes(T),fence=buildFence(T,LOT,S);parent.add(fence);
  const gateRoot=new T.Group();parent.add(gateRoot);const gate=buildGate(T,LOT,S,gateRoot);
- const dog=buildDog(T,S),post={x:0,z:LOT.minZ-.3};dog.root.position.set(post.x,0,post.z);dog.root.rotation.y=Math.PI;dog.root.scale.setScalar(.92);parent.add(dog.root);
- window.ToonOutline?.add(T,fence);window.ToonOutline?.add(T,gateRoot);window.ToonOutline?.add(T,dog.root);
+ const dog=buildDog(T,S),post={x:0,z:LOT.minZ-.3};dog.root.position.set(post.x,DOG_Y,post.z);dog.root.rotation.y=Math.PI;dog.root.scale.setScalar(.92);parent.add(dog.root);
+ window.ToonOutline?.add(T,fence);window.ToonOutline?.add(T,gateRoot);
  Object.values(S).forEach(g=>g.dispose());
  /* 帶路：從大門沿西側步道繞到店門口旁等玩家 */
  const route=[[0,LOT.minZ+2.6],[-12.4,LOT.minZ+3.2],[-12.4,frontZ+3.4],[-2.6,frontZ+3.4]],door={x:0,z:frontZ+2.6},trail=[];
  let phase='guard',open=0,time=0,leg=0,leash=15;
- function setPhase(next){phase=next;leg=0;trail.length=0;dog.root.visible=next!=='gone';if(next==='lead')trail.push({x:dog.root.position.x,z:dog.root.position.z});if(next==='wait'){const[x,z]=route[route.length-1];dog.root.position.set(x,0,z);dog.root.rotation.y=FACE_DOOR;}}
+ function setPhase(next){phase=next;leg=0;trail.length=0;dog.root.visible=next!=='gone';if(next==='lead')trail.push({x:dog.root.position.x,z:dog.root.position.z});if(next==='wait'){const[x,z]=route[route.length-1];dog.root.position.set(x,DOG_Y,z);dog.root.rotation.y=FACE_DOOR;}}
  function step(dt,player){
-  if(phase==='lead'){const [x,z]=route[leg],p=dog.root.position,dx=x-p.x,dz=z-p.z,d=Math.hypot(dx,dz),waiting=player&&Math.hypot(player.x-p.x,player.z-p.z)>leash;if(d<.2){trail.push({x:p.x,z:p.z});if(++leg>=route.length){phase='wait';dog.root.rotation.y=FACE_DOOR;}}else if(!waiting){const k=Math.min(d,5.6*dt),last=trail[trail.length-1];p.x+=dx/d*k;p.z+=dz/d*k;if(!last||Math.hypot(last.x-p.x,last.z-p.z)>.6)trail.push({x:p.x,z:p.z});dog.root.rotation.y=Math.atan2(dx,dz);p.y=Math.abs(Math.sin(time*11))*.16;}}
+  if(phase==='lead'){const [x,z]=route[leg],p=dog.root.position,dx=x-p.x,dz=z-p.z,d=Math.hypot(dx,dz),waiting=player&&Math.hypot(player.x-p.x,player.z-p.z)>leash;if(d<.2){trail.push({x:p.x,z:p.z});if(++leg>=route.length){phase='wait';dog.root.rotation.y=FACE_DOOR;}}else if(!waiting){const k=Math.min(d,5.6*dt),last=trail[trail.length-1];p.x+=dx/d*k;p.z+=dz/d*k;if(!last||Math.hypot(last.x-p.x,last.z-p.z)>.6)trail.push({x:p.x,z:p.z});dog.root.rotation.y=Math.atan2(dx,dz);p.y=DOG_Y+Math.abs(Math.sin(time*11))*.16;}}
  }
  function update(dt,player,{unlocked}){time+=dt;
   const near=!!player&&Math.hypot(player.x,player.z-(LOT.minZ+GATE_DEPTH))<6.5,want=near&&unlocked;open=Math.max(0,Math.min(1,open+(want?dt*2.4:-dt*1.8)));for(const l of gate.leaves)l.h.rotation.y=l.s*open*1.5;
-  if(phase==='gone')return;step(dt,player);dog.wag.rotation.z=Math.sin(time*(phase==='guard'?7:13))*.42;dog.neck.rotation.x=phase==='guard'?Math.sin(time*1.6)*.05:0;dog.neck.rotation.z=Math.sin(time*.9)*.05;if(phase!=='lead')dog.root.position.y=0;
+  if(phase==='gone')return;step(dt,player);dog.wag.rotation.z=Math.sin(time*(phase==='guard'?7:13))*.42;dog.neck.rotation.x=phase==='guard'?Math.sin(time*1.6)*.05:0;dog.neck.rotation.z=Math.sin(time*.9)*.05;if(phase!=='lead')dog.root.position.y=DOG_Y;
  }
  const gateZ=LOT.minZ+GATE_DEPTH;
  function blocked(x,z,m=.42){if(Math.abs(x)<LOT.gate&&Math.abs(z-gateZ)<.5+m&&open<.7)return true;if(phase==='guard'&&Math.hypot(x-post.x,z-post.z)<.85+m)return true;if(Math.abs(Math.abs(x)-(LOT.gate+.42))<.55+m&&Math.abs(z-gateZ)<.55+m)return true;return false;}
