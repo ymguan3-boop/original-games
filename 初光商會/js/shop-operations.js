@@ -1,5 +1,5 @@
 import {decorEffects,obstacles} from './decorations.js';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261106-fx4';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261106-fx5';
 import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT} from './nav.js';
 import {resolveCustomerComplaint} from './customer-complaints.js';
 import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js';

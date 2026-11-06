@@ -1,4 +1,4 @@
-import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261105-commissions2';
+import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261106-fx5';
 import {requiresManagerPatrol} from './event-routing.js';
 import {funnyEvents,comicEventEligible} from './funny-events.js';
 import {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue} from './patrol-events.js';
@@ -11,7 +11,7 @@ import {ensureDailyGoals} from './daily-objectives.js';
 import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js';
 import {decorEffects,decorTypes,obstacles} from './decorations.js';
 import {shopAction,operationsTick,stepCustomers,react} from './shop-operations.js?v=20261105-chase-daily1';
-import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js?v=20261106-fx4';
+import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js?v=20261106-fx5';
 import {pointSegmentDistance,segmentDistance} from './motion.js';
 import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER} from './nav.js';
 export const jobs=[['cashier','收銀員','加速結帳'],['stocker','補貨員','自動搬貨'],['sales','推銷員','提高價格接受度'],['smith','鍛造師','走到鍛爐製作武器，並降低武器進貨成本'],['warehouse','倉管員','提高倉儲容量並折減進貨成本'],['security','保全員','提高排隊耐心'],['cleaner','清潔員','成交後改善滿意度'],['host','招待員','增加客流'],['standby','待命','休息恢復疲勞']].map(([id,name,description])=>({id,name,description}));
@@ -57,7 +57,7 @@ export class Game{
  get state(){return this._state;}
  subscribe(fn){this.listeners.add(fn);return()=>this.listeners.delete(fn);}
  emit(){for(const fn of this.listeners)fn(this.state);}
- initial(seed){const inventory={},prices={};for(const c of this.data.catalog){inventory[c.sku]=c.unlockStoreLevel===1?12:0;prices[c.sku]=c.suggestedRetail;}return {version:1,revision:0,seed,gold:3000,level:1,day:1,phase:'closed',time:0,totalTime:0,paused:false,speed:1,popularity:20,satisfaction:75,employees:[this.employee('bulbasaur','stocker'),this.employee('squirtle','cashier')],shelves:[{id:'shelf-1',type:'apothecary',x:4,z:5,rotation:0,sku:'potion',stock:12},{id:'shelf-2',type:'orbs',x:8,z:5,rotation:0,sku:'ball-basic',stock:12}],inventory,prices,averageCosts:Object.fromEntries(this.data.catalog.map(c=>[c.sku,c.buyCost])),shelfStorage:[],decorations:[],decorStorage:[],upgradeProject:null,customers:[],manager:{x:7,z:7,path:[]},log:[{time:0,text:'歡迎來到初光商會！先巡店，再開門迎客。'}],stats:this.emptyStats(),totals:{revenue:0,sales:0,days:0},report:null,history:[],ledger:[],txIds:[],cooldowns:{},event:null,buffs:{},quests:{},memories:{},visualEvents:[],tutorialSeen:{},incidentHistory:[],serial:0,spawnTimer:0,workTimer:0,patrols:0,undo:null,demand:0};}
+ initial(seed){const inventory={},prices={};for(const c of this.data.catalog){inventory[c.sku]=c.unlockStoreLevel===1?12:0;prices[c.sku]=c.suggestedRetail;}return {version:1,revision:0,seed,gold:3000,level:1,day:1,phase:'closed',time:0,totalTime:0,paused:false,speed:1,popularity:20,satisfaction:75,employees:[this.employee('bulbasaur','stocker'),this.employee('squirtle','cashier')],shelves:[{id:'shelf-1',type:'apothecary',x:4,z:5,rotation:0,sku:'potion',stock:12},{id:'shelf-2',type:'orbs',x:8,z:5,rotation:0,sku:'ball-basic',stock:12}],inventory,prices,averageCosts:Object.fromEntries(this.data.catalog.map(c=>[c.sku,c.buyCost])),shelfStorage:[],decorations:[],decorStorage:[],upgradeProject:null,customers:[],manager:{x:7,z:7,path:[]},log:[{time:0,text:'歡迎來到初光商會！跟著招財的提示完成第一天。'}],stats:this.emptyStats(),totals:{revenue:0,sales:0,days:0},report:null,history:[],ledger:[],txIds:[],cooldowns:{},event:null,buffs:{},quests:{},memories:{},visualEvents:[],tutorialSeen:{},incidentHistory:[],serial:0,spawnTimer:0,workTimer:0,patrols:0,undo:null,demand:0};}
  emptyStats(){return {revenue:0,cogs:0,sales:0,served:0,lost:0,wages:0,expenses:0,purchases:0,rewards:0};}
  employee(id,role='standby'){const h=this.data.hirePool.find(x=>x.id===id),sp=this.data.spirits.find(x=>x.id===id);return {id:`emp-${id}`,baseId:id,spiritId:id,name:sp.name,rarity:h.rarity,rarityAtHire:h.rarity,role,xp:0,workLevel:1,mood:80,fatigue:0,wage:h.wage,passiveSlots:{yellow:1,purple:2,red:3}[h.rarity],evolutionHistory:[],xpToday:0,x:role==='cashier'?10:3,z:role==='cashier'?1:3,reaction:'idle'};}
  random(s){s.seed=(Math.imul(s.seed,1664525)+1013904223)>>>0;return s.seed/4294967296;}
