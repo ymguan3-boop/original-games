@@ -1,110 +1,56 @@
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);import test from 'node:test';
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);import assert from 'node:assert/strict';
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);import {readFileSync} from 'node:fs';
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);const src = (p) => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);const game = src('js/game.js'), gate = src('js/commerce-gate.js'), hall = src('js/commerce-hall.js');
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);test('every answer to 招財 ends in the takeover, and he only leaves once the shop is really entered', () => {
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  const lines = game.match(/const ZHAOCAI_LINES=\[[\s\S]*?\n\];/)[0];
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.ok((lines.match(/\n \['/g) || []).length >= 6);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /S\.state\.zhaocai=1;save\(\);closeDialog\(\);syncZhaocai\(\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /function enterCommerce[^\n]*S\.state\.zhaocai=2;/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /if\(st>=2\)g\.setPhase\('gone'\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);});
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);test('after the talk 招財 walks the player to the door and straight into the shop', () => {
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /if\(zhaocaiEscort\)return stepZhaocaiEscort\(dt\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /zhaocaiEscort=true;enterBusy=true/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /enterBusy=false;document\.body\.classList\.remove\('zhaocai-escort'\);enterCommerce\(\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(gate, /setLeash\(v\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);});
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);test('toasts over a modal live on body, so the card cannot cover 隊伍已滿', () => {
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /host=overModal\?document\.body:\$\('game'\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /return toast\('隊伍已滿'\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);});
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);test('arena spirits stand on the discs, with half-width lines', () => {
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /const ARENA_GROUND=\.14/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /\|\|ARENA_GROUND;/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /width:ToonOutline\.WIDTH\/2/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(src('models/native/families.js'), /OUTLINE_WIDTH=\.0026,OUTLINE_BROWN=0x7a4a2a/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);});
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);test('the gate opens only on approach, and the fence and gate block the way until then', () => {
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(gate, /want=near&&unlocked/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(gate, /open<\.7\)return true/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(hall, /gate\?\.blocked\(x,z,m\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);});
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);test('fence, gate and dog are outlined and merged so they stay cheap', () => {
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(gate, /ToonOutline\?\.add\(T,fence\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(gate, /ToonOutline\?\.add\(T,dog\.root\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(gate, /vertexColors:true/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);});
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);test('radar marks the cave, pier and commerce, and 回復藥 cleanses the whole party', () => {
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /name:'山洞'/); assert.match(game, /name:'碼頭'/); assert.match(game, /name:'商會'/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /p\.hp=Math\.min\(p\.s\.hp,p\.hp\+45\);cleanseAllies\(b\)/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /NEGATIVE_STATUS=\['poison','burn','freeze','stun','defDown'\]/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);});
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);test('special-spirit broadcasts outrank traveller tips and never show together', () => {
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /channel==='general'&&!guardian\.hidden\)\{pendingBroadcast=text;return;\}/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);  assert.match(game, /channel==='guardian'&&!general\.hidden/);
-assert.match(game, /||arenaGround(b);/);
-  assert.match(game, /FISHING_GROUND=-.05/);});
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const src = (p) => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
+const game = src('js/game.js'), gate = src('js/commerce-gate.js'), hall = src('js/commerce-hall.js');
+
+test('every answer to 招財 ends in the takeover, and he only leaves once the shop is really entered', () => {
+  const lines = game.match(/const ZHAOCAI_LINES=\[[\s\S]*?\n\];/)[0];
+  assert.ok((lines.match(/\n \['/g) || []).length >= 6);
+  assert.match(game, /S\.state\.zhaocai=1;save\(\);closeDialog\(\);syncZhaocai\(\)/);
+  assert.match(game, /function enterCommerce[^\n]*S\.state\.zhaocai=2;/);
+  assert.match(game, /if\(st>=2\)g\.setPhase\('gone'\)/);
+});
+
+test('after the talk 招財 walks the player to the door and straight into the shop', () => {
+  assert.match(game, /if\(zhaocaiEscort\)return stepZhaocaiEscort\(dt\)/);
+  assert.match(game, /zhaocaiEscort=true;enterBusy=true/);
+  assert.match(game, /enterBusy=false;document\.body\.classList\.remove\('zhaocai-escort'\);enterCommerce\(\)/);
+  assert.match(gate, /setLeash\(v\)/);
+});
+
+test('toasts over a modal live on body, so the card cannot cover 隊伍已滿', () => {
+  assert.match(game, /host=overModal\?document\.body:\$\('game'\)/);
+  assert.match(game, /return toast\('隊伍已滿'\)/);
+});
+
+test('arena spirits stand on the discs, with half-width lines', () => {
+  assert.match(game, /const ARENA_GROUND=\.14/);
+  assert.match(game, /\|\|arenaGround\(b\);/);
+  assert.match(game, /FISHING_GROUND=-\.05/);
+  assert.match(game, /width:ToonOutline\.WIDTH\/2/);
+  assert.match(src('models/native/families.js'), /OUTLINE_WIDTH=\.0026,OUTLINE_BROWN=0x7a4a2a/);
+});
+
+test('the gate opens only on approach, and the fence and gate block the way until then', () => {
+  assert.match(gate, /want=near&&unlocked/);
+  assert.match(gate, /open<\.7\)return true/);
+  assert.match(hall, /gate\?\.blocked\(x,z,m\)/);
+});
+
+test('fence, gate and dog are outlined and merged so they stay cheap', () => {
+  assert.match(gate, /ToonOutline\?\.add\(T,fence\)/);
+  assert.match(gate, /ToonOutline\?\.add\(T,dog\.root\)/);
+  assert.match(gate, /vertexColors:true/);
+});
+
+test('radar marks the cave, pier and commerce, and 回復藥 cleanses the whole party', () => {
+  assert.match(game, /name:'山洞'/); assert.match(game, /name:'碼頭'/); assert.match(game, /name:'商會'/);
+  assert.match(game, /p\.hp=Math\.min\(p\.s\.hp,p\.hp\+45\);cleanseAllies\(b\)/);
+  assert.match(game, /NEGATIVE_STATUS=\['poison','burn','freeze','stun','defDown'\]/);
+});
+
+test('special-spirit broadcasts outrank traveller tips and never show together', () => {
+  assert.match(game, /channel==='general'&&!guardian\.hidden\)\{pendingBroadcast=text;return;\}/);
+  assert.match(game, /channel==='guardian'&&!general\.hidden/);
+});
