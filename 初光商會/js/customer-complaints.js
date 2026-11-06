@@ -1,5 +1,5 @@
 /* Click-to-resolve customer problems. Uses normal shop transactions; never grants a free sale. */
-import {shelfCapacity} from './furniture.js';
+import {shelfCapacity} from './furniture.js?v=20261106-fx2';
 import {ENTRANCE} from './nav.js';
 import {applyFreeEventFatigue} from './patrol-events.js';
 const clamp=n=>Math.max(0,Math.min(100,n));

@@ -36,24 +36,8 @@
 /* A scalable vector/text animation scene replaces tiny enlarged GIF frames. */
 .incident-scene{display:flex;flex-direction:column;flex:0 0 auto;width:min(100%,212px);min-width:116px;max-width:100%;height:125px;padding:7px 8px;border:2px solid #c59459;border-radius:15px;background:radial-gradient(ellipse at 50% 30%,#fff4cc,#f4d2a6 85%);color:#75502a;box-shadow:inset 0 1px #fff8ec;overflow:hidden;contain:layout paint}
 .incident-scene-stage{position:relative;flex:1;min-height:75px;isolation:isolate}
-.incident-sprite{position:absolute;font-size:clamp(26px,3.8vw,43px);line-height:1.2;filter:drop-shadow(0 3px 0 #9c724955);will-change:transform;animation-duration:1.7s;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
-.incident-sprite--a{left:9%;top:22%;animation-name:comic-hop}
-.incident-sprite--b{left:43%;top:12%;animation-name:comic-bob;animation-delay:-.45s}
-.incident-sprite--c{right:5%;top:24%;animation-name:comic-wobble;animation-delay:-.8s}
-.incident-spark{position:absolute;font-size:18px;color:#ec9a36;animation:comic-spark 1.3s ease-out infinite;pointer-events:none}
-.incident-spark--left{left:13%;top:4%}.incident-spark--right{right:11%;top:7%;animation-delay:-.65s}
+.incident-spark--right{right:11%;top:7%;animation-delay:-.65s}
 .incident-scene-caption{overflow:hidden;text-align:center;white-space:nowrap;text-overflow:ellipsis;font-size:11px;line-height:1.4;font-weight:800;color:#835a34}
-.incident-scene--chase .incident-sprite--a{animation-name:comic-chase}
-.incident-scene--chase .incident-sprite--b{animation-name:comic-chase;animation-delay:-.7s}
-.incident-scene--stack .incident-sprite--a,.incident-scene--stack .incident-sprite--b{animation-name:comic-stack}
-.incident-scene--dance .incident-sprite{animation-name:comic-dance}
-.incident-scene--spin .incident-sprite--b,.incident-scene--spin .incident-sprite--a{animation-name:comic-spin}
-.incident-scene--jelly .incident-sprite{animation-name:comic-jelly}
-.incident-scene--float .incident-sprite{animation-name:comic-float}
-.incident-scene--flutter .incident-sprite{animation-name:comic-flutter}
-.incident-scene--pop .incident-sprite{animation-name:comic-pop}
-.incident-scene--sneak .incident-sprite{animation-name:comic-sneak}
-.incident-scene--sparkle .incident-sprite{animation-name:comic-sparkle}
 @keyframes comic-hop{0%,100%{transform:translateY(0) rotate(-6deg)}45%{transform:translateY(-18px) rotate(8deg)}}
 @keyframes comic-bob{0%,100%{transform:translateY(5px)}50%{transform:translateY(-14px)}}
 @keyframes comic-wobble{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(14deg)}}

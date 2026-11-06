@@ -349,29 +349,29 @@
   // ---- 材質（felt = 不織布絨面） -------------------------------------------
   const base = (skin) => ({
     skin: { c: skin, felt: true },
-    pink: { c: '#E6BDB5', felt: true },
-    pad: { c: '#F0E7D7', felt: true },
-    thread: { c: '#F5EEE2', rough: 0.8 },
-    button: { c: '#4A2C20', rough: 0.3, coat: 0.8 },
-    brow: { c: '#4E3528', rough: 0.8 },
-    cheek: { c: '#F2A1A4', rough: 1 },
-    cream: { c: '#F3EBDB', felt: true },
-    red: { c: '#BE4339', felt: true },
-    yellow: { c: '#E2B13E', felt: true },
+    pink: { c: '#E8807F', felt: true },
+    pad: { c: '#E7C79A', felt: true },
+    thread: { c: '#FFF6E6', rough: 0.8 },
+    button: { c: '#3A1F14', rough: 0.3, coat: 0.8 },
+    brow: { c: '#3A2418', rough: 0.8 },
+    cheek: { c: '#F07C86', rough: 1 },
+    cream: { c: '#F7E3B8', felt: true },
+    red: { c: '#C22A22', felt: true },
+    yellow: { c: '#F2B51E', felt: true },
   });
   const ELEPHANTS = [
     {
       id: 'fat', name: '小肥象', tag: '初階', accent: '#B5483E',
-      materials: base('#A8AEB9'),
+      materials: base('#7E8798'),
       parts: fat(),
     },
     {
       id: 'king', name: '阿拉肥', tag: '終階', accent: '#8E1F2B',
-      materials: Object.assign(base('#A4A4A9'), {
-        velvet: { c: '#8A1C29', felt: true, sheen: 1 },
-        fur: { c: '#F6F1E6', felt: true },
-        spot: { c: '#2D2420', rough: 1 },
-        gold: { c: '#D7A946', rough: 0.3, metal: 0.95 },
+      materials: Object.assign(base('#7C7F8C'), {
+        velvet: { c: '#A80F24', felt: true, sheen: 1 },
+        fur: { c: '#FFF8EA', felt: true },
+        spot: { c: '#201712', rough: 1 },
+        gold: { c: '#F0B422', rough: 0.3, metal: 0.55 },
         ruby: { c: '#C3172C', rough: 0.05, trans: 0.5, coat: 1 },
         pearl: { c: '#F5F0E8', rough: 0.2, coat: 1 },
       }),
@@ -379,14 +379,14 @@
     },
     {
       id: 'fly', name: '小飛', tag: '飛行員', accent: '#4F7FB4',
-      materials: Object.assign(base('#A9C4E4'), {
-        brown: { c: '#6A452F', felt: true },
-        brownDark: { c: '#4C3123', felt: true },
-        glass: { c: '#A9D1EA', rough: 0.1, coat: 1, trans: 0.4 },
-        glassRim: { c: '#9DBBD6', felt: true },
-        white: { c: '#F8F5EF', felt: true },
-        gold: { c: '#D9AE4C', rough: 0.3, metal: 0.95 },
-        goldDark: { c: '#A57A28', rough: 0.4, metal: 0.9 },
+      materials: Object.assign(base('#6FA3DC'), {
+        brown: { c: '#7A4A28', felt: true },
+        brownDark: { c: '#4A2A16', felt: true },
+        glass: { c: '#7CC6F2', rough: 0.1, coat: 1, trans: 0.4 },
+        glassRim: { c: '#3F6E9E', felt: true },
+        white: { c: '#FFFAF0', felt: true },
+        gold: { c: '#F0B422', rough: 0.3, metal: 0.55 },
+        goldDark: { c: '#B9791A', rough: 0.4, metal: 0.5 },
       }),
       parts: fly(),
     },

@@ -49,7 +49,7 @@ export function cloneModel(source) {
 
 export async function nativeAsset(path) {
   const prefix = path.split('://')[0]; let api;
-  if (prefix === 'native') { await script('models/native/birds-blueprint.js'); await script('models/native/elephants-blueprint.js'); await script('models/native/families.js', 'NativeFamilies'); return {g: NativeFamilies.build(path)}; }
+  if (prefix === 'native') { await script('js/fx/toon-outline.js');await script('models/native/birds-blueprint.js'); await script('models/native/elephants-blueprint.js'); await script('models/native/families.js', 'NativeFamilies'); return {g: NativeFamilies.build(path)}; }
   if (prefix === 'avian') { const id = path.split('://')[1], file = {jigglypuff: 'tricolor-egg', treecko: 'small-birds', grovyle: 'small-birds', sceptile: 'little-eagle', palkia: 'dapeng'}[id]; await script('models/native/' + file + '.js'); await script('models/native/avian-spirits.js', 'AvianSpirits'); api = AvianSpirits; }
   else if (['green-eye-bat', 'rabbit-evolution'].includes(prefix)) { await script('models/native/replacement-spirits.js', 'ReplacementSpirits'); api = ReplacementSpirits; }
   else if (prefix === 'robot-evolution') {

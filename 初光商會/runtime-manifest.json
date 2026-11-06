@@ -59,33 +59,6 @@
       }
     },
     {
-      "path": "assets/art-v4/furniture/armory.glb",
-      "sourcePath": "assets/art-v4/furniture/armory.glb",
-      "bytes": 1269000,
-      "sha256": "5686bd2945275fe0af00879be0444718ce36976bd46724bc20d53ca5340525cb",
-      "reasons": [
-        "shelf registry"
-      ],
-      "glbConversion": {
-        "changedImages": [
-          {
-            "bufferView": 19,
-            "originalSize": [
-              1254,
-              1254
-            ],
-            "size": [
-              1024,
-              1024
-            ],
-            "savedBytes": 684279
-          }
-        ],
-        "nonImageBufferSha256": "1ae9320b8f3fef3df1a7ac382881b8afc46bbcceb3f543ec687863c44bf53787",
-        "savedBytes": 684280
-      }
-    },
-    {
       "path": "assets/art-v4/furniture/materials.glb",
       "sourcePath": "assets/art-v4/furniture/materials.glb",
       "bytes": 1300560,
@@ -186,25 +159,6 @@
       }
     },
     {
-      "path": "assets/art-v5/quest-ledger.webp",
-      "sourcePath": "assets/art-v5/quest-ledger.png",
-      "bytes": 246156,
-      "sha256": "634d02967470a9d671cc3f19892bd180857f4a4e97a008d7c5dc716812364f8e",
-      "reasons": [
-        "quest icons"
-      ],
-      "image": {
-        "originalSize": [
-          1254,
-          1254
-        ],
-        "size": [
-          1024,
-          1024
-        ]
-      }
-    },
-    {
       "path": "assets/art-v5/quest-patrol.webp",
       "sourcePath": "assets/art-v5/quest-patrol.png",
       "bytes": 217066,
@@ -231,25 +185,6 @@
       "sha256": "0f3ea7c1fee27788b7ef87e106cbafc391c28c7edd4eda9dbf62df5b5673ffbc",
       "reasons": [
         "js/interior-v5.js asset",
-        "quest icons"
-      ],
-      "image": {
-        "originalSize": [
-          1254,
-          1254
-        ],
-        "size": [
-          1024,
-          1024
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v5/quest-trade.webp",
-      "sourcePath": "assets/art-v5/quest-trade.png",
-      "bytes": 168106,
-      "sha256": "995d56cf599a12a95936957871ce8a9dc55b7c0410b58defbfcdae3ed775e23d",
-      "reasons": [
         "quest icons"
       ],
       "image": {
@@ -956,25 +891,6 @@
       }
     },
     {
-      "path": "assets/art-v7/previews/rack-armory.webp",
-      "sourcePath": "assets/art-v7/previews/rack-armory.png",
-      "bytes": 5394,
-      "sha256": "d6b4308d561801a3f894132e714e03b00e52048c92edc4cf65e73f1e21cc535d",
-      "reasons": [
-        "shelf preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
       "path": "assets/art-v7/previews/rack-materials.webp",
       "sourcePath": "assets/art-v7/previews/rack-materials.png",
       "bytes": 6024,
@@ -1149,25 +1065,6 @@
       }
     },
     {
-      "path": "assets/art-v8/previews/product-battery.webp",
-      "sourcePath": "assets/art-v8/previews/product-battery.png",
-      "bytes": 4292,
-      "sha256": "871a9e45fd98d0a94abc8fe7e33fb2ea09dbe771e5be43019ebfbf6c7e58ea8f",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
       "path": "assets/art-v8/previews/product-berry.webp",
       "sourcePath": "assets/art-v8/previews/product-berry.png",
       "bytes": 3652,
@@ -1225,120 +1122,6 @@
       }
     },
     {
-      "path": "assets/art-v8/previews/product-buff-attack.webp",
-      "sourcePath": "assets/art-v8/previews/product-buff-attack.png",
-      "bytes": 4292,
-      "sha256": "871a9e45fd98d0a94abc8fe7e33fb2ea09dbe771e5be43019ebfbf6c7e58ea8f",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-buff-capture.webp",
-      "sourcePath": "assets/art-v8/previews/product-buff-capture.png",
-      "bytes": 4292,
-      "sha256": "871a9e45fd98d0a94abc8fe7e33fb2ea09dbe771e5be43019ebfbf6c7e58ea8f",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-buff-defense.webp",
-      "sourcePath": "assets/art-v8/previews/product-buff-defense.png",
-      "bytes": 4292,
-      "sha256": "871a9e45fd98d0a94abc8fe7e33fb2ea09dbe771e5be43019ebfbf6c7e58ea8f",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-buff-pickup.webp",
-      "sourcePath": "assets/art-v8/previews/product-buff-pickup.png",
-      "bytes": 4292,
-      "sha256": "871a9e45fd98d0a94abc8fe7e33fb2ea09dbe771e5be43019ebfbf6c7e58ea8f",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-guns-starter.webp",
-      "sourcePath": "assets/art-v8/previews/product-guns-starter.png",
-      "bytes": 1892,
-      "sha256": "261671cee71c856fcf9ec3312e5791dc7ec7a3bd8f0e2562575dd039dd90f420",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-guns-thunder.webp",
-      "sourcePath": "assets/art-v8/previews/product-guns-thunder.png",
-      "bytes": 1892,
-      "sha256": "261671cee71c856fcf9ec3312e5791dc7ec7a3bd8f0e2562575dd039dd90f420",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
       "path": "assets/art-v8/previews/product-knife-starter.webp",
       "sourcePath": "assets/art-v8/previews/product-knife-starter.png",
       "bytes": 1378,
@@ -1362,101 +1145,6 @@
       "sourcePath": "assets/art-v8/previews/product-knife-tide.png",
       "bytes": 1378,
       "sha256": "70206f1986b44ed77525810e6ed4318ce5730956eeabcd7f34c6c8343ee8f08d",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-pet-xp-double.webp",
-      "sourcePath": "assets/art-v8/previews/product-pet-xp-double.png",
-      "bytes": 4292,
-      "sha256": "871a9e45fd98d0a94abc8fe7e33fb2ea09dbe771e5be43019ebfbf6c7e58ea8f",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-revive.webp",
-      "sourcePath": "assets/art-v8/previews/product-revive.png",
-      "bytes": 4292,
-      "sha256": "871a9e45fd98d0a94abc8fe7e33fb2ea09dbe771e5be43019ebfbf6c7e58ea8f",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-shop-crystal.webp",
-      "sourcePath": "assets/art-v8/previews/product-shop-crystal.png",
-      "bytes": 4978,
-      "sha256": "b543d26d478c6e89c313512ae9d46a99f5da8ae94b6dec3a3f932bd1e9b2466e",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-shop-iron.webp",
-      "sourcePath": "assets/art-v8/previews/product-shop-iron.png",
-      "bytes": 4978,
-      "sha256": "b543d26d478c6e89c313512ae9d46a99f5da8ae94b6dec3a3f932bd1e9b2466e",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-shop-wood.webp",
-      "sourcePath": "assets/art-v8/previews/product-shop-wood.png",
-      "bytes": 4978,
-      "sha256": "b543d26d478c6e89c313512ae9d46a99f5da8ae94b6dec3a3f932bd1e9b2466e",
       "reasons": [
         "catalog preview"
       ],
@@ -1497,60 +1185,6 @@
       "sha256": "261671cee71c856fcf9ec3312e5791dc7ec7a3bd8f0e2562575dd039dd90f420",
       "reasons": [
         "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v8/previews/product-vacuum-orb.webp",
-      "sourcePath": "assets/art-v8/previews/product-vacuum-orb.png",
-      "bytes": 4292,
-      "sha256": "871a9e45fd98d0a94abc8fe7e33fb2ea09dbe771e5be43019ebfbf6c7e58ea8f",
-      "reasons": [
-        "catalog preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v9/potion-craft-v5/potion-craft-v5.glb",
-      "sourcePath": "assets/art-v9/potion-craft-v5/potion-craft-v5.glb",
-      "bytes": 1116996,
-      "sha256": "16063fc48a07bacca3ba75fb4371e87f8fca9d9a6c12303c875d7a811f856398",
-      "reasons": [
-        "catalog product",
-        "js/shelf-products.js asset"
-      ],
-      "glbConversion": {
-        "changedImages": [],
-        "nonImageBufferSha256": "b6da3b60fbdc8b79c5ff66f95a70b77f991a07230cd16489d785cc62ba100ffd",
-        "savedBytes": 0
-      }
-    },
-    {
-      "path": "assets/art-v9/previews/product-potion-v5.webp",
-      "sourcePath": "assets/art-v9/previews/product-potion-v5.png",
-      "bytes": 4308,
-      "sha256": "c7c95f1b7a40bf1a3949b7c86eda913143e24120c0539f485dbaff912a5e7af2",
-      "reasons": [
-        "catalog preview",
-        "js/goods-panel.js asset"
       ],
       "image": {
         "originalSize": [
@@ -1615,33 +1249,6 @@
       "sourcePath": "assets/ui-generated/event-magic.webp",
       "bytes": 58792,
       "sha256": "1237a08b481fde9d9c71c4ad3f27e226d3436b88b8043507af2c1bf55d615df1",
-      "reasons": [
-        "patrol role events"
-      ]
-    },
-    {
-      "path": "assets/ui-generated/event-praise.webp",
-      "sourcePath": "assets/ui-generated/event-praise.webp",
-      "bytes": 45562,
-      "sha256": "c21e403301eb81f13159301407f23851f0c50ac8126677ae89a186fa5c087c20",
-      "reasons": [
-        "patrol role events"
-      ]
-    },
-    {
-      "path": "assets/ui-generated/event-queue.webp",
-      "sourcePath": "assets/ui-generated/event-queue.webp",
-      "bytes": 61836,
-      "sha256": "90192e459bcb0016ca2875af25fd8f732a4f8bff58f382fa470b7e51a4525d2e",
-      "reasons": [
-        "patrol role events"
-      ]
-    },
-    {
-      "path": "assets/ui-generated/event-shoplift.webp",
-      "sourcePath": "assets/ui-generated/event-shoplift.webp",
-      "bytes": 49566,
-      "sha256": "392f9cd451ed858b9665623b08ec6b0133b01ef71b50d31919c54843d58e9ba0",
       "reasons": [
         "patrol role events"
       ]
@@ -2728,7 +2335,7 @@
     "main actor/card registries and native dispatch"
   ],
   "externalScope": "Sibling main game is delivered separately. Listed direct dependencies are validated against authoring sibling; its own transitive dependencies remain owned by the main-game bundle.",
-  "fileCount": 145,
+  "fileCount": 123,
   "totalBytes": 37900361,
   "originalTotalBytes": 80241772,
   "savedBytes": 42341411

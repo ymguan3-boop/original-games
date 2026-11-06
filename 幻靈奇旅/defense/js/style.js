@@ -85,7 +85,7 @@ export function createToonKit(THREE) {
   function toonify(root, {outline = 0.04, shadows = true} = {}) {
     root.updateMatrixWorld(true);
     const meshes = [];
-    root.traverse((n) => { if (n.isMesh && !n.userData.isOutline && !n.userData.isEffect && n.visible !== false) meshes.push(n); });
+    root.traverse((n) => { if (n.isMesh && !n.userData.isOutline && !n.userData.toonOutlined && !n.userData.isEffect && n.visible !== false) meshes.push(n); });
     for (const n of meshes) {
       const before = n.material;
       n.material = Array.isArray(before) ? before.map((m) => toToon(m, n)) : toToon(before, n);

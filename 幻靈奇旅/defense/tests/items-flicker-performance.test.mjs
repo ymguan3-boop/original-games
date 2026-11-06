@@ -76,6 +76,6 @@ test('the pier deck carries the hero and the mount; the commerce hall follows th
   assert.match(harbor, /const deckY=/); assert.match(game, /harbor\.deckY\(S\.player\.x,S\.player\.z\)/);
   assert.match(game, /function tickMount\(dt\)\{\s*tickGroundHeight\(\);/);
   assert.ok(html.indexOf('js/commerce-hall.js') < html.indexOf('js/game.js'));
-  assert.match(hall, /PREVIEW_CODE='741216'/); assert.match(hall, /const QUEUE=\[0,2,3,5,6,8\]/);
+  assert.match(hall, /const QUEUE=\[0,2,3,5,6,8\]/);
   assert.match(game, /commerce\?\.inLot\(x,z\)/);
 });

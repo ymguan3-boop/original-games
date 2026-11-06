@@ -82,7 +82,7 @@ test('focused task pauses simulation, blocks unrelated interactions and returns 
 test('mobile alarm, card badge and existing artwork animate before the real saved transition',()=>{
  const app=read('js/app.js'),css=read('commerce-evolution-patrol-v18.css'),html=read('index.html');
  assert.match(html,/id="staff-evolution-stage"/);
- assert.match(html,/app\.js\?v=20261105-evolution-patrol1/);
+ assert.match(html,/app\.js\?v=\d{8}-/);
  assert.match(app,/staffButton\.classList\.toggle\('staff-evolution-ready'/);
  assert.match(app,/data-evolve-employee/);
  assert.match(app,/evolve-ready-label/);

@@ -15,7 +15,7 @@ const lerp=(a,b,k)=>a+(b-a)*k,ease=k=>k*k*(3-2*k);
 /* 把原生 6.6 秒 Boomerang 姿勢重映射到新節奏：出手 2.38、接回 5.55 兩個關鍵影格對齊真正的飛鏢時間。 */
 function nativeTime(sec,windup=WINDUP,flight=DURATION,follow=FOLLOW){if(sec<windup)return lerp(1.6,2.38,Math.max(0,sec)/windup);if(sec<windup+flight)return lerp(2.38,5.55,(sec-windup)/flight);return Math.min(6.6,lerp(5.55,6.6,(sec-windup-flight)/follow));}
 function create({attackId,targets,hand,targetPoint,isValid=()=>true,idOf=t=>t.id,onHit,onCatch,onCancel,onFrame,bulge=.9}){
- const plan=schedule(targets.length),stops=plan.hits.map((at,i)=>({at,target:targets[i]})),seen=new Set(),out={x:0,y:0,z:0};
+ const plan=schedule(targets.length),stops=targets.slice(0,plan.hits.length).map((t,i)=>({at:plan.hits[i],target:t})),seen=new Set(),out={x:0,y:0,z:0};
  let index=0,prevAt=0,lastPos=null,angle=0,finished=false,cancelled=false,hitCount=0,lastT=0;
  const first=hand();let prev={x:first.x,y:first.y,z:first.z};
  function curve(a,b,k,side){const u=ease(k),s=Math.sin(Math.PI*k)*bulge*side,dx=b.x-a.x,dz=b.z-a.z,l=Math.hypot(dx,dz)||1;out.x=lerp(a.x,b.x,u)+(-dz/l)*s;out.y=lerp(a.y,b.y,u)+Math.sin(Math.PI*k)*.28;out.z=lerp(a.z,b.z,u)+(dx/l)*s;return out;}

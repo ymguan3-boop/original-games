@@ -88,6 +88,7 @@ function build({THREE:T,group,town,config,mobile=false}){
   // Walkable: the town side up to the railing, plus the bridge deck up to the tunnel mouth.
   blocked(x,z,m=.42){return z<railZ+.35+m&&!(inBridge(x,m)&&z>=C.tunnelZ+m);},
   canFish(p){return p.z<railZ+.35+.42+.95&&p.z>railZ&&Math.abs(p.x-bx)>bh+.45&&p.x>C.minX+1&&p.x<C.maxX-1;},
+  tunnelPoint(){return{x:C.bridgeX,z:C.tunnelZ};},
   atTunnel(p){return inBridge(p.x,0)&&p.z<C.tunnelZ+1.6;},
   inWaterZone(x,z){return x>=zone.minX&&x<=zone.maxX&&z>=zone.minZ&&z<=zone.maxZ;},
   // Reserved for water-type (潮) spirits once their river-only spawning is switched on.

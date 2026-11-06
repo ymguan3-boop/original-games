@@ -28,7 +28,7 @@ test('the phone tier uses fewer particles than desktop', () => {
 test('it is real 3D geometry with no sprites, images or per-particle objects', () => {
   assert.match(code, /OctahedronGeometry/);
   for (const bad of ['Sprite', 'Texture', 'Image(', 'transparent:true', 'new T.Mesh(g,material)new']) assert.ok(!code.includes(bad), bad);
-  assert.equal((code.match(/new T\.Mesh\(/g) || []).length, 1, 'one mesh per pool');
+  assert.equal((code.match(/new T\.Mesh\(/g) || []).length, 2, 'one mesh per pool, plus its optional outline pass');
 });
 
 test('it touches no sky, fog, exposure, HP or save data', () => {

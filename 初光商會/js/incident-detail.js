@@ -1,5 +1,5 @@
 /* Full event explanation and genuine in-game choice buttons, kept inside a compact window. */
-import {incidentSketch} from './incident-sketch.js';
+import {incidentSketch} from './incident-sketch.js?v=20261106-fx2';
 import {eventEmployee} from './patrol-events.js';
 import {requiresManagerPatrol,patrolEventInstructions} from './event-routing.js';
 const roleName={cashier:'收銀員',stocker:'補貨員',sales:'推銷員',smith:'鍛造師',warehouse:'倉管員',security:'保全員',cleaner:'清潔員',host:'迎賓員'};
@@ -17,7 +17,6 @@ export function eventChoiceHint(choice,gold){
 export function incidentDetailPanel(game,escape,button){
  const event=game.state.event;if(!event)return '<p class="note">事件已結束，請點擊新的事件名稱查看。</p>';
  const person=eventEmployee(game.state,event),who=person?.name||roleName[event.role]||'商會夥伴';
- const image=['cashier','stocker','sales','smith','warehouse','security','cleaner','host'].includes(event.role)?event.role:'question';
  const patrolOnly=requiresManagerPatrol(event),choices=patrolOnly?[]:(Array.isArray(event.choices)?event.choices:[]);
  const optionCount=Math.min(3,choices.length);
  const options=choices.slice(0,3).map(c=>{
@@ -30,7 +29,6 @@ export function incidentDetailPanel(game,escape,button){
 
  return `<article class="incident-presentation" data-incident-id="${escape(event.instanceId||event.id)}">
  <div class="incident-media" aria-label="事件動畫">
-   <img class="incident-gif" src="./assets/event-gifs/${image}.gif" alt="${escape(event.title)}動態示意" loading="eager">
    ${incidentSketch(event,escape)}
  </div>
  <div class="incident-story"><span class="badge">${event.funny?'😂 搞笑事件':'⚠ 待處理事件'} · ${escape(who)}</span>

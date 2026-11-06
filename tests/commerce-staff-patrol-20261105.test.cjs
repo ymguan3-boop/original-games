@@ -80,6 +80,6 @@ test('free event choices disclose extra fatigue and existing rewards still work'
  const source=read('js/core.js'),detail=read('js/incident-detail.js');
  assert.match(source,/if\(ch\.cost===0\)\{for\(const change of applyFreeEventFatigue\(s,e\)/);
  assert.match(source,/this\.applyEventEffect\(s,ev\)/);
- assert.match(detail,/freeResolutionText\(c\)/);
+ assert.match(detail,/eventChoiceHint\(c,/);
  assert.match(detail,/疲勞 \+8/);
 });

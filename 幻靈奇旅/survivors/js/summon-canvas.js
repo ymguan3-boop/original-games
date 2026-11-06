@@ -20,7 +20,7 @@ export function createSummon(stage, rewards, picture, duration) {
   function resize() { const rect=stage.getBoundingClientRect(); width=Math.max(1,rect.width);height=Math.max(1,rect.height); const dpr=Math.min(1.6,devicePixelRatio||1);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0); }
   const observer=new ResizeObserver(resize);observer.observe(stage);resize();
   function imageReady(img) {return img?.complete && img.naturalWidth>0;}
-  function glow(x,y,r,color,alpha=1) {ctx.save();ctx.globalAlpha=alpha;const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,color);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);ctx.restore();}
+  function glow(x,y,r,color,alpha=1) {ctx.save();ctx.globalAlpha=alpha;const g=ctx.createRadialGradient(x,y,0,x,y,Math.max(.01,r));g.addColorStop(0,color);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);ctx.restore();}
   function drawCore(x,y,size,angle,alpha=1) {ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.rotate(angle);if(imageReady(core)){ctx.drawImage(core,-size/2,-size/2,size,size);}else{ctx.fillStyle='#b8ffea';ctx.beginPath();ctx.moveTo(0,-size*.4);ctx.lineTo(size*.28,0);ctx.lineTo(0,size*.4);ctx.lineTo(-size*.28,0);ctx.closePath();ctx.fill();}ctx.restore();}
   function setPhase(next,text) {if(phase!==next){phase=next;stage.dataset.phase=next;caption.textContent=text;}}
   function paint(realTime) {

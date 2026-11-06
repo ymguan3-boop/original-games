@@ -1,5 +1,6 @@
 const categories={all:'全部',item:'補給',weapon:'武器',material:'素材',forge:'鍛造'};
-export const productPreview=sku=>sku==='potion'?'./assets/art-v9/previews/product-potion-v5.webp':`./assets/art-v8/previews/product-${encodeURIComponent(sku)}.webp`;
+const MODELED=new Set(['potion','revive','battery','vacuum-orb','pet-xp-double','buff-attack','buff-defense','buff-capture','buff-pickup','shop-iron','shop-wood','shop-crystal','guns-starter','guns-thunder']);
+export const productPreview=sku=>MODELED.has(sku)?`./assets/art-v10/previews/product-${encodeURIComponent(sku)}.webp`:`./assets/art-v8/previews/product-${encodeURIComponent(sku)}.webp`;
 const image=(p,esc)=>`<img class="product-preview" src="${productPreview(p.sku)}" alt="${esc(p.displayName)}模型預覽" width="72" height="72" loading="lazy">`;
 export function goodsPanel(game,tab,esc,money,btn,focusSku=null){
  const s=game.state,d=game.data,get=sku=>d.catalog.find(p=>p.sku===sku),unlocked=d.catalog.filter(p=>s.level>=p.unlockStoreLevel).length;

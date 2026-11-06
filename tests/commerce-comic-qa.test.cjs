@@ -8,11 +8,10 @@ test('24 new funny events are unique and retain free resolution routes',()=>{
  for(const e of events){assert.match(e.id,/^comic-\d+$/);assert.equal(e.emoji.length,3);assert.ok(e.animation);assert.ok(e.dialogue.length>=12);assert.ok(e.cooldown>=40);assert.ok(e.choices.some(x=>x.cost===0));assert.ok(e.choices.every(x=>x.mood>=0&&x.satisfaction>=0&&x.xp>=0));}
  const core=read('js/core.js');assert.match(core,/\.concat\(funnyEvents\)/);assert.match(core,/comicEventEligible\(s,ev\)/);
 });
-test('comic scenes render three escaped, animated glyphs',()=>{
+test('each event shows its own GIF with an escaped caption',()=>{
  const sketch=load('js/incident-sketch.js','incidentSketch');
  const markup=sketch({id:'comic-1',role:'cashier',title:'唱歌事件',emoji:['🪙','🎵','😄'],animation:'dance',effectText:'收銀加快'},v=>String(v).replace(/[<>]/g,''));
- assert.match(markup,/incident-scene--dance/);assert.equal((markup.match(/incident-sprite--/g)||[]).length,3);
- const stylesheet=read('event-responsive-v10.css');for(const kind of ['chase','dance','spin','jelly','float','flutter','pop','sneak','sparkle'])assert.match(stylesheet,new RegExp('incident-scene--'+kind));
+ assert.match(markup,/event-gifs\/v2\/comic-1\.gif/);assert.match(markup,/loading="lazy"/);
 });
 test('mood overlay is sharp HTML with distinct happy, angry, tired, question and training colors',()=>{
  const src=read('js/actor-visuals.js').replace(/\bexport\s+(?=(?:const|function))/g,'');

@@ -11,16 +11,16 @@ import {ensureDailyGoals} from './daily-objectives.js';
 import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js';
 import {decorEffects,decorTypes,obstacles} from './decorations.js';
 import {shopAction,operationsTick,stepCustomers,react} from './shop-operations.js?v=20261105-chase-daily1';
-import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js';
+import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js?v=20261106-fx2';
 import {pointSegmentDistance,segmentDistance} from './motion.js';
 import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER} from './nav.js';
 export const jobs=[['cashier','收銀員','加速結帳'],['stocker','補貨員','自動搬貨'],['sales','推銷員','提高價格接受度'],['smith','鍛造師','走到鍛爐製作武器，並降低武器進貨成本'],['warehouse','倉管員','提高倉儲容量並折減進貨成本'],['security','保全員','提高排隊耐心'],['cleaner','清潔員','成交後改善滿意度'],['host','招待員','增加客流'],['standby','待命','休息恢復疲勞']].map(([id,name,description])=>({id,name,description}));
 const eventEffects=[['checkout',25,'神速結帳 25 秒'],['reputation',3,'顧客推薦使人氣 +3'],['stock',6,'現有倉存補上最多 6 件商品'],['logistics',25,'搬貨效率提升 25 秒'],['sales',25,'價格接受度提升 25 秒'],['reputation',5,'口碑人氣 +5'],['forge',25,'進貨折扣提升 25 秒'],['morale',8,'在班夥伴士氣 +8'],['storage',30,'倉儲採購折扣 30 秒'],['stock',10,'盤點後從倉庫補上最多 10 件'],['patience',30,'客人排隊耐心 +10 秒，持續 30 秒'],['reputation',4,'迷路客口耳相傳，人氣 +4'],['clean',5,'店面整理使滿意度 +5'],['rest',10,'全員疲勞 -10'],['traffic',25,'表演加速客流 25 秒'],['rest',15,'適當休息使全員疲勞 -15']];
 const eventNames=[['cashier','零錢排隊跳舞'],['cashier','發票捲成圍巾'],['stocker','紙箱山滑倒'],['stocker','浮空補貨術'],['sales','熱情推銷過頭'],['sales','商品說明接龍'],['smith','鍛爐彩虹煙'],['smith','鐵鎚唱歌'],['warehouse','標籤大風吹'],['warehouse','庫房尋寶'],['security','紙箱假小偷'],['security','門口迷路客'],['cleaner','地板溜冰秀'],['cleaner','泡泡大遊行'],['host','歡迎歌太大聲'],['host','招待員打瞌睡']];
-export const events=eventNames.map(([role,title],i)=>({id:`event-${i+1}`,role,title,description:`${title}！${eventEffects[i][2]}。主管可付費協助或免費指導；兩者均會解決事件。`,effect:eventEffects[i][0],effectValue:eventEffects[i][1],effectText:eventEffects[i][2],cooldown:70,choices:[{id:'help',label:'一起處理 · 40 G，士氣 +12、滿意度 +4',cost:40,mood:12,satisfaction:4,xp:10},{id:'coach',label:'耐心指導 · 免費，士氣 +4、滿意度 +1',cost:0,mood:4,satisfaction:1,xp:4}]})).concat(funnyEvents).map(ev=>ev.id==='event-11'?{
+export const events=eventNames.map(([role,title],i)=>({id:`event-${i+1}`,role,title,description:`${title}！${eventEffects[i][2]}。`,effect:eventEffects[i][0],effectValue:eventEffects[i][1],effectText:eventEffects[i][2],cooldown:70,choices:[{id:'help',label:'一起處理 · 40 G，士氣 +12、滿意度 +4',cost:40,mood:12,satisfaction:4,xp:10},{id:'coach',label:'耐心指導 · 免費，士氣 +4、滿意度 +1',cost:0,mood:4,satisfaction:1,xp:4}]})).concat(funnyEvents).map(ev=>ev.id==='event-11'?{
  ...ev,
  // A genuine one-action capture-style store event (not a new collectible spirit).
- description:'紙箱假小偷在商會裡惡作劇！只需親自抓住他，不會強迫玩家在兩個無意義的選項中選擇。',
+ description:'紙箱假小偷在商會裡惡作劇！快親自抓住他。',
  choices:[{id:'catch',label:'捕捉紙箱假小偷 · 免費，疲勞 +8',cost:0,mood:5,satisfaction:2,xp:6}]
 }:ev);
 export const combos=[{id:'flow',name:'物流接力',roles:['stocker','warehouse'],description:'30 秒補貨效率提升一倍'},{id:'show',name:'迎賓快線',roles:['cashier','host'],description:'30 秒結帳效率提升 60%'},{id:'forge',name:'工匠默契',roles:['smith','cleaner'],description:'30 秒採購成本再減 10%'},{id:'shine',name:'安心閃亮',roles:['security','sales'],description:'滿意度 +8、全員疲勞 -10'}];

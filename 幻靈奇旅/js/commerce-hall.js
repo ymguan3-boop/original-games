@@ -170,6 +170,7 @@ function create({THREE:T,scene}){
  const root=new T.Group();root.name='CommerceHall';scene.add(root);root.add(buildLot(T));
  const hallRoot=new T.Group();hallRoot.position.z=0;root.add(hallRoot);
  const shared=new Map();shared.geo={torso:new T.CylinderGeometry(.24,.32,.86,10),head:new T.SphereGeometry(.27,12,10),hair:new T.SphereGeometry(.285,12,8,0,Math.PI*2,0,Math.PI*.55),brim:new T.CylinderGeometry(.4,.4,.04,14),crown:new T.CylinderGeometry(.2,.24,.2,12),bag:new T.BoxGeometry(.16,.3,.26),leg:new T.CylinderGeometry(.095,.085,.62,8),shoe:new T.BoxGeometry(.17,.1,.3),arm:new T.CylinderGeometry(.07,.065,.52,8),hand:new T.SphereGeometry(.08,8,6)};
+ const gate=window.PhantomCommerceGate?.create({THREE:T,parent:root,LOT,frontZ:FRONT_Z})||null;let gateUnlocked=false;
  let hall=null,level=0,people=[],time=0,leaveAt=0,doorOpen=0;
  const slotAt=i=>({x:Math.sin(i*.7)*.28,z:FIRST_SLOT+i*SLOT_GAP});
  const spawnFor=i=>{const s=slotAt(i),side=Math.random()<.5?-1:1;return {x:side*(9+Math.random()*3),z:Math.min(LOT.maxZ-1.2,s.z+1.5)};};
@@ -189,7 +190,7 @@ function create({THREE:T,scene}){
   r.x=nx;r.z=nz;p.root.rotation.y=Math.atan2(dx,dz);p.moving=true;return false;
  }
  function update(dt,player){
-  const near=!!player&&Math.hypot(player.x,player.z-52)<46;root.visible=near;if(!near||!hall)return;
+  const near=!!player&&Math.hypot(player.x,player.z-52)<46;root.visible=near;if(near)gate?.update(dt,player,{unlocked:gateUnlocked});if(!near||!hall)return;
   time+=dt;for(const f of hall.anim)f(time);
   /* the front of the line goes in now and then; everyone steps up; a newcomer joins the back */
   if(time>=leaveAt&&people.length){const f=people.find(p=>p.slot===0&&p.state==='wait'&&Math.hypot(p.root.position.x-slotAt(0).x,p.root.position.z-slotAt(0).z)<.1);if(f){f.state='inside';f.slot=-1;for(const p of people)if(p.slot>0)p.slot--;leaveAt=time+3.2+Math.random()*2.8;}}
@@ -207,6 +208,7 @@ function create({THREE:T,scene}){
  function blocked(x,z,m=.42){
   if(x<LOT.minX+m||x>LOT.maxX-m||z>LOT.maxZ-m)return true;
   if(z<LOT.minZ+1.3&&Math.abs(x)>LOT.gate-m)return true;
+  if(gate?.blocked(x,z,m))return true;
   const hw=(hall?.halfW||6)*HALL_SCALE+.2;if(Math.abs(x)<hw+m&&z>FRONT_Z-(SIZE[level]?.d||7)*HALL_SCALE-.6-m&&z<FRONT_Z+1.3+m)return true;
   for(const p of people){if(p.state==='inside')continue;const a=p.root.position;if(Math.hypot(a.x-x,a.z-z)<.5+m)return true;}
   return false;
@@ -215,7 +217,7 @@ function create({THREE:T,scene}){
  const onStorage=e=>{if(e.key===null||e.key===SHOP_SAVE_KEY||e.key===LEVEL_META_KEY)refresh();};
  window.addEventListener('focus',refresh);window.addEventListener('pageshow',refresh);window.addEventListener('storage',onStorage);
  refresh();
- return {root,update,setLevel,refresh,blocked,inLot,dispose(){window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',onStorage);hall?.dispose();root.traverse(o=>o.geometry?.dispose());for(const material of shared.values())material.dispose();scene.remove(root);},get level(){return level;},get people(){return people;},nearDoor(p){return Math.abs(p.x)<3.4&&p.z>FRONT_Z+1.2&&p.z<FRONT_Z+5.2;}};
+ return {root,update,setLevel,refresh,blocked,inLot,gate,unlockGate(on=true){gateUnlocked=on;},dispose(){gate?.dispose();window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',onStorage);hall?.dispose();root.traverse(o=>o.geometry?.dispose());for(const material of shared.values())material.dispose();scene.remove(root);},get level(){return level;},get people(){return people;},nearDoor(p){return Math.abs(p.x)<3.4&&p.z>FRONT_Z+1.2&&p.z<FRONT_Z+5.2;}};
 }
 window.PhantomCommerce={create,currentLevel,shopURL,SHOP_SAVE_KEY,LEVEL_META_KEY,QUEUE,MAX_LEVEL,LOT};
 })();

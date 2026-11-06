@@ -46,7 +46,7 @@ test('customer and employee incident windows show animation, explanation and 2/3
  assert.match(app,/showCustomerComplaint/);assert.match(app,/onComplaintClick:showCustomerComplaint/);
  assert.match(scene,/complaintId:d\.id,complaintTitle:issue\.title/);
  assert.match(panel,/incident-choices cols-/);assert.match(detail,/incident-choices cols-/);
- assert.match(panel,/incident-gif/);assert.match(detail,/incident-gif/);
+ assert.match(panel,/incidentSketch\(/);assert.match(detail,/incidentSketch\(/);
  assert.match(style,/\.incident-choices\.cols-3\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
  assert.match(style,/overflow:hidden!important/);
  assert.match(app,/currentPanel!=='complaint'&&currentPanel!=='incident'/);

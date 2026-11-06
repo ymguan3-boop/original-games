@@ -948,3 +948,7 @@ body.quest-shortcut-modal #modal .panel{
  body.quest-shortcut-modal #modal{top:calc(env(safe-area-inset-top,0px) + 56px)}
  body.quest-shortcut-modal #modal .panel{max-height:calc(100dvh - env(safe-area-inset-top,0px) - 68px)}
 }
+
+/* 通知：特殊幻靈廣播加粗放大；隊伍提醒壓在圖鑑卡片之上 */
+#guardianBroadcast{font-size:16px;font-weight:900;line-height:1.4;max-width:min(340px,calc(100vw - 24px));color:#fff;background:#b3341fe8;border-radius:10px;padding:8px 14px;text-shadow:0 1px 2px #5c1409}
+#toast.overModal{position:fixed;z-index:9500;top:18%!important;left:50%;transform:translateX(-50%);max-width:min(300px,calc(100vw - 32px));font-size:16px;font-weight:800;color:#fff;background:#173743f2;border-radius:12px;padding:10px 18px;text-shadow:none;box-shadow:0 6px 22px #0e2a3366}

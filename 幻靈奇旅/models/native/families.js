@@ -41,9 +41,16 @@ function feltTexture() {
   return feltTex;
 }
 
+// 城鎮與擂台光源偏亮，壓低明度、拉高飽和，零件才分得開
+function deepen(hex) {
+  const c = new THREE.Color(hex), hsl = {};
+  c.getHSL(hsl);
+  return c.setHSL(hsl.h, Math.min(1, hsl.s * 1.25), hsl.l * 0.78);
+}
+
 function makeMaterial(spec) {
   const m = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(spec.c),
+    color: deepen(spec.c),
     roughness: spec.rough ?? 0.5,
     metalness: spec.metal ?? 0,
     clearcoat: spec.coat ?? 0,
@@ -243,7 +250,7 @@ function batchRigidParts(root){
 function build(path){
  const spec=entry(path);if(!spec)throw Error('未知原生模型：'+path);
  const bp=spec[0]==='bird'?BIRD_BLUEPRINT:ELEPHANT_BLUEPRINT, source=(bp.BIRDS||bp.ELEPHANTS).find(v=>v.id===spec[1]);
- geometryProfile=spec[0];const scene=buildBird(source);batchRigidParts(scene);const clips=Object.values(buildClips(bp.ACTIONS,scene));
+ geometryProfile=spec[0];const scene=buildBird(source);batchRigidParts(scene);window.ToonOutline?.add(THREE,scene);const clips=Object.values(buildClips(bp.ACTIONS,scene));
  clips.forEach(c=>{c.userData={sourceAction:c.name};c.name=clipNames[c.name]||c.name;});
  // Birds have a breathing sitting rest; expose the complete source Sit as well.
  if(!clips.some(c=>c.name==='Idle')){const idle=clips.find(c=>c.name==='Sit').clone();idle.name='Idle';clips.push(idle);}

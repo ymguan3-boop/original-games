@@ -1,4 +1,4 @@
-import {incidentDetailPanel} from './incident-detail.js';
+import {incidentDetailPanel} from './incident-detail.js?v=20261106-fx2';
 /* Manager incident board: each role has a lightweight animated scene and recent actions. */
 const ICONS={cashier:'🧾',stocker:'📦',sales:'💬',smith:'⚒',warehouse:'📋',security:'⚠',cleaner:'✨',host:'♫'};
 const IMAGE={cashier:'queue',stocker:'boxes',sales:'praise',smith:'magic',warehouse:'boxes',security:'shoplift',cleaner:'cleaning',host:'praise'};
