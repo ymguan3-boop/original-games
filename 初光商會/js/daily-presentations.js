@@ -13,6 +13,7 @@ export function dailySettlementHTML(game,esc,money){
  return `<div class="daily-card-title">🧮 第 ${d.day} 天 · 打烊結算</div>
  <div class="daily-calculator-title">叮！今日營業帳單正在逐項核算</div>
  <div class="daily-receipt-lines">${d.figures.map((x,i)=>`<div class="daily-receipt-line ${i===d.figures.length-1?'total':''}" style="--step:${i}"><span>${esc(x.label)}</span><b class="${x.value<0?'negative':''}">${x.value<0?'−':'＋'}${money(Math.abs(x.value))}</b></div>`).join('')}</div>
+ ${d.complete<d.total?`<div class="daily-zhaocai-sad"><img src="../幻靈奇旅/assets/ui/zhaocai-sad.gif" alt="難過的招財"><p><b>招財：</b>嗚……今天的目標還差 ${d.total-d.complete} 項，明天再一起加油！</p></div>`:''}
  <div class="daily-goal-result"><strong>今日目標達成 ${d.complete}/${d.total} 項</strong><div>${d.metrics.map(m=>`<span class="${m.done?'met':'missed'}">${m.done?'✓':'△'} ${esc(m.label)} ${Math.round(m.value)}/${m.target}${esc(m.unit)}</span>`).join('')}</div></div>
  <div class="daily-closing-balance">結算後現金餘額 <b>${money(d.gold)}</b>${d.unpaid>0?`<small>尚有 ${money(d.unpaid)} 待支付，已列入帳本</small>`:''}</div>`;
 }

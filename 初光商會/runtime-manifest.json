@@ -59,33 +59,6 @@
       }
     },
     {
-      "path": "assets/art-v4/furniture/materials.glb",
-      "sourcePath": "assets/art-v4/furniture/materials.glb",
-      "bytes": 1300560,
-      "sha256": "5e4b2c9fd14b54afa12f01b0d8d52641f9343452b666ed18e7335a9dc0b3548e",
-      "reasons": [
-        "shelf registry"
-      ],
-      "glbConversion": {
-        "changedImages": [
-          {
-            "bufferView": 4,
-            "originalSize": [
-              1254,
-              1254
-            ],
-            "size": [
-              1024,
-              1024
-            ],
-            "savedBytes": 684279
-          }
-        ],
-        "nonImageBufferSha256": "044d46533c71a7f94132560da4b8b426459b135581d09145f3e82e57dea1f28e",
-        "savedBytes": 684280
-      }
-    },
-    {
       "path": "assets/art-v5/guild-valley.webp",
       "sourcePath": "assets/art-v5/guild-valley.png",
       "bytes": 440732,
@@ -525,87 +498,6 @@
       }
     },
     {
-      "path": "assets/art-v6/racks/arcane.glb",
-      "sourcePath": "assets/art-v6/racks/arcane.glb",
-      "bytes": 1315632,
-      "sha256": "4792f1bc3bf197cce2147b5d6eb5dea8e8dac4973df1b98620102365af97edbb",
-      "reasons": [
-        "shelf registry"
-      ],
-      "glbConversion": {
-        "changedImages": [
-          {
-            "bufferView": 8,
-            "originalSize": [
-              1254,
-              1254
-            ],
-            "size": [
-              1024,
-              1024
-            ],
-            "savedBytes": 684279
-          }
-        ],
-        "nonImageBufferSha256": "8ebd02c67ae02538db5a77e8897cf92113bf19c992d3748467a968cbfa9d0088",
-        "savedBytes": 684280
-      }
-    },
-    {
-      "path": "assets/art-v6/racks/relic.glb",
-      "sourcePath": "assets/art-v6/racks/relic.glb",
-      "bytes": 1315160,
-      "sha256": "c7d07db319fe898a8d087abd1d400fb2efa7972be566d8e05935e95ea177528d",
-      "reasons": [
-        "shelf registry"
-      ],
-      "glbConversion": {
-        "changedImages": [
-          {
-            "bufferView": 7,
-            "originalSize": [
-              1254,
-              1254
-            ],
-            "size": [
-              1024,
-              1024
-            ],
-            "savedBytes": 684279
-          }
-        ],
-        "nonImageBufferSha256": "b67dec2cc6c2bed0ae03ce4ba44b34d81383aaf97f1c84e503cdf9f6050f37ca",
-        "savedBytes": 684280
-      }
-    },
-    {
-      "path": "assets/art-v6/racks/royal.glb",
-      "sourcePath": "assets/art-v6/racks/royal.glb",
-      "bytes": 1345944,
-      "sha256": "fe8c7622577bc33a61b6ffa1b21842278c6622fe2e08b87b872a320ce2c0ab6f",
-      "reasons": [
-        "shelf registry"
-      ],
-      "glbConversion": {
-        "changedImages": [
-          {
-            "bufferView": 8,
-            "originalSize": [
-              1254,
-              1254
-            ],
-            "size": [
-              1024,
-              1024
-            ],
-            "savedBytes": 684279
-          }
-        ],
-        "nonImageBufferSha256": "e52c2af30d764d4bb26c185f6eb62945e71294713baa1bbc426726beafb87c1e",
-        "savedBytes": 684280
-      }
-    },
-    {
       "path": "assets/art-v6/royal-floor.webp",
       "sourcePath": "assets/art-v6/royal-floor.png",
       "bytes": 199712,
@@ -857,82 +749,6 @@
       "sourcePath": "assets/art-v7/previews/rack-apothecary.png",
       "bytes": 7228,
       "sha256": "92b48d164b20ba3bc44d486448660d3f96cd8d3977f1033ab9f485feca979385",
-      "reasons": [
-        "shelf preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v7/previews/rack-arcane.webp",
-      "sourcePath": "assets/art-v7/previews/rack-arcane.png",
-      "bytes": 5882,
-      "sha256": "336db156bba991c0139db9ae416a57bf611d729b6ce3042fa4874ed4330be8d5",
-      "reasons": [
-        "shelf preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v7/previews/rack-materials.webp",
-      "sourcePath": "assets/art-v7/previews/rack-materials.png",
-      "bytes": 6024,
-      "sha256": "852fba4071fa51d8a2f6c797b7fb107d7135e44000fc1c7a4c94adbc47d029c5",
-      "reasons": [
-        "shelf preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v7/previews/rack-relic.webp",
-      "sourcePath": "assets/art-v7/previews/rack-relic.png",
-      "bytes": 5888,
-      "sha256": "f1584f53ec89e35b34cc994f7df6d3f0dd17b44d451940903248d131a6618072",
-      "reasons": [
-        "shelf preview"
-      ],
-      "image": {
-        "originalSize": [
-          256,
-          256
-        ],
-        "size": [
-          256,
-          256
-        ]
-      }
-    },
-    {
-      "path": "assets/art-v7/previews/rack-royal.webp",
-      "sourcePath": "assets/art-v7/previews/rack-royal.png",
-      "bytes": 5478,
-      "sha256": "1fa931120a63c3add0dbbc2f54e5a9a59b1d7014a68f557c1e77a71c1b2827a8",
       "reasons": [
         "shelf preview"
       ],

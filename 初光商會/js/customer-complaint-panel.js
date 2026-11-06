@@ -1,12 +1,11 @@
 /* Shared compact, no-scroll customer event stage with real in-game choices. */
 import {getCustomerComplaint} from './customer-complaints.js';
-import {incidentSketch} from './incident-sketch.js?v=20261106-fx5';
+import {incidentSketch} from './incident-sketch.js?v=20261106-fx8';
 export function customerComplaintPanel(game,customerId,escape,button){
  const c=game.state.customers.find(c=>c.id===customerId),info=getCustomerComplaint(game.state,c,game);
  if(!info)return '<p class="note">顧客已離開或問題已解決，請關閉此視窗。</p>';
  const choices=info.options.map((o,i)=>`<div class="incident-choice">
- ${button(escape(o.label)+(o.cost?' · '+o.cost+' G':''),'resolveCustomerComplaint',{customerId:c.id,choice:o.id},'primary',!!o.disabled)}
- <small>${escape(o.disabled?o.reason:o.detail+(o.cost===0?' · 疲勞 +5／其他 +1':''))}</small></div>`).join('');
+ ${button(escape(o.label)+(o.cost?' · '+o.cost+' G':'')+`<small class="incident-choice-hint">${escape(o.disabled?o.reason:o.detail+(o.cost===0?' · 疲勞 +5／其他 +1':''))}</small>`,'resolveCustomerComplaint',{customerId:c.id,choice:o.id},'primary',!!o.disabled)}</div>`).join('');
  return `<article class="incident-presentation customer-incident" data-customer="${escape(c.id)}">
   <div class="incident-media" aria-label="顧客事件動畫">
    ${incidentSketch(info,escape)}

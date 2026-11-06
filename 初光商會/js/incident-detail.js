@@ -1,5 +1,5 @@
 /* Full event explanation and genuine in-game choice buttons, kept inside a compact window. */
-import {incidentSketch} from './incident-sketch.js?v=20261106-fx5';
+import {incidentSketch} from './incident-sketch.js?v=20261106-fx8';
 import {eventEmployee} from './patrol-events.js';
 import {requiresManagerPatrol,patrolEventInstructions} from './event-routing.js';
 const roleName={cashier:'收銀員',stocker:'補貨員',sales:'推銷員',smith:'鍛造師',warehouse:'倉管員',security:'保全員',cleaner:'清潔員',host:'迎賓員'};
@@ -22,8 +22,7 @@ export function incidentDetailPanel(game,escape,button){
  const options=choices.slice(0,3).map(c=>{
   const cost=Number(c.cost)||0,disabled=cost>game.state.gold,hint=eventChoiceHint(c,game.state.gold);
   return `<div class="incident-choice">
-   ${button(escape(c.label||'處理事件'),'resolveEvent',{choice:c.id},'primary',disabled)}
-   ${hint?`<small class="incident-choice-hint">${escape(hint)}</small>`:''}
+   ${button(escape(c.label||'處理事件')+(hint?`<small class="incident-choice-hint">${escape(hint)}</small>`:''),'resolveEvent',{choice:c.id},'primary',disabled)}
   </div>`;
  }).join('');
 

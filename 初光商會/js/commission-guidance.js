@@ -1,6 +1,6 @@
 /* Mission guidance is derived from today's live commissions only.
  * It never creates stock, awards gold, or bypasses the normal claim transaction. */
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261106-fx5';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261106-fx8';
 export function commissionOverview(s){
  const b=s.commissionBoard||{clock:0,unread:false};
  const active=activeCommissions(s).slice().sort((a,z)=>{

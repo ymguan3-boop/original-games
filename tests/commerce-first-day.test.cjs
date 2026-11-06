@@ -11,6 +11,14 @@ test('the first day walks through goods, shelves, opening, a sale, closing and a
  assert.equal(step(base({phase:'open',totals:{sales:1,days:0}})).id,'close');
  assert.equal(step(base({phase:'report',totals:{sales:1,days:1}})).id,'finish');
 });
+test('招財 turns sad when a customer leaves before the first sale',async()=>{
+ const {firstDayStep:step}=await load();
+ const lost=step(base({phase:'open',stats:{lost:1}}));
+ assert.equal(lost.id,'sale-lost');assert.equal(lost.sad,true);
+ assert.equal(step(base({phase:'open',stats:{lost:0}})).sad,undefined);
+ assert.equal(step(base({phase:'open',stats:{lost:1},totals:{sales:1,days:0}})).id,'close');
+ for(const f of ['zhaocai.gif','zhaocai-sad.gif']){const d=fs.readFileSync(path.join(ROOT,'../幻靈奇旅/assets/ui',f));assert.equal(d.subarray(0,6).toString('ascii'),'GIF89a');assert.ok(d.length<300000,f+' '+d.length);}
+});
 test('players past the first day never see the guide',async()=>{
  const {firstDayStep:step}=await load();
  assert.equal(step(base({tutorialSeen:{'first-day-done':true},phase:'report'})),null);

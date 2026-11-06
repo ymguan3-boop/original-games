@@ -12,4 +12,4 @@ export const shelfDefinition=sh=>shelfTypes.find(t=>t.id===shelfKind(sh))||shelf
 export const shelfCapacity=sh=>sh.type&&sh.type!=='general'?shelfDefinition(sh).capacity:30;
 export const shelfLimit=level=>2+level*2;
 export function accepts(shelf,item){if(!shelf.type||shelf.type==='general')return true;const kind=shelfKind(shelf);return kind==='royal'?true:kind==='arcane'?item.category==='item':kind==='relic'?['weapon','material'].includes(item.category):kind==='orbs'?/^ball-/.test(item.sku):kind==='armory'?item.category==='weapon':kind==='materials'?item.category==='material':item.category==='item'&&!/^ball-/.test(item.sku);}
-export const shelfModel=type=>type==='armory'?'procedural:armory':type==='orbs'?'@shop/assets/art-v8/pilots-v3/orb-spherical-pilot-v3.glb':'@shop/assets/'+(['arcane','relic','royal'].includes(type)?'art-v6/racks/':'art-v4/furniture/')+type+'.glb';
+export const shelfModel=type=>['armory','materials','arcane','relic','royal'].includes(type)?'procedural:'+type:type==='orbs'?'@shop/assets/art-v8/pilots-v3/orb-spherical-pilot-v3.glb':'@shop/assets/'+(['arcane','relic','royal'].includes(type)?'art-v6/racks/':'art-v4/furniture/')+type+'.glb';
