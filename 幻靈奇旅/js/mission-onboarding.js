@@ -46,7 +46,7 @@
  function visible(selector){const el=document.querySelector(selector);return el&&el.getClientRects().length&&!el.closest('[hidden]')?el:null;}
  function close(){api.closePanels();}
  function specification(step,c){
-  const closeSpec={title:'先關閉目前視窗',text:'點右上角的 ×，或按下方按鈕，回到遊戲操作畫面。',selector:c.dialog?'[data-npc="close"]':'#closeModal',action:close,label:'關閉視窗'};
+  /* 目標按鈕已經框出來，不再多放一張提示卡 */const closeSpec={ringOnly:true,title:'',text:'',selector:c.dialog?'[data-npc="close"]':'#closeModal',action:close,label:''};
   if(step==='tasks')return{title:'第一步｜找到任務選項',text:'上方工具列最右側的 ✦ 是「冒險任務」。可隨時查看目標與完成獎勵；我們會先從最早未完成的一項開始。',selector:'#journeyTaskBtn',action:()=>commit(p=>p.taskLocation=true),label:'知道了，開始任務引導'};
   if(step==='starter'){
    if(c.modal&&c.title==='大夢研究所 · 選擇初始幻靈')return{title:'選擇你的第一位夥伴',text:'點選大眼蛙、C囝仔或水毛蟲的幻靈球。只可選一位，選好後才會完成這一步。',selector:'.labOption'};
@@ -121,7 +121,7 @@
   const step=next(state(),c);
   if(step==='done'){card.hidden=true;ring.hidden=true;return;}
   const spec=specification(step,c);if(!spec)return;
-  card.hidden=false;
+  card.hidden=!!spec.ringOnly;
   if(last!==step+'|'+c.title+'|'+c.dialog+'|'+c.inLab){
    last=step+'|'+c.title+'|'+c.dialog+'|'+c.inLab;
    card.querySelector('small').textContent=step==='tasks'||step==='starter'?'冒險引導 · 第一步':['menu','gym','tower','finish','close-tools'].includes(step)?'冒險引導 · 第三步':'冒險引導 · 第二步';
