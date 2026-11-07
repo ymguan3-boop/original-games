@@ -1,11 +1,11 @@
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。根頁沒有返回鈕，點空白處或按 Esc 關閉。 */
 import {spiritCard} from './spirit-cards.js';
-import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity} from './furniture.js?v=20261107-a3';
+import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity} from './furniture.js?v=20261107-a5';
 import {decorTypes,decorLimit,decorDefinition} from './decorations.js';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261107-a3';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261107-a3';
-import {chapterObjectives} from './shop-chapters.js?v=20261107-a3';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261107-a5';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261107-a5';
+import {chapterObjectives} from './shop-chapters.js?v=20261107-a5';
 import {activeCommissions,commissionProgress} from './commissions.js';
 import {getCustomerComplaint} from './customer-complaints.js';
 import {requiresManagerPatrol} from './event-routing.js';

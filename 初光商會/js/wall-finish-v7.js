@@ -11,7 +11,7 @@ export const wallSkins = Object.freeze([
 export function applyWallFinish({T,building,level,width,material,metrics}) {
   const spec=wallSkins[level];
   if(!spec)return;
-  const path='./assets/art-v11/'+spec.file;
+  const path='./assets/art-v11/'+spec.file+'?v=5';
   const record=metrics.wallFinish={level,name:spec.name,path,width:512,height:512,addedTriangles:0,addedDrawCalls:0,status:'loading',wrapping:'mirrored-repeat',repeat:[width/3.4,1]};
   const fallbackColor=material.color.clone();
   const texture=new T.TextureLoader().load(path,()=>{record.status='ready';},undefined,()=>{

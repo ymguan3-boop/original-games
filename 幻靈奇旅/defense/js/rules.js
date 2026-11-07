@@ -4,9 +4,9 @@
    evolutions from the cave table (survivors/data/evolution.json). The view's hooks.fire plays the cave attack and
    reports when the hit releases, so damage lands on the animation frame.
    Lane coordinate x runs from state.left (monster nest, path start) to state.right (crystal, path end). */
-import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-a4';
-import {STAGES, buildPath} from './stages.js?v=20261107-a4';
-import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-a4';
+import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-a5';
+import {STAGES, buildPath} from './stages.js?v=20261107-a5';
+import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-a5';
 
 export {STAGES};
 /* PK (duel): two players on one road. The host's spirits start at the crystal end (side 'ally'), the guest's at the

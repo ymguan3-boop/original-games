@@ -6,7 +6,7 @@ export function floorFinish({T,building,level,width,finish,oakTexture,metrics}){
  // Keep the light stone fallback visible until the asynchronous image is decoded.
  const material=new T.MeshStandardMaterial({color:level===3?0xe2e6dc:0xffffff,roughness:level>=4?.5:.85});
  let disposed=false;
- const tex=new T.TextureLoader().load('./assets/art-v11/'+file+'.webp',loaded=>{
+ const tex=new T.TextureLoader().load('./assets/art-v11/'+file+'.webp?v=5',loaded=>{
   if(disposed){loaded.dispose();return;}
   material.map=loaded;material.needsUpdate=true;record.status='ready';
  },undefined,()=>{record.status='error';metrics.errors.push('地板貼圖載入失敗：'+file+'.webp');});
