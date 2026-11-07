@@ -1,0 +1,209 @@
+{
+  "note": "小麻與咕咕的第三階，只用於洞穴與守護戰的戰局進化。",
+  "spirits": [
+    {
+      "id": "crown-sparrow",
+      "speciesId": "crown-sparrow",
+      "name": "羽冠麻雀王",
+      "element": "grass",
+      "type": "森",
+      "stage": 3,
+      "family": "avian-evolution",
+      "form": "bird",
+      "color": 5216828,
+      "role": "special",
+      "previous": "treecko",
+      "next": null,
+      "model": "crown://sparrow",
+      "height": 1.9,
+      "hp": 160,
+      "attack": 64,
+      "rarity": "稀有",
+      "motionType": "walk",
+      "cardFrame": "purple",
+      "evolutionOnly": true,
+      "stageLabel": "第 3 階段",
+      "skills": [
+        {
+          "name": "疾風啄擊",
+          "power": 64,
+          "cost": 1
+        },
+        {
+          "name": "百羽風舞・落葉風暴",
+          "power": 130,
+          "cost": 3
+        }
+      ],
+      "description": "小麻的第三階。連續攻擊，風刃貫穿敵人，並替隊友加速。"
+    },
+    {
+      "id": "crown-rooster",
+      "speciesId": "crown-rooster",
+      "name": "鳳冠雄雞王",
+      "element": "fire",
+      "type": "焰",
+      "stage": 3,
+      "family": "avian-evolution",
+      "form": "bird",
+      "color": 14035486,
+      "role": "special",
+      "previous": "grovyle",
+      "next": null,
+      "model": "crown://rooster",
+      "height": 2.1,
+      "hp": 190,
+      "attack": 74,
+      "rarity": "稀有",
+      "motionType": "walk",
+      "cardFrame": "purple",
+      "evolutionOnly": true,
+      "stageLabel": "第 3 階段",
+      "skills": [
+        {
+          "name": "烈焰啄擊",
+          "power": 74,
+          "cost": 1
+        },
+        {
+          "name": "鳳鳴天火・烈羽風暴",
+          "power": 145,
+          "cost": 3
+        }
+      ],
+      "description": "咕咕的第三階。單體爆發高，範圍火焰衝擊，並鼓舞隊友。"
+    }
+  ],
+  "catalogEntries": [
+    {
+      "id": "crown-sparrow",
+      "number": "068",
+      "order": 68,
+      "group": "jigglypuff",
+      "name": "羽冠麻雀王",
+      "skills": [],
+      "category": "spirit"
+    },
+    {
+      "id": "crown-rooster",
+      "number": "069",
+      "order": 69,
+      "group": "jigglypuff",
+      "name": "鳳冠雄雞王",
+      "skills": [],
+      "category": "spirit"
+    }
+  ],
+  "art": {
+    "crown-sparrow": {
+      "image": "assets/ui/zhaocai.gif"
+    },
+    "crown-rooster": {
+      "image": "assets/ui/zhaocai.gif"
+    }
+  },
+  "evolution": {
+    "treecko": {
+      "next": [
+        "crown-sparrow"
+      ],
+      "level": 8,
+      "branch": "linear",
+      "source": "第三階進化"
+    },
+    "grovyle": {
+      "next": [
+        "crown-rooster"
+      ],
+      "level": 8,
+      "branch": "linear",
+      "source": "第三階進化"
+    },
+    "crown-sparrow": {
+      "next": [],
+      "level": 12,
+      "branch": "linear",
+      "source": "最終型態"
+    },
+    "crown-rooster": {
+      "next": [],
+      "level": 12,
+      "branch": "linear",
+      "source": "最終型態"
+    }
+  },
+  "skills": {
+    "crown-sparrow": {
+      "normalType": "ranged",
+      "ultimateType": "blast",
+      "element": "光",
+      "range": 10,
+      "ultimateRange": 14,
+      "multiplier": 2,
+      "cooldown": 20,
+      "normalAnimation": "Attack",
+      "ultimateAnimation": "Ultimate",
+      "normalName": "疾風啄擊",
+      "ultimateName": "百羽風舞・落葉風暴",
+      "model": "crown://sparrow",
+      "fallback": false,
+      "fx": {
+        "style": "cone",
+        "element": "光",
+        "color": 8176202,
+        "source": "models/native/crown-birds.js"
+      }
+    },
+    "crown-rooster": {
+      "normalType": "melee",
+      "ultimateType": "blast",
+      "element": "光",
+      "range": 2.6,
+      "ultimateRange": 16,
+      "multiplier": 2,
+      "cooldown": 20,
+      "normalAnimation": "Attack",
+      "ultimateAnimation": "Ultimate",
+      "normalName": "烈焰啄擊",
+      "ultimateName": "鳳鳴天火・烈羽風暴",
+      "model": "crown://rooster",
+      "fallback": false,
+      "fx": {
+        "style": "cone",
+        "element": "光",
+        "color": 14696490,
+        "source": "models/native/crown-birds.js"
+      }
+    }
+  },
+  "passives": {
+    "crown-sparrow": {
+      "name": "羽冠麻雀王",
+      "ultimateName": "百羽風舞・落葉風暴",
+      "cardFrame": "purple",
+      "stage": 3,
+      "tierPower": 2.2,
+      "slotCount": 2,
+      "effects": [
+        {
+          "effect": "speed",
+          "value": 0.1
+        }
+      ]
+    },
+    "crown-rooster": {
+      "name": "鳳冠雄雞王",
+      "ultimateName": "鳳鳴天火・烈羽風暴",
+      "cardFrame": "purple",
+      "stage": 3,
+      "tierPower": 2.4,
+      "slotCount": 2,
+      "effects": [
+        {
+          "effect": "attack",
+          "value": 0.12
+        }
+      ]
+    }
+  }
+}

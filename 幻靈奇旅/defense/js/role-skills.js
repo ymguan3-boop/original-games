@@ -32,6 +32,8 @@ export const ROLE_META = Object.freeze({
   }
 });
 export const ROLE_SKILLS = Object.freeze({
+  "crown-sparrow": {"name": "羽冠麻雀王", "role": "archer", "ultimate": {"name": "百羽風舞・落葉風暴", "kind": "area", "power": 2.8, "radius": 4.5, "description": "分身旋風集中爆發，範圍傷害", "cooldown": 18}},
+  "crown-rooster": {"name": "鳳冠雄雞王", "role": "warrior", "ultimate": {"name": "鳳鳴天火・烈羽風暴", "kind": "blast", "power": 3.2, "radius": 4, "description": "火鳥掠過戰場引發大爆炎", "cooldown": 18}},
   "zhaocai": {"name": "招財", "role": "archer", "ultimate": {"name": "金幣雨", "kind": "area", "power": 2.2, "radius": 4, "description": "撒出超多金幣大範圍攻擊", "cooldown": 18}},
   "zhaocai-2": {"name": "招財・魔導師", "role": "mage", "ultimate": {"name": "招財領域", "kind": "area", "power": 3, "radius": 6, "description": "金色招財法陣攻擊全範圍敵人", "cooldown": 18}},
   "zhaocai-3": {"name": "招財・守護者", "role": "warrior", "ultimate": {"name": "榮耀守護", "kind": "heal", "heal": 0.3, "targets": 99, "immune": 6, "description": "高舉盾牌，全隊免疫所有狀態 6 秒並回復 30% 血量", "cooldown": 24}},

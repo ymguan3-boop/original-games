@@ -115,6 +115,8 @@ async function zhaocaiAddon(url) { let on = false; try { on = !!JSON.parse(local
 async function loadData() {
   const get = (p) => fetch(new URL(p, ASSET_BASE)).then((r) => { if (!r.ok) throw Error('讀取失敗：' + p); return r.json(); });
   const [spirits, art, catalog, evolution, pool] = await Promise.all([get('data/spirits.json'), get('data/card-art.json'), get('data/spirit-catalog.json'), get('survivors/data/evolution.json'), get('survivors/data/gacha-pool.json')]);
+  const crown = await get('data/crown-addon.json');
+  spirits.push(...crown.spirits); catalog.entries.push(...crown.catalogEntries); Object.assign(evolution, crown.evolution); Object.assign(art.cards || art, crown.art);
   const addon = await zhaocaiAddon(new URL('data/zhaocai-addon.json', ASSET_BASE));
   if (addon) { spirits.push(...addon.spirits); catalog.entries.push(...addon.catalogEntries); Object.assign(evolution, addon.evolution); Object.assign(art.cards || art, addon.art); pool.purple.push(...addon.pool.purple); }
   return {spirits, art, catalog, evolution, pool, excluded: pool.excludedIds || [], spiritMap: new Map(spirits.map((s) => [s.id, s])), entries: new Map((catalog.entries || []).map((e) => [e.id, e]))};

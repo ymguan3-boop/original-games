@@ -309,7 +309,8 @@ export function validEggPosition(state, x) {
     x >= state.left + 0.8 && x <= state.right - 0.8;
 }
 /* 三色蛋一張卡佔三個位置：三格都合法才成立，否則整張卡不生效。靠路徑兩端時整組往內移 */
-export const EGG_GAP = 2.4;
+export const EGG_GAP = 2.4, EGG_SYNERGY = 1.05;
+const eggSynergy = (state, side) => state.fighters.filter((f) => f.side === side && f.stationary && f.hp > 0).length === 3;
 export function eggTrio(state, x, side = 'ally') {
   if (!validEggPosition(state, x)) return null;
   const min = state.left + 0.8 + EGG_GAP, max = state.right - 0.8 - EGG_GAP;
@@ -804,7 +805,7 @@ export function step(state, dt) {
     if (f.regen || f.extraRegenUntil > state.time) f.hp = Math.min(f.maxHp,
       f.hp + f.maxHp * ((f.regen || 0) + (f.extraRegenUntil > state.time ? (f.extraRegen || 0) : 0)) * dt);
     if (f.side === 'enemy' ? frozen : frozenAlly) { f.moving = false; continue; }
-    f.cooldown -= dt * (f.side === 'ally' ? haste : hasteFoe);
+    f.cooldown -= dt * (f.side === 'ally' ? haste : hasteFoe) * (f.stationary && eggSynergy(state, f.side) ? EGG_SYNERGY : 1);
     if (f.knockUntil > state.time) { f.x = Math.max(state.left + 1, Math.min(state.right - 1, f.x + f.knockVel * dt)); f.moving = false; continue; }
     if (f.stunUntil > state.time || f.busyUntil > state.time) { f.moving = false; continue; }
     /* Priests heal the lowest HP-ratio friendly in range before considering damage. */
