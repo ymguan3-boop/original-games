@@ -9,7 +9,7 @@ import {createStaffOverlay} from './staff-overlay.js?v=20261107-a5';
 import {installPatrolControls} from './patrol-controls.js';
 import {playEvolution3D} from './evolution-3d.js';
 import {createScene} from './scene.js?v=20261107-a6';
-import {createScene2D} from './scene-2d.js?v=20261107-b2';
+import {createScene2D} from './scene-2d.js?v=20261107-b6';
 import {createDock} from './dock-2d.js?v=20261107-b2';
 import {createHub} from './shop-hub.js?v=20261107-b3';
 import {installTutorial} from './shop-tutorial.js?v=20261107-a5';
@@ -85,7 +85,7 @@ async function boot(){try{
   onActionResult:r=>toast(r.message,!r.ok),onError:e=>toast('模型載入異常：'+(e.message||e),true)});
  window.shopScene=scene;window.shopHub=hub;
  staffOverlay=createStaffOverlay({game,labels:$('#staff-labels'),card:$('#staff-card'),escape:esc,onEventClick:()=>hub.open('event'),onOpen:id=>hub.open('worker',id)});staffOverlay.render();
- patrolControls=installPatrolControls({joystick:$('#joystick'),stick:$('#stick'),scene});scene.setMode('play');renderHUD();await scene.ready;$('#loading').style.display='none';
+ patrolControls=installPatrolControls({joystick:$('#joystick'),stick:$('#stick'),scene});scene.setMode('play');renderHUD();await scene.ready;$('#loading').style.display='none';document.body.classList.remove('app-loading');
  let last=performance.now(),ui=0;function frame(now){requestAnimationFrame(frame);const elapsed=(now-last)/1000,dt=Math.min(.1,elapsed);last=now;if(document.hidden||shopNavigation?.leaving)return;try{if(!evolutionInProgress&&!$('#confirm').open){const result=game.tick(dt);if(result&&!result.ok)toast(result.message,true);}scene.update(dt);}catch(e){if(!window.lastShopError){console.error(e);toast('執行發生錯誤：'+e.message,true);window.lastShopError=e.message;}}ui+=dt;if(ui>.5){ui=0;renderHUD();staffOverlay?.render();if(hub.isOpen&&['chapter','upgrade','daily'].includes(document.querySelector('#hub')?.dataset.page))hub.render();}}requestAnimationFrame(frame);
  if(innerWidth<700)scene.setQuality?.('low');
 }catch(e){console.error(e);$('#loading').innerHTML=`<p>商會無法啟動：${esc(e.message)}</p>`;}}

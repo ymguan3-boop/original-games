@@ -48,7 +48,9 @@ export function autoAssign(g,s){
  g.log(s,`一鍵配置完成：${chosen.size} 位在班。`);
  return `已配置 ${chosen.size} 位在班員工`;
 }
-export function staffAutomation(g,s,dt){
+/* 顧客在等結帳卻沒有收銀員時，由一位沒鎖定職務的員工補上；玩家鎖定的職務不動 */
+function fillCashier(g,s){if(s.phase!=='open'||s.employees.some(e=>e.role==='cashier')||!s.customers.some(c=>['Queue','Checkout','Cart'].includes(c.state)))return;const room=s.employees.filter(e=>e.role!=='standby').length<capacityOf(g,s),free=s.employees.filter(e=>!e.lockedAssignment&&(room||e.role!=='standby')).sort((a,b)=>(b.role==='standby')-(a.role==='standby')||(preferredJob(g,b)==='cashier')-(preferredJob(g,a)==='cashier')||b.workLevel-a.workLevel),e=free[0];if(!e)return;if(e.workTask){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}e.role='cashier';e.path=[];e.nextTaskAt=0;g.log(s,`${e.name} 接手收銀。`);}
+export function staffAutomation(g,s,dt){fillCashier(g,s);
  if(s.phase!=='open')return;
  const rear=restingPositions(s);
  for(const e of s.employees){

@@ -101,5 +101,8 @@ html body.view-2d #tutor,html body.view-2d.hub-open #tutor{top:auto;bottom:calc(
  html body.view-2d #hub{inset:44px 0 52px auto;width:var(--side)}html body.view-2d .hub-box{border-width:0 0 0 3px}
  html body.view-2d nav.toolbar,html body.view-2d.hub-open nav.toolbar{left:auto!important;width:var(--side)!important;height:52px!important}}
 /* 員工資訊已在下方卡片，場景內不再放名牌擋貨架；心情與提醒氣泡保留 */
-body.view-2d .staff-head-label{display:none!important}
+html body.view-2d .staff-head-label{display:none!important}
 #view-code{width:96px;min-height:40px;padding:0 8px;border:2px solid #a77e4b;border-radius:10px;background:#fff;color:inherit;font:inherit}.hub-field .hub-action{flex:none;min-height:40px;padding:0 12px}
+/* 讀取完成前不顯示教學、按鈕與面板 */
+html body.app-loading #tutor,html body.app-loading nav.toolbar,html body.app-loading #dock2d,html body.app-loading #hub,html body.app-loading header.topbar{display:none!important}
+html body.view-2d #staff-labels{display:none!important}
