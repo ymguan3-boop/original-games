@@ -27,3 +27,6 @@
 .collectionDetail .collectionCard[data-skill-count="3"] .collectionInfo{font-size:clamp(7px,3.1cqi,9.25px);line-height:1.06;gap:0}
 
 .collectionNumber{position:absolute;z-index:3;top:69.5%;left:50%;transform:translateX(-50%);font-size:clamp(6px,2.9cqi,9px);line-height:1.2;white-space:nowrap;color:#59425f;font-weight:800;text-shadow:0 1px #fff}.collectionPickup .collectionNumber{font-size:3px}
+
+button.card.locked{width:100%;font:inherit;color:inherit;cursor:pointer;text-align:center}
+.captureHint{text-align:center;padding:12px 8px}.captureHint .seal{font-size:28px;opacity:.6}.captureHint p{font-size:16px;line-height:1.7;margin:10px 0 4px}
