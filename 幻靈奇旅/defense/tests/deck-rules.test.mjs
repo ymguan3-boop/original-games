@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {autoDeck, combatPower, validPkDeck} from '../js/deck-rules.js';
+import {autoDeck, combatPower, validPkDeck, settleEggSlots} from '../js/deck-rules.js';
 import {isBaseCard, isRedCard} from '../js/rules.js';
 import {createPkLobby} from '../js/pk-lobby.js';
 const json = p => JSON.parse(readFileSync(new URL(p, import.meta.url)));
 const evolution = json('../../survivors/data/evolution.json');
 const spirits = json('../../data/spirits.json');
 const spirit = id => spirits.find(s => s.id === id);
-const base = spirits.filter(s => !isRedCard(s.id) && isBaseCard(evolution,s.id)).map(s=>s.id);
+const base = spirits.filter(s => !isRedCard(s.id) && isBaseCard(evolution,s.id) && s.id !== 'jigglypuff').map(s=>s.id);
 const red = spirits.filter(s=>isRedCard(s.id)).map(s=>s.id);
 const validate = ids => validPkDeck(ids,evolution,spirit);
 
@@ -56,4 +56,17 @@ test('PK host and join entry, invalid peer hello, ready, start and rematch enfor
     nodes.get('pkReady').onclick();channel.onmessage({t:'ready',on:true});assert.equal(starts,1);
     selected=base.slice(0,3);lobby.rematch();assert.equal(lobby.session,null);
   } finally {lobby.leave();globalThis.document=previous;globalThis.location=previousLocation;}
+});
+
+test('三色蛋佔三個基礎格：一鍵編組與 PK 驗證都算三格', () => {
+  const others = base.slice(0,5), result = autoDeck(['jigglypuff',...others,...red],evolution,spirit);
+  assert.equal(result.filter(id => id === 'jigglypuff').length, 3);
+  assert.deepEqual(result.slice(0,3),['jigglypuff','jigglypuff','jigglypuff']);
+  assert.ok(result[3] && result[3] !== 'jigglypuff');
+  assert.equal(validate([...new Set(result.filter(Boolean))]),true);
+  assert.equal(validate(['jigglypuff',base[0]]),true);
+  assert.equal(validate(['jigglypuff',...base.slice(0,3)]),false,'蛋加三張基礎會超過四格');
+  assert.equal(validate(['jigglypuff']),false);
+  assert.deepEqual(settleEggSlots([base[0],'jigglypuff',base[1],base[2],red[0],null]),['jigglypuff','jigglypuff','jigglypuff',base[0],red[0],null]);
+  assert.deepEqual(settleEggSlots([...base.slice(0,4),null,null]),[...base.slice(0,4),null,null]);
 });

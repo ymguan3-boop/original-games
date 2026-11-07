@@ -3,8 +3,8 @@
    observatory dome, moonlit pines, the star tower, the sea-dragon abyss). Each is rendered once to a transparent
    model. This file is the SOURCE of the chart's models: tools/bake-chart-models.mjs builds them here and writes the GLB files in
    defense/models/ that the game loads (the game itself does not run this file). Boss cards come from island-cards.js. */
-import {THEMES} from './env.js?v=20261107-c5';
-import {createIslandProps} from './island-props.js?v=20261107-c5';
+import {THEMES} from './env.js?v=20261107-c6';
+import {createIslandProps} from './island-props.js?v=20261107-c6';
 
 export function createIslandBuilder(THREE, kit) {
   const T = THREE, {toon, toonify} = kit;

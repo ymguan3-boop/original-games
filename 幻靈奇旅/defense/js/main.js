@@ -2,36 +2,36 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, eggTrio, teachDeal, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-c5';
-import {createPkIsland} from './pk-island.js?v=20261107-c5';
-import {createPkLobby} from './pk-lobby.js?v=20261107-c5';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-c5';
-import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-c5';
-import {createToonKit} from './style.js?v=20261107-c5';
-import {createChartModels} from './chart-models.js?v=20261107-c5';
-import {createView} from './view.js?v=20261107-c5';
-import {createSeaChart} from './sea3d.js?v=20261107-c5';
-import {defensePool, poolPreview, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-c5';
-import {buildPath} from './stages.js?v=20261107-c5';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-c5';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-c5';
+import {STAGES, SHAPES, eggTrio, teachDeal, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-c6';
+import {createPkIsland} from './pk-island.js?v=20261107-c6';
+import {createPkLobby} from './pk-lobby.js?v=20261107-c6';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-c6';
+import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-c6';
+import {createToonKit} from './style.js?v=20261107-c6';
+import {createChartModels} from './chart-models.js?v=20261107-c6';
+import {createView} from './view.js?v=20261107-c6';
+import {createSeaChart} from './sea3d.js?v=20261107-c6';
+import {defensePool, poolPreview, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-c6';
+import {buildPath} from './stages.js?v=20261107-c6';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-c6';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-c6';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-c5';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-c5';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-c6';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-c6';
 import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-c5';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-c5';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-c5';
-import {icon} from '../../survivors/js/ui-art.js?v=20261107-c5';
-import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-c5';
-import {createTutorial} from './tutorial.js?v=20261107-c5';
-import {initIcons, ico} from './ui-icons.js?v=20261107-c5';
-import {createCombatAudio} from './combat-audio.js?v=20261107-c5';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-c6';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-c6';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-c6';
+import {icon} from '../../survivors/js/ui-art.js?v=20261107-c6';
+import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-c6';
+import {createTutorial} from './tutorial.js?v=20261107-c6';
+import {initIcons, ico} from './ui-icons.js?v=20261107-c6';
+import {createCombatAudio} from './combat-audio.js?v=20261107-c6';
 
-import {autoDeck, validPkDeck} from './deck-rules.js?v=20261107-c5';
+import {autoDeck, validPkDeck, settleEggSlots} from './deck-rules.js?v=20261107-c6';
 
-import {streamAssets} from './asset-stream.js?v=20261107-c5';
-import {CARD_PREVIEWS} from './card-previews.js?v=20261107-c5';
+import {streamAssets} from './asset-stream.js?v=20261107-c6';
+import {CARD_PREVIEWS} from './card-previews.js?v=20261107-c6';
 const ASSET_BASE = new URL('../../', import.meta.url);
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
@@ -154,6 +154,8 @@ function gachaPool() { return defensePool(data.pool, journey(), new Set(data.spi
 function unlockedStage() { let i = 0; while (i < STAGES.length - 1 && record.cleared[STAGES[i].id]) i++; return i; }
 const deckBase = () => record.deck.filter((id) => isBaseCard(data.evolution, id));
 const deckRed = () => record.deck.filter(isRedCard);
+/* 基礎格實際用掉的格數：三色蛋一張佔三格 */
+const baseFilled = () => record.deckSlots.slice(0, DECK_BASE).filter(Boolean).length;
 
 function unitButton({id, trial = false}) {
   const n = record.deck.indexOf(id), sup = SUPPORT[id];
@@ -190,24 +192,24 @@ function normalizeDeck() {
       ...Array.from({length:DECK_RED},(_,i)=>chosenRed[i] || null)];
   }
   const used = new Set();
-  record.deckSlots = record.deckSlots.map((id, i) => {
+  record.deckSlots = settleEggSlots(record.deckSlots.map((id, i) => {
     const valid = i < DECK_BASE ? baseIds : redIds;
     if (!id || !valid.has(id) || used.has(id)) return null;
     used.add(id);
     return id;
-  });
-  record.deck = record.deckSlots.filter(Boolean);
+  }), DECK_BASE);
+  record.deck = [...new Set(record.deckSlots.filter(Boolean))];
 }
 /* Choose a specific persistent sortie slot; unlike a compact array splice, removing
    a card leaves its position empty for the next player-selected card. */
 function updateDeckSelection(id) {
   normalizeDeck();
   const slot = record.deckSlots.indexOf(id), red = isRedCard(id);
-  if (slot >= 0) record.deckSlots[slot] = null;
+  if (slot >= 0) record.deckSlots = record.deckSlots.map((value) => (value === id ? null : value));
   else {
     const first = red ? DECK_BASE : 0, limit = red ? DECK_SIZE : DECK_BASE;
     let target = record.deckSlots.findIndex((value, i) => i >= first && i < limit && !value);
-    if (target < 0) target = first; // Existing full-deck replacement behavior.
+    if (target < 0) target = !red && record.deckSlots.some(isThreeColorEgg) ? DECK_BASE - 1 : first; // Existing full-deck replacement behavior; 三色蛋 keeps its three slots.
     record.deckSlots[target] = id;
   }
   normalizeDeck();
@@ -226,7 +228,7 @@ function renderLobby() {
 const lobbyTopBox = document.getElementById('lobbyTop');
 if (lobbyTopBox && typeof ResizeObserver !== 'undefined') new ResizeObserver(() => { const h = lobbyTopBox.offsetHeight; if (h) document.documentElement.style.setProperty('--dock', h + 'px'); }).observe(lobbyTopBox);
 function renderIslePanel() {
-  const i = record.stage, s = STAGES[i], boss = spirit(s.boss), nb = deckBase().length, nr = deckRed().length, best = record.best?.[s.id] || 0;
+  const i = record.stage, s = STAGES[i], boss = spirit(s.boss), nb = baseFilled(), nr = deckRed().length, best = record.best?.[s.id] || 0;
   const len = buildPath(s.path).length, route = len < 70 ? '短' : len < 105 ? '中' : '長';
   const traps = (s.traps || []).map((t) => TRAPS[t.kind].name), uniq = [...new Set(traps)].map((n) => `${n}×${traps.filter((x) => x === n).length}`);
   const deck = record.deckSlots.map((id) => id ? `<img src="${picture(id)}" alt="${esc(spirit(id).name)}" title="${esc(spirit(id).name)}" data-frame="${spirit(id).cardFrame || 'yellow'}">` : '<i title="卡組空位"></i>').join('');
@@ -248,7 +250,7 @@ async function pickIsle(i) {
 }
 function requireCompleteSortie() {
   normalizeDeck();
-  const count = deckBase().length;
+  const count = baseFilled();
   if (count >= DECK_BASE) return true;
   toast(`必須編滿四位基礎幻靈才可以出擊！目前只有 ${count}/${DECK_BASE} 位，請先開啟「卡組」補滿。`);
   return false;
@@ -281,9 +283,9 @@ function menuPage(title, items) {
   $('modalBody').querySelectorAll('[data-menu]').forEach((b) => { b.onclick = () => items[+b.dataset.menu][1](); });
 }
 function quickDeck() {
-  record.deckSlots = autoDeck(record.owned, data.evolution, spirit, id => data.entries.get(id)); record.deck = record.deckSlots.filter(Boolean); normalizeDeck(); saveRecord(); renderLobby();
+  record.deckSlots = autoDeck(record.owned, data.evolution, spirit, id => data.entries.get(id)); normalizeDeck(); saveRecord(); renderLobby();
   tutorialSeen.deck = true;
-  if (deckBase().length < DECK_BASE) toast('夥伴還不夠，先去轉蛋吧！'); else toast('已完成一鍵編組');
+  if (baseFilled() < DECK_BASE) toast('夥伴還不夠，先去轉蛋吧！'); else toast('已完成一鍵編組');
 }
 function openIslandMenu() {
   menuPage('選單', [['返回初光鎮', sailHome], ['教學重播', () => { $('modal').close(); tutorial.replay(); }], ['畫面設定', openDisplayMenu], ['測試', openTestCode], ['關閉', () => $('modal').close()]]);
@@ -345,7 +347,7 @@ function bindLobby() {
 let deckHelpExpanded = false;
 function openDeck(picked = null, keepScroll = 0) {
   normalizeDeck();
-  const units = availableUnits(), nb = deckBase().length, nr = deckRed().length;
+  const units = availableUnits(), nb = baseFilled(), nr = deckRed().length;
   const unitIndex = new Map([...units.base, ...units.red].map((u) => [u.id, u]));
   const chosenSlots = record.deckSlots.map((id, i) => {
     const unit = id && unitIndex.get(id);
@@ -359,7 +361,7 @@ function openDeck(picked = null, keepScroll = 0) {
     <p class="result-sub">基礎幻靈 ${nb}/${DECK_BASE}・技能卡 ${nr}/${DECK_RED}（職業決定攻擊方式，四名出戰角色搭配兩張技能卡）</p>
     <div class="role-legend">${Object.values(ROLE_META).map((r) => `<span>${r.icon} ${r.label}</span>`).join('')}</div>
     <div class="panel-scroll deck-card-list">
-      <h3 class="roster-group sortie-heading">⚔️ 已選出擊卡組 <small>${record.deck.length}/${DECK_SIZE}・綠框「出擊」為目前上陣卡牌，空位可自行補入</small></h3>
+      <h3 class="roster-group sortie-heading">⚔️ 已選出擊卡組 <small>${record.deckSlots.filter(Boolean).length}/${DECK_SIZE}・綠框「出擊」為目前上陣卡牌，空位可自行補入</small></h3>
       <div class="roster sortie-current" aria-label="六個固定出擊欄位，移除卡牌後原位置保留空格">${chosenSlots.join('')}</div>
       <details class="deck-special-details" ${deckHelpExpanded ? 'open' : ''}>
         <summary>📖 特殊合體與放置規則（點擊展開）</summary>
@@ -370,7 +372,7 @@ function openDeck(picked = null, keepScroll = 0) {
         </div>
         <div class="deck-special-rule">
           <span class="deck-special-icon" aria-hidden="true">🥚</span>
-          <div><b>三色蛋指定路徑出場</b><p>點選<strong>三色蛋卡牌</strong>，再點選路徑上想放的位置；也能拖曳卡牌到道路放開。放置後不移動，選錯位置不會消耗卡牌。</p></div>
+          <div><b>三色蛋指定路徑出場</b><p>三色蛋佔<strong>三個基礎幻靈格</strong>，再配一張基礎幻靈即可出擊。點選<strong>三色蛋卡牌</strong>，再點選路徑上想放的位置；也能拖曳卡牌到道路放開。放置後不移動，選錯位置不會消耗卡牌。</p></div>
         </div>
       </div>
       </details>
@@ -378,7 +380,7 @@ function openDeck(picked = null, keepScroll = 0) {
       <h3 class="roster-group">其他紅卡輔助 <small>點卡牌可加入出擊卡組</small></h3><div class="roster">${unchosenRed.map(unitButton).join('') || '<p class="muted">沒有其他可選的紅卡輔助，仍可透過轉蛋取得。</p>'}</div></div>
     <div id="flipLayer" class="flip-layer" hidden></div>
     <div class="modal-actions center"><button class="tool" id="autoDeck">⚡ 一鍵編組</button><button class="tool" id="deckGacha">🎰 去轉蛋</button><button class="primary big" data-close>完成</button></div>`, 'howto deck');
-  $('autoDeck').onclick = () => { record.deckSlots = autoDeck(record.owned, data.evolution, spirit, id => data.entries.get(id)); record.deck = record.deckSlots.filter(Boolean); normalizeDeck(); saveRecord(); renderIslePanel(); openDeck(); toast(`已依綜合戰力編組：基礎幻靈 ${deckBase().length}/4、技能卡 ${deckRed().length}/2${deckBase().length < 4 ? '；請先轉蛋補足四位再出擊' : ''}`); };
+  $('autoDeck').onclick = () => { record.deckSlots = autoDeck(record.owned, data.evolution, spirit, id => data.entries.get(id)); normalizeDeck(); saveRecord(); renderIslePanel(); openDeck(); toast(`已依綜合戰力編組：基礎幻靈 ${deckBase().length}/4、技能卡 ${deckRed().length}/2${deckBase().length < 4 ? '；請先轉蛋補足四位再出擊' : ''}`); };
   $('deckGacha').onclick = () => { $('modal').close(); openGacha(); };
   /* tapping a card turns it over: the back lists its attack, ultimate and passives, with a button to add it to / remove it from the deck */
   const scroller = $('modalBody').querySelector('.panel-scroll'), layer = $('flipLayer');
@@ -510,7 +512,7 @@ function showHowTo() {
     ${tip('⏳','大絕錯峰施放', `<p>全場同一時間只允許一個重型大絕啟動；每次間隔至少 ${ULTIMATE_SPACING} 秒。其他幻靈繼續普攻，支援技能與塔上魔王同樣排隊，避免特效同時爆發造成卡頓。</p>`)}
     ${tip('🌤️','固定關卡天氣', `<p>所有關卡與 PK 戰的天氣、天空、日光都固定，不因受到攻擊或施放大絕改變；第三關「水仙瀑布」另有偶發、只落在道路上的閃電，會傷害場上雙方幻靈，不影響天空與基地：</p><div class="weather-grid">${weathers}</div>`)}
     ${tip('🏝️','群島航線', '<p>從初光鎮碼頭出發，依序經過十個主題島；通關後可挑戰下一島，已通關島可重複挑戰。</p>')}
-    ${tip('🃏','卡組與升星', `<p>四張基礎幻靈加兩張技能卡，手牌最多 ${HAND_SIZE} 張；一般相同卡須相鄰才能合成升星。<b>特殊例外：</b>金魚國王 ×1 ＋ 金魚皇后 ×1 相鄰可合體為水蛟龍王 ★★★，兩張同種金魚只升星；<b>三色蛋</b>點卡後可選道路任意有效位置放置，或拖曳到道路，放下後固定不移動。場上出戰上限 ${20} 隻。</p>`)}
+    ${tip('🃏','卡組與升星', `<p>四格基礎幻靈（三色蛋佔三格）加兩張技能卡，手牌最多 ${HAND_SIZE} 張；一般相同卡須相鄰才能合成升星。<b>特殊例外：</b>金魚國王 ×1 ＋ 金魚皇后 ×1 相鄰可合體為水蛟龍王 ★★★，兩張同種金魚只升星；<b>三色蛋</b>點卡後可選道路任意有效位置放置，或拖曳到道路，放下後固定不移動。場上出戰上限 ${20} 隻。</p>`)}
     ${tip('🔮','支援技能卡', `<ul class="mini">${supports}</ul>`)}
     ${tip('🎒','道具', `<p>${Object.values(ITEMS).map((it) => `<span class="chip">${it.icon} ${it.name}</span>`).join('')}</p>`)}
     </div>
@@ -861,7 +863,7 @@ function cardBackHtml(id) {
     return `<details class="star-sec"${r === 0 ? ' open' : ''}><summary><span class="ci-tag t-star">${'★'.repeat(r + 1)}</span><b>${esc(forms.map(spiritName).join(' 或 '))}</b><small>${growth}</small></summary>${body}</details>`;
   }).join('');
   const special = id === 'jigglypuff'
-    ? '<div class="deck-special-note">🥚 <b>指定出場位置：</b>點三色蛋卡牌再點道路，或拖曳卡牌到道路；蛋放好後不移動，無效位置不消耗。</div>'
+    ? '<div class="deck-special-note">🥚 <b>佔三個基礎格・指定出場位置：</b>點三色蛋卡牌再點道路，或拖曳卡牌到道路；蛋放好後不移動，無效位置不消耗。</div>'
     : id === 'kyogre'
       ? '<div class="deck-special-note">🐟 <b>水蛟龍王合體條件：</b>國王 ×1 ＋ 皇后 ×1 相鄰 → 水蛟龍王 ★★★；兩張同種金魚只升星。</div>'
       : '';
@@ -1192,7 +1194,7 @@ function bindHud() {
   tutorial = createTutorial({get: () => record, save: saveRecord, box: $('tutor'), onAdvance: (step) => { if (step === 'leaveBattle') { $('itemMenu').hidden = true; leaveGame(); } }, extraFocus: (step) => step === 'gacha' && (record.starterClaimed || tutorialSeen.pulled) && $('panel').open ? '#closePanel' : step === 'deck' && $('modal').open && deckBase().length >= DECK_BASE ? '#modalBody .modal-dismiss' : step === 'deck' && !$('modal').open ? '.isle-deck-actions [data-auto-deck]' : null});
   tutorial.render();
   setInterval(() => tutorial.check({
-    gacha: () => (record.starterClaimed || tutorialSeen.pulled) && !$('panel').open, deck: () => deckBase().length >= DECK_BASE && !$('modal').open,
+    gacha: () => (record.starterClaimed || tutorialSeen.pulled) && !$('panel').open, deck: () => baseFilled() >= DECK_BASE && !$('modal').open,
     sortie: () => !!game, deploy: () => !!game && alliesCount(game) > 0,
     star2: () => !!game && (game.hand.some((c) => c.rank >= 2) || game.fighters.some((f) => f.side === 'ally' && f.rank >= 2)),
     star3: () => !!game && game.hand.filter((c) => c.rank === 2).length >= 2,

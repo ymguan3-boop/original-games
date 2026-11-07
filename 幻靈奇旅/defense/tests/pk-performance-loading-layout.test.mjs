@@ -74,7 +74,7 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/20261107-c5/);
+  assert.match(html,/20261107-c6/);
 });
 
 
@@ -125,7 +125,7 @@ test('fixed sortie slots preserve holes after removal and allow deliberate refil
   const selectionEnd = main.indexOf('function renderLobby() {', selectionStart);
   assert.ok(normalStart >= 0 && selectionStart > normalStart && selectionEnd > selectionStart);
   const logic = main.slice(normalStart, selectionStart) + main.slice(selectionStart, selectionEnd);
-  const make = new Function('record','availableUnits','DECK_BASE','DECK_RED','DECK_SIZE','isRedCard','saveRecord',
+  const make = new Function('record','availableUnits','DECK_BASE','DECK_RED','DECK_SIZE','isRedCard','saveRecord','settleEggSlots','isThreeColorEgg',
     logic + ';return {normalizeDeck,updateDeckSelection};');
   const base = ['a','b','c','d','e'].map((id) => ({id}));
   const red = ['r1','r2','r3'].map((id) => ({id}));
@@ -133,7 +133,8 @@ test('fixed sortie slots preserve holes after removal and allow deliberate refil
   const redCard = (id) => id.startsWith('r');
   const old = {deck:['a','b','c','d','r1','r2']};
   let saved = '';
-  const api = make(old,availableUnits,4,2,6,redCard,()=>{saved=JSON.stringify(old);});
+  const egg = (id) => id === 'egg', settle = (slots) => slots.some(egg) ? ['egg','egg','egg',slots.slice(0,4).find((id) => id && !egg(id)) || null,...slots.slice(4)] : slots;
+  const api = make(old,availableUnits,4,2,6,redCard,()=>{saved=JSON.stringify(old);},settle,egg);
   api.normalizeDeck();
   assert.deepEqual(old.deckSlots,['a','b','c','d','r1','r2']);
   assert.equal(api.updateDeckSelection('b'),false);
@@ -142,7 +143,7 @@ test('fixed sortie slots preserve holes after removal and allow deliberate refil
   api.normalizeDeck();
   assert.equal(old.deckSlots[1],null,'normalization must not refill a removed card');
   const reopened=JSON.parse(saved);
-  make(reopened,availableUnits,4,2,6,redCard,()=>{}).normalizeDeck();
+  make(reopened,availableUnits,4,2,6,redCard,()=>{},settle,egg).normalizeDeck();
   assert.equal(reopened.deckSlots[1],null,'saved hole persists after reopening');
   assert.equal(api.updateDeckSelection('e'),true);
   assert.deepEqual(old.deckSlots,['a','e','c','d','r1','r2'],'new base card refills the same open base slot');
@@ -151,7 +152,7 @@ test('fixed sortie slots preserve holes after removal and allow deliberate refil
   assert.equal(api.updateDeckSelection('r3'),true);
   assert.equal(old.deckSlots[4],'r3','red skill fills red slot, not a base slot');
   const incomplete={deck:['a','b','c','d'],deckSlots:['a','b','c','d',null,null]};
-  const newer=make(incomplete,availableUnits,4,2,6,redCard,()=>{});
+  const newer=make(incomplete,availableUnits,4,2,6,redCard,()=>{},settle,egg);
   newer.normalizeDeck();
   assert.deepEqual(incomplete.deckSlots,['a','b','c','d',null,null],
     'empty two red positions must stay visible even when red cards are available');
@@ -185,7 +186,7 @@ test('top points and four action shortcuts share all available width at phone an
   assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
   assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
   assert.match(top,/sortie-base-warning/);
-  assert.match(html,/20261107-c5/,'main script needs a new version after hit isolation');
+  assert.match(html,/20261107-c6/,'main script needs a new version after hit isolation');
 });
 
 test('win screen keeps Next Stage button in a fixed accessible footer on landscape phones', () => {
@@ -272,7 +273,7 @@ test('stage and weather use separate content-sized chips without orphaned words'
   assert.match(styles,/flex-wrap:nowrap/);
   assert.match(main,/!html\.includes\('class="stage-result-content"'\)/,'result navigation must remain outside content scroller');
   assert.match(styles,/height:30px;min-height:30px/);
-  assert.match(html,/20261107-c5/);
+  assert.match(html,/20261107-c6/);
 });
 
 test('evolution cutscene and obsolete camera button stay removed in solo and PK', () => {
@@ -327,7 +328,7 @@ test('all stages share localized thunder animations and climate cannot flash scr
   assert.match(view,/sun\.intensity !== c\.sunPower/);
   assert.match(sea,/function lockWeather\(\)/);
   assert.match(rules,/state\.stage\.id === 'waterfall'/);
-  assert.match(html,/main\.js\?v=20261107-c5/);
+  assert.match(html,/main\.js\?v=20261107-c6/);
 });
 
 test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local barrel feedback', () => {
@@ -348,6 +349,6 @@ test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local
   assert.match(view,/body\.scale\.set\(1 \+ k, 1 - k, 1 \+ k\)/,'local barrel squash remains');
   assert.match(view,/Math\.sin\(b\.userData\.flash \/ 0\.18 \* Math\.PI\) \* 0\.018/);
   assert.match(css,/#world \{[^}]+background-position: center; background-size: cover;/);
-  assert.match(html,/defense\.css\?v=20261107-c5/);
-  assert.match(html,/main\.js\?v=20261107-c5/);
+  assert.match(html,/defense\.css\?v=20261107-c6/);
+  assert.match(html,/main\.js\?v=20261107-c6/);
 });

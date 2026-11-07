@@ -1,10 +1,10 @@
 /* The sea chart's models, loaded straight from GLB files (defense/models/*.glb, baked by tools/bake-chart-models.mjs from
    js/islands3d.js and js/harbor.js): ten islands, the town pier and the speedboat. Nothing is built with code at run time except
    the boss cards, the two painted-texture props (star plate, rainbow plaza), the boatman and the rider (the hero model). */
-import {createIslandProps} from './island-props.js?v=20261107-c5';
-import {createCardMaker} from './island-cards.js?v=20261107-c5';
+import {createIslandProps} from './island-props.js?v=20261107-c6';
+import {createCardMaker} from './island-cards.js?v=20261107-c6';
 
-import {batchStatic} from './batch.js?v=20261107-c5';
+import {batchStatic} from './batch.js?v=20261107-c6';
 
 export function createChartModels(THREE, kit, {loadGltf, cloneModel}) {
   const T = THREE, ink = new T.Color(0x3a2414).convertSRGBToLinear();

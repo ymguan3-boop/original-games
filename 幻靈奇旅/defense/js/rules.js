@@ -4,9 +4,9 @@
    evolutions from the cave table (survivors/data/evolution.json). The view's hooks.fire plays the cave attack and
    reports when the hit releases, so damage lands on the animation frame.
    Lane coordinate x runs from state.left (monster nest, path start) to state.right (crystal, path end). */
-import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-c5';
-import {STAGES, buildPath} from './stages.js?v=20261107-c5';
-import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-c5';
+import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-c6';
+import {STAGES, buildPath} from './stages.js?v=20261107-c6';
+import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-c6';
 
 export {STAGES};
 /* PK (duel): two players on one road. The host's spirits start at the crystal end (side 'ally'), the guest's at the
@@ -52,13 +52,14 @@ export const HAND_SIZE = 6, MAX_ALLIES = 20, MAX_RANK = 3;
 export const GOLDFISH_KING = 'groudon', GOLDFISH_QUEEN = 'rayquaza',
   WATER_DRAGON = 'mewtwo', THREE_COLOR_EGG = 'jigglypuff';
 export const isThreeColorEgg = (id) => id === THREE_COLOR_EGG;
+export const baseSlotCost = (id) => (isThreeColorEgg(id) ? 3 : 1);
 export const goldfishPair = (a, b) =>
   (a === GOLDFISH_KING && b === GOLDFISH_QUEEN) ||
   (a === GOLDFISH_QUEEN && b === GOLDFISH_KING);
 /* Every summoned spirit (and the boss) has its own cave ultimate on a cooldown, by card frame; the first one is
    ready after ULT_FIRST of the cooldown. The cave "技能冷卻" passive shortens it. */
 export const ULT_CD = {yellow: 10, purple: 11, red: 12, boss: 13}, ULT_FIRST = 0.5;
-/* A deck is 4 base spirits (unevolved yellow / purple cards, plus 三色蛋) and 2 red support cards. */
+/* A deck is 4 base slots (unevolved yellow / purple cards; 三色蛋 takes 3 of them) and 2 red support cards. */
 export const DECK_BASE = 4, DECK_RED = 2, DECK_SIZE = DECK_BASE + DECK_RED;
 export const DEAL_EVERY = 3.2;
 /* monsters spawn at the same pace relative to the deal as when cards came every 2.4 s */
@@ -248,7 +249,10 @@ const other = (side) => (side === 'ally' ? 'enemy' : 'ally');
 function deal(state, side = 'ally') {
   const seat = seatOf(state, side);
   if (!seat.deck.length || seat.hand.length >= HAND_SIZE) return null;
-  const species = seat.deck[Math.floor(state.random() * seat.deck.length)];
+  /* 三色蛋每場只能放一組，放好後不再發，手牌才不會卡住 */
+  const pool = state.eggSets?.[side] ? seat.deck.filter((id) => !isThreeColorEgg(id)) : seat.deck;
+  if (!pool.length) return null;
+  const species = pool[Math.floor(state.random() * pool.length)];
   const card = {uid: state.nextCard++, species, rank: 1, boost: 0};
   seat.hand.push(card);
   emit(state, 'deal', {uid: card.uid, side});
