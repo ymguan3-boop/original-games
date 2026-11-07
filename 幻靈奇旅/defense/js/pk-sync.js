@@ -3,7 +3,7 @@
    event since the last one). The guest keeps a mirror object shaped like a rules state and seen from its own side:
    sides swapped, lane x mirrored (x -> -x, so its spirits also start at the crystal end and walk toward the nest),
    bases swapped. The battle view and the hand UI read the mirror exactly as they read a normal battle. */
-import {buildPath} from './stages.js?v=20261107-a3';
+import {buildPath} from './stages.js?v=20261107-a4';
 
 const r2 = (v) => Math.round(v * 100) / 100;
 const STATUS = ['poison', 'burn', 'slow', 'weaken', 'freeze'];
