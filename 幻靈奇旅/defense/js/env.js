@@ -1,7 +1,7 @@
 /* Themed cartoon scenery for each stage (farm meadow, riverside, forge town, library, night forest, star tower,
    abyss): ground colours, lighting and toon-shaded, outlined props placed clear of the road and the two bases. */
 
-import {createIslandProps} from './island-props.js?v=20261107-a1';
+import {createIslandProps} from './island-props.js?v=20261107-a3';
 
 export const THEMES = {
   meadow: {sky: 0xbfe6ff, ground: [0x86cc5e, 0x6ab84c, 0xb4d468], hemi: [0xfff6e0, 0x5e8a3a, 0.85], sun: [0xfff0cf, 1.15], road: [0x6a4528, 0xc89a5a, 0xe9c98e]},

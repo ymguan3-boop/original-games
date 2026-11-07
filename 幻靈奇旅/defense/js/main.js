@@ -2,36 +2,36 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, eggTrio, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-a1';
-import {createPkIsland} from './pk-island.js?v=20261107-a1';
-import {createPkLobby} from './pk-lobby.js?v=20261107-a1';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-a1';
-import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-a1';
-import {createToonKit} from './style.js?v=20261107-a1';
-import {createChartModels} from './chart-models.js?v=20261107-a1';
-import {createView} from './view.js?v=20261107-a1';
-import {createSeaChart} from './sea3d.js?v=20261107-a1';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-a1';
-import {buildPath} from './stages.js?v=20261107-a1';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-a1';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-a1';
+import {STAGES, SHAPES, eggTrio, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-a3';
+import {createPkIsland} from './pk-island.js?v=20261107-a3';
+import {createPkLobby} from './pk-lobby.js?v=20261107-a3';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-a3';
+import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-a3';
+import {createToonKit} from './style.js?v=20261107-a3';
+import {createChartModels} from './chart-models.js?v=20261107-a3';
+import {createView} from './view.js?v=20261107-a3';
+import {createSeaChart} from './sea3d.js?v=20261107-a3';
+import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-a3';
+import {buildPath} from './stages.js?v=20261107-a3';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-a3';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-a3';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-a1';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-a1';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-a3';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-a3';
 import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-a1';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-a1';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-a1';
-import {icon} from '../../survivors/js/ui-art.js?v=20261107-a1';
-import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-a1';
-import {createTutorial} from './tutorial.js?v=20261107-a1';
-import {initIcons, ico} from './ui-icons.js?v=20261107-a1';
-import {createCombatAudio} from './combat-audio.js?v=20261107-a1';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-a3';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-a3';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-a3';
+import {icon} from '../../survivors/js/ui-art.js?v=20261107-a3';
+import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-a3';
+import {createTutorial} from './tutorial.js?v=20261107-a3';
+import {initIcons, ico} from './ui-icons.js?v=20261107-a3';
+import {createCombatAudio} from './combat-audio.js?v=20261107-a3';
 
-import {autoDeck, validPkDeck} from './deck-rules.js?v=20261107-a1';
+import {autoDeck, validPkDeck} from './deck-rules.js?v=20261107-a3';
 
-import {streamAssets} from './asset-stream.js?v=20261107-a1';
-import {CARD_PREVIEWS} from './card-previews.js?v=20261107-a1';
+import {streamAssets} from './asset-stream.js?v=20261107-a3';
+import {CARD_PREVIEWS} from './card-previews.js?v=20261107-a3';
 const ASSET_BASE = new URL('../../', import.meta.url);
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
@@ -168,7 +168,7 @@ function unitButton({id, trial = false}) {
 }
 
 let chart = null, tutorial = null;
-const tutorialSeen = {gacha: false, deck: false, item: false};
+const tutorialSeen = {pulled: false, deck: false, item: false};
 /* Preserve fixed card positions, including deliberately emptied slots.
    Slots 1–4 are base spirits and slots 5–6 are red skill cards. The compact
    record.deck remains the existing battle/PK API; only the lobby stores holes.
@@ -230,8 +230,9 @@ function renderIslePanel() {
   $('islePanel').innerHTML = `<div class="isle-card">
     <div class="isle-title"><small>第 ${i + 1} 島</small><h2>${esc(s.name)}</h2><span class="weather-pill">${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span>${record.cleared[s.id] ? `<span class="cleared-tag">已通關 ${'★'.repeat(best)}<em>可重複挑戰</em></span>` : ''}</div>
     <div class="isle-boss"><img src="${picture(s.boss)}" alt=""><div><small>${i < 5 ? '小魔王' : '大魔王'}</small><b>${esc(boss.name)}</b></div></div>
-    <details class="isle-more"><summary>更多關卡資訊</summary><div class="isle-facts"><span>🛤️ 路線 ${route}</span><span>🎟️ 擊倒 +${killPoints(i)}</span><span>🃏 編組 ${nb + nr}/${DECK_SIZE}</span></div></details>
-    ${nb < DECK_BASE ? `<p class="sortie-base-warning" role="status">⚠️ 必須編滿四位基礎幻靈才可以出擊（目前 ${nb}/${DECK_BASE} 位），請先進入「卡組」補滿。</p>` : ''}
+    <div class="isle-deck"><div class="deck-strip">${deck}</div><div class="isle-deck-actions"><button class="tool small" data-open="deck">編組 ${nb + nr}/${DECK_SIZE}</button><button class="tool small" data-auto-deck>一鍵編組</button></div></div>
+    <details class="isle-more"><summary>更多關卡資訊</summary><div class="isle-facts"><span>🛤️ 路線 ${route}</span><span>🎟️ 擊倒 +${killPoints(i)}</span></div></details>
+    ${nb < DECK_BASE ? `<p class="sortie-base-warning" role="status">⚠️ 必須編滿四位基礎幻靈才可以出擊（目前 ${nb}/${DECK_BASE} 位）</p>` : ''}
   </div>`;
 }
 async function sailTo(i, speed = 13) {
@@ -278,6 +279,11 @@ function menuPage(title, items) {
   $('modalBody').querySelector('.modal-dismiss')?.remove();
   $('modalBody').querySelectorAll('[data-menu]').forEach((b) => { b.onclick = () => items[+b.dataset.menu][1](); });
 }
+function quickDeck() {
+  record.deckSlots = autoDeck(record.owned, data.evolution, spirit, id => data.entries.get(id)); record.deck = record.deckSlots.filter(Boolean); normalizeDeck(); saveRecord(); renderLobby();
+  tutorialSeen.deck = true;
+  if (deckBase().length < DECK_BASE) toast('夥伴還不夠，先去轉蛋吧！'); else toast('已完成一鍵編組');
+}
 function openIslandMenu() {
   menuPage('選單', [['返回初光鎮', sailHome], ['教學重播', () => { $('modal').close(); tutorial.replay(); }], ['畫面設定', openDisplayMenu], ['關閉', () => $('modal').close()]]);
 }
@@ -301,6 +307,7 @@ function bindLobby() {
   $('islePanel').onclick = (e) => {
     if (e.target.closest('#start')) beginStage();
     else if (e.target.closest('[data-open="deck"]')) openDeck();
+    else if (e.target.closest('[data-auto-deck]')) quickDeck();
     else if (e.target.closest('[data-open="gacha"]')) openGacha();
   };
   $('gachaBtn').onclick = () => openGacha();
@@ -314,7 +321,6 @@ function bindLobby() {
 /* deck editor: base spirits and red support cards from the summoned collection */
 let deckHelpExpanded = false;
 function openDeck(picked = null, keepScroll = 0) {
-  tutorialSeen.deck = true;
   normalizeDeck();
   const units = availableUnits(), nb = deckBase().length, nr = deckRed().length;
   const unitIndex = new Map([...units.base, ...units.red].map((u) => [u.id, u]));
@@ -413,7 +419,6 @@ for (const [id, t] of Object.entries({...TRAP_CARDS, ...BAG_ITEMS})) CAVE_ITEMS[
 };
 const filmRewards = (rewards) => rewards;
 function openGacha() {
-  tutorialSeen.gacha = true;
   const first = !record.starterClaimed, pts = points(), pool = gachaPool();
   openPanel('群島轉蛋機', `<div class="dg-wallet"><span>🎟️ 持有點數（與無盡洞穴共用）</span><strong>${pts.toLocaleString()}<small>點</small></strong></div>
     <div class="dg-intro"><button class="dg-machine" aria-label="轉動轉蛋機"><img src="../survivors/assets/gacha-machine-v03.png" alt=""></button>
@@ -427,12 +432,13 @@ function openGacha() {
 }
 function claimStarter() {
   const r = starterRewards(gachaPool());
-  record.owned = [...new Set([...(record.owned || []), ...r.map((x) => x.id)])]; record.starterClaimed = true; saveRecord();
+  record.owned = [...new Set([...(record.owned || []), ...r.map((x) => x.id)])]; record.starterClaimed = true; tutorialSeen.pulled = true; saveRecord();
   showRewards(r, '新手召喚', 0);
 }
 function drawBatch(n) {
   try {
     const rewards = drawWithStore(caveStore(), gachaPool(), record.owned || [], n).value;
+    tutorialSeen.pulled = true;
     record.owned ||= [];
     for (const r of rewards) {
       if (r.kind === 'spirit' && !record.owned.includes(r.id)) record.owned.push(r.id);
@@ -1147,10 +1153,10 @@ function showResult(r) {
 function bindHud() {
   $('dismissBossIntro').onclick = hideBossIntro;
   initFullscreen();
-  tutorial = createTutorial({get: () => record, save: saveRecord, box: $('tutor')});
+  tutorial = createTutorial({get: () => record, save: saveRecord, box: $('tutor'), extraFocus: (step) => step === 'gacha' && (record.starterClaimed || tutorialSeen.pulled) && $('panel').open ? '#closePanel' : step === 'deck' && $('modal').open && deckBase().length >= DECK_BASE ? '#modalBody .modal-dismiss' : step === 'deck' && !$('modal').open ? '.isle-deck-actions [data-auto-deck]' : null});
   tutorial.render();
   setInterval(() => tutorial.check({
-    gacha: () => tutorialSeen.gacha, deck: () => deckBase().length >= DECK_BASE && tutorialSeen.deck,
+    gacha: () => (record.starterClaimed || tutorialSeen.pulled) && !$('panel').open, deck: () => deckBase().length >= DECK_BASE && !$('modal').open,
     sortie: () => !!game, deploy: () => !!game && alliesCount(game) > 0,
     star2: () => !!game && (game.hand.some((c) => c.rank >= 2) || game.fighters.some((f) => f.side === 'ally' && f.rank >= 2)),
     star3: () => !!game && (game.hand.some((c) => c.rank >= 3) || game.fighters.some((f) => f.side === 'ally' && f.rank >= 3)),
