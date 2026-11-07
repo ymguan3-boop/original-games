@@ -127,7 +127,7 @@ async function loadData() {
 function cardHtml(id, {line} = {}) {
   const s = spirit(id), number = data.entries.get(id)?.number || '—';
   const info = line || `${esc(roleLabel(id))} · ${esc(s.rarity || '普通')} · 第 ${s.stage || 1} 階段`;
-  return `<article class="collectionCard" data-frame="${s.cardFrame || 'yellow'}"><span class="collectionNumber">No.${number}</span><span class="class-medal role-${roleFor(id).basic}" title="${esc(roleLabel(id))}">${roleFor(id).icon}</span><img class="collectionArt" src="${picture(id)}" alt="${esc(s.name)}" decoding="async"><img class="collectionFrame" src="${new URL('defense/assets/collection-frame.webp', ASSET_BASE).href}" alt="" decoding="async"><h3 class="collectionName">${esc(s.name)}</h3><div class="collectionInfo"><div class="collectionType">${info}</div><div class="collectionStats"><span>HP ${s.hp}</span><span>攻擊 ${s.attack}</span></div></div></article>`;
+  return `<article class="collectionCard" data-frame="${s.cardFrame || 'yellow'}"><span class="collectionNumber">No.${number}</span><span class="class-medal role-${roleFor(id).basic}" title="${esc(roleLabel(id))}">${roleFor(id).icon}</span><img class="collectionArt" src="${picture(id)}" alt="${esc(s.name)}" decoding="async"><img class="collectionFrame" src="${new URL('defense/assets/collection-frame.webp', ASSET_BASE).href}" alt="" decoding="async"><h3 class="collectionName">${esc(s.name)}</h3><div class="collectionInfo"><div class="collectionType">${info}</div><div class="collectionStats"><span>HP ${isThreeColorEgg(id)?1:s.hp}</span><span>攻擊 ${s.attack}</span></div></div></article>`;
 }
 
 /* ---------- lobby ---------- */
