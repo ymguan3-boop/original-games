@@ -21,7 +21,7 @@ test('spirits are 10% of summons (yellow 6, purple 3, red 1); rates sum to 1', (
 test('base spirits follow the cave summon pool: locked colours wait for the original unlocks, 水蛟龍王 never appears', () => {
   const fresh = defensePool(pool, {});
   assert.ok(fresh.yellow.length >= STARTER_COUNT);
-  assert.deepEqual([fresh.purple.length, fresh.red.length], [0, 0], 'purple and red need the original game unlocks, as in the cave');
+  assert.deepEqual([fresh.purple, fresh.red], [['giratina'], ['jigglypuff']], '小黃 and 三色蛋 are free as in the cave; the rest need the original game');
   const open = defensePool(pool, unlocked);
   assert.ok(open.purple.length && open.red.length);
   assert.ok(![...open.yellow, ...open.purple, ...open.red].includes('mewtwo'));
@@ -35,7 +35,7 @@ test('the first summon gives four different yellow base spirits', () => {
 });
 
 test('a locked colour falls back to a lower one instead of failing', () => {
-  const [r] = rollRewards(defensePool(pool, {}), [], 1, seq(0.095, 0.2));
+  const [r] = rollRewards({...defensePool(pool, {}), purple: [], red: []}, [], 1, seq(0.095, 0.2));
   assert.equal(r.kind, 'spirit'); assert.equal(r.color, 'yellow');
 });
 
@@ -65,6 +65,6 @@ test('tower bosses join the red pool only after the main game; zhaocai only join
   assert.ok(defensePool(pool, {captureCounts: {chimchar: 1}}).red.includes('chimchar'));
   const {all, open} = poolPreview(pool, {}, null);
   for (const id of ['chimchar', 'monferno', 'infernape', 'dialga', 'pikachu', 'mew', 'wigglytuff', 'blissey', 'jigglypuff']) assert.ok(all.red.includes(id), id);
-  assert.equal(open.red.length, 0);
+  assert.deepEqual(open.red, ['jigglypuff']);
   assert.ok(![...pool.yellow, ...pool.purple, ...pool.red].some((id) => id.startsWith('zhaocai')), 'the base pool never holds the zhaocai family');
 });

@@ -3,8 +3,8 @@
    purple/red cards only after the original game unlocks them). Points come from the shared cave wallet, so
    spending here spends cave points; items land in the shared cave bag. Spirits drawn here join the
    defense collection (record.owned), which is what the deck is built from. */
-import {eligiblePool, DRAW_COST, DUPLICATE_POINTS} from '../../survivors/js/gacha.js?v=20261107-c3';
-import {SUPPORT, TRAP_CARDS, BAG_ITEMS} from './rules.js?v=20261107-c3';
+import {eligiblePool, DRAW_COST, DUPLICATE_POINTS} from '../../survivors/js/gacha.js?v=20261107-c5';
+import {SUPPORT, TRAP_CARDS, BAG_ITEMS} from './rules.js?v=20261107-c5';
 
 export {DRAW_COST, DUPLICATE_POINTS};
 /* 10% spirits (yellow 6%, purple 3%, red 1%); the other 90% are this mode's own items: supplies and trap cards (kept in the island record). */
@@ -31,7 +31,7 @@ export const isTrapCard = (id) => id in TRAP_CARDS, isDefenseItem = (id) => id i
    The three tower bosses stay out of the cave pool, but they are support cards here: once won in the main game they can be drawn. */
 export const TOWER_RED = ['chimchar', 'monferno', 'infernape'];
 export function defensePool(pool, journey = {}, spiritIds = null) {
-  const p = eligiblePool(pool, journey), known = (id) => !spiritIds || spiritIds.has(id), progress = journey.state || journey;
+  const p = eligiblePool(pool, journey, {standalone: true}), known = (id) => !spiritIds || spiritIds.has(id), progress = journey.state || journey;
   const tower = TOWER_RED.filter((id) => progress.pokedexUnlocks?.[id] || progress.captureCounts?.[id] > 0);
   return {
     yellow: p.yellow.filter(known),
