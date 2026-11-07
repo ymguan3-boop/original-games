@@ -18,6 +18,7 @@ export function createDock({game,hub,esc}){
  list.addEventListener('error',e=>{const i=e.target;if(i.dataset?.fallback&&i.getAttribute('src')!==i.dataset.fallback)i.src=i.dataset.fallback;},true);
  const face=e=>`<span class="dock-face"><img src="./assets/staff-gifs/${esc(e.spiritId)}.gif" data-fallback="${esc(spiritArtPath(e.spiritId))}" alt=""><i class="dock-ready" hidden>✨</i></span>`;
  function renderGoal(s){
+  if(s.phase==='open'&&s.layoutPause){goal.dataset.tone='alert';goal.children[0].textContent='暫停營業中，顧客正在等候';goal.children[1].textContent='點這裡恢復';goalTap=()=>hub.open('build');return;}
   const issue=s.customers.map(c=>[c,getCustomerComplaint(s,c,game)]).find(x=>x[1]);
   if(s.event){goal.dataset.tone='alert';goal.children[0].textContent='待處理：'+s.event.title;goal.children[1].textContent='點這裡處理';goalTap=()=>hub.open('event');return;}
   if(issue){goal.dataset.tone='alert';goal.children[0].textContent='顧客：'+issue[1].title;goal.children[1].textContent=issue[1].customerName||'點這裡協助';goalTap=()=>hub.open('complaint',issue[0].id);return;}

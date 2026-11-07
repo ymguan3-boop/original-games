@@ -34,7 +34,7 @@ test('第二位同職務效率遞減',()=>{const g=fresh({level:3});g.act('hire'
 test('Lv.3 看不到也買不到 Lv.4 以上物品，升 Lv.4 立刻可買',()=>{
  const g=fresh({level:3}),locked=g.data.catalog.find(c=>c.unlockStoreLevel===4);assert.equal(g.act('buy',{sku:locked.sku,qty:1}).ok,false);
  assert.equal(g.act('purchaseShelf',{type:'royal'}).ok,false);assert.equal(g.act('purchaseDecor',{type:'lucky-cat'}).ok,false);
- g.transaction(null,s=>{s.level=4;return 'x';});assert.equal(g.act('buy',{sku:locked.sku,qty:1}).ok,true);
+ g.transaction(null,s=>{s.level=4;s.shelves.push({id:'royal-test',type:'royal',x:3,z:1,sku:locked.sku,stock:0,rotation:0});return 'x';});assert.equal(g.act('buy',{sku:locked.sku,qty:1}).ok,true);
 });
 test('已購買家具可移動與收納，收納後再擺放不重複收費',()=>{
  const g=fresh({phase:'closed'});assert.equal(place(g).ok,true);const id=g.state.shelves[0].id,gold=g.state.gold;

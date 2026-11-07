@@ -137,3 +137,6 @@ html body #lobby .chart-head h1{text-shadow:none!important;filter:none!important
 
 .pool-list{margin-top:8px}.pool-list p{margin:6px 0 0;font-size:12px;line-height:1.5;opacity:.8}.pool-cards{margin-top:6px;line-height:1.7}.pool-cards b{display:block;font-size:13px}.pool-cards span{display:inline-block;margin:2px 4px 0 0;padding:0 8px;border:1px solid #ffd23a;border-radius:999px;font-size:12px;line-height:20px}.pool-cards[data-color=purple] span{border-color:#b46cff}.pool-cards[data-color=red] span{border-color:#ff5068}.pool-cards span.is-locked{opacity:.45;border-style:dashed}
 #panel .pool-details{padding-right:12px;box-sizing:border-box}
+/* 編組視窗底部三顆按鈕平分寬度，不超出視窗 */
+html body dialog#modal.deck #modalBody>.modal-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%;max-width:520px;box-sizing:border-box;margin:6px auto 0!important;padding:8px 0 max(6px,env(safe-area-inset-bottom))!important}
+html body dialog#modal.deck #modalBody>.modal-actions button{display:flex!important;flex-direction:row!important;align-items:center;justify-content:center;gap:3px;width:100%!important;min-width:0!important;height:44px!important;min-height:0!important;margin:0!important;padding:0 4px!important;font-size:13px!important;line-height:1!important;white-space:nowrap;box-sizing:border-box;overflow:hidden}

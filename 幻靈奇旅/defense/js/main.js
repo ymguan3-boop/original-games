@@ -290,12 +290,17 @@ function quickDeck() {
 function openIslandMenu() {
   menuPage('選單', [['返回初光鎮', sailHome], ['教學重播', () => { $('modal').close(); tutorial.replay(); }], ['畫面設定', openDisplayMenu], ['測試', openTestCode], ['關閉', () => $('modal').close()]]);
 }
-/* 測試：輸入密碼後領取轉蛋點數與全部卡片，點數每次輸入都會入帳；未解鎖的招財家族不在資料內，所以不會發放 */
+/* 測試：輸入密碼後領取轉蛋點數與全部卡片，點數每次輸入都會入帳。招財要先解鎖才讀得到資料，所以這裡一併解鎖並重新載入 */
 const TEST_CODE = '741216', TEST_POINTS = 100000;
 function allCards() {
   const {all} = poolPreview(data.pool, journey(), new Set(data.spiritMap.keys())), excluded = data.pool.excludedIds || [];
   const deckCards = [...data.spiritMap.keys()].filter((id) => (isBaseCard(data.evolution, id) || isRedCard(id)) && !excluded.includes(id));
-  return [...new Set([...deckCards, ...all.yellow, ...all.purple, ...all.red])];
+  return [...new Set([...deckCards, ...all.yellow, ...all.purple, ...all.red, 'zhaocai'])];
+}
+function unlockZhaocaiForTest() {
+  const unlocks = readJson('phantom_shared_unlocks', {}), already = !!unlocks.zhaocaiStage3Completed;
+  if (!already) localStorage.setItem('phantom_shared_unlocks', JSON.stringify({...unlocks, zhaocaiStage3Completed: true}));
+  return !already;
 }
 function openTestCode() {
   openModal(ribbon('測試', '☰') + '<form class="test-code" id="testForm"><label>請輸入測試密碼<input id="testCode" type="password" inputmode="numeric" maxlength="6" autocomplete="off" required></label><p class="test-msg" id="testMsg" role="status"></p><div class="bm-actions menu-actions"><button class="primary" type="submit">確認</button><button type="button" id="testBack">返回選單</button></div></form>', 'menu');
@@ -307,10 +312,11 @@ function openTestCode() {
     const box = $('testCode'), msg = $('testMsg');
     if (box.value !== TEST_CODE) { msg.className = 'test-msg'; msg.textContent = '密碼不正確，請再試一次。'; box.select(); return; }
     try { globalThis.PhantomCaveBridge.reward('test-points:' + Date.now(), TEST_POINTS); } catch (x) { msg.className = 'test-msg'; msg.textContent = '點數寫入失敗：' + x.message; return; }
-    const cards = allCards();
+    const cards = allCards(), reload = unlockZhaocaiForTest();
     record.owned = [...new Set([...(record.owned || []), ...cards])]; saveRecord(); renderLobby();
     box.value = ''; $('pointsNow').textContent = points().toLocaleString();
-    msg.className = 'test-msg ok'; msg.textContent = '已獲得 ' + TEST_POINTS.toLocaleString() + ' 轉蛋點數與全部 ' + cards.length + ' 張卡片，目前共 ' + points().toLocaleString() + ' 點。';
+    msg.className = 'test-msg ok'; msg.textContent = '已獲得 ' + TEST_POINTS.toLocaleString() + ' 轉蛋點數與全部 ' + cards.length + ' 張卡片，目前共 ' + points().toLocaleString() + ' 點。' + (reload ? '招財已解鎖，正在重新載入。' : '');
+    if (reload) setTimeout(() => location.reload(), 1500);
   };
 }
 function openDisplayMenu() {

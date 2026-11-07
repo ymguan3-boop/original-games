@@ -8,10 +8,10 @@ import {createGame} from './core.js?v=20261107-a5';
 import {createStaffOverlay} from './staff-overlay.js?v=20261107-a5';
 import {installPatrolControls} from './patrol-controls.js';
 import {playEvolution3D} from './evolution-3d.js';
-import {createScene} from './scene.js?v=20261107-a6';
-import {createScene2D} from './scene-2d.js?v=20261107-b6';
-import {createDock} from './dock-2d.js?v=20261107-b2';
-import {createHub} from './shop-hub.js?v=20261107-b3';
+import {createScene} from './scene.js?v=20261107-b7';
+import {createScene2D} from './scene-2d.js?v=20261107-b7';
+import {createDock} from './dock-2d.js?v=20261107-b7';
+import {createHub} from './shop-hub.js?v=20261107-b7';
 import {installTutorial} from './shop-tutorial.js?v=20261107-a5';
 import {commissionNotice} from './commissions.js';
 import {dailyTasks} from './management.js?v=20261107-a5';
@@ -48,7 +48,7 @@ function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncN
  $('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels[s.level-1]?.name||''}`;
  $('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
  const dot=(id,on)=>$(`.toolbar [data-hub=${id}]`).classList.toggle('has-notice',!!on&&!s.patrolFocus);
- const daily=dailyTasks(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length);dot('tasks',s.event||commissionNotice(s)||daily.tasks.some(t=>t.done&&!t.claimed));
+ const daily=dailyTasks(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length);dot('build',s.layoutPause);dot('tasks',s.event||commissionNotice(s)||daily.tasks.some(t=>t.done&&!t.claimed));
  tutorial?.sync();}
 const pageFor={goods:'goods',shelves:'build',staff:'staff',quests:'tasks',upgrade:'upgrade',settings:'settings'};
 const openPanel=name=>hub.open(pageFor[name]||'shop');
@@ -75,13 +75,13 @@ async function boot(){try{
  await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id)});window.shop=game;window.shopTrial=trial;
  const sceneFactory=view2d?createScene2D:createScene;document.body.classList.toggle('view-2d',view2d);if(view2d)createDock({game,hub,esc});
  scene=sceneFactory({canvas:$('#world'),game,
-  onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){scene.setMode('decorate');scene.selectShelf(o.id);}},
+  onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){if(game.state.phase==='open'&&!game.state.layoutPause){toast('營業中不能移動貨架，請到「布置」暫停營業。',true);return;}scene.setMode('decorate');scene.selectShelf(o.id);}},
   onStaffPositions:rows=>staffOverlay?.position(rows),
   onActorVisuals:view=>{const focus=game.state.patrolFocus?.employeeId;actorVisuals?.render(focus?{actors:view.actors.filter(v=>v.id===focus),notices:view.notices.filter(n=>n.targetId===focus)}:view);},
   onPlacementChange:p=>{$('#placement-hint').hidden=!p;if(p)$('#placement-message').textContent=p.ok?'點地板選位置，再按 ✓':'這裡不能放：'+p.message;document.body.classList.toggle('placement-bad',!!p&&!p.ok);},
   onFurnitureSelect:sh=>{selectedShelf=sh&&!sh.decoration&&!sh.isPlacement?sh.id:null;$('#shelf-goods').hidden=!selectedShelf;$('#retract-furniture').hidden=!!sh?.isPlacement;document.body.classList.toggle('editing-furniture',!!sh&&!sh.lockedOnly);const el=$('#furniture-controls');el.hidden=!sh||!!sh.lockedOnly;},
   onFurniturePosition:p=>{if(!p)return;const el=$('#furniture-controls'),w=el.offsetWidth||148,v=document.documentElement.clientWidth;el.style.left=`${Math.max(w/2+8,Math.min(v-w/2-8,p.x))}px`;el.style.top=`${p.y-8}px`;},
-  onModeChange:mode=>{const patrol=mode==='follow',decorate=mode==='decorate';document.body.classList.toggle('patrol-active',patrol);document.body.classList.toggle('decorate-active',decorate);$('#patrol-controls').hidden=!patrol;patrolControls?.reset();if(!!game.state.layoutPause!==decorate)action('setLayoutPause',{value:decorate});const t=game.state.tutorialState;if(t&&!t.done){if(patrol)action('tutorial',{patch:{patrolled:true}});else if(t.patrolled)action('tutorial',{patch:{patrolReturned:true}});}},
+  onModeChange:mode=>{const patrol=mode==='follow',decorate=mode==='decorate';document.body.classList.toggle('patrol-active',patrol);document.body.classList.toggle('decorate-active',decorate);$('#patrol-controls').hidden=!patrol;patrolControls?.reset();if(patrol&&game.state.layoutPause)action('setLayoutPause',{value:false});const t=game.state.tutorialState;if(t&&!t.done){if(patrol)action('tutorial',{patch:{patrolled:true}});else if(t.patrolled)action('tutorial',{patch:{patrolReturned:true}});}},
   onActionResult:r=>toast(r.message,!r.ok),onError:e=>toast('模型載入異常：'+(e.message||e),true)});
  window.shopScene=scene;window.shopHub=hub;
  staffOverlay=createStaffOverlay({game,labels:$('#staff-labels'),card:$('#staff-card'),escape:esc,onEventClick:()=>hub.open('event'),onOpen:id=>hub.open('worker',id)});staffOverlay.render();
