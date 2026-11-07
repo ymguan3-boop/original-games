@@ -25,3 +25,4 @@
 #lobby .isle-panel .isle-deck .deck-strip img,#lobby .isle-panel .isle-deck .deck-strip i{display:block!important;width:100%!important;height:auto!important;aspect-ratio:1!important}
 #lobby .isle-panel .isle-deck-actions{display:grid!important;grid-template-columns:1fr 1fr!important}
 #lobby .isle-panel .isle-card{display:block!important}#lobby .isle-panel .isle-boss{margin:4px 0;width:auto!important}#lobby .isle-panel .deck-strip img,#lobby .isle-panel .deck-strip i{max-height:46px}
+#lobby .isle-panel,#lobby .isle-panel .isle-card{max-height:none!important;height:auto!important;overflow:visible!important}
