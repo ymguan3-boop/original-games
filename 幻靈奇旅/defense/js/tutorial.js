@@ -4,7 +4,7 @@ const TEXT={
  displayControls:['船長','歡迎來到守護戰島！用手機玩嗎？把手機橫過來視野更寬，也能雙指縮放，或從選單切換全螢幕。',true],
  islandHint:['船長','點島嶼上的數字，可以查看關卡名稱；拖曳地圖可以看其他島！',true],
  gacha:['船長','先召喚幻靈夥伴吧！點「轉蛋」，看看會出現誰。'],
- deck:['船長','到「編組」挑好四位基礎幻靈，組成出擊隊伍！'],
+ deck:['船長','按「一鍵編組」，或點「編組」自己挑四位夥伴！'],
  sortie:['船長','準備好了嗎？按下「出擊」！'],
  deploy:['船長','先點幻靈卡讓牠出場！三色蛋要點道路，一張卡會佔三個位置。'],
  star2:['船長','把相鄰的相同卡片合成，讓幻靈升到二星！'],
@@ -24,7 +24,7 @@ export function createTutorial({get,save,box,onDone=()=>{},extraFocus=()=>null})
  let focused=null;
  const shown=q=>{const el=document.querySelector(q);return el&&el.getClientRects().length?el:null;};
  /* 標出目標按鈕，對話框放到目標的另一側才不會擋住；有視窗開著時只留標示 */
- function place(step){const list=[extraFocus(step),...(FOCUS[step]||[])].filter(Boolean),el=list.map(shown).find(Boolean)||null;if(el!==focused){focused?.classList.remove('tutor-focus');el?.classList.add('tutor-focus');focused=el;}const dialog=!!document.querySelector('dialog[open]');box.classList.toggle('tutor-away',dialog);if(dialog||!el){box.style.top='';box.style.bottom='';return;}const r=el.getBoundingClientRect();if(r.top<innerHeight/2){box.style.top=Math.min(innerHeight-box.offsetHeight-8,r.bottom+12)+'px';box.style.bottom='auto';}else{box.style.bottom=(innerHeight-r.top+12)+'px';box.style.top='auto';}}
+ function place(step){const list=[extraFocus(step),...(FOCUS[step]||[])].filter(Boolean),el=list.map(shown).find(Boolean)||null;if(el!==focused){focused?.classList.remove('tutor-focus');el?.classList.add('tutor-focus');focused=el;}const dialog=!!document.querySelector('dialog[open]');box.classList.toggle('tutor-away',dialog);if(dialog||!el){box.style.top='';box.style.bottom='';return;}const r=(el.closest('.isle-panel')||el).getBoundingClientRect();if(r.top<innerHeight/2){box.style.top=Math.min(innerHeight-box.offsetHeight-8,r.bottom+12)+'px';box.style.bottom='auto';}else{box.style.bottom=(innerHeight-r.top+12)+'px';box.style.top='auto';}}
  function render(){const t=state();if(t.done){box.hidden=true;focused?.classList.remove('tutor-focus');focused=null;return;}const [name,text,info]=TEXT[t.step]||TEXT.displayControls;face.src='assets/captain/'+(FACE[t.step]||'talk')+'.gif';who.textContent=name;line.textContent=text;next.hidden=!info;box.hidden=false;place(t.step);}
  next.onclick=advance;
  skip.onclick=()=>{if(confirm('要跳過教學嗎？之後可以從選單重播。')){const t=state();t.done=true;t.step='done';save();render();onDone();}};
