@@ -9,7 +9,7 @@ import {createStaffOverlay} from './staff-overlay.js?v=20261107-a5';
 import {installPatrolControls} from './patrol-controls.js';
 import {playEvolution3D} from './evolution-3d.js';
 import {createScene} from './scene.js?v=20261107-b7';
-import {createScene2D} from './scene-2d.js?v=20261107-b7';
+import {createScene2D} from './scene-2d.js?v=20261107-b8';
 import {createDock} from './dock-2d.js?v=20261107-b7';
 import {createHub} from './shop-hub.js?v=20261107-b7';
 import {installTutorial} from './shop-tutorial.js?v=20261107-a5';
