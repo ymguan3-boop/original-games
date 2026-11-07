@@ -110,3 +110,9 @@ html body #lobby .isle-panel .isle-deck-actions .sortie{background:#e0662c!impor
 #modal button.wide small,#modal button.big small,.pk-choices button small{display:block;font-size:11px!important;line-height:1.2!important;white-space:normal}
 .pk-choices{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch}
 button.round{height:auto!important;min-height:52px;width:auto!important;min-width:52px;padding:6px 4px!important;box-sizing:border-box}button.round small{white-space:nowrap;line-height:1.1}
+/* 上方列不可超出畫面；提示訊息放在上方列下面，不蓋住任何按鈕 */
+html body #lobby .chart-head{width:auto!important;max-width:calc(100vw - 12px)!important;box-sizing:border-box!important;overflow:hidden}
+html body #lobby .chart-tools{min-width:0!important;width:auto!important;max-width:none!important;flex:1 1 0!important;box-sizing:border-box}
+html body #lobby .chart-tools button.tool{width:100%!important;box-sizing:border-box!important}
+html body #lobby .chart-head .title-block{flex:0 1 auto;min-width:0}
+#toast,.toast{top:calc(max(6px,env(safe-area-inset-top)) + 46px)!important;bottom:auto!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;max-width:calc(100vw - 24px);width:max-content;z-index:90}

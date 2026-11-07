@@ -56,6 +56,7 @@ function resolve(p,canon){
  const names=p.modes;
  if(canon==='Attack'||canon==='Ultimate'){
   if(p.route?.kind==='tower')return{mode:canon,release:.48,attack:canon==='Ultimate'?1:0};
+  if(p.route?.kind==='crown')return{mode:canon,release:.48,attack:canon==='Ultimate'?1:0};
   if(p.route?.kind==='zhaocai')return{mode:canon,release:canon==='Attack'?.68:.45,attack:canon==='Ultimate'?1:0};
   if(p.hero)return{mode:find(names,canon==='Attack'?'Attack':'Throw')||'Idle'};
   const i=canon==='Attack'?0:1,skill=p.s.skills?.[i]||{cost:i?3:1};let plan;
