@@ -3,7 +3,7 @@
  * forced into the walk-through patrol mode. */
 const PHYSICAL_PATROL_IDS=new Set(['cashier-idle']);
 export function requiresManagerPatrol(event){
- return !!event&&(event.requiresPatrol===true||PHYSICAL_PATROL_IDS.has(event.id));
+ return !!event&&!event.remoteResolution&&(event.requiresPatrol===true||PHYSICAL_PATROL_IDS.has(event.id));
 }
 export function patrolEventInstructions(event,{patrol=false}={}){
  if(!requiresManagerPatrol(event))return null;

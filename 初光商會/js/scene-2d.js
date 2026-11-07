@@ -1,15 +1,16 @@
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261107-fixes-r1';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是正面斜俯視：x 往右、z 往畫面下方，後牆朝向玩家；地板與牆面用材質貼圖畫進背景，
  * 貨架、家具與角色是依 z 排序的 DOM 圖片，GIF 才能在畫面上持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js';
-import {ENTRANCE,dimensions} from './nav.js';
-import {sampleTrail} from './motion.js';
-import {getCustomerComplaint} from './customer-complaints.js';
-import {eventEmployee} from './patrol-events.js';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261107-a5';
-import {stockCount} from './shelf-products.js?v=20261107-a5';
-import {createAssets} from './asset-resolver.js?v=20261107-a5';
-import {spiritArtPath} from './spirit-cards.js?v=20261107-a6';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261107-fixes-r1';
+import {ENTRANCE,dimensions} from './nav.js?v=20261107-fixes-r1';
+import {sampleTrail} from './motion.js?v=20261107-fixes-r1';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261107-fixes-r1';
+import {eventEmployee} from './patrol-events.js?v=20261107-fixes-r1';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261107-fixes-r1';
+import {stockCount} from './shelf-products.js?v=20261107-fixes-r1';
+import {createAssets} from './asset-resolver.js?v=20261107-fixes-r1';
+import {spiritArtPath} from './spirit-cards.js?v=20261107-fixes-r1';
 
 const U=64,TILT=typeof innerHeight==='number'&&innerHeight>innerWidth?1.05:.72,V=U*TILT,WALL=2.5*U,MARGIN=U*.9,SPRITES='./assets/sprites-v1/';
 const RACK_WIDTH=2.3,ACTOR_SIZE=1.45,DECOR_WIDTH={sofa:2.2,plant:1.5,'lucky-cat':1.5,fountain:2.3,artwork:1.8,phoenix:1.7};
@@ -27,6 +28,8 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  const layer=document.createElement('div');layer.className='world2d';canvas.after(layer);
  const roomCanvas=document.createElement('canvas');const items=new Map(),actors=new Map(),keys=new Set(),touches=new Map();
  let level=0,dim={width:14,height:12},mode='play',alive=true,time=0,scale=1,panX=0,panY=0,userZoom=1,cw=1,ch=1,selected=null,unlocked=false,placement=null,ghost=null,snapshot=null,down=null,drag=null,gesture=null,joystick={x:0,y:0},motionStamp=-1,motionProgress=1,frame=0,dirty=true,assets3d=null;
+ let chaseStarted=-100;
+ function playChaseSuccess(){chaseStarted=time;metrics.chaseCelebrations=(metrics.chaseCelebrations||0)+1;}
  const furniture=(s=state())=>[...s.shelves,...(s.decorations||[])];
  const roomW=()=>dim.width*U+MARGIN*2,roomH=()=>dim.height*V+WALL+MARGIN*2;
  const wx=x=>(x+.5)*U+MARGIN,wy=z=>(z+.5)*V+WALL+MARGIN;
@@ -83,11 +86,11 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  /* 主管依行走方向換圖；側面圖面向右，往左時由 flip 翻轉。GIF 還沒到位時用靜態圖 */
  function setManagerImage(a,walking){const name=walking?'manager-'+(a.facing||'front'):'manager-idle';if(a.imageName===name)return;a.imageName=name;a.img.onerror=()=>{a.img.onerror=null;a.img.src=SPRITES+(walking?name:'manager-front')+'.webp';};a.img.src=SPRITES+name+'.gif';}
  function syncActors(dt){
-  const s=state(),all=[...(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager&&mode==='follow')all.push(['manager',s.manager,'manager']);
+  const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager&&mode==='follow')all.push(['manager',s.manager,'manager']);
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));
   const moods=[],staffRows=[],active=new Set();
   for(const[key,d,type]of all){active.add(key);const a=ensureActor(key,d,type),trail=game.motionFrame?.trails.get(key),p=trail?sampleTrail(trail,motionProgress):d,dx=p.x-a.pos.x,dz=p.z-a.pos.z,moved=dx*dx+dz*dz>.000001;a.pos={x:p.x,z:p.z};if(moved){a.moveUntil=time+.14;if(Math.abs(dx)>.002)a.flip=dx<0?-1:1;if(type==='manager')a.facing=Math.abs(dx)>Math.abs(dz)?'side':dz<0?'back':'front';}if(type==='manager')setManagerImage(a,time<a.moveUntil);
-   const px=ACTOR_SIZE*U,leaving=type==='customer'&&d.state==='Leave'?Math.min(1,Math.max(.05,Math.hypot(d.x-ENTRANCE.x,d.z-ENTRANCE.z)/1.7)):1;a.el.style.width=px+'px';a.el.style.left=wx(p.x)-px/2+'px';const deskPull=type==='staff'&&d.role==='cashier'?Math.max(0,1-Math.hypot(p.x-10,p.z-1)/1.5):0,deskFeet=wy(2)+V*.45-U*1.02,feet=wy(p.z)+V*.25;a.el.style.top=feet+(deskFeet-feet)*deskPull-px+'px';a.el.style.zIndex=Math.round(100+p.z*100);a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');
+   const px=ACTOR_SIZE*U,leaving=type==='customer'&&d.state==='Leave'?Math.min(1,Math.max(.05,Math.hypot(d.x-ENTRANCE.x,d.z-ENTRANCE.z)/1.7)):1;a.el.style.width=px+'px';a.el.style.left=wx(p.x)-px/2+'px';const deskPull=type==='staff'&&d.role==='cashier'?Math.max(0,1-Math.hypot(p.x-10,p.z-1)/1.5):0,deskFeet=wy(2)+V*.45-U*1.02,feet=wy(p.z)+V*.25;a.el.style.top=feet+(deskFeet-feet)*deskPull-px+'px';a.el.style.zIndex=Math.round(100+p.z*100);a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;const victory=chasePose(time-chaseStarted),celebrating=type==='manager'&&victory.active;a.el.classList.toggle('chase-celebrating',celebrating);if(celebrating)a.img.style.transform+=` translateY(${-victory.hop*U}px) rotate(${victory.lean}rad)`;a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');
    const emotion=stateEmotion(type,d,s),issue=type==='customer'?getCustomerComplaint(s,d,game):null,chase=type==='customer'&&s.customerChase?.customerId===d.id;
    if(emotion||issue||chase){const ev=s.event,related=!!ev&&(type==='staff'&&eventEmployee(s,ev)?.id===d.id||type==='customer'&&ev.description?.includes(d.name)&&['Angry','OutOfStock','Queue','UnhappyExit'].includes(d.state)),head=toScreen(p.x,p.z,ACTOR_SIZE*.95);moods.push({id:key,kind:chase?'impatient':emotion||'impatient',...(chase?{complaintId:d.id,complaintTitle:'🏃 追上我',chaseTarget:true}:issue?{complaintId:d.id,complaintTitle:issue.title}:related?{eventId:ev.instanceId||ev.id,eventTitle:ev.title}:{}),x:head.x,y:head.y,inFront:true});}
    if(type==='staff'){const head=toScreen(p.x,p.z,ACTOR_SIZE*.9);staffRows.push({id:key,x:head.x,y:head.y});}}
@@ -123,7 +126,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  const api={
   /* 進化仍是 3D 演出，要用時才載入模型 */
   evolutionActor(path){assets3d||=createAssets(globalThis.THREE,metrics);return assets3d.actor(path,3,{footprint:99,diameter:99});},
-  update,resize,ready:Promise.resolve(),metrics,setQuality(q){metrics.quality=q;},selectShelf,editShelf,beginShelfPlacement,confirmPlacement,cancelPlacement,cancelEdit,
+  playChaseSuccess,update,resize,ready:Promise.resolve(),metrics,setQuality(q){metrics.quality=q;},selectShelf,editShelf,beginShelfPlacement,confirmPlacement,cancelPlacement,cancelEdit,
   projectShelf(id){const i=furniture().find(x=>x.id===id);return i?toScreen(i.x,i.z):null;},projectShelfHead(id){return headOf(furniture().find(x=>x.id===id));},projectCell(x,z,y=0){return toScreen(x,z,y);},
   setMode(m){if(m==='follow'&&lockedView())return {ok:false,message:'請先完成貨架調整或點空白處取消選取，再切換主管巡店'};if(m!=='decorate')cancelPlacement();const result=game.setManagerActive(m==='follow');if(!result.ok){onActionResult(result);return result;}mode=m;keys.clear();joystick={x:0,y:0};game.setManagerInput(0,0);metrics.mode=m;metrics.managerVisible=m==='follow';showGrid();if(m!=='decorate')selectShelf(null);panX=0;panY=0;fit();onModeChange(m);return result;},
   setJoystick(x,y){joystick={x,y};},rotate(){return false;},zoom(delta=1){if(lockedView())return false;userZoom=Math.max(1,Math.min(2.6,userZoom-delta*.1));fit();return true;},setGestureMode(){return 'pan';},get gestureMode(){return 'pan';},get cameraLocked(){return lockedView();},get cameraPose(){return {scale,panX,panY};},

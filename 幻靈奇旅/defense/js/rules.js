@@ -4,9 +4,9 @@
    evolutions from the cave table (survivors/data/evolution.json). The view's hooks.fire plays the cave attack and
    reports when the hit releases, so damage lands on the animation frame.
    Lane coordinate x runs from state.left (monster nest, path start) to state.right (crystal, path end). */
-import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-c6';
-import {STAGES, buildPath} from './stages.js?v=20261107-c6';
-import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-c6';
+import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-fixes-r1';
+import {STAGES, buildPath} from './stages.js?v=20261107-fixes-r1';
+import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-fixes-r1';
 
 export {STAGES};
 /* PK (duel): two players on one road. The host's spirits start at the crystal end (side 'ally'), the guest's at the
@@ -193,7 +193,7 @@ export const DRAGON_HP_RATE = 2 / 3;
 export function fighterStats(spec, entry, side, scale = 1, boost = 0, duel = false) {
   const profile = profileFor(spec, entry, false), ally = side === 'ally' || duel, k = 1 + 0.5 * boost;
   return {
-    hp: Math.round(spec.hp * (spec.id === WATER_DRAGON ? DRAGON_HP_RATE : 1) * (ally ? (RARITY_HP[spec.rarity] || 4.8) * k : 1.8 * scale)),
+    hp: isThreeColorEgg(spec.id) ? 1 : Math.round(spec.hp * (spec.id === WATER_DRAGON ? DRAGON_HP_RATE : 1) * (ally ? (RARITY_HP[spec.rarity] || 4.8) * k : 1.8 * scale)),
     attack: spec.attack * (ally ? k : 0.95 * scale) * (roleFor(spec.id).basic === 'melee' ? 1.15 : 1),
     speed: spec.stage >= 3 ? 1.3 : ['run', 'fly', 'hop'].includes(spec.motionType) ? 2.2 : 1.7,
     profile, rate: roleFor(spec.id).basic === 'melee' ? 1.05 : roleFor(spec.id).basic === 'ranged' ? 1.2 : 1.45, knockbacks: ally ? 3 : spec.stage >= 3 ? 2 : 1,
@@ -239,6 +239,17 @@ export function teachDeal(state, species) {
   const card = {uid: state.nextCard++, species, rank: 1, boost: 0};
   state.hand.push(card); emit(state, 'deal', {uid: card.uid, side: 'ally'}); mergeHand(state, 'ally'); return card;
 }
+// Build a deterministic practice hand once per lesson, without timers or RNG.
+export function configureTutorialStep(state, lesson) {
+  if(!state?.tutorialBattle||!state.started||state.tutorialAction?.step===lesson)return false;
+  state.tutorialAction={step:lesson,completed:false};state.dealAt=Infinity;
+  const add=(species,rank=1,boost=0)=>{const c=teachDeal(state,species);c.rank=rank;c.boost=boost;return c;};
+  if(lesson==='deploy'){state.hand=[];state.tutorialAction.uid=add('bulbasaur').uid;}
+  else if(lesson==='star2'){state.hand=[];const left=add('bulbasaur');add('charmander');const right=add('bulbasaur');Object.assign(state.tutorialAction,{uid:right.uid,targetUid:left.uid});}
+  else if(lesson==='star3'){const first=state.hand.find(c=>c.rank===2);if(!first)throw Error('請先完成二星合成');state.hand=[first];add('charmander');add(first.species,first.rank,first.boost);}
+  else if(lesson==='dragMerge'){const pair=state.hand.filter(c=>c.rank===2);if(pair.length!==2)throw Error('教學合成卡片未就緒');Object.assign(state.tutorialAction,{uid:pair[1].uid,targetUid:pair[0].uid});}
+  return true;
+}
 function emit(state, type, data = {}) { state.events.push({...data, type}); }
 export function alliesOnField(state, side = 'ally') { return state.fighters.filter((f) => f.side === side && f.hp > 0).length; }
 /* a hand and its deal clock: the state itself for the player (side 'ally'), state.foe for the PK guest */
@@ -247,6 +258,7 @@ const other = (side) => (side === 'ally' ? 'enemy' : 'ally');
 
 /* ---------- hand: deal, merge (七大罪 style), play ---------- */
 function deal(state, side = 'ally') {
+  if (state.tutorialBattle) return null;
   const seat = seatOf(state, side);
   if (!seat.deck.length || seat.hand.length >= HAND_SIZE) return null;
   /* 三色蛋每場只能放一組，放好後不再發，手牌才不會卡住 */
@@ -278,7 +290,8 @@ export function mergeResult(state, card) {
 }
 
 /* Adjacent identical cards (same spirit, same star) merge, and merges cascade. */
-function mergeHand(state, side = 'ally') {
+function mergeHand(state, side = 'ally', tutorialMove = false) {
+  if (state.tutorialBattle && !tutorialMove) return;
   const hand = seatOf(state, side).hand;
   for (let again = true; again;) {
     again = false;
@@ -306,14 +319,16 @@ function mergeHand(state, side = 'ally') {
    any identical neighbours, so placing two identical cards side by side evolves / stars them up. */
 export function moveCard(state, from, to, side = 'ally') {
   const hand = seatOf(state, side).hand, card = hand[from]; if (!card) return false;
+  if(state.tutorialBattle){const a=state.tutorialAction;if(side!=='ally'||!['star2','dragMerge'].includes(a?.step)||card.uid!==a.uid)return false;const rest=hand.filter((_,i)=>i!==from),target=rest.findIndex(c=>c.uid===a.targetUid),at=Math.max(0,Math.min(rest.length,to));if(target<0||(at!==target&&at!==target+1))return false;}
   hand.splice(from, 1);
   hand.splice(Math.max(0, Math.min(hand.length, to)), 0, card);
   emit(state, 'move', {uid: card.uid, side});
-  mergeHand(state, side);
+  mergeHand(state, side, true);
+  if(state.tutorialBattle)state.tutorialAction.completed=true;
   return true;
 }
 
-export function canPlay(state, i, side = 'ally') { const c = seatOf(state, side).hand[i]; return !!c && (isSupport(c.species) || alliesOnField(state, side) < unitCap(state)); }
+export function canPlay(state, i, side = 'ally') { const c = seatOf(state, side).hand[i]; return !!c && (!state.tutorialBattle||(state.tutorialAction?.step==='deploy'&&state.tutorialAction.uid===c.uid)) && (isSupport(c.species) || alliesOnField(state, side) < unitCap(state)); }
 
 export function validEggPosition(state, x) {
   return !!state && Number.isFinite(x) &&
@@ -332,6 +347,7 @@ export function eggTrio(state, x, side = 'ally') {
 }
 export function playCard(state, i, side = 'ally', laneX = null) {
   const hand = seatOf(state, side).hand, card = hand[i]; if (!card) throw Error('沒有這張卡');
+  if(state.tutorialBattle&&(side!=='ally'||state.tutorialAction?.step!=='deploy'||state.tutorialAction.uid!==card.uid))throw Error('請依老船夫指示操作指定卡牌');
   /* Never consume a placement card until the player taps a valid road point.
      Same rule on the host and PK guest's host-authoritative lane. */
   if (isThreeColorEgg(card.species) && !validEggPosition(state, laneX))
@@ -352,6 +368,7 @@ export function playCard(state, i, side = 'ally', laneX = null) {
   }
   hand.splice(i, 1);
   emit(state, 'play', {uid: card.uid, species: card.species, rank: card.rank, side});
+  if(state.tutorialBattle)state.tutorialAction.completed=true;
   mergeHand(state, side);
   return card;
 }
@@ -409,7 +426,7 @@ function applySupport(state, card) {
 function spawn(state, side, speciesId, {boss = false, boost = 0, rank = 1, laneX = null} = {}) {
   const spec = state.spirits.get(speciesId), st = fighterStats(spec, state.entries.get(speciesId), side, state.stage.scale, boost, state.duel), ally = side === 'ally', player = ally || state.duel;
   const passiveHp = player || boss ? passivesOf(spec).effects.find((e) => e.effect === 'hp')?.value || 0 : 0;
-  const hp = Math.round(st.hp * (boss ? 5 : 1) * (1 + passiveHp)),
+  const hp = isThreeColorEgg(speciesId) ? 1 : Math.round(st.hp * (boss ? 5 : 1) * (1 + passiveHp)),
     stationary = isThreeColorEgg(speciesId), knocks = stationary ? 0 : boss ? 4 : st.knockbacks;
   /* allies (and the boss) carry their cave passives: stat bonuses plus on-hit status chances */
   const pv = player || boss ? passivesOf(spec).effects : [], p = Object.fromEntries(pv.map((e) => [e.effect, e.value]));

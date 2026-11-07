@@ -2,36 +2,36 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, eggTrio, teachDeal, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-c6';
-import {createPkIsland} from './pk-island.js?v=20261107-c6';
-import {createPkLobby} from './pk-lobby.js?v=20261107-c6';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-c6';
-import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-c6';
-import {createToonKit} from './style.js?v=20261107-c6';
-import {createChartModels} from './chart-models.js?v=20261107-c6';
-import {createView} from './view.js?v=20261107-c6';
-import {createSeaChart} from './sea3d.js?v=20261107-c6';
-import {defensePool, poolPreview, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-c6';
-import {buildPath} from './stages.js?v=20261107-c6';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-c6';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-c6';
-import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-c6';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-c6';
-import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-c6';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-c6';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-c6';
-import {icon} from '../../survivors/js/ui-art.js?v=20261107-c6';
-import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-c6';
-import {createTutorial} from './tutorial.js?v=20261107-c6';
-import {initIcons, ico} from './ui-icons.js?v=20261107-c6';
-import {createCombatAudio} from './combat-audio.js?v=20261107-c6';
+import {STAGES, SHAPES, eggTrio, configureTutorialStep, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-fixes-r1';
+import {createPkIsland} from './pk-island.js?v=20261107-fixes-r1';
+import {createPkLobby} from './pk-lobby.js?v=20261107-fixes-r1';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-fixes-r1';
+import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-fixes-r1';
+import {createToonKit} from './style.js?v=20261107-fixes-r1';
+import {createChartModels} from './chart-models.js?v=20261107-fixes-r1';
+import {createView} from './view.js?v=20261107-fixes-r1';
+import {createSeaChart} from './sea3d.js?v=20261107-fixes-r1';
+import {defensePool, poolPreview, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-fixes-r1';
+import {buildPath} from './stages.js?v=20261107-fixes-r1';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-fixes-r1';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-fixes-r1';
+import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261107-fixes-r1';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-fixes-r1';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-fixes-r1';
+import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261107-fixes-r1';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-fixes-r1';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-fixes-r1';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-fixes-r1';
+import {icon} from '../../survivors/js/ui-art.js?v=20261107-fixes-r1';
+import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-fixes-r1';
+import {createTutorial} from './tutorial.js?v=20261107-fixes-r1';
+import {initIcons, ico} from './ui-icons.js?v=20261107-fixes-r1';
+import {createCombatAudio} from './combat-audio.js?v=20261107-fixes-r1';
 
-import {autoDeck, validPkDeck, settleEggSlots} from './deck-rules.js?v=20261107-c6';
+import {autoDeck, validPkDeck, settleEggSlots} from './deck-rules.js?v=20261107-fixes-r1';
 
-import {streamAssets} from './asset-stream.js?v=20261107-c6';
-import {CARD_PREVIEWS} from './card-previews.js?v=20261107-c6';
+import {streamAssets} from './asset-stream.js?v=20261107-fixes-r1';
+import {CARD_PREVIEWS} from './card-previews.js?v=20261107-fixes-r1';
 const ASSET_BASE = new URL('../../', import.meta.url);
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
@@ -333,7 +333,7 @@ function openBoatman() {
 }
 
 function bindLobby() {
-  chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman, onPk: () => { if (requireCompleteSortie()) pkLobby.open(); else openDeck(); }});
+  chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman, onPk: () => pkLobby.open()});
   pkLobby = createPkLobby({openModal, closeModal: () => $('modal').close(), ribbon, esc, picture, spirit, validateDeck: (ids) => validPkDeck(ids, data.evolution, spirit), deck: () => (normalizeDeck(), record.deck.slice()), inventory: tacticalInventory, costume: () => costumeFor(journey()).id,
     name: () => record.pkName || (record.pkName = '旅人' + String(Math.floor(Math.random() * 90) + 10)), setName: (n) => { record.pkName = n; saveRecord(); }, toast, onStart: startPkGame});
   $('islePanel').onclick = (e) => {
@@ -758,10 +758,11 @@ function renderHand() {
   handSig = sig;
   $('hand').innerHTML = game.hand.map((c, i) => {
     const sup = SUPPORT[c.species], anim = fresh.get(c.uid) || '';
+    const interactive = game.tutorialBattle ? game.tutorialAction?.uid === c.uid : canPlay(game,i);
     const line = isThreeColorEgg(c.species) ? '🥚 點選後放在路徑上'
       : ['groudon','rayquaza'].includes(c.species) ? '🐟 國王＋皇后合體水蛟龍王'
       : sup ? `✨ 技能：${esc(sup.skill)}` : `${esc(roleLabel(c.species))} · ${shapeLabel(c.species, false)}`;
-    return `<button class="hand-card ${sup ? 'support' : ''} ${isThreeColorEgg(c.species) ? 'egg-lane-card' : ''} ${placing?.type === 'egg' && placing.uid === c.uid ? 'egg-selected' : ''} ${canPlay(game, i) ? '' : 'disabled'} ${anim}" data-uid="${c.uid}" title="${esc(sup ? sup.text : spirit(c.species).name + '・大絕' + shapeLabel(c.species, true))}"><span class="stars stars-${spirit(c.species).cardFrame || 'yellow'}">${'<i>★</i>'.repeat(c.rank)}</span>${sup ? '<span class="badge">技能</span>' : ''}${cardHtml(c.species, {line})}</button>`;
+    return `<button class="hand-card ${sup ? 'support' : ''} ${isThreeColorEgg(c.species) ? 'egg-lane-card' : ''} ${placing?.type === 'egg' && placing.uid === c.uid ? 'egg-selected' : ''} ${interactive ? '' : 'disabled'} ${anim}" data-uid="${c.uid}" title="${esc(sup ? sup.text : spirit(c.species).name + '・大絕' + shapeLabel(c.species, true))}"><span class="stars stars-${spirit(c.species).cardFrame || 'yellow'}">${'<i>★</i>'.repeat(c.rank)}</span>${sup ? '<span class="badge">技能</span>' : ''}${cardHtml(c.species, {line})}</button>`;
   }).join('');
   fresh.clear();
 }
@@ -841,7 +842,7 @@ function formRows(id, rank, mul) {
           : '';
   return row('t-job', '職業', `<b>${esc(roleLabel(id))}</b>`)
     + special
-    + row('t-atk', '普攻', `${shapeLabel(id, false)}・距離 ${r.range.toFixed(1)}<br><small>生命 ${Math.round(s.hp * mul)}・攻擊 ${Math.round(s.attack * mul)}${mul > 1 ? '（×' + mul.toFixed(1) + '）' : ''}</small>`)
+    + row('t-atk', '普攻', `${shapeLabel(id, false)}・距離 ${r.range.toFixed(1)}<br><small>生命 ${isThreeColorEgg(id) ? 1 : Math.round(s.hp * mul)}・攻擊 ${Math.round(s.attack * mul)}${mul > 1 ? '（×' + mul.toFixed(1) + '）' : ''}</small>`)
     + row('t-ult', '大絕', `<b>${esc(u?.name || s.skills?.[1]?.name || '大絕')}</b>　${esc(u?.description || '專屬技能')}<br><small>威力 ${Math.round((1 + 0.3 * k) * 100)}%${heal ? '・治療量 ' + Math.round((1 + 0.2 * k) * 100) + '%' : ''}・冷卻 ${+ultCooldown(s).toFixed(1)} 秒${s.stage ? '・第 ' + s.stage + ' 階段' : ''}</small>`)
     + row('t-pas', '被動', passives.length ? passives.map(esc).join('<br>') : '無被動能力');
 }
@@ -888,6 +889,7 @@ function bindHand() {
   const hand = $('hand');
   hand.addEventListener('pointerdown', (e) => {
     const el = e.target.closest('.hand-card'); if (!el || !game || game.result) return;
+    if(game.tutorialBattle&&Number(el.dataset.uid)!==game.tutorialAction?.uid)return;
     drag = {el, uid: Number(el.dataset.uid), x: e.clientX, y: e.clientY, moving: false, id: e.pointerId};
     const d = drag; d.hold = setTimeout(() => { const card = game?.hand[indexOfUid(d.uid)]; if (drag === d && !d.moving && card) { d.info = true; showCardInfo(el, card); } }, 420);
     el.setPointerCapture?.(e.pointerId);
@@ -895,7 +897,8 @@ function bindHand() {
   hand.addEventListener('pointermove', (e) => {
     if (!drag || e.pointerId !== drag.id) return;
     const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-    if (drag.info || (!drag.moving && Math.hypot(dx, dy) < 10)) return;
+    if (!drag.moving && Math.hypot(dx, dy) < 10) return;
+    if (drag.info) { hideCardInfo(); drag.info = false; }
     clearTimeout(drag.hold);
     drag.moving = true; drag.el.classList.add('dragging'); if (game) game.dragging = true;
     drag.el.style.transform = `translate(${dx}px, ${dy}px) scale(1.08) rotate(${Math.max(-8, Math.min(8, dx / 30))}deg)`;
@@ -1197,33 +1200,32 @@ function bindHud() {
   $('dismissBossIntro').onclick = hideBossIntro;
   initFullscreen();
   new Image().src = 'assets/gacha-machine.webp';
-  tutorial = createTutorial({get: () => record, save: saveRecord, box: $('tutor'), onAdvance: (step) => { if (step === 'leaveBattle') { $('itemMenu').hidden = true; leaveGame(); } }, extraFocus: (step) => step === 'gacha' && (record.starterClaimed || tutorialSeen.pulled) && $('panel').open ? '#closePanel' : step === 'deck' && $('modal').open && deckBase().length >= DECK_BASE ? '#modalBody .modal-dismiss' : step === 'deck' && !$('modal').open ? '.isle-deck-actions [data-auto-deck]' : null});
+  tutorial = createTutorial({get: () => record, save: saveRecord, box: $('tutor'), onDone: () => { if(game?.tutorialBattle)leaveGame(); }, onAdvance: (step) => { if (step === 'leaveBattle') { $('itemMenu').hidden = true; leaveGame(); } }, extraFocus: (step) => step === 'gacha' && (record.starterClaimed || tutorialSeen.pulled) && $('panel').open ? '#closePanel' : step === 'deck' && $('modal').open && deckBase().length >= DECK_BASE ? '#modalBody .modal-dismiss' : step === 'deck' && !$('modal').open ? '.isle-deck-actions [data-auto-deck]' : null});
   tutorial.render();
   setInterval(() => tutorial.check({
     gacha: () => (record.starterClaimed || tutorialSeen.pulled) && !$('panel').open, deck: () => baseFilled() >= DECK_BASE && !$('modal').open,
-    sortie: () => !!game, deploy: () => !!game && alliesCount(game) > 0,
-    star2: () => !!game && (game.hand.some((c) => c.rank >= 2) || game.fighters.some((f) => f.side === 'ally' && f.rank >= 2)),
+    sortie: () => !!game, deploy: () => !!game?.tutorialAction && game.tutorialAction.step==='deploy' && game.tutorialAction.completed,
+    star2: () => game?.tutorialAction?.step==='star2' && game.tutorialAction.completed,
     star3: () => !!game && game.hand.filter((c) => c.rank === 2).length >= 2,
-    dragMerge: () => !!game && game.hand.some((c) => c.rank >= 3),
+    dragMerge: () => game?.tutorialAction?.step==='dragMerge' && game.tutorialAction.completed && game.hand.some(c=>c.rank===3),
     item: () => !$('itemMenu').hidden
   }), 500);
   /* 教學戰的發牌腳本：只有出擊那一步能碰手牌，合成由系統示範 */
   setInterval(() => {
     const step = record.tutorial?.step, teach = !!game?.tutorialBattle;
     document.body.classList.toggle('teach-battle', teach);
-    document.body.classList.toggle('teach-lock', teach && step !== 'deploy' && step !== 'dragMerge');
-    document.body.classList.toggle('teach-drag', teach && step === 'dragMerge');
+    document.body.classList.toggle('teach-lock', teach && !['deploy','star2','dragMerge'].includes(step));
+    document.body.classList.toggle('teach-drag', teach && ['star2','dragMerge'].includes(step));
     document.body.classList.toggle('teach-item', teach && step === 'item');
     if (!teach || !game.started || !teachScript) return;
-    const give = (n, kind) => { for (let i = 0; i < n; i++) setTimeout(() => { if (game?.tutorialBattle) { teachDeal(game, kind || teachScript.card); handleEvents(); handSig = ''; hud(); } }, 900 * (i + 1)); };
-    if (step === 'deploy' && !teachScript.first) { teachScript.first = true; give(1); }
-    if (step === 'star2' && !teachScript.s2) { teachScript.s2 = true; give(2); }
-    if (step === 'star3' && !teachScript.s3) { teachScript.s3 = true; give(1, 'charmander'); setTimeout(() => give(2), 1100); }
+    if(configureTutorialStep(game,step)){handleEvents();handSig='';hud();}
+
   }, 300);
-  $('items').onclick = () => { if (placing) { endPlacing(); return; } const menu = $('itemMenu'); menu.hidden = !menu.hidden; if (!menu.hidden) renderItems(true); };
+  $('items').onclick = () => { if(game?.tutorialBattle&&!['item','itemInfo'].includes(record.tutorial?.step))return; if (placing) { endPlacing(); return; } const menu = $('itemMenu'); menu.hidden = !menu.hidden; if (!menu.hidden) renderItems(true); };
   bindPlacement();
   $('itemMenu').onclick = (e) => {
     const b = e.target.closest('[data-bag],[data-trap]'); if (!b || !game) return;
+    if(game.tutorialBattle){toast('教學只介紹道具，不會消耗你的道具');return;}
     if (b.dataset.trap) beginPlacing(b.dataset.trap); else useBag(b.dataset.bag);
   };
   $('speed').onclick = () => { speed = speed === 1 ? 2 : 1; hud(); };
@@ -1380,7 +1382,7 @@ function whenIdle(work) {
 async function renderChartArt() {
   const T = globalThis.THREE, H = globalThis.PhantomHarbor, kit = createToonKit(T), models = createChartModels(T, kit, {loadGltf, cloneModel});
   chart.addAnimations(models.animated);
-  const card = (id) => { const s = spirit(id); return {art: picture(id), frameImage: 'assets/card-frame.webp', frame: s.cardFrame || 'yellow', name: s.name, number: data.entries.get(id)?.number || '—', info: s.type + " · " + (s.rarity || "普通") + " · 第 " + (s.stage || 1) + " 階段", hp: s.hp, attack: s.attack}; };
+  const card = (id) => { const s = spirit(id); return {art: picture(id), frameImage: 'assets/card-frame.webp', frame: s.cardFrame || 'yellow', name: s.name, number: data.entries.get(id)?.number || '—', info: s.type + " · " + (s.rarity || "普通") + " · 第 " + (s.stage || 1) + " 階段", hp: isThreeColorEgg(id) ? 1 : s.hp, attack: s.attack}; };
   const loadIsland = async i => {
     const stage = STAGES[i], group = await models.island(stage.scene);
     chart.setIsland(i, group);

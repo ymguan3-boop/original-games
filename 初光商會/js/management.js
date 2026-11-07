@@ -1,6 +1,6 @@
 /* 簡化經營規則：四職務、在班名額、專屬被動、自動工作、每日任務與舊存檔遷移。
  * 所有數值都放在 data/management.json，這裡只有規則。 */
-import {shelfCapacity,accepts} from './furniture.js';
+import {shelfCapacity,accepts} from './furniture.js?v=20261107-fixes-r1';
 export const WORK_JOBS=['cashier','stocker','host','cleaner'];
 const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner'};
 export const legacyRole=r=>LEGACY_ROLES[r]||r;
@@ -41,7 +41,7 @@ export function eventAllowed(g,s){return !s.event&&!s.layoutPause&&!s.patrolFocu
 export function migrateState(g,s){
  const m=g.data.management;if((s.schemaVersion||1)>=m.schemaVersion&&s.tutorialState)return false;
  if(g.storage&&!g.storage.getItem(g.key+'.pre-v2'))g.storage.setItem(g.key+'.pre-v2',JSON.stringify(s));
- for(const e of s.employees){e.role=legacyRole(e.role);e.wage=0;e.fatigue=0;e.lockedAssignment=!!e.lockedAssignment;if(e.role==='standby'||!WORK_JOBS.includes(e.role))e.role='standby';if(e.workTask&&e.role!=='stocker'){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}}
+ for(const e of s.employees){e.role=legacyRole(e.role);e.wage=0;e.fatigue=Math.max(0,Math.min(100,Number(e.fatigue)||0));e.lockedAssignment=!!e.lockedAssignment;if(e.role==='standby'||!WORK_JOBS.includes(e.role))e.role='standby';if(e.workTask&&e.role!=='stocker'){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}}
  const cap=capacityOf(g,s),order=['cashier','stocker','host','cleaner'],duty=onDuty(s).sort((a,b)=>order.indexOf(a.role)-order.indexOf(b.role)||b.workLevel-a.workLevel);for(const e of duty.slice(cap)){if(e.workTask?.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;e.role='standby';e.path=[];}
  s.unpaidWages=0;s.forge&&(s.forge.employeeId=null);s.xpTickets??=0;s.layoutPause=false;
  const veteran=(s.totals?.days||0)>0||(s.totals?.sales||0)>0||s.tutorialSeen?.['first-day-done'];

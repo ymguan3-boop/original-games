@@ -1,7 +1,7 @@
-import {addPaleFeatureLines} from './pale-feature-lines.js';
-import {cashierPose,resetCashierPose} from './cashier-pose.js';
-import {addIllustratedOutline} from './illustrated-outline.js';
-import {ART_STYLE} from './art-style.js';
+import {addPaleFeatureLines} from './pale-feature-lines.js?v=20261107-fixes-r1';
+import {cashierPose,resetCashierPose} from './cashier-pose.js?v=20261107-fixes-r1';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261107-fixes-r1';
+import {ART_STYLE} from './art-style.js?v=20261107-fixes-r1';
 const BASE='../幻靈奇旅/';
 const scripts=new Map();
 function script(path){if(!scripts.has(path))scripts.set(path,new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=BASE+path;el.onload=resolve;el.onerror=()=>{scripts.delete(path);el.remove();reject(Error('無法載入原資產 '+path));};document.head.appendChild(el);}));return scripts.get(path);}

@@ -1,7 +1,7 @@
-import {employeeSpot,employeePath} from './staff-routing.js';
-import {obstacles,decorEffects} from './decorations.js';
-import {findPath,walkable} from './nav.js';
-import {capacityOf,preferredJob,WORK_JOBS} from './management.js';
+import {employeeSpot,employeePath} from './staff-routing.js?v=20261107-fixes-r1';
+import {obstacles,decorEffects} from './decorations.js?v=20261107-fixes-r1';
+import {findPath,walkable} from './nav.js?v=20261107-fixes-r1';
+import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261107-fixes-r1';
 const stations={cashier:{x:10,z:1},stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
 /* The rear wall is z=1. Each resting worker gets their own place and is never
  * mistaken for an idling / slacking employee at an active work station. */
@@ -9,16 +9,7 @@ export function restingPositions(s){
  const resting=s.employees.filter(e=>e.role==='standby').sort((a,b)=>String(a.id).localeCompare(String(b.id)));
  return new Map(resting.map((e,i)=>[e.id,{x:2+i%7,z:1+Math.floor(i/7)}]));
 }
-export function sendToRest(g,s,e){
- const preferred=restingPositions(s).get(e.id);if(!preferred)return false;
- const targets=new Set([...s.employees.filter(a=>a!==e&&a.role==='standby'&&!(a.path||[]).length).map(a=>`${Math.round(a.x)},${Math.round(a.z)}`)]);
- const target=employeeSpot(g,s,e,preferred,targets);
- if(!target)return false;
- if(Math.hypot(target.x-e.x,target.z-e.z)<.25){e.path=[];e.reaction='sleep';return true;}
- const path=employeePath(s,e,target);
- if(path!==null){e.path=path;e.reaction='walk';return true;}
- return false;
-}
+export function sendToRest(g,s,e){e.path=[];e.reaction='sleep';e.offDuty=true;return true;}
 const wandering=(s,e)=>{
  const shelves=s.shelves||[],i=(e.patrolStep||0),next=()=>{e.patrolStep=i+1;};
  const patterns={
@@ -38,30 +29,23 @@ const wandering=(s,e)=>{
 /* 一鍵最佳配置：鎖定的員工不動，其餘依擅長職務與熟練度排入在班名額 */
 export function autoAssign(g,s){
  const capacity=capacityOf(g,s),jobs=WORK_JOBS,locked=s.employees.filter(e=>e.lockedAssignment&&e.role!=='standby'),chosen=new Map(locked.map(e=>[e.id,e.role])),count=j=>[...chosen.values()].filter(r=>r===j).length;
- const free=s.employees.filter(e=>!e.lockedAssignment).sort((a,b)=>b.workLevel-a.workLevel);
+ const free=s.employees.filter(e=>!e.lockedAssignment&&e.fatigue<85).sort((a,b)=>b.workLevel-a.workLevel);
  for(const job of jobs){if(chosen.size>=capacity||count(job))continue;const pick=free.find(e=>!chosen.has(e.id)&&preferredJob(g,e)===job)||null;if(pick)chosen.set(pick.id,job);}
  for(const job of jobs){if(chosen.size>=capacity||count(job))continue;const pick=free.find(e=>!chosen.has(e.id));if(pick)chosen.set(pick.id,job);}
  for(const e of free){if(chosen.size>=capacity)break;if(!chosen.has(e.id))chosen.set(e.id,preferredJob(g,e));}
  for(const e of s.employees){if(e.lockedAssignment)continue;const role=chosen.get(e.id)||'standby';if(e.role!==role&&e.workTask){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}e.role=role;e.path=[];e.nextTaskAt=0;}
  const targets=new Set();
- for(const e of s.employees){const preferred=e.role==='standby'?restingPositions(s).get(e.id):stations[e.role]||{x:5,z:5},spot=employeeSpot(g,s,e,preferred,targets);if(spot){g.route(s,e,spot);targets.add(`${spot.x},${spot.z}`);}}
+ for(const e of s.employees){if(e.role==='standby'){sendToRest(g,s,e);continue;}const preferred=e.role==='standby'?restingPositions(s).get(e.id):stations[e.role]||{x:5,z:5},spot=employeeSpot(g,s,e,preferred,targets);if(spot){g.route(s,e,spot);targets.add(`${spot.x},${spot.z}`);}}
  g.log(s,`一鍵配置完成：${chosen.size} 位在班。`);
  return `已配置 ${chosen.size} 位在班員工`;
 }
 /* 顧客在等結帳卻沒有收銀員時，由一位沒鎖定職務的員工補上；玩家鎖定的職務不動 */
 function fillCashier(g,s){if(s.phase!=='open'||s.employees.some(e=>e.role==='cashier')||!s.customers.some(c=>['Queue','Checkout','Cart'].includes(c.state)))return;const room=s.employees.filter(e=>e.role!=='standby').length<capacityOf(g,s),free=s.employees.filter(e=>!e.lockedAssignment&&(room||e.role!=='standby')).sort((a,b)=>(b.role==='standby')-(a.role==='standby')||(preferredJob(g,b)==='cashier')-(preferredJob(g,a)==='cashier')||b.workLevel-a.workLevel),e=free[0];if(!e)return;if(e.workTask){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}e.role='cashier';e.path=[];e.nextTaskAt=0;g.log(s,`${e.name} 接手收銀。`);}
-export function staffAutomation(g,s,dt){fillCashier(g,s);
+export function staffAutomation(g,s,dt){
  if(s.phase!=='open')return;
  const rear=restingPositions(s);
  for(const e of s.employees){
-  if(e.role==='standby'){
-   const target=rear.get(e.id)||restingPositions(s).get(e.id);
-   if(!target)continue;
-   if((e.path||[]).length&&(e.blocked||0)<2){e.reaction='walk';continue;}
-   if(Math.hypot(e.x-target.x,e.z-target.z)>.35)sendToRest(g,s,e);
-   else{e.path=[];e.reaction='sleep';}
-   continue;
-  }
+  if(e.role==='standby'){sendToRest(g,s,e);continue;}
   // Only a named slacking incident allows an on-duty worker to stand still.
   if(s.event?.id==='cashier-idle'&&(s.event.employeeId===e.id||!s.event.employeeId&&e.role==='cashier')){
    e.path=[];e.reaction='bored';continue;

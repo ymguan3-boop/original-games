@@ -5,7 +5,7 @@
    - otherwise the PeerJS public broker (no account needed): the host registers the peer id "hlqj-pk-<code>".
    - ?pknet=local: two tabs of the same browser over a BroadcastChannel (testing).
    Every transport returns the same channel: send(obj), onmessage(obj), onclose(), close(), kind. */
-import {FIREBASE_CONFIG} from './pk-config.js?v=20261107-c6';
+import {FIREBASE_CONFIG} from './pk-config.js?v=20261107-fixes-r1';
 
 export const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const makeCode = (rand = Math.random) => Array.from({length: 4}, () => CODE_CHARS[Math.floor(rand() * CODE_CHARS.length)]).join('');
@@ -18,11 +18,12 @@ export function transportKind() {
   return FIREBASE_CONFIG ? 'firebase' : 'peerjs';
 }
 
-function makeChannel(kind, sendRaw, close) {
-  const ch = {kind, onmessage: null, onclose: null, closed: false,
+export function makeChannel(kind, sendRaw, close) {
+  let listener=null;const pending=[];
+  const ch = {kind, get onmessage(){return listener;}, set onmessage(fn){listener=fn;if(fn)queueMicrotask(()=>{while(listener&&pending.length&&!ch.closed)listener(pending.shift());});}, onclose: null, closed: false,
     send(obj) { if (!ch.closed) try { sendRaw(obj); } catch (e) { console.warn(e); } },
     close() { if (ch.closed) return; ch.closed = true; try { close(); } catch {} },
-    _recv(obj) { if (!ch.closed) ch.onmessage?.(obj); },
+    _recv(obj) { if(ch.closed)return;if(listener)listener(obj);else if(pending.length<32)pending.push(obj); },
     _gone() { if (ch.closed) return; ch.closed = true; ch.onclose?.(); }};
   return ch;
 }

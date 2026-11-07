@@ -1,9 +1,9 @@
 /* Spirit actors for the defense mode, built the same way as the cave's pets (survivors/js/scene.js):
    same models and clips, the same special effects (阿宏牛仔/藍金星輝法師, 官胖, 歐頭慢), and attacks planned by
    SpiritCombat.attackPlan + the model room's SpiritVfx scripts, so moves and ultimates look identical. */
-import {modelHeight} from '../../survivors/js/actor-layout.js?v=20261107-c6';
-import {modelRoomPlan, originalPresentation, createModelRoomEffect} from '../../survivors/js/model-room-effects.js?v=20261107-c6';
-import {attackProfile} from '../../survivors/js/combat-profile.js?v=20261107-c6';
+import {modelHeight} from '../../survivors/js/actor-layout.js?v=20261107-fixes-r1';
+import {modelRoomPlan, originalPresentation, createModelRoomEffect} from '../../survivors/js/model-room-effects.js?v=20261107-fixes-r1';
+import {attackProfile} from '../../survivors/js/combat-profile.js?v=20261107-fixes-r1';
 
 const BASE = new URL('../../', import.meta.url);
 const scripts = new Map(), gltfs = new Map();

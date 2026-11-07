@@ -1,5 +1,5 @@
 /* Defense retains the player's full BGM level; cave's foreground mix is separate. */
-import '../../js/combat-audio.js?v=20261030-reaper-v2';
+import '../../js/combat-audio.js?v=20261107-fixes-r1';
 export function createCombatAudio(options = {}) {
   globalThis.PhantomBgm?.setMix?.({gain: 1, ceiling: 1});
   return globalThis.PhantomCombatAudio.create({

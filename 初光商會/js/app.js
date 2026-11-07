@@ -1,21 +1,22 @@
-import {installShopNavigation} from './shop-navigation.js?v=20261107-a5';
-import {showZhaocaiNote} from './zhaocai-note.js';
-import {installShopMusic} from './shop-music.js?v=20261106-audio1';
-import {createActorVisuals} from './actor-visuals.js?v=20261107-a5';
-import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261107-a5';
-import {loadSpiritCards} from './spirit-cards.js?v=20261107-a6';
-import {createGame} from './core.js?v=20261107-a5';
-import {createStaffOverlay} from './staff-overlay.js?v=20261107-a5';
-import {installPatrolControls} from './patrol-controls.js';
-import {playEvolution3D} from './evolution-3d.js';
-import {createScene} from './scene.js?v=20261107-b7';
-import {createScene2D} from './scene-2d.js?v=20261107-b8';
-import {createDock} from './dock-2d.js?v=20261107-b7';
-import {createHub} from './shop-hub.js?v=20261107-b7';
-import {installTutorial} from './shop-tutorial.js?v=20261107-a5';
-import {commissionNotice} from './commissions.js';
-import {dailyTasks} from './management.js?v=20261107-a5';
-import {installWindowControls} from './window-controls.js?v=20261105-customer1';
+import {showChaseSuccess} from './chase-celebration.js?v=20261107-fixes-r1';
+import {installShopNavigation} from './shop-navigation.js?v=20261107-fixes-r1';
+import {showZhaocaiNote} from './zhaocai-note.js?v=20261107-fixes-r1';
+import {installShopMusic} from './shop-music.js?v=20261107-fixes-r1';
+import {createActorVisuals} from './actor-visuals.js?v=20261107-fixes-r1';
+import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261107-fixes-r1';
+import {loadSpiritCards} from './spirit-cards.js?v=20261107-fixes-r1';
+import {createGame} from './core.js?v=20261107-fixes-r1';
+import {createStaffOverlay} from './staff-overlay.js?v=20261107-fixes-r1';
+import {installPatrolControls} from './patrol-controls.js?v=20261107-fixes-r1';
+import {playEvolution3D} from './evolution-3d.js?v=20261107-fixes-r1';
+import {createScene} from './scene.js?v=20261107-fixes-r1';
+import {createScene2D} from './scene-2d.js?v=20261107-fixes-r1';
+import {createDock} from './dock-2d.js?v=20261107-fixes-r1';
+import {createHub} from './shop-hub.js?v=20261107-fixes-r1';
+import {installTutorial} from './shop-tutorial.js?v=20261107-fixes-r1';
+import {commissionNotice} from './commissions.js?v=20261107-fixes-r1';
+import {dailyTasks} from './management.js?v=20261107-fixes-r1';
+import {installWindowControls} from './window-controls.js?v=20261107-fixes-r1';
 /* 2D 測試：在設定輸入代碼後切換並記住；本機開發可用 ?shopDev=1&view=2d 直接進入 */
 const VIEW_KEY='firstlight-shop-view',VIEW_CODE='741216',viewParams=new URLSearchParams(location.search),readView=()=>{try{return localStorage.getItem(VIEW_KEY);}catch{return null;}},view2d=viewParams.get('view')==='2d'&&viewParams.has('shopDev')&&['localhost','127.0.0.1'].includes(location.hostname)||readView()==='2d';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -41,7 +42,7 @@ async function beginEvolution(employeeId){
 function syncPatrolSolved(){const info=game.state.recentPatrolResolution;if(!info||seenPatrolResolution===info.id)return;seenPatrolResolution=info.id;if(info.focused&&scene?.metrics.mode==='follow')scene.setMode('play');const popup=$('#patrol-solved');clearTimeout(patrolTimer);$('#patrol-solved-title').textContent='✅ 問題解決了！';$('#patrol-solved-message').textContent=`${info.employeeName}｜${info.title}`;popup.hidden=false;patrolTimer=setTimeout(()=>{popup.hidden=true;},3000);}
 function syncNotices(s){
  const clear=s.chapterClear;if(clear&&seenChapterClear!==clear.id){seenChapterClear=clear.id;toast(`🎉 商會升級：${clear.title}`);}
- const chase=s.customerChaseResult;if(chase&&seenChase!==chase.id){seenChase=chase.id;if(chase.success)toast('追客成功！');else showZhaocaiNote('追客失敗了……');}
+ const chase=s.customerChaseResult;if(chase&&seenChase!==chase.id){seenChase=chase.id;if(chase.success){showChaseSuccess(chase);scene?.playChaseSuccess?.();}else showZhaocaiNote('追客失敗了……');}
  const notice=$('#shop-notice');notice.hidden=!s.event||s.patrolFocus||hub?.isOpen;if(!notice.hidden)notice.textContent=`⚠ ${s.event.title}：按「任務」處理`;
 }
 function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncNotices(s);

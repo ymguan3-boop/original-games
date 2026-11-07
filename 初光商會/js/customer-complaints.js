@@ -1,7 +1,7 @@
 /* Click-to-resolve customer problems. Uses normal shop transactions; never grants a free sale. */
-import {shelfCapacity} from './furniture.js?v=20261107-a5';
-import {ENTRANCE} from './nav.js';
-import {applyFreeEventFatigue} from './patrol-events.js';
+import {shelfCapacity} from './furniture.js?v=20261107-fixes-r1';
+import {ENTRANCE} from './nav.js?v=20261107-fixes-r1';
+import {applyFreeEventFatigue} from './patrol-events.js?v=20261107-fixes-r1';
 const clamp=n=>Math.max(0,Math.min(100,n));
 const stockShelf=(g,s)=>s.shelves.find(sh=>{const product=g.data.catalog.find(p=>p.sku===sh.sku);return product&&product.unlockStoreLevel<=s.level&&sh.stock<shelfCapacity(sh);});
 const availableShelf=(g,s)=>s.shelves.find(sh=>g.available(s,sh)>0);
@@ -54,9 +54,10 @@ export function getCustomerComplaint(s,c,g){
   ];
  }
  options=options.map(o=>({...o,disabled:!!o.disabled||used.includes(kind+':'+o.id),reason:used.includes(kind+':'+o.id)?'此方法已使用':o.reason||''}));
- return {...config,kind,id,customerId:c.id,customerName:c.name,role:'customer',title:config.title,options:options.filter(o=>!o.disabled).slice(0,2),funny:false};
+ return {...config,kind,id,customerId:c.id,customerName:c.name,role:'customer',title:config.title,options:[...options.filter(o=>!o.disabled&& !['apologize','farewell'].includes(o.id)).slice(0,1),{id:'farewell',label:'道歉並友善送客',detail:'結束這次客訴，不產生交易',cost:0}],funny:false};
 }
 export function resolveCustomerComplaint(g,s,p){
+ p={...p,choice:p.choice??p.option};
  const c=s.customers.find(c=>c.id===p.customerId);if(!c)throw Error('顧客已離開商會');
  const info=getCustomerComplaint(s,c,g);
  if(!info)throw Error('這個顧客目前沒有待解決的問題');
@@ -74,9 +75,10 @@ export function resolveCustomerComplaint(g,s,p){
  }
  const previous=s.satisfaction;
  const mood=(n)=>{s.satisfaction=clamp(s.satisfaction+n);const delta=Math.round((s.satisfaction-previous)*10)/10;if(delta>0)g.notice(s,c.id,'滿意 +'+delta,'good');};
- const retry=()=>{c.state='Browse';c.timer=0;c.wait=0;c.angerReason=null;c.emotion='happy';c.visited=[];c.path=[];c.patience=Math.max(c.patience||30,35)+15;g.route(s,c,{x:c.x,z:c.z});};
- const goodbye=()=>{c.state='Leave';c.timer=0;c.exitRerouteAt=2;c.path=[];c.emotion='happy';g.route(s,c,ENTRANCE);};
- if(info.kind==='stockout'){
+ const retry=()=>{c.basket=[];c.state='Browse';c.timer=0;c.wait=0;c.angerReason=null;c.emotion='happy';c.visited=[];c.path=[];c.patience=Math.max(c.patience||30,35)+15;g.route(s,c,{x:c.x,z:c.z});};
+ const goodbye=()=>{c.basket=[];c.state='Leave';c.timer=0;c.exitRerouteAt=2;c.path=[];c.emotion='happy';g.route(s,c,ENTRANCE);};
+ if(p.choice==='farewell'){goodbye();if(info.kind!=='angry')s.stats.lost=(s.stats.lost||0)+1;mood(1);}
+ else if(info.kind==='stockout'){
   if(p.choice==='restock'){const sh=stockShelf(g,s);if(!sh)throw Error('缺少可補貨貨架');const product=g.data.catalog.find(x=>x.sku===sh.sku);if((s.inventory[sh.sku]||0)>0)s.inventory[sh.sku]-=1;else{if(!cost||!product)throw Error('無法採購缺貨商品');s.stats.purchases=(s.stats.purchases||0)+cost;}sh.stock++;retry();mood(1);}
   else if(p.choice==='alternate'){retry();mood(1);}
   else {goodbye();s.stats.lost=(s.stats.lost||0)+1;mood(1);}
