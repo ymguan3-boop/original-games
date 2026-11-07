@@ -9,17 +9,22 @@ import {createStaffOverlay} from './staff-overlay.js?v=20261107-a5';
 import {installPatrolControls} from './patrol-controls.js';
 import {playEvolution3D} from './evolution-3d.js';
 import {createScene} from './scene.js?v=20261107-a6';
-import {createHub} from './shop-hub.js?v=20261107-a6';
+import {createScene2D} from './scene-2d.js?v=20261107-b2';
+import {createDock} from './dock-2d.js?v=20261107-b2';
+import {createHub} from './shop-hub.js?v=20261107-b3';
 import {installTutorial} from './shop-tutorial.js?v=20261107-a5';
 import {commissionNotice} from './commissions.js';
 import {dailyTasks} from './management.js?v=20261107-a5';
 import {installWindowControls} from './window-controls.js?v=20261105-customer1';
+/* 2D 測試：在設定輸入代碼後切換並記住；本機開發可用 ?shopDev=1&view=2d 直接進入 */
+const VIEW_KEY='firstlight-shop-view',VIEW_CODE='741216',viewParams=new URLSearchParams(location.search),readView=()=>{try{return localStorage.getItem(VIEW_KEY);}catch{return null;}},view2d=viewParams.get('view')==='2d'&&viewParams.has('shopDev')&&['localhost','127.0.0.1'].includes(location.hostname)||readView()==='2d';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=v=>Math.round(Number(v)||0).toLocaleString('zh-TW');
 const confirmWindow=installWindowControls($('#confirm'),{onClose:()=>{$('#confirm-shield').hidden=true;}});
 let game,scene,hub,tutorial,staffOverlay,actorVisuals,patrolControls,shopNavigation,shopMusic=null,evolutionInProgress=false,selectedShelf=null,seenPatrolResolution=null,patrolTimer=null,seenChapterClear=null,seenChase=null,toastTimer,quality='low';
 function toast(message,error=false){const el=$('#toast');el.textContent=message;el.className=error?'error':'';el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',3200);}
 function action(type,payload={}){let r;try{r=game.act(type,payload);}catch(e){r={ok:false,message:e.message};}if(r?.message&&!['tutorial','已完成'].includes(type)&&r.message!=='已完成'&&type!=='tutorial')toast(r.message,!r.ok);renderHUD();staffOverlay?.render();return r;}
+function switchView(code){if(!view2d&&code!==VIEW_CODE){toast('代碼不正確。',true);return;}try{localStorage.setItem(VIEW_KEY,view2d?'3d':'2d');}catch{toast('無法儲存畫面設定。',true);return;}location.reload();}
 function confirmAction(message,fn){$('#confirm-message').textContent=message;$('#confirm-shield').hidden=false;confirmWindow.open();$('#confirm-yes').onclick=()=>{confirmWindow.close();fn();};}
 $('#confirm-no').onclick=()=>confirmWindow.close();
 function fullscreen(){const el=document.documentElement;if(document.fullscreenElement){document.exitFullscreen();return;}if(el.requestFullscreen)el.requestFullscreen().catch(()=>toast('這個瀏覽器不支援全螢幕，可以把遊戲加入主畫面。',true));else toast('這個瀏覽器不支援全螢幕，可以把遊戲加入主畫面。',true);}
@@ -47,7 +52,7 @@ function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncN
  tutorial?.sync();}
 const pageFor={goods:'goods',shelves:'build',staff:'staff',quests:'tasks',upgrade:'upgrade',settings:'settings'};
 const openPanel=name=>hub.open(pageFor[name]||'shop');
-for(const b of document.querySelectorAll('.toolbar [data-hub]'))b.onclick=()=>{const page=b.dataset.hub;if(page==='tasks'&&game.state.event){hub.open('event');return;}hub.open(page);};
+for(const b of document.querySelectorAll('.toolbar [data-hub]'))b.onclick=()=>{const page=b.dataset.hub;if(document.body.classList.contains('view-2d')&&hub.isOpen&&hub.rootPage===page){hub.close();return;}if(page==='tasks'&&game.state.event){hub.open('event');return;}hub.open(page);};
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!game||game.state.patrolFocus)return;
  if(b.id==='rotate-furniture'){const r=scene.editShelf(0,0,90);if(!r.ok)toast(r.message,true);}
  if(b.id==='retract-furniture'){const r=scene.cancelEdit();toast(r.message||'已收納',!r.ok);if(r.ok)scene.setMode('play');}
@@ -64,11 +69,12 @@ function recoverSave(){confirmAction('恢復前一個備份會取代目前進度
 async function boot(){try{
  shopMusic=installShopMusic();game=await createGame({storage:localStorage,key:'firstlight_shop_v1'});seenPatrolResolution=game.state.recentPatrolResolution?.id||null;seenChapterClear=game.state.chapterClear?.id||null;seenChase=game.state.customerChaseResult?.id||null;
  shopNavigation=installShopNavigation({game,onError:e=>toast(e.message,true)});
- hub=createHub({game,getScene:()=>scene,act:action,toast,esc,evolve:beginEvolution,leave:()=>$('#return-to-game').click(),settings:{volume:()=>shopMusic?.volume??40,quality:()=>quality,exportSave,recover:recoverSave},onChange:()=>{game.uiBusy=evolutionInProgress||hub?.isOpen;renderHUD();}});
+ hub=createHub({game,getScene:()=>scene,act:action,toast,esc,evolve:beginEvolution,leave:()=>$('#return-to-game').click(),settings:{volume:()=>shopMusic?.volume??40,quality:()=>quality,exportSave,recover:recoverSave,is2D:()=>view2d,switchView},onChange:()=>{game.uiBusy=evolutionInProgress||hub?.isOpen;renderHUD();}});
  tutorial=installTutorial({game,act:action,fullscreen,confirmSkip:fn=>confirmAction('要跳過新手教學嗎？之後可以到「商會 → 更多」重播。',fn)});
  const trial=['localhost','127.0.0.1'].includes(location.hostname)&&new URLSearchParams(location.search).has('shopDev');if(innerWidth<700)game.data.config.maxCustomers=6;
  await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id)});window.shop=game;window.shopTrial=trial;
- scene=createScene({canvas:$('#world'),game,
+ const sceneFactory=view2d?createScene2D:createScene;document.body.classList.toggle('view-2d',view2d);if(view2d)createDock({game,hub,esc});
+ scene=sceneFactory({canvas:$('#world'),game,
   onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){scene.setMode('decorate');scene.selectShelf(o.id);}},
   onStaffPositions:rows=>staffOverlay?.position(rows),
   onActorVisuals:view=>{const focus=game.state.patrolFocus?.employeeId;actorVisuals?.render(focus?{actors:view.actors.filter(v=>v.id===focus),notices:view.notices.filter(n=>n.targetId===focus)}:view);},
