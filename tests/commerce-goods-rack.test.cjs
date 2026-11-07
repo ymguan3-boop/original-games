@@ -3,7 +3,7 @@ const ROOT=path.join(__dirname,'../初光商會'),read=f=>fs.readFileSync(path.j
 test('supplies and materials each get their own model and preview',()=>{
  const src=read('js/product-models.js');
  for(const sku of ['potion','revive','battery','vacuum-orb','pet-xp-double','buff-attack','buff-defense','buff-capture','buff-pickup','shop-iron','shop-wood','shop-crystal']){
-  assert.ok(src.includes(sku),sku);assert.ok(fs.existsSync(path.join(ROOT,'assets/art-v10/previews/product-'+sku+'.webp')),sku);
+  assert.ok(src.includes(sku),sku);assert.ok(fs.existsSync(path.join(ROOT,'assets/icons-v12/product-'+sku+'.webp')),sku);
  }
 });
 test('guns use the gun model and the armory hangs weapons on a real rack',()=>{
@@ -13,8 +13,8 @@ test('guns use the gun model and the armory hangs weapons on a real rack',()=>{
 });
 test('the four upgraded racks are procedural, match their slots and have fresh previews',()=>{
  const racks=read('js/rack-models.js');
- for(const id of ['materials','arcane','relic','royal']){assert.match(racks,new RegExp('function '+id+'\\(b,S\\)'));assert.ok(fs.existsSync(path.join(ROOT,'assets/art-v10/previews/rack-'+id+'.webp')),id);}
- assert.ok(fs.existsSync(path.join(ROOT,'assets/art-v10/previews/rack-armory.webp')));
+ for(const id of ['materials','arcane','relic','royal']){assert.match(racks,new RegExp('function '+id+'\\(b,S\\)'));assert.ok(fs.existsSync(path.join(ROOT,'assets/icons-v12/rack-'+id+'.webp')),id);}
+ assert.ok(fs.existsSync(path.join(ROOT,'assets/icons-v12/rack-armory.webp')));
  assert.match(racks,/ys=\[\.23,\.74,1\.25\],h=1\.4/);assert.match(racks,/ys=\[\.23,\.62,1\.01,1\.4\]/);assert.match(racks,/ys=\[\.23,\.58,\.93,1\.28,1\.63\]/);
  assert.match(read('js/shelf-view.js'),/hasRackModel\(kind\)\?Promise\.resolve\(rackModel\(T,kind\)\)/);
 });

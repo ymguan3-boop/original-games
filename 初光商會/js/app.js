@@ -3,12 +3,13 @@ import {showZhaocaiNote} from './zhaocai-note.js';
 import {installShopMusic} from './shop-music.js?v=20261106-audio1';
 import {createActorVisuals} from './actor-visuals.js?v=20261107-a5';
 import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261107-a5';
-import {loadSpiritCards,spiritCard} from './spirit-cards.js';
+import {loadSpiritCards} from './spirit-cards.js?v=20261107-a6';
 import {createGame} from './core.js?v=20261107-a5';
 import {createStaffOverlay} from './staff-overlay.js?v=20261107-a5';
 import {installPatrolControls} from './patrol-controls.js';
-import {createScene} from './scene.js?v=20261107-a5';
-import {createHub} from './shop-hub.js?v=20261107-a5';
+import {playEvolution3D} from './evolution-3d.js';
+import {createScene} from './scene.js?v=20261107-a6';
+import {createHub} from './shop-hub.js?v=20261107-a6';
 import {installTutorial} from './shop-tutorial.js?v=20261107-a5';
 import {commissionNotice} from './commissions.js';
 import {dailyTasks} from './management.js?v=20261107-a5';
@@ -16,21 +17,22 @@ import {installWindowControls} from './window-controls.js?v=20261105-customer1';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=v=>Math.round(Number(v)||0).toLocaleString('zh-TW');
 const confirmWindow=installWindowControls($('#confirm'),{onClose:()=>{$('#confirm-shield').hidden=true;}});
-let game,scene,hub,tutorial,staffOverlay,actorVisuals,patrolControls,shopNavigation,shopMusic=null,evolutionInProgress=false,evolutionTimer=null,selectedShelf=null,seenPatrolResolution=null,patrolTimer=null,seenChapterClear=null,seenChase=null,toastTimer,quality='low';
+let game,scene,hub,tutorial,staffOverlay,actorVisuals,patrolControls,shopNavigation,shopMusic=null,evolutionInProgress=false,selectedShelf=null,seenPatrolResolution=null,patrolTimer=null,seenChapterClear=null,seenChase=null,toastTimer,quality='low';
 function toast(message,error=false){const el=$('#toast');el.textContent=message;el.className=error?'error':'';el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',3200);}
 function action(type,payload={}){let r;try{r=game.act(type,payload);}catch(e){r={ok:false,message:e.message};}if(r?.message&&!['tutorial','已完成'].includes(type)&&r.message!=='已完成'&&type!=='tutorial')toast(r.message,!r.ok);renderHUD();staffOverlay?.render();return r;}
 function confirmAction(message,fn){$('#confirm-message').textContent=message;$('#confirm-shield').hidden=false;confirmWindow.open();$('#confirm-yes').onclick=()=>{confirmWindow.close();fn();};}
 $('#confirm-no').onclick=()=>confirmWindow.close();
 function fullscreen(){const el=document.documentElement;if(document.fullscreenElement){document.exitFullscreen();return;}if(el.requestFullscreen)el.requestFullscreen().catch(()=>toast('這個瀏覽器不支援全螢幕，可以把遊戲加入主畫面。',true));else toast('這個瀏覽器不支援全螢幕，可以把遊戲加入主畫面。',true);}
-function beginEvolution(employeeId){
+/* 進度先存好再播 3D 演出，動畫失敗也不會損失進化 */
+async function beginEvolution(employeeId){
  if(evolutionInProgress)return;const emp=game.state.employees.find(e=>e.id===employeeId),rule=staffEvolutionInfo(game.data,emp),spirit=id=>game.data.spirits.find(x=>x.id===id);
  if(!rule.eligible){toast('尚未達到進化門檻。',true);return;}
- evolutionInProgress=true;game.uiBusy=true;const stage=$('#staff-evolution-stage'),dialog=$('#staff-evolution-dialog');
- $('#staff-evolution-title').textContent='✨ '+emp.name+' · 開始進化';$('#staff-evolution-art').innerHTML=spiritCard(spirit(emp.spiritId),emp.rarity,esc);$('#staff-evolution-status').textContent='正在聚集進化能量…';$('#staff-evolution-finish').hidden=true;
- dialog.classList.remove('is-evolving','is-done');stage.hidden=false;requestAnimationFrame(()=>{if(!stage.hidden)dialog.classList.add('is-evolving');});
- clearTimeout(evolutionTimer);evolutionTimer=setTimeout(()=>{const result=action('evolveEmployee',{employeeId});dialog.classList.remove('is-evolving');dialog.classList.add('is-done');if(result.ok){const evolved=game.state.employees.find(e=>e.id===employeeId);$('#staff-evolution-art').innerHTML=spiritCard(spirit(evolved.spiritId),evolved.rarity,esc);$('#staff-evolution-title').textContent='✨ 進化成功！';$('#staff-evolution-status').textContent=result.message;}else{$('#staff-evolution-title').textContent='進化尚未完成';$('#staff-evolution-status').textContent=result.message;}$('#staff-evolution-finish').hidden=false;},2400);
+ const before=spirit(emp.spiritId);evolutionInProgress=true;game.uiBusy=true;
+ const result=action('evolveEmployee',{employeeId});
+ try{if(result.ok)await playEvolution3D({before,after:spirit(game.state.employees.find(e=>e.id===employeeId).spiritId),loadActor:sp=>scene.evolutionActor(sp.model)});}
+ catch(e){console.warn('進化演出失敗',e);if(result.ok)toast(result.message);}
+ finally{evolutionInProgress=false;game.uiBusy=false;renderHUD();}
 }
-$('#staff-evolution-finish').onclick=()=>{clearTimeout(evolutionTimer);$('#staff-evolution-stage').hidden=true;$('#staff-evolution-dialog').classList.remove('is-evolving','is-done');evolutionInProgress=false;game.uiBusy=false;renderHUD();};
 function syncPatrolSolved(){const info=game.state.recentPatrolResolution;if(!info||seenPatrolResolution===info.id)return;seenPatrolResolution=info.id;if(info.focused&&scene?.metrics.mode==='follow')scene.setMode('play');const popup=$('#patrol-solved');clearTimeout(patrolTimer);$('#patrol-solved-title').textContent='✅ 問題解決了！';$('#patrol-solved-message').textContent=`${info.employeeName}｜${info.title}`;popup.hidden=false;patrolTimer=setTimeout(()=>{popup.hidden=true;},3000);}
 function syncNotices(s){
  const clear=s.chapterClear;if(clear&&seenChapterClear!==clear.id){seenChapterClear=clear.id;toast(`🎉 商會升級：${clear.title}`);}

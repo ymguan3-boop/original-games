@@ -11,7 +11,7 @@
 .menu-actions{display:grid;gap:8px}.menu-actions button{min-height:46px}
 .tutor{position:fixed;left:50%;transform:translateX(-50%);top:max(64px,calc(env(safe-area-inset-top) + 58px));width:min(420px,calc(100vw - 20px));z-index:50;background:#fff8e8;color:#4a3019;border:3px solid #6b914b;border-radius:14px;padding:8px 12px}
 .tutor b{font-size:14px}.tutor p{margin:2px 0 6px;font-size:14px;line-height:1.4}.tutor div{display:flex;justify-content:flex-end;gap:8px}.tutor button{min-height:38px;padding:0 12px}
-@media (orientation:landscape) and (max-height:500px){#lobby .isle-panel{left:auto;right:8px;width:230px;bottom:8px}.tutor{left:8px;transform:none;width:min(320px,48vw);top:56px}}
+@media (orientation:landscape) and (max-height:500px){#lobby .isle-panel{left:auto;right:8px;width:230px;bottom:8px}.tutor{left:8px;transform:none;width:min(320px,48vw)}}
 .tutor{padding-left:84px;min-height:84px}.tutor-face{position:absolute;left:8px;top:8px;width:68px;height:68px;border-radius:50%;object-fit:cover;background:#fff}
 .tutor-focus{outline:4px solid #ffc81e!important;outline-offset:3px;animation:tutor-pulse 1s ease-in-out infinite;position:relative;z-index:60}
 @keyframes tutor-pulse{50%{outline-color:#ff6a2a;outline-offset:6px}}
@@ -27,3 +27,41 @@
 #lobby .isle-panel .isle-card{display:block!important}#lobby .isle-panel .isle-boss{margin:4px 0;width:auto!important}#lobby .isle-panel .deck-strip img,#lobby .isle-panel .deck-strip i{max-height:46px}
 #lobby .isle-panel,#lobby .isle-panel .isle-card{max-height:none!important;height:auto!important;overflow:visible!important}
 #lobby .isle-panel .isle-boss{display:flex!important;align-items:center;gap:8px}#lobby .isle-panel .isle-brief{margin:0 0 0 auto;font-size:12px;line-height:1.5;white-space:nowrap;color:#6a4a24}
+
+/* 手機橫放等矮螢幕：轉蛋視窗改用整個高度，機台縮小，按鈕與獎勵才不會被裁切 */
+@media (max-height:560px){
+ dialog#panel{width:min(780px,94vw);max-height:96dvh;padding:8px 14px}
+ dialog#panel .dialog-top{position:absolute;top:6px;right:10px;z-index:4}
+ dialog#panel #panelLabel{display:none}
+ dialog#panel h2{font-size:17px;line-height:1.3;margin:0 44px 6px 0}
+ dialog#panel #panelBody{max-height:calc(96dvh - 46px)}
+ #panel .dg-wallet{padding:3px 10px;font-size:12px}
+ #panel .dg-wallet strong{font-size:16px}
+ #panel .dg-intro{gap:10px;margin:5px 0}
+ #panel .dg-machine{width:58px;height:74px;border-radius:9px}
+ #panel .dg-copy strong{font-size:15px}
+ #panel .dg-copy p{margin:1px 0 0;line-height:1.35}
+ #panel .draw-actions{margin:0}
+ #panel .draw-actions .primary{margin:0;padding:8px}
+ #panel .pool-details{margin-top:4px}
+ #panel button.dg-machine{padding:0;width:64px;height:78px}
+ #panel .reward-list{grid-template-columns:repeat(auto-fit,minmax(118px,1fr))!important;gap:6px}
+ #panel .reward-entry{padding:4px 6px;gap:6px;flex-direction:row!important;text-align:left}
+ #panel .reward-portrait{width:42px!important;height:42px!important;flex:none}
+ #panel .reward-copy small,#panel .reward-copy p{display:none}
+ #panel .reward-entry strong{font-size:12px;margin:0}
+}
+
+/* 關卡資訊：五列由上而下排好，每列各佔一行，不用舊版的格線定位 */
+#lobby .isle-panel .isle-card{display:flex!important;flex-direction:column!important;gap:6px!important;padding:8px 10px!important;box-sizing:border-box!important}
+#lobby .isle-panel .isle-card>*{position:static!important;margin:0!important;width:100%!important;min-width:0!important;box-sizing:border-box!important;grid-area:auto!important}
+#lobby .isle-panel .isle-title{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:6px!important;overflow:hidden}
+#lobby .isle-panel .isle-title h2{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
+#lobby .isle-panel .isle-title small,#lobby .isle-panel .isle-title .weather-pill,#lobby .isle-panel .isle-title .cleared-tag{flex:none;white-space:nowrap}
+#lobby .isle-panel .isle-boss{display:grid!important;grid-template-columns:36px minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important}
+#lobby .isle-panel .isle-boss>div{min-width:0}#lobby .isle-panel .isle-boss b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lobby .isle-panel .isle-brief{margin:0!important;text-align:right}
+#lobby .isle-panel .isle-deck{margin:0!important}#lobby .isle-panel .isle-deck-actions{margin:6px 0 0!important}
+#lobby .isle-panel .isle-deck-actions .tool{margin:0!important;padding:0 4px!important;min-height:38px!important;height:38px!important;line-height:1!important;white-space:nowrap}
+#lobby .isle-panel .sortie-base-warning{margin:0!important;padding:4px 8px!important;font-size:12px!important;line-height:1.3!important;white-space:normal!important}
+@media (orientation:landscape) and (max-height:500px){#lobby .isle-panel{top:auto!important;width:270px!important}#lobby .isle-panel .deck-strip img,#lobby .isle-panel .deck-strip i{max-height:34px!important}#lobby .isle-panel .isle-card{gap:4px!important;padding:6px 8px!important}}
