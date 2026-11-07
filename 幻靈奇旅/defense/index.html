@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="../survivors/css/v16.css?v=20261025-v16">
   <link rel="stylesheet" href="css/cave-gacha.css?v=20261107-b8">
   <link rel="stylesheet" href="css/defense.css?v=20261107-b8">
-  <link rel="stylesheet" href="css/defense-compact.css?v=20261107-b9">
+  <link rel="stylesheet" href="css/defense-compact.css?v=20261107-c2">
 </head>
 <body class="defense-scene">
   <canvas id="world" aria-label="幻靈守護戰 戰場"></canvas>
@@ -26,6 +26,8 @@
 
   <main id="lobby">
     <div id="seaChart" class="sea-wrap"></div>
+    <div id="lobbyTop" class="lobby-top">
+    <aside id="islePanel" class="isle-panel" aria-live="polite"></aside>
     <header class="chart-head">
       <img class="logo" src="assets/logo.webp" alt="幻靈奇旅">
       <div class="title-block"><p class="eyebrow">幻靈群島 · SPIRIT ISLES</p><h1>幻靈守護戰</h1></div>
@@ -35,7 +37,7 @@
         <button id="menuBtn" class="tool">☰<span>選單</span></button>
       </div>
     </header>
-    <aside id="islePanel" class="isle-panel" aria-live="polite"></aside>
+    </div>
   </main>
     <aside id="tutor" class="tutor" hidden><img class="tutor-face" alt="船長"><b></b><p></p><div class="tutor-btns"><button type="button" data-next class="primary">下一步</button><button type="button" data-skip>略過</button></div></aside>
 

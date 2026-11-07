@@ -31,6 +31,8 @@ export function effectText(e){return e.effect.startsWith('proc-')?'命中 '+ +(e
 export function mergeEffects(effects){const map=new Map();for(const e of effects||[]){const key=e.effect;if(!key)continue;const old=map.get(key)||{effect:key,value:0,count:0};old.value=Math.round((old.value+e.value)*1e9)/1e9;old.count++;map.set(key,old);}return [...map.values()];}
 export function scalarTotals(effects){return Object.fromEntries(mergeEffects(effects).filter(e=>!e.effect.startsWith('proc-')).map(e=>[e.effect,e.value]));}
 export function passiveDefinition(spec){
+ /* 招財與第三階鳥是附加資料，被動已寫在 addon 內 */
+ if(!PROFILES[spec.id]&&globalThis.PhantomAddonPassives?.[spec.id])return globalThis.PhantomAddonPassives[spec.id];
  const frame=spec.cardFrame||'yellow',count=PASSIVE_SLOTS[frame]||1,power=cardBase(spec).power,profile=PROFILES[spec.id],inherited=EGG_DESCENDANTS.has(spec.id);
  if(!profile||profile.length!==count)throw Error('缺少大絕被動配置：'+spec.id);
  // Inherited defense is 40% of a dedicated slot, preserving rarity order at max training.

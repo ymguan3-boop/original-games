@@ -1,6 +1,6 @@
 import {familyRoot,isTrainingBase,ownsFamily,trainingOf,familyGrowth} from './family-progress.js?v=20261025-v19';
 import {cardBase} from './card-balance.js';
-import {mergeEffects,effectText,scalarTotals,passiveDefinition} from './passive-rules.js?v=20261025-v17';
+import {mergeEffects,effectText,scalarTotals,passiveDefinition} from './passive-rules.js?v=20261107-c1';
 export const MAX_GROWTH_LEVEL=50;
 export const xpRequired=level=>40+level*10;
 export const xpPrice=level=>20+Math.floor(level/10)*10;

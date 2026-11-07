@@ -117,9 +117,9 @@ async function loadData() {
   const get = (p) => fetch(new URL(p, ASSET_BASE)).then((r) => { if (!r.ok) throw Error('讀取失敗：' + p); return r.json(); });
   const [spirits, art, catalog, evolution, pool] = await Promise.all([get('data/spirits.json'), get('data/card-art.json'), get('data/spirit-catalog.json'), get('survivors/data/evolution.json'), get('survivors/data/gacha-pool.json')]);
   const crown = await get('data/crown-addon.json');
-  spirits.push(...crown.spirits); catalog.entries.push(...crown.catalogEntries); Object.assign(evolution, crown.evolution); Object.assign(art.cards || art, crown.art);
+  spirits.push(...crown.spirits); catalog.entries.push(...crown.catalogEntries); Object.assign(evolution, crown.evolution); Object.assign(art.cards || art, crown.art); globalThis.PhantomAddonPassives = {...crown.passives};
   const addon = await zhaocaiAddon(new URL('data/zhaocai-addon.json', ASSET_BASE));
-  if (addon) { spirits.push(...addon.spirits); catalog.entries.push(...addon.catalogEntries); Object.assign(evolution, addon.evolution); Object.assign(art.cards || art, addon.art); pool.purple.push(...addon.pool.purple); }
+  if (addon) { Object.assign(globalThis.PhantomAddonPassives, addon.passives); spirits.push(...addon.spirits); catalog.entries.push(...addon.catalogEntries); Object.assign(evolution, addon.evolution); Object.assign(art.cards || art, addon.art); pool.purple.push(...addon.pool.purple); }
   return {spirits, art, catalog, evolution, pool, excluded: pool.excludedIds || [], spiritMap: new Map(spirits.map((s) => [s.id, s])), entries: new Map((catalog.entries || []).map((e) => [e.id, e]))};
 }
 
@@ -222,6 +222,9 @@ function renderLobby() {
   $('pointsNow').textContent = points().toLocaleString();
   renderIslePanel();
 }
+/* 置頂介面的實際高度：海圖、提示都接在它下面 */
+const lobbyTopBox = document.getElementById('lobbyTop');
+if (lobbyTopBox && typeof ResizeObserver !== 'undefined') new ResizeObserver(() => { const h = lobbyTopBox.offsetHeight; if (h) document.documentElement.style.setProperty('--dock', h + 'px'); }).observe(lobbyTopBox);
 function renderIslePanel() {
   const i = record.stage, s = STAGES[i], boss = spirit(s.boss), nb = deckBase().length, nr = deckRed().length, best = record.best?.[s.id] || 0;
   const len = buildPath(s.path).length, route = len < 70 ? '短' : len < 105 ? '中' : '長';
@@ -271,7 +274,7 @@ function sailHome() {
   record.boatAt = -1; saveRecord();
   if (globalThis.PhantomTransition) PhantomTransition.navigate('../?fromDock=1', '搭快艇返回初光鎮'); else location.href = '../';
 }
-/* 主島選單：四個選項，畫面設定是子頁 */
+/* 主島選單，畫面設定與測試是子頁 */
 function menuPage(title, items) {
   openModal(ribbon(title, '☰') + '<div class="bm-actions menu-actions">' + items.map(([label], i) => '<button data-menu="' + i + '">' + label + '</button>').join('') + '</div>', 'menu');
   $('modalBody').querySelector('.modal-dismiss')?.remove();
@@ -283,7 +286,23 @@ function quickDeck() {
   if (deckBase().length < DECK_BASE) toast('夥伴還不夠，先去轉蛋吧！'); else toast('已完成一鍵編組');
 }
 function openIslandMenu() {
-  menuPage('選單', [['返回初光鎮', sailHome], ['教學重播', () => { $('modal').close(); tutorial.replay(); }], ['畫面設定', openDisplayMenu], ['關閉', () => $('modal').close()]]);
+  menuPage('選單', [['返回初光鎮', sailHome], ['教學重播', () => { $('modal').close(); tutorial.replay(); }], ['畫面設定', openDisplayMenu], ['測試', openTestCode], ['關閉', () => $('modal').close()]]);
+}
+/* 測試：輸入密碼後領取轉蛋點數，每次輸入都會入帳 */
+const TEST_CODE = '741216', TEST_POINTS = 100000;
+function openTestCode() {
+  openModal(ribbon('測試', '☰') + '<form class="test-code" id="testForm"><label>請輸入測試密碼<input id="testCode" type="password" inputmode="numeric" maxlength="6" autocomplete="off" required></label><p class="test-msg" id="testMsg" role="status"></p><div class="bm-actions menu-actions"><button class="primary" type="submit">確認</button><button type="button" id="testBack">返回選單</button></div></form>', 'menu');
+  $('modalBody').querySelector('.modal-dismiss')?.remove();
+  $('testBack').onclick = openIslandMenu;
+  $('testCode').focus();
+  $('testForm').onsubmit = (e) => {
+    e.preventDefault();
+    const box = $('testCode'), msg = $('testMsg');
+    if (box.value !== TEST_CODE) { msg.className = 'test-msg'; msg.textContent = '密碼不正確，請再試一次。'; box.select(); return; }
+    try { globalThis.PhantomCaveBridge.reward('test-points:' + Date.now(), TEST_POINTS); } catch (x) { msg.className = 'test-msg'; msg.textContent = '點數寫入失敗：' + x.message; return; }
+    box.value = ''; $('pointsNow').textContent = points().toLocaleString();
+    msg.className = 'test-msg ok'; msg.textContent = '已獲得 ' + TEST_POINTS.toLocaleString() + ' 轉蛋點數，目前共 ' + points().toLocaleString() + ' 點。';
+  };
 }
 function openDisplayMenu() {
   menuPage('畫面設定', [[isFullscreen() ? '離開全螢幕' : '進入全螢幕', async () => { if (!nativeFullscreen()) toast('這個瀏覽器不支援全螢幕，可以把遊戲加入主畫面。'); await toggleFullscreen(); openDisplayMenu(); }], ['重置視角', () => { chart.resetView(); toast('已重置視角'); }], ['玩法說明', showHowTo], ['返回', openIslandMenu]]);
