@@ -78,7 +78,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
     else if(prefix==='leaf-frog'){await script('models/native/leaf-frogs.js');await script('models/native/frog-spirits.js','FrogSpirits');api=FrogSpirits;}
     if(api){const g=api.load?await api.load(path):{create:()=>api.create(path),animations:[]};return {g,api};}
     if(prefix==='crown'){await script('models/native/small-birds.js','SmallBirds');await script('models/native/crown-birds.js','CrownBirds');return {g:{animations:[],create:()=>CrownBirds.create({kind:path.split('://')[1]})}};}
-    if(prefix==='zhaocai'){await script('js/commerce-gate.js','PhantomCommerceGate');return {g:{animations:[],create:()=>PhantomCommerceGate.mascot(globalThis.THREE,Number(path.split('://')[1])||1)}};}
+    if(prefix==='zhaocai'){await script('js/commerce-gate.js','PhantomCommerceGate');await script('js/fx/zhaocai-coins.js','ZhaocaiCoins');return {g:{animations:[],create:()=>PhantomCommerceGate.mascot(globalThis.THREE,Number(path.split('://')[1])||1)}};}
     const defs={'floral-deer':['floral-deer','FloralDeer'],'light-phoenix':['light-phoenix','LightPhoenix'],riceball:['riceball','RiceballSpirit'],xiaoshan:['xiaoshan','XiaoshanSpirit']};
     const def=defs[prefix];if(!def)throw Error('無支援的原生角色：'+path);await script('models/native/'+def[0]+'.js',def[1]);
     return {g:{animations:[],create:()=>globalThis[def[1]].create({inPlace:true,stage:['chikorita','bayleef','meganium'].indexOf(path.split('://')[1])+1})}};

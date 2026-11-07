@@ -1012,6 +1012,7 @@ export function createView(canvas, {spirits, catalog}) {
       projectileView.clear(); combatVfx.clear(); fx.clear(); vfx3d?.clear(); fieldJobs.length = 0;
       state = game; if (game) buildMap(game); else seascape.dispose();
     },
+    get renderer() { return renderer; },
     get nestBoss() { return nestBoss; },
     fighterActor(id) { return fighters.get(id)?.actor; },
     async preload(ids, onProgress = null) {
