@@ -1,241 +1,84 @@
-import {installShopNavigation} from './shop-navigation.js?v=20261106-fx10';
-import {installFirstDayGuide,showZhaocaiNote} from './first-day-guide.js?v=20261106-fx10';
+import {installShopNavigation} from './shop-navigation.js?v=20261107-a1';
+import {showZhaocaiNote} from './zhaocai-note.js';
 import {installShopMusic} from './shop-music.js?v=20261106-audio1';
-import {installWindowControls} from './window-controls.js?v=20261105-customer1';
-let shopNavigation,eventCoach,firstDay,readyCommissionIds=null,guidedCommissionId=null,pendingCommissionCompletionId=null;
-const panelWindow=installWindowControls(document.getElementById('panel'));
-const confirmWindow=installWindowControls(document.getElementById('confirm'),{onClose:()=>{document.getElementById('confirm-shield').hidden=true;}});
-import {commissionNotice,commissionProgress,activeCommissions} from './commissions.js?v=20261106-fx10';
-import {installEventCoach} from './event-coach.js?v=20261106-fx10';
-import {createActorVisuals} from './actor-visuals.js?v=20261105-chase-daily1';
-let questTab='messages';let focusPurchaseSku=null,seenChapterClear=null;
-import {goodsPanel} from './goods-panel.js?v=20261106-fx10';
-import {chapterMissionPanel} from './chapter-view.js';
-import {chapterObjectives} from './shop-chapters.js';
-import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js';
-import {ledgerPanel} from './ledger-panel.js';
-let lastManagerSecond=-1,lastManagerEventId=null;
-import {furnishingPanel} from './furnishing-panel.js?v=20261106-fx10';
-import {patrolPanel} from './patrol-panel.js?v=20261105-customer1';
-import {incidentDetailPanel} from './incident-detail.js?v=20261106-fx10';
-import {customerComplaintPanel} from './customer-complaint-panel.js?v=20261106-fx10';
-import {getCustomerComplaint} from './customer-complaints.js';
-import {describeShopIssue} from './shop-event-guide.js?v=20261105-commission-flow1';
-import {dailyOpeningHTML,dailySettlementHTML} from './daily-presentations.js';
-import {shelfLimit} from './furniture.js?v=20261106-fx10';
-import {decorLimit} from './decorations.js';
-let furnitureTab='racks';let selectedWorldShelf=null;
-let lastQuestSignature='';
-const questSignature=s=>[s.day,s.level,s.patrols,s.totals.sales,s.totals.days,Object.keys(s.quests).join(','),Math.floor(s.commissionBoard?.clock||0),JSON.stringify(s.commissionBoard?.entries||[])].join('|');
-import {questPanel} from './quest-view.js?v=20261105-commission-flow1';
+import {createActorVisuals} from './actor-visuals.js?v=20261107-a1';
+import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261107-a1';
 import {loadSpiritCards,spiritCard} from './spirit-cards.js';
-import {upgradeSeconds} from './shop-operations.js';
-import {createGame} from './core.js?v=20261106-fx10';
-import {createStaffOverlay} from './staff-overlay.js?v=20261105-patrol-solved1';
-import {shelfTypes,shelfKind,accepts} from './furniture.js?v=20261106-fx10';
-let staffOverlay,actorVisuals;
+import {createGame} from './core.js?v=20261107-a1';
+import {createStaffOverlay} from './staff-overlay.js?v=20261107-a1';
 import {installPatrolControls} from './patrol-controls.js';
-let patrolControls;
-import {createScene} from './scene.js?v=20261106-fx10';
-const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt=v=>Math.round(Number(v)||0).toLocaleString('zh-TW'), money=v=>`${fmt(v)} G`;
-const rarity={yellow:'黃卡',purple:'紫卡',red:'紅卡'}, cat={item:'補給道具',weapon:'冒險武器',material:'經營素材'};
-let evolutionInProgress=false,evolutionTimer=null;
-let game,scene,seenPatrolResolution=null,patrolResolutionTimer=null,patrolResolutionDelay=null,seenChaseResult=null,dismissedGuideId=null,seenDailyReportDay=null,currentPanel='',selectedComplaintId=null,staffTab='roster',goodsTab='all',toastTimer,lastPanelRender=0,seenEvent='',frames=0,fps=0,frameTime=0,settings={sound:false,quality:'low',diagnostics:false},audioCtx;
-function beep(ok=true){if(!settings.sound)return;try{audioCtx??=new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=ok?660:180;g.gain.setValueAtTime(.035,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.12);o.start();o.stop(audioCtx.currentTime+.12);}catch{}}
-function toast(message,error=false){$('#toast').textContent=message;$('#toast').className=error?'error':'';$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',4200);beep(!error);}
-function action(type,payload={}){let r;try{r=game.act(type,payload);}catch(e){r={ok:false,message:e.message};}if(r?.message)toast(r.message,!r.ok);renderHUD();if(currentPanel)renderPanel();staffOverlay?.render();return r;}
+import {createScene} from './scene.js?v=20261107-a1';
+import {createHub} from './shop-hub.js?v=20261107-a1';
+import {installTutorial} from './shop-tutorial.js?v=20261107-a1';
+import {commissionNotice} from './commissions.js';
+import {dailyTasks} from './management.js?v=20261107-a1';
+import {installWindowControls} from './window-controls.js?v=20261105-customer1';
+const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=v=>Math.round(Number(v)||0).toLocaleString('zh-TW');
+const confirmWindow=installWindowControls($('#confirm'),{onClose:()=>{$('#confirm-shield').hidden=true;}});
+let game,scene,hub,tutorial,staffOverlay,actorVisuals,patrolControls,shopNavigation,shopMusic=null,evolutionInProgress=false,evolutionTimer=null,selectedShelf=null,seenPatrolResolution=null,patrolTimer=null,seenChapterClear=null,seenChase=null,toastTimer,quality='low';
+function toast(message,error=false){const el=$('#toast');el.textContent=message;el.className=error?'error':'';el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',3200);}
+function action(type,payload={}){let r;try{r=game.act(type,payload);}catch(e){r={ok:false,message:e.message};}if(r?.message&&!['tutorial','已完成'].includes(type)&&r.message!=='已完成'&&type!=='tutorial')toast(r.message,!r.ok);renderHUD();staffOverlay?.render();return r;}
 function confirmAction(message,fn){$('#confirm-message').textContent=message;$('#confirm-shield').hidden=false;confirmWindow.open();$('#confirm-yes').onclick=()=>{confirmWindow.close();fn();};}
 $('#confirm-no').onclick=()=>confirmWindow.close();
-const btn=(text,action,data={},cls='',disabled=false)=>`<button class="${cls}" data-action="${action}" data-payload="${esc(JSON.stringify(data))}" ${disabled?'disabled':''}>${text}</button>`;
-const metric=(title,value)=>`<div class="metric"><small>${title}</small><strong>${value}</strong></div>`;
-const item=sku=>game.data.catalog.find(p=>p.sku===sku);
-const spirit=id=>Array.isArray(game.data.spirits)?game.data.spirits.find(p=>p.id===id):game.data.spirits[id];
-const roleLabel=id=>{const j=game.data.jobs;return (Array.isArray(j)?j.find(x=>x.id===id):j[id])?.name||id;};
-function startExclusivePatrol(){
- const ev=game.state.event;
- if(!ev||['stockout','queue-complaint','no-cashier'].includes(ev.id)){
-  toast('這個事件需要實際補貨、安排收銀或顧客服務，不能靠走近員工完成。',true);return false;
- }
- if(game.state.phase!=='open'){toast('請先開門營業，再進行這項主管巡店任務。',true);return false;}
- const wasFollow=scene.metrics.mode==='follow';
- if(!wasFollow){const entered=scene.setMode('follow');if(!entered?.ok){toast(entered?.message||'無法進入主管巡店',true);return false;}}
- const eventId=ev.instanceId||ev.id;
- const started=action('startPatrolFocus',{eventId});
- if(!started.ok){if(!wasFollow)scene.setMode('play');return false;}
- closePanel();$('#shop-event-guide').hidden=true;
- $('#patrol-focus-hint').hidden=false;
- toast('已開始主管專屬巡店：請使用左下搖桿走到指定員工身邊。');return true;
+function fullscreen(){const el=document.documentElement;if(document.fullscreenElement){document.exitFullscreen();return;}if(el.requestFullscreen)el.requestFullscreen().catch(()=>toast('這個瀏覽器不支援全螢幕，可以把遊戲加入主畫面。',true));else toast('這個瀏覽器不支援全螢幕，可以把遊戲加入主畫面。',true);}
+function beginEvolution(employeeId){
+ if(evolutionInProgress)return;const emp=game.state.employees.find(e=>e.id===employeeId),rule=staffEvolutionInfo(game.data,emp),spirit=id=>game.data.spirits.find(x=>x.id===id);
+ if(!rule.eligible){toast('尚未達到進化門檻。',true);return;}
+ evolutionInProgress=true;game.uiBusy=true;const stage=$('#staff-evolution-stage'),dialog=$('#staff-evolution-dialog');
+ $('#staff-evolution-title').textContent='✨ '+emp.name+' · 開始進化';$('#staff-evolution-art').innerHTML=spiritCard(spirit(emp.spiritId),emp.rarity,esc);$('#staff-evolution-status').textContent='正在聚集進化能量…';$('#staff-evolution-finish').hidden=true;
+ dialog.classList.remove('is-evolving','is-done');stage.hidden=false;requestAnimationFrame(()=>{if(!stage.hidden)dialog.classList.add('is-evolving');});
+ clearTimeout(evolutionTimer);evolutionTimer=setTimeout(()=>{const result=action('evolveEmployee',{employeeId});dialog.classList.remove('is-evolving');dialog.classList.add('is-done');if(result.ok){const evolved=game.state.employees.find(e=>e.id===employeeId);$('#staff-evolution-art').innerHTML=spiritCard(spirit(evolved.spiritId),evolved.rarity,esc);$('#staff-evolution-title').textContent='✨ 進化成功！';$('#staff-evolution-status').textContent=result.message;}else{$('#staff-evolution-title').textContent='進化尚未完成';$('#staff-evolution-status').textContent=result.message;}$('#staff-evolution-finish').hidden=false;},2400);
 }
-function beginStaffEvolution(employeeId){
- if(evolutionInProgress)return;
- const emp=game.state.employees.find(e=>e.id===employeeId);
- const rule=staffEvolutionInfo(game.data,emp);
- if(!rule.eligible){toast('這位員工尚未達到進化門檻，或已是最終形態。',true);return;}
- evolutionInProgress=true;
- const stage=$('#staff-evolution-stage'),dialog=$('#staff-evolution-dialog');
- $('#staff-evolution-title').textContent='✨ '+emp.name+' · 開始進化';
- $('#staff-evolution-art').innerHTML=spiritCard(spirit(emp.spiritId),emp.rarity,esc);
- $('#staff-evolution-status').textContent='白光正在聚集，幻靈卡片開始旋轉…';
- $('#staff-evolution-finish').hidden=true;
- dialog.classList.remove('is-evolving','is-done');stage.hidden=false;
- // Give the browser one paint before beginning the CSS rotation and flashes.
- requestAnimationFrame(()=>{if(!stage.hidden)dialog.classList.add('is-evolving');});
- clearTimeout(evolutionTimer);
- evolutionTimer=setTimeout(()=>{
-  const result=action('evolveEmployee',{employeeId});
-  dialog.classList.remove('is-evolving');dialog.classList.add('is-done');
-  if(result.ok){
-   const evolved=game.state.employees.find(e=>e.id===employeeId);
-   $('#staff-evolution-art').innerHTML=spiritCard(spirit(evolved.spiritId),evolved.rarity,esc);
-   $('#staff-evolution-title').textContent='✨ 進化成功！';
-   $('#staff-evolution-status').textContent=result.message+'　熟練度及員工資料永久保留。';
-  }else{
-   $('#staff-evolution-title').textContent='進化尚未完成';
-   $('#staff-evolution-status').textContent=result.message;
-  }
-  $('#staff-evolution-finish').hidden=false;
- },2400);
+$('#staff-evolution-finish').onclick=()=>{clearTimeout(evolutionTimer);$('#staff-evolution-stage').hidden=true;$('#staff-evolution-dialog').classList.remove('is-evolving','is-done');evolutionInProgress=false;game.uiBusy=false;renderHUD();};
+function syncPatrolSolved(){const info=game.state.recentPatrolResolution;if(!info||seenPatrolResolution===info.id)return;seenPatrolResolution=info.id;if(info.focused&&scene?.metrics.mode==='follow')scene.setMode('play');const popup=$('#patrol-solved');clearTimeout(patrolTimer);$('#patrol-solved-title').textContent='✅ 問題解決了！';$('#patrol-solved-message').textContent=`${info.employeeName}｜${info.title}`;popup.hidden=false;patrolTimer=setTimeout(()=>{popup.hidden=true;},3000);}
+function syncNotices(s){
+ const clear=s.chapterClear;if(clear&&seenChapterClear!==clear.id){seenChapterClear=clear.id;toast(`🎉 商會升級：${clear.title}`);}
+ const chase=s.customerChaseResult;if(chase&&seenChase!==chase.id){seenChase=chase.id;if(chase.success)toast('追客成功！');else showZhaocaiNote('追客失敗了……');}
+ const notice=$('#shop-notice');notice.hidden=!s.event||s.patrolFocus||hub?.isOpen;if(!notice.hidden)notice.textContent=`⚠ ${s.event.title}：按「任務」處理`;
 }
-function finishStaffEvolution(){
- clearTimeout(evolutionTimer);$('#staff-evolution-stage').hidden=true;
- $('#staff-evolution-dialog').classList.remove('is-evolving','is-done');
- evolutionInProgress=false;if(currentPanel==='staff')renderPanel();renderHUD();
-}
-function syncPatrolSolved(){
- const info=game?.state?.recentPatrolResolution;
- if(!info||seenPatrolResolution===info.id)return;
- seenPatrolResolution=info.id;
- if(info.focused&&scene?.metrics.mode==='follow'){scene.setMode('play');$('#patrol-focus-hint').hidden=true;document.body.classList.remove('patrol-focus');document.body.classList.add('patrol-recovering');}
- const popup=$('#patrol-solved');
- clearTimeout(patrolResolutionTimer);clearTimeout(patrolResolutionDelay);popup.hidden=true;
- patrolResolutionDelay=setTimeout(()=>{
-  $('#patrol-solved-title').textContent=info.awakening?'✨ 員工驚醒，問題已解決！':'✅ 主管巡查，問題已解決！';
-  $('#patrol-solved-message').textContent=`${info.employeeName}｜${info.title}｜疲勞 +${info.extraFatigue}（其他員工 +1）`;
-  popup.hidden=false;
-  patrolResolutionTimer=setTimeout(()=>{popup.hidden=true;document.body.classList.remove('patrol-recovering');},4200);
- },850);
-}
-function syncChapterClear(){
- const event=game?.state?.chapterClear;if(!event||seenChapterClear===event.id)return;seenChapterClear=event.id;
- $('#chapter-clear-title').textContent=event.title;$('#chapter-clear-badge').textContent=event.level===5?'★':String(event.level);
- $('#chapter-clear-description').textContent=event.id==='chapter-legendary'?'傳奇初光商會全章節達成！商會將繼續營業。':`通過第 ${event.from} 章！已解鎖 Lv.${event.level} 商會、新店裝潢及更多員工與商品。`;
- $('#chapter-clear').hidden=false;
-}
-function openPurchaseGuidance(sku){
- const p=game.data.catalog.find(x=>x.sku===sku);if(!p)return;
- focusPurchaseSku=sku;goodsTab=p.category||'all';scene?.selectShelf(null);openPanel('goods');
- requestAnimationFrame(()=>{document.querySelector('#panel-content [data-purchase-focus]')?.scrollIntoView({block:'center',behavior:'smooth'});});
- toast(`庫房沒有「${p.displayName}」，已帶你到商品採購。採購後才可自動補貨。`);
-}
-function showDailyStart(){
- $('#daily-start-body').innerHTML=dailyOpeningHTML(game,esc,money);
- $('#daily-start').hidden=false;
- $('#shop-event-guide').hidden=true;
-}
-function showDailySettlement(){
- $('#daily-settlement-body').innerHTML=dailySettlementHTML(game,esc,money);
- $('#daily-settlement').hidden=false;
- $('#shop-event-guide').hidden=true;
-}
-function syncShopEventGuide(){
- const s=game.state,host=$('#shop-event-guide');
- const result=s.customerChaseResult;
- if(result&&seenChaseResult!==result.id){seenChaseResult=result.id;if(result.success)toast('追客成功！'+result.reason);else showZhaocaiNote('追客失敗了……'+result.reason);}
- if(s.patrolFocus||document.body.classList.contains('patrol-recovering')){host.hidden=true;return;}
- const info=describeShopIssue(s,{patrol:scene?.metrics?.mode==='follow'});
- if(!info||currentPanel||!$('#daily-start').hidden||!$('#daily-settlement').hidden||dismissedGuideId===info.id){host.hidden=true;return;}
- host.hidden=false;host.classList.toggle('chase-active',info.kind==='chase');host.dataset.issueId=info.id;
- $('#shop-event-title').textContent=info.title;$('#shop-event-description').textContent=info.message;
- const primary=$('#shop-event-primary'),secondary=$('#shop-event-secondary');
- primary.textContent=info.primary;primary.dataset.guideAction=info.primaryAction;primary.dataset.targetId=info.targetId||'';
- secondary.hidden=!info.secondaryAction;secondary.textContent=info.secondary||'';secondary.dataset.guideAction=info.secondaryAction||'';secondary.dataset.targetId=info.targetId||'';
-}
-function runShopGuideAction(type,id){
- if(type==='complaint'){if(id)showCustomerComplaint(id);else toast('目前顧客已離開，請先補貨');return;}
- if(type==='event'){if(game.state.event)showEventDetail(game.state.event.instanceId||game.state.event.id);else toast('這個事件已結束');return;}
- if(type==='goods'){openPanel('goods');return;}
- if(type==='commission'){openCommissionMessage(id);return;}
- if(type==='commission-buy'){const order=activeCommissions(game.state).find(q=>q.id===id);if(order?.kind==='delivery'&&order.sku){guidedCommissionId=id;openPurchaseGuidance(order.sku);}else toast('這件交貨委託已結束。',true);return;}
- if(type==='patrol'){if(game.state.event&&!['stockout','queue-complaint','no-cashier'].includes(game.state.event.id)){startExclusivePatrol();return;}if(scene.metrics.mode!=='follow'){const r=scene.setMode('follow');if(r?.ok===false)toast(r.message,true);}return;}
- if(type==='cancel-chase'){action('cancelCustomerChase');return;}
- if(type==='start-chase'){
-  const r=scene.metrics.mode==='follow'?{ok:true}:scene.setMode('follow');
-  if(!r?.ok){toast(r?.message||'無法切換主管巡店',true);return;}
-  const result=action('startCustomerChase',{customerId:id});
-  if(result.ok)toast('追客開始！使用左下搖桿追上頭頂有「🏃 追上我」的顧客。');
- }
-}
-function openCommissionMessage(id){
- const order=activeCommissions(game.state).find(q=>q.id===id);
- if(!order){toast('這件委託已過期或結束，不會再顯示提示。',true);return false;}
- guidedCommissionId=id;questTab='messages';openPanel('quests');
- requestAnimationFrame(()=>document.querySelector('#panel-content .commission-focus')?.scrollIntoView({block:'nearest',behavior:'smooth'}));
- return true;
-}
-function syncCommissionCompletion(s){
- const active=activeCommissions(s);
- const ready=active.filter(q=>commissionProgress(s,q)>=q.qty),readyIds=new Set(ready.map(q=>q.id));
- if(readyCommissionIds===null){readyCommissionIds=readyIds;return;}
- const newlyReady=ready.find(q=>!readyCommissionIds.has(q.id));
- readyCommissionIds=readyIds;
- if(newlyReady)pendingCommissionCompletionId=newlyReady.id;
- const target=ready.find(q=>q.id===pendingCommissionCompletionId);
- if(!target){pendingCommissionCompletionId=null;return;}
- if(s.patrolFocus||evolutionInProgress||!$('#daily-start').hidden||!$('#daily-settlement').hidden||
-   !$('#confirm-shield').hidden||['incident','complaint'].includes(currentPanel))return;
- pendingCommissionCompletionId=null;
- openCommissionMessage(target.id);
- toast('商會委託已達標！請在訊息中按「交付商品／領取酬勞」完成結案。');
-}
-function renderHUD(){if(!game)return;syncPatrolSolved();syncChapterClear();const s=game.state;
- syncCommissionCompletion(s);
- const staffButton=document.querySelector('.toolbar [data-panel="staff"]'),evoReady=readyStaffEvolutions(game.data,s.employees).length;
- if(staffButton){staffButton.classList.toggle('staff-evolution-ready',evoReady>0&&!s.patrolFocus);staffButton.setAttribute('aria-label',evoReady?('員工夥伴，有 '+evoReady+' 位幻靈可進化'):'員工夥伴');}
- document.body.classList.toggle('patrol-focus',!!s.patrolFocus);
- $('#patrol-focus-hint').hidden=!s.patrolFocus;
- if(s.patrolFocus)$('#patrol-focus-hint').textContent='主管專屬巡店：'+s.patrolFocus.title+'｜使用搖桿靠近事件員工，完成後自動返回商店。';if(s.phase==='report'&&s.report&&seenDailyReportDay!==s.day){seenDailyReportDay=s.day;showDailySettlement();}const questButton=document.querySelector('.toolbar [data-panel=quests]');if(questButton){const notice=commissionNotice(s);questButton.classList.toggle('commission-notify',notice&&!s.patrolFocus);questButton.setAttribute('aria-label',notice?'商會委託，有新訊息或可完成委託':'商會委託');}$('#mobile-summary').textContent=`Lv.${s.level} · ${s.customers.length}客 · 滿意${Math.round(s.satisfaction)}%`;$('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#day').textContent=`第 ${s.day} 天 · ${{closed:'準備中',open:'營業中',report:'今日結算'}[s.phase]||s.phase}`;const mins=Math.floor((s.time||0)/(game.data.config.dayDuration||180)*600);$('#clock').textContent=`${String(9+Math.floor(mins/60)).padStart(2,'0')}:${String(mins%60).padStart(2,'0')}`;$('#satisfaction').innerHTML=`${Math.round(s.satisfaction??75)} <em>/100</em>`;$('#pause').textContent=s.paused?'▶':'Ⅱ';$('#speed').textContent=`${s.speed||1}×`;$('#level-quick').textContent=`Lv.${s.level} ▾`;$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels.find(x=>x.level===s.level)?.name||''}`;$('#customer-count').textContent=`${s.customers.length} 位顧客`;$('#business-state').textContent=s.phase==='open'?`今日成交 ${s.stats.sales||0} 筆`:'準備好就開門吧';$('#business').innerHTML=s.phase==='open'?'打烊結算 →':s.phase==='report'?'迎接新的一天 →':'開門營業 →';$('#staff-mini').innerHTML=s.employees.slice(0,4).map(e=>`<div class="mini-staff"><span class="staff-dot">${esc(e.name.slice(0,1))}</span><div><strong>${esc(e.name)}</strong><small>${esc(roleLabel(e.role))} · Lv.${e.workLevel} · ${rarity[e.rarity]}</small></div><span class="work-mark">${e.fatigue>70?'疲勞':'在班'}</span></div>`).join('');$('#activity-log').innerHTML=s.log.slice(-3).reverse().map(l=>`<div>${esc(l.text||l.message||'')}</div>`).join('')||'<div>貨架已備妥，兩位夥伴正等你一起開張。</div>';if(settings.diagnostics){$('#diagnostics').textContent=`FPS ${fps} | 顧客 ${s.customers.length}\n存檔 revision ${s.revision}\n${s.customers.map(c=>`${c.name}: ${c.state}`).join('\n')}\n${JSON.stringify(scene?.metrics||{})}`;}$('#diagnostics').hidden=!settings.diagnostics;if(s.event&&(s.event.instanceId||s.event.id)!==seenEvent){seenEvent=s.event.instanceId||s.event.id;}const ready=(s.commissionBoard?.entries||[]).filter(q=>q.status==='active'&&q.expiresAt>s.commissionBoard.clock&&commissionProgress(s,q)>=q.qty).map(q=>q.id);if(readyCommissionIds===null)readyCommissionIds=new Set(ready);else{const fresh=ready.filter(id=>!readyCommissionIds.has(id));if(fresh.length)toast(`有 ${fresh.length} 件限時委託已達成！請前往商會委託領獎。`);readyCommissionIds=new Set(ready);}eventCoach?.sync(s);firstDay?.sync(s);syncShopEventGuide();}
-const titles={goods:'商品與採購',shelves:'貨架與店面裝潢',staff:'商會的好夥伴',manager:'主管巡查日誌',incident:'商會事件說明',complaint:'顧客抱怨處理',quests:'商會委託',report:'每一枚金幣，都有來處',upgrade:'讓小店，長成大夢想',settings:'遊戲設定',tutorial:'歡迎來到初光商會',customer:'顧客購物觀察'};
-function showEventDetail(eventId){const ev=game?.state?.event;if(!ev||(ev.instanceId||ev.id)!==eventId){toast('這個事件已經結束，請查看目前待辦事件。');return;}openPanel('incident');}
- function showCustomerComplaint(customerId){const c=game?.state?.customers?.find(c=>c.id===customerId);if(!c||!getCustomerComplaint(game.state,c,game)){toast('顧客已離開或問題已解決');return;}selectedComplaintId=customerId;openPanel('complaint');}
- function openPanel(name){firstDay?.notePanel(name);if(name==='quests'&&game.state.commissionBoard?.unread)game.act('readCommissions');$('#panel').classList.toggle('compact-goods',name==='goods');$('#panel').classList.toggle('compact-report',name==='report');staffOverlay?.close();$('#panel').classList.toggle('compact-shelves',name==='shelves');$('#panel').classList.toggle('compact-staff',name==='staff');$('#panel').classList.toggle('compact-quests',name==='quests');$('#panel').classList.toggle('compact-manager',name==='manager');$('#panel').classList.toggle('compact-incident',name==='incident');$('#panel').classList.toggle('compact-complaint',name==='complaint');if(!['manager','incident','complaint'].includes(name)&&scene?.metrics.mode==='follow')scene.setMode('play');currentPanel=name;$('#panel-title').textContent=titles[name]||name;renderPanel();if(!$('#panel').open)panelWindow.open();}
-function closePanel(){currentPanel='';panelWindow.close();}
-$('#panel-close').onclick=closePanel;$('#panel').addEventListener('close',()=>currentPanel='');
-function renderPanel(){if(!currentPanel||!game)return;const s=game.state,d=game.data;$('#panel').classList.toggle('staff-roster',currentPanel==='staff'&&staffTab==='roster');let html='';
-if(currentPanel==='goods'){html=goodsPanel(game,goodsTab,esc,money,btn,focusPurchaseSku);}
-if(currentPanel==='shelves'){html=furnishingPanel(game,furnitureTab,esc,money,btn);}
-if(currentPanel==='staff'){const jobs=Array.isArray(d.jobs)?d.jobs:Object.entries(d.jobs).map(([id,v])=>({id,...v}));html=`<div class="crew-schedule">${btn('一鍵分配職務','autoAssign',{},'primary')}<small>優先收銀與補貨 · 高疲勞安排休息</small></div><div class="tabs"><button data-stafftab="roster" class="${staffTab==='roster'?'active':''}">員工與培育 (${s.employees.length})</button><button data-stafftab="hire" class="${staffTab==='hire'?'active':''}">招聘市場</button></div><div class="crew-grid">`;
-if(staffTab==='roster')html+=s.employees.map(e=>{const ev=staffEvolutionInfo(d,e);return `<article class="employee-card ${e.rarity} ${ev.eligible?'evolution-ready':''}">${ev.eligible?`<button type="button" class="staff-evolve-card" data-evolve-employee="${esc(e.id)}" aria-label="${esc(e.name)} 熟練度達標，點擊卡片進化">${spiritCard(spirit(e.spiritId),e.rarity,esc)}<span class="evolve-ready-label">✨ 可進化 · 點擊卡片</span></button>`:spiritCard(spirit(e.spiritId),e.rarity,esc)}<div class="crew-status"><b>熟練 Lv.${e.workLevel}</b><small>${rarity[e.rarity]} · 日薪 ${money(e.wage||d.hirePool.find(h=>h.id===e.baseId)?.wage)}</small></div><div class="progress" title="工作經驗 ${e.xp}/${e.workLevel*25}"><span style="width:${Math.min(100,e.xp/(e.workLevel*25)*100)}%"></span></div><div class="crew-stats">經驗 ${e.xp}/${e.workLevel*25} · 士氣 ${Math.round(e.mood)} · 疲勞 ${Math.round(e.fatigue)}</div><label class="crew-job">職務<select aria-label="${esc(e.name)}職務" data-role="${esc(e.id)}">${jobs.map(j=>`<option value="${esc(j.id)}" ${j.id===e.role?'selected':''}>${esc(j.name)}</option>`).join('')}</select></label><div class="crew-actions">${btn(`訓練 ${d.config.trainCost}G`,'train',{employeeId:e.id})}${btn('表揚','praise',{employeeId:e.id})}${btn('休息','rest',{employeeId:e.id})}</div><details><summary>能力與進化</summary><p>${esc(jobs.find(j=>j.id===e.role)?.description||jobs.find(j=>j.id===e.role)?.effect||'職務技能影響工作效率。')}<br>被動欄 ${e.rarity==='red'?3:e.rarity==='purple'?2:1} · ${d.evolution[e.spiritId]?.next?.length?`進化 Lv.${d.evolution[e.spiritId].level}`:'最終型態'}</p></details></article>`}).join('');
-else html+=(d.hirePool.filter(h=>!h.evolutionOnly&&!s.employees.some(e=>e.baseId===h.id||e.spiritId===h.id)).map(h=>{const locked=s.level<h.level,needsSales=h.special&&(s.totals.sales||0)<h.requiredSales;return `<article class="employee-card ${h.rarity}">${spiritCard(spirit(h.id),h.rarity,esc)}<div class="crew-status"><b>${money(h.cost)}</b><small>${rarity[h.rarity]} · 日薪 ${money(h.wage)}</small></div><small class="hire-requirement">商會 Lv.${h.level}${h.special?` · 成交 ${h.requiredSales} 筆`:''}</small><div class="crew-actions">${btn(locked?`Lv.${h.level} 解鎖`:needsSales?'成交不足':'聘用夥伴','hire',{id:h.id},'primary',locked||needsSales)}</div></article>`;}).join('')||'<p class="commerce-hint">目前市場上的夥伴都已加入。</p>');html+='</div>';}
-if(currentPanel==='manager'){lastManagerSecond=Math.floor(s.totalTime);lastManagerEventId=s.event?.instanceId||null;html=patrolPanel(game,esc,btn);}if(currentPanel==='incident'){lastManagerEventId=s.event?.instanceId||null;html=incidentDetailPanel(game,esc,btn);}if(currentPanel==='complaint'){html=customerComplaintPanel(game,selectedComplaintId,esc,btn);}
-if(currentPanel==='quests'){lastQuestSignature=questSignature(s);html=questPanel(game,esc,money,btn,questTab,guidedCommissionId);}
-if(currentPanel==='report'){html=ledgerPanel(game,esc,money,btn);}
-if(currentPanel==='upgrade'){html=`${chapterMissionPanel(game,esc,money,btn,{compact:true})}${s.upgradeProject?`<div class="note construction-status">正在裝修至 Lv.${s.upgradeProject.to} · 剩餘 ${Math.ceil(s.upgradeProject.remaining)} 秒<progress value="${s.upgradeProject.duration-s.upgradeProject.remaining}" max="${s.upgradeProject.duration}"></progress></div>`:''}<p class="intro">升級會改變地板、牆面、窗戶、窗簾及天花收邊，並解鎖更多貨櫃、可購買裝潢與員工名額。施工倒數會保存，暫停與離線時不施工。</p><div class="grid">${d.levels.map(l=>`<article class="card"><span class="badge">${l.level===s.level?'目前等級':l.level<s.level?'已完成裝修':`Lv.${l.level}`}</span><h3>${esc(l.name)}</h3><p class="desc">${["","暖色石磚與木框窗 · 30格貨櫃","橡木地板與百葉窗 · 武器／素材櫃","象牙拼花與格窗 · 45格秘藥櫃","大理石與彩繪拱窗 · 60格珍品櫃","皇家金線石紋與絲絨窗簾 · 90格寶櫃"][l.level]}<br>工期 ${l.upgradeSeconds??upgradeSeconds(l.level)} 秒<br>員工 ${l.capacity} 位 · ${l.level>=4?'黃／紫／紅卡':l.level>=3?'黃／紫卡':'黃卡'}招聘<br>累積營業額 ${money(l.revenue)}<br>滿意度 ${l.satisfaction}% · 完成 ${l.days} 天營業</p><div class="row"><strong>${l.cost?money(l.cost):'夢想的起點'}</strong>${l.level===s.level+1?btn(s.upgradeProject?'施工中':!chapterObjectives(s,d.levels).ready?'主線未達標':s.gold<l.cost?'資金不足':'安排升級施工','upgrade',{},'primary',!!s.upgradeProject||s.phase!=='closed'||!chapterObjectives(s,d.levels).ready||s.gold<l.cost):''}</div></article>`).join('')}</div>`;}
-if(currentPanel==='settings'){html=`<p class="intro">進度會隨每次有效操作自動儲存於這台電腦的瀏覽器。離開或切換分頁不會產生離線收益。</p><div class="card"><div class="row bgm-volume-row"><label for="bgm-volume">BGM 音量</label><input type="range" id="bgm-volume" min="0" max="100" step="5" value="${shopMusic?.volume??40}"><output id="bgm-volume-value">${shopMusic?.volume??40}%</output></div><div class="row"><label>操作音效 <input type="checkbox" id="sound" ${settings.sound?'checked':''}></label><label>效能資訊 <input type="checkbox" id="debug" ${settings.diagnostics?'checked':''}></label></div><div class="row"><label>畫質 <select id="quality"><option value="low" ${settings.quality==='low'?'selected':''}>省電</option><option value="medium" ${settings.quality==='medium'?'selected':''}>標準</option><option value="high" ${settings.quality==='high'?'selected':''}>精緻</option></select></label></div><div class="note">顧客使用本機規則 AI，不需要 API 金鑰。遊戲不讀寫原冒險背包或經濟資料。</div><div class="actions">${btn('立即儲存','save',{},'primary')}<button id="export-save">匯出存檔備份</button><button id="tutorial">重看新手指南</button></div><div class="actions"><button id="recover-save">恢復前一個備份</button></div></div><p class="intro" style="margin-top:20px">視角：滑鼠滾輪縮放，拖曳／右鍵操作依相機模式；手機可用單指旋轉、雙指縮放視角。ESC 關閉管理面板。</p>`;}
-if(currentPanel==='tutorial'){html=`<div id="cover-slot"></div><div class="tutorial">${game.state.totals.days?'':'<div class="first-day-intro"><img src="../幻靈奇旅/assets/ui/zhaocai.gif" alt="招財"><p><b>招財：</b>老闆，今天的目標是<b>賣出第一件商品，再打烊結算</b>！照著畫面下方的提示走，我一步一步帶你。</p></div>'}<small>你的第一間奇幻小店</small><h3>兩位夥伴，一起開張。</h3><p>青螺靈負責補貨，小芝麻守住收銀台。你就是唯一的主管，從 3,000 枚金幣開始，把小店經營成傳奇商會。</p><ol><li><b>商品採購</b>：進貨到庫房，檢查商品售價。</li><li><b>貨架裝潢</b>：選商品並補貨；開場貨架已有商品。</li><li><b>開門營業</b>：看顧客挑貨、提籃、排隊並真正付款。</li><li><b>主管巡查</b>：走訪夥伴、處理事件、安排休息。</li><li><b>打烊結算</b>：查看盈虧、付薪，再迎接新的一天。</li><li><b>章節主線與支線</b>：至「商會委託 → 章節任務」查看每一級成交、營收、滿意度與日結目標；支線可領金幣，主線完成後資金足夠便自動施工升級並播放過關動畫。</li></ol><p>工作經驗與進化永久保存。畫面上的暫停與 2× 能調整節奏。</p><div class="actions"><button id="start-playing" class="primary">開始第一天 →</button></div></div>`;}
-if(currentPanel==='customer'){html=`<p class="intro">每位顧客有自己的需求、預算與耐心；商品先保留在購物籃，付款成功才記為銷售。</p><div class="grid">${s.customers.map(c=>`<article class="card"><h3>${esc(c.name)}</h3><p class="desc">預算 ${money(c.budget)} · 狀態 ${esc(c.state)}<br>購物籃：${esc(JSON.stringify(c.basket||[]))}</p></article>`).join('')||'<p>目前沒有顧客，開門後稍等片刻。</p>'}</div>`;}
-const openedDetails=[...$('#panel-content').querySelectorAll('[data-commerce-detail][open]')].map(el=>el.dataset.commerceDetail);const contentScroll=$('#panel-content').scrollTop;$('#panel-content').innerHTML=html;for(const detail of $('#panel-content').querySelectorAll('[data-commerce-detail]'))detail.open=openedDetails.includes(detail.dataset.commerceDetail);if(currentPanel==='report'||currentPanel==='quests')$('#panel-content').scrollTop=contentScroll;if(currentPanel==='tutorial')loadCover();}
-function refreshManagerButtons(){if(currentPanel!=='manager')return;const s=game.state;
- for(const b of document.querySelectorAll('#panel-content [data-action="combo"]')){let id;try{id=JSON.parse(b.dataset.payload||'{}').id;}catch{continue;}
-  const combo=game.data.combos.find(x=>x.id===id);if(!combo)continue;
-  const ready=combo.roles.every(r=>game.role(s,r)),cooldown=Math.max(0,Math.ceil((s.cooldowns[id]||s.cooldowns['combo-'+id]||0)-s.totalTime));
-  const label=!ready?'缺少職務':cooldown?cooldown+'秒':'發動';
-  if(b.textContent!==label)b.textContent=label;b.disabled=!ready||cooldown>0;
- }}
-function installArt(){document.querySelectorAll('[data-icon]').forEach(el=>{const image=new Image();image.src=`./assets/ui-generated/icon-${el.dataset.icon}.webp`;image.alt='';image.onload=()=>el.replaceChildren(image);});}
-function loadCover(){const i=new Image();i.src='./assets/ui-generated/cover.webp';i.className='cover';i.alt='暖陽中的奇幻商店原創插畫';i.onload=()=>$('#cover-slot')?.append(i);}
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!game)return;
- if(b.id==='staff-evolution-finish'){finishStaffEvolution();return;}
- if(b.dataset.evolveEmployee){beginStaffEvolution(b.dataset.evolveEmployee);return;}
- if(game.state.patrolFocus)return;if(b.id==='shelf-auto-restock'&&selectedWorldShelf){const shelfId=selectedWorldShelf,r=action('toggleAutoRestock',{shelfId});if(!r.ok)toast(r.message,true);else{if(/不足|沒有可採購/.test(r.message))toast(r.message,true);scene.selectShelf(shelfId,true);}}if(b.dataset.furniture){const moves={left:[0,0,-90],right:[0,0,90],west:[-1,0,0],east:[1,0,0],north:[0,-1,0],south:[0,1,0]},r=scene.editShelf(...moves[b.dataset.furniture]);if(!r.ok)toast(r.message,true);}if(b.id==='finish-decorate'){if(scene.metrics.placement)scene.confirmPlacement();else scene.setMode('play');$('#scene-hint').textContent='物件點一次鎖定，再點一次進入編輯；點員工查看狀態。';}if(b.id==='cancel-placement'){scene.cancelPlacement();scene.setMode('play');}if(b.dataset.newShelf){const purchase=action('purchaseShelf',{type:b.dataset.newShelf});if(purchase.ok&&game.state.shelves.length<shelfLimit(game.state.level)){const result=scene.beginShelfPlacement(b.dataset.newShelf,game.state.lastPurchasedShelf);if(result.ok)closePanel();toast(result.message,!result.ok);}}if(b.dataset.placeShelf){const sh=game.state.shelfStorage.find(sh=>sh.id===b.dataset.placeShelf);if(sh){const result=scene.beginShelfPlacement(sh.type,sh.id);if(result.ok)closePanel();toast(result.message,!result.ok);}}if(b.dataset.furnituretab){furnitureTab=b.dataset.furnituretab;renderPanel();}if(b.dataset.newDecor){const purchase=action('purchaseDecor',{type:b.dataset.newDecor});if(purchase.ok&&game.state.decorations.length<decorLimit(game.state.level)){const result=scene.beginShelfPlacement(b.dataset.newDecor,game.state.lastPurchasedDecor);if(result.ok)closePanel();toast(result.message,!result.ok);}}if(b.dataset.placeDecor){const sh=game.state.decorStorage.find(d=>d.id===b.dataset.placeDecor);if(sh){const result=scene.beginShelfPlacement(sh.type,sh.id);if(result.ok)closePanel();toast(result.message,!result.ok);}}if(b.id==='retract-furniture'){const r=scene.cancelEdit();toast(r.message||'已撤銷擺設',!r.ok);if(r.ok)scene.setMode('play');}if(b.dataset.editShelf){closePanel();scene.setMode('decorate');scene.selectShelf(b.dataset.editShelf);}if(b.dataset.step){const [dx,dz]=b.dataset.step.split(',').map(Number),m=game.state.manager;action('moveManager',{x:Math.round(m.x)+dx,z:Math.round(m.z)+dz});}if(b.id==='level-quick'){const menu=$('#level-menu');menu.hidden=!menu.hidden;b.setAttribute('aria-expanded',String(!menu.hidden));}if(b.dataset.trialLevel){const result=action('trialLevel',{level:Number(b.dataset.trialLevel)});if(result.ok)scene.setMode('play');$('#level-menu').hidden=true;$('#level-quick').setAttribute('aria-expanded','false');}if(b.id==='mobile-info'){const open=document.body.classList.toggle('show-info');b.setAttribute('aria-expanded',String(open));b.textContent=open?'收合資訊 ▴':'商會資訊 ▾';}if(b.dataset.panel){if(b.dataset.panel==='quests')questTab='messages';openPanel(b.dataset.panel);}if(b.dataset.questtab){questTab=b.dataset.questtab;renderPanel();}if(b.dataset.commissionBuy){guidedCommissionId=b.dataset.commissionId||null;openPurchaseGuidance(b.dataset.commissionBuy);return;}
- if(b.dataset.commissionContinue){guidedCommissionId=b.dataset.commissionContinue;closePanel();toast('請繼續接待顧客；達標後將自動開啟委託完成頁。');return;}if(b.dataset.category){goodsTab=b.dataset.category;renderPanel();}if(b.dataset.stafftab){staffTab=b.dataset.stafftab;renderPanel();}if(b.dataset.action){const type=b.dataset.action,p=JSON.parse(b.dataset.payload||'{}');if(type==='patrol')scene.setMode('follow');if(['hire','upgrade','train','sellShelf','sellDecor'].includes(type))confirmAction(type==='hire'?`聘用 ${game.data.hirePool.find(x=>x.id===p.id)?.name}，支付 ${money(game.data.hirePool.find(x=>x.id===p.id)?.cost)}？`:type==='upgrade'?`支付 ${money(game.data.levels.find(x=>x.level===game.state.level+1)?.cost)} 升級商會？`:'這項操作會影響商會資金與配置，確認繼續？',()=>action(type,p));else {const result=action(type,p);if(result?.ok&&type==='resolveCustomerComplaint')closePanel();if(result?.ok&&type==='resolveEvent'&&currentPanel==='incident')closePanel();if(result?.ok&&type==='claimCommission'){guidedCommissionId=p.id;questTab='messages';if(currentPanel!=='quests')openPanel('quests');else renderPanel();}}}if(b.dataset.buy){const sku=b.dataset.buy,qty=Number($(`#qty-${CSS.escape(sku)}`).value);const cost=(item(sku)?.buyCost||0)*qty;if(cost>=500)confirmAction(`採購 ${qty} 件，牌價 ${money(cost)}（實際依職務折扣），確認進貨？`,()=>action('buy',{sku,qty}));else action('buy',{sku,qty});}if(b.dataset.price){const sku=b.dataset.price;action('price',{sku,price:Number($(`#price-${CSS.escape(sku)}`).value)});}if(b.dataset.restock){const shelfId=b.dataset.restock,sku=$(`#shelf-sku-${CSS.escape(shelfId)}`).value,qty=Number($(`#shelf-qty-${CSS.escape(shelfId)}`).value);if((game.state.inventory[sku]||0)<qty)openPurchaseGuidance(sku);else action('restock',{shelfId,sku,qty});}if(b.dataset.move){const shelfId=b.dataset.move,sh=game.state.shelves.find(x=>x.id===shelfId);action('moveShelf',{shelfId,x:Number($(`#sx-${CSS.escape(shelfId)}`).value),z:Number($(`#sz-${CSS.escape(shelfId)}`).value),rotation:sh.rotation});}if(b.id==='decorate'){closePanel();scene.setMode('decorate');$('#scene-hint').textContent='拖曳貨架到新格位。綠色代表可放置；紅色代表阻擋通路。';toast('點一次物件鎖定，再點一次才能拖拉、旋轉或撤銷。');}if(b.id==='patrol-required-go'){startExclusivePatrol();return;}if(b.id==='walk-mode'){if(game.state.event&&!['stockout','queue-complaint','no-cashier'].includes(game.state.event.id)){startExclusivePatrol();return;}scene.setMode('follow');if((game.state.cooldowns.patrol||0)<=game.state.totalTime)action('patrol');closePanel();toast('點地板或使用 WASD 移動主管。');}if(b.dataset.guideAction){runShopGuideAction(b.dataset.guideAction,b.dataset.targetId||'');return;}
- if(b.id==='shop-event-dismiss'){dismissedGuideId=$('#shop-event-guide').dataset.issueId||null;$('#shop-event-guide').hidden=true;return;}
- if(b.id==='daily-start-continue'){$('#daily-start').hidden=true;renderHUD();return;}
- if(b.id==='daily-settlement-ledger'){$('#daily-settlement').hidden=true;openPanel('report');return;}
- if(b.id==='daily-settlement-next'){$('#daily-settlement').hidden=true;const result=action('nextDay');if(result.ok)toast('新的一天準備開始，請確認貨架庫存！');return;}
- if(b.id==='chapter-continue'){$('#chapter-clear').hidden=true;openPanel('quests');questTab='chapter';renderPanel();}if(b.id==='tutorial')openPanel('tutorial');if(b.id==='start-playing')closePanel();if(b.id==='export-save'){const blob=new Blob([JSON.stringify(game.state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`初光商會-第${game.state.day}天.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}if(b.id==='recover-save'){confirmAction('回復前一個自動備份會取代目前商會進度，確定恢復？',()=>{const key='firstlight_shop_v1',backup=localStorage.getItem(key+'.backup');if(!backup)return toast('沒有可用的前一個備份。',true);try{game.validate(JSON.parse(backup));localStorage.setItem(key,backup);location.reload();}catch(err){toast('備份無法恢復：'+err.message,true);}});}});
-document.addEventListener('input',e=>{if(e.target.id!=='bgm-volume')return;shopMusic?.setVolume(e.target.value);$('#bgm-volume-value').textContent=e.target.value+'%';});document.addEventListener('change',e=>{if(e.target.dataset.role)action('assign',{employeeId:e.target.dataset.role,role:e.target.value});if(e.target.id==='sound')settings.sound=e.target.checked;if(e.target.id==='debug')settings.diagnostics=e.target.checked;if(e.target.id==='quality'){settings.quality=e.target.value;scene.setQuality?.(settings.quality);}});
-$('#pause').onclick=()=>action('pause');$('#speed').onclick=()=>action('speed',{value:game.state.speed===2?1:2});$('#business').onclick=()=>{const phase=game.state.phase;if(phase==='open')confirmAction('打烊將退回尚未結帳的商品並結算今日薪資，確定打烊？',()=>{const result=action('close');if(result.ok&&$('#daily-settlement').hidden)showDailySettlement();});else{const result=action(phase==='report'?'nextDay':'open');if(result.ok&&phase==='closed')showDailyStart();}};$('#camera-mode').onclick=()=>{if(scene.cameraLocked||game.state.patrolFocus)return;if(scene.metrics.mode!=='follow'&&game.state.event&&!['stockout','queue-complaint','no-cashier'].includes(game.state.event.id)){startExclusivePatrol();return;}scene.setMode(scene.metrics.mode==='follow'?'play':'follow');};
-let shopMusic=null;
-async function boot(){try{shopMusic=installShopMusic();game=await createGame({storage:localStorage,key:'firstlight_shop_v1'});seenPatrolResolution=game.state.recentPatrolResolution?.id||null;seenChapterClear=game.state.chapterClear?.id||null;seenChaseResult=game.state.customerChaseResult?.id||null;seenDailyReportDay=game.state.phase==='report'?game.state.day:null;shopNavigation=installShopNavigation({game,onError:e=>toast(e.message,true)});firstDay=installFirstDayGuide({game,openPanel});eventCoach=installEventCoach({game,openPanel:panel=>{if(panel==='quests')questTab='messages';openPanel(panel);},openAchievements:()=>{questTab='achievements';openPanel('quests');}});const trialAllowed=['localhost','127.0.0.1'].includes(location.hostname)&&new URLSearchParams(location.search).has('shopDev');$('#level-quick').hidden=!trialAllowed;if(innerWidth<700)game.data.config.maxCustomers=6;await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:showEventDetail,onComplaintClick:showCustomerComplaint});window.shop=game;scene=createScene({canvas:$('#world'),game,onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='staff')staffOverlay.show(o.id);else openPanel(o.type==='shelf'?'shelves':'customer');},onStaffPositions:rows=>staffOverlay?.position(rows),onActorVisuals:view=>{const focus=game.state.patrolFocus?.employeeId;actorVisuals?.render(focus?{actors:view.actors.filter(v=>v.id===focus),notices:view.notices.filter(n=>n.targetId===focus)}:view);},onPlacementChange:p=>{$('#placement-hint').hidden=!p;if(p)$('#placement-message').textContent=p.ok?'移動預覽，點地板或 ✓ 放置':'此處無法放置：'+p.message;},onFurnitureSelect:sh=>{const locked=!!sh;document.body.classList.toggle('camera-locked',locked);$('#camera-mode').disabled=locked;for(const control of document.querySelectorAll('.camera-controls button'))control.disabled=locked;selectedWorldShelf=sh&&!sh.decoration&&!sh.isPlacement?sh.id:null;const auto=$('#shelf-auto-restock');auto.hidden=!selectedWorldShelf;if(sh){auto.textContent=sh.autoRestock===false?'自動補貨：關':'自動補貨：開';auto.setAttribute('aria-pressed',String(sh.autoRestock!==false));}for(const control of document.querySelectorAll('#furniture-controls [data-furniture],#retract-furniture'))control.disabled=game.state.phase==='open';document.body.classList.toggle('editing-furniture',!!sh&&!sh.lockedOnly);const el=$('#furniture-controls');el.hidden=!sh||!!sh.lockedOnly;if(sh)$('#furniture-name').textContent=`已選取${sh.decoration?'裝潢':'貨架'} · ${sh.rotation||0}°`;},onFurniturePosition:p=>{if(!p)return;const el=$('#furniture-controls'),w=el.offsetWidth||148,viewport=document.documentElement.clientWidth;el.style.left=`${Math.max(w/2+8,Math.min(viewport-w/2-8,p.x))}px`;el.style.top=`${p.y-8}px`;},onModeChange:mode=>{const active=mode==='follow';document.body.classList.toggle('patrol-active',active);$('#patrol-controls').hidden=!active;$('#camera-mode').textContent=active?'退出巡店':'主管巡店';$('#camera-mode').setAttribute('aria-label',active?'結束主管巡店':'進入主管巡店');$('#camera-mode').setAttribute('aria-pressed',String(active));$('#camera-mode').title=active?'結束巡店':'進入主管巡店';patrolControls?.reset();},onActionResult:r=>toast(r.message,!r.ok),onError:e=>toast('模型載入異常：'+(e.message||e),true)});window.shopScene=scene;staffOverlay=createStaffOverlay({game,labels:$('#staff-labels'),card:$('#staff-card'),escape:esc,onEventClick:showEventDetail});staffOverlay.render();patrolControls=installPatrolControls({joystick:$('#joystick'),stick:$('#stick'),scene});scene.setMode('play');renderHUD();installArt();await scene.ready;$('#loading').style.display='none';let last=performance.now(),ui=0;function frame(now){requestAnimationFrame(frame);const elapsed=(now-last)/1000,dt=Math.min(.1,elapsed);last=now;if(document.hidden||shopNavigation?.leaving)return;try{const commissionClaimWindow=currentPanel==='quests'&&questTab==='messages'&&activeCommissions(game.state).some(q=>commissionProgress(game.state,q)>=q.qty);if(!commissionClaimWindow&&!evolutionInProgress&&!$('#confirm').open&&$('#daily-start').hidden&&$('#daily-settlement').hidden&&currentPanel!=='complaint'&&currentPanel!=='incident'){const result=game.tick(dt);if(result&&!result.ok){toast(result.message,true);}}scene.update(dt);}catch(e){if(!window.lastShopError){console.error(e);toast('執行發生錯誤：'+e.message,true);window.lastShopError=e.message;}}frames++;frameTime+=elapsed;if(frameTime>=1){fps=Math.round(frames/frameTime);frames=0;frameTime=0;}ui+=dt;if(ui>.5){ui=0;renderHUD();staffOverlay?.render();if(currentPanel==='manager'){if((game.state.event?.instanceId||null)!==lastManagerEventId)renderPanel();else refreshManagerButtons();}if(currentPanel==='incident'&&(game.state.event?.instanceId||null)!==lastManagerEventId)renderPanel();if(currentPanel==='customer'||currentPanel==='report'||currentPanel==='upgrade'||currentPanel==='quests'&&lastQuestSignature!==questSignature(game.state))renderPanel();}}requestAnimationFrame(frame);if(innerWidth<700){scene.setQuality?.('low');settings.quality='low';}if(game.state.day===1&&game.state.phase==='closed'&&(game.state.stats.sales||0)===0)openPanel('tutorial');}catch(e){console.error(e);$('#load-message').textContent=`無法開店：${e.message}。原有存檔已保留，請檢查伺服器或存檔。`;}}
+function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncNotices(s);
+ $('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels[s.level-1]?.name||''}`;
+ $('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
+ const dot=(id,on)=>$(`.toolbar [data-hub=${id}]`).classList.toggle('has-notice',!!on&&!s.patrolFocus);
+ const daily=dailyTasks(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length);dot('tasks',s.event||commissionNotice(s)||daily.tasks.some(t=>t.done&&!t.claimed));
+ tutorial?.sync();}
+const pageFor={goods:'goods',shelves:'build',staff:'staff',quests:'tasks',upgrade:'upgrade',settings:'settings'};
+const openPanel=name=>hub.open(pageFor[name]||'shop');
+for(const b of document.querySelectorAll('.toolbar [data-hub]'))b.onclick=()=>{const page=b.dataset.hub;if(page==='tasks'&&game.state.event){hub.open('event');return;}hub.open(page);};
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!game||game.state.patrolFocus)return;
+ if(b.id==='rotate-furniture'){const r=scene.editShelf(0,0,90);if(!r.ok)toast(r.message,true);}
+ if(b.id==='retract-furniture'){const r=scene.cancelEdit();toast(r.message||'已收納',!r.ok);if(r.ok)scene.setMode('play');}
+ if(b.id==='shelf-goods'&&selectedShelf)hub.open('shelfGoods',selectedShelf);
+ if(b.id==='finish-decorate'){if(scene.metrics.placement)scene.confirmPlacement();else scene.setMode('play');}
+ if(b.id==='cancel-placement'){scene.cancelPlacement();scene.setMode('play');}
+});
+document.addEventListener('input',e=>{if(e.target.id==='bgm-volume')shopMusic?.setVolume(e.target.value);});
+document.addEventListener('change',e=>{if(e.target.id==='quality'){quality=e.target.value;scene.setQuality?.(quality);}});
+$('#camera-mode').onclick=()=>{if(!scene.cameraLocked&&!game.state.patrolFocus)scene.setMode('play');};
+$('#patrol-event').onclick=()=>{if(game.state.event)hub.open('event');else toast('目前沒有事件。');};
+function exportSave(){const blob=new Blob([JSON.stringify(game.state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`初光商會-第${game.state.day}天.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+function recoverSave(){confirmAction('恢復前一個備份會取代目前進度，確定嗎？',()=>{const key='firstlight_shop_v1',backup=localStorage.getItem(key+'.backup');if(!backup)return toast('沒有可用的備份。',true);try{game.validate(JSON.parse(backup));localStorage.setItem(key,backup);location.reload();}catch(err){toast('備份無法恢復：'+err.message,true);}});}
+async function boot(){try{
+ shopMusic=installShopMusic();game=await createGame({storage:localStorage,key:'firstlight_shop_v1'});seenPatrolResolution=game.state.recentPatrolResolution?.id||null;seenChapterClear=game.state.chapterClear?.id||null;seenChase=game.state.customerChaseResult?.id||null;
+ shopNavigation=installShopNavigation({game,onError:e=>toast(e.message,true)});
+ hub=createHub({game,getScene:()=>scene,act:action,toast,esc,evolve:beginEvolution,leave:()=>$('#return-to-game').click(),settings:{volume:()=>shopMusic?.volume??40,quality:()=>quality,exportSave,recover:recoverSave},onChange:()=>{game.uiBusy=evolutionInProgress||hub?.isOpen;renderHUD();}});
+ tutorial=installTutorial({game,act:action,fullscreen,confirmSkip:fn=>confirmAction('要跳過新手教學嗎？之後可以到「商會 → 更多」重播。',fn)});
+ const trial=['localhost','127.0.0.1'].includes(location.hostname)&&new URLSearchParams(location.search).has('shopDev');if(innerWidth<700)game.data.config.maxCustomers=6;
+ await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id)});window.shop=game;window.shopTrial=trial;
+ scene=createScene({canvas:$('#world'),game,
+  onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){scene.setMode('decorate');scene.selectShelf(o.id);}},
+  onStaffPositions:rows=>staffOverlay?.position(rows),
+  onActorVisuals:view=>{const focus=game.state.patrolFocus?.employeeId;actorVisuals?.render(focus?{actors:view.actors.filter(v=>v.id===focus),notices:view.notices.filter(n=>n.targetId===focus)}:view);},
+  onPlacementChange:p=>{$('#placement-hint').hidden=!p;if(p)$('#placement-message').textContent=p.ok?'點地板選位置，再按 ✓':'這裡不能放：'+p.message;document.body.classList.toggle('placement-bad',!!p&&!p.ok);},
+  onFurnitureSelect:sh=>{selectedShelf=sh&&!sh.decoration&&!sh.isPlacement?sh.id:null;$('#shelf-goods').hidden=!selectedShelf;$('#retract-furniture').hidden=!!sh?.isPlacement;document.body.classList.toggle('editing-furniture',!!sh&&!sh.lockedOnly);const el=$('#furniture-controls');el.hidden=!sh||!!sh.lockedOnly;},
+  onFurniturePosition:p=>{if(!p)return;const el=$('#furniture-controls'),w=el.offsetWidth||148,v=document.documentElement.clientWidth;el.style.left=`${Math.max(w/2+8,Math.min(v-w/2-8,p.x))}px`;el.style.top=`${p.y-8}px`;},
+  onModeChange:mode=>{const patrol=mode==='follow',decorate=mode==='decorate';document.body.classList.toggle('patrol-active',patrol);document.body.classList.toggle('decorate-active',decorate);$('#patrol-controls').hidden=!patrol;patrolControls?.reset();if(!!game.state.layoutPause!==decorate)action('setLayoutPause',{value:decorate});const t=game.state.tutorialState;if(t&&!t.done){if(patrol)action('tutorial',{patch:{patrolled:true}});else if(t.patrolled)action('tutorial',{patch:{patrolReturned:true}});}},
+  onActionResult:r=>toast(r.message,!r.ok),onError:e=>toast('模型載入異常：'+(e.message||e),true)});
+ window.shopScene=scene;window.shopHub=hub;
+ staffOverlay=createStaffOverlay({game,labels:$('#staff-labels'),card:$('#staff-card'),escape:esc,onEventClick:()=>hub.open('event'),onOpen:id=>hub.open('worker',id)});staffOverlay.render();
+ patrolControls=installPatrolControls({joystick:$('#joystick'),stick:$('#stick'),scene});scene.setMode('play');renderHUD();await scene.ready;$('#loading').style.display='none';
+ let last=performance.now(),ui=0;function frame(now){requestAnimationFrame(frame);const elapsed=(now-last)/1000,dt=Math.min(.1,elapsed);last=now;if(document.hidden||shopNavigation?.leaving)return;try{if(!evolutionInProgress&&!$('#confirm').open){const result=game.tick(dt);if(result&&!result.ok)toast(result.message,true);}scene.update(dt);}catch(e){if(!window.lastShopError){console.error(e);toast('執行發生錯誤：'+e.message,true);window.lastShopError=e.message;}}ui+=dt;if(ui>.5){ui=0;renderHUD();staffOverlay?.render();if(hub.isOpen&&['chapter','upgrade','daily'].includes(document.querySelector('#hub')?.dataset.page))hub.render();}}requestAnimationFrame(frame);
+ if(innerWidth<700)scene.setQuality?.('low');
+}catch(e){console.error(e);$('#loading').innerHTML=`<p>商會無法啟動：${esc(e.message)}</p>`;}}
 boot();

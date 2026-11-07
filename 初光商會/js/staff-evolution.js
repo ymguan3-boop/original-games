@@ -3,7 +3,9 @@
  * This helper is read-only so it is safe for every HUD refresh and old saves. */
 export function staffEvolutionInfo(data,employee){
  if(!employee||!data)return {eligible:false,required:0,next:[]};
- const rule=data.evolution?.[employee.spiritId];
+ const hire=data.hirePool?.find(h=>h.id===employee.baseId),fixed=hire?.route?.[employee.spiritId];
+ /* 三色蛋招聘走固定路線；其他角色照原本 evolution.json */
+ const rule=fixed?{next:[fixed.next],level:fixed.level,branch:'linear'}:data.evolution?.[employee.spiritId];
  const next=(Array.isArray(rule?.next)?rule.next:[]).filter(id=>data.spirits?.some(sp=>sp.id===id));
  const required=Number(rule?.level)||0;
  const eligible=required>0&&next.length>0&&employee.workLevel>=required;
@@ -24,6 +26,7 @@ export function evolveStaffOnce(game,s,employee){
  employee.spiritId=selected;
  employee.name=sp.name;
  employee.efficiency=game.efficiency(employee);
+ if(selected==='zhaocai-3'){s.zhaocaiStage3Completed=true;try{game.storage?.setItem('phantom_shared_unlocks',JSON.stringify({zhaocaiStage3Completed:true}));}catch{}}
  game.log(s,`${before} → ${sp.name} 完成永久進化！熟練 Lv.${employee.workLevel} 保留。`);
  game.notice(s,employee.id,'✨ 進化成功','level');
  return `${before} 進化成 ${sp.name}！`;

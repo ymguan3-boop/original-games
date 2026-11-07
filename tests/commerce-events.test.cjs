@@ -13,22 +13,6 @@ function fixture(customer){
  const g={data:{config:{checkoutSeconds:1},catalog:[{sku:'potion',category:'item',buyCost:10,suggestedRetail:20}]},available:(_,sh)=>sh.stock,role:(x,r)=>x.employees.find(e=>e.role===r)||null,efficiency:()=>1,notice:(_,id,message,tone)=>notices.push({id,message,tone}),xp:()=>{},safeMove:()=>{},route:(_,c,d)=>{c.path=[{x:d.x,z:d.z}];return true;},log:(_,message)=>s.log.push(message)};
  return {s,g,notices};
 }
-test('customers with no stock display question before becoming angry',()=>{
- const {stepCustomers}=simulation(),c={id:'c1',state:'Enter',x:6,z:9,visited:[],basket:[],path:[],personality:0,timer:0,budget:200,patience:30}, {s,g,notices}=fixture(c);
- s.shelves[0].stock=0;
- stepCustomers(g,s,.25);assert.equal(c.state,'OutOfStock');assert.equal(c.emotion,'question');
- stepCustomers(g,s,1);assert.equal(c.state,'OutOfStock');assert.equal(s.stats.lost,0);
- stepCustomers(g,s,1.5);assert.equal(c.state,'OutOfStock');stepCustomers(g,s,15);assert.equal(c.state,'Angry');assert.equal(s.satisfaction,74);
- assert.equal(notices[0].message,'滿意 -1');assert.equal(s.event.id,'stockout');
-});
-test('paid customer generates satisfaction and exits safely even when path is blocked',()=>{
- const {stepCustomers}=simulation(),c={id:'c2',state:'Checkout',x:10,z:3,visited:[],basket:[{sku:'potion',shelfId:'s1',qty:1,price:20,cost:10}],path:[],personality:0,timer:0,wait:0,budget:200,patience:40};
- const {s,g,notices}=fixture(c);
- stepCustomers(g,s,1.2);
- assert.equal(c.state,'Paid');assert.equal(s.stats.sales,1);assert.equal(s.shelves[0].stock,1);assert.equal(s.satisfaction,76);assert.equal(notices[0].message,'滿意 +1');
- stepCustomers(g,s,1);assert.equal(c.state,'Leave');assert.ok(c.path.length);
- stepCustomers(g,s,20.1);assert.equal(s.customers.length,0);
-});
 test('a departing customer is immediately removed after reaching the actual entrance',()=>{
  const {stepCustomers}=simulation(),c={id:'c3',state:'Leave',x:6.2,z:10.1,visited:[],basket:[],path:[{x:6,z:10}],timer:0,patience:40};
  const {s,g}=fixture(c);stepCustomers(g,s,.3);assert.equal(s.customers.length,0);
@@ -41,11 +25,4 @@ test('every event has its own animated GIF, light enough for phones',()=>{
   assert.ok(data.length<260000,id+' '+data.length);
   assert.ok(data.indexOf(Buffer.from('NETSCAPE2.0'))>0,id);
  }
-});
-test('one-time incident coach, mobile return placement and achievement notice are connected',()=>{
- assert.match(text('js/app.js'),/installEventCoach/);
- assert.match(text('js/shop-navigation.js'),/mobileBar\.append\(button\)/);
- assert.match(text('navigation.css'),/grid-area:return/);
- assert.match(text('js/core.js'),/case 'ackTutorial'/);
- assert.match(text('js/scene.js'),/onActorVisuals/);assert.match(text('js/app.js'),/createActorVisuals/);
 });

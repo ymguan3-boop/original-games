@@ -1,0 +1,39 @@
+/* 同屏最多四個操作鈕：主畫面只留狀態列與四個入口 */
+.staff-dock,.activity,.scene-label,.operating,.time-controls,.mobile-strip,.brand small,#return-to-game,#staff-card,#shop-event-guide,#event-coach,#daily-start,#daily-settlement,#chapter-clear,#first-day-guide,.status-row .stat:not(.gold){display:none!important}
+.topbar{position:fixed;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);right:auto;width:auto;max-width:calc(100vw - 24px);display:flex;align-items:center;gap:14px;padding:6px 16px;background:#fff6dcee;border:2px solid #a77e4b;border-radius:16px;min-height:0}
+.topbar .brand{display:flex;align-items:center;gap:8px}.topbar h1{font-size:15px;margin:0;white-space:nowrap}.brand-seal{display:none}
+.status-row{display:flex;gap:12px;align-items:center}.status-row .stat{padding:0;border:0;background:none}.status-row .stat small{display:none}.status-row strong{font-size:17px}
+#shop-notice{position:fixed;top:calc(max(8px,env(safe-area-inset-top)) + 50px);left:50%;transform:translateX(-50%);max-width:calc(100vw - 32px);padding:6px 12px;border-radius:10px;background:#fff1c9;border:1px solid #c9973f;font-size:14px;color:#5a3c20;pointer-events:none;z-index:30}
+.toolbar{position:fixed;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:min(520px,calc(100vw - 24px));padding:8px;z-index:40}
+.toolbar button{position:relative;min-height:48px;font-size:15px;font-weight:700}
+.toolbar .has-notice::after{content:'';position:absolute;top:6px;right:8px;width:10px;height:10px;border-radius:50%;background:#d9402f;box-shadow:0 0 0 2px #fff}
+body.hub-open .toolbar,body.patrol-active .toolbar,body.decorate-active .toolbar,body.editing-furniture .toolbar{display:none}
+#hub{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:#2c1d0e66;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}#hub[hidden]{display:none}
+.hub-box{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;gap:10px;padding:16px;background:#fff8e8;border:3px solid #a77e4b;border-radius:18px;color:#4a3019;overflow:hidden}
+.hub-box h2{margin:0;font-size:20px}.hub-note{margin:0;font-size:14px;line-height:1.5}.hub-hint{text-align:center;opacity:.6;font-size:12px}
+.hub-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;overflow:auto;flex:1;min-height:0;padding:2px}
+.hub-card{display:flex;flex-direction:column;gap:2px;text-align:left;padding:10px;border:2px solid #d8bf91;border-radius:12px;background:#fff;color:inherit;min-height:56px;font:inherit}.hub-card small{font-size:12px;opacity:.8}.hub-card.done{opacity:.55}.hub-card .spirit-pokedex-card{max-width:90px}
+.hub-actions{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px}.hub-action{min-height:46px;padding:6px 8px;border:2px solid #a77e4b;border-radius:12px;background:#fff;color:inherit;font:inherit;font-weight:700}.hub-action.primary{background:#6b914b;border-color:#4e6e35;color:#fff}.hub-action:disabled{opacity:.45}
+.hub-field{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px}
+#camera-mode,#patrol-event{display:none}body.patrol-active #camera-mode,body.patrol-active #patrol-event{display:block;position:fixed;right:12px;z-index:45;min-height:44px;padding:0 14px;font-weight:700}body.patrol-active #camera-mode{bottom:max(14px,env(safe-area-inset-bottom))}body.patrol-active #patrol-event{bottom:calc(max(14px,env(safe-area-inset-bottom)) + 54px)}
+#furniture-controls{display:flex;gap:6px}#furniture-controls[hidden]{display:none}#furniture-controls button{min-height:44px;min-width:44px;font-size:13px}
+body.placement-bad #placement-hint{color:#b3261e}
+#tutor{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(10px,env(safe-area-inset-bottom)) + 84px);width:min(440px,calc(100vw - 24px));z-index:70;padding:12px 14px;background:#fff8e8;border:3px solid #6b914b;border-radius:14px;color:#4a3019}#tutor[hidden]{display:none}#tutor strong{display:block;font-size:16px}#tutor p{margin:4px 0 8px;font-size:14px;line-height:1.45}#tutor .tutor-actions{display:flex;gap:8px;justify-content:flex-end}#tutor button{min-height:40px;padding:0 12px;font-weight:700}
+.tutor-focus{outline:3px solid #f2b632!important;outline-offset:2px;animation:tutor-pulse 1.1s ease-in-out infinite;position:relative;z-index:65}@keyframes tutor-pulse{50%{outline-color:#ff7a33}}
+body[data-tutorial] .toolbar button:not(.tutor-focus){visibility:hidden}
+body.hub-open #tutor .tutor-actions{display:none}
+body.hub-open #tutor{top:max(8px,env(safe-area-inset-top));bottom:auto}
+@media (orientation:landscape) and (max-height:500px){.toolbar{right:max(10px,env(safe-area-inset-right));left:auto;transform:none;width:190px;grid-template-columns:repeat(2,minmax(0,1fr))}#tutor{bottom:auto;top:56px;left:12px;transform:none;width:min(320px,45vw)}.hub-box{width:min(640px,100%)}}
+@media (prefers-reduced-motion:reduce){.tutor-focus{animation:none}}
+/* 直立手機優先：上方一條細狀態列、下方一排薄按鈕，其餘都留給店面 */
+html body header.topbar{position:fixed!important;top:max(6px,env(safe-area-inset-top))!important;left:8px!important;right:8px!important;transform:none!important;width:auto!important;max-width:none!important;min-height:0!important;height:38px!important;padding:0 12px!important;border-width:2px!important;border-radius:12px!important;display:flex!important;justify-content:space-between!important;align-items:center!important;gap:8px!important;box-shadow:none!important}
+html body header.topbar .brand{display:none!important}
+html body header.topbar .status-row{display:flex!important;width:100%!important;justify-content:space-between!important;align-items:center!important;gap:10px!important;min-width:0!important}
+html body header.topbar .status-row strong{font-size:15px!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#shop-notice{top:calc(max(6px,env(safe-area-inset-top)) + 44px)}
+html body nav.toolbar{position:fixed!important;left:8px!important;right:8px!important;bottom:max(6px,env(safe-area-inset-bottom))!important;top:auto!important;transform:none!important;width:auto!important;max-width:560px;margin:0 auto;min-height:0!important;height:auto!important;padding:0!important;display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:6px!important;background:none!important;border:0!important;box-shadow:none!important}
+html body nav.toolbar button{display:block!important;width:100%!important;min-width:0!important;min-height:42px!important;height:42px!important;padding:0 2px!important;margin:0!important;border:2px solid #a77e4b!important;border-radius:12px!important;background:#fff8e8ee!important;color:#4a3019!important;font-size:15px!important;font-weight:700!important;line-height:1!important;writing-mode:horizontal-tb!important;white-space:nowrap!important;box-shadow:none!important}
+html body #tutor{bottom:calc(max(6px,env(safe-area-inset-bottom)) + 52px);padding:8px 12px}#tutor strong{font-size:15px}#tutor p{margin:2px 0 6px;font-size:13px}#tutor button{min-height:36px}
+html body.hub-open #tutor{top:calc(max(6px,env(safe-area-inset-top)) + 44px);bottom:auto}
+@media (orientation:landscape) and (max-height:500px){html body nav.toolbar{left:auto!important;right:8px!important;width:220px!important}}
+html body.hub-open nav.toolbar,html body.patrol-active nav.toolbar,html body.decorate-active nav.toolbar,html body.editing-furniture nav.toolbar{display:none!important}

@@ -21,43 +21,6 @@ test('single event selects only its assigned employee, even with multiple same-r
  s.manager.x=2;s.manager.z=1;
  assert.equal(managerNearEmployee(s,s.event),false);
 });
-test('wake events recognize dozing while free choices impose tangible fatigue cost',()=>{
- const {sleepEvent,applyFreeEventFatigue,freeResolutionText}=helpers(),s=fakeState();
- assert.equal(sleepEvent(s.event),true);
- assert.equal(sleepEvent({title:'紙箱山滑倒'}),false);
- const charges=applyFreeEventFatigue(s,s.employees[0]);
- assert.deepEqual(Array.from(charges,x=>x.delta),[8,2]);
- assert.equal(s.employees[0].fatigue,18);assert.equal(s.employees[1].fatigue,22);
- assert.match(freeResolutionText({cost:0}),/疲勞 \+8/);
- assert.equal(freeResolutionText({cost:40}),'');
-});
-test('proximity method completes the active event once and persists resolved record',()=>{
- const {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue}=helpers(),
-  code=read('js/core.js'),start=code.indexOf('resolveNearbyEvent(s){'),end=code.indexOf('setManagerActive(active)',start);
- assert.ok(start>0&&end>start);
- const method=code.slice(start,end).trim();
- const make=new Function('eventEmployee','managerNearEmployee','sleepEvent','applyFreeEventFatigue','react','requiresManagerPatrol',`return ({${method}}).resolveNearbyEvent;`);
- const reactions=[],resolved=make(eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue,(s,e,kind,seconds)=>{reactions.push(kind);e.feedbackKind=kind;e.reactionUntil=s.totalTime+seconds;},()=>false);
- const s=fakeState(),notices=[],logs=[],g={managerActive:true,
-  applyEventEffect:(s,ev)=>{s.effectApplied=(s.effectApplied||0)+1},
-  efficiency:e=>1-e.fatigue/200,
-  notice:(s,id,text)=>notices.push({id,text}),
-  log:(s,text)=>logs.push(text)
- };
- assert.equal(resolved.call(g,s),true);
- assert.equal(s.event,null);
- assert.equal(s.recentPatrolResolution.id,'event-77');
- assert.equal(s.incidentHistory.length,1);
- assert.equal(s.incidentHistory[0].method,'nearby');
- assert.deepEqual(reactions,['wake']);
- assert.equal(s.employees[0].fatigue,16);
- assert.equal(s.employees[1].fatigue,21);
- assert.equal(s.effectApplied,1);
- assert.equal(resolved.call(g,s),false);
- assert.equal(s.incidentHistory.length,1);
- assert.ok(notices.some(n=>n.text.includes('驚醒')));
- assert.equal(logs.length,1);
-});
 test('duplicate event banners removed while staff level/fatigue badge stays tappable and compact',()=>{
  const staff=read('js/staff-overlay.js'),scene=read('js/scene.js'),css=read('commerce-staff-v13.css');
  assert.doesNotMatch(staff,/staff-event-icon/);
@@ -66,20 +29,4 @@ test('duplicate event banners removed while staff level/fatigue badge stays tapp
  assert.match(scene,/eventEmployee\(s,s\.event\)\?\.id===d\.id/);
  assert.match(css,/#staff-labels \.staff-head-label/);
  assert.match(css,/width:79px!important/);
-});
-test('manager proximity event result appears after wake and does not replay old saves',()=>{
- const html=read('index.html'),app=read('js/app.js'),scene=read('js/scene.js');
- assert.match(html,/id="patrol-solved"/);
- assert.match(app,/seenPatrolResolution=game\.state\.recentPatrolResolution\?\.id\|\|null/);
- assert.match(app,/patrolResolutionDelay=setTimeout/);
- assert.match(app,/問題已解決/);
- assert.match(scene,/feedback==='wake'/);
- assert.match(read('js/actor-visuals.js'),/wake:\['‼'/);
-});
-test('free event choices disclose extra fatigue and existing rewards still work',()=>{
- const source=read('js/core.js'),detail=read('js/incident-detail.js');
- assert.match(source,/if\(ch\.cost===0\)\{for\(const change of applyFreeEventFatigue\(s,e\)/);
- assert.match(source,/this\.applyEventEffect\(s,ev\)/);
- assert.match(detail,/eventChoiceHint\(c,/);
- assert.match(detail,/疲勞 \+8/);
 });

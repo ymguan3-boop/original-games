@@ -1,7 +1,8 @@
 import {employeeSpot,employeePath} from './staff-routing.js';
 import {obstacles,decorEffects} from './decorations.js';
 import {findPath,walkable} from './nav.js';
-const stations={cashier:{x:10,z:1},stocker:{x:3,z:3},warehouse:{x:2,z:3},smith:{x:2,z:5},host:{x:5,z:9},sales:{x:5,z:4},security:{x:11,z:6},cleaner:{x:3,z:7},standby:{x:3,z:1}};
+import {capacityOf,preferredJob,WORK_JOBS} from './management.js';
+const stations={cashier:{x:10,z:1},stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
 /* The rear wall is z=1. Each resting worker gets their own place and is never
  * mistaken for an idling / slacking employee at an active work station. */
 export function restingPositions(s){
@@ -23,11 +24,7 @@ const wandering=(s,e)=>{
  const patterns={
   cashier:[stations.cashier],
   stocker:[stations.stocker,...shelves.map(sh=>({x:sh.x,z:sh.z+1})),{x:2,z:4}],
-  warehouse:[stations.warehouse,{x:2,z:4},{x:3,z:4}],
-  smith:[stations.smith,{x:3,z:5},{x:2,z:6}],
   host:[{x:5,z:9},{x:6,z:8},{x:7,z:9}],
-  sales:[...shelves.map(sh=>({x:sh.x+1,z:sh.z+1})),{x:7,z:6}],
-  security:[{x:11,z:7},{x:7,z:9},{x:5,z:9}],
   cleaner:[{x:3,z:6},{x:7,z:8},{x:8,z:3}],
  };
  const points=patterns[e.role]||[{x:4,z:5},{x:7,z:6},{x:6,z:8}];
@@ -38,29 +35,23 @@ const wandering=(s,e)=>{
  }
  next();return null;
 };
+/* 一鍵最佳配置：鎖定的員工不動，其餘依擅長職務與熟練度排入在班名額 */
 export function autoAssign(g,s){
- const candidates=s.employees.filter(e=>e.fatigue<90),capacity=g.data.levels[s.level-1].capacity,chosen=new Map(),used=new Set(),roles=['cashier','stocker','warehouse','sales','host','smith','security','cleaner'];
- if(s.forge){const smith=candidates.find(e=>e.id===s.forge.employeeId);if(smith){chosen.set(smith.id,'smith');used.add('smith');}}
- for(let i=0;chosen.size<Math.min(capacity,candidates.length);i++){
-  const role=roles.find(r=>!used.has(r))||'stocker',list=candidates.filter(e=>!chosen.has(e.id));
-  list.sort((a,b)=>Number(b.role===role)-Number(a.role===role)||b.workLevel-a.workLevel||a.fatigue-b.fatigue);
-  if(!list.length)break;chosen.set(list[0].id,role);used.add(role);
- }
- for(const e of s.employees){const role=chosen.get(e.id)||'standby';if(e.role!==role&&e.workTask){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}e.role=role;e.path=[];e.nextTaskAt=0;}
+ const capacity=capacityOf(g,s),jobs=WORK_JOBS,locked=s.employees.filter(e=>e.lockedAssignment&&e.role!=='standby'),chosen=new Map(locked.map(e=>[e.id,e.role])),count=j=>[...chosen.values()].filter(r=>r===j).length;
+ const free=s.employees.filter(e=>!e.lockedAssignment).sort((a,b)=>b.workLevel-a.workLevel);
+ for(const job of jobs){if(chosen.size>=capacity||count(job))continue;const pick=free.find(e=>!chosen.has(e.id)&&preferredJob(g,e)===job)||null;if(pick)chosen.set(pick.id,job);}
+ for(const job of jobs){if(chosen.size>=capacity||count(job))continue;const pick=free.find(e=>!chosen.has(e.id));if(pick)chosen.set(pick.id,job);}
+ for(const e of free){if(chosen.size>=capacity)break;if(!chosen.has(e.id))chosen.set(e.id,preferredJob(g,e));}
+ for(const e of s.employees){if(e.lockedAssignment)continue;const role=chosen.get(e.id)||'standby';if(e.role!==role&&e.workTask){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}e.role=role;e.path=[];e.nextTaskAt=0;}
  const targets=new Set();
  for(const e of s.employees){const preferred=e.role==='standby'?restingPositions(s).get(e.id):stations[e.role]||{x:5,z:5},spot=employeeSpot(g,s,e,preferred,targets);if(spot){g.route(s,e,spot);targets.add(`${spot.x},${spot.z}`);}}
- g.log(s,`一鍵排班完成：${chosen.size} 位上班、${s.employees.length-chosen.size} 位到後方休息區。`);
- return '已分配職務；休息員工至後方排隊，在班員工會工作或巡視。';
+ g.log(s,`一鍵配置完成：${chosen.size} 位在班。`);
+ return `已配置 ${chosen.size} 位在班員工`;
 }
 export function staffAutomation(g,s,dt){
  if(s.phase!=='open')return;
  const rear=restingPositions(s);
  for(const e of s.employees){
-  if(e.fatigue>=95&&e.role!=='standby'){
-   if(e.workTask?.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;
-   e.workTask=null;e.role='standby';e.path=[];e.nextTaskAt=0;
-   g.log(s,`${e.name}疲勞過高，自動退至後方休息區。`);
-  }
   if(e.role==='standby'){
    const target=rear.get(e.id)||restingPositions(s).get(e.id);
    if(!target)continue;
@@ -77,7 +68,8 @@ export function staffAutomation(g,s,dt){
   if((e.path||[]).length&&(e.blocked||0)<2){e.reaction='walk';continue;}
   if((e.path||[]).length){e.path=[];e.nextTaskAt=0;}
   if(e.role==='cashier'){if(Math.hypot(e.x-10,e.z-1)>.18)g.route(s,e,stations.cashier);e.reaction='work';continue;}
-  if(e.role==='smith'&&s.forge?.employeeId===e.id){e.reaction='work';continue;}
+  /* 大型幻靈固定在寬敞的工作點，不到處走，避免穿過貨架 */
+  if(e.spiritId===g.data.management.dragon.spiritId){const zone=g.data.management.dragon.zone;if(Math.hypot(e.x-zone.x,e.z-zone.z)>.6){const spot=employeeSpot(g,s,e,zone);if(spot)g.route(s,e,spot);}e.reaction='work';continue;}
   if((e.nextTaskAt||0)>s.totalTime){e.reaction='work';continue;}
   e.nextTaskAt=s.totalTime+2.5;
   const preferred=wandering(s,e);

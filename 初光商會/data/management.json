@@ -1,0 +1,569 @@
+{
+  "schemaVersion": 2,
+  "jobs": {
+    "cashier": {
+      "name": "收銀員",
+      "work": "自動結帳、減少排隊"
+    },
+    "stocker": {
+      "name": "補貨員",
+      "work": "自動補貨、縮短缺貨"
+    },
+    "host": {
+      "name": "招待員",
+      "work": "引導顧客、提高購買機率"
+    },
+    "cleaner": {
+      "name": "清潔員",
+      "work": "恢復整潔、提升滿意度"
+    }
+  },
+  "preferredBonus": 0.25,
+  "teamFalloff": 0.6,
+  "passiveCap": 0.5,
+  "decorCap": 0.15,
+  "xp": {
+    "perSecond": 0.12,
+    "reserveRate": 0.2
+  },
+  "noStaff": {
+    "checkoutSeconds": 7,
+    "restockInterval": 16,
+    "restockQty": 4,
+    "cleanPerSecond": 0.02,
+    "cleanTarget": 70
+  },
+  "events": {
+    "firstDelay": 300,
+    "minGap": 300,
+    "jitter": 60,
+    "afterResolve": 90
+  },
+  "daily": {
+    "timeZone": "Asia/Taipei",
+    "tasks": [
+      {
+        "id": "sales",
+        "label": "完成交易",
+        "target": 10,
+        "reward": 100,
+        "unit": "筆"
+      },
+      {
+        "id": "gold",
+        "label": "賺取金幣",
+        "target": 500,
+        "reward": 150,
+        "unit": "G"
+      },
+      {
+        "id": "exp",
+        "label": "員工獲得經驗",
+        "target": 100,
+        "reward": 200,
+        "unit": "EXP"
+      }
+    ],
+    "bonusGold": 300,
+    "bonusTickets": 1,
+    "ticketXp": 50
+  },
+  "dragon": {
+    "spiritId": "mewtwo",
+    "zone": {
+      "x": 7,
+      "z": 7
+    },
+    "tasks": [
+      {
+        "id": "treasure",
+        "name": "龍王聚寶",
+        "kind": "income",
+        "value": 0.08,
+        "level": 1,
+        "text": "商會金幣收益 +8%",
+        "fx": "水珠匯聚金幣"
+      },
+      {
+        "id": "brew",
+        "name": "靈泉煉藥",
+        "kind": "potion",
+        "value": 0.12,
+        "level": 1,
+        "text": "藥水補貨速度 +12%",
+        "fx": "水環圍繞藥瓶"
+      },
+      {
+        "id": "guard",
+        "name": "龍威鎮店",
+        "kind": "calm",
+        "value": 0.15,
+        "level": 6,
+        "text": "混亂事件機率 -15%",
+        "fx": "龍眼發光、藍色威壓"
+      },
+      {
+        "id": "forge",
+        "name": "靈核淬鍊",
+        "kind": "forge",
+        "value": 0.1,
+        "level": 7,
+        "text": "鍛造效率 +10%",
+        "fx": "水流環繞靈核"
+      },
+      {
+        "id": "bless",
+        "name": "龍王祈福",
+        "kind": "team",
+        "value": 0.05,
+        "level": 8,
+        "text": "全體員工效率 +5%",
+        "fx": "藍色光環擴散"
+      }
+    ]
+  },
+  "traits": {
+    "bulbasaur": {
+      "preferredJob": "stocker",
+      "passiveId": "snail-carry",
+      "name": "螺殼背包",
+      "kind": "restock",
+      "base": [
+        0.03,
+        0.05,
+        0.07
+      ],
+      "boosted": [
+        0.08,
+        0.12,
+        0.15
+      ],
+      "text": "補貨速度提升"
+    },
+    "charmander": {
+      "preferredJob": "host",
+      "passiveId": "chili-call",
+      "name": "辣味吆喝",
+      "kind": "traffic",
+      "base": [
+        0.03,
+        0.05,
+        0.07
+      ],
+      "boosted": [
+        0.08,
+        0.12,
+        0.15
+      ],
+      "text": "客流增加"
+    },
+    "squirtle": {
+      "preferredJob": "host",
+      "passiveId": "sesame-charm",
+      "name": "可愛魅力",
+      "kind": "satisfaction",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "顧客滿意度提升"
+    },
+    "chikorita": {
+      "preferredJob": "cleaner",
+      "passiveId": "flower-scent",
+      "name": "花香清新",
+      "kind": "clean",
+      "base": [
+        0.03,
+        0.05,
+        0.07
+      ],
+      "boosted": [
+        0.08,
+        0.12,
+        0.15
+      ],
+      "text": "環境恢復加快"
+    },
+    "cyndaquil": {
+      "preferredJob": "cashier",
+      "passiveId": "robot-count",
+      "name": "精準運算",
+      "kind": "checkout",
+      "base": [
+        0.03,
+        0.05,
+        0.07
+      ],
+      "boosted": [
+        0.08,
+        0.12,
+        0.15
+      ],
+      "text": "結帳速度提升"
+    },
+    "totodile": {
+      "preferredJob": "stocker",
+      "passiveId": "trunk-lift",
+      "name": "長鼻搬運",
+      "kind": "restock",
+      "base": [
+        0.03,
+        0.05,
+        0.07
+      ],
+      "boosted": [
+        0.08,
+        0.12,
+        0.15
+      ],
+      "text": "補貨速度提升"
+    },
+    "torchic": {
+      "preferredJob": "host",
+      "passiveId": "puppy-welcome",
+      "name": "熱情迎賓",
+      "kind": "traffic",
+      "base": [
+        0.03,
+        0.05,
+        0.07
+      ],
+      "boosted": [
+        0.08,
+        0.12,
+        0.15
+      ],
+      "text": "客流增加"
+    },
+    "mudkip": {
+      "preferredJob": "cleaner",
+      "passiveId": "bear-hug",
+      "name": "暖心抱抱",
+      "kind": "satisfaction",
+      "base": [
+        0.03,
+        0.05,
+        0.07
+      ],
+      "boosted": [
+        0.08,
+        0.12,
+        0.15
+      ],
+      "text": "顧客滿意度提升"
+    },
+    "turtwig": {
+      "preferredJob": "host",
+      "passiveId": "cat-smile",
+      "name": "貓娘微笑",
+      "kind": "patience",
+      "base": [
+        0.03,
+        0.05,
+        0.07
+      ],
+      "boosted": [
+        0.08,
+        0.12,
+        0.15
+      ],
+      "text": "顧客更有耐心"
+    },
+    "piplup": {
+      "preferredJob": "cashier",
+      "passiveId": "chick-chirp",
+      "name": "報價小鳥",
+      "kind": "income",
+      "base": [
+        0.02,
+        0.03,
+        0.04
+      ],
+      "boosted": [
+        0.04,
+        0.06,
+        0.08
+      ],
+      "text": "交易收入提升"
+    },
+    "kyogre": {
+      "preferredJob": "stocker",
+      "passiveId": "fish-flow",
+      "name": "水流推車",
+      "kind": "restock",
+      "base": [
+        0.03,
+        0.05,
+        0.07
+      ],
+      "boosted": [
+        0.08,
+        0.12,
+        0.15
+      ],
+      "text": "補貨速度提升"
+    },
+    "articuno": {
+      "preferredJob": "stocker",
+      "passiveId": "frog-reach",
+      "name": "靈巧搬運",
+      "kind": "restock",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "補貨速度提升"
+    },
+    "raikou": {
+      "preferredJob": "cashier",
+      "passiveId": "kid-quick",
+      "name": "機靈找零",
+      "kind": "checkout",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "結帳速度提升"
+    },
+    "entei": {
+      "preferredJob": "cleaner",
+      "passiveId": "mist-clean",
+      "name": "清新水霧",
+      "kind": "clean",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "環境恢復加快"
+    },
+    "giratina": {
+      "preferredJob": "host",
+      "passiveId": "yellow-cheer",
+      "name": "小黃打氣",
+      "kind": "xp",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "同伴經驗增加"
+    },
+    "dialga": {
+      "preferredJob": "cleaner",
+      "passiveId": "bat-sonar",
+      "name": "夜巡超音波",
+      "kind": "patience",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "顧客更有耐心"
+    },
+    "pikachu": {
+      "preferredJob": "cashier",
+      "passiveId": "hero-fan",
+      "name": "英雄光環",
+      "kind": "income",
+      "base": [
+        0.03,
+        0.04,
+        0.05
+      ],
+      "boosted": [
+        0.06,
+        0.09,
+        0.12
+      ],
+      "text": "交易收入提升"
+    },
+    "mew": {
+      "preferredJob": "host",
+      "passiveId": "rice-comfort",
+      "name": "飯糰療癒",
+      "kind": "satisfaction",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "顧客滿意度提升"
+    },
+    "wigglytuff": {
+      "preferredJob": "cleaner",
+      "passiveId": "mountain-breeze",
+      "name": "山風拂塵",
+      "kind": "clean",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "環境恢復加快"
+    },
+    "blissey": {
+      "preferredJob": "host",
+      "passiveId": "phoenix-glow",
+      "name": "鳳光招客",
+      "kind": "traffic",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "客流增加"
+    },
+    "mewtwo": {
+      "preferredJob": "cashier",
+      "passiveId": "dragon-grace",
+      "name": "龍王恩澤",
+      "kind": "xp",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "同伴經驗增加"
+    },
+    "jigglypuff": {
+      "preferredJob": "host",
+      "passiveId": "egg-luck",
+      "name": "三色好運",
+      "kind": "income",
+      "base": [
+        0.02,
+        0.03,
+        0.04
+      ],
+      "boosted": [
+        0.04,
+        0.06,
+        0.08
+      ],
+      "text": "交易收入提升"
+    },
+    "egg-gu": {
+      "preferredJob": "host",
+      "passiveId": "rooster-call",
+      "name": "晨啼招客",
+      "kind": "traffic",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "客流增加"
+    },
+    "egg-ma": {
+      "preferredJob": "cleaner",
+      "passiveId": "sparrow-sweep",
+      "name": "羽翼拂塵",
+      "kind": "clean",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "環境恢復加快"
+    },
+    "egg-ying": {
+      "preferredJob": "stocker",
+      "passiveId": "eagle-haul",
+      "name": "鷹爪搬運",
+      "kind": "restock",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "補貨速度提升"
+    },
+    "zhaocai": {
+      "preferredJob": "cashier",
+      "passiveId": "lucky-coin",
+      "name": "幸運金幣",
+      "kind": "income",
+      "base": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "boosted": [
+        0.1,
+        0.1,
+        0.15
+      ],
+      "text": "交易收入提升"
+    }
+  }
+}

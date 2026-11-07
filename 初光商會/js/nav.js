@@ -2,7 +2,9 @@ export const ENTRANCE={x:6,z:10}, CHECKOUT={x:10,z:3}, WAREHOUSE={x:2,z:3};
 // Conservative occupied cells include the real furniture silhouette plus actor clearance.
 export const FIXED_CELLS=['9,2','10,2','11,2'];
 export const ACTOR_DIAMETER=.82;
-export const dimensions=(level=1)=>({width:14+(level-1)*2,height:12});
+/* Lv.6–10 是經營等級，建築外觀與空間維持五階 */
+export const buildingLevel=(level=1)=>Math.min(level,5);
+export const dimensions=(level=1)=>({width:14+(buildingLevel(level)-1)*2,height:12});
 export function blocked(shelves=[]){return new Set([...FIXED_CELLS,...shelves.map(s=>`${s.x},${s.z}`)]);}
 export function walkable(p,shelves=[],level=1){const {width,height}=dimensions(level);if(!(p.x>=1&&p.z>=1&&p.x<=width-2&&p.z<=height-2))return false;for(const key of blocked(shelves)){const [x,z]=key.split(',').map(Number),dx=Math.max(Math.abs(p.x-x)-.5,0),dz=Math.max(Math.abs(p.z-z)-.5,0);if(Math.hypot(dx,dz)<ACTOR_DIAMETER/2-.00001)return false;}return true;}
 export function findPath(start,end,shelves=[],level=1){

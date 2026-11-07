@@ -6,19 +6,6 @@ test('camera uses touch orbit and pinch instead of visible angle buttons',()=>{
  assert.match(scene,/touchDragMode='rotate'/);assert.match(scene,/getTouchGesture/);
  assert.match(css,/\.camera-controls\{display:none!important/);
 });
-test('shelf selection and placement freeze every camera input path',()=>{
- const scene=read('js/scene.js'),css=read('shop-interactions-v9.css'),app=read('js/app.js');
- assert.match(scene,/function cameraLocked\(\)\{return !!selectedShelf\|\|!!placement;\}/);
- assert.match(scene,/function panCamera\(dx,dy\)\{if\(cameraLocked\(\)\)return;/);
- assert.match(scene,/if\(cameraLocked\(\)\)\{gesture=null;return;\}/);
- assert.match(scene,/if\(cameraLocked\(\)&&!drag&&!placement\)return;/);
- assert.match(scene,/function wheel\(e\)\{e\.preventDefault\(\);if\(cameraLocked\(\)\)return;/);
- assert.match(scene,/rotate\(delta=\.24\)\{if\(cameraLocked\(\)\)return false;/);
- assert.match(scene,/zoom\(delta=1\)\{if\(cameraLocked\(\)\)return false;/);
- assert.match(app,/document\.body\.classList\.toggle\('camera-locked',locked\)/);
- assert.match(app,/control\.disabled=locked/);
- assert.match(css,/body\.camera-locked \.camera-controls\{visibility:hidden!important/);
-});
 test('camera pose is preserved when entering and exiting shelf editing',()=>{
  const scene=read('js/scene.js');
  assert.match(scene,/const previousMode=mode;/);

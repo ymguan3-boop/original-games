@@ -1,13 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const ROOT=path.resolve(__dirname,'../初光商會'),read=p=>fs.readFileSync(path.join(ROOT,p),'utf8');
 const load=(file,expression,context={})=>{vm.runInNewContext(read(file).replace(/^import .*?;\n/gm,'').replace(/\bexport\s+(?=(?:function|const|class))/g,'')+';this.output='+expression,context);return context.output;};
-test('24 new funny events are unique and retain free resolution routes',()=>{
- const events=load('js/funny-events.js','funnyEvents');
- assert.equal(events.length,24);
- assert.equal(new Set(events.map(e=>e.id)).size,24);
- for(const e of events){assert.match(e.id,/^comic-\d+$/);assert.equal(e.emoji.length,3);assert.ok(e.animation);assert.ok(e.dialogue.length>=12);assert.ok(e.cooldown>=40);assert.ok(e.choices.some(x=>x.cost===0));assert.ok(e.choices.every(x=>x.mood>=0&&x.satisfaction>=0&&x.xp>=0));}
- const core=read('js/core.js');assert.match(core,/\.concat\(funnyEvents\)/);assert.match(core,/comicEventEligible\(s,ev\)/);
-});
 test('each event shows its own GIF with an escaped caption',()=>{
  const sketch=load('js/incident-sketch.js','incidentSketch');
  const markup=sketch({id:'comic-1',role:'cashier',title:'唱歌事件',emoji:['🪙','🎵','😄'],animation:'dance',effectText:'收銀加快'},v=>String(v).replace(/[<>]/g,''));
@@ -26,21 +19,4 @@ test('mood overlay is sharp HTML with distinct happy, angry, tired, question and
  const css=read('event-responsive-v10.css');for(const tone of ['happy','angry','question','tired','training','funny'])assert.match(css,new RegExp('data-tone="'+tone+'"'));
  assert.match(css,/font:800 13px/);
 });
-test('event coach, management, confirmation and staff cards remain compact and movable',()=>{
- const html=read('index.html'),app=read('js/app.js'),coach=read('js/event-coach.js'),win=read('js/window-controls.js'),staff=read('js/staff-overlay.js'),css=read('event-responsive-v10.css');
- for(const id of ['event-coach','confirm-shield','actor-reactions'])assert.match(html,new RegExp('id="'+id+'"'));
- for(const attr of ['data-coach-smaller','data-coach-larger','data-coach-reset'])assert.match(html,new RegExp(attr));
- assert.match(app,/confirmWindow\.open\(\)/);assert.doesNotMatch(app,/\$\('#confirm'\)\.showModal\(\)/);
- assert.match(win,/minWidth/);assert.match(coach,/setPointerCapture/);assert.match(coach,/resizeWindowRect/);
- assert.match(staff,/data-staff-larger/);assert.match(staff,/staff-card-detached/);
- assert.match(css,/max-height:min\(68dvh,555px\)/);assert.match(css,/max-height:min\(52dvh,335px\)/);
- assert.match(css,/event-coach-scroll/);
-});
 
-test('running manager comic animation is not recreated every second',()=>{
- const app=read('js/app.js');
- assert.match(app,/function refreshManagerButtons\(\)/);
- assert.match(app,/lastManagerEventId/);
- assert.match(app,/if\(\(game\.state\.event\?\.instanceId\|\|null\)!==lastManagerEventId\)renderPanel\(\);else refreshManagerButtons\(\)/);
- assert.doesNotMatch(app,/currentPanel==='manager'&&Math\.floor\(game\.state\.totalTime\)!==lastManagerSecond/);
-});

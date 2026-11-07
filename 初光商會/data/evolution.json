@@ -132,16 +132,20 @@
     "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
   },
   "treecko": {
-    "next": [],
-    "level": 0,
-    "branch": "terminal",
-    "source": "洞穴 v0.18：小麻與咕咕為最終型態"
+    "next": [
+      "crown-sparrow"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "商會規格：小麻 Lv.8 → 羽冠麻雀王，模型完成後生效"
   },
   "grovyle": {
-    "next": [],
-    "level": 0,
-    "branch": "terminal",
-    "source": "洞穴 v0.18：小麻與咕咕為最終型態"
+    "next": [
+      "crown-rooster"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "商會規格：咕咕 Lv.8 → 鳳冠雄雞王，模型完成後生效"
   },
   "sceptile": {
     "next": [
@@ -451,5 +455,27 @@
     "level": 4,
     "branch": "linear",
     "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+  },
+  "zhaocai": {
+    "next": [
+      "zhaocai-2"
+    ],
+    "level": 4,
+    "branch": "linear",
+    "source": "商會規格：招財 Lv.4 手動進化"
+  },
+  "zhaocai-2": {
+    "next": [
+      "zhaocai-3"
+    ],
+    "level": 8,
+    "branch": "linear",
+    "source": "商會規格：招財 Lv.8 手動進化"
+  },
+  "zhaocai-3": {
+    "next": [],
+    "level": 12,
+    "branch": "linear",
+    "source": "商會規格：招財最終型態"
   }
 }

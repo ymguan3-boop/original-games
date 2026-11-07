@@ -5,7 +5,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -15,7 +15,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -25,7 +25,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -35,7 +35,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -45,7 +45,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -55,7 +55,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -65,7 +65,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -75,7 +75,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -85,7 +85,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -95,7 +95,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": false,
     "requiredSales": 0
   },
@@ -105,7 +105,7 @@
     "rarity": "yellow",
     "level": 1,
     "cost": 450,
-    "wage": 25,
+    "wage": 0,
     "special": true,
     "requiredSales": 20
   },
@@ -115,7 +115,7 @@
     "rarity": "purple",
     "level": 3,
     "cost": 3200,
-    "wage": 110,
+    "wage": 0,
     "special": true,
     "requiredSales": 60
   },
@@ -125,7 +125,7 @@
     "rarity": "purple",
     "level": 3,
     "cost": 3200,
-    "wage": 110,
+    "wage": 0,
     "special": true,
     "requiredSales": 60
   },
@@ -135,7 +135,7 @@
     "rarity": "purple",
     "level": 3,
     "cost": 3200,
-    "wage": 110,
+    "wage": 0,
     "special": true,
     "requiredSales": 60
   },
@@ -145,7 +145,7 @@
     "rarity": "purple",
     "level": 3,
     "cost": 3200,
-    "wage": 110,
+    "wage": 0,
     "special": true,
     "requiredSales": 60
   },
@@ -155,7 +155,7 @@
     "rarity": "red",
     "level": 4,
     "cost": 12000,
-    "wage": 300,
+    "wage": 0,
     "special": true,
     "requiredSales": 150
   },
@@ -165,7 +165,7 @@
     "rarity": "red",
     "level": 4,
     "cost": 12000,
-    "wage": 300,
+    "wage": 0,
     "special": true,
     "requiredSales": 150
   },
@@ -175,7 +175,7 @@
     "rarity": "red",
     "level": 4,
     "cost": 12000,
-    "wage": 300,
+    "wage": 0,
     "special": true,
     "requiredSales": 150
   },
@@ -185,7 +185,7 @@
     "rarity": "red",
     "level": 4,
     "cost": 12000,
-    "wage": 300,
+    "wage": 0,
     "special": true,
     "requiredSales": 150
   },
@@ -195,7 +195,7 @@
     "rarity": "red",
     "level": 4,
     "cost": 12000,
-    "wage": 300,
+    "wage": 0,
     "special": true,
     "requiredSales": 150
   },
@@ -205,7 +205,7 @@
     "rarity": "red",
     "level": 4,
     "cost": 12000,
-    "wage": 300,
+    "wage": 0,
     "special": true,
     "requiredSales": 150,
     "evolutionOnly": true
@@ -216,8 +216,87 @@
     "rarity": "red",
     "level": 4,
     "cost": 12000,
-    "wage": 300,
+    "wage": 0,
     "special": true,
-    "requiredSales": 150
+    "requiredSales": 150,
+    "evolutionOnly": true,
+    "legacy": true
+  },
+  {
+    "id": "egg-gu",
+    "name": "三色蛋・咕",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 0,
+    "special": false,
+    "requiredSales": 0,
+    "spiritId": "jigglypuff",
+    "recruitOnly": true,
+    "route": {
+      "jigglypuff": {
+        "next": "grovyle",
+        "level": 4
+      },
+      "grovyle": {
+        "next": "crown-rooster",
+        "level": 8
+      }
+    }
+  },
+  {
+    "id": "egg-ma",
+    "name": "三色蛋・麻",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 0,
+    "special": false,
+    "requiredSales": 0,
+    "spiritId": "jigglypuff",
+    "recruitOnly": true,
+    "route": {
+      "jigglypuff": {
+        "next": "treecko",
+        "level": 4
+      },
+      "treecko": {
+        "next": "crown-sparrow",
+        "level": 8
+      }
+    }
+  },
+  {
+    "id": "egg-ying",
+    "name": "三色蛋・鷹",
+    "rarity": "red",
+    "level": 4,
+    "cost": 12000,
+    "wage": 0,
+    "special": false,
+    "requiredSales": 0,
+    "spiritId": "jigglypuff",
+    "recruitOnly": true,
+    "route": {
+      "jigglypuff": {
+        "next": "sceptile",
+        "level": 4
+      },
+      "sceptile": {
+        "next": "palkia",
+        "level": 8
+      }
+    }
+  },
+  {
+    "id": "zhaocai",
+    "name": "招財",
+    "rarity": "red",
+    "level": 5,
+    "cost": 6000,
+    "wage": 0,
+    "special": false,
+    "requiredSales": 0,
+    "recruitOnly": true
   }
 ]

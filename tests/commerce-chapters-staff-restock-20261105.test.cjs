@@ -26,36 +26,3 @@ test('side missions pay only once, do not gate store progression',()=>{
  assert.equal(s.gold,4120);assert.equal(s.chapterRewards['lv1-patrol'],true);
  assert.throws(()=>awardSideChapter(g,s,'lv1-patrol'));
 });
-test('all resting workers line up against back wall and active staff remain productive',()=>{
- const context={employeeSpot:(g,s,e,p)=>p,employeePath:(s,e,p)=>[p],obstacles:()=>[],decorEffects:()=>({}),findPath:()=>[],walkable:()=>true};
- const {restingPositions,staffAutomation}=modules('js/staff-automation.js','({restingPositions,staffAutomation})',context),s=state();
- s.phase='open';s.totalTime=10;s.employees=[
- {id:'r1',role:'standby',x:6,z:6,fatigue:30,path:[],blocked:0},
- {id:'r2',role:'standby',x:7,z:7,fatigue:30,path:[],blocked:0},
- {id:'w1',role:'stocker',x:3,z:3,fatigue:10,path:[],blocked:0},
- {id:'w2',role:'host',x:5,z:9,fatigue:15,path:[],blocked:0},
- {id:'w3',role:'cashier',x:10,z:1,fatigue:10,path:[],blocked:0}];
- s.shelves=[{x:4,z:5,sku:'potion'}];const routes=[],g={route:(s,e,p)=>{routes.push(e.id);e.path=[p]},clearOfActors:()=>true,log:()=>{}};
- const spots=restingPositions(s);assert.equal(spots.get('r1').z,1);assert.equal(spots.get('r2').z,1);assert.notEqual(spots.get('r1').x,spots.get('r2').x);
- staffAutomation(g,s,.2);
- for(const id of ['r1','r2'])assert.ok(s.employees.find(e=>e.id===id).path.length,'resting '+id+' must walk to rear');
- assert.ok(routes.includes('w1'));assert.ok(routes.includes('w2'));
- assert.equal(s.employees.find(e=>e.id==='w3').reaction,'work');
-});
-test('only a genuine slacking event allows on-duty cashier to stop working',()=>{
- const {staffAutomation}=modules('js/staff-automation.js','({staffAutomation})',{employeeSpot:(g,s,e,p)=>p,employeePath:()=>[],obstacles:()=>[],decorEffects:()=>({}),findPath:()=>[],walkable:()=>true});
- const s=state(),e=s.employees[0];s.phase='open';s.totalTime=30;s.shelves=[];e.path=[];e.reaction='idle';s.event={id:'cashier-idle',employeeId:e.id};
- staffAutomation({route:()=>{},clearOfActors:()=>true,log:()=>{}},s,.2);
- assert.equal(e.reaction,'bored');
- s.event=null;staffAutomation({route:()=>{},clearOfActors:()=>true,log:()=>{}},s,.2);
- assert.equal(e.reaction,'work');
-});
-test('out-of-stock auto replenishment offers direct procurement and chapter screens are linked',()=>{
- const app=read('js/app.js'),goods=read('js/goods-panel.js'),html=read('index.html'),scene=read('js/scene.js');
- assert.match(app,/if\(\(game\.state\.inventory\[sku\]\|\|0\)<qty\)openPurchaseGuidance\(sku\)/);
- assert.match(goods,/data-purchase-focus/);
- assert.match(html,/id="chapter-clear"/);assert.match(html,/commerce-chapters-v14\.css/);
- assert.match(scene,/d\.reaction==='work'\?'work'/);
- assert.match(read('js/quest-view.js'),/data-questtab="chapter"/);
- assert.match(read('js/core.js'),/autoChapterConstruction\(this,s\)/);
-});

@@ -18,21 +18,30 @@ function shopURL(href=location.href){
 /* 街區：z 向南。ROOT_Z 是建築中心，FRONT_Z 是門面，北側只有中央道路接進來。 */
 const LOT={minX:-17,maxX:17,minZ:36,maxZ:68,gate:3.6},ROOT_Z=46,FRONT_Z=50.5,DOOR_Z=FRONT_Z+.25;
 const QUEUE=[0,2,3,5,6,8],SLOT_GAP=1.3,FIRST_SLOT=FRONT_Z+2.1;
-const SIZE=[null,{w:9,d:7,h:3.6},{w:10.5,d:7.5,h:3.8},{w:14,d:8,h:3.8},{w:16,d:8.5,h:4},{w:20,d:9,h:4.2}];
+/* 五階外觀：破舊木屋 → 整修小店 → 石砌商會 → 白石大館 → 金頂宮殿 */
+const LOOK=[null,
+ {wall:0x8c6d4c,base:0x8a7d68,baseTop:0x9a8d76,red:0x94604e,trim:0x5e4227,tile:['#7d6a58','#6f5d4d','#8a7664','#4f4034'],glow:0x8a7450},
+ {wall:0xe6d3ac,base:0xcbb994,baseTop:0xdcccab,red:0xb04632,trim:0x9a6538,tile:['#c0674f','#b35c46','#cb735a','#8f4634'],glow:0xffd98a},
+ {wall:0xf7ead0,base:0xefe2c6,baseTop:0xf7efdc,red:0xc22d1c,trim:0xeaa820,tile:['#d9553f','#cf4b37','#e0614a','#a83b2b'],glow:0xffd98a},
+ {wall:0xfff6e4,base:0xf6efe0,baseTop:0xfff8ea,red:0xcc1f14,trim:0xf2b01e,tile:['#d9402e','#c93524','#e4503c','#9c2a1c'],glow:0xffe2a0},
+ {wall:0xfffcf2,base:0xfff7e6,baseTop:0xffffff,red:0xd4160e,trim:0xffc61a,tile:['#c9302a','#b52620','#e0463a','#ffc61a'],glow:0xffe8b0}];
+const SIZE=[null,{w:8,d:6.5,h:3},{w:10.5,d:7.5,h:3.8},{w:14,d:8,h:3.8},{w:16,d:8.5,h:4},{w:20,d:9,h:4.2}];
 const HALL_SCALE=.82,LIT=.46,RED=0xc22d1c,RED_DARK=0xa02416,CREAM=0xf7ead0,STONE=0xefe2c6,STONE_D=0xdcc9a2,GOLD=0xeaa820,GREEN=0x7fb84e,GREEN_D=0x5f9a3c,WOOD=0x9a6538;
 
-function tileTexture(T){
- const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle='#d9553f';g.fillRect(0,0,128,128);
- for(let r=0;r<4;r++)for(let i=-1;i<5;i++){const x=i*32+(r%2)*16,y=r*32;g.fillStyle=(i+r)%3?'#cf4b37':'#e0614a';g.beginPath();g.moveTo(x,y);g.lineTo(x+32,y);g.lineTo(x+32,y+18);g.quadraticCurveTo(x+16,y+36,x,y+18);g.closePath();g.fill();g.strokeStyle='#a83b2b';g.lineWidth=2;g.stroke();}
+function tileTexture(T,look,level){
+ const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle=look.tile[0];g.fillRect(0,0,128,128);
+ for(let r=0;r<4;r++)for(let i=-1;i<5;i++){const x=i*32+(r%2)*16,y=r*32;g.fillStyle=(i+r)%3?look.tile[1]:look.tile[2];g.beginPath();g.moveTo(x,y);g.lineTo(x+32,y);g.lineTo(x+32,y+18);g.quadraticCurveTo(x+16,y+36,x,y+18);g.closePath();g.fill();g.strokeStyle=look.tile[3];g.lineWidth=2;g.stroke();}
+ if(level===1){g.fillStyle='#2e241b';for(const [x,y,w,h] of [[10,20,26,14],[70,6,20,12],[84,74,30,16],[30,100,18,10]])g.fillRect(x,y,w,h);g.fillStyle='#6f7a4a';for(const [x,y] of [[50,44],[100,30],[20,70],[60,112]]){g.beginPath();g.arc(x,y,7,0,7);g.fill();}}
  const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.wrapS=t.wrapT=T.RepeatWrapping;return t;
 }
-function signTexture(T,star){
+function signTexture(T,star,level=3){
  const c=document.createElement('canvas');c.width=1024;c.height=340;const g=c.getContext('2d');
- g.fillStyle='#fff6e2';g.fillRect(0,0,1024,340);
+ g.fillStyle=level===1?'#a98a62':'#fff6e2';g.fillRect(0,0,1024,340);
+ if(level===1){g.strokeStyle='#7c6243';g.lineWidth=5;for(const y of [80,170,260]){g.beginPath();g.moveTo(0,y);g.lineTo(1024,y+6);g.stroke();}}
  const cx=512,cy=86;
- if(star){g.fillStyle='#f2bd3f';g.strokeStyle='#c98a1e';g.lineWidth=5;g.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?26:62;g[i?'lineTo':'moveTo'](cx+Math.cos(a)*r,cy+10+Math.sin(a)*r);}g.closePath();g.fill();g.stroke();}
+ if(level===1){}else if(star){g.fillStyle='#f2bd3f';g.strokeStyle='#c98a1e';g.lineWidth=5;g.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?26:62;g[i?'lineTo':'moveTo'](cx+Math.cos(a)*r,cy+10+Math.sin(a)*r);}g.closePath();g.fill();g.stroke();}
  else{g.fillStyle='#f2a93b';g.beginPath();g.arc(cx,cy+26,44,Math.PI,0);g.closePath();g.fill();g.strokeStyle='#f2a93b';g.lineWidth=11;g.lineCap='round';for(let i=0;i<7;i++){const a=Math.PI+(i+.5)*Math.PI/7;g.beginPath();g.moveTo(cx+Math.cos(a)*60,cy+26+Math.sin(a)*60);g.lineTo(cx+Math.cos(a)*88,cy+26+Math.sin(a)*88);g.stroke();}}
- g.fillStyle='#2c2622';g.font='900 150px "Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('初光商會',cx,238);
+ g.fillStyle=level===1?'#3a2a1a':'#2c2622';g.font='900 150px "Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('初光商會',cx,238);
  const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=4;return t;
 }
 function boardTexture(T){
@@ -49,18 +58,19 @@ function hipRoof(T,w,d,h,ridge){
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.computeVertexNormals();return g;
 }
 
+
 function buildHall(T,level){
  const S=SIZE[level],root=new T.Group(),mats=new Map(),textures=[],anim=[];
  const m=(color,o={})=>{const k=color+JSON.stringify(o);if(!mats.has(k))mats.set(k,new T.MeshStandardMaterial({color,roughness:.85,...o}));return mats.get(k);};
  const add=(geo,mat,x=0,y=0,z=0,parent=root)=>{const o=new T.Mesh(geo,mat);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o;};
  const box=(w,h,d,mat,x,y,z,parent)=>add(new T.BoxGeometry(w,h,d),mat,x,y,z,parent);
- const front=S.d/2,tile=tileTexture(T),roofMat=new T.MeshStandardMaterial({color:0xffffff,map:tile,roughness:.8,side:T.DoubleSide});textures.push(tile);
- const glowMat=m(0xffd98a,{emissive:0xffb648,emissiveIntensity:.75}),gold=m(GOLD,{metalness:.2}),cream=m(CREAM),stone=m(STONE),stoneD=m(STONE_D),red=m(RED),redD=m(RED_DARK);
+ const look=LOOK[level],worn=level===1,front=S.d/2,tile=tileTexture(T,look,level),roofMat=new T.MeshStandardMaterial({color:0xffffff,map:tile,roughness:.8,side:T.DoubleSide});textures.push(tile);
+ const glowMat=m(look.glow,{emissive:worn?0x3a2a14:0xffb648,emissiveIntensity:worn?.3:level===5?1:.75}),gold=m(look.trim,{metalness:level>=4?.55:worn?0:.2,roughness:level>=4?.4:.85}),cream=m(look.wall),stone=m(look.base),stoneD=m(worn?0x6a5a48:STONE_D),red=m(look.red),redD=m(worn?0x6e463a:RED_DARK);
  const glass=new T.MeshStandardMaterial({color:0xa9dcf2,transparent:true,opacity:.55,roughness:.15,metalness:.1});
 
  /* base and walls */
  const baseW=S.w+(level>=3?3:1.6);
- box(baseW,.28,S.d+1.8,stone,0,.14,.3);box(baseW-.5,.12,S.d+1.3,m(0xf7efdc),0,.34,.3);
+ box(baseW,.28,S.d+1.8,stone,0,.14,.3);box(baseW-.5,.12,S.d+1.3,m(look.baseTop),0,.34,.3);
  box(S.w,S.h,S.d,cream,0,.4+S.h/2,0);box(S.w+.14,.4,S.d+.14,stoneD,0,.58,0);
  /* door: two glass leaves that slide apart */
  const doorW=2.9,doorH=2.75,y0=.4,doors=[];
@@ -68,15 +78,18 @@ function buildHall(T,level){
  const darkIn=box(doorW,doorH,.08,m(0x4f4238),0,y0+doorH/2,front+.1);darkIn.userData.soft=true;
  for(const s of[-1,1]){const leaf=new T.Group();leaf.position.set(s*doorW/4,y0+doorH/2,front+.17);root.add(leaf);const g=box(doorW/2-.08,doorH-.1,.05,glass,0,0,0,leaf);g.userData.soft=true;g.castShadow=false;box(.07,.8,.07,gold,-s*(doorW/4-.2),0,.06,leaf);doors.push({leaf,s});}
  /* shop windows either side of the door, warm with shelves */
- const shopWin=(x,w,h=2.3)=>{box(w+.24,h+.24,.12,m(0x8c5a34),x,y0+.34+h/2,front+.04);const g=box(w,h,.06,glowMat,x,y0+.34+h/2,front+.09);g.userData.soft=true;g.castShadow=false;for(let i=1;i<3;i++)box(w,.05,.08,m(0xb07a44),x,y0+.34+h*i/3,front+.13);box(.05,h,.08,m(0xb07a44),x,y0+.34+h/2,front+.13);};
+ const shopWin=(x,w,h=worn?1.7:2.3)=>{box(w+.24,h+.24,.12,m(0x8c5a34),x,y0+.34+h/2,front+.04);const g=box(w,h,.06,glowMat,x,y0+.34+h/2,front+.09);g.userData.soft=true;g.castShadow=false;for(let i=1;i<3;i++)box(w,.05,.08,m(0xb07a44),x,y0+.34+h*i/3,front+.13);box(.05,h,.08,m(0xb07a44),x,y0+.34+h/2,front+.13);};
  const winX=doorW/2+.95;shopWin(-winX,1.2);shopWin(winX,1.2);
+ /* 第一階：木板牆、釘死的窗、補丁；第二階：整修過的半木構牆面 */
+ if(worn){for(const side of [-1,1])for(let i=0;i<4;i++)box(.42,S.h-.1,.05,m(i%2?0x7a5c3e:0x967656),side*(S.w/2-.25-i*.3),.4+S.h/2,front+.03).userData.soft=true;const plank=(x,y,r,l=1.7)=>{const b=box(l,.18,.05,m(0xa98c63),x,y,front+.17);b.rotation.z=r;};plank(-winX,1.7,.5);plank(-winX,1.25,-.42);plank(winX,1.5,-.25,1.5);box(.9,.7,.04,m(0x6d7a55),-S.w/2+.8,2.6,front+.06);box(.7,.55,.04,m(0x9a5a3e),S.w/2-.9,3,front+.06);}
+ if(level===2){const beam=m(0x7a5230);for(const x of [-S.w/2+.15,S.w/2-.15,-winX-.95,winX+.95])box(.2,S.h,.08,beam,x,.4+S.h/2,front+.04);box(S.w,.2,.08,beam,0,3.1,front+.04);box(S.w,.2,.08,beam,0,.4+S.h-.1,front+.04);}
  /* striped awning with a scalloped hem */
  const awnW=doorW+(level>=3?3.4:3),n=Math.round(awnW/.62),sw=awnW/n,awnY=y0+doorH+.62;
- for(let i=0;i<n;i++){const x=-awnW/2+sw*(i+.5),c=i%2?m(0xfff4df):m(RED),slat=box(sw,.1,1.25,c,x,awnY,front+.62);slat.rotation.x=.42;const sc=add(new T.CylinderGeometry(sw/2,sw/2,.1,14,1,false,0,Math.PI),c,x,awnY-.32,front+1.2);sc.rotation.set(Math.PI/2,0,Math.PI/2);}
+ for(let i=0;i<n;i++){if(worn&&(i===1||i===n-2))continue;const x=-awnW/2+sw*(i+.5),c=i%2?m(worn?0xb7a98e:0xfff4df):red,slat=box(sw,.1,1.25,c,x,awnY,front+.62);slat.rotation.x=.42;const sc=add(new T.CylinderGeometry(sw/2,sw/2,.1,14,1,false,0,Math.PI),c,x,awnY-.32,front+1.2);sc.rotation.set(Math.PI/2,0,Math.PI/2);}
  /* sign board */
- const signW=level>=3?6:4.8,signH=signW*.34,signY=y0+doorH+(level===1?1.75:2.05);
- box(signW+.36,signH+.36,.22,gold,0,signY,front+.56);const st=signTexture(T,level>=4);textures.push(st);
- const sign=add(new T.PlaneGeometry(signW,signH),new T.MeshBasicMaterial({map:st}),0,signY,front+.69);sign.userData.soft=true;sign.castShadow=false;
+ const signW=level>=4?7:level===3?6:level===2?4.8:3.8,signH=signW*.34,signY=y0+doorH+(level===1?1.55:2.05);
+ const signFrame=box(signW+.36,signH+.36,.22,gold,0,signY,front+.56);const st=signTexture(T,level>=4,level);textures.push(st);
+ const sign=add(new T.PlaneGeometry(signW,signH),new T.MeshBasicMaterial({map:st}),0,signY,front+.69);if(worn){signFrame.rotation.z=sign.rotation.z=-.07;}sign.userData.soft=true;sign.castShadow=false;
  /* crest: gold wings and the crystal */
  const crystalAt=(x,y,z)=>{const cr=add(new T.OctahedronGeometry(.62),new T.MeshStandardMaterial({color:0x9fdcff,emissive:0x5fb8ff,emissiveIntensity:.35,roughness:.2,metalness:.1,flatShading:true}),x,y+.8,z);cr.scale.y=1.35;cr.userData.soft=true;anim.push(t=>{cr.rotation.y=t*.5;cr.position.y=y+.8+Math.sin(t*1.5)*.06;});
   const d=add(new T.OctahedronGeometry(.4),gold,x,y+.02,z);d.scale.set(.8,1.3,.4);for(const s of[-1,1]){const w=add(new T.SphereGeometry(.34,10,8),gold,x+s*.45,y-.08,z);w.scale.set(1.2,.55,.5);}};
@@ -96,19 +109,22 @@ function buildHall(T,level){
   const r=add(new T.ExtrudeGeometry(sh,{depth:S.d+.7,bevelEnabled:false}),roofMat,0,roofY-.05,-(S.d+.7)/2);
   const gableIn=new T.Shape();gableIn.moveTo(-S.w/2+.05,0);gableIn.lineTo(0,2.45);gableIn.lineTo(S.w/2-.05,0);gableIn.closePath();const gf=add(new T.ShapeGeometry(gableIn),cream,0,roofY-.05,front+.36);gf.castShadow=false;gf.userData.soft=true;
   for(const s of[-1,1]){const eave=box(Math.hypot(S.w/2+.75,2.75)+.2,.22,.4,m(RED_DARK),s*(S.w/4+.38),roofY+1.33,front+.42);eave.rotation.z=-s*Math.atan2(2.75,S.w/2+.75);}
-  crystalAt(0,roofY+2.75,front+.2);banner(-S.w/2+.75,y0+3.35);banner(S.w/2-.75,y0+3.35);box(S.w-.1,.12,.12,gold,0,y0+3.42,front+.2);
+  r.rotation.z=-.018;/* 第一階沒有金飾與水晶：屋頂塌陷、破洞用木板蓋著，門口堆著舊木箱 */
+  box(1.5,.1,1.1,m(0x8d6f4c),1.6,roofY+1.15,front+.1).rotation.z=-.62;box(1.1,.1,.9,m(0x7a5c3e),-1.9,roofY+.85,front-.6).rotation.z=.62;
+  for(const [x,z,w] of [[-S.w/2-.6,front+.9,.8],[-S.w/2-.1,front+1.2,.6],[S.w/2+.5,front+.7,.7]]){const c=box(w,w,w,m(0x8a6a44),x,.34+w/2,z);c.rotation.y=x*.7;}
+  for(const [x,z] of [[-2,front+1.4],[2.4,front+1.3],[S.w/2+.9,front-1],[-S.w/2-.9,front-.5]])add(new T.ConeGeometry(.22,.55,5),m(0x6f8a48),x,.56,z).castShadow=false;
  }else if(level===2){
   const r=add(hipRoof(T,S.w+1.5,S.d+1.2,1.4,S.d*.15),roofMat,0,roofY,0);
-  arch(0,roofY-.05,3.7,front+.42);box(S.w+.6,.3,.5,stone,0,roofY-.02,front+.3);
-  for(const s of[-1,1]){box(2.2,.5,1.2,stone,s*(S.w/2-1.1),roofY+1.1,-.3);const b=add(new T.SphereGeometry(.85,12,8),m(GREEN),s*(S.w/2-1.1),roofY+1.5,-.3);b.scale.set(1.15,.55,.7);for(const a of[0,1.2,2.5,3.8,5])add(new T.SphereGeometry(.1,6,5),m(a>2?0xf0704a:0xffffff),s*(S.w/2-1.1)+Math.cos(a)*.6,roofY+1.82,-.3+Math.sin(a)*.34);}
-  crystalAt(0,roofY+2.95,front+.24);banner(-S.w/2+.72,y0+3.4);banner(S.w/2-.72,y0+3.4);lantern(-doorW/2-1.72,y0+2.5);lantern(doorW/2+1.72,y0+2.5);
+  box(S.w+.6,.3,.5,stone,0,roofY-.02,front+.3);
+  lantern(-doorW/2-1.72,y0+2.5);lantern(doorW/2+1.72,y0+2.5);
  }else{
   add(hipRoof(T,S.w+1.5,S.d+1.4,level>=4?2.3:1.9,S.w*.42),roofMat,0,roofY,0);
   arch(0,roofY-.05,level>=4?4.4:3.9,front+.42);box(S.w+.7,.34,.6,stone,0,roofY-.02,front+.3);box(S.w+.7,.1,.66,gold,0,roofY-.24,front+.3);
   const span=S.w/2-1.3;
   if(level===3){for(const s of[-1,1]){archWin(s*span,1.5,2.3);banner(s*(span-1.45),y0+3.45);box(.8,.45,.9,gold,s*(S.w/2-.35),roofY+.12,front+.15);}const fb=box(2.1,.5,1,stone,3.8,roofY+1.2,1);add(new T.SphereGeometry(.8,12,8),m(GREEN),3.8,roofY+1.6,1).scale.set(1.2,.55,.7);crystalAt(0,roofY+3.35,front+.2);}
   if(level>=4){for(const s of[-1,1]){archWin(s*span,1.6,2.45);banner(s*(span-1.5),y0+3.5);banner(s*(span-2.25),y0+3.5);dormer(s*(S.w/2-2.2),roofY+1.32,1.05);box(.7,.3,.6,gold,s*(S.w/2-.3),roofY+.14,front+.2);}}
-  if(level===4){crystalAt(0,roofY+3.75,front+.2);}
+  if(level===4){crystalAt(0,roofY+3.75,front+.2);for(const s of[-1,1])for(const x of [S.w/2-.1,doorW/2+3.2])pillar(s*x,3.2,front+.34,.24);}
+  if(level>=4){box(S.w+1,.16,S.d+.9,gold,0,roofY+.02,0);}
   for(const s of[-1,1]){pillar(s*(doorW/2+1.5),2.9);lantern(s*(doorW/2+1.5),y0+2.4,front+.82);}
  }
  if(level>=4){
@@ -128,10 +144,13 @@ function buildHall(T,level){
    const fl=new T.Shape();fl.moveTo(0,0);fl.quadraticCurveTo(.7,.16,1.45,-.26);fl.quadraticCurveTo(.8,-.3,1.3,-.74);fl.quadraticCurveTo(.6,-.5,0,-.62);fl.closePath();const f=add(new T.ShapeGeometry(fl),m(RED,{side:T.DoubleSide}),x+.05,roofY+4.2,-1.4);f.userData.soft=true;anim.push(t=>{f.rotation.y=Math.sin(t*2.4+s)*.28;f.scale.x=1+Math.sin(t*3.2+s)*.05;});
    /* the outer arched windows and lamps of the wings */
    pillar(s*(S.w/2-.1),3.1,front+.34,.3);lantern(s*(S.w/2+.05),y0+2.5,front+.85);}
+  /* 第五階：整排金柱、金色飛簷、門前噴泉 */
+  for(const s of[-1,1]){for(const x of [doorW/2+2.8,doorW/2+4.2,doorW/2+5.6])pillar(s*x,3.5,front+.36,.25);const px=s*(doorW/2+3.4);add(new T.CylinderGeometry(1.15,1.25,.32,20),stone,px,.5,front+3.1);add(new T.CylinderGeometry(.95,.95,.06,20),m(0x7fd0ee,{emissive:0x2f8fc0,emissiveIntensity:.3}),px,.68,front+3.1);add(new T.CylinderGeometry(.16,.24,1.1,10),gold,px,1.15,front+3.1);add(new T.SphereGeometry(.28,12,10),gold,px,1.75,front+3.1);}
+  box(S.w+1.6,.26,S.d+1.5,gold,0,roofY+.14,0);
   planter(-S.w/2-.1,2.4,front+1.05,true);planter(-S.w/2+2.6,1.9,front+1.05);planter(S.w/2+.1,2.4,front+1.05,true);planter(S.w/2-2.6,1.9,front+1.05);
  }else if(level===4){planter(-S.w/2+1,3.7,front+.98);planter(S.w/2-1,3.7,front+.98);for(const s of[-1,1]){const x=s*(S.w/2+.65);add(new T.CylinderGeometry(.08,.11,2.3,8),m(0x8c5a34),x,.34+1.15,front+.8);lantern(x,1.95,front+.8);}}
  else if(level===3){planter(-S.w/2+.55,3,front+.98,true);planter(S.w/2-.55,3,front+.98,true);}
- else{const w=level===2?2.2:2;planter(-S.w/2+.45,w,front+.92,level===2);planter(S.w/2-.45,w,front+.92,level===2);}
+ else if(level===2){planter(-S.w/2+.45,2.2,front+.92);planter(S.w/2-.45,2.2,front+.92);}
  /* chalkboard with the cart */
  const bt=boardTexture(T);textures.push(bt);const bx=doorW/2+1.1,bz=front+(level>=4?1.55:1.15);box(1,1.34,.1,m(WOOD),bx,.34+.72,bz);const board=add(new T.PlaneGeometry(.8,.96),new T.MeshBasicMaterial({map:bt}),bx,.34+.82,bz+.06);board.userData.soft=true;board.castShadow=false;box(.08,.3,.08,m(WOOD),bx-.4,.46,bz);box(.08,.3,.08,m(WOOD),bx+.4,.46,bz);
  window.PhantomHarbor?.toonOutline?.(T,root,{thickness:.075});

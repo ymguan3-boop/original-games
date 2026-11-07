@@ -1,5 +1,5 @@
 /* Click-to-resolve customer problems. Uses normal shop transactions; never grants a free sale. */
-import {shelfCapacity} from './furniture.js?v=20261106-fx10';
+import {shelfCapacity} from './furniture.js?v=20261107-a1';
 import {ENTRANCE} from './nav.js';
 import {applyFreeEventFatigue} from './patrol-events.js';
 const clamp=n=>Math.max(0,Math.min(100,n));
@@ -10,7 +10,7 @@ export function complaintKind(s,c){
  if(c.state==='OutOfStock')return 'stockout';
  if(c.state==='Angry')return 'angry';
  if(['UnhappyExit','AbandonCart'].includes(c.state))return 'disappointed';
- if(['Queue','Checkout','Cart'].includes(c.state)&&((c.wait||0)>=Math.max(2,(c.patience||30)*.5)||!s.employees.some(e=>e.role==='cashier'&&e.fatigue<95)&&(c.wait||0)>2))return 'queue';
+ if(['Queue','Checkout','Cart'].includes(c.state)&&((c.wait||0)>=Math.max(2,(c.patience||30)*.5)))return 'queue';
  return null;
 }
 const formats={
@@ -54,7 +54,7 @@ export function getCustomerComplaint(s,c,g){
   ];
  }
  options=options.map(o=>({...o,disabled:!!o.disabled||used.includes(kind+':'+o.id),reason:used.includes(kind+':'+o.id)?'此方法已使用':o.reason||''}));
- return {...config,kind,id,customerId:c.id,customerName:c.name,role:'customer',title:config.title,options,funny:false};
+ return {...config,kind,id,customerId:c.id,customerName:c.name,role:'customer',title:config.title,options:options.filter(o=>!o.disabled).slice(0,2),funny:false};
 }
 export function resolveCustomerComplaint(g,s,p){
  const c=s.customers.find(c=>c.id===p.customerId);if(!c)throw Error('顧客已離開商會');

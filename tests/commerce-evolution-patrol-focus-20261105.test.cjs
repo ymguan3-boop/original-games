@@ -38,17 +38,6 @@ test('one card click evolves exactly one stage, preserves the employee identity,
  employee.workLevel=8;evolveStaffOnce(game,s,employee);assert.equal(employee.spiritId,'spirit-c');
  assert.equal(employee.evolutionHistory.length,2);
 });
-test('leveling up only unlocks manual evolution and does not mutate existing species',()=>{
- const code=read('js/core.js'),start=code.indexOf('xp(s,e,amount){'),end=code.indexOf('efficiency(e){',start);
- assert.ok(start>=0&&end>start);
- const method=code.slice(start,end);
- const xp=new Function('return ({'+method+'}).xp;')();
- const {employee,s}=setup(),g={data:setup().data,efficiency:()=>1,notice:()=>{},log:()=>{}};
- employee.workLevel=3;employee.xp=72;
- xp.call(g,s,employee,5);
- assert.equal(employee.workLevel,4);assert.equal(employee.spiritId,'spirit-a');
- assert.equal(employee.evolutionHistory.length,0);
-});
 test('patrol completion is impossible for required events before the selected focus, and auto-clears when nearby',()=>{
  const {requiresManagerPatrol}=helper('js/event-routing.js',['requiresManagerPatrol']);
  const {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue}=helper('js/patrol-events.js',['eventEmployee','managerNearEmployee','sleepEvent','applyFreeEventFatigue']);
@@ -66,28 +55,4 @@ test('patrol completion is impossible for required events before the selected fo
  assert.equal(s.recentPatrolResolution.focused,true);
  assert.equal(s.incidentHistory.length,1);
  assert.equal(resolve.call(g,s),false);
-});
-test('focused task pauses simulation, blocks unrelated interactions and returns only on success',()=>{
- const core=read('js/core.js'),app=read('js/app.js'),html=read('index.html'),coach=read('js/event-coach.js'),css=read('commerce-evolution-patrol-v18.css');
- assert.match(core,/if\(!s\.patrolFocus\)this\.simulate\(s,step\)/);
- assert.match(core,/if\(!active&&this\.state\.patrolFocus\)return/);
- assert.match(app,/action\('startPatrolFocus',\{eventId\}\)/);
- assert.match(app,/if\(game\.state\.patrolFocus\)return/);
- assert.match(app,/if\(info\.focused&&scene\?\.metrics\.mode==='follow'\)/);
- assert.match(app,/scene\.setMode\('play'\)/);
- assert.match(coach,/s\.patrolFocus/);
- assert.match(html,/id="patrol-focus-hint"/);
- assert.match(css,/body\.patrol-focus \.toolbar/);
-});
-test('mobile alarm, card badge and existing artwork animate before the real saved transition',()=>{
- const app=read('js/app.js'),css=read('commerce-evolution-patrol-v18.css'),html=read('index.html');
- assert.match(html,/id="staff-evolution-stage"/);
- assert.match(html,/app\.js\?v=\d{8}-/);
- assert.match(app,/staffButton\.classList\.toggle\('staff-evolution-ready'/);
- assert.match(app,/data-evolve-employee/);
- assert.match(app,/evolve-ready-label/);
- assert.match(app,/setTimeout\(\(\)=>\{\s*const result=action\('evolveEmployee'/);
- assert.match(css,/@keyframes staff-evo-spin/);
- assert.match(css,/@keyframes staff-evo-flash/);
- assert.match(css,/filter:brightness\(4\.5\) saturate\(0\)/);
 });
