@@ -2,36 +2,36 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, eggTrio, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-b2';
-import {createPkIsland} from './pk-island.js?v=20261107-b2';
-import {createPkLobby} from './pk-lobby.js?v=20261107-b2';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-b2';
-import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-b2';
-import {createToonKit} from './style.js?v=20261107-b2';
-import {createChartModels} from './chart-models.js?v=20261107-b2';
-import {createView} from './view.js?v=20261107-b2';
-import {createSeaChart} from './sea3d.js?v=20261107-b2';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-b2';
-import {buildPath} from './stages.js?v=20261107-b2';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-b2';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-b2';
+import {STAGES, SHAPES, eggTrio, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-b5';
+import {createPkIsland} from './pk-island.js?v=20261107-b5';
+import {createPkLobby} from './pk-lobby.js?v=20261107-b5';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-b5';
+import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-b5';
+import {createToonKit} from './style.js?v=20261107-b5';
+import {createChartModels} from './chart-models.js?v=20261107-b5';
+import {createView} from './view.js?v=20261107-b5';
+import {createSeaChart} from './sea3d.js?v=20261107-b5';
+import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-b5';
+import {buildPath} from './stages.js?v=20261107-b5';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-b5';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-b5';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-b2';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-b2';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-b5';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-b5';
 import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-b2';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-b2';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-b2';
-import {icon} from '../../survivors/js/ui-art.js?v=20261107-b2';
-import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-b2';
-import {createTutorial} from './tutorial.js?v=20261107-b2';
-import {initIcons, ico} from './ui-icons.js?v=20261107-b2';
-import {createCombatAudio} from './combat-audio.js?v=20261107-b2';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-b5';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-b5';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-b5';
+import {icon} from '../../survivors/js/ui-art.js?v=20261107-b5';
+import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-b5';
+import {createTutorial} from './tutorial.js?v=20261107-b5';
+import {initIcons, ico} from './ui-icons.js?v=20261107-b5';
+import {createCombatAudio} from './combat-audio.js?v=20261107-b5';
 
-import {autoDeck, validPkDeck} from './deck-rules.js?v=20261107-b2';
+import {autoDeck, validPkDeck} from './deck-rules.js?v=20261107-b5';
 
-import {streamAssets} from './asset-stream.js?v=20261107-b2';
-import {CARD_PREVIEWS} from './card-previews.js?v=20261107-b2';
+import {streamAssets} from './asset-stream.js?v=20261107-b5';
+import {CARD_PREVIEWS} from './card-previews.js?v=20261107-b5';
 const ASSET_BASE = new URL('../../', import.meta.url);
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
@@ -228,8 +228,7 @@ function renderIslePanel() {
   const traps = (s.traps || []).map((t) => TRAPS[t.kind].name), uniq = [...new Set(traps)].map((n) => `${n}×${traps.filter((x) => x === n).length}`);
   const deck = record.deckSlots.map((id) => id ? `<img src="${picture(id)}" alt="${esc(spirit(id).name)}" title="${esc(spirit(id).name)}" data-frame="${spirit(id).cardFrame || 'yellow'}">` : '<i title="卡組空位"></i>').join('');
   $('islePanel').innerHTML = `<div class="isle-card">
-    <div class="isle-title"><small>第 ${i + 1} 島</small><h2>${esc(s.name)}</h2><span class="weather-pill">${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span>${record.cleared[s.id] ? `<span class="cleared-tag">已通關 ${'★'.repeat(best)}<em>可重複挑戰</em></span>` : ''}</div>
-    <div class="isle-boss"><img src="${picture(s.boss)}" alt=""><div><small>${i < 5 ? '小魔王' : '大魔王'}</small><b>${esc(boss.name)}</b></div><p class="isle-brief">🛤️ 路線${route}<br>🎟️ 擊倒 +${killPoints(i)}</p></div>
+    <div class="isle-row"><img src="${picture(s.boss)}" alt=""><div class="isle-name"><b>第 ${i + 1} 島・${esc(s.name)}${record.cleared[s.id] ? ' 🚩' : ''}</b><small>${i < 5 ? '小魔王' : '大魔王'} ${esc(boss.name)}</small></div><div class="isle-brief"><span>${stageWeather(s.scene).icon} ${stageWeather(s.scene).name}</span><span>🛤️ 路線${route}・🎟️ +${killPoints(i)}</span></div></div>
     <div class="isle-deck"><div class="deck-strip">${deck}</div><div class="isle-deck-actions"><button class="tool small" data-open="deck">編組 ${nb + nr}/${DECK_SIZE}</button><button class="tool small" data-auto-deck>一鍵編組</button></div></div>
     ${nb < DECK_BASE ? `<p class="sortie-base-warning" role="status">⚠️ 必須編滿四位基礎幻靈才可以出擊（目前 ${nb}/${DECK_BASE} 位）</p>` : ''}
   </div>`;
@@ -535,8 +534,12 @@ async function startGame() {
     if (!view) view = createView($('world'), {spirits: data.spirits, catalog: data.catalog});
     if (!audio) audio = createCombatAudio();
     view.costume = costumeFor(journey()).id;
-    game = createGame({stageIndex: record.stage, deck: record.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
+    /* 教學戰：獨立小關、只發同一種卡，一定能合到三星；不算正式關卡，也不給獎勵 */
+    const teachBattle = tutorial?.active && ['sortie', 'deploy', 'star2', 'star3', 'item', 'finish'].includes(record.tutorial?.step);
+    const teachCard = deckBase()[0];
+    game = createGame({stageIndex: record.stage, stage: teachBattle ? {...STAGES[0], id: 'tutorial-battle', name: '教學戰', scale: 0.3, nest: 900, crystal: 6000} : null, deck: teachBattle ? [teachCard] : record.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
     game.runId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    game.tutorialBattle = !!teachBattle;
     view.setGame(game);
     loadingPhase('場景完成，正在準備幻靈素材…', 55);
     const ids = [...record.deck, ...game.stage.groups.map((g) => g.species), game.stage.boss];
@@ -1112,11 +1115,17 @@ function handleEvents() {
     else if (ev.type === 'item') { toast(`${ITEMS[ev.id].icon} ${ITEMS[ev.id].name}！`); audio?.play({phase: 'impact', strong: true}); }
     else if (ev.type === 'boss') banner(`魔王 ${spirit(ev.species).name} 現身！`, true);
     else if (ev.type === 'baseHit' && ev.side === 'crystal' && navigator.userActivation?.hasBeenActive) navigator.vibrate?.(40);
-    else if (ev.type === 'finish') { ev.earned = creditPoints(); setTimeout(() => showResult(ev), 1000); }
+    else if (ev.type === 'finish') { ev.earned = game.tutorialBattle ? 0 : creditPoints(); setTimeout(() => showResult(ev), 1000); }
   }
 }
 
 function showResult(r) {
+  if (game.tutorialBattle) {
+    tutorial.check({finish: () => true});
+    openModal(ribbon('教學戰結束', '⚓') + '<p class="bm-line">做得好！你已學會守護戰，正式關卡等著你。</p><div class="modal-actions center"><button class="primary" id="teachDone">返回主島</button></div>', 'result');
+    $('teachDone').onclick = () => { $('modal').close(); game = null; $('hud').hidden = true; $('lobby').hidden = false; renderLobby(); };
+    return;
+  }
   const stage = game.stage, idx = STAGES.indexOf(stage), first = r.won && !record.cleared[stage.id];
   if (r.won) { record.cleared[stage.id] = true; saveRecord(); }
   const mins = Math.floor(r.time / 60), secs = Math.round(r.time % 60);

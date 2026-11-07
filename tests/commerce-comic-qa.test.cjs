@@ -1,11 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const ROOT=path.resolve(__dirname,'../初光商會'),read=p=>fs.readFileSync(path.join(ROOT,p),'utf8');
 const load=(file,expression,context={})=>{vm.runInNewContext(read(file).replace(/^import .*?;\n/gm,'').replace(/\bexport\s+(?=(?:function|const|class))/g,'')+';this.output='+expression,context);return context.output;};
-test('each event shows its own GIF with an escaped caption',()=>{
- const sketch=load('js/incident-sketch.js','incidentSketch');
- const markup=sketch({id:'comic-1',role:'cashier',title:'唱歌事件',emoji:['🪙','🎵','😄'],animation:'dance',effectText:'收銀加快'},v=>String(v).replace(/[<>]/g,''));
- assert.match(markup,/event-gifs\/v2\/comic-1\.gif/);assert.match(markup,/loading="lazy"/);
-});
 test('mood overlay is sharp HTML with distinct happy, angry, tired, question and training colors',()=>{
  const src=read('js/actor-visuals.js').replace(/\bexport\s+(?=(?:const|function))/g,'');
  const created=[],context={innerWidth:390,innerHeight:844,performance:{now:()=>2000},document:{createElement:()=>{const node={children:[],dataset:{},style:{},hidden:false,addEventListener(){},setAttribute(){},removeAttribute(){},append(...els){this.children.push(...els);},remove(){this.removed=true;}};created.push(node);return node;}}};

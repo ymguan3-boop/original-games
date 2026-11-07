@@ -573,5 +573,30 @@
     "generatedAt": "2026-10-21",
     "path": "cards/art/avian-egg.webp?v=20261021-illustrated-v2",
     "styleReference": "cards/art/floral-deer-chikorita.webp"
+  },
+  "zhaocai": {
+    "image": "cards/art/zhaocai.webp?v=20261107",
+    "name": "招財",
+    "source": "gpt-image"
+  },
+  "zhaocai-2": {
+    "image": "cards/art/zhaocai-2.webp?v=20261107",
+    "name": "招財・魔導師",
+    "source": "gpt-image"
+  },
+  "zhaocai-3": {
+    "image": "cards/art/zhaocai-3.webp?v=20261107",
+    "name": "招財・守護者",
+    "source": "gpt-image"
+  },
+  "crown-sparrow": {
+    "image": "cards/art/crown-sparrow.webp?v=20261107",
+    "name": "羽冠麻雀王",
+    "source": "gpt-image"
+  },
+  "crown-rooster": {
+    "image": "cards/art/crown-rooster.webp?v=20261107",
+    "name": "鳳冠雄雞王",
+    "source": "gpt-image"
   }
 }

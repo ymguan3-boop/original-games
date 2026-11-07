@@ -96,10 +96,10 @@
   ],
   "art": {
     "crown-sparrow": {
-      "image": "assets/ui/zhaocai.gif"
+      "image": "cards/art/crown-sparrow.webp?v=20261107"
     },
     "crown-rooster": {
-      "image": "assets/ui/zhaocai.gif"
+      "image": "cards/art/crown-rooster.webp?v=20261107"
     }
   },
   "evolution": {

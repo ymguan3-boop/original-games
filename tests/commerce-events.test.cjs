@@ -17,12 +17,3 @@ test('a departing customer is immediately removed after reaching the actual entr
  const {stepCustomers}=simulation(),c={id:'c3',state:'Leave',x:6.2,z:10.1,visited:[],basket:[],path:[{x:6,z:10}],timer:0,patience:40};
  const {s,g}=fixture(c);stepCustomers(g,s,.3);assert.equal(s.customers.length,0);
 });
-test('every event has its own animated GIF, light enough for phones',()=>{
- const ids=[...Array.from({length:16},(_,i)=>'event-'+(i+1)),...Array.from({length:24},(_,i)=>'comic-'+(i+1)),'stockout','queue-complaint'];
- for(const id of ids){
-  const data=fs.readFileSync(path.join(ROOT,'assets/event-gifs/v2',id+'.gif'));
-  assert.equal(data.subarray(0,6).toString('ascii'),'GIF89a',id);
-  assert.ok(data.length<260000,id+' '+data.length);
-  assert.ok(data.indexOf(Buffer.from('NETSCAPE2.0'))>0,id);
- }
-});

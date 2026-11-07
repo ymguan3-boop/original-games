@@ -13,7 +13,7 @@ const WATER_Y = -0.12, PITCH = 0.95, FOV = 38;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-import {ico} from './ui-icons.js?v=20261107-b2';
+import {ico} from './ui-icons.js?v=20261107-b5';
 
 export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, esc = (s) => s}) {
   let state = {open: 0, cleared: {}, selected: 0, boatAt: -1}, sailing = null, portrait = isPortrait();
@@ -288,7 +288,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, es
     if (untouched) reset(rigReady); rigReady = true;
   }
   let rigReady = false;
-  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => { const nowPortrait = isPortrait(); if (nowPortrait !== portrait && !sailing) relayout(nowPortrait); }) : null; ro?.observe(host);
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => { resize(); const nowPortrait = isPortrait(); if (nowPortrait !== portrait && !sailing) relayout(nowPortrait); }) : null; ro?.observe(host);
   function relayout(p) {
     portrait = p; placeIslands(); computeBounds(); buildLanes(); fit(); reset(false); refreshTags(); if (!sailing) boatTo(state.boatAt);
   }

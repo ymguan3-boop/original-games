@@ -215,13 +215,13 @@
   },
   "art": {
     "zhaocai": {
-      "image": "assets/ui/zhaocai.gif"
+      "image": "cards/art/zhaocai.webp?v=20261107"
     },
     "zhaocai-2": {
-      "image": "assets/ui/zhaocai.gif"
+      "image": "cards/art/zhaocai-2.webp?v=20261107"
     },
     "zhaocai-3": {
-      "image": "assets/ui/zhaocai.gif"
+      "image": "cards/art/zhaocai-3.webp?v=20261107"
     }
   },
   "evolution": {

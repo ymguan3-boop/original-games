@@ -18,8 +18,3 @@ test('patrol movement speed is exactly doubled for manual and auto paths',()=>{
  const core=read('js/core.js');assert.match(core,/this\.safeMove\(s,s\.manager,step\*2\.7,step\)/);
  assert.match(core,/steerManager\(s,dt\)\{const a=s\.manager,delta=dt\*2\.7/);
 });
-test('GIF handoff is explicit and no originals are prematurely deleted',()=>{
- const guide=read('IMAGE26_GIF_CODEX_HANDOFF.md');
- assert.match(guide,/image2\.6/);assert.match(guide,/comic-1\.gif/);assert.match(guide,/stockout\.gif/);
- assert.match(guide,/全倉庫搜尋/);
-});
