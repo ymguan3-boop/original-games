@@ -72,12 +72,12 @@ test('egg can deploy near any part of the road, does not march from own base', (
     const c=playCard(s,0,'ally',x);
     assert.equal(c.species,THREE_COLOR_EGG);
     assert.ok(!s.hand.some(p=>p.uid===91),'played card removed only after valid placement');
-    const f=s.fighters.find(f=>f.species===THREE_COLOR_EGG);
-    assert.ok(f);
-    assert.equal(f.x,x);assert.equal(f.z,0);
+    const eggs=s.fighters.filter(f=>f.species===THREE_COLOR_EGG).sort((a,b)=>a.x-b.x);
+    assert.equal(eggs.length,3,'一張卡固定佔三格');
+    const f=eggs[1],at=f.x;assert.ok(eggs[0].x>=s.left+.8&&eggs[2].x<=s.right-.8);assert.ok(Math.abs(at-x)<=s.right-s.left);assert.equal(f.z,0);
     assert.equal(f.stationary,true);assert.equal(f.knockLeft,0);
     for(let i=0;i<80;i++) step(s,1/30);
-    assert.equal(f.x,x,'egg must stay at the selected location');
+    assert.equal(f.x,at,'egg must stay at the selected location');
     assert.equal(f.moving,false);
   }
 });
@@ -87,11 +87,11 @@ test('PK guest placement uses opposite host lane and the mirror restores its cho
   s.foe.hand=[card(77,THREE_COLOR_EGG,1)];
   const guestChoice=7.2,hostPosition=-guestChoice;
   playCard(s,0,'enemy',hostPosition);
-  const remote=s.fighters.find(f=>f.species===THREE_COLOR_EGG);
+  const remote=s.fighters.filter(f=>f.species===THREE_COLOR_EGG).sort((a,b)=>a.x-b.x)[1];
   assert.equal(remote.x,hostPosition);
   const mirror=createMirror(PK_STAGE);
   applySnapshot(mirror,snapshot(s,[]));
-  assert.equal(mirror.fighters.find(f=>f.species===THREE_COLOR_EGG)?.x,guestChoice);
+  assert.equal(mirror.fighters.filter(f=>f.species===THREE_COLOR_EGG).sort((a,b)=>a.x-b.x)[1]?.x,guestChoice);
 });
 
 test('touch/click selected-egg placement, touch drag, and cancelled non-deduction are wired', () => {
@@ -129,5 +129,15 @@ test('sortie deck editor, flipped card descriptions, and how-to explain actual f
   assert.match(main,/卡組與升星/,'how-to also updated');
   assert.match(css,/\.deck-special-rules/);
   assert.match(css,/\.deck-special-note/);
-  assert.match(html,/20261104-v28/);
+  assert.match(html,/20261107-a1/);
+});
+
+test('三色蛋：空位不足時整張卡不生效，也不能放第二組', () => {
+  const s=game({stage:{...game().stage,groups:[],boss:null}});
+  const mid=(s.left+s.right)/2;s.hand=[card(91,THREE_COLOR_EGG,1),card(92,THREE_COLOR_EGG,1)];
+  playCard(s,0,'ally',mid);assert.equal(s.fighters.filter(f=>f.species===THREE_COLOR_EGG).length,3);
+  assert.throws(()=>playCard(s,0,'ally',mid+6),/每場最多放一組三色蛋/);assert.equal(s.hand.length,1);
+  const t=game({stage:{...game().stage,groups:[],boss:null}});t.hand=[card(93,THREE_COLOR_EGG,1)];
+  for(let i=0;i<19;i++)t.fighters.push({side:'ally',hp:10,species:'x',x:0,stationary:false,support:false});
+  assert.throws(()=>playCard(t,0,'ally',(t.left+t.right)/2),/需要三個空閒初級位置/);assert.equal(t.hand.length,1);
 });

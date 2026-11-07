@@ -4,9 +4,9 @@
    evolutions from the cave table (survivors/data/evolution.json). The view's hooks.fire plays the cave attack and
    reports when the hit releases, so damage lands on the animation frame.
    Lane coordinate x runs from state.left (monster nest, path start) to state.right (crystal, path end). */
-import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261104-v28';
-import {STAGES, buildPath} from './stages.js?v=20261104-v28';
-import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261104-v28';
+import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-a1';
+import {STAGES, buildPath} from './stages.js?v=20261107-a1';
+import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-a1';
 
 export {STAGES};
 /* PK (duel): two players on one road. The host's spirits start at the crystal end (side 'ally'), the guest's at the
@@ -308,13 +308,31 @@ export function validEggPosition(state, x) {
   return !!state && Number.isFinite(x) &&
     x >= state.left + 0.8 && x <= state.right - 0.8;
 }
+/* 三色蛋一張卡佔三個位置：三格都合法才成立，否則整張卡不生效。靠路徑兩端時整組往內移 */
+export const EGG_GAP = 2.4;
+export function eggTrio(state, x, side = 'ally') {
+  if (!validEggPosition(state, x)) return null;
+  const min = state.left + 0.8 + EGG_GAP, max = state.right - 0.8 - EGG_GAP;
+  if (min > max) return null;
+  const mid = Math.max(min, Math.min(max, x)), spots = [mid - EGG_GAP, mid, mid + EGG_GAP];
+  const taken = state.fighters.filter((f) => f.side === side && f.stationary && f.hp > 0);
+  return spots.every((p) => !taken.some((f) => Math.abs(f.x - p) < 1)) ? spots : null;
+}
 export function playCard(state, i, side = 'ally', laneX = null) {
   const hand = seatOf(state, side).hand, card = hand[i]; if (!card) throw Error('沒有這張卡');
   /* Never consume a placement card until the player taps a valid road point.
      Same rule on the host and PK guest's host-authoritative lane. */
   if (isThreeColorEgg(card.species) && !validEggPosition(state, laneX))
     throw Error('請先點選路徑上要放置三色蛋的位置');
-  if (isSupport(card.species)) castSupport(state, {...card, side});
+  if (isThreeColorEgg(card.species)) {
+    state.eggSets ??= {};
+    if (state.eggSets[side]) throw Error('每場最多放一組三色蛋');
+    const spots = eggTrio(state, laneX, side);
+    if (!spots || alliesOnField(state, side) + 3 > unitCap(state)) throw Error('需要三個空閒初級位置');
+    state.eggSets[side] = true;
+    for (const x of spots) spawn(state, side, card.species, {boost: card.boost, rank: card.rank, laneX: x});
+    if (side === 'ally') state.stats.summons += 3;
+  } else if (isSupport(card.species)) castSupport(state, {...card, side});
   else {
     if (alliesOnField(state, side) >= unitCap(state)) throw Error(`場上最多 ${unitCap(state)} 隻幻靈`);
     spawn(state, side, card.species, {boost: card.boost, rank: card.rank, laneX});

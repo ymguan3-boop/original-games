@@ -27,6 +27,8 @@ export function installTutorial({game,act,confirmSkip,fullscreen}){
  const finish=()=>act('tutorial',{done:true});
  next.onclick=()=>{const raw=game.state.tutorialState.step,id=raw==='welcome'?'orient':raw,following=after(id);following?go(following):finish();sync();};
  skip.onclick=()=>confirmSkip(()=>{finish();sync();});full.onclick=fullscreen;
+ /* 未完成就離開：下次進來從頭開始 */
+ if(game.state.tutorialState&&!game.state.tutorialState.done&&game.state.tutorialState.step!=='welcome')act('tutorial',{patch:{step:'welcome',assigned:false,patrolled:false,patrolReturned:false}});
  function sync(){const t=game.state.tutorialState;if(!t||t.done){box.hidden=true;document.body.removeAttribute('data-tutorial');setFocus(null);return;}
   let id=t.step==='welcome'?'orient':t.step;const step=STEPS[id];if(!step){finish();return;}
   if(step.done?.(game.state)){const following=after(id);following?go(following):finish();return;}

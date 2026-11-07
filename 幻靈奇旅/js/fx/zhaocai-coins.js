@@ -13,7 +13,7 @@ function create({THREE:T,parent}){
  const pillar=new T.Mesh(new T.CylinderGeometry(.9,1.25,6,28,1,true),glowMat());pillar.position.y=3;pillar.visible=false;root.add(pillar);
  const coins=Array.from({length:COINS},()=>({life:0,age:0,p:new T.Vector3(),v:new T.Vector3(),a:new T.Vector3(),spin:new T.Vector3(),toss:null,bounces:0,rest:0}));
  const sparks=Array.from({length:SPARKS},()=>({life:0,age:0,p:new T.Vector3(),v:new T.Vector3()}));
- let coinHead=0,sparkHead=0,queue=null,ringT=-1,pillarT=-1,targets=[],onTargetHit=null;
+ const shots=[],fields=[];let coinHead=0,sparkHead=0,queue=null,ringT=-1,pillarT=-1,targets=[],onTargetHit=null;
  const next=()=>{const c=coins[coinHead];coinHead=(coinHead+1)%COINS;return c;};
  function burst(pos,n=24,speed=4.5){for(let i=0;i<n;i++){const s=sparks[sparkHead];sparkHead=(sparkHead+1)%SPARKS;s.age=0;s.life=.3+Math.random()*.35;s.p.copy(pos);s.v.set(Math.random()-.5,Math.random()*.9,Math.random()-.5).normalize().multiplyScalar(speed*(.4+Math.random()*.8));}}
  function launch(c,from,v){c.age=0;c.life=2.6;c.toss=null;c.bounces=0;c.rest=0;c.p.copy(from);c.v.copy(v);c.a.set(Math.random()*6,Math.random()*6,Math.random()*6);c.spin.set(6+Math.random()*10,Math.random()*5,6+Math.random()*10);}
@@ -24,6 +24,8 @@ function create({THREE:T,parent}){
  function emit(q,dt){q.carry+=q.rate*dt;while(q.carry>=1&&q.left>0){q.carry--;q.left--;const a=Math.random()*Math.PI*2,r=Math.sqrt(Math.random())*q.radius,up=6.5+Math.random()*3.5,air=2*up/GRAVITY;launch(next(),q.origin,new T.Vector3(Math.cos(a)*r/air,up,Math.sin(a)*r/air));}if(q.left<=0)queue=null;}
  const hide=(mesh,i)=>{dummy.position.set(0,-50,0);dummy.scale.setScalar(zero);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);};
  function update(dt){if(queue)emit(queue,dt);
+  for(let i=shots.length-1;i>=0;i--){const q=shots[i];q.t+=dt;const k=Math.min(1,q.t/q.dur);q.o.position.lerpVectors(q.from,q.to,k);q.o.position.y+=Math.sin(k*Math.PI)*q.arc;if(q.spin)q.o.rotation.z+=dt*22;if(k>=1){shots.splice(i,1);if(!q.keep&&!q.spin){burst(q.to,20,4.5);root.remove(q.o);q.o.geometry.dispose();q.o.material.dispose();}else if(!q.keep){root.remove(q.o);q.o.geometry.dispose();q.o.material.dispose();}q.onHit?.();}}
+  for(let i=fields.length-1;i>=0;i--){const f=fields[i];f.t+=dt;const k=f.t/f.dur;if(f.glow){f.m.material.opacity=.1*Math.sin(Math.min(1,k)*Math.PI);}else{f.m.material.opacity=Math.min(1,f.t*3)*Math.min(1,(1-k)*4);f.m.rotation.z+=dt*.4;}if(k>=1){fields.splice(i,1);root.remove(f.m);f.m.geometry.dispose();f.m.material.dispose();f.tex?.dispose();}}
   for(let i=0;i<COINS;i++){const c=coins[i];if(c.age>=c.life||!c.life){hide(coinMesh,i);continue;}c.age+=dt;
    if(c.toss&&c.age>=c.life){c.toss.onHit?.(c.toss.to);burst(c.toss.to,28,5);c.life=0;hide(coinMesh,i);continue;}
    c.v.y-=GRAVITY*dt;c.p.addScaledVector(c.v,dt);c.a.addScaledVector(c.spin,dt);
@@ -35,10 +37,18 @@ function create({THREE:T,parent}){
   sparkMesh.instanceMatrix.needsUpdate=true;
   for(const t of targets)t.cooldown=Math.max(0,(t.cooldown||0)-dt);
   if(ringT>=0){ringT+=dt;const k=ringT/1.1;ring.scale.setScalar(.5+k*(queue?queue.radius:6.5));ring.material.opacity=Math.max(0,.85*(1-k));if(k>=1){ringT=-1;ring.visible=false;}}
-  if(pillarT>=0){pillarT+=dt;const k=pillarT/1.8;pillar.material.opacity=Math.max(0,Math.sin(Math.min(1,k)*Math.PI)*.14);pillar.rotation.y+=dt*2;if(k>=1){pillarT=-1;pillar.visible=false;}}
+  if(pillarT>=0){pillarT+=dt;const k=pillarT/1.8;pillar.material.opacity=Math.max(0,Math.sin(Math.min(1,k)*Math.PI)*.06);pillar.rotation.y+=dt*2;if(k>=1){pillarT=-1;pillar.visible=false;}}
  }
+ /* 魔法彈：連射三發金色法彈 */
+ function bolt(from,to,onHit){for(let i=0;i<3;i++)setTimeout(()=>{const o=new T.Mesh(new T.SphereGeometry(.16,12,10),new T.MeshBasicMaterial({color:0xffdc5a,blending:T.AdditiveBlending,transparent:true,depthWrite:false,toneMapped:false}));o.position.copy(from);root.add(o);shots.push({o,from:from.clone(),to:to.clone(),t:0,dur:.3,onHit:i===2?onHit:null,arc:0});},i*140);}
+ /* 招財領域：地上金色魔法陣寫著招財二字 */
+ function domain(origin,radius=7,dur=2.6,onHit){const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');g.strokeStyle='#ffd24a';g.fillStyle='#ffd24a';g.translate(256,256);for(const [r,w] of [[244,8],[222,3],[150,5]]){g.lineWidth=w;g.beginPath();g.arc(0,0,r,0,7);g.stroke();}g.lineWidth=4;g.beginPath();for(let i=0;i<=5;i++){const a=-Math.PI/2+i*4*Math.PI/5;g[i?'lineTo':'moveTo'](Math.cos(a)*222,Math.sin(a)*222);}g.stroke();for(let i=0;i<24;i++){g.save();g.rotate(i*Math.PI/12);g.fillRect(-3,-240,6,14);g.restore();}g.font='900 124px "Microsoft JhengHei",sans-serif';g.textAlign='center';g.textBaseline='middle';g.shadowColor='#ffb400';g.shadowBlur=24;g.fillText('招財',0,4);const tex=new T.CanvasTexture(c);tex.encoding=T.sRGBEncoding;const m=new T.Mesh(new T.PlaneGeometry(radius*2,radius*2),new T.MeshBasicMaterial({map:tex,transparent:true,opacity:0,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false}));m.rotation.x=-Math.PI/2;m.position.copy(origin).setY(.06);root.add(m);fields.push({m,t:0,dur,tex});pillarT=0;pillar.visible=true;pillar.position.set(origin.x,3,origin.z);for(let i=0;i<4;i++)setTimeout(()=>{onHit?.(i===3);burst(new T.Vector3(origin.x+(Math.random()-.5)*radius,.4,origin.z+(Math.random()-.5)*radius),20,5);},500+i*500);}
+ /* 盾牌連鎖：依序彈過每個目標再飛回來 */
+ function shieldChain(from,points,onHit,onBack){const o=new T.Mesh(new T.CylinderGeometry(.34,.34,.06,24),new T.MeshPhongMaterial({color:0xd4201a,shininess:80,specular:0xffffff,emissive:0x401000}));o.position.copy(from);root.add(o);let i=0;const next=(a)=>{if(i<points.length){const to=points[i],idx=i++;shots.push({o,from:a.clone(),to:to.clone(),t:0,dur:.26,keep:true,spin:true,onHit:()=>{onHit?.(idx);burst(to,16,4.5);next(to);},arc:.5});}else shots.push({o,from:a.clone(),to:from.clone(),t:0,dur:.3,spin:true,arc:.3,onHit:onBack});};next(from);}
+ /* 榮耀守護：全體發光 */
+ function glory(origin,targets=[],dur=2.4){ringT=0;ring.visible=true;ring.position.set(origin.x,.04,origin.z);pillarT=0;pillar.visible=true;pillar.position.set(origin.x,3,origin.z);for(const p of targets){const b=new T.Mesh(new T.CylinderGeometry(.75,.9,3,18,1,true),new T.MeshBasicMaterial({color:0xffe27a,transparent:true,opacity:.1,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,toneMapped:false}));b.position.set(p.x,1.5,p.z);root.add(b);fields.push({m:b,t:0,dur,glow:true});burst(new T.Vector3(p.x,1,p.z),24,4);}}
  function clear(){queue=null;for(const c of coins)c.life=0;for(const s of sparks)s.life=0;ringT=pillarT=-1;ring.visible=pillar.visible=false;}
- return{toss,spray,burst,update,clear,root,dispose(){root.removeFromParent();for(const m of[coinMesh,sparkMesh,ring,pillar]){m.geometry.dispose();m.material.dispose();}}};
+ return{toss,spray,burst,bolt,domain,shieldChain,glory,update,clear,root,dispose(){root.removeFromParent();for(const m of[coinMesh,sparkMesh,ring,pillar]){m.geometry.dispose();m.material.dispose();}}};
 }
 /* 訓練木頭人：立柱、橫臂、草繩綁身與靶心，被打到會彈性搖晃 */
 function dummyTarget(T){

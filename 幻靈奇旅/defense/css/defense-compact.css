@@ -1,0 +1,14 @@
+/* 主島精簡：數字標記、四個固定按鈕、不遮島的關卡資訊 */
+.sea-zoom,.hud-fs,.chart-fs{display:none!important}
+.isle-tag{width:30px;height:30px;padding:0!important;border-radius:50%!important;display:grid;place-items:center;font-size:14px!important;font-weight:800;line-height:1;border:2px solid #fff;background:rgba(28,62,104,.86)}
+.isle-tag .tag-lock{position:absolute;right:-6px;top:-7px;font-size:11px;font-style:normal}
+.isle-tag.home-tag,.isle-tag.pk-tag{width:34px;height:30px;border-radius:12px!important;font-size:12px!important}
+.isle-tag.is-selected{box-shadow:0 0 0 4px rgba(242,165,22,.5),0 0 14px rgba(255,200,80,.9)}
+#lobby .chart-head .logo,#lobby .chart-head .eyebrow{display:none}#lobby .chart-head h1{font-size:18px}
+#lobby .chart-tools button.tool{min-width:44px;min-height:44px}#lobby .chart-tools button.tool span{display:inline;font-size:12px}
+.tool.sortie{background:#d9602a;color:#fff}
+.isle-panel .isle-card{padding:8px 12px}.isle-panel h2{font-size:16px;margin:0}.isle-boss{display:flex;gap:8px;align-items:center}.isle-boss img{width:34px;height:34px}.isle-more summary{font-size:12px;cursor:pointer}.isle-facts{font-size:12px}
+.menu-actions{display:grid;gap:8px}.menu-actions button{min-height:46px}
+.tutor{position:fixed;left:50%;transform:translateX(-50%);top:max(64px,calc(env(safe-area-inset-top) + 58px));width:min(420px,calc(100vw - 20px));z-index:50;background:#fff8e8;color:#4a3019;border:3px solid #6b914b;border-radius:14px;padding:8px 12px}
+.tutor b{font-size:14px}.tutor p{margin:2px 0 6px;font-size:14px;line-height:1.4}.tutor div{display:flex;justify-content:flex-end;gap:8px}.tutor button{min-height:38px;padding:0 12px}
+@media (orientation:landscape) and (max-height:500px){#lobby .isle-panel{left:auto;right:8px;width:230px;bottom:8px}.tutor{left:8px;transform:none;width:min(320px,48vw);top:56px}}

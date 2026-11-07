@@ -13,7 +13,7 @@ const WATER_Y = -0.12, PITCH = 0.95, FOV = 38;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-import {ico} from './ui-icons.js?v=20261104-v28';
+import {ico} from './ui-icons.js?v=20261107-a1';
 
 export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, esc = (s) => s}) {
   let state = {open: 0, cleared: {}, selected: 0, boatAt: -1}, sailing = null, portrait = isPortrait();
@@ -32,7 +32,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, es
   const tags = document.createElement('div'); tags.className = 'sea-tags';
   const tools = document.createElement('div'); tools.className = 'sea-zoom';
   tools.innerHTML = '<button type="button" data-z="in" title="放大" aria-label="放大">' + ico('plus') + '</button><button type="button" data-z="out" title="縮小" aria-label="縮小">' + ico('minus') + '</button><button type="button" data-z="reset" title="回到全圖" aria-label="回到全圖">' + ico('home') + '</button>';
-  host.append(canvas, tags, tools);
+  host.append(canvas, tags);
   const renderer = new T.WebGLRenderer({canvas, antialias: true, powerPreference: 'high-performance'});
   renderer.outputEncoding = T.sRGBEncoding; renderer.setClearColor(0x2a86c4, 1);
   const scene = new T.Scene(), camera = new T.PerspectiveCamera(FOV, 1, 0.5, 400); host.__sea = {scene, camera};
@@ -146,9 +146,9 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, es
 
   /* ---------- tags (island names) ---------- */
   const tagEls = [], tagHome = document.createElement('button');
-  tagHome.type = 'button'; tagHome.className = 'isle-tag home-tag'; tagHome.textContent = '⚓ 初光鎮碼頭・船夫'; tagHome.addEventListener('click', () => !sailing && onHome?.());
+  tagHome.type = 'button'; tagHome.className = 'isle-tag home-tag'; tagHome.textContent = '⚓';tagHome.setAttribute('aria-label', '初光鎮碼頭'); tagHome.addEventListener('click', () => !sailing && onHome?.());
   const tagPk = document.createElement('button');
-  tagPk.type = 'button'; tagPk.className = 'isle-tag pk-tag'; tagPk.textContent = '⚔️ PK 競技場'; tagPk.addEventListener('click', () => !sailing && onPk?.());
+  tagPk.type = 'button'; tagPk.className = 'isle-tag pk-tag'; tagPk.textContent = 'PK';tagPk.setAttribute('aria-label', 'PK 競技場'); tagPk.addEventListener('click', () => !sailing && onPk?.());
   tags.append(tagHome, tagPk);
   stages.forEach((s, i) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'isle-tag'; b.dataset.isle = i;
@@ -170,7 +170,7 @@ export function createSeaChart(host, {THREE: T, stages, onPick, onHome, onPk, es
     stages.forEach((s, i) => {
       const locked = i > state.open, el = tagEls[i];
       el.className = 'isle-tag' + (locked ? ' is-locked' : '') + (state.selected === i ? ' is-selected' : '') + (state.cleared[s.id] ? ' is-cleared' : '');
-      el.innerHTML = (locked ? '🔒 ' : '') + (state.cleared[s.id] ? '🚩 ' : '') + (i + 1) + '. ' + esc(s.name);
+      /* 常駐只顯示數字，名稱放到關卡資訊區，才不會遮住島嶼 */el.innerHTML = (locked ? '<i class="tag-lock">🔒</i>' : '') + (i + 1);
       el._h = 0; el.setAttribute('aria-label', (i + 1) + '. ' + s.name + (locked ? '（尚未解鎖）' : ''));
       fogs[i].visible = locked; flags[i].visible = !!state.cleared[s.id];
     });

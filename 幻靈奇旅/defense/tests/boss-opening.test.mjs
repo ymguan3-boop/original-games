@@ -57,8 +57,8 @@ test('the dialog shows the boss 2D comic portrait, plays the voice, and the them
   assert.match(main, /const THEME_SCENE = 'theme'/);
   assert.ok(!main.includes("setScene?.('arena')"));
   assert.match(html, /bi-title/);
-  assert.match(html, /class="fs-toggle hud-fs"/);
-  assert.match(html, /class="tool fs-toggle chart-fs"/);
+  assert.doesNotMatch(html, /class="fs-toggle hud-fs"/);
+  assert.doesNotMatch(html, /class="tool fs-toggle chart-fs"/);
 });
 
 test('modal helpers used by the result, deck, rules and boatman dialogs are defined', () => {

@@ -70,9 +70,16 @@ function dogShapes(T){const lathe=(pts,seg=26)=>{const g=new T.LatheGeometry(pts
  return{ball:new T.SphereGeometry(1,18,14),dome:new T.SphereGeometry(1,24,12,0,Math.PI*2,0,Math.PI/2),ring:new T.TorusGeometry(1,.1,10,30),rod:new T.CylinderGeometry(1,1,1,12),
   robe:lathe([[.001,.5],[.2,.5],[.27,.46],[.32,.36],[.37,.22],[.42,.08],[.47,-.04],[.49,-.09],[.46,-.12],[.001,-.12]]),
   cap:lathe([[.001,.34],[.3,.33],[.46,.27],[.53,.19],[.54,.11],[.5,.05],[.47,0],[.001,0]])};}
-function buildDog(T){
+/* 三階造型：第一階紅袍看門狗、第二階魔法師型、第三階守護者型 */
+const OUTFIT={
+ 1:{robe:0xc4140c,robeD:0x6a0806,trim:0xffd21f,hand:0xfffaf0,foot:0xfffaf0,hat:0xc4140c,satchel:true},
+ 2:{robe:0x1f2f6e,robeD:0x121b45,trim:0xffd21f,hand:0xfffaf0,foot:0x54290c,hat:0xc4140c,cape:0xb8160e,belt:true},
+ 3:{robe:0x1f4fc0,robeD:0x12307a,trim:0xffd21f,hand:0xc4140c,foot:0x6a3a14,hat:0x1f3f9c,cape:0xc4140c,belt:true,helmet:true,shield:true}
+};
+function shieldTexture(T){const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#d4201a';g.fillRect(0,0,256,256);g.fillStyle='#fff6e2';g.beginPath();g.arc(128,128,104,0,7);g.fill();g.fillStyle='#d4201a';g.beginPath();g.arc(128,128,86,0,7);g.fill();const r=g.createRadialGradient(100,100,10,128,128,70);r.addColorStop(0,'#fff0a0');r.addColorStop(1,'#e8a010');g.fillStyle=r;g.beginPath();g.arc(128,128,68,0,7);g.fill();g.fillStyle='#a2540c';g.font='900 46px "Microsoft JhengHei",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('招',128,102);g.fillText('財',128,152);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;return t;}
+function buildDog(T,stage=1){const P=OUTFIT[stage]||OUTFIT[1];
  /* 招財沒有輪廓線，靠深紅、橘毛、奶白的明暗差把部位分開 */
- const RED=0xc4140c,RED_D=0x6a0806,GOLD=0xffd21f,COAT=0xe8820e,COAT_D=0xbf6408,CREAM=0xfffaf0,BROWN=0x54290c,S=dogShapes(T);
+ const RED=P.robe,RED_D=P.robeD,GOLD=P.trim,COAT=0xe8820e,COAT_D=0xbf6408,CREAM=0xfffaf0,BROWN=0x54290c,S=dogShapes(T);
  const root=new T.Group();root.name='招財';
  const joint=(name,parent,x,y,z,paint)=>{const g=new T.Group();g.name=name;g.position.set(x,y,z);parent.add(g);if(paint){const b=builder(T),put=b.put;b.put=(geo,color,px,py,pz,sx,sy=sx,sz=sx,...r)=>put(geo,color,px,py,pz,sx,sy,sz,...r);paint(b);g.add(b.mesh());}return g;};
  const hips=joint('hips',root,0,.5,0,b=>{b.put(S.ball,RED,0,.02,0,.34,.24,.3);});
@@ -80,38 +87,44 @@ function buildDog(T){
   b.put(S.robe,RED,0,.04,0,.95,.98,.82);b.put(S.ring,GOLD,0,-.07,0,.46,.37,.5,Math.PI/2);b.put(S.ring,RED_D,0,.17,0,.385,.32,.34,Math.PI/2);
   b.put(S.ball,CREAM,0,.34,.2,.17,.2,.1);b.put(S.ball,GOLD,0,.03,.335,.035,.2,.02);
   b.put(S.ring,GOLD,0,.56,.01,.25,.22,.5,Math.PI/2);
-  b.put(S.rod,BROWN,.03,.27,.285,.022,.82,.02,0,0,-.72);b.put(S.ball,BROWN,.39,.02,.2,.15,.13,.08);b.put(S.ball,COAT_D,.39,.1,.26,.14,.05,.035);b.put(S.ball,GOLD,.39,.07,.285,.032,.032,.018);});
+  if(P.satchel){b.put(S.rod,BROWN,.03,.27,.285,.022,.82,.02,0,0,-.72);b.put(S.ball,BROWN,.39,.02,.2,.15,.13,.08);b.put(S.ball,COAT_D,.39,.1,.26,.14,.05,.035);b.put(S.ball,GOLD,.39,.07,.285,.032,.032,.018);}
+  if(P.belt){b.put(S.ring,BROWN,0,.06,0,.43,.36,.55,Math.PI/2);b.put(S.ball,BROWN,.3,.01,.24,.09,.08,.05);b.put(S.ball,BROWN,-.3,.01,.24,.09,.08,.05);b.put(S.ball,GOLD,0,.06,.36,.05,.05,.02);}});
  /* 徽章是真的金幣：有厚度、外緣與高光 */
  const coinFace=coinTexture(T),gold=new T.MeshPhongMaterial({color:0xffc21a,specular:0xfff4c0,shininess:80,emissive:0x4a2f00}),face=new T.MeshPhongMaterial({map:coinFace,specular:0xffffff,shininess:90,emissive:0x2a1a00,emissiveMap:coinFace});
- const coin=new T.Group();coin.name='招財金幣';coin.position.set(0,.3,.345);coin.rotation.x=-.08;chest.add(coin);
+ const coin=new T.Group();coin.name='招財金幣';coin.position.set(0,.3,.345);/* 第三階胸口改成星徽 */if(P.shield)coin.scale.setScalar(.72);coin.rotation.x=-.08;chest.add(coin);
  const disc=new T.Mesh(new T.CylinderGeometry(.19,.19,.05,40),[gold,face,gold]);disc.rotation.x=Math.PI/2;disc.rotation.y=Math.PI/2;coin.add(disc);
  const rim=new T.Mesh(new T.TorusGeometry(.19,.018,10,40),gold);rim.position.z=.024;coin.add(rim);const rimBack=rim.clone();rimBack.position.z=-.024;coin.add(rimBack);
  const glint=new T.Mesh(new T.PlaneGeometry(.2,.2),new T.MeshBasicMaterial({map:(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),r=g.createRadialGradient(32,32,0,32,32,32);r.addColorStop(0,'#fff');r.addColorStop(.25,'rgba(255,240,170,.7)');r.addColorStop(1,'rgba(255,220,120,0)');g.fillStyle=r;g.fillRect(0,0,64,64);g.fillStyle='#fff';g.fillRect(31,0,2,64);g.fillRect(0,31,64,2);return new T.CanvasTexture(c);})(),transparent:true,blending:T.AdditiveBlending,depthWrite:false,toneMapped:false}));glint.position.set(.08,.08,.04);coin.add(glint);
  const head=joint('head',chest,0,.62,.02,b=>{
   b.put(S.ball,COAT,0,.36,0,.5,.45,.45);
-  b.put(S.cap,RED,0,.56,-.02,1,.92,.98);b.put(S.ring,GOLD,0,.57,-.02,.5,.47,.55,Math.PI/2);b.put(S.ball,RED_D,0,.58,.42,.33,.04,.17,.16);b.put(S.ball,GOLD,0,.92,-.02,.1);b.put(S.ball,GOLD,0,.74,.44,.075,.075,.035);});
+  b.put(S.cap,P.hat,0,.56,-.02,1,.92,.98);b.put(S.ring,GOLD,0,.57,-.02,.5,.47,.55,Math.PI/2);b.put(S.ball,P.helmet?0x12307a:P.robeD===0x121b45?0x6a0806:RED_D,0,.58,.42,.33,.04,.17,.16);b.put(S.ball,GOLD,0,P.helmet?.86:.92,-.02,P.helmet?.07:.1);b.put(S.ball,GOLD,0,.74,.44,.075,.075,.035);if(P.helmet)for(const s of [-1,1]){b.put(S.ball,GOLD,s*.5,.72,.02,.08,.2,.04,0,0,-s*.5);b.put(S.ball,GOLD,s*.58,.8,.02,.06,.15,.035,0,0,-s*.75);b.put(S.ball,GOLD,s*.65,.87,.02,.045,.11,.03,0,0,-s*.95);}});
  /* 表情曲面貼著頭部，比頭只大一點點 */
  const faceTex=faceTexture(T),faceMesh=new T.Mesh(new T.SphereGeometry(1,36,24,Math.PI/2-1.1,2.2,.72,1.56),new T.MeshLambertMaterial({map:faceTex,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2}));faceMesh.material.color.setRGB(LIT,LIT,LIT);faceMesh.position.set(0,.36,0);faceMesh.scale.set(.505,.455,.455);faceMesh.renderOrder=1;head.add(faceMesh);
  const setFace=name=>{const i=Math.max(0,FACES.indexOf(name));faceTex.offset.set((i%4)*.25,.5-Math.floor(i/4)*.5);};setFace('idle');
  const ears=[-1,1].map(s=>({s,g:joint('ear'+(s<0?'L':'R'),head,s*.44,.52,.02,b=>{b.put(S.ball,COAT_D,s*.08,-.2,0,.15,.3,.19,0,0,s*.22);})}));
  const arms=[-1,1].map(s=>{const upper=joint('upperArm'+(s<0?'L':'R'),chest,s*.31,.44,.02,b=>{b.put(S.ball,RED,s*.03,-.13,0,.115,.18,.115);b.put(S.ball,RED_D,s*.01,.02,0,.1);});
   const fore=joint('forearm'+(s<0?'L':'R'),upper,s*.05,-.28,0,b=>{b.put(S.ball,RED,0,-.08,0,.1,.15,.1);b.put(S.ring,GOLD,0,-.2,0,.1,.1,.2,Math.PI/2);});
-  const hand=joint('hand'+(s<0?'L':'R'),fore,0,-.22,.01,b=>{b.put(S.ball,CREAM,0,-.07,.01,.1,.095,.1);for(const k of[-1,0,1])b.put(S.ball,CREAM,k*.05,-.13,.06,.032);});
+  const hand=joint('hand'+(s<0?'L':'R'),fore,0,-.22,.01,b=>{b.put(S.ball,P.hand,0,-.07,.01,.1,.095,.1);for(const k of[-1,0,1])b.put(S.ball,P.hand,k*.05,-.13,.06,.032);});
   return{upper,fore,hand,s};});
  const legs=[-1,1].map(s=>{const thigh=joint('thigh'+(s<0?'L':'R'),hips,s*.17,-.02,0,b=>{b.put(S.ball,COAT,0,-.11,0,.12,.16,.13);});
   const shin=joint('shin'+(s<0?'L':'R'),thigh,0,-.21,0,b=>{b.put(S.ball,COAT,0,-.08,0,.1,.13,.11);});
-  const foot=joint('foot'+(s<0?'L':'R'),shin,0,-.19,.01,b=>{b.put(S.ball,CREAM,0,-.02,.07,.11,.08,.16);for(const k of[-1,0,1])b.put(S.ball,CREAM,k*.055,-.03,.2,.035,.03,.04);});
+  const foot=joint('foot'+(s<0?'L':'R'),shin,0,-.19,.01,b=>{b.put(S.ball,P.foot,0,-.02,.07,.11,.08,.16);for(const k of[-1,0,1])b.put(S.ball,P.foot,k*.055,-.03,.2,.035,.03,.04);if(P.shield)b.put(S.ball,P.foot,0,.1,0,.12,.14,.12);});
   return{thigh,shin,foot,s};});
  /* 尾巴從下襬後方伸出去再往上翹，離開衣服 */
  const t1=joint('tail1',hips,0,-.14,-.24,b=>{b.put(S.ball,COAT,0,.1,0,.08,.15,.08);});
  const t2=joint('tail2',t1,0,.2,0,b=>{b.put(S.ball,COAT,0,.1,0,.085,.15,.085);});
  const t3=joint('tail3',t2,0,.19,0,b=>{b.put(S.ball,COAT,0,.07,0,.085,.12,.085);b.put(S.ball,CREAM,0,.17,0,.065,.08,.065);});
+ /* 披風：胸口後方的關節，走路和出招時會飄 */
+ const cape=P.cape?joint('cape',chest,0,.54,-.2,b=>{b.put(S.ball,P.cape,0,-.36,-.1,.42,.46,.12);b.put(S.ring,GOLD,0,-.74,-.1,.32,.1,.3,Math.PI/2);b.put(S.ball,GOLD,0,-.36,-.235,.1,.1,.02);b.put(S.ball,GOLD,0,-.36,-.235,.03,.17,.02);b.put(S.ball,GOLD,0,-.36,-.235,.17,.03,.02);}):null;
+ let shield=null;if(P.shield){shield=new T.Group();shield.name='招財盾牌';const tex=shieldTexture(T),face=new T.MeshLambertMaterial({map:tex,color:0x9a9a9a}),rim=new T.MeshPhongMaterial({color:0xc4140c,shininess:70});const disc=new T.Mesh(new T.CylinderGeometry(.34,.34,.06,40),[rim,face,face]);disc.rotation.x=Math.PI/2;shield.add(disc);shield.position.set(0,-.12,.14);arms[1].hand.add(shield);}
  Object.values(S).forEach(g=>g.dispose());
- return{root,hips,chest,head,ears,arms,legs,tail:[t1,t2,t3],coin,glint,setFace};
+ return{root,hips,chest,head,ears,arms,legs,tail:[t1,t2,t3],coin,glint,setFace,cape,shield,stage};
 }
 const ease=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
 /* 每個招式的長度與出手時間 */
 const MOVES={attack:{length:1.15,release:.36},ultimate:{length:3.3,release:.72}};
+/* 招式名稱與戰鬥定位，三階共用同一組動作骨架 */
+const SKILLS={1:{attack:'金幣連擲',ultimate:'金幣雨'},2:{attack:'招財魔法彈',ultimate:'招財領域'},3:{attack:'連鎖招財盾',ultimate:'榮耀守護'}};
 /* w 是 0 到 1 的走路比例：站立和走路之間平滑過渡，手腳成對擺動。act 是正在播放的招式 */
 function poseDog(d,t,w,act){
  const c=t*10.5,sw=Math.sin(c),br=Math.sin(t*2.1);
@@ -132,6 +145,9 @@ function poseDog(d,t,w,act){
    d.hips.position.y+=-.17*crouch+.1*rise+air;d.hips.rotation.y=spin;d.chest.rotation.x+=.34*crouch-.16*rise;d.head.rotation.x+=.22*crouch-.2*rise;
    for(const a of d.arms){const toss=Math.sin(Math.max(0,k-.6)*16+a.s)*.5;a.upper.rotation.x=(-2.5+toss)*rise+.5*crouch;a.upper.rotation.z=a.s*(.16+.55*rise);a.fore.rotation.x=-.3-.8*crouch+.2*rise;}
    for(const l of d.legs){l.thigh.rotation.x=-.8*crouch+.18*rise;l.shin.rotation.x=1.25*crouch;l.foot.rotation.x=-.45*crouch;}lift=rise;}}
+ if(d.cape)d.cape.rotation.x=.14+Math.abs(sw)*.28*w+(act?.5*Math.sin(Math.min(1,act.t)*3.14):0)+Math.sin(t*2)*.03;
+ /* 第三階大絕：右手高舉盾牌 */
+ if(act?.name==='ultimate'&&d.shield){const up=ease(act.t/.5)*(1-ease((act.t-2.9)/.3)),a=d.arms[1];d.hips.rotation.y=0;a.upper.rotation.set(-3*up,0,.1);a.fore.rotation.x=-.1;d.shield.rotation.set(-1.4*up,0,0);d.hips.position.y=.5;for(const l of d.legs){l.thigh.rotation.x=0;l.shin.rotation.x=0;l.foot.rotation.x=0;}d.arms[0].upper.rotation.set(-.3*up,0,-.5*up);}
  for(const e of d.ears)e.g.rotation.set(sw*.2*w,0,e.s*(.06+flop+lift*1.05));
  d.coin.rotation.y=Math.sin(t*1.3)*.1;const shine=Math.max(0,Math.sin(t*1.7));d.glint.material.opacity=Math.pow(shine,16);d.glint.rotation.z=t;d.glint.scale.setScalar(.7+Math.pow(shine,16)*.7);
 }
@@ -147,9 +163,9 @@ function dogDriver(dog){
   setTalking(v){talking=!!v;},setMood(v){mood=v||'';},get acting(){return !!act;}};
 }
 /* 模型室用的控制器，介面與其他原生幻靈相同 */
-function mascot(T){
- const dog=buildDog(T),drive=dogDriver(dog);let mode='Idle';
- const c={root:dog.root,onRelease:null,getState:()=>({modes:['Idle','Walk','Run','Attack','Ultimate'],durations:{Attack:MOVES.attack.length,Ultimate:MOVES.ultimate.length}}),
+function mascot(T,stage=1){
+ const dog=buildDog(T,stage),drive=dogDriver(dog);let mode='Idle';
+ const c={root:dog.root,stage,skills:SKILLS[stage],onRelease:null,shield:dog.shield,getState:()=>({modes:['Idle','Walk','Run','Attack','Ultimate'],durations:{Attack:MOVES.attack.length,Ultimate:MOVES.ultimate.length}}),
   setMode(m){mode=m;if(m==='Attack'||m==='Ultimate')drive.play(m.toLowerCase(),{onRelease:()=>c.onRelease?.(m)});},
   update(dt){drive.tick(dt,mode==='Walk'||mode==='Run');},hand:v=>dog.arms[1].hand.getWorldPosition(v),dispose(){}};
  return c;
