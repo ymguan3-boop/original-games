@@ -134,3 +134,6 @@ html body #lobby .chart-head h1{text-shadow:none!important;filter:none!important
  html body #lobby .isle-card .sortie-base-warning{grid-row:5}
 }
 .test-code{display:grid;gap:10px}.test-code label{display:grid;gap:6px;font-size:15px;font-weight:700}.test-code input{min-height:46px;box-sizing:border-box;width:100%;padding:0 12px;font-size:18px;letter-spacing:4px;text-align:center;border:2px solid #916137;border-radius:12px;background:#fffdf6;color:#4a3019}.test-code .test-msg{min-height:20px;margin:0;font-size:14px;text-align:center;color:#b23a1e}.test-code .test-msg.ok{color:#2f7d3a}
+
+.pool-list{margin-top:8px}.pool-list p{margin:6px 0 0;font-size:12px;line-height:1.5;opacity:.8}.pool-cards{margin-top:6px;line-height:1.7}.pool-cards b{display:block;font-size:13px}.pool-cards span{display:inline-block;margin:2px 4px 0 0;padding:0 8px;border:1px solid #ffd23a;border-radius:999px;font-size:12px;line-height:20px}.pool-cards[data-color=purple] span{border-color:#b46cff}.pool-cards[data-color=red] span{border-color:#ff5068}.pool-cards span.is-locked{opacity:.45;border-style:dashed}
+#panel .pool-details{padding-right:12px;box-sizing:border-box}

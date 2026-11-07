@@ -88,7 +88,8 @@ test('招財 stays out of base dex data until unlocked through the addon', () =>
   for (const f of ['data/spirits.json', 'data/spirit-catalog.json']) assert.ok(!/zhaocai:\/\/|"zhaocai"/.test(src(f)), f);
 });
 
-test('未締約的圖鑑卡片可以點開取得方式', () => {
+test('未締約的圖鑑卡片直接寫出取得方式，不再彈出視窗', () => {
   const game = src('js/game.js');
-  assert.ok(game.includes('function captureHint(s)') && game.includes('data-capture-hint'));
+  assert.ok(game.includes('function captureHint(s)') && game.includes('esc(captureHint(s))'));
+  assert.ok(!game.includes('showCaptureHint') && !game.includes('點擊查看取得方式'));
 });

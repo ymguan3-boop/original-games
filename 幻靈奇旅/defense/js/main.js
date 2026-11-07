@@ -2,36 +2,36 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, eggTrio, teachDeal, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-b8';
-import {createPkIsland} from './pk-island.js?v=20261107-b8';
-import {createPkLobby} from './pk-lobby.js?v=20261107-b8';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-b8';
-import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-b8';
-import {createToonKit} from './style.js?v=20261107-b8';
-import {createChartModels} from './chart-models.js?v=20261107-b8';
-import {createView} from './view.js?v=20261107-b8';
-import {createSeaChart} from './sea3d.js?v=20261107-b8';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-b8';
-import {buildPath} from './stages.js?v=20261107-b8';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-b8';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-b8';
+import {STAGES, SHAPES, eggTrio, teachDeal, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-c3';
+import {createPkIsland} from './pk-island.js?v=20261107-c3';
+import {createPkLobby} from './pk-lobby.js?v=20261107-c3';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-c3';
+import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-c3';
+import {createToonKit} from './style.js?v=20261107-c3';
+import {createChartModels} from './chart-models.js?v=20261107-c3';
+import {createView} from './view.js?v=20261107-c3';
+import {createSeaChart} from './sea3d.js?v=20261107-c3';
+import {defensePool, poolPreview, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-c3';
+import {buildPath} from './stages.js?v=20261107-c3';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-c3';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-c3';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-b8';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-b8';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-c3';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-c3';
 import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-b8';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-b8';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-b8';
-import {icon} from '../../survivors/js/ui-art.js?v=20261107-b8';
-import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-b8';
-import {createTutorial} from './tutorial.js?v=20261107-b8';
-import {initIcons, ico} from './ui-icons.js?v=20261107-b8';
-import {createCombatAudio} from './combat-audio.js?v=20261107-b8';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-c3';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-c3';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-c3';
+import {icon} from '../../survivors/js/ui-art.js?v=20261107-c3';
+import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-c3';
+import {createTutorial} from './tutorial.js?v=20261107-c3';
+import {initIcons, ico} from './ui-icons.js?v=20261107-c3';
+import {createCombatAudio} from './combat-audio.js?v=20261107-c3';
 
-import {autoDeck, validPkDeck} from './deck-rules.js?v=20261107-b8';
+import {autoDeck, validPkDeck} from './deck-rules.js?v=20261107-c3';
 
-import {streamAssets} from './asset-stream.js?v=20261107-b8';
-import {CARD_PREVIEWS} from './card-previews.js?v=20261107-b8';
+import {streamAssets} from './asset-stream.js?v=20261107-c3';
+import {CARD_PREVIEWS} from './card-previews.js?v=20261107-c3';
 const ASSET_BASE = new URL('../../', import.meta.url);
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
@@ -288,8 +288,13 @@ function quickDeck() {
 function openIslandMenu() {
   menuPage('選單', [['返回初光鎮', sailHome], ['教學重播', () => { $('modal').close(); tutorial.replay(); }], ['畫面設定', openDisplayMenu], ['測試', openTestCode], ['關閉', () => $('modal').close()]]);
 }
-/* 測試：輸入密碼後領取轉蛋點數，每次輸入都會入帳 */
+/* 測試：輸入密碼後領取轉蛋點數與全部卡片，點數每次輸入都會入帳；未解鎖的招財家族不在資料內，所以不會發放 */
 const TEST_CODE = '741216', TEST_POINTS = 100000;
+function allCards() {
+  const {all} = poolPreview(data.pool, journey(), new Set(data.spiritMap.keys())), excluded = data.pool.excludedIds || [];
+  const deckCards = [...data.spiritMap.keys()].filter((id) => (isBaseCard(data.evolution, id) || isRedCard(id)) && !excluded.includes(id));
+  return [...new Set([...deckCards, ...all.yellow, ...all.purple, ...all.red])];
+}
 function openTestCode() {
   openModal(ribbon('測試', '☰') + '<form class="test-code" id="testForm"><label>請輸入測試密碼<input id="testCode" type="password" inputmode="numeric" maxlength="6" autocomplete="off" required></label><p class="test-msg" id="testMsg" role="status"></p><div class="bm-actions menu-actions"><button class="primary" type="submit">確認</button><button type="button" id="testBack">返回選單</button></div></form>', 'menu');
   $('modalBody').querySelector('.modal-dismiss')?.remove();
@@ -300,8 +305,10 @@ function openTestCode() {
     const box = $('testCode'), msg = $('testMsg');
     if (box.value !== TEST_CODE) { msg.className = 'test-msg'; msg.textContent = '密碼不正確，請再試一次。'; box.select(); return; }
     try { globalThis.PhantomCaveBridge.reward('test-points:' + Date.now(), TEST_POINTS); } catch (x) { msg.className = 'test-msg'; msg.textContent = '點數寫入失敗：' + x.message; return; }
+    const cards = allCards();
+    record.owned = [...new Set([...(record.owned || []), ...cards])]; saveRecord(); renderLobby();
     box.value = ''; $('pointsNow').textContent = points().toLocaleString();
-    msg.className = 'test-msg ok'; msg.textContent = '已獲得 ' + TEST_POINTS.toLocaleString() + ' 轉蛋點數，目前共 ' + points().toLocaleString() + ' 點。';
+    msg.className = 'test-msg ok'; msg.textContent = '已獲得 ' + TEST_POINTS.toLocaleString() + ' 轉蛋點數與全部 ' + cards.length + ' 張卡片，目前共 ' + points().toLocaleString() + ' 點。';
   };
 }
 function openDisplayMenu() {
@@ -434,13 +441,19 @@ for (const [id, t] of Object.entries({...TRAP_CARDS, ...BAG_ITEMS})) CAVE_ITEMS[
   rarity: '一般', stackLimit: 999999, duration: 0
 };
 const filmRewards = (rewards) => rewards;
+/* 獎池與機率裡的卡片清單；灰色是還沒解鎖、目前抽不到的卡 */
+function poolCardList() {
+  const {all, open} = poolPreview(data.pool, journey(), new Set(data.spiritMap.keys()));
+  const row = ([color, label]) => '<div class="pool-cards" data-color="' + color + '"><b>' + label + ' ' + open[color].length + '／' + all[color].length + ' 張</b>' + all[color].map((id) => '<span' + (open[color].includes(id) ? '' : ' class="is-locked"') + '>' + esc(spirit(id).name) + '</span>').join('') + '</div>';
+  return '<div class="pool-list">' + [['yellow', '黃卡'], ['purple', '紫卡'], ['red', '紅卡']].map(row).join('') + '<p>數字是目前抽得到／全部。灰色的卡要先在主遊戲締約才會加入獎池；某色沒有可抽的卡時，改抽較低一階的卡。進階型由合成取得，水蛟龍王不在獎池內。</p></div>';
+}
 function openGacha() {
   const first = !record.starterClaimed, pts = points(), pool = gachaPool();
   openPanel('群島轉蛋機', `<div class="dg-wallet"><span>🎟️ 持有點數（與無盡洞穴共用）</span><strong>${pts.toLocaleString()}<small>點</small></strong></div>
     <div class="dg-intro"><button class="dg-machine" aria-label="轉動轉蛋機"><img src="assets/gacha-machine.webp" width="340" height="510" decoding="async" alt=""></button>
       <div class="dg-copy"><strong>尋找下一位夥伴</strong><p>基礎幻靈・戰術道具・陷阱卡</p><p class="dg-note">${first ? '第一次召喚免費，保底 4 隻黃卡' : '可抽幻靈：黃 ' + pool.yellow.length + '・紫 ' + pool.purple.length + '・紅 ' + pool.red.length}</p></div></div>
     <div class="draw-actions" id="drawActions"></div>
-    <details class="pool-details"><summary>獎池與機率</summary><p>幻靈 10%（黃 6%・紫 3%・紅 1%）<br>道具 90%：陷阱卡約四成（泥沼、漩渦、符文陣、毒蘑菇、尖刺、電擊板、間歇泉），補給約六成（治療藥水、緊急復甦藥、大絕電池、攻擊增幅、防禦增幅、速整卡牌、疾速發牌、發牌干擾、清除陷阱卡、PK 專用重新換牌卡）。新戰術道具較稀有；發牌干擾在 PK 中降低對手發牌速度，單人關卡則延緩敵方出兵。<br>道具存在守護戰道具包，戰鬥中點「道具」使用。重複黃／紫／紅卡返還 50／100／500 點。</p></details>`, 'gacha');
+    <details class="pool-details"><summary>獎池與機率</summary><p>幻靈 10%（黃 6%・紫 3%・紅 1%）<br>道具 90%：陷阱卡約四成（泥沼、漩渦、符文陣、毒蘑菇、尖刺、電擊板、間歇泉），補給約六成（治療藥水、緊急復甦藥、大絕電池、攻擊增幅、防禦增幅、速整卡牌、疾速發牌、發牌干擾、清除陷阱卡、PK 專用重新換牌卡）。新戰術道具較稀有；發牌干擾在 PK 中降低對手發牌速度，單人關卡則延緩敵方出兵。<br>道具存在守護戰道具包，戰鬥中點「道具」使用。重複黃／紫／紅卡返還 50／100／500 點。</p>${poolCardList()}</details>`, 'gacha');
   const actions = $('drawActions'), add = (text, fn, cls, disabled) => { const b = document.createElement('button'); b.textContent = text; b.className = cls; b.disabled = disabled; b.onclick = fn; actions.append(b); return b; };
   if (first) add('新手召喚 · 免費（保底 4 隻黃卡）', claimStarter, 'primary', false);
   else for (const n of [1, 10]) add((n === 1 ? '召喚一次' : '召喚十次') + ' · ' + (n * DRAW_COST).toLocaleString() + ' 點', () => drawBatch(n), n === 10 ? 'primary' : '', pts < n * DRAW_COST);

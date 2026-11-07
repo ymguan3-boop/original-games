@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {BAG_ITEMS} from '../js/rules.js';
-import {DEFENSE_RATES, STARTER_COUNT, DRAW_COST, defensePool, rollKind, rollRewards, starterRewards, drawWithStore} from '../js/gacha.js';
+import {DEFENSE_RATES, STARTER_COUNT, DRAW_COST, defensePool, poolPreview, rollKind, rollRewards, starterRewards, drawWithStore} from '../js/gacha.js';
 import {createStore, SAVE_KEY} from '../../survivors/js/save-bridge.js';
 import {killPoints, SUPPORT} from '../js/rules.js';
 
@@ -57,4 +57,14 @@ test('summons spend the shared cave points, refund duplicates and put items in t
 test('kill points use the cave drop scale', () => {
   assert.deepEqual([killPoints(0), killPoints(4), killPoints(9)], [3, 8, 15]);
   assert.deepEqual([killPoints(2, true), killPoints(7, true)], [200, 300]);
+});
+
+test('tower bosses join the red pool only after the main game; zhaocai only joins through the add-on', () => {
+  const closed = defensePool(pool, unlocked);
+  assert.ok(!closed.red.includes('chimchar'));
+  assert.ok(defensePool(pool, {captureCounts: {chimchar: 1}}).red.includes('chimchar'));
+  const {all, open} = poolPreview(pool, {}, null);
+  for (const id of ['chimchar', 'monferno', 'infernape', 'dialga', 'pikachu', 'mew', 'wigglytuff', 'blissey', 'jigglypuff']) assert.ok(all.red.includes(id), id);
+  assert.equal(open.red.length, 0);
+  assert.ok(![...pool.yellow, ...pool.purple, ...pool.red].some((id) => id.startsWith('zhaocai')), 'the base pool never holds the zhaocai family');
 });
