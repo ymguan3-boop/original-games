@@ -4,9 +4,9 @@
    evolutions from the cave table (survivors/data/evolution.json). The view's hooks.fire plays the cave attack and
    reports when the hit releases, so damage lands on the animation frame.
    Lane coordinate x runs from state.left (monster nest, path start) to state.right (crystal, path end). */
-import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-b5';
-import {STAGES, buildPath} from './stages.js?v=20261107-b5';
-import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-b5';
+import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-b7';
+import {STAGES, buildPath} from './stages.js?v=20261107-b7';
+import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-b7';
 
 export {STAGES};
 /* PK (duel): two players on one road. The host's spirits start at the crystal end (side 'ally'), the guest's at the
@@ -233,6 +233,11 @@ export function beginDealing(state) {
   return true;
 }
 
+/* 教學戰由腳本發牌：牌堆是空的，只有這裡會發 */
+export function teachDeal(state, species) {
+  const card = {uid: state.nextCard++, species, rank: 1, boost: 0};
+  state.hand.push(card); emit(state, 'deal', {uid: card.uid, side: 'ally'}); mergeHand(state, 'ally'); return card;
+}
 function emit(state, type, data = {}) { state.events.push({...data, type}); }
 export function alliesOnField(state, side = 'ally') { return state.fighters.filter((f) => f.side === side && f.hp > 0).length; }
 /* a hand and its deal clock: the state itself for the player (side 'ally'), state.foe for the PK guest */

@@ -98,3 +98,7 @@ html body #lobby .chart-tools .points-badge *{max-height:16px!important;font-siz
 @media (min-width:700px),(orientation:landscape){html body #lobby .isle-panel{left:auto!important;right:6px!important;width:280px!important;max-width:34vw}}
 @media (orientation:landscape) and (max-height:500px){html body #lobby .isle-panel{min-width:230px}html body #lobby .isle-panel .deck-strip img,html body #lobby .isle-panel .deck-strip i{height:24px!important;max-height:24px!important}html body #lobby .isle-panel .sortie-base-warning{font-size:10px!important;padding:1px 5px!important}html body #lobby .isle-panel .isle-deck-actions .tool{height:28px!important;min-height:28px!important}html body #lobby .chart-tools{max-width:60vw;margin-left:auto!important}.tutor{width:min(300px,44vw)!important}}
 html body #lobby #seaChart{position:absolute!important;left:0!important;top:0!important;right:0!important;bottom:0!important;width:100%!important;height:100%!important;max-width:none!important}html body #lobby .sea-canvas{width:100%!important;height:100%!important}
+.tutor{z-index:80}
+body.teach-lock #hand{pointer-events:none}
+body.teach-battle #speed,body.teach-battle #pause{pointer-events:none;opacity:.45}
+body.teach-battle #items{pointer-events:none}body.teach-item #items{pointer-events:auto}

@@ -5,7 +5,7 @@
    - otherwise the PeerJS public broker (no account needed): the host registers the peer id "hlqj-pk-<code>".
    - ?pknet=local: two tabs of the same browser over a BroadcastChannel (testing).
    Every transport returns the same channel: send(obj), onmessage(obj), onclose(), close(), kind. */
-import {FIREBASE_CONFIG} from './pk-config.js?v=20261107-b5';
+import {FIREBASE_CONFIG} from './pk-config.js?v=20261107-b7';
 
 export const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const makeCode = (rand = Math.random) => Array.from({length: 4}, () => CODE_CHARS[Math.floor(rand() * CODE_CHARS.length)]).join('');

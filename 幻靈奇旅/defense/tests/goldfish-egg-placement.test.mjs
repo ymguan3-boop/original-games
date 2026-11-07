@@ -129,7 +129,7 @@ test('sortie deck editor, flipped card descriptions, and how-to explain actual f
   assert.match(main,/卡組與升星/,'how-to also updated');
   assert.match(css,/\.deck-special-rules/);
   assert.match(css,/\.deck-special-note/);
-  assert.match(html,/20261107-b5/);
+  assert.match(html,/20261107-b7/);
 });
 
 test('三色蛋：空位不足時整張卡不生效，也不能放第二組', () => {
@@ -146,4 +146,9 @@ test('榮耀守護：全隊免疫狀態並回血 30%', async () => {
   const {ROLE_SKILLS}=await import('../js/role-skills.js');
   const u=ROLE_SKILLS['zhaocai-3'].ultimate;assert.equal(u.heal,.3);assert.equal(u.kind,'heal');assert.ok(u.immune>0);assert.ok(u.targets>=20);
   assert.equal(ROLE_SKILLS['zhaocai-2'].ultimate.name,'招財領域');
+});
+
+test('教學戰流程：合成由腳本示範，不需要擊敗魔王', async () => {
+  const {TUTORIAL_FLOW}=await import('../js/tutorial.js');
+  assert.deepEqual(TUTORIAL_FLOW.slice(-7),['deploy','star2','star3','item','itemInfo','leaveBattle','returnHint']);
 });

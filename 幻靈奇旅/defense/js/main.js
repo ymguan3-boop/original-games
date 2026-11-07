@@ -2,36 +2,36 @@
    (wardrobe outfit, original unlocks) read-only; gacha points and bag items go through the shared cave ledger
    (PhantomCaveBridge); its own records (summoned spirits, deck, cleared islands, boat position) live in
    phantom-defense-v1. */
-import {STAGES, SHAPES, eggTrio, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-b5';
-import {createPkIsland} from './pk-island.js?v=20261107-b5';
-import {createPkLobby} from './pk-lobby.js?v=20261107-b5';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-b5';
-import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-b5';
-import {createToonKit} from './style.js?v=20261107-b5';
-import {createChartModels} from './chart-models.js?v=20261107-b5';
-import {createView} from './view.js?v=20261107-b5';
-import {createSeaChart} from './sea3d.js?v=20261107-b5';
-import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-b5';
-import {buildPath} from './stages.js?v=20261107-b5';
-import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-b5';
-import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-b5';
+import {STAGES, SHAPES, eggTrio, teachDeal, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-b7';
+import {createPkIsland} from './pk-island.js?v=20261107-b7';
+import {createPkLobby} from './pk-lobby.js?v=20261107-b7';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-b7';
+import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-b7';
+import {createToonKit} from './style.js?v=20261107-b7';
+import {createChartModels} from './chart-models.js?v=20261107-b7';
+import {createView} from './view.js?v=20261107-b7';
+import {createSeaChart} from './sea3d.js?v=20261107-b7';
+import {defensePool, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-b7';
+import {buildPath} from './stages.js?v=20261107-b7';
+import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-b7';
+import {costumeFor} from '../../survivors/js/costume-effects.js?v=20261107-b7';
 import {ITEMS as CAVE_ITEMS} from '../../survivors/js/inventory.js?v=20261030-reaper-v2';
-import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-b5';
-import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-b5';
+import {summonMarkup, startSummon} from '../../survivors/js/summon-view.js?v=20261107-b7';
+import {groupRewards} from '../../survivors/js/reward-groups.js?v=20261107-b7';
 import {itemPicture} from '../../survivors/js/item-pictures.js?v=20261029-reaper-v1';
-import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-b5';
-import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-b5';
-import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-b5';
-import {icon} from '../../survivors/js/ui-art.js?v=20261107-b5';
-import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-b5';
-import {createTutorial} from './tutorial.js?v=20261107-b5';
-import {initIcons, ico} from './ui-icons.js?v=20261107-b5';
-import {createCombatAudio} from './combat-audio.js?v=20261107-b5';
+import {ROLE_META, ROLE_SKILLS, roleFor, ultimateFor, ultimateDescription, roleLabel, ULTIMATE_SPACING} from './role-skills.js?v=20261107-b7';
+import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-b7';
+import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-b7';
+import {icon} from '../../survivors/js/ui-art.js?v=20261107-b7';
+import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-b7';
+import {createTutorial} from './tutorial.js?v=20261107-b7';
+import {initIcons, ico} from './ui-icons.js?v=20261107-b7';
+import {createCombatAudio} from './combat-audio.js?v=20261107-b7';
 
-import {autoDeck, validPkDeck} from './deck-rules.js?v=20261107-b5';
+import {autoDeck, validPkDeck} from './deck-rules.js?v=20261107-b7';
 
-import {streamAssets} from './asset-stream.js?v=20261107-b5';
-import {CARD_PREVIEWS} from './card-previews.js?v=20261107-b5';
+import {streamAssets} from './asset-stream.js?v=20261107-b7';
+import {CARD_PREVIEWS} from './card-previews.js?v=20261107-b7';
 const ASSET_BASE = new URL('../../', import.meta.url);
 const $ = (id) => document.getElementById(id);
 const SAVE_KEY = 'phantom-defense-v1';
@@ -83,6 +83,7 @@ function hideBossIntro() {
   $('bossIntro').hidden = true;
 }
 function showBossIntro(stage) {
+  if (game?.tutorialBattle) return;
   const speech = openingFor(stage);
   if (!speech) return;
   hideBossIntro();
@@ -167,7 +168,7 @@ function unitButton({id, trial = false}) {
   return `<button class="collectionThumb ${n >= 0 ? 'on sortie-picked' : ''}" data-unit="${id}" aria-label="${n >= 0 ? '已選出擊：' : '可選卡牌：'}${esc(spirit(id).name)}" title="${esc(hint)}">${trial ? '<span class="trial">體驗</span>' : ''}${n >= 0 ? '<span class="sortie-badge">出擊</span>' : ''}${sup ? '<span class="skilltag">輔助</span>' : ''}${cardHtml(id, {line})}</button>`;
 }
 
-let chart = null, tutorial = null;
+let chart = null, tutorial = null, teachScript = null;
 const tutorialSeen = {pulled: false, deck: false, item: false};
 /* Preserve fixed card positions, including deliberately emptied slots.
    Slots 1–4 are base spirits and slots 5–6 are red skill cards. The compact
@@ -535,11 +536,12 @@ async function startGame() {
     if (!audio) audio = createCombatAudio();
     view.costume = costumeFor(journey()).id;
     /* 教學戰：獨立小關、只發同一種卡，一定能合到三星；不算正式關卡，也不給獎勵 */
-    const teachBattle = tutorial?.active && ['sortie', 'deploy', 'star2', 'star3', 'item', 'finish'].includes(record.tutorial?.step);
-    const teachCard = deckBase()[0];
-    game = createGame({stageIndex: record.stage, stage: teachBattle ? {...STAGES[0], id: 'tutorial-battle', name: '教學戰', scale: 0.3, nest: 900, crystal: 6000} : null, deck: teachBattle ? [teachCard] : record.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
+    const teachBattle = tutorial?.active && record.tutorial?.step === 'sortie';
+    const teachCard = 'bulbasaur';
+    game = createGame({stageIndex: record.stage, stage: teachBattle ? {...STAGES[0], id: 'tutorial-battle', name: '教學戰', scale: 0.3, nest: 900, crystal: 6000, groups: [], traps: []} : null, deck: teachBattle ? [teachCard] : record.deck, spirits: data.spirits, catalog: data.catalog, evolution: data.evolution, deferDeal: true, hooks: {fire: (f, target, strong) => view.fire(f, target, strong)}});
     game.runId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
     game.tutorialBattle = !!teachBattle;
+    if (teachBattle) { game.deck = []; game.freezeUntil = 1e9; teachScript = {card: teachCard, first: false, s2: false, s3: false}; }
     view.setGame(game);
     loadingPhase('場景完成，正在準備幻靈素材…', 55);
     const ids = [...record.deck, ...game.stage.groups.map((g) => g.species), game.stage.boss];
@@ -1120,12 +1122,6 @@ function handleEvents() {
 }
 
 function showResult(r) {
-  if (game.tutorialBattle) {
-    tutorial.check({finish: () => true});
-    openModal(ribbon('教學戰結束', '⚓') + '<p class="bm-line">做得好！你已學會守護戰，正式關卡等著你。</p><div class="modal-actions center"><button class="primary" id="teachDone">返回主島</button></div>', 'result');
-    $('teachDone').onclick = () => { $('modal').close(); game = null; $('hud').hidden = true; $('lobby').hidden = false; renderLobby(); };
-    return;
-  }
   const stage = game.stage, idx = STAGES.indexOf(stage), first = r.won && !record.cleared[stage.id];
   if (r.won) { record.cleared[stage.id] = true; saveRecord(); }
   const mins = Math.floor(r.time / 60), secs = Math.round(r.time % 60);
@@ -1161,15 +1157,27 @@ function showResult(r) {
 function bindHud() {
   $('dismissBossIntro').onclick = hideBossIntro;
   initFullscreen();
-  tutorial = createTutorial({get: () => record, save: saveRecord, box: $('tutor'), extraFocus: (step) => step === 'gacha' && (record.starterClaimed || tutorialSeen.pulled) && $('panel').open ? '#closePanel' : step === 'deck' && $('modal').open && deckBase().length >= DECK_BASE ? '#modalBody .modal-dismiss' : step === 'deck' && !$('modal').open ? '.isle-deck-actions [data-auto-deck]' : null});
+  tutorial = createTutorial({get: () => record, save: saveRecord, box: $('tutor'), onAdvance: (step) => { if (step === 'leaveBattle') { $('itemMenu').hidden = true; leaveGame(); } }, extraFocus: (step) => step === 'gacha' && (record.starterClaimed || tutorialSeen.pulled) && $('panel').open ? '#closePanel' : step === 'deck' && $('modal').open && deckBase().length >= DECK_BASE ? '#modalBody .modal-dismiss' : step === 'deck' && !$('modal').open ? '.isle-deck-actions [data-auto-deck]' : null});
   tutorial.render();
   setInterval(() => tutorial.check({
     gacha: () => (record.starterClaimed || tutorialSeen.pulled) && !$('panel').open, deck: () => deckBase().length >= DECK_BASE && !$('modal').open,
     sortie: () => !!game, deploy: () => !!game && alliesCount(game) > 0,
     star2: () => !!game && (game.hand.some((c) => c.rank >= 2) || game.fighters.some((f) => f.side === 'ally' && f.rank >= 2)),
     star3: () => !!game && (game.hand.some((c) => c.rank >= 3) || game.fighters.some((f) => f.side === 'ally' && f.rank >= 3)),
-    item: () => tutorialSeen.item, finish: () => !!game?.result
+    item: () => !$('itemMenu').hidden
   }), 500);
+  /* 教學戰的發牌腳本：只有出擊那一步能碰手牌，合成由系統示範 */
+  setInterval(() => {
+    const step = record.tutorial?.step, teach = !!game?.tutorialBattle;
+    document.body.classList.toggle('teach-battle', teach);
+    document.body.classList.toggle('teach-lock', teach && step !== 'deploy');
+    document.body.classList.toggle('teach-item', teach && step === 'item');
+    if (!teach || !game.started || !teachScript) return;
+    const give = (n) => { for (let i = 0; i < n; i++) setTimeout(() => { if (game?.tutorialBattle) { teachDeal(game, teachScript.card); handleEvents(); handSig = ''; hud(); } }, 900 * (i + 1)); };
+    if (step === 'deploy' && !teachScript.first) { teachScript.first = true; give(1); }
+    if (step === 'star2' && !teachScript.s2) { teachScript.s2 = true; give(2); }
+    if (step === 'star3' && !teachScript.s3) { teachScript.s3 = true; give(2); }
+  }, 300);
   $('items').onclick = () => { if (placing) { endPlacing(); return; } const menu = $('itemMenu'); menu.hidden = !menu.hidden; if (!menu.hidden) renderItems(true); };
   bindPlacement();
   $('itemMenu').onclick = (e) => {
