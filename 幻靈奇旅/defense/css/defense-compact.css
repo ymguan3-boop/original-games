@@ -65,3 +65,7 @@
 #lobby .isle-panel .isle-deck-actions .tool{margin:0!important;padding:0 4px!important;min-height:38px!important;height:38px!important;line-height:1!important;white-space:nowrap}
 #lobby .isle-panel .sortie-base-warning{margin:0!important;padding:4px 8px!important;font-size:12px!important;line-height:1.3!important;white-space:normal!important}
 @media (orientation:landscape) and (max-height:500px){#lobby .isle-panel{top:auto!important;width:270px!important}#lobby .isle-panel .deck-strip img,#lobby .isle-panel .deck-strip i{max-height:34px!important}#lobby .isle-panel .isle-card{gap:4px!important;padding:6px 8px!important}}
+#lobby .isle-panel .isle-deck-actions [data-open="deck"],#lobby .isle-panel .isle-deck-actions [data-auto-deck]{display:block!important;visibility:visible!important;width:100%!important}
+#lobby .isle-panel .isle-title small,#lobby .isle-panel .isle-title .weather-pill{display:inline-flex!important;align-items:center}
+#lobby .isle-panel .isle-boss small{display:block!important}
+#lobby .isle-panel .isle-boss img{width:36px!important;height:36px!important;display:block!important;border-radius:8px}

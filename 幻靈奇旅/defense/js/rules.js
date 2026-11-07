@@ -4,9 +4,9 @@
    evolutions from the cave table (survivors/data/evolution.json). The view's hooks.fire plays the cave attack and
    reports when the hit releases, so damage lands on the animation frame.
    Lane coordinate x runs from state.left (monster nest, path start) to state.right (crystal, path end). */
-import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-a6';
-import {STAGES, buildPath} from './stages.js?v=20261107-a6';
-import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-a6';
+import {passiveDefinition, effectText, mergeEffects} from '../../survivors/js/passive-rules.js?v=20261107-b2';
+import {STAGES, buildPath} from './stages.js?v=20261107-b2';
+import {ROLE_SKILLS, roleFor, ultimateFor, basicReach, isPriest, ULTIMATE_SPACING} from './role-skills.js?v=20261107-b2';
 
 export {STAGES};
 /* PK (duel): two players on one road. The host's spirits start at the crystal end (side 'ally'), the guest's at the
@@ -187,10 +187,12 @@ export function killPoints(stageIndex, boss = false) {
   return stageIndex < 3 ? 3 : stageIndex < 6 ? 8 : 15;
 }
 
+/* 水蛟龍王在守護戰的血量是原本的三分之二 */
+export const DRAGON_HP_RATE = 2 / 3;
 export function fighterStats(spec, entry, side, scale = 1, boost = 0, duel = false) {
   const profile = profileFor(spec, entry, false), ally = side === 'ally' || duel, k = 1 + 0.5 * boost;
   return {
-    hp: Math.round(spec.hp * (ally ? (RARITY_HP[spec.rarity] || 4.8) * k : 1.8 * scale)),
+    hp: Math.round(spec.hp * (spec.id === WATER_DRAGON ? DRAGON_HP_RATE : 1) * (ally ? (RARITY_HP[spec.rarity] || 4.8) * k : 1.8 * scale)),
     attack: spec.attack * (ally ? k : 0.95 * scale) * (roleFor(spec.id).basic === 'melee' ? 1.15 : 1),
     speed: spec.stage >= 3 ? 1.3 : ['run', 'fly', 'hop'].includes(spec.motionType) ? 2.2 : 1.7,
     profile, rate: roleFor(spec.id).basic === 'melee' ? 1.05 : roleFor(spec.id).basic === 'ranged' ? 1.2 : 1.45, knockbacks: ally ? 3 : spec.stage >= 3 ? 2 : 1,

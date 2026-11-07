@@ -48,7 +48,7 @@ function create({THREE:T,parent}){
  /* 榮耀守護：全體發光 */
  function glory(origin,targets=[],dur=2.4){ringT=0;ring.visible=true;ring.position.set(origin.x,.04,origin.z);pillarT=0;pillar.visible=true;pillar.position.set(origin.x,3,origin.z);for(const p of targets){const b=new T.Mesh(new T.CylinderGeometry(.75,.9,3,18,1,true),new T.MeshBasicMaterial({color:0xffe27a,transparent:true,opacity:.1,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,toneMapped:false}));b.position.set(p.x,1.5,p.z);root.add(b);fields.push({m:b,t:0,dur,glow:true});burst(new T.Vector3(p.x,1,p.z),24,4);}}
  function clear(){queue=null;for(const c of coins)c.life=0;for(const s of sparks)s.life=0;ringT=pillarT=-1;ring.visible=pillar.visible=false;}
- return{toss,spray,burst,bolt,domain,shieldChain,glory,update,clear,root,dispose(){root.removeFromParent();for(const m of[coinMesh,sparkMesh,ring,pillar]){m.geometry.dispose();m.material.dispose();}}};
+ return{toss,spray,burst,bolt,domain,shieldChain,glory,update,clear,root,dispose(){root.parent?.remove(root);for(const m of[coinMesh,sparkMesh,ring,pillar]){m.geometry.dispose();m.material.dispose();}}};
 }
 /* 訓練木頭人：立柱、橫臂、草繩綁身與靶心，被打到會彈性搖晃 */
 function dummyTarget(T){

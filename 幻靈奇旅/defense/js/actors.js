@@ -1,9 +1,9 @@
 /* Spirit actors for the defense mode, built the same way as the cave's pets (survivors/js/scene.js):
    same models and clips, the same special effects (阿宏牛仔/藍金星輝法師, 官胖, 歐頭慢), and attacks planned by
    SpiritCombat.attackPlan + the model room's SpiritVfx scripts, so moves and ultimates look identical. */
-import {modelHeight} from '../../survivors/js/actor-layout.js?v=20261107-a6';
-import {modelRoomPlan, originalPresentation, createModelRoomEffect} from '../../survivors/js/model-room-effects.js?v=20261107-a6';
-import {attackProfile} from '../../survivors/js/combat-profile.js?v=20261107-a6';
+import {modelHeight} from '../../survivors/js/actor-layout.js?v=20261107-b2';
+import {modelRoomPlan, originalPresentation, createModelRoomEffect} from '../../survivors/js/model-room-effects.js?v=20261107-b2';
+import {attackProfile} from '../../survivors/js/combat-profile.js?v=20261107-b2';
 
 const BASE = new URL('../../', import.meta.url);
 const scripts = new Map(), gltfs = new Map();
@@ -87,6 +87,39 @@ function normalize(object, height) {
   const s = height / h; object.scale.multiplyScalar(s); object.position.y -= box.min.y * s;
 }
 
+/* 零件很多的剛體模型（水蛟龍王 96 件）：跟著同一個動畫節點動的零件合併，draw call 大幅減少，外觀與動作不變。
+   合併結果依模型快取，同一隻魔王重複出場不用再算。 */
+const rigidCache = new Map();
+export function batchRigidModel(T, object, clips, path) {
+  const meshes = []; object.traverse((n) => { if (n.isMesh) meshes.push(n); });
+  if (meshes.length < 40 || meshes.some((n) => n.isSkinnedMesh)) return meshes.length;
+  const animated = new Set(); for (const c of clips) for (const t of c.tracks) animated.add(t.name.split('.')[0]);
+  object.updateMatrixWorld(true);
+  const pivotOf = (m) => { let p = m.parent; while (p !== object && !animated.has(p.name)) p = p.parent; return p; };
+  /* 模型沒有貼圖，不同顏色的材質改成頂點色，同一節點就能併成一件；透明與發光零件維持原樣 */
+  const groups = new Map(), plain = (m) => !m.transparent && !m.map, glowKey = (m) => (m.emissive?.getHexString() || '000000') + ':' + (m.emissiveIntensity ?? 1);
+  for (const m of meshes) { if (!plain(m.material)) continue; const pivot = pivotOf(m), key = pivot.uuid + '|' + glowKey(m.material); (groups.get(key) || groups.set(key, {pivot, glow: m.material, meshes: []}).get(key)).meshes.push(m); }
+  const cache = rigidCache.get(path) || rigidCache.set(path, {materials: new Map(), parts: new Map()}).get(path);
+  for (const g of groups.values()) {
+    if (g.meshes.length < 2) continue;
+    const key = g.pivot.name + '|' + glowKey(g.glow); let geometry = cache.parts.get(key);
+    if (!geometry) {
+      const inv = new T.Matrix4().copy(g.pivot.matrixWorld).invert(), pos = [], nor = [], col = [], idx = []; let base = 0;
+      for (const m of g.meshes) {
+        const c = m.geometry.clone().applyMatrix4(new T.Matrix4().multiplyMatrices(inv, m.matrixWorld)), at = c.attributes, tint = m.material.color;
+        for (let i = 0; i < at.position.count; i++) { pos.push(at.position.getX(i), at.position.getY(i), at.position.getZ(i)); nor.push(at.normal?.getX(i) || 0, at.normal?.getY(i) || 0, at.normal?.getZ(i) || 1); col.push(tint.r, tint.g, tint.b); }
+        const n = c.index ? c.index.count : at.position.count; for (let i = 0; i < n; i++) idx.push(base + (c.index ? c.index.getX(i) : i));
+        base += at.position.count; c.dispose();
+      }
+      geometry = new T.BufferGeometry(); geometry.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); geometry.setAttribute('normal', new T.Float32BufferAttribute(nor, 3)); geometry.setAttribute('color', new T.Float32BufferAttribute(col, 3)); geometry.setIndex(idx); cache.parts.set(key, geometry);
+    }
+    const mk = glowKey(g.glow); if (!cache.materials.has(mk)) cache.materials.set(mk, new T.MeshStandardMaterial({vertexColors: true, roughness: .55, metalness: .05, emissive: g.glow.emissive?.clone() || new T.Color(0), emissiveIntensity: g.glow.emissiveIntensity ?? 1}));
+    const merged = new T.Mesh(geometry, cache.materials.get(mk)), small = geometry.index.count / 3 < 400; merged.frustumCulled = false; merged.castShadow = !small; merged.userData.rigidBatch = true; if (small) merged.userData.toonOutlined = true; g.pivot.add(merged);
+    for (const m of g.meshes) m.parent.remove(m);
+  }
+  let count = 0; object.traverse((n) => { if (n.isMesh) count++; }); return count;
+}
+
 /* scale enlarges the cave height for the wide defense camera; effects use the same height so they scale too. */
 export async function createActor(spec, entry, scale = 1) {
   const T = THREE, path = spec.model, id = spec.id, height = modelHeight(spec) * scale;
@@ -94,6 +127,7 @@ export async function createActor(spec, entry, scale = 1) {
   const controller = g.create?.(), object = controller ? controller.root : cloneModel(g.scene), root = new T.Group();
   root.add(object);
   object.traverse((n) => { if (n.userData?.costume) n.visible = false; if (n.isMesh) { n.frustumCulled = false; n.castShadow = true; } });
+  if (!controller) batchRigidModel(T, object, g.animations || [], path);
   const mixer = new T.AnimationMixer(object), actions = {};
   (g.animations || []).forEach((c) => { actions[c.name.replace(/.*[|]/, '')] = mixer.clipAction(c); });
   const duoFx = /(ahong-cowboy|starlight-mage)\.glb$/.test(path) ? createDuoCombatVFX(T, root, object, path) : null;
