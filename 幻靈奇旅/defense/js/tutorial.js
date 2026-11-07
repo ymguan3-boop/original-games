@@ -1,5 +1,5 @@
 /* 首次登島引導：只讀正式遊戲狀態判斷過關，不改星數、不發獎勵。進度存在 record.tutorial。 */
-export const TUTORIAL_FLOW=['displayControls','islandHint','gacha','deck','sortie','deploy','star2','star3','item','itemInfo','leaveBattle','returnHint'];
+export const TUTORIAL_FLOW=['displayControls','islandHint','gacha','deck','sortie','deploy','star2','star3','dragMerge','item','itemInfo','leaveBattle','returnHint'];
 const TEXT={
  displayControls:['老船夫','歡迎來到守護戰島！用手機玩嗎？把手機橫過來視野更寬，也能雙指縮放，或從選單切換全螢幕。',true],
  islandHint:['老船夫','點島嶼上的數字，可以查看關卡名稱；拖曳地圖可以看其他島！',true],
@@ -8,16 +8,17 @@ const TEXT={
  sortie:['老船夫','準備好了嗎？按下「出擊」！'],
  deploy:['老船夫','這是教學戰。點這張一星卡，讓幻靈出擊！'],
  star2:['老船夫','相同的卡片相鄰會自動合成，不用點。看，兩張一星卡要合成二星了！'],
- star3:['老船夫','再來兩張！合成二星後，兩張二星會再合成三星！'],
+ star3:['老船夫','這次發來一張別的卡，中間隔開就不會自動合成，我們來試試。'],
+ dragMerge:['老船夫','按住右邊的二星卡，拖到左邊二星卡的旁邊放開，兩張相鄰就會合成三星！'],
  item:['老船夫','很好！現在點「道具」打開看看。'],
  itemInfo:['老船夫','道具從轉蛋取得，點一下就會使用，例如整理手牌或加速發牌。用完就沒了，沒有道具時這裡是空的。',true],
  leaveBattle:['老船夫','教學就到這裡，不用打魔王。回海島吧！',true],
  returnHint:['老船夫','想回初光鎮時，點「選單」→「返回初光鎮」。接下來就自由遊玩吧！',true]
 };
 /* 每一步要按的按鈕，由前往後找第一個看得到的 */
-const FOCUS={gacha:['#closePanelTarget','#panelBody .dg-actions button','#panelBody .dg-machine','#gachaBtn'],deck:['#deckCloseTarget','#autoDeck','#deckBtn'],sortie:['#sortieBtn'],deploy:['.hand-card'],item:['#items'],leaveBattle:['#tutor [data-next]'],returnHint:['#menuBtn']};
+const FOCUS={gacha:['#closePanelTarget','#panelBody .dg-actions button','#panelBody .dg-machine','#gachaBtn'],deck:['#deckCloseTarget','#autoDeck','[data-open="deck"]'],sortie:['#sortieBtn'],deploy:['.hand-card'],dragMerge:['#hand .hand-card:last-child'],item:['#items'],leaveBattle:['#tutor [data-next]'],returnHint:['#menuBtn']};
 export function createTutorial({get,save,box,onDone=()=>{},extraFocus=()=>null,onAdvance=()=>{}}){
- const face=box.querySelector('img'),FACE={displayControls:'happy',islandHint:'talk',gacha:'talk',deck:'talk',sortie:'wow',deploy:'talk',itemInfo:'talk',leaveBattle:'happy',star2:'talk',star3:'wow',item:'talk',finish:'happy',returnHint:'happy'},[who,line]=[box.querySelector('b'),box.querySelector('p')],next=box.querySelector('[data-next]'),skip=box.querySelector('[data-skip]');
+ const face=box.querySelector('img'),FACE={displayControls:'happy',islandHint:'talk',gacha:'talk',deck:'talk',sortie:'wow',deploy:'talk',dragMerge:'wow',itemInfo:'talk',leaveBattle:'happy',star2:'talk',star3:'wow',item:'talk',finish:'happy',returnHint:'happy'},[who,line]=[box.querySelector('b'),box.querySelector('p')],next=box.querySelector('[data-next]'),skip=box.querySelector('[data-skip]');
  const state=()=>get().tutorial||(get().tutorial={step:'displayControls',done:false,version:1});
  /* 未完成就離開：下次進來從頭開始 */
  if(!state().done&&state().step!==TUTORIAL_FLOW[0]){state().step=TUTORIAL_FLOW[0];save();}

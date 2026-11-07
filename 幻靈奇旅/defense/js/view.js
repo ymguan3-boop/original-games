@@ -2,17 +2,17 @@
    state.events into effects. Every fighter is a cave actor (actors.js); attacks use the cave's model-room scripts,
    metal projectiles (survivors/js/projectile-view.js) and spell/impact effects (survivors/js/combat-vfx-v17.js).
    Hits get hit-stop, a flash, a recoil and damage numbers so every strike lands with weight. */
-import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-b7';
-import {createFx} from './fx.js?v=20261107-b7';
-import {createSeascape} from './seascape.js?v=20261107-b7';
-import {createToonKit} from './style.js?v=20261107-b7';
-import {batchStatic, movingMeshes} from './batch.js?v=20261107-b7';
-import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261107-b7';
-import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261107-b7';
-import {pointAt} from './stages.js?v=20261107-b7';
-import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261107-b7';
-import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261107-b7';
-import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261107-b7';
+import {createActor, performSkill, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-b8';
+import {createFx} from './fx.js?v=20261107-b8';
+import {createSeascape} from './seascape.js?v=20261107-b8';
+import {createToonKit} from './style.js?v=20261107-b8';
+import {batchStatic, movingMeshes} from './batch.js?v=20261107-b8';
+import {buildEnvironment, themeOf, THEMES} from './env.js?v=20261107-b8';
+import {ELEMENT_COLORS, TRAP_WARN} from './rules.js?v=20261107-b8';
+import {pointAt} from './stages.js?v=20261107-b8';
+import {createCombatVfx} from '../../survivors/js/combat-vfx-v17.js?v=20261107-b8';
+import {createProjectileView} from '../../survivors/js/projectile-view.js?v=20261107-b8';
+import {projectileStyle, projectileTint} from '../../survivors/js/actor-layout.js?v=20261107-b8';
 
 /* spirits on the path are 0.7x of the earlier size */
 const SCALE = 1.26, BOSS_SCALE = 2.1, FIELD = [34, 20], ISLAND = [33, 23.5];
@@ -391,8 +391,9 @@ export function createView(canvas, {spirits, catalog}) {
   /* when the nest is down to 60% the boss leaps off its barrel onto the start of the path (the walking boss takes over) */
   function releaseNestBoss() {
     if (!nestBoss) return;
-    const b = nestBoss, p = world(state.left + 1.5); b.cast = null;
-    b.leave = {t: 0, from: b.root.position.clone(), to: new THREE.Vector3(p.x, 0, p.z)};
+    const b = nestBoss, p = world(state.left + 1.5); b.cast = null; b.roomFx?.dispose(); b.roomFx = null; b.hold = 0;
+    /* 就算正在施法縮小中，跳下來的過程也恢復到路上魔王的尺寸 */
+    b.leave = {t: 0, from: b.root.position.clone(), to: new THREE.Vector3(p.x, 0, p.z), scale: b.root.scale.x, end: BOSS_SCALE / 1.1};
     if (nest?.userData.guardianBar) nest.userData.guardianBar.visible = false;
     b.play('Attack', true);
   }
@@ -443,7 +444,7 @@ export function createView(canvas, {spirits, catalog}) {
     for (let i = fieldJobs.length - 1; i >= 0; i--) if (clock >= fieldJobs[i].at) { const job = fieldJobs.splice(i, 1)[0]; job.run(); }
   }
   function bossSkillStart() {
-    const b = nestBoss; if (!b || b.leave) return;
+    const b = nestBoss; if (!b || b.leave || b.cast) return;
     const r = canvas.getBoundingClientRect(), to = screenToWorld(r.left + r.width / 2, r.top + r.height * 0.5, CASTER_DIST);
     to.y -= b.height * 0.45 * 0.6;
     b.cast = {t: 0, from: b.home.clone(), to, castT: undefined}; b.mood.kind = null; b.play('Idle');
@@ -456,6 +457,8 @@ export function createView(canvas, {spirits, catalog}) {
       const r = fighters.get(f.id);
       if (r) combatVfx.impact({x: r.deco.position.x, z: r.deco.position.z, element: ev.element, strong: true});
     }
+    /* 開場跳出的事件若被錯過（模型剛載入等），施法時補跳，不再原地放招 */
+    if (b && !b.cast && !b.leave) bossSkillStart();
     if (!b?.cast) return;
     b.cast.castT = 0;
     const center = world((state.left + state.right) / 2);
@@ -467,20 +470,22 @@ export function createView(canvas, {spirits, catalog}) {
     if (b.leave) {
       const L = b.leave; L.t += dt; const k = Math.min(1, L.t / 0.45), e = ease(k);
       b.root.position.lerpVectors(L.from, L.to, e); b.root.position.y += Math.sin(k * Math.PI) * 2.2;
-      b.root.scale.setScalar(Math.max(0.01, 1 - Math.max(0, k - 0.75) * 4 * 0.5));
+      b.root.scale.setScalar(L.scale + (L.end - L.scale) * e);
       if (k >= 1) { fx.shockwave({x: L.to.x, z: L.to.z, color: 0xff6b8a, radius: 3, life: 0.5}); fx.particles({x: L.to.x, z: L.to.z, y: 0.3, count: 24, color: 0xb46cff, size: 0.4, speed: 3, up: 2, life: 0.6}); b.dispose(); nestBoss = null; }
       return;
     }
     if (b.cast) {
       /* same beats as a skill card: leap out, face the player, turn while rising, cast, then fly home */
       const c = b.cast; c.t += dt; if (c.castT !== undefined) c.castT += dt;
+      /* 施法事件沒來時不要卡在畫面前，直接飛回木桶 */
+      if (c.castT === undefined && c.t > 2.6) c.castT = 1.6;
       const t = c.t, jump = ease(Math.min(1, t / 0.5)), turn = ease(Math.max(0, Math.min(1, (t - 0.7) / 0.35)));
       const toCam = Math.atan2(camBase.x - b.root.position.x, camBase.z - b.root.position.z);
       if (c.castT !== undefined && c.castT > 1.6) {
         const k = ease(Math.min(1, (c.castT - 1.6) / 0.55));
         b.root.position.lerpVectors(c.to, b.home, k); b.root.position.y += Math.sin(k * Math.PI) * 1.6;
         b.root.rotation.y = toCam + Math.PI + (b.facing - toCam - Math.PI) * k; b.root.scale.setScalar(0.6 + 0.4 * k);
-        if (k >= 1) { b.cast = null; b.root.scale.setScalar(1); b.root.rotation.y = b.facing; b.play('Idle'); }
+        if (k >= 1) { b.cast = null; b.root.scale.setScalar(1); b.root.position.copy(b.home); b.root.rotation.y = b.facing; b.roomFx?.dispose(); b.roomFx = null; b.hold = 0; b.play('Idle'); }
         return;
       }
       b.root.position.lerpVectors(c.from, c.to, jump); b.root.position.y += Math.sin(Math.min(1, t / 0.5) * Math.PI) * 2;
@@ -823,6 +828,8 @@ export function createView(canvas, {spirits, catalog}) {
       const c = casters[i], a = c.a; c.t += dt;
       if (!a) { if (c.t > 4) casters.splice(i, 1); continue; }
       a.tick(dt);
+      /* 施法事件沒來時不要卡在畫面前，直接飛回木桶 */
+      if (c.castT === undefined && c.t > 2.6) c.castT = 1.6;
       const t = c.t, jump = ease(Math.min(1, t / 0.5)), turn = ease(Math.max(0, Math.min(1, (t - 0.7) / 0.35))), rise = ease(Math.max(0, Math.min(1, (t - 0.7) / 0.6)));
       a.root.position.lerpVectors(c.from, c.to, jump);
       a.root.position.y += Math.sin(Math.min(1, t / 0.5) * Math.PI) * 1.6 + rise * 0.5 + (t > 0.5 && t < 0.7 ? -Math.sin((t - 0.5) / 0.2 * Math.PI) * 0.12 : 0);
@@ -1005,6 +1012,8 @@ export function createView(canvas, {spirits, catalog}) {
       projectileView.clear(); combatVfx.clear(); fx.clear(); vfx3d?.clear(); fieldJobs.length = 0;
       state = game; if (game) buildMap(game); else seascape.dispose();
     },
+    get nestBoss() { return nestBoss; },
+    fighterActor(id) { return fighters.get(id)?.actor; },
     async preload(ids, onProgress = null) {
       /* Fetch model/assets only. Old code constructed+destroyed every complete
          skinned fighter sequentially, delaying sortie for many seconds. */

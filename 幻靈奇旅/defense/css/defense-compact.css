@@ -102,3 +102,11 @@ html body #lobby #seaChart{position:absolute!important;left:0!important;top:0!im
 body.teach-lock #hand{pointer-events:none}
 body.teach-battle #speed,body.teach-battle #pause{pointer-events:none;opacity:.45}
 body.teach-battle #items{pointer-events:none}body.teach-item #items{pointer-events:auto}
+body.teach-drag #hand{pointer-events:auto}
+html body #lobby .chart-tools{grid-template-columns:auto repeat(2,minmax(0,1fr))!important}
+html body #lobby .isle-panel .isle-deck-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+html body #lobby .isle-panel .isle-deck-actions .sortie{background:#e0662c!important;color:#fff!important;border-color:#a8461a!important;font-weight:800}
+#modal button.wide,#modal button.big,#panel button.wide,.pk-choices button,.modal-actions button{height:auto!important;min-height:44px;padding:8px 10px!important;display:flex!important;flex-direction:column!important;align-items:center;justify-content:center;gap:2px;line-height:1.25!important;white-space:normal!important;word-break:keep-all;text-align:center;box-sizing:border-box;max-width:100%}
+#modal button.wide small,#modal button.big small,.pk-choices button small{display:block;font-size:11px!important;line-height:1.2!important;white-space:normal}
+.pk-choices{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch}
+button.round{height:auto!important;min-height:52px;width:auto!important;min-width:52px;padding:6px 4px!important;box-sizing:border-box}button.round small{white-space:nowrap;line-height:1.1}
