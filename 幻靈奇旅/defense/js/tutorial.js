@@ -14,12 +14,12 @@ const TEXT={
  returnHint:['船長','想回初光鎮？選單 → 返回初光鎮。你已學會守護戰！',true]
 };
 export function createTutorial({get,save,box,onDone=()=>{}}){
- const [who,line]=[box.querySelector('b'),box.querySelector('p')],next=box.querySelector('[data-next]'),skip=box.querySelector('[data-skip]');
+ const face=box.querySelector('img'),FACE={displayControls:'happy',islandHint:'talk',gacha:'talk',deck:'talk',sortie:'wow',deploy:'talk',star2:'talk',star3:'wow',item:'talk',finish:'happy',returnHint:'happy'},[who,line]=[box.querySelector('b'),box.querySelector('p')],next=box.querySelector('[data-next]'),skip=box.querySelector('[data-skip]');
  const state=()=>get().tutorial||(get().tutorial={step:'displayControls',done:false,version:1});
  /* 未完成就離開：下次進來從頭開始 */
  if(!state().done&&state().step!==TUTORIAL_FLOW[0]){state().step=TUTORIAL_FLOW[0];save();}
  const advance=()=>{const t=state(),i=TUTORIAL_FLOW.indexOf(t.step);if(i>=TUTORIAL_FLOW.length-1){t.done=true;t.step='done';onDone();}else t.step=TUTORIAL_FLOW[i+1];save();render();};
- function render(){const t=state();if(t.done){box.hidden=true;return;}const [name,text,info]=TEXT[t.step]||TEXT.displayControls;who.textContent=name;line.textContent=text;next.hidden=!info;box.hidden=false;}
+ function render(){const t=state();if(t.done){box.hidden=true;return;}const [name,text,info]=TEXT[t.step]||TEXT.displayControls;face.src='assets/captain/'+(FACE[t.step]||'talk')+'.gif';who.textContent=name;line.textContent=text;next.hidden=!info;box.hidden=false;}
  next.onclick=advance;
  skip.onclick=()=>{if(confirm('要跳過教學嗎？之後可以從選單重播。')){const t=state();t.done=true;t.step='done';save();render();onDone();}};
  return {render,advance,replay(){const t=state();t.done=false;t.step='displayControls';t.replay=true;save();render();},

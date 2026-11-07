@@ -141,3 +141,9 @@ test('三色蛋：空位不足時整張卡不生效，也不能放第二組', ()
   for(let i=0;i<19;i++)t.fighters.push({side:'ally',hp:10,species:'x',x:0,stationary:false,support:false});
   assert.throws(()=>playCard(t,0,'ally',(t.left+t.right)/2),/需要三個空閒初級位置/);assert.equal(t.hand.length,1);
 });
+
+test('榮耀守護：全隊免疫狀態並回血 30%', async () => {
+  const {ROLE_SKILLS}=await import('../js/role-skills.js');
+  const u=ROLE_SKILLS['zhaocai-3'].ultimate;assert.equal(u.heal,.3);assert.equal(u.kind,'heal');assert.ok(u.immune>0);assert.ok(u.targets>=20);
+  assert.equal(ROLE_SKILLS['zhaocai-2'].ultimate.name,'招財領域');
+});

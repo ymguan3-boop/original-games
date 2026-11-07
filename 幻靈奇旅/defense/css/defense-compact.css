@@ -12,3 +12,4 @@
 .tutor{position:fixed;left:50%;transform:translateX(-50%);top:max(64px,calc(env(safe-area-inset-top) + 58px));width:min(420px,calc(100vw - 20px));z-index:50;background:#fff8e8;color:#4a3019;border:3px solid #6b914b;border-radius:14px;padding:8px 12px}
 .tutor b{font-size:14px}.tutor p{margin:2px 0 6px;font-size:14px;line-height:1.4}.tutor div{display:flex;justify-content:flex-end;gap:8px}.tutor button{min-height:38px;padding:0 12px}
 @media (orientation:landscape) and (max-height:500px){#lobby .isle-panel{left:auto;right:8px;width:230px;bottom:8px}.tutor{left:8px;transform:none;width:min(320px,48vw);top:56px}}
+.tutor{padding-left:84px;min-height:84px}.tutor-face{position:absolute;left:8px;top:8px;width:68px;height:68px;border-radius:50%;object-fit:cover;background:#fff}

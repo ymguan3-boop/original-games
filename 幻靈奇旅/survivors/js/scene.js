@@ -77,6 +77,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
     else if(prefix==='robot-evolution'){await script('survivors/js/robot-evolution-v08.js?v=20261025-v20','CaveRobotEvolution');await script('models/native/robot-spirits.js','RobotSpirits');const stage={cyndaquil:1,quilava:2,typhlosion:3}[path.split('://')[1]];return{g:{animations:[],create:()=>{const c=CaveRobotEvolution.create({stage,inPlace:true});c.root.userData.caveBounds=c.getState().bounds;return c;}},api:RobotSpirits};}
     else if(prefix==='leaf-frog'){await script('models/native/leaf-frogs.js');await script('models/native/frog-spirits.js','FrogSpirits');api=FrogSpirits;}
     if(api){const g=api.load?await api.load(path):{create:()=>api.create(path),animations:[]};return {g,api};}
+    if(prefix==='zhaocai'){await script('js/commerce-gate.js','PhantomCommerceGate');return {g:{animations:[],create:()=>PhantomCommerceGate.mascot(globalThis.THREE,Number(path.split('://')[1])||1)}};}
     const defs={'floral-deer':['floral-deer','FloralDeer'],'light-phoenix':['light-phoenix','LightPhoenix'],riceball:['riceball','RiceballSpirit'],xiaoshan:['xiaoshan','XiaoshanSpirit']};
     const def=defs[prefix];if(!def)throw Error('無支援的原生角色：'+path);await script('models/native/'+def[0]+'.js',def[1]);
     return {g:{animations:[],create:()=>globalThis[def[1]].create({inPlace:true,stage:['chikorita','bayleef','meganium'].indexOf(path.split('://')[1])+1})}};

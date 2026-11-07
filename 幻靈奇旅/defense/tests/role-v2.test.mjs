@@ -13,12 +13,12 @@ const species = Object.fromEntries(spirits.map((s) => [s.id,s]));
 const newGame = (deck = ['squirtle','charmander','cyndaquil']) =>
   createGame({deck,spirits,catalog,evolution,stageIndex:0,seed:71});
 
-test('all 61 collectible/model records have an authored role and unique named ultimate', () => {
+test('all collectible/model records have an authored role and unique named ultimate', () => {
   assert.equal(spirits.length,61);
-  assert.equal(Object.keys(ROLE_SKILLS).length,spirits.length);
+  assert.equal(Object.keys(ROLE_SKILLS).length,spirits.length+3,'招財三階的資料平時不載入');
   assert.deepEqual(Object.fromEntries(Object.keys(ROLE_META).map((r) =>
     [r,Object.values(ROLE_SKILLS).filter((s) => s.role === r).length])),
-  {warrior:23,archer:9,mage:14,priest:7,support:8});
+  {warrior:24,archer:10,mage:15,priest:7,support:8});
   for(const s of spirits) {
     const job=ROLE_SKILLS[s.id];
     assert.ok(job,s.name);

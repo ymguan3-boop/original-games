@@ -17,9 +17,9 @@ export function floorFinish({T,building,level,width,finish,oakTexture,metrics}){
  },undefined,()=>{record.status='error';metrics.errors.push('地板貼圖載入失敗：'+file+'.webp');});
  material.addEventListener('dispose',()=>{disposed=true;tex.dispose();});
  tex.encoding=T.sRGBEncoding;tex.wrapS=tex.wrapT=T.RepeatWrapping;
- tex.repeat.set(width/(level===5?7:level===4?5:4),12/(level===5?7:level===4?5:4));
+ tex.repeat.set(width/(level===5?7:level===4?5:4),(11+level)/(level===5?7:level===4?5:4));
  material.color.convertSRGBToLinear();
- const floor=new T.Mesh(new T.PlaneGeometry(width,12),material);floor.rotation.x=-Math.PI/2;floor.position.set((width-1)/2,.041,5.5);floor.receiveShadow=true;
+ const floor=new T.Mesh(new T.PlaneGeometry(width,11+level),material);floor.rotation.x=-Math.PI/2;floor.position.set((width-1)/2,.041,(10+level)/2);floor.receiveShadow=true;
  Object.assign(floor.userData,{ownedGeometry:true,ownedMaterial:true,ownedTexture:true,noOutline:true});building.add(floor);metrics.floorTexture=file+'.webp';
 }
 export function windows({T,building,level,width,box,mats,metrics}){applyWallFinish({T,building,level,width,material:mats.finishes.wall,metrics});const {gold,cream,wood,windowGlass}=mats,paint=mats.finishes.curtain,centers=[1.5,10.5,...(width>=20?[16.5]:[]),...(width>=22?[19.5]:[])];metrics.windows=[];

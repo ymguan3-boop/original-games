@@ -110,9 +110,13 @@ function shapeLabel(id, strong) {
   return ultimateFor(id)?.description || SHAPES[p.type].label;
 }
 
+/* 招財完成商會第三階後才併入資料 */
+async function zhaocaiAddon(url) { let on = false; try { on = !!JSON.parse(localStorage.getItem('phantom_shared_unlocks'))?.zhaocaiStage3Completed; } catch {} if (!on) return null; const r = await fetch(url); return r.ok ? r.json() : null; }
 async function loadData() {
   const get = (p) => fetch(new URL(p, ASSET_BASE)).then((r) => { if (!r.ok) throw Error('讀取失敗：' + p); return r.json(); });
   const [spirits, art, catalog, evolution, pool] = await Promise.all([get('data/spirits.json'), get('data/card-art.json'), get('data/spirit-catalog.json'), get('survivors/data/evolution.json'), get('survivors/data/gacha-pool.json')]);
+  const addon = await zhaocaiAddon(new URL('data/zhaocai-addon.json', ASSET_BASE));
+  if (addon) { spirits.push(...addon.spirits); catalog.entries.push(...addon.catalogEntries); Object.assign(evolution, addon.evolution); Object.assign(art.cards || art, addon.art); pool.purple.push(...addon.pool.purple); }
   return {spirits, art, catalog, evolution, pool, excluded: pool.excludedIds || [], spiritMap: new Map(spirits.map((s) => [s.id, s])), entries: new Map((catalog.entries || []).map((e) => [e.id, e]))};
 }
 

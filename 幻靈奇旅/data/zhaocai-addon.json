@@ -1,0 +1,369 @@
+{
+  "note": "招財在商會完成第三階後才併入各模式資料；未解鎖時完全不載入。",
+  "spirits": [
+    {
+      "element": "fairy",
+      "type": "光",
+      "family": "zhaocai",
+      "form": "dog",
+      "color": 15237646,
+      "motionType": "walk",
+      "cardFrame": "purple",
+      "rarity": "稀有",
+      "id": "zhaocai",
+      "speciesId": "zhaocai",
+      "name": "招財",
+      "stage": 1,
+      "previous": null,
+      "next": "zhaocai-2",
+      "evolvesTo": "zhaocai-2",
+      "model": "zhaocai://1",
+      "height": 1.4,
+      "hp": 110,
+      "attack": 34,
+      "role": "special",
+      "skills": [
+        {
+          "name": "金幣連擲",
+          "power": 34,
+          "cost": 1
+        },
+        {
+          "name": "金幣雨",
+          "power": 68,
+          "cost": 3
+        }
+      ],
+      "description": "把初光商會交給主角的看門狗。擲出金幣攻擊，大絕撒出漫天金幣。",
+      "stageLabel": "第 1 階段"
+    },
+    {
+      "element": "fairy",
+      "type": "光",
+      "family": "zhaocai",
+      "form": "dog",
+      "color": 15237646,
+      "motionType": "walk",
+      "cardFrame": "purple",
+      "rarity": "稀有",
+      "id": "zhaocai-2",
+      "speciesId": "zhaocai-2",
+      "name": "招財・魔導師",
+      "stage": 2,
+      "previous": "zhaocai",
+      "next": "zhaocai-3",
+      "evolvesTo": "zhaocai-3",
+      "model": "zhaocai://2",
+      "height": 1.6,
+      "hp": 165,
+      "attack": 58,
+      "role": "evolved",
+      "evolutionOnly": true,
+      "skills": [
+        {
+          "name": "招財魔法彈",
+          "power": 58,
+          "cost": 1
+        },
+        {
+          "name": "招財領域",
+          "power": 125,
+          "cost": 3
+        }
+      ],
+      "description": "魔法師型的招財。連射魔法彈，大絕展開金色招財法陣，攻擊全場。",
+      "stageLabel": "第 2 階段"
+    },
+    {
+      "element": "fairy",
+      "type": "光",
+      "family": "zhaocai",
+      "form": "dog",
+      "color": 15237646,
+      "motionType": "walk",
+      "cardFrame": "purple",
+      "rarity": "稀有",
+      "id": "zhaocai-3",
+      "speciesId": "zhaocai-3",
+      "name": "招財・守護者",
+      "stage": 3,
+      "previous": "zhaocai-2",
+      "next": null,
+      "evolvesTo": null,
+      "model": "zhaocai://3",
+      "height": 1.8,
+      "hp": 260,
+      "attack": 66,
+      "role": "evolved",
+      "evolutionOnly": true,
+      "skills": [
+        {
+          "name": "連鎖招財盾",
+          "power": 66,
+          "cost": 1
+        },
+        {
+          "name": "榮耀守護",
+          "power": 0,
+          "cost": 3,
+          "effect": "gloryGuard"
+        }
+      ],
+      "description": "守護者型的招財。盾牌連鎖彈射，大絕高舉盾牌，全隊免疫狀態並回復 30% 血量。",
+      "stageLabel": "第 3 階段"
+    }
+  ],
+  "catalogEntries": [
+    {
+      "id": "zhaocai",
+      "number": "065",
+      "order": 65,
+      "group": "zhaocai",
+      "name": "招財",
+      "skills": [
+        {
+          "index": 0,
+          "name": "金幣連擲",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.15,
+          "source": "js/commerce-gate.js"
+        },
+        {
+          "index": 1,
+          "name": "金幣雨",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 3.3,
+          "source": "js/commerce-gate.js"
+        }
+      ],
+      "category": "spirit"
+    },
+    {
+      "id": "zhaocai-2",
+      "number": "066",
+      "order": 66,
+      "group": "zhaocai",
+      "name": "招財・魔導師",
+      "skills": [
+        {
+          "index": 0,
+          "name": "招財魔法彈",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.15,
+          "source": "js/commerce-gate.js"
+        },
+        {
+          "index": 1,
+          "name": "招財領域",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 3.3,
+          "source": "js/commerce-gate.js"
+        }
+      ],
+      "category": "spirit"
+    },
+    {
+      "id": "zhaocai-3",
+      "number": "067",
+      "order": 67,
+      "group": "zhaocai",
+      "name": "招財・守護者",
+      "skills": [
+        {
+          "index": 0,
+          "name": "連鎖招財盾",
+          "animation": "Attack",
+          "mode": "Attack",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 1.15,
+          "source": "js/commerce-gate.js"
+        },
+        {
+          "index": 1,
+          "name": "榮耀守護",
+          "animation": "Ultimate",
+          "mode": "Ultimate",
+          "nativeAttack": true,
+          "fallback": false,
+          "duration": 3.3,
+          "source": "js/commerce-gate.js"
+        }
+      ],
+      "category": "spirit"
+    }
+  ],
+  "catalogGroup": {
+    "id": "zhaocai",
+    "ids": [
+      "zhaocai",
+      "zhaocai-2",
+      "zhaocai-3"
+    ]
+  },
+  "art": {
+    "zhaocai": {
+      "image": "assets/ui/zhaocai.gif"
+    },
+    "zhaocai-2": {
+      "image": "assets/ui/zhaocai.gif"
+    },
+    "zhaocai-3": {
+      "image": "assets/ui/zhaocai.gif"
+    }
+  },
+  "evolution": {
+    "zhaocai": {
+      "next": [
+        "zhaocai-2"
+      ],
+      "level": 4,
+      "branch": "linear",
+      "source": "招財副本內進化"
+    },
+    "zhaocai-2": {
+      "next": [
+        "zhaocai-3"
+      ],
+      "level": 8,
+      "branch": "linear",
+      "source": "招財副本內進化"
+    },
+    "zhaocai-3": {
+      "next": [],
+      "level": 12,
+      "branch": "linear",
+      "source": "招財最終型態"
+    }
+  },
+  "skills": {
+    "zhaocai": {
+      "normalType": "ranged",
+      "ultimateType": "blast",
+      "element": "光",
+      "range": 12,
+      "ultimateRange": 14,
+      "multiplier": 2,
+      "cooldown": 18,
+      "normalAnimation": "Attack",
+      "ultimateAnimation": "Ultimate",
+      "normalName": "金幣連擲",
+      "ultimateName": "金幣雨",
+      "model": "zhaocai://1",
+      "fallback": false,
+      "fx": {
+        "style": "cone",
+        "element": "光",
+        "color": 16765514,
+        "source": "js/fx/zhaocai-coins.js"
+      }
+    },
+    "zhaocai-2": {
+      "normalType": "ranged",
+      "ultimateType": "area",
+      "element": "光",
+      "range": 14,
+      "ultimateRange": 18,
+      "multiplier": 2,
+      "cooldown": 20,
+      "normalAnimation": "Attack",
+      "ultimateAnimation": "Ultimate",
+      "normalName": "招財魔法彈",
+      "ultimateName": "招財領域",
+      "model": "zhaocai://2",
+      "fallback": false,
+      "fx": {
+        "style": "cone",
+        "element": "光",
+        "color": 16765514,
+        "source": "js/fx/zhaocai-coins.js"
+      }
+    },
+    "zhaocai-3": {
+      "normalType": "tracking",
+      "ultimateType": "self",
+      "element": "光",
+      "range": 8,
+      "ultimateRange": 18,
+      "multiplier": 2,
+      "cooldown": 24,
+      "normalAnimation": "Attack",
+      "ultimateAnimation": "Ultimate",
+      "normalName": "連鎖招財盾",
+      "ultimateName": "榮耀守護",
+      "model": "zhaocai://3",
+      "fallback": false,
+      "fx": {
+        "style": "cone",
+        "element": "光",
+        "color": 16765514,
+        "source": "js/fx/zhaocai-coins.js"
+      }
+    }
+  },
+  "passives": {
+    "zhaocai": {
+      "name": "招財",
+      "ultimateName": "金幣雨",
+      "cardFrame": "purple",
+      "stage": 1,
+      "tierPower": 1.3,
+      "slotCount": 2,
+      "effects": [
+        {
+          "effect": "attack",
+          "value": 0.04
+        }
+      ]
+    },
+    "zhaocai-2": {
+      "name": "招財・魔導師",
+      "ultimateName": "招財領域",
+      "cardFrame": "purple",
+      "stage": 2,
+      "tierPower": 1.8,
+      "slotCount": 2,
+      "effects": [
+        {
+          "effect": "attack",
+          "value": 0.08
+        }
+      ]
+    },
+    "zhaocai-3": {
+      "name": "招財・守護者",
+      "ultimateName": "榮耀守護",
+      "cardFrame": "purple",
+      "stage": 3,
+      "tierPower": 2.4,
+      "slotCount": 3,
+      "effects": [
+        {
+          "effect": "defense",
+          "value": 0.12
+        },
+        {
+          "effect": "regen",
+          "value": 0.002
+        }
+      ]
+    }
+  },
+  "pool": {
+    "purple": [
+      "zhaocai"
+    ]
+  }
+}

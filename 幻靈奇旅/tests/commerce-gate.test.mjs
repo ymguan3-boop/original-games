@@ -82,8 +82,8 @@ test('special-spirit broadcasts outrank traveller tips and never show together',
   assert.match(game, /channel==='guardian'&&!general\.hidden/);
 });
 
-test('招財 is in the model room only, not the dex or gacha data', () => {
+test('招財 stays out of base dex data until unlocked through the addon', () => {
   assert.ok(src('js/model-preview.js').includes("category:'npc'"));
   assert.ok(src('js/model-preview-settings.js').includes("kind:'zhaocai'"));
-  for (const f of ['data/spirits.json', 'data/spirit-catalog.json', 'data/card-art.json', 'js/game.js']) assert.ok(!/zhaocai:\/\/|"zhaocai"/.test(src(f)), f);
+  for (const f of ['data/spirits.json', 'data/spirit-catalog.json', 'data/card-art.json']) assert.ok(!/zhaocai:\/\/|"zhaocai"/.test(src(f)), f);
 });

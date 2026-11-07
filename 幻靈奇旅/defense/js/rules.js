@@ -568,7 +568,7 @@ function hurtBase(state, base, amount, side) {
 }
 
 function setStatus(state, f, type, amount, duration = 4) {
-  if (f.hp <= 0) return;
+  if (f.hp <= 0 || f.immuneUntil > state.time) return;
   const s = f.statuses, d = Math.max(0.4, Math.min(8, duration));
   if (type === 'burn' || type === 'poison') s[type] = {until: state.time + d,
     dps: Math.max(s[type]?.until > state.time ? s[type].dps : 0, amount * 0.15)};
@@ -605,8 +605,9 @@ function basicPriestHeal(state, f, target) {
 function applyOwnSkill(state, shot, src, friends, foes, at, base) {
   const skill = shot.skill;
   if (!skill || !src) return false;
+  if (skill.immune) for (const o of friends()) { o.immuneUntil = state.time + skill.immune; o.statuses = {}; o.stunUntil = 0; }
   if (skill.kind === 'heal') {
-    const patients = friends().filter((o) => Math.abs(o.x - src.x) <= shot.profile.reach &&
+    const patients = friends().filter((o) => (skill.immune || Math.abs(o.x - src.x) <= shot.profile.reach) &&
         o.hp < o.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp || a.id - b.id)
         .slice(0, skill.targets || 1);
     for (const o of patients) {
