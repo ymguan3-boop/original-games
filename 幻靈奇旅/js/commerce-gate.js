@@ -167,7 +167,7 @@ function mascot(T,stage=1){
  const dog=buildDog(T,stage),drive=dogDriver(dog);let mode='Idle';
  const c={root:dog.root,stage,skills:SKILLS[stage],onRelease:null,shield:dog.shield,getState:()=>({modes:['Idle','Walk','Run','Attack','Ultimate'],durations:{Attack:MOVES.attack.length,Ultimate:MOVES.ultimate.length}}),
   setMode(m){mode=m;if(m==='Attack'||m==='Ultimate')drive.play(m.toLowerCase(),{onRelease:()=>c.onRelease?.(m)});},
-  update(dt){drive.tick(dt,mode==='Walk'||mode==='Run');},hand:v=>dog.arms[1].hand.getWorldPosition(v),dispose(){}};
+  update(dt){drive.tick(dt,mode==='Walk'||mode==='Run');},setMotionSpeed(){},seek(){},setFlightHeight(){},setTargetDistance(){},getMotionState:()=>({}),hand:v=>dog.arms[1].hand.getWorldPosition(v),dispose(){}};
  return c;
 }
 function create({THREE:T,parent,LOT,frontZ}){

@@ -1,4 +1,4 @@
-import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261107-a2';
+import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261107-a3';
 import {requiresManagerPatrol} from './event-routing.js';
 import {funnyEvents,comicEventEligible} from './funny-events.js';
 import {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue} from './patrol-events.js';
@@ -10,8 +10,8 @@ import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './custom
 import {ensureDailyGoals} from './daily-objectives.js';
 import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js';
 import {decorEffects,decorTypes,obstacles} from './decorations.js';
-import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261107-a2';
-import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js?v=20261107-a2';
+import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261107-a3';
+import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js?v=20261107-a3';
 import {pointSegmentDistance,segmentDistance} from './motion.js';
 import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER,buildingLevel,dimensions,applyRoom} from './nav.js';
 import {legacyRole,managementAction,migrateState,preferredJob,capacityOf,passive,jobPower,dailyTrack,dailyState,systemRestock,workXp,eventGap,eventAllowed,WORK_JOBS} from './management.js';

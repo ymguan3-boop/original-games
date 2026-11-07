@@ -8,7 +8,7 @@ export const decorTypes=[
  {id:'phoenix',name:'金曜鳳羽藝術座',group:'decor',level:9,cost:1800,height:1.95,description:'來客速度 +18% · 成交價 +5%',effect:{traffic:.18,premium:.05}}
 ];
 export const decorDefinition=item=>decorTypes.find(t=>t.id===item.type);
-export const decorModel=(type,level=1)=>'@shop/assets/art-v6/decor/'+(type==='phoenix'?'phoenix-fit-v2':type==='carpet'?'carpet-l'+Math.min(level,5):type)+'.glb';
+export const decorModel=(type,level=1)=>type==='carpet'?'@carpet/'+Math.min(level,5):'@shop/assets/art-v6/decor/'+(type==='phoenix'?'phoenix-fit-v2':type)+'.glb';
 export const decorLimit=level=>2+Math.min(level,5)*2;
 export function decorEffects(s){const effects={traffic:0,rest:0,patience:0,satisfaction:0,premium:0},seen=new Set();for(const item of s.decorations||[]){if(seen.has(item.type))continue;seen.add(item.type);const d=decorDefinition(item);for(const [key,value]of Object.entries(d?.effect||{}))effects[key]+=value;}effects.traffic=Math.min(effects.traffic,.15);effects.premium=Math.min(effects.premium,.15);return effects;}
 export const obstacles=s=>[...s.shelves,...(s.decorations||[]).filter(d=>!decorDefinition(d)?.ground)];

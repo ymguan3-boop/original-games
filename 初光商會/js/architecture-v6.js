@@ -1,24 +1,19 @@
 import {applyWallFinish} from './wall-finish-v7.js';
 export function finishes(level,mat){return {wall:mat([0,0xffedce,0xf1e2bd,0xe2e8cd,0xdce9e6,0xdde6d4][level]),floorA:mat([0,0xd9b97d,0xd4a66b,0xd9d8bd,0xe5e9e5,0xe5e6d2][level]),floorB:mat([0,0xe9d29c,0xe8c48c,0xf0e8ce,0xf9f7ec,0xf9f3db][level]),ceiling:mat([0,0x64442a,0x946834,0x526444,0xe5d8b7,0x35535c][level]),curtain:mat(level===5?0x34575c:level===4?0x607c58:0x668a3f)};}
 export function floorFinish({T,building,level,width,finish,oakTexture,metrics}){
- const file=level===2?'painted-oak-v2':level===1?'floor':level===5?'royal-floor':'marble';
+ const file='floor-lv'+level;
  const record=metrics.floorFinish={level,file:file+'.webp',status:'loading'};
- if(level===2){
-  for(const m of [finish.floorA,finish.floorB]){m.map=oakTexture;m.color.setHex(0xffffff);}
-  Object.defineProperty(record,'status',{enumerable:true,get:()=>oakTexture.image?.width>0?'ready':'loading'});
-  metrics.floorTexture=file+'.webp';return;
- }
  // Keep the light stone fallback visible until the asynchronous image is decoded.
  const material=new T.MeshStandardMaterial({color:level===3?0xe2e6dc:0xffffff,roughness:level>=4?.5:.85});
  let disposed=false;
- const tex=new T.TextureLoader().load('./assets/art-v6/'+file+'.webp',loaded=>{
+ const tex=new T.TextureLoader().load('./assets/art-v11/'+file+'.webp',loaded=>{
   if(disposed){loaded.dispose();return;}
   material.map=loaded;material.needsUpdate=true;record.status='ready';
  },undefined,()=>{record.status='error';metrics.errors.push('地板貼圖載入失敗：'+file+'.webp');});
  material.addEventListener('dispose',()=>{disposed=true;tex.dispose();});
  tex.encoding=T.sRGBEncoding;tex.wrapS=tex.wrapT=T.RepeatWrapping;
- tex.repeat.set(width/(level===5?7:level===4?5:4),(11+level)/(level===5?7:level===4?5:4));
- material.color.convertSRGBToLinear();
+ tex.repeat.set(width/6,(11+level)/6);
+ material.color.setScalar([0,.6,.8,.82,.86,.86][level]);
  const floor=new T.Mesh(new T.PlaneGeometry(width,11+level),material);floor.rotation.x=-Math.PI/2;floor.position.set((width-1)/2,.041,(10+level)/2);floor.receiveShadow=true;
  Object.assign(floor.userData,{ownedGeometry:true,ownedMaterial:true,ownedTexture:true,noOutline:true});building.add(floor);metrics.floorTexture=file+'.webp';
 }

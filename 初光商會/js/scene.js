@@ -3,15 +3,15 @@ import {finishes,windows,floorFinish} from './architecture-v6.js';
 import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js';
 import {decorateInterior} from './interior-v5.js';
 import {addIllustratedOutline} from './illustrated-outline.js';
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261107-a2';
-import {createAssets} from './asset-resolver.js?v=20261107-a2';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261107-a3';
+import {createAssets} from './asset-resolver.js?v=20261107-a3';
 import {isLayoutValid,ENTRANCE} from './nav.js';
 import {sampleTrail,turnToward} from './motion.js';
 import {getCustomerComplaint} from './customer-complaints.js';
 import {eventEmployee} from './patrol-events.js';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261107-a2';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261107-a2';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261107-a2';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261107-a3';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261107-a3';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261107-a3';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
@@ -44,7 +44,7 @@ const tall=innerHeight>innerWidth;let yaw=tall?.34:.68,pitch=tall?1.02:.88,dista
  for(let x=4.5;x<=7.5;x+=.5)box(.48,.1,.8,Math.round(x*2)%2?cream:roofBlue,x,2.8,depth-1,building);for(const x of [4.4,7.6])box(.15,2.9,.15,wood,x,1.4,depth-1,building);label('歡 迎 光 臨',6,2.45,11,2.4,building);
  // Checkout desk, wrapping station, office, forge and break nook.
  metrics.counterTop=.555;metrics.cashierPlatform=0;cashierChair=null;
- for(const [name,x,z]of [['cash-counter',10,2],['sesame-chair',10,1]])assets.load('@shop/assets/art-v5/interior/'+name+'.glb').then(g=>{if(!alive||generation!==roomGeneration)return;const o=assets.clone(g.scene);o.position.set(x,0,z);building.add(o);if(name==='sesame-chair'){cashierChair=o;o.visible=false;}sceneContours.push(addIllustratedOutline(T,o,{thickness:.012}));metrics.interiorModels||={};metrics.interiorModels[name]=true;}).catch(report);
+ for(const [name,x,z]of [['cash-counter',10,2],['sesame-chair',10,1]])assets.load('@shop/assets/art-v5/interior/'+name+'.glb').then(g=>{if(!alive||generation!==roomGeneration)return;const o=assets.clone(g.scene);if(name==='cash-counter')o.traverse(n=>{if(n.isMesh&&n.material){n.material=n.material.clone();n.material.color.multiplyScalar(.68);}});o.position.set(x,0,z);building.add(o);if(name==='sesame-chair'){cashierChair=o;o.visible=false;}sceneContours.push(addIllustratedOutline(T,o,{thickness:.012}));metrics.interiorModels||={};metrics.interiorModels[name]=true;}).catch(report);
 
  // The legacy warehouse desk and forge prop were retired in v7.
  // Restocking and smith work remain gameplay services, without hidden obstacles.
