@@ -78,7 +78,7 @@
     {
       "id": "crown-sparrow",
       "number": "065",
-      "order": 65,
+      "order": 44.1,
       "group": "jigglypuff",
       "name": "羽冠麻雀王",
       "skills": [],
@@ -87,7 +87,7 @@
     {
       "id": "crown-rooster",
       "number": "066",
-      "order": 66,
+      "order": 44.2,
       "group": "jigglypuff",
       "name": "鳳冠雄雞王",
       "skills": [],
