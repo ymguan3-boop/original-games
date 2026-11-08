@@ -11,7 +11,7 @@ test('mobile page and core use fresh chapter-aware boot modules', () => {
   assert.match(html, /app\.js\?v=\d{8}-/);
   assert.match(app, /core\.js\?v=\d{8}-/);
   assert.match(core, /shop-operations\.js\?v=\d{8}-/);
-  assert.match(core, /import\s*\{[^}]*chapterObjectives[^}]*\}\s*from\s*['"]\.\/shop-chapters\.js['"]/);
-  assert.match(read('js/shop-operations.js'), /import\s*\{[^}]*chapterObjectives[^}]*\}\s*from\s*['"]\.\/shop-chapters\.js['"]/);
+  assert.match(core, /import\s*\{[^}]*chapterObjectives[^}]*\}\s*from\s*['"]\.\/shop-chapters\.js(?:\?v=[^'"]+)?['"]/);
+  assert.match(read('js/shop-operations.js'), /import\s*\{[^}]*chapterObjectives[^}]*\}\s*from\s*['"]\.\/shop-chapters\.js(?:\?v=[^'"]+)?['"]/);
 });
 

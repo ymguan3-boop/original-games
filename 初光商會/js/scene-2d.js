@@ -84,7 +84,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   const shadow=document.createElement('i');box.append(shadow,img);layer.append(box);a={id,el:box,img,type,pos:{x:d.x||0,z:d.z||0},flip:1,moveUntil:0,height:ACTOR_SIZE};actors.set(key,a);metrics.actors=actors.size;return a;
  }
  /* 主管依行走方向換圖；側面圖面向右，往左時由 flip 翻轉。GIF 還沒到位時用靜態圖 */
- function setManagerImage(a,walking){const name=walking?'manager-'+(a.facing||'front'):'manager-idle';if(a.imageName===name)return;a.imageName=name;a.img.onerror=()=>{a.img.onerror=null;a.img.src=SPRITES+(walking?name:'manager-front')+'.webp';};a.img.src=SPRITES+name+'.gif';}
+ function setManagerImage(a,walking){const face=a.facing||'front',name=walking?'manager-'+face:face==='front'?'manager-idle':'manager-'+face+'-still';if(a.imageName===name)return;a.imageName=name;const still=name.endsWith('-still');a.img.onerror=()=>{a.img.onerror=null;a.img.src=SPRITES+(walking?name:'manager-'+face)+'.webp';};a.img.src=SPRITES+(still?'manager-'+face+'.webp':name+'.gif');a.img.onerror=still?null:a.img.onerror;}
  function syncActors(dt){
   const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager&&mode==='follow')all.push(['manager',s.manager,'manager']);
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));

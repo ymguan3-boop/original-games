@@ -106,3 +106,15 @@ html body.view-2d .staff-head-label{display:none!important}
 /* 讀取完成前不顯示教學、按鈕與面板 */
 html body.app-loading #tutor,html body.app-loading nav.toolbar,html body.app-loading #dock2d,html body.app-loading #hub,html body.app-loading header.topbar{display:none!important}
 html body.view-2d #staff-labels{display:none!important}
+
+/* 長文字先收成一行，點擊展開 */
+.hub-card small,.hub-card b{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.hub-card.expanded small,.hub-card.expanded b{white-space:normal;overflow:visible}
+.hub-note{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}.hub-note.expanded{display:block;-webkit-line-clamp:unset}
+.hub-card .spirit-pokedex-card{white-space:normal}
+/* 2D 下方面板縮小；選項超出時改左右滑動 */
+body.view-2d{--dock-h:27dvh!important}
+html body.view-2d .hub-cards{grid-auto-flow:column;grid-template-columns:none;grid-template-rows:repeat(auto-fill,minmax(52px,1fr));grid-auto-columns:minmax(150px,46%);overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;scroll-snap-type:x proximity}
+html body.view-2d .hub-card{scroll-snap-align:start;min-height:0;padding:6px 8px}
+html body.view-2d .hub-box{gap:4px;padding:6px 10px}html body.view-2d .hub-note{font-size:12px;line-height:1.35}html body.view-2d .hub-action{min-height:36px}
+.dock-staff{grid-auto-columns:calc((100% - 18px)/4)}.dock-card small{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
