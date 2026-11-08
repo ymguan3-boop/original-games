@@ -10,6 +10,7 @@ import {eventEmployee} from './patrol-events.js?v=20261107-fixes-r1';
 import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261107-fixes-r1';
 import {stockCount} from './shelf-products.js?v=20261107-fixes-r1';
 import {createAssets} from './asset-resolver.js?v=20261107-fixes-r1';
+import {createPlacementCells} from './placement-cells.js?v=20261108-a2';
 import {spiritArtPath} from './spirit-cards.js?v=20261107-fixes-r1';
 
 const U=64,TILT=typeof innerHeight==='number'&&innerHeight>innerWidth?1.05:.72,V=U*TILT,WALL=2.5*U,MARGIN=U*.9,SPRITES='./assets/sprites-v1/';
@@ -26,7 +27,9 @@ const stateEmotion=(type,d,s)=>{
 export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const metrics={assets:[],errors:[],actors:0,frames:0,renderer:'2d'},ctx=canvas.getContext('2d'),state=()=>game.state;
  const layer=document.createElement('div');layer.className='world2d';canvas.after(layer);
- const roomCanvas=document.createElement('canvas');const items=new Map(),actors=new Map(),keys=new Set(),touches=new Map();
+ const roomCanvas=document.createElement('canvas'),cellCanvas=document.createElement('canvas');cellCanvas.className='world2d-cells';layer.prepend(cellCanvas);const cellsFor=createPlacementCells(game);let cellKey='';
+ /* 布置模式：擺放時綠格可放、紅格不可放；只選取物件時顯示淡格線 */
+ function drawCells(){const want=mode==='decorate'?(placement?'p':'g'):'';const list=placement?cellsFor(placement):[],k=want+(placement?list.length+':'+list.filter(c=>c.ok).length+':'+placement.type+placement.rotation:'')+dim.width+'x'+dim.height;if(k===cellKey)return;cellKey=k;cellCanvas.width=roomW();cellCanvas.height=roomH();const g=cellCanvas.getContext('2d');g.clearRect(0,0,cellCanvas.width,cellCanvas.height);if(!want)return;for(let z=0;z<dim.height;z++)for(let x=0;x<dim.width;x++){const c=placement?list.find(v=>v.x===x&&v.z===z):null,px=MARGIN+x*U,py=WALL+MARGIN+z*V;if(c){g.fillStyle=c.ok?'#4fc38a55':'#f05e5333';g.fillRect(px+2,py+2,U-4,V-4);}g.strokeStyle=c?.ok?'#2f9a63aa':'#7eaa5588';g.lineWidth=1.5;g.strokeRect(px+1,py+1,U-2,V-2);}}const items=new Map(),actors=new Map(),keys=new Set(),touches=new Map();
  let level=0,dim={width:14,height:12},mode='play',alive=true,time=0,scale=1,panX=0,panY=0,userZoom=1,cw=1,ch=1,selected=null,unlocked=false,placement=null,ghost=null,snapshot=null,down=null,drag=null,gesture=null,joystick={x:0,y:0},motionStamp=-1,motionProgress=1,frame=0,dirty=true,assets3d=null;
  let chaseStarted=-100;
  function playChaseSuccess(){chaseStarted=time;metrics.chaseCelebrations=(metrics.chaseCelebrations||0)+1;}
@@ -99,7 +102,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   if(s.manager&&mode==='follow'){const open=document.querySelector('dialog[open]'),ix=open?0:joystick.x+(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0),iy=open?0:joystick.y+(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);game.setManagerInput(ix,iy);fit();}
  }
  function headOf(item){if(!item)return null;const sp=spriteFor(item);return toScreen(item.x,item.z,sp.ground?.3:sp.width*1.1);}
- function update(dt){if(!alive)return;dt=Math.min(dt,.1);time+=dt;const l=Math.min(state().level||1,5);if(l!==level){level=l;buildRoom(l);}syncItems();syncActors(dt);if(placement)refreshPlacement();else if(selected)onFurniturePosition(headOf(furniture().find(i=>i.id===selected)));drawRoom();metrics.frames++;}
+ function update(dt){if(!alive)return;dt=Math.min(dt,.1);time+=dt;const l=Math.min(state().level||1,5);if(l!==level){level=l;buildRoom(l);}syncItems();syncActors(dt);drawCells();if(placement)refreshPlacement();else if(selected)onFurniturePosition(headOf(furniture().find(i=>i.id===selected)));drawRoom();metrics.frames++;}
  /* 擺放 */
  const clearGhost=()=>{ghost?.remove();ghost=null;};
  function cancelPlacement(){clearGhost();placement=null;metrics.placement=null;onPlacementChange(null);onFurnitureSelect(null);}

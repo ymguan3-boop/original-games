@@ -29,7 +29,7 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
  const pending=()=>pendingRewards(game,s()),claimAll=()=>{const r=act('claimAllRewards');if(r?.ok&&s().lastClaim)push('claimed');else render();};
  const relief=()=>{act('toggleAutoRelief');render();};
  const pages={
-  build(){const open=s().phase==='open',paused=open&&s().layoutPause,place=[['貨架',()=>push('racks')],['家具',()=>push('decor','furniture')],['裝飾',()=>push('decor','decor')]],resume=()=>{act('setLayoutPause',{value:false});close();};
+  build(){const open=s().phase==='open',paused=open&&s().layoutPause,lv=s().level,rk=`${s().shelves.length}/${shelfLimit(lv)}`,dc=`${(s().decorations||[]).length}/${decorLimit(lv)}`,place=[[`貨架（${rk}）`,()=>push('racks')],[`家具（${dc}）`,()=>push('decor','furniture')],[`裝飾（${dc}）`,()=>push('decor','decor')]],resume=()=>{act('setLayoutPause',{value:false});close();};
    if(open&&!paused)return {title:'布置',note:'營業中不能擺放貨架與家具。要布置請先暫停營業，顧客會停在原地。',actions:[['商品',()=>push('goods')],['暫停營業',()=>{act('setLayoutPause',{value:true});render();},true]]};
    if(paused)return {title:'布置（已暫停營業）',note:'現在可以買貨架、家具並擺放。點店內物件可移動，布置完記得恢復營業。',actions:[...place,['恢復營業',resume,true]]};
    return {title:'布置',note:'買貨架與家具，自由擺放。',actions:[['商品',()=>push('goods')],...place]};},

@@ -118,3 +118,4 @@ html body.view-2d .hub-cards{grid-auto-flow:column;grid-template-columns:none;gr
 html body.view-2d .hub-card{scroll-snap-align:start;min-height:0;padding:6px 8px}
 html body.view-2d .hub-box{gap:4px;padding:6px 10px}html body.view-2d .hub-note{font-size:12px;line-height:1.35}html body.view-2d .hub-action{min-height:36px}
 .dock-staff{grid-auto-columns:calc((100% - 18px)/4)}.dock-card small{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.world2d-cells{position:absolute;left:0;top:0;z-index:2;pointer-events:none}
