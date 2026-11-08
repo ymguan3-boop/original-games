@@ -21,7 +21,7 @@
  // Reuse the same unlimited-stock display rule for capture balls and star berries.
  const ballHudValue=value=>{const actual=Number.isFinite(Number(value))?Math.max(0,Math.floor(Number(value))):0;return{display:Math.min(actual,99),overflow:actual>99,actual};};
  const evolutionOnlyWild=Object.freeze(['zapdos','moltres','suicune','raichu','palkia']);
- const progress=(all,owned)=>{const list=all.filter(s=>s?.acquisition!=='tower'&&s?.category!=='tower'&&!['chimchar','monferno','infernape'].includes(s.id));return{owned:list.filter(s=>owned(s.id)).length,total:list.length};};
+ const progress=(all,owned)=>{const list=all.filter(s=>!s?.addon&&s?.acquisition!=='tower'&&s?.category!=='tower'&&!['chimchar','monferno','infernape'].includes(s.id));return{owned:list.filter(s=>owned(s.id)).length,total:list.length};};
  const countAt=(total,percent)=>Math.ceil(total*percent);
  const towerCardChance=defeated=>Math.min(1,tower.baseCardChance+tower.cardChancePerWin*Math.max(0,Number(defeated)||0));
  const pct=n=>Math.round(n*100)+'%';

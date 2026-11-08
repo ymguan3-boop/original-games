@@ -1,5 +1,5 @@
 {
-  "note": "小麻與咕咕的第三階，只用於洞穴與守護戰的戰局進化。",
+  "note": "小麻與咕咕的第三階。主遊戲圖鑑、洞穴與守護戰都會併入；主遊戲由小麻與咕咕同隊參加一場幻靈競技擂台後進階。",
   "spirits": [
     {
       "id": "crown-sparrow",
@@ -77,8 +77,8 @@
   "catalogEntries": [
     {
       "id": "crown-sparrow",
-      "number": "068",
-      "order": 68,
+      "number": "065",
+      "order": 65,
       "group": "jigglypuff",
       "name": "羽冠麻雀王",
       "skills": [],
@@ -86,8 +86,8 @@
     },
     {
       "id": "crown-rooster",
-      "number": "069",
-      "order": 69,
+      "number": "066",
+      "order": 66,
       "group": "jigglypuff",
       "name": "鳳冠雄雞王",
       "skills": [],
