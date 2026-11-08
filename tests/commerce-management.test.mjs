@@ -48,13 +48,16 @@ test('每日任務只能領一次，全勤獎勵要三項都領完',()=>{
 });
 test('事件至少相隔五分鐘，布置模式不觸發',()=>{
  const g=fresh(finished);place(g,'apothecary',4,5);g.act('hire',{id:'bulbasaur'});const times=[];let last=null;
- for(let i=0;i<4*1500;i++){g.tick(.25);const id=g.state.event?.instanceId;if(id&&id!==last){last=id;times.push(g.state.totalTime);g.transaction(null,s=>{s.event=null;return 'x';});}}
+ for(let i=0;i<4*1500;i++){g.tick(.25);if(g.state.phase==='report')g.act('nextDay');const id=g.state.event?.instanceId;if(id&&id!==last){last=id;times.push(g.state.totalTime);g.transaction(null,s=>{s.event=null;return 'x';});}}
  assert.ok(times.length>=2,'應出現事件');for(let i=1;i<times.length;i++)assert.ok(times[i]-times[i-1]>=299,`間隔 ${times[i]-times[i-1]}`);
  g.act('setLayoutPause',{value:true});const t=g.state.totalTime;for(let i=0;i<40;i++)g.tick(.25);assert.equal(g.state.totalTime,t);
 });
 test('事件文字與選項符合長度限制，且最多兩個選項',()=>{for(const e of events){assert.ok(e.title.length<=12,e.title);assert.ok((e.dialogue||e.description).length<=40,e.title);assert.ok(e.choices.length<=2,e.title);for(const c of e.choices)assert.ok(c.label.length<=8,c.label);}});
+test('每天 20:00 打烊停在結算，按新的一天才回到 07:00',()=>{
+ const g=fresh(finished);place(g,'apothecary',4,5);for(let i=0;i<4*200;i++)g.tick(.25);assert.equal(g.state.phase,'report');const day=g.state.day;for(let i=0;i<40;i++)g.tick(.25);assert.equal(g.state.phase,'report');assert.equal(g.act('nextDay').ok,true);g.tick(.25);assert.equal(g.state.day,day+1);assert.equal(g.state.phase,'open');assert.ok(g.state.time<1);
+});
 test('沒有員工時系統仍低速結帳與補貨，不扣薪資',()=>{
- const g=fresh(finished);place(g,'apothecary',4,5);for(let i=0;i<4*400;i++)g.tick(.25);assert.ok(g.state.totals.sales>0,'應有交易');assert.equal(g.state.stats.wages,0);assert.equal(g.lastError,'');assert.equal(g.state.phase,'open');
+ const g=fresh(finished);place(g,'apothecary',4,5);for(let i=0;i<4*400;i++){g.tick(.25);if(g.state.phase==='report')g.act('nextDay');}assert.ok(g.state.totals.sales>0,'應有交易');assert.equal(g.state.stats.wages,0);assert.equal(g.lastError,'');assert.equal(g.state.phase,'open');
 });
 test('招財 Lv.5 才能招聘，到 Lv.8 未進化不算解鎖',()=>{
  const g=fresh({level:4});assert.equal(g.act('hire',{id:'zhaocai'}).ok,false);g.transaction(null,s=>{s.level=5;return 'x';});assert.equal(g.act('hire',{id:'zhaocai'}).ok,true);

@@ -1,18 +1,21 @@
 import {showChaseSuccess} from './chase-celebration.js?v=20261108-b1';
+import {chapterObjectives} from './shop-chapters.js?v=20261108-b1';
+import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261108-b2';
+import {showLevelUp} from './levelup.js?v=20261108-b2';
 import {installShopNavigation} from './shop-navigation.js?v=20261108-b1';
 import {showZhaocaiNote} from './zhaocai-note.js?v=20261108-b1';
 import {installShopMusic} from './shop-music.js?v=20261108-b1';
 import {createActorVisuals} from './actor-visuals.js?v=20261108-b1';
 import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261108-b1';
 import {loadSpiritCards} from './spirit-cards.js?v=20261108-b1';
-import {createGame} from './core.js?v=20261108-b1';
+import {createGame} from './core.js?v=20261108-b2';
 import {createStaffOverlay} from './staff-overlay.js?v=20261108-b1';
 import {installPatrolControls} from './patrol-controls.js?v=20261108-b1';
 import {playEvolution3D} from './evolution-3d.js?v=20261108-b1';
 import {createScene} from './scene.js?v=20261108-b1';
 import {createScene2D} from './scene-2d.js?v=20261108-b1';
 import {createDock} from './dock-2d.js?v=20261108-b1';
-import {createHub} from './shop-hub.js?v=20261108-b1';
+import {createHub} from './shop-hub.js?v=20261108-b2';
 import {installTutorial} from './shop-tutorial.js?v=20261108-b1';
 import {commissionNotice} from './commissions.js?v=20261108-b1';
 import {dailyTasks} from './management.js?v=20261108-b1';
@@ -40,19 +43,21 @@ async function beginEvolution(employeeId){
  finally{evolutionInProgress=false;game.uiBusy=false;renderHUD();}
 }
 function syncPatrolSolved(){const info=game.state.recentPatrolResolution;if(!info||seenPatrolResolution===info.id)return;seenPatrolResolution=info.id;if(info.focused&&scene?.metrics.mode==='follow')scene.setMode('play');const popup=$('#patrol-solved');clearTimeout(patrolTimer);$('#patrol-solved-title').textContent='✅ 問題解決了！';$('#patrol-solved-message').textContent=`${info.employeeName}｜${info.title}`;popup.hidden=false;patrolTimer=setTimeout(()=>{popup.hidden=true;},3000);}
+let reportShownDay=null;
 function syncNotices(s){
- const clear=s.chapterClear;if(clear&&seenChapterClear!==clear.id){seenChapterClear=clear.id;toast(`🎉 商會升級：${clear.title}`);}
+ const clear=s.chapterClear;if(clear&&seenChapterClear!==clear.id){const first=seenChapterClear===undefined;seenChapterClear=clear.id;if(!first)showLevelUp(game,clear,esc);}
  const chase=s.customerChaseResult;if(chase&&seenChase!==chase.id){seenChase=chase.id;if(chase.success){showChaseSuccess(chase);scene?.playChaseSuccess?.();}else showZhaocaiNote('追客失敗了……');}
  const notice=$('#shop-notice');notice.hidden=!s.event||s.patrolFocus||hub?.isOpen;if(!notice.hidden)notice.textContent=`⚠ ${s.event.title}：按「任務」處理`;
 }
 function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncNotices(s);
  $('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels[s.level-1]?.name||''}`;
- $('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
+ {const info=chapterObjectives(s,game.data.levels),pct=upgradeProgress(info);$('#hud-progress').textContent=s.upgradeProject?`🔨 ${Math.ceil(s.upgradeProject.remaining)}秒`:info.last?'★ 最高級':`▲ ${pct}%`;$('#hud-progress').classList.toggle('ready',info.ready&&!s.upgradeProject);$('#hud-clock').textContent=`${clockText(s,game.data.config)} ${clockLabel(s,game.data.config)}`;if(s.phase==='report'&&reportShownDay!==s.day&&hub&&!hub.isOpen){reportShownDay=s.day;hub.open('report');}}$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
  const dot=(id,on)=>$(`.toolbar [data-hub=${id}]`).classList.toggle('has-notice',!!on&&!s.patrolFocus);
  const daily=dailyTasks(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length);dot('build',s.layoutPause);dot('tasks',s.event||commissionNotice(s)||daily.tasks.some(t=>t.done&&!t.claimed));
  tutorial?.sync();}
 const pageFor={goods:'goods',shelves:'build',staff:'staff',quests:'tasks',upgrade:'upgrade',settings:'settings'};
 const openPanel=name=>hub.open(pageFor[name]||'shop');
+$('#hud-progress').onclick=()=>hub.open('upgrade');$('#hud-history').onclick=()=>hub.open('history');
 for(const b of document.querySelectorAll('.toolbar [data-hub]'))b.onclick=()=>{const page=b.dataset.hub;if(document.body.classList.contains('view-2d')&&hub.isOpen&&hub.rootPage===page){hub.close();return;}if(page==='tasks'&&game.state.event){hub.open('event');return;}hub.open(page);};
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!game||game.state.patrolFocus)return;
  if(b.id==='rotate-furniture'){const r=scene.editShelf(0,0,90);if(!r.ok)toast(r.message,true);}

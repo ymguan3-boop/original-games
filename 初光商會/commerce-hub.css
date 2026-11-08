@@ -119,3 +119,20 @@ html body.view-2d .hub-card{scroll-snap-align:start;min-height:0;padding:6px 8px
 html body.view-2d .hub-box{gap:4px;padding:6px 10px}html body.view-2d .hub-note{font-size:12px;line-height:1.35}html body.view-2d .hub-action{min-height:36px}
 .dock-staff{grid-auto-columns:calc((100% - 18px)/4)}.dock-card small{display:block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .world2d-cells{position:absolute;left:0;top:0;z-index:2;pointer-events:none}
+
+/* 上方工具列：升級達成率、時間、今日歷程 */
+html body header.topbar .status-row{gap:6px!important}
+.hud-chip{flex:none;min-height:26px;padding:0 7px;border:1.5px solid #c9a46b;border-radius:9px;background:#fffaf0;color:#5a3c20;font:inherit;font-size:12px;font-weight:700;white-space:nowrap;line-height:24px}
+button.hud-chip{cursor:pointer}.hud-chip.ready{background:#e4fff0;border-color:#228465;color:#1d6b4f}
+html body header.topbar .status-row strong#level-name{flex:1 1 auto;min-width:0}
+@media(max-width:420px){#hud-history{font-size:0;padding:0 5px}#hud-history::before{content:'📜';font-size:14px}}
+/* 升級演出 */
+.levelup{position:fixed;inset:0;z-index:5200;display:grid;place-items:center;padding:16px;background:#2c1d0eb3;overflow:hidden}
+.levelup-rays{position:absolute;inset:-60%;background:repeating-conic-gradient(from 0deg,#ffe58a00 0 9deg,#ffe58a55 9deg 18deg);animation:lu-spin 9s linear infinite}
+.levelup-coins i{position:absolute;top:-40px;left:var(--x);width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6c2,#f2b632 55%,#b9700c);border:2px solid #8a5208;animation:lu-fall 2.6s var(--d) ease-in infinite;transform:rotate(var(--r))}
+.levelup-card{position:relative;width:min(420px,100%);max-height:86dvh;overflow:auto;padding:18px 20px;border:4px solid #e2b13a;border-radius:20px;background:#fff8e8;color:#4a3019;text-align:center;animation:lu-pop .55s cubic-bezier(.2,1.6,.5,1) both;box-shadow:0 0 40px #ffd75a}
+.levelup-card small{font-weight:900;letter-spacing:.2em;color:#b9700c}.levelup-card h2{margin:4px 0 10px;font-size:24px}.levelup-card h3{margin:10px 0 4px;font-size:15px}
+.levelup-card ul{margin:0;padding:0;list-style:none;font-size:14px;line-height:1.7}.levelup-ok{margin-top:12px;min-height:44px;padding:0 22px;border:2px solid #4e6e35;border-radius:12px;background:#6b914b;color:#fff;font:inherit;font-weight:800}
+@keyframes lu-spin{to{transform:rotate(360deg)}}@keyframes lu-fall{to{transform:translateY(110dvh) rotate(720deg)}}@keyframes lu-pop{from{transform:scale(.4);opacity:0}}
+@media(prefers-reduced-motion:reduce){.levelup-rays,.levelup-coins i,.levelup-card{animation:none}}
+html body header.topbar .status-row strong#gold{flex:none!important;overflow:visible!important}
