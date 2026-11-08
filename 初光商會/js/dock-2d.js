@@ -1,5 +1,6 @@
 /* 2D 版下方常駐面板：上面一條顯示最該處理的事（事件 → 顧客問題 → 章節目標），下面是員工卡。
  * 只有名單變動才重建卡片，平常只更新文字，員工 GIF 才不會一直重播。 */
+import {activeEvent} from './economy-v2.js?v=20261108-b3';
 import {spiritArtPath} from './spirit-cards.js?v=20261108-b1';
 import {chapterObjectives} from './shop-chapters.js?v=20261108-b1';
 import {getCustomerComplaint} from './customer-complaints.js?v=20261108-b1';
@@ -22,6 +23,7 @@ export function createDock({game,hub,esc}){
   const issue=s.customers.map(c=>[c,getCustomerComplaint(s,c,game)]).find(x=>x[1]);
   if(s.event){goal.dataset.tone='alert';goal.children[0].textContent='待處理：'+s.event.title;goal.children[1].textContent='點這裡處理';goalTap=()=>hub.open('event');return;}
   if(issue){goal.dataset.tone='alert';goal.children[0].textContent='顧客：'+issue[1].title;goal.children[1].textContent=issue[1].customerName||'點這裡協助';goalTap=()=>hub.open('complaint',issue[0].id);return;}
+  const mk=activeEvent(s);if(mk&&s.phase==='open'&&(s.totalTime||0)%20<6){goal.dataset.tone='';goal.children[0].textContent='📢 '+mk.title;goal.children[1].textContent=`剩 ${mk.endDay-s.day+1} 天`;goalTap=()=>hub.open('market');return;}
   const c=chapterObjectives(s,game.data.levels),g=c.goals.find(x=>!x.done);goal.dataset.tone='';goal.children[0].textContent=g?g.title:'本章目標已完成';goal.children[1].textContent=g?`${Math.floor(Math.min(g.value,g.target))}/${g.target}`:'準備升級';goalTap=()=>hub.open('chapter');
  }
  function renderStaff(s){

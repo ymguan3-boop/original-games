@@ -1,4 +1,5 @@
 import {showChaseSuccess} from './chase-celebration.js?v=20261108-b1';
+import {activeEvent} from './economy-v2.js?v=20261108-b3';
 import {chapterObjectives} from './shop-chapters.js?v=20261108-b1';
 import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261108-b2';
 import {showLevelUp} from './levelup.js?v=20261108-b2';
@@ -8,14 +9,14 @@ import {installShopMusic} from './shop-music.js?v=20261108-b1';
 import {createActorVisuals} from './actor-visuals.js?v=20261108-b1';
 import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261108-b1';
 import {loadSpiritCards} from './spirit-cards.js?v=20261108-b1';
-import {createGame} from './core.js?v=20261108-b2';
+import {createGame} from './core.js?v=20261108-b3';
 import {createStaffOverlay} from './staff-overlay.js?v=20261108-b1';
 import {installPatrolControls} from './patrol-controls.js?v=20261108-b1';
 import {playEvolution3D} from './evolution-3d.js?v=20261108-b1';
 import {createScene} from './scene.js?v=20261108-b1';
 import {createScene2D} from './scene-2d.js?v=20261108-b1';
-import {createDock} from './dock-2d.js?v=20261108-b1';
-import {createHub} from './shop-hub.js?v=20261108-b2';
+import {createDock} from './dock-2d.js?v=20261108-b3';
+import {createHub} from './shop-hub.js?v=20261108-b3';
 import {installTutorial} from './shop-tutorial.js?v=20261108-b1';
 import {commissionNotice} from './commissions.js?v=20261108-b1';
 import {dailyTasks} from './management.js?v=20261108-b1';
@@ -43,8 +44,8 @@ async function beginEvolution(employeeId){
  finally{evolutionInProgress=false;game.uiBusy=false;renderHUD();}
 }
 function syncPatrolSolved(){const info=game.state.recentPatrolResolution;if(!info||seenPatrolResolution===info.id)return;seenPatrolResolution=info.id;if(info.focused&&scene?.metrics.mode==='follow')scene.setMode('play');const popup=$('#patrol-solved');clearTimeout(patrolTimer);$('#patrol-solved-title').textContent='✅ 問題解決了！';$('#patrol-solved-message').textContent=`${info.employeeName}｜${info.title}`;popup.hidden=false;patrolTimer=setTimeout(()=>{popup.hidden=true;},3000);}
-let reportShownDay=null;
-function syncNotices(s){
+let reportShownDay=null,seenMarket=undefined;
+function syncNotices(s){{const ev=activeEvent(s),key=ev?ev.id+ev.startDay:null;if(seenMarket!==undefined&&key&&key!==seenMarket)toast(`📢 市場消息：${ev.title}，點「📜 歷程」查看`);seenMarket=key;}
  const clear=s.chapterClear;if(clear&&seenChapterClear!==clear.id){const first=seenChapterClear===undefined;seenChapterClear=clear.id;if(!first)showLevelUp(game,clear,esc);}
  const chase=s.customerChaseResult;if(chase&&seenChase!==chase.id){seenChase=chase.id;if(chase.success){showChaseSuccess(chase);scene?.playChaseSuccess?.();}else showZhaocaiNote('追客失敗了……');}
  const notice=$('#shop-notice');notice.hidden=!s.event||s.patrolFocus||hub?.isOpen;if(!notice.hidden)notice.textContent=`⚠ ${s.event.title}：按「任務」處理`;

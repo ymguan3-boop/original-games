@@ -1,4 +1,5 @@
 import {decorEffects,obstacles} from './decorations.js?v=20261108-b1';
+import {purchaseChance} from './economy-v2.js?v=20261108-b3';
 import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261108-b1';
 import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT} from './nav.js?v=20261108-b1';
 import {resolveCustomerComplaint} from './customer-complaints.js?v=20261108-b1';
@@ -64,7 +65,7 @@ export function stepCustomers(g,s,dt){
   }else if(c.state==='Evaluate'&&c.timer>1){
    const target=s.shelves.find(sh=>sh.id===c.targetShelf);if(target&&!c.browsingNear&&Math.hypot(c.x-target.x,c.z-(target.z+1))>.15){g.route(s,c,{x:target.x,z:target.z+1});continue;}c.browsingNear=false;
    const sh=s.shelves.find(x=>x.id===c.targetShelf),item=g.data.catalog.find(x=>x.sku===sh?.sku),price=sh?Math.round(s.prices[sh.sku]*shelfDefinition(sh).premium*(1+decorEffects(s).premium)):0,tolerance=(c.personality===4?1.1:1.4)+(g.role(s,'host')?.3:0)+(s.buffs.sales>s.totalTime?.2:0)+(c.memory?.satisfied?.1:c.memory?-.15:0);
-   if(sh&&g.available(s,sh)<=0){c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}if(sh&&g.available(s,sh)>0&&price<=c.budget&&price<=item.suggestedRetail*tolerance*shelfDefinition(sh).premium*(1+decorEffects(s).premium)){c.basket=[{sku:sh.sku,shelfId:sh.id,qty:1,price,cost:s.averageCosts?.[sh.sku]??item.buyCost}];c.state='Cart';c.timer=0;c.wait=0;g.xp(s,g.role(s,'host'),.5);}else{c.state=c.visited.length<s.shelves.length?'Browse':'UnhappyExit';c.timer=0;}
+   if(sh&&g.available(s,sh)<=0){c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}if(sh&&g.available(s,sh)>0&&price<=c.budget&&g.random(s)<purchaseChance(s,{type:c.customerType||'commoner',sku:sh.sku,price,ref:item.suggestedRetail*shelfDefinition(sh).premium*(1+decorEffects(s).premium)*(tolerance/1.4)})){c.basket=[{sku:sh.sku,shelfId:sh.id,qty:1,price,cost:s.averageCosts?.[sh.sku]??item.buyCost}];c.state='Cart';c.timer=0;c.wait=0;g.xp(s,g.role(s,'host'),.5);}else{c.state=c.visited.length<s.shelves.length?'Browse':'UnhappyExit';c.timer=0;}
   }else if(c.state==='Cart'){
    if(s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).length>=6)continue;c.state='Queue';c.queueOrder=++s.serial;c.queueSlot=-1;c.timer=0;
   }else if(c.state==='Queue'){
