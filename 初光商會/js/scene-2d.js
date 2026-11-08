@@ -15,7 +15,7 @@ import {environment} from './environment.js?v=20261108-b4';
 import {createEnvironment2D} from './environment-2d.js?v=20261108-b5';
 import {spiritArtPath} from './spirit-cards.js?v=20261108-b1';
 
-const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*1.1,SPRITES='./assets/sprites-v1/',SLANT=Math.hypot(HW,HH);
+const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*1.1,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
 const TRIM=[null,{base:'#7a5634',top:'#8a6a4a',pillar:'#9a8f86',cap:'#b7aca2'},{base:'#a2663b',top:'#c58a3c',pillar:'#d79a3a',cap:'#f2c35a'},{base:'#a2663b',top:'#d6a03c',pillar:'#e0a53a',cap:'#fbd46a'},{base:'#8d5a2e',top:'#e3b34a',pillar:'#e8b23e',cap:'#ffe08a'},{base:'#a3322c',top:'#f0c24c',pillar:'#c8302a',cap:'#ffd75a'}];
 const RACK_WIDTH=2.3,ACTOR_SIZE=1.45,DECOR_WIDTH={sofa:2.2,plant:1.5,'lucky-cat':1.5,fountain:2.3,artwork:1.8,phoenix:1.7};
@@ -71,7 +71,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   /* 入口迎賓墊與店外盆栽 */
   g.save();g.setTransform(HW,HH,-HW,HH,x0,y0);g.fillStyle='#fff3cf';g.fillRect(ENTRANCE.x-.6,Hd-1.05,2.2,1);g.fillStyle='#c35a3a';g.fillRect(ENTRANCE.x-.45,Hd-.95,1.9,.8);g.restore();
   if(plant){for(const[px,pz]of[[ENTRANCE.x-1.6,Hd+.8],[ENTRANCE.x+3.4,Hd+.8],[Wd+.8,Hd-2],[-1,Hd-3]]){const p=P(px,pz),w=U*1.1,h=w*plant.height/plant.width;g.drawImage(plant,p.X-w/2,p.Y-h+HH,w,h);}}
-  layer.querySelector('.world2d-counter')?.remove();if(counter){const el=new Image();el.src=SPRITES+'counter.webp';el.alt='';el.className='world2d-item world2d-counter';layer.append(el);placeItem(el,{},10,2,4.2);metrics.counter=true;}
+  layer.querySelector('.world2d-counter')?.remove();if(counter){const el=new Image();el.src=ISO+'counter.webp';el.alt='';el.className='world2d-item world2d-counter';layer.append(el);placeItem(el,{rotation:COUNTER_FLIP?180:0},10,2,3.6);metrics.counter=true;}
   metrics.projection='isometric';dirty=true;fit();
  }
  function fit(){
@@ -83,8 +83,8 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  }
  function drawRoom(){const grass=environment(state(),game.data.config).season.grass;if(grass!==bgGrass){bgGrass=grass;dirty=true;}if(!dirty)return;dirty=false;ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=bgGrass;ctx.fillRect(0,0,cw,ch);ctx.setTransform(scale,0,0,scale,panX,panY);ctx.imageSmoothingQuality='high';ctx.drawImage(roomCanvas,0,0);}
  function spriteFor(item){
-  if(item.decoration){const t=item.type;if(t==='carpet')return {src:`./assets/art-v11/carpet-lv${Math.min(level,5)}.webp`,width:3.8,ground:true};return {src:`${SPRITES}decor-${t}.webp`,width:DECOR_WIDTH[t]||1.3};}
-  return {src:`${SPRITES}rack-${shelfKind(item)}.webp`,width:RACK_WIDTH};
+  if(item.decoration){const t=item.type;if(t==='carpet')return {src:`./assets/art-v11/carpet-lv${Math.min(level,5)}.webp`,width:3.8,ground:true};return {src:`${ISO}decor-${t}.webp`,width:DECOR_WIDTH[t]||1.3};}
+  return {src:`${ISO}rack-${shelfKind(item)}.webp`,width:RACK_WIDTH};
  }
  function placeItem(el,item,x,z,w,ground){const p=P(x,z),flip=(item.rotation||0)%180?-1:1;if(ground){const side=w*U/1.414;el.style.width=side+'px';el.style.height=side*.7+'px';el.style.left=p.X+'px';el.style.top=p.Y+'px';el.style.zIndex=1;el.style.transform=`translate(-50%,-50%) scaleY(.5) rotate(45deg) rotate(${item.rotation||0}deg)`;}else{const px=w*U;el.style.width=px+'px';el.style.height='';el.style.left=p.X-px/2+'px';el.style.top=p.Y+HH*.9+'px';el.style.zIndex=Math.round(100+(x+z)*60);el.style.transform=`translateY(-100%) scaleX(${flip})`;}}
  function syncItems(){
@@ -96,9 +96,9 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
    if(!item.decoration){const cap=shelfCapacity(item),avail=stockCount(game.available(s,item),cap);v.el.classList.toggle('empty',avail<=0);metrics.shelves||={};metrics.shelves[item.id]={stock:item.stock,available:avail,capacity:cap};}}
  }
  function ensureActor(key,d,type){
-  const id=type==='manager'?'manager':d.spiritId;let a=actors.get(key);if(a&&a.id===id)return a;if(a){a.el.remove();actors.delete(key);}
+  const id=type==='manager'?'manager':type==='customer'&&d.customerType?`customer-${d.customerType}-${d.variant||'m'}`:d.spiritId;let a=actors.get(key);if(a&&a.id===id)return a;if(a){a.el.remove();actors.delete(key);}
   const box=document.createElement('div');box.className='world2d-actor';const img=new Image();img.alt='';img.draggable=false;
-  const card=type==='manager'?'':spiritArtPath(id);img.src=type==='manager'?SPRITES+'manager-front.webp':`./assets/staff-gifs/${id}.gif`;img.onerror=()=>{if(card&&!img.src.includes(card.split('/').pop())){box.classList.add('use-card');img.src=card;}};
+  const card=type==='manager'?'':spiritArtPath(id);img.src=type==='manager'?SPRITES+'manager-front.webp':id.startsWith('customer-')?`./assets/customers/${id.slice(9)}.gif`:`./assets/staff-gifs/${id}.gif`;img.onerror=()=>{if(card&&!img.src.includes(card.split('/').pop())){box.classList.add('use-card');img.src=card;}};
   const shadow=document.createElement('i');box.append(shadow,img);layer.append(box);a={id,el:box,img,type,pos:{x:d.x||0,z:d.z||0},flip:1,moveUntil:0,height:ACTOR_SIZE};actors.set(key,a);metrics.actors=actors.size;return a;
  }
  /* 主管依行走方向換圖；側面圖面向右，往左時由 flip 翻轉。GIF 還沒到位時用靜態圖 */
