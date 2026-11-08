@@ -704,7 +704,7 @@ function endPk() {
   pk = null;
 }
 function showPkResult(r) {
-  if (!pk || pk.shown) return; pk.shown = true;
+  if (!pk || pk.shown) return; pk.shown = true; noteZhaocaiRun();
   const won = r.won === true, draw = r.won === null, mine = Math.round((game?.crystal.hp || 0) / (game?.crystal.maxHp || 1) * 100), theirs = Math.round((game?.nest.hp || 0) / (game?.nest.maxHp || 1) * 100);
   const kills = pk.role === 'host' ? game?.stats.kills : game?.stats.kills, lost = pk.role === 'host' ? game?.foe?.kills || 0 : game?.foeKills || 0;
   const why = r.gone ? '對手離線，判定獲勝' : pk.quit ? '你投降了' : pk.foeQuit || r.foeQuit ? '對手投降了' : r.timeUp ? (mine !== theirs ? '時間到，比基地剩餘血量' : '時間到，基地血量相同，比擊倒數') : won ? '攻破了對方的基地！' : '基地被攻破了…';
@@ -732,6 +732,13 @@ function openPkPause() {
 }
 
 /* credit this battle's kill points to the shared cave wallet once (idempotent per run id) */
+/* 招財在出擊卡組並打完一場守護戰：主遊戲的招財可進階一次 */
+function noteZhaocaiRun() {
+  if (!game || game.zhaocaiNoted || game.tutorialBattle || !(record.deck || []).includes('zhaocai')) return;
+  game.zhaocaiNoted = true;
+  const u = readJson('phantom_shared_unlocks', {});
+  try { localStorage.setItem('phantom_shared_unlocks', JSON.stringify({...u, zhaocaiDefenseRuns: (Number(u.zhaocaiDefenseRuns) || 0) + 1})); } catch (e) { console.warn(e); }
+}
 function creditPoints() {
   if (!game || game.credited) return 0; game.credited = true;
   const pts = game.stats.points; if (!pts) return 0;
@@ -1159,7 +1166,7 @@ function handleEvents() {
     else if (ev.type === 'item') { toast(`${ITEMS[ev.id].icon} ${ITEMS[ev.id].name}！`); audio?.play({phase: 'impact', strong: true}); }
     else if (ev.type === 'boss') banner(`魔王 ${spirit(ev.species).name} 現身！`, true);
     else if (ev.type === 'baseHit' && ev.side === 'crystal' && navigator.userActivation?.hasBeenActive) navigator.vibrate?.(40);
-    else if (ev.type === 'finish') { ev.earned = game.tutorialBattle ? 0 : creditPoints(); setTimeout(() => showResult(ev), 1000); }
+    else if (ev.type === 'finish') { noteZhaocaiRun(); ev.earned = game.tutorialBattle ? 0 : creditPoints(); setTimeout(() => showResult(ev), 1000); }
   }
 }
 

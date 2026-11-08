@@ -35,16 +35,16 @@ test('PK host and join entry, invalid peer hello, ready, start and rematch enfor
   globalThis.location = {search:"?pknet=local"};
   const nodes = new Map();
   globalThis.document = {getElementById:id=>nodes.get(id)};
-  let selected=base.slice(0,3), opens=0, starts=0, hostCalls=0, joinCalls=0;
+  let lastHtml='', selected=base.slice(0,3), opens=0, starts=0, hostCalls=0, joinCalls=0;
   const channel={send(){},close(){}};
   const lobby=createPkLobby({
-    openModal(html){opens++;nodes.clear();for(const m of html.matchAll(/id="([^"]+)"/g))nodes.set(m[1],{value:'ABCD',focus(){}});},
+    openModal(html){opens++;lastHtml=html;nodes.clear();for(const m of html.matchAll(/id="([^"]+)"/g))nodes.set(m[1],{value:'ABCD',focus(){}});},
     closeModal(){},ribbon:()=>'',esc:String,picture:id=>id,spirit,deck:()=>selected.slice(),validateDeck:validate,
     name:()=> 'tester',setName(){},toast(){},onStart(){starts++;},
     network:{async hostRoom(){hostCalls++;return {code:'ABCD',ready:Promise.resolve(channel),cancel(){}}},async joinRoom(){joinCalls++;return channel;}}
   });
   try {
-    lobby.open();assert.equal(opens,0);
+    lobby.open();assert.equal(opens,1,'an incomplete deck still opens the lobby');assert.match(lastHtml,/pk-error/,'and shows how to fill the deck');
     selected=base.slice(0,4);lobby.open();
     selected=base.slice(0,3);await nodes.get('pkCreate').onclick();assert.equal(hostCalls,0);
     nodes.get('pkJoin').onclick();assert.equal(joinCalls,0);

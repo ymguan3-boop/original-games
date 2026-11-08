@@ -31,9 +31,10 @@ export function combatPower(spec, entry) {
 export function autoDeck(owned, evolution, spirit, entry = () => null) {
   const ids = [...new Set(Array.isArray(owned) ? owned : [])].filter(id => spirit(id));
   const rank = (a, b) => combatPower(spirit(b), entry(b)) - combatPower(spirit(a), entry(a)) || a.localeCompare(b);
-  /* 依強度填四個基礎格；三色蛋佔三格，剩不到三格時改選下一張 */
+  /* 有三色蛋就先放（佔三格），其餘依強度補滿四個基礎格 */
   const base = [];
-  for (const id of ids.filter(id => !isRedCard(id) && isBaseCard(evolution, id)).sort(rank)) {
+  const egg = (id) => isThreeColorEgg(id) ? 0 : 1;
+  for (const id of ids.filter(id => !isRedCard(id) && isBaseCard(evolution, id)).sort((a, b) => egg(a) - egg(b) || rank(a, b))) {
     const cost = baseSlotCost(id);
     if (base.length + cost <= 4) base.push(...Array(cost).fill(id));
     if (base.length === 4) break;
