@@ -15,10 +15,10 @@ import {environment} from './environment.js?v=20261108-b4';
 import {createEnvironment2D} from './environment-2d.js?v=20261108-b5';
 import {spiritArtPath} from './spirit-cards.js?v=20261108-b1';
 
-const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*1.1,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
+const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*1.1,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
 const TRIM=[null,{base:'#7a5634',top:'#8a6a4a',pillar:'#9a8f86',cap:'#b7aca2'},{base:'#a2663b',top:'#c58a3c',pillar:'#d79a3a',cap:'#f2c35a'},{base:'#a2663b',top:'#d6a03c',pillar:'#e0a53a',cap:'#fbd46a'},{base:'#8d5a2e',top:'#e3b34a',pillar:'#e8b23e',cap:'#ffe08a'},{base:'#a3322c',top:'#f0c24c',pillar:'#c8302a',cap:'#ffd75a'}];
-const RACK_WIDTH=2.3,ACTOR_SIZE=1.45,DECOR_WIDTH={sofa:2.2,plant:1.5,'lucky-cat':1.5,fountain:2.3,artwork:1.8,phoenix:1.7};
+const RACK_WIDTH=1.75,ACTOR_SIZE=1.5,MANAGER_SIZE=1.8,COUNTER_WIDTH=2.5,DECOR_WIDTH={sofa:1.8,plant:1.2,'lucky-cat':1.2,fountain:1.9,artwork:1.5,phoenix:1.4};
 const loadImage=src=>new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src;});
 const stateEmotion=(type,d,s)=>{
  if(type==='staff')return eventEmployee(s,s.event)?.id===d.id?'event-'+d.role:d.reactionUntil>s.totalTime?(d.feedbackKind||d.reaction):d.role==='standby'?null:d.fatigue>=80?'tired':d.workTask?'restock':null;
@@ -31,7 +31,7 @@ const stateEmotion=(type,d,s)=>{
 export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const metrics={assets:[],errors:[],actors:0,frames:0,renderer:'2d'},ctx=canvas.getContext('2d'),state=()=>game.state;
  const layer=document.createElement('div');layer.className='world2d';canvas.after(layer);
- let bgGrass='#8fc56b',windowSpots=[];const envLayer=createEnvironment2D({world:canvas,getView:()=>{const x0=X0(),y0=Y0(),c=(x,z)=>({X:x0+(x-z)*HW,Y:y0+(x+z)*HH}),a=c(0,0),r=c(dim.width,0),b=c(dim.width,dim.height),l=c(0,dim.height);return {panX,panY,scale,poly:[{X:a.X,Y:a.Y-WALL},{X:r.X,Y:r.Y-WALL},r,b,l,{X:l.X,Y:l.Y-WALL}],windows:windowSpots};}});
+ let grassImg=null;loadImage(OUT+'grass.webp').then(i=>{grassImg=i;dirty=true;});let bgGrass='#8fc56b',windowSpots=[];const envLayer=createEnvironment2D({world:canvas,getView:()=>{const x0=X0(),y0=Y0(),c=(x,z)=>({X:x0+(x-z)*HW,Y:y0+(x+z)*HH}),a=c(0,0),r=c(dim.width,0),b=c(dim.width,dim.height),l=c(0,dim.height);return {panX,panY,scale,poly:[{X:a.X,Y:a.Y-WALL},{X:r.X,Y:r.Y-WALL},r,b,l,{X:l.X,Y:l.Y-WALL}],windows:windowSpots};}});
  const roomCanvas=document.createElement('canvas'),cellCanvas=document.createElement('canvas');cellCanvas.className='world2d-cells';layer.prepend(cellCanvas);const cellsFor=createPlacementCells(game);let cellKey='';
  /* 布置模式：擺放時綠格可放、紅格不可放；只選取物件時顯示淡格線 */
  function drawCells(){const want=mode==='decorate'?(placement?'p':'g'):'';const list=placement?cellsFor(placement):[],k=want+(placement?list.length+':'+list.filter(c=>c.ok).length+':'+placement.type+placement.rotation:'')+dim.width+'x'+dim.height;if(k===cellKey)return;cellKey=k;cellCanvas.width=roomW();cellCanvas.height=roomH();const g=cellCanvas.getContext('2d');g.clearRect(0,0,cellCanvas.width,cellCanvas.height);if(!want)return;for(let z=0;z<dim.height;z++)for(let x=0;x<dim.width;x++){const c=placement?list.find(v=>v.x===x&&v.z===z):null,p=P(x,z);g.beginPath();g.moveTo(p.X,p.Y-HH+1);g.lineTo(p.X+HW-2,p.Y);g.lineTo(p.X,p.Y+HH-1);g.lineTo(p.X-HW+2,p.Y);g.closePath();if(c){g.fillStyle=c.ok?'#4fc38a66':'#f05e5340';g.fill();}g.strokeStyle=c?.ok?'#2f9a63aa':'#7eaa5588';g.lineWidth=1.2;g.stroke();}}const items=new Map(),actors=new Map(),keys=new Set(),touches=new Map();
@@ -39,8 +39,8 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  let chaseStarted=-100;
  function playChaseSuccess(){chaseStarted=time;metrics.chaseCelebrations=(metrics.chaseCelebrations||0)+1;}
  const furniture=(s=state())=>[...s.shelves,...(s.decorations||[])];
- const roomW=()=>(dim.width+dim.height)*HW+MARGIN*2,roomH=()=>(dim.width+dim.height)*HH+WALL+MARGIN*2.4;
- const X0=()=>MARGIN+dim.height*HW,Y0=()=>MARGIN+WALL;
+ const roomW=()=>(dim.width+dim.height)*HW+MARGIN*2,roomH=()=>(dim.width+dim.height)*HH+WALL+MARGIN*2.4+TOPM;
+ const X0=()=>MARGIN+dim.height*HW,Y0=()=>MARGIN+WALL+TOPM;
  /* 格子座標（格子中心為整數）→ 背景畫布座標 */
  const P=(x,z)=>({X:X0()+(x-z)*HW,Y:Y0()+(x+z+1)*HH});
  const toScreen=(x,z,h=0)=>{const p=P(x,z);return {x:panX+p.X*scale,y:panY+(p.Y-h*U)*scale};};
@@ -48,10 +48,12 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  function fromScreen(cx,cy){const q=toRoom(cx,cy),a=(q.X-X0())/HW,b=(q.Y-Y0())/HH;return {x:(a+b-1)/2,z:(b-a-1)/2};}
  async function buildRoom(l){
   const tag=++metrics.roomBuild||(metrics.roomBuild=1);dim=dimensions(l);roomCanvas.width=roomW();roomCanvas.height=roomH();
-  const [floor,wall,win,banner,counter,door,plant]=await Promise.all([loadImage(`./assets/art-v11/floor-lv${l}.webp`),loadImage(`./assets/art-v11/wall-lv${l}.webp`),loadImage(SPRITES+'window.webp'),loadImage(SPRITES+'banner.webp'),loadImage(SPRITES+'counter.webp'),loadImage(SPRITES+'door.webp'),loadImage(SPRITES+'decor-plant.webp')]);
+  const [floor,wall,win,banner,counter,door,plant,oTree,oBush,oBed,oFence,oLamp,oBanner]=await Promise.all([loadImage(`./assets/art-v11/floor-lv${l}.webp`),loadImage(`./assets/art-v11/wall-lv${l}.webp`),loadImage(SPRITES+'window.webp'),loadImage(SPRITES+'banner.webp'),loadImage(SPRITES+'counter.webp'),loadImage(SPRITES+'door.webp'),loadImage(SPRITES+'decor-plant.webp'),...['tree','bush','flowerbed','fence','lamp','banner'].map(n=>loadImage(OUT+n+'.webp'))]);
   if(tag!==metrics.roomBuild||!alive)return;
   const g=roomCanvas.getContext('2d'),Wd=dim.width,Hd=dim.height,x0=X0(),y0=Y0(),t=TRIM[Math.min(l,5)];g.clearRect(0,0,roomCanvas.width,roomCanvas.height);
   const corner=(x,z)=>({X:x0+(x-z)*HW,Y:y0+(x+z)*HH});const cR=corner(Wd,0),cL=corner(0,Hd),cB=corner(Wd,Hd);
+  const prop=(img,x,z,w)=>{if(!img)return;const p=P(x,z),pw=w*U,ph=pw*img.height/img.width;g.drawImage(img,p.X-pw/2,p.Y+HH*.6-ph,pw,ph);};
+  const back=[];for(let x=.5;x<Wd;x+=3.1)back.push([oTree,x,-1.7,2.6]);for(let z=1.2;z<Hd-1;z+=3.3)back.push([oTree,-1.7,z,2.6]);back.push([oBanner,Wd+.6,-1.2,1.3],[oTree,-2,-2,2.8]);back.sort((a,b)=>(a[1]+a[2])-(b[1]+b[2])).forEach(a=>prop(...a));
   /* 店外石板路：從入口一路鋪到畫面下方 */
   const door0=corner(ENTRANCE.x+.5,Hd);g.fillStyle='#cbbca6';for(let i=0;i<7;i++){const yy=door0.Y+18+i*26,xx=door0.X-i*10+(i%2?8:-8);g.beginPath();g.ellipse(xx,yy,26,11,0,0,7);g.fill();g.strokeStyle='#9e8f7a';g.lineWidth=2;g.stroke();}
   /* 地板（菱形）與前緣木板邊 */
@@ -70,8 +72,8 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   pillar(corner(0,0));pillar(cR);pillar(cL);
   /* 入口迎賓墊與店外盆栽 */
   g.save();g.setTransform(HW,HH,-HW,HH,x0,y0);g.fillStyle='#fff3cf';g.fillRect(ENTRANCE.x-.6,Hd-1.05,2.2,1);g.fillStyle='#c35a3a';g.fillRect(ENTRANCE.x-.45,Hd-.95,1.9,.8);g.restore();
-  if(plant){for(const[px,pz]of[[ENTRANCE.x-1.6,Hd+.8],[ENTRANCE.x+3.4,Hd+.8],[Wd+.8,Hd-2],[-1,Hd-3]]){const p=P(px,pz),w=U*1.1,h=w*plant.height/plant.width;g.drawImage(plant,p.X-w/2,p.Y-h+HH,w,h);}}
-  layer.querySelector('.world2d-counter')?.remove();if(counter){const el=new Image();el.src=ISO+'counter.webp';el.alt='';el.className='world2d-item world2d-counter';layer.append(el);placeItem(el,{rotation:COUNTER_FLIP?180:0},10,2,3.6);metrics.counter=true;}
+  const front=[[oBush,-1.3,Hd-1.5,1.5],[oBush,Wd+.9,2,1.4],[oBush,Wd+.9,Hd-3,1.5],[oLamp,ENTRANCE.x-.9,Hd+.8,.75],[oLamp,ENTRANCE.x+3.6,Hd+.8,.75],[oBed,ENTRANCE.x-3.2,Hd+1.6,1.9],[oBed,ENTRANCE.x+5.2,Hd+1.4,1.9],[oFence,Wd+1.2,Hd+.4,1.4],[oFence,Wd+1.2,Hd+1.6,1.4],[oTree,-2.2,Hd+1.5,2.4],[oBush,ENTRANCE.x-5.2,Hd+2.6,1.4]];front.sort((a,b)=>(a[1]+a[2])-(b[1]+b[2])).forEach(a=>prop(...a));
+  layer.querySelector('.world2d-counter')?.remove();if(counter){const el=new Image();el.src=ISO+'counter.webp';el.alt='';el.className='world2d-item world2d-counter';layer.append(el);placeItem(el,{rotation:COUNTER_FLIP?180:0},10,2,COUNTER_WIDTH);metrics.counter=true;}
   metrics.projection='isometric';dirty=true;fit();
  }
  function fit(){
@@ -81,7 +83,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   else{const free=roomW()*scale,used=roomH()*scale;panX=Math.max(Math.min(0,cw-free),Math.min(free<cw?(cw-free)/2:0,panX||(cw-free)/2));panY=used<ch-top-bottom?top+(ch-top-bottom-used)/2:Math.max(ch-bottom-used,Math.min(top,panY||top));}
   layer.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;layer.style.width=roomW()+'px';layer.style.height=roomH()+'px';dirty=true;
  }
- function drawRoom(){const grass=environment(state(),game.data.config).season.grass;if(grass!==bgGrass){bgGrass=grass;dirty=true;}if(!dirty)return;dirty=false;ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=bgGrass;ctx.fillRect(0,0,cw,ch);ctx.setTransform(scale,0,0,scale,panX,panY);ctx.imageSmoothingQuality='high';ctx.drawImage(roomCanvas,0,0);}
+ function drawRoom(){const grass=environment(state(),game.data.config).season.grass;if(grass!==bgGrass){bgGrass=grass;dirty=true;}if(!dirty)return;dirty=false;ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=bgGrass;ctx.fillRect(0,0,cw,ch);if(grassImg){const pat=ctx.createPattern(grassImg,'repeat');pat.setTransform(new DOMMatrix().translate(panX,panY).scale(scale*.5));ctx.fillStyle=pat;ctx.globalAlpha=bgGrass==='#8fd06a'||bgGrass==='#5fae3a'?1:.45;ctx.fillRect(0,0,cw,ch);ctx.globalAlpha=1;}ctx.setTransform(scale,0,0,scale,panX,panY);ctx.imageSmoothingQuality='high';ctx.drawImage(roomCanvas,0,0);}
  function spriteFor(item){
   if(item.decoration){const t=item.type;if(t==='carpet')return {src:`./assets/art-v11/carpet-lv${Math.min(level,5)}.webp`,width:3.8,ground:true};return {src:`${ISO}decor-${t}.webp`,width:DECOR_WIDTH[t]||1.3};}
   return {src:`${ISO}rack-${shelfKind(item)}.webp`,width:RACK_WIDTH};
@@ -108,7 +110,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));
   const moods=[],staffRows=[],active=new Set();
   for(const[key,d,type]of all){active.add(key);const a=ensureActor(key,d,type),trail=type==='manager'&&mode!=='follow'||type==='promoter'?null:game.motionFrame?.trails.get(key),p=trail?sampleTrail(trail,motionProgress):d,dx=p.x-a.pos.x,dz=p.z-a.pos.z,moved=dx*dx+dz*dz>.000001;a.pos={x:p.x,z:p.z};if(moved){a.moveUntil=time+.14;if(Math.abs(dx)>.002)a.flip=dx<0?-1:1;if(type==='manager')a.facing=Math.abs(dx)>Math.abs(dz)?'side':dz<0?'back':'front';}if(type==='manager')setManagerImage(a,time<a.moveUntil);
-   const px=(type==='promoter'?2.4:ACTOR_SIZE)*U,leaving=type==='customer'&&d.state==='Leave'?Math.min(1,Math.max(.05,Math.hypot(d.x-ENTRANCE.x,d.z-ENTRANCE.z)/1.7)):1;a.el.style.width=px+'px';const q=P(p.x,p.z);a.el.style.left=q.X-px/2+'px';a.el.style.top=q.Y+HH*.6-px+'px';a.el.style.zIndex=Math.round(100+(p.x+p.z)*60+30);a.screen={X:q.X,Y:q.Y+HH*.6,w:px};a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;const victory=chasePose(time-chaseStarted),celebrating=type==='manager'&&victory.active;a.el.classList.toggle('chase-celebrating',celebrating);if(celebrating)a.img.style.transform+=` translateY(${-victory.hop*U}px) rotate(${victory.lean}rad)`;a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');
+   const px=(type==='promoter'?2.4:type==='manager'?MANAGER_SIZE:ACTOR_SIZE)*U,leaving=type==='customer'&&d.state==='Leave'?Math.min(1,Math.max(.05,Math.hypot(d.x-ENTRANCE.x,d.z-ENTRANCE.z)/1.7)):1;a.el.style.width=px+'px';const q=P(p.x,p.z);a.el.style.left=q.X-px/2+'px';/* 主角在櫃台：腳踩在檯面後緣的高度，櫃台擋住下半身、露出上半身；巡店走近時平順移過去 */const deskPull=type==='manager'?(mode!=='follow'?1:Math.max(0,1-Math.hypot(p.x-10,p.z-1)/1.2)):0,deskFeet=P(10,2).Y+HH*.9-COUNTER_WIDTH*U*.4,feet=q.Y+HH*.6;a.el.style.top=feet+(deskFeet-feet)*deskPull-px+'px';if(deskPull>0)a.el.style.left=q.X-px/2-HW*1.3*deskPull+'px';a.el.style.zIndex=Math.round(100+(p.x+p.z)*60+30);a.screen={X:q.X,Y:q.Y+HH*.6,w:px};a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;const victory=chasePose(time-chaseStarted),celebrating=type==='manager'&&victory.active;a.el.classList.toggle('chase-celebrating',celebrating);if(celebrating)a.img.style.transform+=` translateY(${-victory.hop*U}px) rotate(${victory.lean}rad)`;a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');
    const emotion=stateEmotion(type,d,s),issue=type==='customer'?getCustomerComplaint(s,d,game):null,chase=type==='customer'&&s.customerChase?.customerId===d.id;
    if(emotion||issue||chase){const ev=s.event,related=!!ev&&(type==='staff'&&eventEmployee(s,ev)?.id===d.id||type==='customer'&&ev.description?.includes(d.name)&&['Angry','OutOfStock','Queue','UnhappyExit'].includes(d.state)),head=toScreen(p.x,p.z,ACTOR_SIZE*.95);moods.push({id:key,kind:chase?'impatient':emotion||'impatient',...(chase?{complaintId:d.id,complaintTitle:'🏃 追上我',chaseTarget:true}:issue?{complaintId:d.id,complaintTitle:issue.title}:related?{eventId:ev.instanceId||ev.id,eventTitle:ev.title}:{}),x:head.x,y:head.y,inFront:true});}
    if(type==='staff'){const head=toScreen(p.x,p.z,ACTOR_SIZE*.9);staffRows.push({id:key,x:head.x,y:head.y});}}
