@@ -1,4 +1,5 @@
 import {showChaseSuccess} from './chase-celebration.js?v=20261108-b1';
+import {environment} from './environment.js?v=20261108-b4';
 import {activeEvent} from './economy-v2.js?v=20261108-b3';
 import {chapterObjectives} from './shop-chapters.js?v=20261108-b1';
 import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261108-b2';
@@ -9,12 +10,12 @@ import {installShopMusic} from './shop-music.js?v=20261108-b1';
 import {createActorVisuals} from './actor-visuals.js?v=20261108-b1';
 import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261108-b1';
 import {loadSpiritCards} from './spirit-cards.js?v=20261108-b1';
-import {createGame} from './core.js?v=20261108-b3';
+import {createGame} from './core.js?v=20261108-b4';
 import {createStaffOverlay} from './staff-overlay.js?v=20261108-b1';
 import {installPatrolControls} from './patrol-controls.js?v=20261108-b1';
 import {playEvolution3D} from './evolution-3d.js?v=20261108-b1';
-import {createScene} from './scene.js?v=20261108-b1';
-import {createScene2D} from './scene-2d.js?v=20261108-b1';
+import {createScene} from './scene.js?v=20261108-b4';
+import {createScene2D} from './scene-2d.js?v=20261108-b4';
 import {createDock} from './dock-2d.js?v=20261108-b3';
 import {createHub} from './shop-hub.js?v=20261108-b3';
 import {installTutorial} from './shop-tutorial.js?v=20261108-b1';
@@ -52,7 +53,7 @@ function syncNotices(s){{const ev=activeEvent(s),key=ev?ev.id+ev.startDay:null;i
 }
 function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncNotices(s);
  $('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels[s.level-1]?.name||''}`;
- {const info=chapterObjectives(s,game.data.levels),pct=upgradeProgress(info);$('#hud-progress').textContent=s.upgradeProject?`🔨 ${Math.ceil(s.upgradeProject.remaining)}秒`:info.last?'★ 最高級':`▲ ${pct}%`;$('#hud-progress').classList.toggle('ready',info.ready&&!s.upgradeProject);$('#hud-clock').textContent=`${clockText(s,game.data.config)} ${clockLabel(s,game.data.config)}`;if(s.phase==='report'&&reportShownDay!==s.day&&hub&&!hub.isOpen){reportShownDay=s.day;hub.open('report');}}$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
+ {const info=chapterObjectives(s,game.data.levels),pct=upgradeProgress(info);$('#hud-progress').textContent=s.upgradeProject?`🔨 ${Math.ceil(s.upgradeProject.remaining)}秒`:info.last?'★ 最高級':`▲ ${pct}%`;$('#hud-progress').classList.toggle('ready',info.ready&&!s.upgradeProject);{const env=environment(s,game.data.config);$('#hud-clock').textContent=`${env.weatherInfo.icon}${env.season.name} ${clockText(s,game.data.config)} ${clockLabel(s,game.data.config)}`;$('#hud-clock').title=`${env.season.name}季・${env.weatherInfo.name}`;}if(s.phase==='report'&&reportShownDay!==s.day&&hub&&!hub.isOpen){reportShownDay=s.day;hub.open('report');}}$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
  const dot=(id,on)=>$(`.toolbar [data-hub=${id}]`).classList.toggle('has-notice',!!on&&!s.patrolFocus);
  const daily=dailyTasks(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length);dot('build',s.layoutPause);dot('tasks',s.event||commissionNotice(s)||daily.tasks.some(t=>t.done&&!t.claimed));
  tutorial?.sync();}

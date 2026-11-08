@@ -137,3 +137,5 @@ html body header.topbar .status-row strong#level-name{flex:1 1 auto;min-width:0}
 @media(prefers-reduced-motion:reduce){.levelup-rays,.levelup-coins i,.levelup-card{animation:none}}
 html body header.topbar .status-row strong#gold{flex:none!important;overflow:visible!important}
 .market-gif{display:block;width:min(220px,60%);margin:0 auto;border-radius:12px}
+.world2d-env{position:fixed;z-index:2;pointer-events:none}
+body.hub-open .world2d-env{z-index:2}

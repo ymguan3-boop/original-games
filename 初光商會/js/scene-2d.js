@@ -11,6 +11,8 @@ import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js
 import {stockCount} from './shelf-products.js?v=20261108-b1';
 import {createAssets} from './asset-resolver.js?v=20261108-b1';
 import {createPlacementCells} from './placement-cells.js?v=20261108-a2';
+import {environment} from './environment.js?v=20261108-b4';
+import {createEnvironment2D} from './environment-2d.js?v=20261108-b4';
 import {spiritArtPath} from './spirit-cards.js?v=20261108-b1';
 
 const U=64,TILT=typeof innerHeight==='number'&&innerHeight>innerWidth?1.05:.72,V=U*TILT,WALL=2.5*U,MARGIN=U*.9,SPRITES='./assets/sprites-v1/';
@@ -27,6 +29,7 @@ const stateEmotion=(type,d,s)=>{
 export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const metrics={assets:[],errors:[],actors:0,frames:0,renderer:'2d'},ctx=canvas.getContext('2d'),state=()=>game.state;
  const layer=document.createElement('div');layer.className='world2d';canvas.after(layer);
+ let bgGrass='#8fc56b',windowSpots=[];const envLayer=createEnvironment2D({world:canvas,getView:()=>({panX,panY,scale,wall:WALL,room:{x:MARGIN,y:MARGIN,w:dim.width*U,h:dim.height*V+WALL},windows:windowSpots})});
  const roomCanvas=document.createElement('canvas'),cellCanvas=document.createElement('canvas');cellCanvas.className='world2d-cells';layer.prepend(cellCanvas);const cellsFor=createPlacementCells(game);let cellKey='';
  /* 布置模式：擺放時綠格可放、紅格不可放；只選取物件時顯示淡格線 */
  function drawCells(){const want=mode==='decorate'?(placement?'p':'g'):'';const list=placement?cellsFor(placement):[],k=want+(placement?list.length+':'+list.filter(c=>c.ok).length+':'+placement.type+placement.rotation:'')+dim.width+'x'+dim.height;if(k===cellKey)return;cellKey=k;cellCanvas.width=roomW();cellCanvas.height=roomH();const g=cellCanvas.getContext('2d');g.clearRect(0,0,cellCanvas.width,cellCanvas.height);if(!want)return;for(let z=0;z<dim.height;z++)for(let x=0;x<dim.width;x++){const c=placement?list.find(v=>v.x===x&&v.z===z):null,px=MARGIN+x*U,py=WALL+MARGIN+z*V;if(c){g.fillStyle=c.ok?'#4fc38a55':'#f05e5333';g.fillRect(px+2,py+2,U-4,V-4);}g.strokeStyle=c?.ok?'#2f9a63aa':'#7eaa5588';g.lineWidth=1.5;g.strokeRect(px+1,py+1,U-2,V-2);}}const items=new Map(),actors=new Map(),keys=new Set(),touches=new Map();
@@ -43,13 +46,13 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   const [floor,wall,win,banner,counter]=await Promise.all([loadImage(`./assets/art-v11/floor-lv${l}.webp`),loadImage(`./assets/art-v11/wall-lv${l}.webp`),loadImage(SPRITES+'window.webp'),loadImage(SPRITES+'banner.webp'),loadImage(SPRITES+'counter.webp')]);
   if(tag!==metrics.roomBuild||!alive)return;
   const g=roomCanvas.getContext('2d'),W=roomCanvas.width,H=roomCanvas.height,left=MARGIN,top=MARGIN,fw=dim.width*U,fh=dim.height*V;
-  g.fillStyle='#8fc56b';g.fillRect(0,0,W,H);
+  g.clearRect(0,0,W,H);
   /* 地板：材質照傾斜比例壓扁，看起來才是往畫面裡鋪 */
   g.save();g.beginPath();g.rect(left,top+WALL,fw,fh);g.clip();g.translate(left,top+WALL);g.scale(1,Math.min(1,TILT));if(floor){g.fillStyle=g.createPattern(floor,'repeat');const k=U*5/floor.width;g.scale(k,k);g.fillRect(0,0,fw/k,fh/Math.min(1,TILT)/k);}g.restore();
   /* 後牆 */
   g.save();g.beginPath();g.rect(left,top,fw,WALL);g.clip();g.translate(left,top);if(wall){const k=U*4/wall.width;g.scale(k,k);g.fillStyle=g.createPattern(wall,'repeat');g.fillRect(0,0,fw/k,WALL/k);}g.restore();
   g.fillStyle='#a2663b';g.fillRect(left,top+WALL-14,fw,14);g.fillStyle='#6a3f22';g.fillRect(left,top+WALL-3,fw,8);g.fillRect(left,top,fw,6);
-  const wallArt=(img,x,w)=>{if(!img)return;const h=w*img.height/img.width;g.drawImage(img,left+x-w/2,top+WALL*.46-h/2,w,h);};
+  windowSpots=[];const wallArt=(img,x,w)=>{if(img===win)windowSpots.push({x:left+x,w});if(!img)return;const h=w*img.height/img.width;g.drawImage(img,left+x-w/2,top+WALL*.46-h/2,w,h);};
   for(let x=2.5;x<dim.width;x+=4)wallArt(win,x*U,U*1.9);for(let x=4.5;x<dim.width-1;x+=4)wallArt(banner,x*U,U*.85);
   /* 地板陰影與側邊矮牆 */
   const shade=g.createLinearGradient(0,top+WALL,0,top+WALL+V);shade.addColorStop(0,'#3c241433');shade.addColorStop(1,'#3c241400');g.fillStyle=shade;g.fillRect(left,top+WALL,fw,V);
@@ -66,7 +69,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   else{const free=roomW()*scale,used=roomH()*scale;panX=Math.max(Math.min(0,cw-free),Math.min(free<cw?(cw-free)/2:0,panX||(cw-free)/2));panY=used<ch-top-bottom?top+(ch-top-bottom-used)/2:Math.max(ch-bottom-used,Math.min(top,panY||top));}
   layer.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;layer.style.width=roomW()+'px';layer.style.height=roomH()+'px';dirty=true;
  }
- function drawRoom(){if(!dirty)return;dirty=false;ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#8fc56b';ctx.fillRect(0,0,cw,ch);ctx.setTransform(scale,0,0,scale,panX,panY);ctx.imageSmoothingQuality='high';ctx.drawImage(roomCanvas,0,0);}
+ function drawRoom(){const grass=environment(state(),game.data.config).season.grass;if(grass!==bgGrass){bgGrass=grass;dirty=true;}if(!dirty)return;dirty=false;ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=bgGrass;ctx.fillRect(0,0,cw,ch);ctx.setTransform(scale,0,0,scale,panX,panY);ctx.imageSmoothingQuality='high';ctx.drawImage(roomCanvas,0,0);}
  function spriteFor(item){
   if(item.decoration){const t=item.type;if(t==='carpet')return {src:`./assets/art-v11/carpet-lv${Math.min(level,5)}.webp`,width:3.8,ground:true};return {src:`${SPRITES}decor-${t}.webp`,width:DECOR_WIDTH[t]||1.3};}
   return {src:`${SPRITES}rack-${shelfKind(item)}.webp`,width:RACK_WIDTH};
@@ -102,7 +105,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   if(s.manager&&mode==='follow'){const open=document.querySelector('dialog[open]'),ix=open?0:joystick.x+(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0),iy=open?0:joystick.y+(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);game.setManagerInput(ix,iy);fit();}
  }
  function headOf(item){if(!item)return null;const sp=spriteFor(item);return toScreen(item.x,item.z,sp.ground?.3:sp.width*1.1);}
- function update(dt){if(!alive)return;dt=Math.min(dt,.1);time+=dt;const l=Math.min(state().level||1,5);if(l!==level){level=l;buildRoom(l);}syncItems();syncActors(dt);drawCells();if(placement)refreshPlacement();else if(selected)onFurniturePosition(headOf(furniture().find(i=>i.id===selected)));drawRoom();metrics.frames++;}
+ function update(dt){if(!alive)return;dt=Math.min(dt,.1);time+=dt;const l=Math.min(state().level||1,5);if(l!==level){level=l;buildRoom(l);}syncItems();syncActors(dt);drawCells();if(placement)refreshPlacement();else if(selected)onFurniturePosition(headOf(furniture().find(i=>i.id===selected)));drawRoom();const env=environment(state(),game.data.config);envLayer.draw(env,dt);metrics.environment={slot:env.slot,weather:env.weather,season:env.season.id};metrics.frames++;}
  /* 擺放 */
  const clearGhost=()=>{ghost?.remove();ghost=null;};
  function cancelPlacement(){clearGhost();placement=null;metrics.placement=null;onPlacementChange(null);onFurnitureSelect(null);}
@@ -133,7 +136,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   projectShelf(id){const i=furniture().find(x=>x.id===id);return i?toScreen(i.x,i.z):null;},projectShelfHead(id){return headOf(furniture().find(x=>x.id===id));},projectCell(x,z,y=0){return toScreen(x,z,y);},
   setMode(m){if(m==='follow'&&lockedView())return {ok:false,message:'請先完成貨架調整或點空白處取消選取，再切換主管巡店'};if(m!=='decorate')cancelPlacement();const result=game.setManagerActive(m==='follow');if(!result.ok){onActionResult(result);return result;}mode=m;keys.clear();joystick={x:0,y:0};game.setManagerInput(0,0);metrics.mode=m;metrics.managerVisible=m==='follow';showGrid();if(m!=='decorate')selectShelf(null);panX=0;panY=0;fit();onModeChange(m);return result;},
   setJoystick(x,y){joystick={x,y};},rotate(){return false;},zoom(delta=1){if(lockedView())return false;userZoom=Math.max(1,Math.min(2.6,userZoom-delta*.1));fit();return true;},setGestureMode(){return 'pan';},get gestureMode(){return 'pan';},get cameraLocked(){return lockedView();},get cameraPose(){return {scale,panX,panY};},
-  dispose(){alive=false;cancelPlacement();observer?.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('keydown',keyDown);window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',blur);for(const[n,f]of listeners)canvas.removeEventListener(n,f);canvas.removeEventListener('wheel',wheel);layer.remove();}
+  dispose(){alive=false;envLayer.dispose();cancelPlacement();observer?.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('keydown',keyDown);window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',blur);for(const[n,f]of listeners)canvas.removeEventListener(n,f);canvas.removeEventListener('wheel',wheel);layer.remove();}
  };
  return api;
 }
