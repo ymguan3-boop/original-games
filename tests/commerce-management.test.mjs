@@ -19,14 +19,14 @@ test('Lv.1 一人在班、Lv.5 五人在班，第六位進備用且資料不丟�
  const g=fresh({level:1});g.act('hire',{id:'bulbasaur'});g.act('hire',{id:'squirtle'});assert.equal(onDuty(g.state).length,1);assert.equal(g.state.employees.length,2);
  g.transaction(null,s=>{s.level=5;return 'x';});for(const id of ['charmander','chikorita','cyndaquil','totodile'])g.act('hire',{id});
  g.act('autoAssign');assert.equal(onDuty(g.state).length,5);assert.equal(capacityOf(g,g.state),5);assert.equal(g.state.employees.length,6);
- const reserve=g.state.employees.find(e=>e.role==='standby');assert.ok(reserve);const r=g.act('assign',{employeeId:reserve.id,role:'cashier'});assert.equal(r.ok,false);
- const on=onDuty(g.state)[0];g.act('assign',{employeeId:on.id,role:'standby'});assert.equal(g.act('assign',{employeeId:reserve.id,role:'cashier'}).ok,true);assert.equal(g.state.employees.length,6);
+ const reserve=g.state.employees.find(e=>e.role==='standby');assert.ok(reserve);const r=g.act('assign',{employeeId:reserve.id,role:'stocker'});assert.equal(r.ok,false);
+ const on=onDuty(g.state)[0];g.act('assign',{employeeId:on.id,role:'standby'});assert.equal(g.act('assign',{employeeId:reserve.id,role:'stocker'}).ok,true);assert.equal(g.act('assign',{employeeId:reserve.id,role:'cashier'}).ok,false);assert.equal(g.state.employees.length,6);
 });
 test('擅長職務有 25% 加成，換職後被動仍有效且熟練度不歸零',()=>{
  const g=fresh({level:3});g.act('hire',{id:'squirtle'});const e=g.state.employees[0];
  g.act('assign',{employeeId:e.id,role:'host'});const good=jobPower(g,g.state,'host'),pass=passive(g,g.state,'satisfaction');
- g.transaction(null,s=>{s.employees[0].workLevel=3;return 'x';});g.act('assign',{employeeId:e.id,role:'cashier'});
- assert.ok(Math.abs(good/jobPower(g,{...g.state,employees:[{...g.state.employees[0],workLevel:1}]},'cashier')-1.25)<.001);
+ g.transaction(null,s=>{s.employees[0].workLevel=3;return 'x';});g.act('assign',{employeeId:e.id,role:'stocker'});
+ assert.ok(Math.abs(good/jobPower(g,{...g.state,employees:[{...g.state.employees[0],workLevel:1}]},'stocker')-1.25)<.001);
  assert.ok(passive(g,g.state,'satisfaction')>0&&passive(g,g.state,'satisfaction')<pass);assert.equal(g.state.employees[0].workLevel,3);
 });
 test('第二位同職務效率遞減',()=>{const g=fresh({level:3});g.act('hire',{id:'cyndaquil'});g.act('hire',{id:'raikou'});g.act('hire',{id:'bulbasaur'});
@@ -67,14 +67,20 @@ test('三種蛋各招一次、固定路線，已聘用者不影響其他分支',
  g.transaction(null,s=>{for(const e of s.employees)e.workLevel=4;return 'x';});for(const e of g.state.employees)g.act('evolveEmployee',{employeeId:e.id});
  assert.deepEqual(g.state.employees.map(e=>e.spiritId),['grovyle','treecko','sceptile']);
 });
-test('小金魚兩條分支都能到水蛟龍王，熟練度不重置',()=>{
- for(const pick of [0,1]){const g=fresh();g.act('hire',{id:'kyogre'});g.transaction(null,s=>{s.employees[0].workLevel=8;return 'x';});g.random=()=>pick*.99;g.act('evolveEmployee',{employeeId:g.state.employees[0].id});assert.equal(g.state.employees[0].spiritId,pick?'rayquaza':'groudon');g.act('evolveEmployee',{employeeId:g.state.employees[0].id});assert.equal(g.state.employees[0].spiritId,'mewtwo');assert.equal(g.state.employees[0].workLevel,8);}
+test('商會的小金魚依序進化成金魚皇后、金魚國王，熟練度不重置',()=>{
+ const g=fresh();g.act('hire',{id:'kyogre'});g.transaction(null,s=>{s.employees[0].workLevel=8;return 'x';});
+ g.act('evolveEmployee',{employeeId:g.state.employees[0].id});assert.equal(g.state.employees[0].spiritId,'rayquaza');
+ g.act('evolveEmployee',{employeeId:g.state.employees[0].id});assert.equal(g.state.employees[0].spiritId,'groudon');assert.equal(g.state.employees[0].workLevel,8);
+ assert.equal(g.act('evolveEmployee',{employeeId:g.state.employees[0].id}).ok,false);
 });
 test('水蛟龍王一次只有一項駐點任務，加成真實生效',()=>{
- const g=fresh({level:8});g.act('hire',{id:'kyogre'});g.transaction(null,s=>{s.employees[0].workLevel=8;s.employees[0].spiritId='mewtwo';s.employees[0].role='cashier';return 'x';});
+ const g=fresh({level:8});g.act('hire',{id:'kyogre'});g.transaction(null,s=>{s.employees[0].workLevel=8;s.employees[0].spiritId='mewtwo';s.employees[0].role='host';return 'x';});
  assert.equal(g.act('setDragonTask',{id:'treasure'}).ok,true);const income=passive(g,g.state,'income');assert.ok(income>=.08);g.act('setDragonTask',{id:'brew'});assert.ok(passive(g,g.state,'income')<income);assert.ok(passive(g,g.state,'potion')>=.12);
 });
-test('主角每次都從門口內側進場',()=>{const g=fresh();g.transaction(null,s=>{s.manager.x=3;s.manager.z=3;return 'x';});g.setManagerActive(true);assert.ok(Math.abs(g.state.manager.x-6)<=1&&Math.abs(g.state.manager.z-9)<=1);});
+test('主角平常在櫃台收銀，巡店從櫃台後方出發',()=>{const g=fresh();g.transaction(null,s=>{s.manager.x=3;s.manager.z=3;return 'x';});g.setManagerActive(true);assert.ok(Math.abs(g.state.manager.x-10)<=1&&Math.abs(g.state.manager.z-1)<=1);});
+test('宣傳員：等級不足不能聘請、不佔在班名額、只在毛利為正時加成',()=>{
+ const g=fresh({level:1});assert.equal(g.act('hirePromoter',{id:'blissey'}).ok,false);assert.equal(g.act('hirePromoter',{id:'swampert'}).ok,true);assert.equal(g.state.promoter.id,'swampert');assert.equal(g.state.employees.length,0);
+});
 test('舊存檔遷移：職務併入、超額轉備用、欠薪清除、家具與金幣保留',()=>{
  const g=fresh({level:3});place(g);const old=JSON.parse(JSON.stringify(g.state));delete old.schemaVersion;delete old.tutorialState;old.totals.sales=20;old.unpaidWages=300;old.gold=1234;
  const pool=['bulbasaur','squirtle','charmander','chikorita'];old.employees=pool.map((id,i)=>({...g.employee(id,['sales','smith','warehouse','security'][i]),workLevel:5}));

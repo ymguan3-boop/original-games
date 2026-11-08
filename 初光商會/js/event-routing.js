@@ -1,7 +1,7 @@
 /* Explicit event routing: customer shortages and business tasks can be handled
  * by their own controls. Only a genuinely personal manager intervention is
  * forced into the walk-through patrol mode. */
-const PHYSICAL_PATROL_IDS=new Set(['cashier-idle']);
+const PHYSICAL_PATROL_IDS=new Set();
 export function requiresManagerPatrol(event){
  return !!event&&!event.remoteResolution&&(event.requiresPatrol===true||PHYSICAL_PATROL_IDS.has(event.id));
 }

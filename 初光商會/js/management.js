@@ -1,13 +1,13 @@
 /* 簡化經營規則：四職務、在班名額、專屬被動、自動工作、每日任務與舊存檔遷移。
  * 所有數值都放在 data/management.json，這裡只有規則。 */
-import {shelfCapacity,accepts} from './furniture.js?v=20261107-fixes-r1';
-export const WORK_JOBS=['cashier','stocker','host','cleaner'];
-const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner'};
+import {shelfCapacity,accepts} from './furniture.js?v=20261108-b1';
+export const WORK_JOBS=['stocker','host','cleaner'];
+const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner',cashier:'host'};
 export const legacyRole=r=>LEGACY_ROLES[r]||r;
 export const capacityOf=(g,s)=>g.data.levels[s.level-1]?.capacity||1;
 export const onDuty=s=>s.employees.filter(e=>e.role!=='standby');
 export const traitOf=(g,e)=>g.data.management.traits[e.baseId]||null;
-export const preferredJob=(g,e)=>traitOf(g,e)?.preferredJob||'host';
+export const preferredJob=(g,e)=>legacyRole(traitOf(g,e)?.preferredJob||'host');
 export const stageIndex=e=>Math.min(2,e.evolutionHistory?.length||0);
 export function passiveValue(g,e){const t=traitOf(g,e);if(!t)return 0;return (e.role===t.preferredJob?t.boosted:t.base)[stageIndex(e)];}
 export function dragonTask(g,s){if(!s.dragonTask)return null;const d=g.data.management.dragon,on=s.employees.some(e=>e.spiritId===d.spiritId&&e.role!=='standby');return on?d.tasks.find(t=>t.id===s.dragonTask&&t.level<=s.level)||null:null;}

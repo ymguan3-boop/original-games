@@ -8,7 +8,7 @@ function helper(filename,entries){
 function setup(){
  const data={evolution:{'spirit-a':{level:4,next:['spirit-b']},'spirit-b':{level:8,next:['spirit-c']},'spirit-c':{level:12,next:[]}},
  spirits:[{id:'spirit-a',name:'原形',stage:1},{id:'spirit-b',name:'進化型',stage:2},{id:'spirit-c',name:'最終型',stage:3}]};
- const employee={id:'emp-spirit-a',baseId:'spirit-a',spiritId:'spirit-a',name:'原形',rarity:'yellow',role:'cashier',workLevel:4,xp:0,xpToday:0,fatigue:25,mood:92,efficiency:1,wage:25,evolutionHistory:[]};
+ const employee={id:'emp-spirit-a',baseId:'spirit-a',spiritId:'spirit-a',name:'原形',rarity:'yellow',role:'host',workLevel:4,xp:0,xpToday:0,fatigue:25,mood:92,efficiency:1,wage:25,evolutionHistory:[]};
  const s={day:9,seed:15,totalTime:36,employees:[employee],event:null,incidents:[],incidentHistory:[],cooldowns:{},manager:{x:10,z:1}};
  const game={data,random:()=>.99,efficiency:e=>Math.round(e.workLevel*.2),log:(s,msg)=>{(s.log??=[]).push(msg)},notice:(s,id,msg)=>{(s.notices??=[]).push({id,msg})}};
  return {data,employee,s,game};
@@ -46,7 +46,7 @@ test('patrol completion is impossible for required events before the selected fo
  const react=(s,e,kind)=>{e.reaction=kind};
  const resolve=new Function('eventEmployee','managerNearEmployee','sleepEvent','applyFreeEventFatigue','react','requiresManagerPatrol','return ({'+method+'}).resolveNearbyEvent;')
  (eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue,react,requiresManagerPatrol);
- const {s,employee}=setup();employee.x=10;employee.z=1;s.event={id:'cashier-idle',instanceId:'focused-1',title:'收銀員閒得打瞌睡',employeeId:employee.id,role:'cashier',cooldown:45,effect:'clean'};
+ const {s,employee}=setup();employee.x=10;employee.z=1;s.event={id:'idle-sleep',requiresPatrol:true,instanceId:'focused-1',title:'收銀員閒得打瞌睡',employeeId:employee.id,role:'host',cooldown:45,effect:'clean'};
  const g={applyEventEffect:()=>{},efficiency:()=>1,notice:()=>{},log:()=>{}};
  assert.equal(resolve.call(g,s),false);
  s.patrolFocus={eventId:'focused-1',employeeId:employee.id,title:s.event.title};

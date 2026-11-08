@@ -1,8 +1,8 @@
-import {employeeSpot,employeePath} from './staff-routing.js?v=20261107-fixes-r1';
-import {obstacles,decorEffects} from './decorations.js?v=20261107-fixes-r1';
-import {findPath,walkable} from './nav.js?v=20261107-fixes-r1';
-import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261107-fixes-r1';
-const stations={cashier:{x:10,z:1},stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
+import {employeeSpot,employeePath} from './staff-routing.js?v=20261108-b1';
+import {obstacles,decorEffects} from './decorations.js?v=20261108-b1';
+import {findPath,walkable} from './nav.js?v=20261108-b1';
+import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261108-b1';
+const stations={stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
 /* The rear wall is z=1. Each resting worker gets their own place and is never
  * mistaken for an idling / slacking employee at an active work station. */
 export function restingPositions(s){
@@ -13,7 +13,6 @@ export function sendToRest(g,s,e){e.path=[];e.reaction='sleep';e.offDuty=true;re
 const wandering=(s,e)=>{
  const shelves=s.shelves||[],i=(e.patrolStep||0),next=()=>{e.patrolStep=i+1;};
  const patterns={
-  cashier:[stations.cashier],
   stocker:[stations.stocker,...shelves.map(sh=>({x:sh.x,z:sh.z+1})),{x:2,z:4}],
   host:[{x:5,z:9},{x:6,z:8},{x:7,z:9}],
   cleaner:[{x:3,z:6},{x:7,z:8},{x:8,z:3}],
@@ -39,21 +38,15 @@ export function autoAssign(g,s){
  g.log(s,`一鍵配置完成：${chosen.size} 位在班。`);
  return `已配置 ${chosen.size} 位在班員工`;
 }
-/* 顧客在等結帳卻沒有收銀員時，由一位沒鎖定職務的員工補上；玩家鎖定的職務不動 */
-function fillCashier(g,s){if(s.phase!=='open'||s.employees.some(e=>e.role==='cashier')||!s.customers.some(c=>['Queue','Checkout','Cart'].includes(c.state)))return;const room=s.employees.filter(e=>e.role!=='standby').length<capacityOf(g,s),free=s.employees.filter(e=>!e.lockedAssignment&&(room||e.role!=='standby')).sort((a,b)=>(b.role==='standby')-(a.role==='standby')||(preferredJob(g,b)==='cashier')-(preferredJob(g,a)==='cashier')||b.workLevel-a.workLevel),e=free[0];if(!e)return;if(e.workTask){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}e.role='cashier';e.path=[];e.nextTaskAt=0;g.log(s,`${e.name} 接手收銀。`);}
 export function staffAutomation(g,s,dt){
  if(s.phase!=='open')return;
  const rear=restingPositions(s);
  for(const e of s.employees){
   if(e.role==='standby'){sendToRest(g,s,e);continue;}
   // Only a named slacking incident allows an on-duty worker to stand still.
-  if(s.event?.id==='cashier-idle'&&(s.event.employeeId===e.id||!s.event.employeeId&&e.role==='cashier')){
-   e.path=[];e.reaction='bored';continue;
-  }
   if(e.workTask){e.reaction='work';continue;}
   if((e.path||[]).length&&(e.blocked||0)<2){e.reaction='walk';continue;}
   if((e.path||[]).length){e.path=[];e.nextTaskAt=0;}
-  if(e.role==='cashier'){if(Math.hypot(e.x-10,e.z-1)>.18)g.route(s,e,stations.cashier);e.reaction='work';continue;}
   /* 大型幻靈固定在寬敞的工作點，不到處走，避免穿過貨架 */
   if(e.spiritId===g.data.management.dragon.spiritId){const zone=g.data.management.dragon.zone;if(Math.hypot(e.x-zone.x,e.z-zone.z)>.6){const spot=employeeSpot(g,s,e,zone);if(spot)g.route(s,e,spot);}e.reaction='work';continue;}
   if((e.nextTaskAt||0)>s.totalTime){e.reaction='work';continue;}

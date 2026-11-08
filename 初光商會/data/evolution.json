@@ -305,28 +305,25 @@
   },
   "kyogre": {
     "next": [
-      "groudon",
       "rayquaza"
     ],
     "level": 4,
-    "branch": "random",
-    "source": "原始 previous/next/evolvesTo 聯集；三色蛋同階鏈以累進門檻處理"
+    "branch": "linear",
+    "source": "商會：小金魚 → 金魚皇后"
   },
   "groudon": {
-    "next": [
-      "mewtwo"
-    ],
-    "level": 8,
+    "next": [],
+    "level": 12,
     "branch": "linear",
-    "source": "洞穴 v0.25：戰局 Lv.8 進化；主遊戲條件不變"
+    "source": "商會：金魚國王為最終型態"
   },
   "rayquaza": {
     "next": [
-      "mewtwo"
+      "groudon"
     ],
     "level": 8,
     "branch": "linear",
-    "source": "洞穴 v0.25：戰局 Lv.8 進化；主遊戲條件不變"
+    "source": "商會：金魚皇后 → 金魚國王"
   },
   "dialga": {
     "next": [],

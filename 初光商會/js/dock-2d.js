@@ -1,10 +1,10 @@
 /* 2D 版下方常駐面板：上面一條顯示最該處理的事（事件 → 顧客問題 → 章節目標），下面是員工卡。
  * 只有名單變動才重建卡片，平常只更新文字，員工 GIF 才不會一直重播。 */
-import {spiritArtPath} from './spirit-cards.js?v=20261107-fixes-r1';
-import {chapterObjectives} from './shop-chapters.js?v=20261107-fixes-r1';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261107-fixes-r1';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261107-fixes-r1';
-import {capacityOf} from './management.js?v=20261107-fixes-r1';
+import {spiritArtPath} from './spirit-cards.js?v=20261108-b1';
+import {chapterObjectives} from './shop-chapters.js?v=20261108-b1';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261108-b1';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261108-b1';
+import {capacityOf} from './management.js?v=20261108-b1';
 
 const SLOTS=4;
 export function createDock({game,hub,esc}){

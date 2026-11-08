@@ -8,7 +8,7 @@ export function managerNearEmployee(s,ev,distance=1.65){
  // approaching an employee must never silently dismiss these problems.
  if(['stockout','queue-complaint','no-cashier'].includes(ev?.id))return false;
  const employee=eventEmployee(s,ev),manager=s.manager;
- const reach=ev?.role==='cashier'?Math.max(distance,2.15):distance; // the counter physically separates the cashier from the aisle
+ const reach=distance;
  return !!(employee&&manager&&Number.isFinite(employee.x)&&Number.isFinite(employee.z)&&Number.isFinite(manager.x)&&Number.isFinite(manager.z)&&Math.hypot(manager.x-employee.x,manager.z-employee.z)<=reach);
 }
 export function sleepEvent(ev){

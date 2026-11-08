@@ -1,22 +1,22 @@
-import {showChaseSuccess} from './chase-celebration.js?v=20261107-fixes-r1';
-import {installShopNavigation} from './shop-navigation.js?v=20261107-fixes-r1';
-import {showZhaocaiNote} from './zhaocai-note.js?v=20261107-fixes-r1';
-import {installShopMusic} from './shop-music.js?v=20261107-fixes-r1';
-import {createActorVisuals} from './actor-visuals.js?v=20261107-fixes-r1';
-import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261107-fixes-r1';
-import {loadSpiritCards} from './spirit-cards.js?v=20261107-fixes-r1';
-import {createGame} from './core.js?v=20261108-a1';
-import {createStaffOverlay} from './staff-overlay.js?v=20261107-fixes-r1';
-import {installPatrolControls} from './patrol-controls.js?v=20261107-fixes-r1';
-import {playEvolution3D} from './evolution-3d.js?v=20261107-fixes-r1';
-import {createScene} from './scene.js?v=20261108-a2';
-import {createScene2D} from './scene-2d.js?v=20261108-a2';
-import {createDock} from './dock-2d.js?v=20261107-fixes-r1';
-import {createHub} from './shop-hub.js?v=20261108-a2';
-import {installTutorial} from './shop-tutorial.js?v=20261107-fixes-r1';
-import {commissionNotice} from './commissions.js?v=20261107-fixes-r1';
-import {dailyTasks} from './management.js?v=20261107-fixes-r1';
-import {installWindowControls} from './window-controls.js?v=20261107-fixes-r1';
+import {showChaseSuccess} from './chase-celebration.js?v=20261108-b1';
+import {installShopNavigation} from './shop-navigation.js?v=20261108-b1';
+import {showZhaocaiNote} from './zhaocai-note.js?v=20261108-b1';
+import {installShopMusic} from './shop-music.js?v=20261108-b1';
+import {createActorVisuals} from './actor-visuals.js?v=20261108-b1';
+import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261108-b1';
+import {loadSpiritCards} from './spirit-cards.js?v=20261108-b1';
+import {createGame} from './core.js?v=20261108-b1';
+import {createStaffOverlay} from './staff-overlay.js?v=20261108-b1';
+import {installPatrolControls} from './patrol-controls.js?v=20261108-b1';
+import {playEvolution3D} from './evolution-3d.js?v=20261108-b1';
+import {createScene} from './scene.js?v=20261108-b1';
+import {createScene2D} from './scene-2d.js?v=20261108-b1';
+import {createDock} from './dock-2d.js?v=20261108-b1';
+import {createHub} from './shop-hub.js?v=20261108-b1';
+import {installTutorial} from './shop-tutorial.js?v=20261108-b1';
+import {commissionNotice} from './commissions.js?v=20261108-b1';
+import {dailyTasks} from './management.js?v=20261108-b1';
+import {installWindowControls} from './window-controls.js?v=20261108-b1';
 /* 2D 測試：在設定輸入代碼後切換並記住；本機開發可用 ?shopDev=1&view=2d 直接進入 */
 const VIEW_KEY='firstlight-shop-view',VIEW_CODE='741216',viewParams=new URLSearchParams(location.search),readView=()=>{try{return localStorage.getItem(VIEW_KEY);}catch{return null;}},view2d=viewParams.get('view')==='2d'&&viewParams.has('shopDev')&&['localhost','127.0.0.1'].includes(location.hostname)||readView()==='2d';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -76,7 +76,7 @@ async function boot(){try{
  await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id)});window.shop=game;window.shopTrial=trial;
  const sceneFactory=view2d?createScene2D:createScene;document.body.classList.toggle('view-2d',view2d);if(view2d)createDock({game,hub,esc});
  scene=sceneFactory({canvas:$('#world'),game,
-  onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){if(game.state.phase==='open'&&!game.state.layoutPause){toast('營業中不能移動貨架，請到「布置」暫停營業。',true);return;}scene.setMode('decorate');scene.selectShelf(o.id);}},
+  onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='promoter'){hub.open('promoters');return;}if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){if(game.state.phase==='open'&&!game.state.layoutPause){toast('營業中不能移動貨架，請到「布置」暫停營業。',true);return;}scene.setMode('decorate');scene.selectShelf(o.id);}},
   onStaffPositions:rows=>staffOverlay?.position(rows),
   onActorVisuals:view=>{const focus=game.state.patrolFocus?.employeeId;actorVisuals?.render(focus?{actors:view.actors.filter(v=>v.id===focus),notices:view.notices.filter(n=>n.targetId===focus)}:view);},
   onPlacementChange:p=>{$('#placement-hint').hidden=!p;if(p)$('#placement-message').textContent=p.ok?'點地板選位置，再按 ✓':'這裡不能放：'+p.message;document.body.classList.toggle('placement-bad',!!p&&!p.ok);},

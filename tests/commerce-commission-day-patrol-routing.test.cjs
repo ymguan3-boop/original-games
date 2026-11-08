@@ -42,12 +42,13 @@ test('old saves without createdDay still load and clear safely on the next day',
 });
 test('only physical intervention events require supervisor patrol; customer complaints and staff advice do not',()=>{
  const policy=load('js/event-routing.js',['requiresManagerPatrol','patrolEventInstructions']);
- assert.equal(policy.requiresManagerPatrol({id:'cashier-idle'}),true);
+ /* 收銀改由主角負責，收銀員打瞌睡不再需要巡店 */
+ assert.equal(policy.requiresManagerPatrol({id:'cashier-idle'}),false);
  assert.equal(policy.requiresManagerPatrol({id:'stockout'}),false);
  assert.equal(policy.requiresManagerPatrol({id:'queue-complaint'}),false);
  assert.equal(policy.requiresManagerPatrol({id:'cashier-rush'}),false);
  assert.equal(policy.requiresManagerPatrol({id:'no-cashier'}),false);
  assert.equal(policy.requiresManagerPatrol({id:'comic-1'}),false);
  assert.equal(policy.requiresManagerPatrol({id:'custom',requiresPatrol:true}),true);
- assert.match(policy.patrolEventInstructions({id:'cashier-idle'},{patrol:true}),/已經在主管巡店/);
+ assert.match(policy.patrolEventInstructions({id:'custom',requiresPatrol:true},{patrol:true}),/已經在主管巡店/);
 });
