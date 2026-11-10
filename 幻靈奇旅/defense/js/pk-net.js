@@ -33,14 +33,7 @@ export function makeChannel(kind, sendRaw, close) {
 /* host: open a room and wait for the guest. Returns {code, ready: Promise<channel>, cancel()} */
 export async function hostRoom({onStatus = () => {}} = {}) {
   const kind = transportKind();
-  if(kind==='https'){
-    onStatus('正在建立 HTTPS 對戰房間…');
-    const remote=await hostHttps(makeChannel,{onStatus}),local=hostLocal(remote.code);let chosen=false,resolve;
-    const ready=new Promise(r=>{resolve=r;});
-    const accept=(ch,isLocal)=>{if(chosen){ch.close();return;}chosen=true;if(isLocal)remote.cancel();else local.cancel();resolve(ch);};
-    local.ready.then(ch=>accept(ch,true));remote.ready.then(ch=>accept(ch,false));
-    return {code:remote.code,ready,cancel(){chosen=true;local.cancel();remote.cancel();}};
-  }
+  if(kind==='https'){onStatus('正在建立 HTTPS 對戰房間…');return hostHttps(makeChannel,{onStatus});}
   for (let tries = 0; tries < 5; tries++) {
     const code = makeCode();
     if (kind === 'local') return hostLocal(code);
@@ -67,12 +60,13 @@ export async function joinRoom(code, {onStatus = () => {}} = {}) {
   if (!validCode(code)) throw Error('房號是 4 碼英文字母或數字');
   const kind = transportKind();
   if (kind === 'local') return joinLocal(code);
+  if(kind==='https'){onStatus('正在以 HTTPS 加入房間…');return joinHttps(code,makeChannel,{onStatus});}
   // Independent per-page tokens, never an account ID or IP address.
   if (typeof BroadcastChannel === 'function') {
     try { return await joinLocal(code, 650); }
     catch (e) { if (e.code === 'full') throw e; }
   }
-  if(kind==='https'){onStatus('正在以 HTTPS 加入房間…');return joinHttps(code,makeChannel,{onStatus});}
+
   return kind === 'firebase' ? joinFirebase(code, onStatus) : joinPeer(code, onStatus);
 }
 

@@ -4,7 +4,7 @@
    phantom-defense-v1. */
 import {STAGES, SHAPES, eggTrio, configureTutorialStep, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-fixes-r1';
 import {createPkIsland} from './pk-island.js?v=20261107-fixes-r1';
-import {createPkLobby} from './pk-lobby.js?v=20261110-relay-r2';
+import {createPkLobby} from './pk-lobby.js?v=20261110-relay-r3';
 import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-fixes-r1';
 import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-fixes-r1';
 import {createToonKit} from './style.js?v=20261107-fixes-r1';
