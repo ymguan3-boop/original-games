@@ -1,6 +1,7 @@
 /* 簡化經營規則：四職務、在班名額、專屬被動、自動工作、每日任務與舊存檔遷移。
  * 所有數值都放在 data/management.json，這裡只有規則。 */
 import {shelfCapacity,accepts} from './furniture.js?v=20261110-chibi2';
+import {applyFortune} from './fortune-cards.js?v=20261110-chibi2';
 export const WORK_JOBS=['stocker','host','cleaner'];
 const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner',cashier:'host'};
 export const legacyRole=r=>LEGACY_ROLES[r]||r;
@@ -20,6 +21,7 @@ export function dailyState(g,s,now=Date.now()){const date=dateKey(g,now);if(s.da
 export function dailyTrack(g,s,key,amount){if(amount>0)dailyState(g,s)[key]+=amount;}
 export function dailyTasks(g,s){const d=s.dailyTaskState?.date===dateKey(g)?s.dailyTaskState:{sales:0,gold:0,exp:0,claimed:{},bonus:false};return {tasks:g.data.management.daily.tasks.map(t=>({...t,value:Math.floor(d[t.id]||0),done:(d[t.id]||0)>=t.target,claimed:!!d.claimed[t.id]})),bonus:d.bonus};}
 export function managementAction(g,s,type,p){
+ if(type==='fortuneCard')return applyFortune(g,s,p);
  const m=g.data.management,assert=(v,msg)=>{if(!v)throw Error(msg);};
  if(type==='claimDaily'){const state=dailyState(g,s),task=m.daily.tasks.find(t=>t.id===p.id);assert(task&&(state[task.id]||0)>=task.target&&!state.claimed[task.id],'任務未完成或已領取');state.claimed[task.id]=true;s.gold+=task.reward;s.stats.rewards+=task.reward;return `獲得 ${task.reward} G`;}
  if(type==='claimDailyBonus'){const state=dailyState(g,s);assert(m.daily.tasks.every(t=>state.claimed[t.id])&&!state.bonus,'三項任務領完才能領全勤獎勵');state.bonus=true;s.gold+=m.daily.bonusGold;s.stats.rewards+=m.daily.bonusGold;s.xpTickets=(s.xpTickets||0)+m.daily.bonusTickets;return `全勤獎勵：${m.daily.bonusGold} G 與經驗券`;}

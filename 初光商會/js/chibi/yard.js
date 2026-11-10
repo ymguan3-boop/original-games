@@ -175,7 +175,7 @@ export function buildYard(level,opts={}){
  const groundY=(x,z)=>{if(z<=zF+.18)return 0;if(z>=zS)return G;return THREE.MathUtils.lerp(0,G,(z-(zF+.18))/(zS-zF-.18));};
  const staffColor=[0,0x8a6a48,0x5ea63f,0xc8382a,0xc22d1c,0xa8171a][level];
  const staff=person({seed:900+level,shirt:level===1?0x9a8a70:0xfffaf0,apron:staffColor,hat:level>=2?staffColor:null,style:'short',skirt:false,flyers:true,patch:level===1,scale:1.3});
- const staffPos=new THREE.Vector3(DX+Math.max(Y.stepW/2+.35,pw/2+.45),G,zS+.45);staff.g.position.copy(staffPos);root.add(staff.g);staff.home=staffPos.clone();
+ const staffPos=new THREE.Vector3(DX+Math.max(Y.stepW/2+.35,pw/2+.45),G,zS+.45);staff.g.position.copy(staffPos);if(!ambient)root.add(staff.g);staff.home=staffPos.clone();
  staff.arms[0].sh.rotation.x=-.9;staff.arms[0].sh.rotation.z=.25;staff.armOverride=true;
  const spawnRoute=(p,shop)=>{const s=R()<.5?-1:1,lane=zR+(R()-.5)*1.4,jx=(R()-.5)*.6;p.route=[];p.wait=0;p.inside=false;
   p.g.position.set(p.first?(R()-.5)*RX*1.6:s*RX,G,lane);p.first=false;
@@ -209,7 +209,7 @@ export function buildYard(level,opts={}){
   }
   function spawnRouteFrom(p,lane,jx){const bx=(R()-.5)*(w-1.6),bz=-d/2+.8+R()*(d-2.2);p.route=[{x:jx*.5,z:zS+.25},{x:0,z:zF+.25},{x:0,z:d/2-.5},{x:bx,z:bz,wait:2.5+R()*3},{x:0,z:d/2-.5},{x:0,z:zF+.25,bag:true},{x:jx*.5,z:zS+.25},{x:-jx,z:lane},{x:(R()<.5?-1:1)*RX,z:lane}];}
   /* 店員：轉向最近的人，揮手招呼，靠近時遞傳單 */
-  let best=null,bd=5.2;for(const p of people){if(!p.g.visible||!p.route||p.g.position.z<zF+.3)continue;const dd=p.g.position.distanceTo(staff.g.position);if(dd<bd){bd=dd;best=p;}}
+  if(!ambient){let best=null,bd=5.2;for(const p of people){if(!p.g.visible||!p.route||p.g.position.z<zF+.3)continue;const dd=p.g.position.distanceTo(staff.g.position);if(dd<bd){bd=dd;best=p;}}
   const look=best?Math.atan2(best.g.position.x-staff.g.position.x,best.g.position.z-staff.g.position.z):0;let da=look-staff.g.rotation.y;da=Math.atan2(Math.sin(da),Math.cos(da));staff.g.rotation.y+=da*Math.min(1,dt*4);
   staffCool-=dt;
   if(give>0){give-=dt;const k=1-give/.9;staff.arms[1].sh.rotation.x=-Math.sin(Math.min(1,k*1.6)*Math.PI/2)*1.35;staff.props.flyer.visible=k<.55;if(k>=.55&&giveTarget&&!giveTarget.got){giveTarget.got=true;giveTarget.props.flyer.visible=!giveTarget.props.bag.visible;say(giveTarget,THANKS[Math.floor(R()*THANKS.length)],1.4);}if(give<=0){staff.arms[1].sh.rotation.x=0;}}
@@ -217,9 +217,9 @@ export function buildYard(level,opts={}){
   else if(best&&staffCool<=0){if(bd<1.5&&!best.got&&!best.props.bag.visible){give=.9;giveTarget=best;staff.props.flyer.visible=true;say(staff,'送你一張傳單！',1.6);staffCool=1.4;}
    else if(bd<5.2){waveT=1.1;say(staff,LINES[Math.floor(R()*4)],1.8);staffCool=2.4+R()*1.5;if(!best.got&&!best.shopper&&R()<.5)best.got=true;}}
   else if(!best&&staffCool<=0){say(staff,LINES[Math.floor(R()*4)],1.8);waveT=1;staffCool=4+R()*2;}
-  staff.pose(dt,false);staff.body.position.y=Math.abs(Math.sin(t*2))*.01;
+  staff.pose(dt,false);staff.body.position.y=Math.abs(Math.sin(t*2))*.01;}
   for(const p of idlers){p.idleT+=dt;p.pose(dt,false);p.head.rotation.y=Math.sin(p.idleT*.7)*.5;p.body.rotation.z=Math.sin(p.idleT*1.6)*.02;if(p.idleT%9<dt&&R()<.5)say(p,['這個好！','多少錢？','真熱鬧～','嗯…'][Math.floor(R()*4)],1.6);}
-  for(const p of [...people,staff,...idlers])if(p.bub){p.bubT-=dt;p.bub.material.opacity=Math.min(1,p.bubT*3);if(p.bubT<=0){p.g.remove(p.bub);p.bub=null;}}
+  for(const p of [...people,...(ambient?[]:[staff]),...idlers])if(p.bub){p.bubT-=dt;p.bub.material.opacity=Math.min(1,p.bubT*3);if(p.bubT<=0){p.g.remove(p.bub);p.bub=null;}}
  }
  root.userData={level,lineMats:props.userData.lineMats,camZ:(zR+(level>=3?[0,0,0,6,7.5,9][level]:2))/2-.6,extent:Y.roadHalf};
  return {root,update,people,staff};
