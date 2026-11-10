@@ -169,7 +169,7 @@ function mascot(T,stage=1){
  const selfCast=m=>{if(!window.ZhaocaiCoins)return;own??=window.ZhaocaiCoins.create({THREE:T,parent:dog.root});const at=new T.Vector3(0,.8,0),to=new T.Vector3(0,.8,4);if(stage===2){if(m==='Attack')own.bolt(at,to);else own.domain(new T.Vector3(),5,2.6);}else if(stage===3){if(m==='Attack')own.shieldChain(at,[to,new T.Vector3(1.6,.8,3)],null,null);else own.glory(new T.Vector3(),[new T.Vector3()]);}else if(m==='Attack')own.toss(at,to);else own.spray(new T.Vector3(0,1.4,0),{count:160,radius:4.5});};
  const c={root:dog.root,stage,skills:SKILLS[stage],onRelease:null,shield:dog.shield,getState:()=>({modes:['Idle','Walk','Run','Attack','Ultimate'],durations:{Attack:MOVES.attack.length,Ultimate:MOVES.ultimate.length}}),
   setMode(m){mode=m;if(m==='Attack'||m==='Ultimate')drive.play(m.toLowerCase(),{onRelease:()=>{if(c.onRelease)return c.onRelease(m);selfCast(m);}});},
-  update(dt){drive.tick(dt,mode==='Walk'||mode==='Run');own?.update(dt);},setMotionSpeed(){},seek(){},setFlightHeight(){},setTargetDistance(){},getMotionState:()=>({}),hand:v=>dog.arms[1].hand.getWorldPosition(v),dispose(){}};
+  update(dt){drive.tick(dt,mode==='Walk'||mode==='Run');own?.update(dt);},setMotionSpeed(){},seek(){},setFlightHeight(){},setTargetDistance(){},getMotionState:()=>({}),hand:v=>dog.arms[1].hand.getWorldPosition(v),dispose(){own?.dispose();own=null;c.onRelease=null;}};
  return c;
 }
 function create({THREE:T,parent,LOT,frontZ}){

@@ -1,8 +1,8 @@
 /* Optional live 3D customer chase mini-game.
  * Never creates free stock or a fake sale: catches route through the existing
  * complaint resolution transaction, with its real staff fatigue and satisfaction effects. */
-import {getCustomerComplaint,resolveCustomerComplaint} from './customer-complaints.js?v=20261108-b1';
-import {ENTRANCE} from './nav.js?v=20261108-b1';
+import {getCustomerComplaint,resolveCustomerComplaint} from './customer-complaints.js?v=20261110-commerce-r1';
+import {ENTRANCE} from './nav.js?v=20261110-commerce-r1';
 const radius=1.4;
 const waypoints=[{x:3,z:8},{x:7,z:7},{x:11,z:8},{x:6,z:4},{x:4,z:5},{x:9,z:5}];
 const stockoutReason=reason=>/缺貨|找不到商品/.test(reason||'');

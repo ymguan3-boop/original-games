@@ -1,21 +1,21 @@
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261108-b1';
-import {CUSTOMER_TYPES,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261108-b3';
-import {clockText} from './shop-clock.js?v=20261108-b2';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261108-b1';
-import {pendingRewards} from './reward-collection.js?v=20261108-a1';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261110-commerce-r1';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261110-commerce-r1';
+import {clockText} from './shop-clock.js?v=20261110-commerce-r1';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261110-commerce-r1';
+import {pendingRewards} from './reward-collection.js?v=20261110-commerce-r1';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
-import {spiritPortrait} from './spirit-cards.js?v=20261108-b1';
-import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity} from './furniture.js?v=20261108-b1';
-import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261108-b1';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261108-b1';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261108-b1';
-import {chapterObjectives} from './shop-chapters.js?v=20261108-b1';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261108-b1';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261108-b1';
-import {requiresManagerPatrol} from './event-routing.js?v=20261108-b1';
-import {eventEmployee} from './patrol-events.js?v=20261108-b1';
-import {ledgerPanel} from './ledger-panel.js?v=20261108-b1';
+import {spiritPortrait} from './spirit-cards.js?v=20261110-commerce-r1';
+import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity} from './furniture.js?v=20261110-commerce-r1';
+import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261110-commerce-r1';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261110-commerce-r1';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261110-commerce-r1';
+import {chapterObjectives} from './shop-chapters.js?v=20261110-commerce-r1';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261110-commerce-r1';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261110-commerce-r1';
+import {requiresManagerPatrol} from './event-routing.js?v=20261110-commerce-r1';
+import {eventEmployee} from './patrol-events.js?v=20261110-commerce-r1';
+import {ledgerPanel} from './ledger-panel.js?v=20261110-commerce-r1';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -57,7 +57,7 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   evolveOne(id){const e=s().employees.find(x=>x.id===id),info=staffEvolutionInfo(d,e);return {title:e.name,art:staffIcon(e),note:info.eligible?'進化會保留熟練度、職務與位置。':info.next.length?`需要熟練 Lv.${info.required}。`:'已是最終型態。',actions:info.eligible?[['開始進化',()=>{close();evolve(id);},true]]:[]};},
   tasks(){const ev=s().event;return {title:'任務',note:'橘色尚未完成・綠色可領獎・灰色已完成。批次領獎包含已可交付委託，交貨會扣除所需商品。',cards:[...(ev?[{key:'urgent',status:'urgent',html:`<b>${esc(ev.title)}</b><small>立即處理突發委託</small>`,tap:()=>push('event')}]:[]),...['daily','orders','chapter'].map((key,i)=>({key,status:pending()[key]?'ready':undefined,html:`<b>${['每日任務','商會委託','章節進度'][i]}</b><small>${pending()[key]?`可領 ${pending()[key]} 項`:'沒有可領的獎勵'}</small>`,tap:()=>{if(key==='orders'&&s().commissionBoard?.unread)act('readCommissions');push(key);}}))],actions:[[pending().total?`一鍵領取全部獎勵（${pending().total}）`:'沒有可領的獎勵',claimAll,true,!pending().total]]};},
   history(){const cfg=d.config,list=(s().log||[]).filter(x=>x.day===s().day).slice().reverse(),at=t=>clockText({phase:'open',time:t},cfg);const ev=activeEvent(s()),m=ensureMarket(s());return {title:`第 ${s().day} 天歷程`,note:`聲譽 ${Math.round(m.reputation)} · 忠誠 ${Math.round(m.loyalty)}。${list.length?`今天共 ${list.length} 則紀錄。`:'今天還沒有紀錄。'}`,cards:[{key:'market',status:ev?.tone==='bad'?'urgent':undefined,html:ev?`<b>📢 ${esc(ev.title)}（剩 ${ev.endDay-s().day+1} 天）</b><small>${esc(eventEffects(ev).join('、'))}</small>`:'<b>📢 今日市場平穩</b><small>沒有特別的市場事件</small>',tap:()=>push('market')},...list.map((x,i)=>({key:'h'+i,html:`<b>${at(x.time)}</b><small>${esc(x.text)}</small>`}))]};},
-  market(){const ev=activeEvent(s());if(!ev)return {title:'市場公告',note:'今天市場平穩，沒有特別的事件。'};return {title:`📢 ${esc(ev.title)}`,note:`${esc(ev.text)}<br>「${esc(ev.shout)}」`,html:`<img class="market-gif" src="./assets/market-gifs/${esc(ev.id)}.gif" alt="${esc(ev.title)}動畫" onerror="this.remove()">`,cards:[...eventEffects(ev).map((t,i)=>({key:'e'+i,html:`<b>${esc(t)}</b>`})),{key:'days',html:`<b>剩 ${ev.endDay-s().day+1} 天</b><small>第 ${ev.startDay}～${ev.endDay} 天</small>`}]};},
+  market(){const index=competitionIndex(s()),competition=`競爭市場指數 ${index}（基準 100；越高分流越強）。`;const ev=activeEvent(s());if(!ev)return {title:'市場公告',note:competition+'今天市場平穩，沒有特別的事件。'};return {title:`📢 ${esc(ev.title)}`,note:`${competition}<br>${esc(ev.text)}<br>「${esc(ev.shout)}」`,html:`<img class="market-gif" src="./assets/market-gifs/${esc(ev.id)}.gif" alt="${esc(ev.title)}動畫" onerror="this.remove()">`,cards:[...eventEffects(ev).map((t,i)=>({key:'e'+i,html:`<b>${esc(t)}</b>`})),{key:'days',html:`<b>剩 ${ev.endDay-s().day+1} 天</b><small>第 ${ev.startDay}～${ev.endDay} 天</small>`}]};},
   report(){const r=s().lastReport||s().report||{};const gross=(r.revenue||0)-(r.cogs||0);return {title:`第 ${r.day||s().day} 天結算`,note:`營業時間 07:00～20:00 已結束。`,cards:[['營業額',money(r.revenue)],['毛利',money(gross)],...(r.promoterBonus?[['宣傳員加成','+'+money(r.promoterBonus)]]:[]),['支出',money(r.expenses)],['淨利',money(r.netProfit)],['成交',`${r.sales||0} 筆`],['聲譽',`${Math.round(ensureMarket(s()).reputation)}（${(r.reputationDelta||0)>=0?'+':''}${Math.round((r.reputationDelta||0)*10)/10}）`]].map(([a,b],i)=>({key:'r'+i,html:`<b>${a}</b><small>${b}</small>`})),actions:[['開始新的一天',()=>{act('nextDay');close();},true]]};},
   claimed(){const c=s().lastClaim||{items:[]};return {title:'領取成功',note:`共獲得 ${money(c.gold)}${c.tickets>0?`、經驗券 ${c.tickets} 張`:''}。`,cards:c.items.map((x,i)=>({key:'c'+i,status:'claimed',html:`<b>${esc(x.name)}</b><small>${x.gold>0?'+'+money(x.gold):'已領取'}</small>`}))};},
   daily(){const data=dailyTasks(game,s()),firsts=game.questList(s()).filter(q=>q.done&&!s().quests[q.id]).slice(0,3),all=data.tasks.every(t=>t.claimed);return {title:'每日任務',note:`經驗券 ${s().xpTickets||0} 張`,cards:[...firsts.map(q=>({key:q.id,tutor:'quest',status:'ready',html:`<b>${esc(q.name)}</b><small>可領 ${money(q.reward)}</small>`,tap:()=>{act('claimQuest',{id:q.id});render();}})),...data.tasks.map(t=>({key:t.id,done:t.claimed,status:rewardState(t.done,t.claimed),html:`<b>${esc(t.label)}</b><small>${t.claimed?'已領取':`${Math.min(t.value,t.target)}/${t.target} ${t.unit} · ${money(t.reward)}`}</small>`,tap:()=>{if(t.done&&!t.claimed){act('claimDaily',{id:t.id});render();}else toast(t.claimed?'已領取':'任務尚未完成');}})),{key:'bonus',done:data.bonus,status:rewardState(all,data.bonus),html:`<b>全勤獎勵</b><small>${data.bonus?'已領取':`${money(d.management.daily.bonusGold)} 與經驗券`}</small>`,tap:()=>{if(all&&!data.bonus){act('claimDailyBonus');render();}else toast(data.bonus?'已領取':'三項任務領完才能領');}}]};},

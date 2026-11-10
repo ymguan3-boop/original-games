@@ -1,19 +1,19 @@
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261108-b1';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261110-commerce-r1';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261108-b1';
-import {ENTRANCE,dimensions} from './nav.js?v=20261108-b1';
-import {sampleTrail} from './motion.js?v=20261108-b1';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261108-b1';
-import {eventEmployee} from './patrol-events.js?v=20261108-b1';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261108-b1';
-import {stockCount} from './shelf-products.js?v=20261108-b1';
-import {createAssets} from './asset-resolver.js?v=20261108-b1';
-import {createPlacementCells} from './placement-cells.js?v=20261108-a2';
-import {environment} from './environment.js?v=20261108-b4';
-import {createEnvironment2D} from './environment-2d.js?v=20261108-b5';
-import {spiritArtPath} from './spirit-cards.js?v=20261108-b1';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261110-commerce-r1';
+import {ENTRANCE,dimensions} from './nav.js?v=20261110-commerce-r1';
+import {sampleTrail} from './motion.js?v=20261110-commerce-r1';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261110-commerce-r1';
+import {eventEmployee} from './patrol-events.js?v=20261110-commerce-r1';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261110-commerce-r1';
+import {stockCount} from './shelf-products.js?v=20261110-commerce-r1';
+import {createAssets} from './asset-resolver.js?v=20261110-commerce-r1';
+import {createPlacementCells} from './placement-cells.js?v=20261110-commerce-r1';
+import {environment} from './environment.js?v=20261110-commerce-r1';
+import {createEnvironment2D} from './environment-2d.js?v=20261110-commerce-r1';
+import {spiritArtPath} from './spirit-cards.js?v=20261110-commerce-r1';
 
 const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*1.1,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
@@ -53,26 +53,31 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   const g=roomCanvas.getContext('2d'),Wd=dim.width,Hd=dim.height,x0=X0(),y0=Y0(),t=TRIM[Math.min(l,5)];g.clearRect(0,0,roomCanvas.width,roomCanvas.height);
   const corner=(x,z)=>({X:x0+(x-z)*HW,Y:y0+(x+z)*HH});const cR=corner(Wd,0),cL=corner(0,Hd),cB=corner(Wd,Hd);
   const prop=(img,x,z,w)=>{if(!img)return;const p=P(x,z),pw=w*U,ph=pw*img.height/img.width;g.drawImage(img,p.X-pw/2,p.Y+HH*.6-ph,pw,ph);};
-  const back=[];for(let x=.5;x<Wd;x+=3.1)back.push([oTree,x,-1.7,2.6]);for(let z=1.2;z<Hd-1;z+=3.3)back.push([oTree,-1.7,z,2.6]);back.push([oBanner,Wd+.6,-1.2,1.3],[oTree,-2,-2,2.8]);back.sort((a,b)=>(a[1]+a[2])-(b[1]+b[2])).forEach(a=>prop(...a));
+  const back=[];for(let x=.5;x<Wd;x+=3.1)back.push([oTree,x,-1.7,2.6]);for(let z=1.2;z<Hd-1;z+=3.3)Math.abs(z-ENTRANCE.z)>2.5&&back.push([oTree,-1.7,z,2.6]);back.push([oBanner,Wd+.6,-1.2,1.3],[oTree,-2,-2,2.8]);back.sort((a,b)=>(a[1]+a[2])-(b[1]+b[2])).forEach(a=>prop(...a));
   /* 店外石板路：從入口一路鋪到畫面下方 */
-  const door0=corner(ENTRANCE.x+.5,Hd);g.fillStyle='#cbbca6';for(let i=0;i<7;i++){const yy=door0.Y+18+i*26,xx=door0.X-i*10+(i%2?8:-8);g.beginPath();g.ellipse(xx,yy,26,11,0,0,7);g.fill();g.strokeStyle='#9e8f7a';g.lineWidth=2;g.stroke();}
+  const door0=corner(0,ENTRANCE.z+.5);g.fillStyle='#cbbca6';for(let i=0;i<7;i++){const yy=door0.Y-i*10,xx=door0.X-18-i*26;g.beginPath();g.ellipse(xx,yy,26,11,0,0,7);g.fill();g.strokeStyle='#9e8f7a';g.lineWidth=2;g.stroke();}
   /* 地板（菱形）與前緣木板邊 */
   g.save();g.setTransform(HW,HH,-HW,HH,x0,y0);g.beginPath();g.rect(0,0,Wd,Hd);g.clip();if(floor){const pat=g.createPattern(floor,'repeat');pat.setTransform(new DOMMatrix().scale(4/floor.width));g.fillStyle=pat;}else g.fillStyle='#e8d6b2';g.fillRect(0,0,Wd,Hd);g.restore();
   g.fillStyle=t.base;g.beginPath();g.moveTo(cR.X,cR.Y);g.lineTo(cB.X,cB.Y);g.lineTo(cL.X,cL.Y);g.lineTo(cL.X,cL.Y+12);g.lineTo(cB.X,cB.Y+12);g.lineTo(cR.X,cR.Y+12);g.closePath();g.fill();
   /* 兩面牆：右牆沿 z=0、左牆沿 x=0；左牆略暗，看起來有立體感 */
-  const wallFace=(sx,len,shade)=>{g.save();g.setTransform(sx*HW,HH,0,1,x0,y0);g.beginPath();g.rect(0,-WALL,len,WALL);g.clip();if(wall){const pat=g.createPattern(wall,'repeat');pat.setTransform(new DOMMatrix().scale(3.2/wall.width,3.2*SLANT/wall.height));g.fillStyle=pat;}else g.fillStyle='#f6ead2';g.fillRect(0,-WALL,len,WALL);if(shade){g.fillStyle=`rgba(60,36,20,${shade})`;g.fillRect(0,-WALL,len,WALL);}
+  const wallFace=(sx,len,shade)=>{g.save();g.setTransform(sx*HW,HH,0,1,x0,y0);g.beginPath();g.rect(0,-WALL,len,WALL);if(sx===-1)g.rect(ENTRANCE.z-.9,-2.25*U,1.8,2.25*U);g.clip("evenodd");if(wall){const pat=g.createPattern(wall,'repeat');pat.setTransform(new DOMMatrix().scale(3.2/wall.width,3.2*SLANT/wall.height));g.fillStyle=pat;}else g.fillStyle='#f6ead2';g.fillRect(0,-WALL,len,WALL);if(shade){g.fillStyle=`rgba(60,36,20,${shade})`;g.fillRect(0,-WALL,len,WALL);}
    g.fillStyle=t.base;g.fillRect(0,-16,len,16);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(0,-4,len,4);g.fillStyle=t.top;g.fillRect(0,-WALL,len,10);g.restore();};
   wallFace(1,Wd,0);wallFace(-1,Hd,.1);
   /* 牆上的窗與旗：sx=1 右牆、-1 左牆 */
   windowSpots=[];const onWall=(img,sx,u,w,hFrac,isWin)=>{if(!img)return;const hpx=w*SLANT*img.height/img.width;g.save();g.setTransform(sx*HW,HH,0,1,x0,y0);g.drawImage(img,u-w/2,-WALL*hFrac-hpx/2,w,hpx);g.restore();if(isWin){const b=corner(sx>0?u:0,sx>0?0:u);windowSpots.push({X:b.X,Y:b.Y,ax:sx*HW*w*.4,ay:HH*w*.4,ix:sx>0?-HW:HW,iy:HH});}};
   for(let u=2.5;u<Wd-1;u+=4)onWall(win,1,u,2.6,.55,true);for(let u=4.5;u<Wd-1;u+=4)onWall(banner,1,u,1,.6,false);
-  for(let u=3;u<Hd-1;u+=4.5)onWall(win,-1,u,2.6,.55,true);if(l>=2)for(let u=5.2;u<Hd-1;u+=4.5)onWall(banner,-1,u,1,.6,false);
+  for(let u=3;u<Hd-1;u+=4.5)if(Math.abs(u-ENTRANCE.z)>2.4)onWall(win,-1,u,2.6,.55,true);if(l>=2)for(let u=5.2;u<Hd-1;u+=4.5)onWall(banner,-1,u,1,.6,false);
+  onWall(door,-1,ENTRANCE.z,2.1,.41,false);
+  g.save();g.setTransform(-HW,HH,0,1,x0,y0);g.strokeStyle=t.top;g.lineWidth=.12;g.strokeRect(ENTRANCE.z-1,-2.3*U,2,2.3*U);
+  if(l>=3){g.fillStyle='#65d9ff';g.beginPath();g.moveTo(ENTRANCE.z,-2.65*U);g.lineTo(ENTRANCE.z+.25,-2.45*U);g.lineTo(ENTRANCE.z,-2.3*U);g.lineTo(ENTRANCE.z-.25,-2.45*U);g.closePath();g.fill();}g.restore();
+  if(l>=4){g.save();g.setTransform(HW,HH,-HW,HH,x0,y0);g.strokeStyle=t.top;g.lineWidth=.035;for(let x=1;x<Wd-1;x+=3){g.beginPath();g.moveTo(x,1);g.lineTo(x,Hd-1);g.stroke();}g.restore();}
+  metrics.entrance={...ENTRANCE};metrics.exteriorTier=l;
   /* 三根柱子：轉角與兩端 */
   const pillar=(p,h=WALL+14)=>{g.fillStyle=t.pillar;g.fillRect(p.X-9,p.Y-h,18,h);g.fillStyle='rgba(0,0,0,.15)';g.fillRect(p.X+2,p.Y-h,7,h);g.fillStyle=t.cap;g.fillRect(p.X-12,p.Y-h-10,24,12);if(l>=5){g.fillStyle='#6fd3ff';g.beginPath();g.moveTo(p.X,p.Y-h-34);g.lineTo(p.X+9,p.Y-h-18);g.lineTo(p.X,p.Y-h-8);g.lineTo(p.X-9,p.Y-h-18);g.closePath();g.fill();}};
   pillar(corner(0,0));pillar(cR);pillar(cL);
   /* 入口迎賓墊與店外盆栽 */
-  g.save();g.setTransform(HW,HH,-HW,HH,x0,y0);g.fillStyle='#fff3cf';g.fillRect(ENTRANCE.x-.6,Hd-1.05,2.2,1);g.fillStyle='#c35a3a';g.fillRect(ENTRANCE.x-.45,Hd-.95,1.9,.8);g.restore();
-  const front=[[oBush,-1.3,Hd-1.5,1.5],[oBush,Wd+.9,2,1.4],[oBush,Wd+.9,Hd-3,1.5],[oLamp,ENTRANCE.x-.9,Hd+.8,.75],[oLamp,ENTRANCE.x+3.6,Hd+.8,.75],[oBed,ENTRANCE.x-3.2,Hd+1.6,1.9],[oBed,ENTRANCE.x+5.2,Hd+1.4,1.9],[oFence,Wd+1.2,Hd+.4,1.4],[oFence,Wd+1.2,Hd+1.6,1.4],[oTree,-2.2,Hd+1.5,2.4],[oBush,ENTRANCE.x-5.2,Hd+2.6,1.4]];front.sort((a,b)=>(a[1]+a[2])-(b[1]+b[2])).forEach(a=>prop(...a));
+  g.save();g.setTransform(HW,HH,-HW,HH,x0,y0);g.fillStyle='#fff3cf';g.fillRect(-.7,ENTRANCE.z-.9,1.7,1.8);g.fillStyle='#c35a3a';g.fillRect(-.6,ENTRANCE.z-.8,1.5,1.6);g.restore();
+  const front=[[oBush,-1.3,Hd-1.5,1.5],[oBush,Wd+.9,2,1.4],[oBush,Wd+.9,Hd-3,1.5],[oLamp,-1.5,ENTRANCE.z-1.7,.75],[oLamp,-1.5,ENTRANCE.z+1.7,.75],[oBed,-2.4,ENTRANCE.z-3.5,1.9],[oBed,-2.4,ENTRANCE.z+3.5,1.9],[oFence,Wd+1.2,Hd+.4,1.4],[oFence,Wd+1.2,Hd+1.6,1.4],[oTree,-2.2,Hd+1.5,2.4],[oBush,ENTRANCE.x-5.2,Hd+2.6,1.4]];front.sort((a,b)=>(a[1]+a[2])-(b[1]+b[2])).forEach(a=>prop(...a));
   layer.querySelector('.world2d-counter')?.remove();if(counter){const el=new Image();el.src=ISO+'counter.webp';el.alt='';el.className='world2d-item world2d-counter';layer.append(el);placeItem(el,{rotation:COUNTER_FLIP?180:0},10,2,COUNTER_WIDTH);metrics.counter=true;}
   metrics.projection='isometric';dirty=true;fit();
  }
@@ -106,7 +111,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  /* 主管依行走方向換圖；側面圖面向右，往左時由 flip 翻轉。GIF 還沒到位時用靜態圖 */
  function setManagerImage(a,walking){const face=a.facing||'front',name=walking?'manager-'+face:face==='front'?'manager-idle':'manager-'+face+'-still';if(a.imageName===name)return;a.imageName=name;const still=name.endsWith('-still');a.img.onerror=()=>{a.img.onerror=null;a.img.src=SPRITES+(walking?name:'manager-'+face)+'.webp';};a.img.src=SPRITES+(still?'manager-'+face+'.webp':name+'.gif');a.img.onerror=still?null:a.img.onerror;}
  function syncActors(dt){
-  const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager)all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:10,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,x:ENTRANCE.x+2.6,z:dim.height+.7},'promoter']);
+  const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager)all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:10,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,x:-2.6,z:ENTRANCE.z+2.6},'promoter']);
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));
   const moods=[],staffRows=[],active=new Set();
   for(const[key,d,type]of all){active.add(key);const a=ensureActor(key,d,type),trail=type==='manager'&&mode!=='follow'||type==='promoter'?null:game.motionFrame?.trails.get(key),p=trail?sampleTrail(trail,motionProgress):d,dx=p.x-a.pos.x,dz=p.z-a.pos.z,moved=dx*dx+dz*dz>.000001;a.pos={x:p.x,z:p.z};if(moved){a.moveUntil=time+.14;if(Math.abs(dx)>.002)a.flip=dx<0?-1:1;if(type==='manager')a.facing=Math.abs(dx)>Math.abs(dz)?'side':dz<0?'back':'front';}if(type==='manager')setManagerImage(a,time<a.moveUntil);

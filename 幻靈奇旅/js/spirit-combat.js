@@ -13,6 +13,7 @@
  function attackPlan(species,actor,skill={},configured={}){
   const strong=(skill.cost||0)>=3,path=actor.path||species.model||'',available=Object.keys(actor.actions||{});
   // 沒有專屬攻擊動作的家族：撞擊＋同色光球（普攻約 0.55 秒）／大光球（絕招約 1.15 秒），動作由 arena-fx.js 以程序方式演出
+  if(path.startsWith('zhaocai://')){const durations=actor.controller?.getState?.()?.durations||{},duration=Number(durations[strong?'Ultimate':'Attack'])||(strong?3.3:1.15);return{mode:strong?'Ultimate':'Attack',duration:duration+(strong?2.6:1.1),nativeDuration:duration,nativeFx:true,releaseFraction:(strong?.72:.36)/(duration+(strong?2.6:1.1))};}
   if(window.SpiritVfx?.keyOf?.(path)==='orb')return{mode:'Idle',duration:strong?1.15:.55,nativeFx:true,procedural:true,releaseFraction:2};
   let mode=configured.animation||configured.mode,duration=Number(configured.duration)||0,nativeFx=false;
   if(window.ReplacementSpirits?.has(path)){mode=ReplacementSpirits.attack(path,strong);duration=ReplacementSpirits.duration(path,strong);nativeFx=true;}else if(window.AvianSpirits?.has(path)){mode=AvianSpirits.attack(path,strong);duration=AvianSpirits.duration(path,strong);nativeFx=true;}else if(path.startsWith('leaf-frog://')){mode=window.FrogSpirits.attack(path,strong,skill);duration=window.FrogSpirits.duration(path,strong,skill);nativeFx=true;}

@@ -4,7 +4,7 @@
    phantom-defense-v1. */
 import {STAGES, SHAPES, eggTrio, configureTutorialStep, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-fixes-r1';
 import {createPkIsland} from './pk-island.js?v=20261107-fixes-r1';
-import {createPkLobby} from './pk-lobby.js?v=20261107-fixes-r1';
+import {createPkLobby} from './pk-lobby.js?v=20261110-pk-r1';
 import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-fixes-r1';
 import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-fixes-r1';
 import {createToonKit} from './style.js?v=20261107-fixes-r1';
@@ -295,7 +295,7 @@ const TEST_CODE = '741216', TEST_POINTS = 100000;
 function allCards() {
   const {all} = poolPreview(data.pool, journey(), new Set(data.spiritMap.keys())), excluded = data.pool.excludedIds || [];
   const deckCards = [...data.spiritMap.keys()].filter((id) => (isBaseCard(data.evolution, id) || isRedCard(id)) && !excluded.includes(id));
-  return [...new Set([...deckCards, ...all.yellow, ...all.purple, ...all.red, 'zhaocai'])];
+  return [...new Set([...deckCards, ...all.yellow, ...all.purple, ...all.red, 'zhaocai', 'jigglypuff'])];
 }
 function unlockZhaocaiForTest() {
   const unlocks = readJson('phantom_shared_unlocks', {}), already = !!unlocks.zhaocaiStage3Completed;
@@ -313,9 +313,9 @@ function openTestCode() {
     if (box.value !== TEST_CODE) { msg.className = 'test-msg'; msg.textContent = '密碼不正確，請再試一次。'; box.select(); return; }
     try { globalThis.PhantomCaveBridge.reward('test-points:' + Date.now(), TEST_POINTS); } catch (x) { msg.className = 'test-msg'; msg.textContent = '點數寫入失敗：' + x.message; return; }
     const cards = allCards(), reload = unlockZhaocaiForTest();
-    record.owned = [...new Set([...(record.owned || []), ...cards])]; saveRecord(); renderLobby();
+    record.owned = [...new Set([...(record.owned || []), ...cards])]; record.deckSlots=autoDeck(record.owned,data.evolution,spirit,id=>data.entries.get(id));record.deck=[...new Set(record.deckSlots.filter(Boolean))];saveRecord(); renderLobby();
     box.value = ''; $('pointsNow').textContent = points().toLocaleString();
-    msg.className = 'test-msg ok'; msg.textContent = '已獲得 ' + TEST_POINTS.toLocaleString() + ' 轉蛋點數與全部 ' + cards.length + ' 張卡片，目前共 ' + points().toLocaleString() + ' 點。' + (reload ? '招財已解鎖，正在重新載入。' : '');
+    msg.className = 'test-msg ok'; msg.textContent = '已獲得 ' + TEST_POINTS.toLocaleString() + ' 轉蛋點數與全部 ' + cards.length + ' 張卡片，測試編組已納入三色蛋。目前共 ' + points().toLocaleString() + ' 點。' + (reload ? '招財已解鎖，正在重新載入。' : '');
     if (reload) setTimeout(() => location.reload(), 1500);
   };
 }

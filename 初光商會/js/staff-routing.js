@@ -1,5 +1,5 @@
-import {obstacles} from './decorations.js?v=20261108-b1';
-import {findPath,walkable,dimensions} from './nav.js?v=20261108-b1';
+import {obstacles} from './decorations.js?v=20261110-commerce-r1';
+import {findPath,walkable,dimensions} from './nav.js?v=20261110-commerce-r1';
 function segmentDistance(p,a,b){const dx=b.x-a.x,dz=b.z-a.z,len=dx*dx+dz*dz,t=len?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/len)):0;return Math.hypot(p.x-a.x-t*dx,p.z-a.z-t*dz);}
 export const employeePath=(s,e,to)=>actorPath(s,e,to,true);
 export function actorPath(s,e,to,staff=false,actors=[...s.employees.filter(a=>a.role!=='standby'),...s.customers]){const others=actors.filter(a=>a!==e),staticItems=obstacles(s),busy=[],reserved=[];for(const a of others)for(let x=Math.floor(a.x);x<=Math.ceil(a.x);x++)for(let z=Math.floor(a.z);z<=Math.ceil(a.z);z++)if(Math.hypot(a.x-x,a.z-z)<.94)busy.push({x,z});if(staff&&e.role!=='stocker')reserved.push({x:2,z:3});if(staff&&e.role!=='cashier')reserved.push({x:10,z:1});

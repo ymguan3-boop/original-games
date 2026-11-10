@@ -26,7 +26,7 @@ export const MARKET_EVENTS=[
 ];
 export const marketEvent=id=>MARKET_EVENTS.find(e=>e.id===id)||null;
 export const DAILY_EVENT_CHANCE=.55,ANCHOR=2.4;
-export function ensureMarket(s){s.market||={event:null,lastId:null,history:[],reputation:50,loyalty:50,announced:null};s.market.reputation??=50;s.market.loyalty??=50;return s.market;}
+export function ensureMarket(s){s.market||={event:null,lastId:null,history:[],reputation:50,loyalty:50,announced:null};s.market.reputation??=50;s.market.loyalty??=50;s.market.competition??=100;return s.market;}
 export function activeEvent(s){const m=ensureMarket(s),e=m.event;return e&&s.day>=e.startDay&&s.day<=e.endDay?{...marketEvent(e.id),...e}:null;}
 /* 每天開店前抽一次；進行中的長期事件不重抽，也不連續出同一件 */
 export function rollMarket(g,s){
@@ -42,7 +42,8 @@ export const tagName=t=>TAG_NAMES[t]||t;
 export function eventEffects(ev){if(!ev)return [];const out=[];for(const[k,v]of Object.entries(ev.demand||{}))out.push(`${tagName(k)}需求 ${v>1?'+':''}${Math.round((v-1)*100)}%`);for(const[k,v]of Object.entries(ev.cost||{}))out.push(`${tagName(k)}進價 ${v>1?'+':''}${Math.round((v-1)*100)}%`);if(ev.costPick)out.push(`${tagName(ev.pickedTag)}進價 +${Math.round((ev.costPick-1)*100)}%`);if(ev.traffic)out.push(`人流 ${ev.traffic>1?'+':''}${Math.round((ev.traffic-1)*100)}%`);return out;}
 export function demandFactor(s,sku){const ev=activeEvent(s);if(!ev?.demand)return 1;return tagsOf(sku).reduce((f,t)=>f*(ev.demand[t]||1),1);}
 export function costFactor(s,sku){const ev=activeEvent(s);if(!ev)return 1;let f=ev.cost?.all||1;for(const t of tagsOf(sku))f*=ev.cost?.[t]||1;if(ev.costPick&&tagsOf(sku).includes(ev.pickedTag))f*=ev.costPick;return f;}
-export function trafficFactor(s){return activeEvent(s)?.traffic||1;}
+export function competitionIndex(s){const m=ensureMarket(s);if(m.competitionDay!==s.day){const ev=activeEvent(s);m.competition=Math.max(70,Math.min(140,Math.round(100+(50-m.reputation)*.2+(ev?.id==='rival'?25:0))));m.competitionDay=s.day;}return m.competition;}
+export function trafficFactor(s){return (activeEvent(s)?.traffic||1)*Math.max(.75,Math.min(1.15,1-(competitionIndex(s)-100)/200));}
 /* 依類型權重抽顧客；事件可以提高特定類型的比例 */
 export function pickCustomerType(g,s){const ev=activeEvent(s),entries=Object.entries(CUSTOMER_TYPES).map(([id,t])=>[id,t.weight*(ev?.types?.[id]||1)*(id==='rich'?1+Math.min(4,s.level-1)*.15:1)]),total=entries.reduce((n,e)=>n+e[1],0);let r=g.random(s)*total;for(const[id,w]of entries){r-=w;if(r<=0)return id;}return 'commoner';}
 export function customerBudget(g,type){const[a,b]=CUSTOMER_TYPES[type].budget;return {type,min:a,max:b};}

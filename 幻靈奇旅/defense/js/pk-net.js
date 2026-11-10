@@ -24,7 +24,7 @@ export function makeChannel(kind, sendRaw, close) {
     send(obj) { if (!ch.closed) try { sendRaw(obj); } catch (e) { console.warn(e); } },
     close() { if (ch.closed) return; ch.closed = true; try { close(); } catch {} },
     _recv(obj) { if(ch.closed)return;if(listener)listener(obj);else if(pending.length<32)pending.push(obj); },
-    _gone() { if (ch.closed) return; ch.closed = true; ch.onclose?.(); }};
+    _gone() { if (ch.closed) return; ch.closed = true;try{close();}catch{} ch.onclose?.(); }};
   return ch;
 }
 
@@ -33,44 +33,71 @@ export async function hostRoom({onStatus = () => {}} = {}) {
   const kind = transportKind();
   for (let tries = 0; tries < 5; tries++) {
     const code = makeCode();
-    try {
-      if (kind === 'local') return hostLocal(code);
-      if (kind === 'peerjs') return await hostPeer(code, onStatus);
-      return await hostFirebase(code, onStatus);
-    } catch (e) { if (e.code !== 'taken') throw e; }
+    if (kind === 'local') return hostLocal(code);
+    // Publish locally immediately: another tab must work even when the broker is offline.
+    const local = hostLocal(code); let remote = null, cancelled = false, chosen = false;
+    let resolve; const ready = new Promise(r => { resolve = r; });
+    const accept = (ch, winner) => {
+      if (cancelled || chosen) { ch.close(); return; }
+      chosen = true;
+      if (winner === 'local') remote?.cancel(); else local.cancel();
+      resolve(ch);
+    };
+    local.ready.then(ch => accept(ch, 'local'));
+    (kind === 'firebase' ? hostFirebase(code, onStatus) : hostPeer(code, onStatus)).then(h => {
+      remote = h;
+      if (cancelled || chosen) { h.cancel(); return; }
+      h.ready.then(ch => accept(ch, 'remote')).catch(() => onStatus('遠端連線失敗；同瀏覽器分頁仍可輸入房號加入'));
+    }).catch(() => { if (!cancelled && !chosen) onStatus('遠端服務暫時無法使用；同瀏覽器分頁仍可加入'); });
+    return {code, ready, cancel() { cancelled = true; local.cancel(); remote?.cancel(); }};
   }
-  throw Error('暫時無法建立房間，請稍後再試');
 }
-/* guest: join a room by its code. Returns a channel once connected; throws a friendly error otherwise */
 export async function joinRoom(code, {onStatus = () => {}} = {}) {
+  code = normalizeCode(code);
+  if (!validCode(code)) throw Error('房號是 4 碼英文字母或數字');
   const kind = transportKind();
   if (kind === 'local') return joinLocal(code);
-  if (kind === 'peerjs') return joinPeer(code, onStatus);
-  return joinFirebase(code, onStatus);
+  // Independent per-page tokens, never an account ID or IP address.
+  if (typeof BroadcastChannel === 'function') {
+    try { return await joinLocal(code, 650); }
+    catch (e) { if (e.code === 'full') throw e; }
+  }
+  return kind === 'firebase' ? joinFirebase(code, onStatus) : joinPeer(code, onStatus);
 }
 
-/* ---------- local: BroadcastChannel ---------- */
+/* ---------- same-origin tabs: private per-guest channel ---------- */
 function hostLocal(code) {
-  const bc = new BroadcastChannel('hlqj-pk-' + code); let ch = null, resolve;
-  const ready = new Promise((r) => (resolve = r));
-  bc.onmessage = (e) => {
+  if (typeof BroadcastChannel !== 'function') return {code, ready: new Promise(() => {}), cancel() {}};
+  const bc = new BroadcastChannel('hlqj-pk-' + code); let ch = null, resolve, timer;
+  const ready = new Promise(r => { resolve = r; });
+  bc.onmessage = e => {
     const m = e.data;
-    if (m.k === 'hello' && !ch) { ch = makeChannel('local', (o) => bc.postMessage({k: 'h2g', o}), () => { bc.postMessage({k: 'bye'}); bc.close(); }); bc.postMessage({k: 'welcome'}); resolve(ch); }
-    else if (m.k === 'g2h') ch?._recv(m.o); else if (m.k === 'bye') ch?._gone(); else if (m.k === 'hello' && ch) bc.postMessage({k: 'full'});
-  };
-  return {code, ready, cancel() { bc.close(); }};
-}
-function joinLocal(code) {
-  return new Promise((resolve, reject) => {
-    const bc = new BroadcastChannel('hlqj-pk-' + code); let ch = null;
-    const timer = setTimeout(() => { bc.close(); reject(Error('找不到房間 ' + code + '，請確認房號')); }, 2500);
-    bc.onmessage = (e) => {
-      const m = e.data;
-      if (m.k === 'welcome' && !ch) { clearTimeout(timer); ch = makeChannel('local', (o) => bc.postMessage({k: 'g2h', o}), () => { bc.postMessage({k: 'bye'}); bc.close(); }); resolve(ch); }
-      else if (m.k === 'full' && !ch) { clearTimeout(timer); bc.close(); reject(Error('這個房間已經有人了')); }
-      else if (m.k === 'h2g') ch?._recv(m.o); else if (m.k === 'bye') ch?._gone();
+    if (m?.k !== 'hello' || typeof m.token !== 'string') return;
+    if (ch) { bc.postMessage({k:'full', token:m.token}); return; }
+    const link = new BroadcastChannel('hlqj-pk-' + code + '-' + m.token);
+    ch = makeChannel('local', o => link.postMessage({k:'data',o}), () => {link.postMessage({k:'bye'});link.close();bc.close();clearTimeout(timer);});
+    link.onmessage = e => {
+      if(e.data?.k==='ack'){clearTimeout(timer);resolve(ch);}
+      else if(e.data?.k==='data')ch._recv(e.data.o);
+      else if(e.data?.k==='bye'){ch._gone();link.close();bc.close();}
     };
-    bc.postMessage({k: 'hello'});
+    timer=setTimeout(()=>{ch.close();},5000);
+    bc.postMessage({k:'welcome',token:m.token});
+  };
+  return {code, ready, cancel() {clearTimeout(timer);bc.close();ch?.close();}};
+}
+function joinLocal(code, timeout=2500) {
+  return new Promise((resolve,reject) => {
+    const bc=new BroadcastChannel('hlqj-pk-'+code),token=globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2);
+    const link=new BroadcastChannel('hlqj-pk-'+code+'-'+token);let ch=null;
+    const timer=setTimeout(()=>{bc.close();link.close();reject(Error('找不到房間 '+code+'，請確認房號'));},timeout);
+    link.onmessage=e=>{if(e.data?.k==='data')ch?._recv(e.data.o);else if(e.data?.k==='bye'){ch?._gone();link.close();}};
+    bc.onmessage=e=>{
+      const m=e.data;if(m?.token!==token)return;
+      if(m.k==='welcome'&&!ch){clearTimeout(timer);bc.close();ch=makeChannel('local',o=>link.postMessage({k:'data',o}),()=>{link.postMessage({k:'bye'});link.close();});link.postMessage({k:'ack'});resolve(ch);}
+      else if(m.k==='full'&&!ch){clearTimeout(timer);bc.close();link.close();const err=Error('這個房間已經有人了');err.code='full';reject(err);}
+    };
+    bc.postMessage({k:'hello',token});
   });
 }
 
@@ -80,7 +107,7 @@ function loadPeer() {
   if (globalThis.Peer) return Promise.resolve(globalThis.Peer);
   return peerLib ||= new Promise((resolve, reject) => {
     const s = document.createElement('script'); s.src = new URL('../vendor/peerjs.min.js', import.meta.url).href;
-    s.onload = () => resolve(globalThis.Peer); s.onerror = () => reject(Error('連線元件載入失敗')); document.head.append(s);
+    const timer=setTimeout(()=>{peerLib=null;s.remove();reject(Error('連線元件載入逾時'));},10000);s.onload=()=>{clearTimeout(timer);resolve(globalThis.Peer);};s.onerror=()=>{clearTimeout(timer);peerLib=null;s.remove();reject(Error('連線元件載入失敗'));};document.head.append(s);
   });
 }
 function wrapConn(conn, peer) {
@@ -99,8 +126,9 @@ async function hostPeer(code, onStatus) {
   const Peer = await loadPeer();
   const peer = new Peer(PEER_PREFIX + code, {debug: 0, config: {iceServers: ICE}});
   await new Promise((resolve, reject) => {
-    peer.on('open', resolve);
-    peer.on('error', (e) => { const err = Error(e.type === 'unavailable-id' ? 'taken' : '連線服務暫時無法使用（' + e.type + '）'); if (e.type === 'unavailable-id') err.code = 'taken'; peer.destroy(); reject(err); });
+    const timer=setTimeout(()=>{peer.destroy();reject(Error('連線服務回應逾時'));},10000);
+    peer.on('open',()=>{clearTimeout(timer);resolve();});
+    peer.on('error', (e) => { clearTimeout(timer);const err = Error(e.type === 'unavailable-id' ? 'taken' : '連線服務暫時無法使用（' + e.type + '）'); if (e.type === 'unavailable-id') err.code = 'taken'; peer.destroy(); reject(err); });
   });
   onStatus('等待對手輸入房號…');
   let resolve; const ready = new Promise((r) => (resolve = r)); let taken = false;
@@ -112,15 +140,14 @@ async function hostPeer(code, onStatus) {
 }
 async function joinPeer(code, onStatus) {
   const Peer = await loadPeer(), peer = new Peer({debug: 0, config: {iceServers: ICE}});
-  await new Promise((resolve, reject) => { peer.on('open', resolve); peer.on('error', (e) => { peer.destroy(); reject(Error('連線服務暫時無法使用（' + e.type + '）')); }); });
+  await new Promise((resolve, reject) => { const timer=setTimeout(()=>{peer.destroy();reject(Error('連線服務回應逾時'));},10000);peer.on('open',()=>{clearTimeout(timer);resolve();}); peer.on('error', (e) => {clearTimeout(timer); peer.destroy(); reject(Error('連線服務暫時無法使用（' + e.type + '）')); }); });
   onStatus('正在連線到房間 ' + code + '…');
   return new Promise((resolve, reject) => {
     const conn = peer.connect(PEER_PREFIX + code, {reliable: true, serialization: 'json'});
     const timer = setTimeout(() => { peer.destroy(); reject(Error('連不上房間 ' + code + '（房號錯誤，或網路不允許直接連線）')); }, 15000);
     peer.on('error', (e) => { clearTimeout(timer); peer.destroy(); reject(Error(e.type === 'peer-unavailable' ? '找不到房間 ' + code + '，請確認房號' : '連線失敗（' + e.type + '）')); });
     conn.on('open', () => {
-      const ch = wrapConn(conn, peer), first = (o) => { if (o?.t === 'full') { ch.close(); clearTimeout(timer); reject(Error('這個房間已經有人了')); } };
-      const prev = ch._recv; ch._recv = (o) => { first(o); prev(o); };
+      const ch = wrapConn(conn, peer);
       clearTimeout(timer); resolve(ch);
     });
   });

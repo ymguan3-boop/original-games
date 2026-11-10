@@ -1,7 +1,7 @@
 /* PK 競技場 lobby: pick a name, create a room (shows a 4-character code) or join one by typing the code, see both
    decks, and press 確認出戰 on both sides to start. Each player fights with their own current 出擊卡組. The lobby owns the
    room channel and hands it to the battle as a session: {role, ch, me, foe, seed, on(type, fn)}. */
-import {hostRoom, joinRoom, normalizeCode, validCode, transportKind} from './pk-net.js?v=20261107-fixes-r1';
+import {hostRoom, joinRoom, normalizeCode, validCode, transportKind} from './pk-net.js?v=20261110-pk-r1';
 import {PK_ITEMS} from './rules.js?v=20261107-fixes-r1';
 
 export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spirit, deck, validateDeck, inventory = () => ({}), costume = () => 'trainer', name, setName, toast, onStart, network = {hostRoom, joinRoom}}) {
@@ -16,7 +16,7 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
   function home(msg = '') {
     leave();
     openModal(`${ribbon('PK 競技場', '⚔️')}
-      <p class="result-sub">兩位玩家用自己的出擊卡組對戰：各自發牌、派出幻靈往對方基地推進，先打倒對方基地的人獲勝。</p>
+      <p class="result-sub">支援同一 IP；同一帳號也可開兩個網頁，用房號互相對戰。兩位玩家用自己的出擊卡組對戰：各自發牌、派出幻靈往對方基地推進，先打倒對方基地的人獲勝。</p>
       <label class="pk-name">我的名字<input id="pkName" maxlength="8" value="${esc(name())}" autocomplete="off"></label>
       <h3 class="roster-group">我的出擊卡組</h3>${strip(deck())}${valid(deck())?'':'<p class="pk-error">開始對戰前請先編滿四個基礎格；三色蛋佔三格。</p>'}
       ${msg ? `<p class="pk-error">${esc(msg)}</p>` : ''}
@@ -75,10 +75,10 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
   /* connected: swap names and decks, then both confirm */
   function begin(role, ch, code) {
     if (!requireDeck()) { ch.close(); return; }
-    const handlers = {};
+    const handlers = {}, pending = {};
     session = {role, ch, code, me: {name: name(), deck: deck(), stock: inventory(), costume: costume()}, foe: null, ready: {me: false, foe: false}, handlers,
-      on(type, fn) { handlers[type] = fn; }, send(o) { ch.send(o); }};
-    ch.onmessage = (m) => handlers[m?.t]?.(m);
+      on(type, fn) { handlers[type] = fn;const messages=pending[type];delete pending[type];if(messages)queueMicrotask(()=>messages.forEach(m=>{if(session?.handlers===handlers)fn(m);})); }, send(o) { ch.send(o); }};
+    ch.onmessage = (m) => {if(handlers[m?.t])handlers[m.t](m);else if(['loaded','snap','act','quit'].includes(m?.t)){const list=pending[m.t]||=[];if(m.t==='snap')list.length=0;if(list.length<32)list.push(m);}};
     ch.onclose = () => { const s = session; session = null; if (s?.inBattle) s.onGone?.(); else home('對手已離開房間'); };
     session.on('hello', (m) => {
       if (!valid(m.deck)) { session.foe = null; session.ready = {me:false, foe:false}; toast('對手尚未編滿四位基礎幻靈，無法開始 PK'); room(); return; }
@@ -99,7 +99,7 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
     });
     session.on('ready', (m) => { session.ready.foe = !!m.on && readyDecks(session); room(); maybeStart(); });
     session.on('start', (m) => { if (role === 'guest') launch(m.seed); });
-    session.on('bye', () => ch._gone?.());
+    session.on('bye', () => {ch._gone?.();ch.close();});session.on('full',()=>home('這個房間已經有人了'));
     ch.send({t: 'hello', name: session.me.name, deck: session.me.deck, stock: session.me.stock, costume: session.me.costume});
     room();
   }

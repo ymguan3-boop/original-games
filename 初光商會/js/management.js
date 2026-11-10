@@ -1,6 +1,6 @@
 /* 簡化經營規則：四職務、在班名額、專屬被動、自動工作、每日任務與舊存檔遷移。
  * 所有數值都放在 data/management.json，這裡只有規則。 */
-import {shelfCapacity,accepts} from './furniture.js?v=20261108-b1';
+import {shelfCapacity,accepts} from './furniture.js?v=20261110-commerce-r1';
 export const WORK_JOBS=['stocker','host','cleaner'];
 const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner',cashier:'host'};
 export const legacyRole=r=>LEGACY_ROLES[r]||r;
@@ -39,7 +39,10 @@ export function eventGap(g,s){const m=g.data.management.events,calm=dragonTask(g
 export function eventAllowed(g,s){return !s.event&&!s.layoutPause&&!s.patrolFocus&&!g.uiBusy&&!!s.tutorialState?.done&&(s.cooldowns.autoEvent??0)<=s.totalTime;}
 /* 舊存檔只補欄位，不刪任何貨架、家具、員工或金幣 */
 export function migrateState(g,s){
- const m=g.data.management;if((s.schemaVersion||1)>=m.schemaVersion&&s.tutorialState)return false;
+ const m=g.data.management;if((s.schemaVersion||1)>m.schemaVersion)throw Error('存檔來自較新版本，請更新遊戲');
+ s.txIds??=[];s.ledger??=[];s.history??=[];if(s.promoter&&s.employees.some(e=>e.spiritId===s.promoter.id||e.baseId===s.promoter.id)){s.promoter=null;g.log(s,'原宣傳員已是店內員工，保留員工並解除重複宣傳職務。');}
+ if((s.schemaVersion||1)>=m.schemaVersion&&s.tutorialState)return false;
+ if((s.schemaVersion||1)>=2&&s.tutorialState){s.schemaVersion=m.schemaVersion;return true;}
  if(g.storage&&!g.storage.getItem(g.key+'.pre-v2'))g.storage.setItem(g.key+'.pre-v2',JSON.stringify(s));
  for(const e of s.employees){e.role=legacyRole(e.role);e.wage=0;e.fatigue=Math.max(0,Math.min(100,Number(e.fatigue)||0));e.lockedAssignment=!!e.lockedAssignment;if(e.role==='standby'||!WORK_JOBS.includes(e.role))e.role='standby';if(e.workTask&&e.role!=='stocker'){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}}
  const cap=capacityOf(g,s),order=['cashier','stocker','host','cleaner'],duty=onDuty(s).sort((a,b)=>order.indexOf(a.role)-order.indexOf(b.role)||b.workLevel-a.workLevel);for(const e of duty.slice(cap)){if(e.workTask?.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;e.role='standby';e.path=[];}

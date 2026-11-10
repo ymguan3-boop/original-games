@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "jobs": {
     "cashier": {
       "name": "收銀員",

@@ -97,9 +97,20 @@ function pose(h,t,w,mood){
 }
 /* 控制器：介面與其他原生角色相同（root、setMode、update、dispose），另可 setMood 換表情 */
 export function createHuman(T,type,variant){
- const h=buildHuman(T,type,variant);let mode='Idle',time=Math.random()*10,stride=0,mood='',blinkAt=2;
- return {root:h.root,human:h,setMode(m){mode=m;},setMood(m){mood=m||'';},
-  update(dt){time+=dt;stride+=((mode==='Walk'||mode==='Run'?1:0)-stride)*Math.min(1,dt*9);pose(h,time,stride,mood);blinkAt-=dt;if(blinkAt<-.12)blinkAt=2+Math.random()*3;
+ const h=buildHuman(T,type,variant);let mode='Idle',time=Math.random()*10,stride=0,mood='',action='idle',actionTime=0,blinkAt=2;
+ return {root:h.root,human:h,setAction(a){if(a!==action){action=a;actionTime=0;}},setMode(m){mode=m;},setMood(m){mood=m||'';},
+  update(dt){time+=dt;stride+=((mode==='Walk'||mode==='Run'?1:0)-stride)*Math.min(1,dt*9);pose(h,time,stride,mood);actionTime+=dt;
+   const a=h.arms[1],b=h.arms[0],u=Math.sin(Math.min(1,actionTime/.8)*Math.PI),pulse=Math.sin(actionTime*7);
+   if(action==='browse'){h.head.rotation.y+=Math.sin(actionTime*1.5)*.3;}
+   if(action==='pick'){a.upper.rotation.x=-1.2*u;a.fore.rotation.x=-.4;h.chest.rotation.x=.12*u;}
+   if(action==='carry'){for(const arm of h.arms){arm.upper.rotation.x=-.5;arm.fore.rotation.x=-1.1;}}
+   if(action==='queue'){a.fore.rotation.x=-1.1;h.head.rotation.y+=Math.sin(actionTime*2)*.2;}
+   if(action==='pay'){a.upper.rotation.x=-.8-.18*pulse;a.fore.rotation.x=-.5;b.fore.rotation.x=-1.2;}
+   if(action==='celebrate'){for(const arm of h.arms)arm.upper.rotation.x=-2.3;h.hips.position.y+=Math.abs(pulse)*.035;}
+   if(action==='reject'){h.head.rotation.y+=pulse*.35;a.upper.rotation.z=.6;a.fore.rotation.x=-1.5;}
+   if(action==='question'){a.upper.rotation.x=-1.1;a.fore.rotation.x=-1.8;h.head.rotation.z=.2;}
+   if(action==='angry'){for(const arm of h.arms){arm.upper.rotation.z=arm.s*.6;arm.fore.rotation.x=-1.7;}}
+   blinkAt-=dt;if(blinkAt<-.12)blinkAt=2+Math.random()*3;
    h.setFace(mood==='happy'?'happy':mood==='angry'?'angry':mood==='sad'||mood==='confused'?'sad':mood==='question'?'think':mood==='impatient'?'think':stride>.3?(Math.sin(time*6)>0?'happy':'talk'):blinkAt<0?'blink':'idle');},
-  getState:()=>({modes:['Idle','Walk']}),setMotionSpeed(){},seek(){},getMotionState:()=>({}),dispose(){}};
+  getState:()=>({modes:['Idle','Walk'],action}),setMotionSpeed(){},seek(){},getMotionState:()=>({}),dispose(){}};
 }

@@ -54,6 +54,15 @@ test('PK host and join entry, invalid peer hello, ready, start and rematch enfor
     channel.onmessage({t:'ready',on:true});assert.equal(starts,0);
     channel.onmessage({t:'hello',deck:base.slice(0,4),name:'valid'});
     nodes.get('pkReady').onclick();channel.onmessage({t:'ready',on:true});assert.equal(starts,1);
+    channel.onmessage({t:'loaded'});
+    channel.onmessage({t:'snap',d:{frame:1}});
+    channel.onmessage({t:'snap',d:{frame:2}});
+    let loaded=0,frame=0;
+    lobby.session.on('loaded',()=>loaded++);
+    lobby.session.on('snap',m=>{frame=m.d.frame;});
+    await new Promise(resolve=>setImmediate(resolve));
+    assert.equal(loaded,1,'a faster peer must not lose its loaded message while the engine imports');
+    assert.equal(frame,2,'only the latest early snapshot is needed');
     selected=base.slice(0,3);lobby.rematch();assert.equal(lobby.session,null);
   } finally {lobby.leave();globalThis.document=previous;globalThis.location=previousLocation;}
 });

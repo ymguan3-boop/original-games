@@ -19,7 +19,7 @@ export function evolveStaffOnce(game,s,employee){
  if(!info.eligible)throw Error(info.next.length?'熟練度尚未達到進化門檻':'此幻靈已是最終形態或沒有可用的進化路線');
  const selected=info.next[Math.floor(game.random(s)*info.next.length)];
  const sp=game.data.spirits.find(item=>item.id===selected);
- if(!sp)throw Error('進化後模型資料不存在，未更動員工');
+ if(!sp)throw Error('進化後模型資料不存在，未更動員工');if(s.promoter?.id===selected)throw Error('進化後的幻靈正在擔任宣傳員，請先更換宣傳員');
  const before=employee.name,oldId=employee.spiritId;
  employee.evolutionHistory??=[];
  employee.evolutionHistory.push({from:oldId,to:selected,day:s.day,seed:s.seed});

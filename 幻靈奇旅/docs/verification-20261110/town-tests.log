@@ -1,0 +1,46 @@
+✔ a fishing streak grants four fish per win and none for zero or invalid wins (1.638ms)
+✔ all three zhaocai stages use their native controller modes and retain full release time (2.214ms)
+✔ zhaocai arena adapter routes each stage to its authored effects and restores the shield (0.83ms)
+✔ release to catch is under 1000 ms for 1, 2 and 3 targets, at 60 fps and on a 6 fps phone (1.1208ms)
+✔ hits follow the schedule in order, one per target, and damage multipliers are 100/70/50 (0.5331ms)
+✔ selection: primary first, nearest next, no duplicates, no fallen, no more than three (0.1793ms)
+✔ a duplicate target cannot be hit twice in one throw (0.1049ms)
+✔ a target that dies mid-flight is skipped and the boomerang still comes home (0.5602ms)
+✔ cancel stops the flight once and leaves no further hits (0.1387ms)
+✔ the native pose is remapped so the 2.38 release and 5.55 catch keyframes meet the real flight (0.1038ms)
+✔ the model keeps one boomerang; the arena uses real roster entries and the shared formula (2.8145ms)
+✔ left door remains reachable at every tier and reserves the actual door cell (8.7457ms)
+✔ reloading a previous schema preserves gold and inventory; stale tab cannot charge again (9.162ms)
+✔ checkout settles a customer once even if its old Checkout state is replayed after reload (19.4439ms)
+✔ weekly report weights average price and stockouts across days without counting report twice (0.2353ms)
+✔ competition is stable within a day and a rival promotion diverts traffic (0.1711ms)
+✔ employee and promoter recruitment reject occupying the same spirit (10.6973ms)
+✔ every answer to 招財 ends in the takeover, and he only leaves once the shop is really entered (0.9193ms)
+✔ after the talk 招財 walks the player to the door and straight into the shop (0.2235ms)
+✔ a spirit auto-joined on capture still reads as joined (0.177ms)
+✔ toasts over a modal live on body, so the card cannot cover 隊伍已滿 (0.1442ms)
+✔ arena and fishing outlines stay on the outer silhouette only (3.7473ms)
+✔ arena spirits stand on the discs, with half-width lines (1.4271ms)
+✔ the gate opens only on approach, and the fence and gate block the way until then (0.1288ms)
+✔ 招財 uses the hero joint set and smooth surfaces (0.2074ms)
+✔ fence and gate are outlined, 招財 has none, and all stay cheap (0.104ms)
+✔ radar marks the cave, pier and commerce, and 回復藥 cleanses the whole party (0.5068ms)
+✔ special-spirit broadcasts outrank traveller tips and never show together (0.0901ms)
+✔ 招財 stays out of base dex data until unlocked through the addon (3.7726ms)
+✔ 未締約的圖鑑卡片直接寫出取得方式，不再彈出視窗 (1.691ms)
+(node:31692) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ turned off, every call reports false so the caller plays the original effect (0.7249ms)
+✔ all six elements have 3D particle colours (0.0872ms)
+✔ the phone tier uses fewer particles than desktop (0.0908ms)
+✔ it is real 3D geometry with no sprites, images or per-particle objects (0.1416ms)
+✔ it touches no sky, fog, exposure, HP or save data (0.08ms)
+✔ the file stays light enough for the first screen (1.4334ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 866.8382
