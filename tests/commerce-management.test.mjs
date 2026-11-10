@@ -8,7 +8,7 @@ const ROOT=path.join(path.dirname(fileURLToPath(import.meta.url)),'../初光商�
 const J=f=>JSON.parse(fs.readFileSync(path.join(ROOT,'data',f+'.json'),'utf8'));
 const load=p=>import(pathToFileURL(path.join(ROOT,'js',p)).href);
 const {Game,events}=await load('core.js');
-const {CHECKOUT}=await import(pathToFileURL(path.join(ROOT,'js','nav.js')).href+'?v=20261110-shop-r2');
+const {CHECKOUT}=await import(pathToFileURL(path.join(ROOT,'js','nav.js')).href+'?v=20261110-chibi2');
 const {capacityOf,onDuty,jobPower,passive,dailyTasks,migrateState}=await load('management.js');
 const {staffEvolutionInfo}=await load('staff-evolution.js');
 const data=()=>({catalog:J('shop-catalog'),hirePool:J('hire-pool'),spirits:J('spirits'),evolution:J('evolution'),levels:J('store-levels'),config:J('economy'),management:J('management')});

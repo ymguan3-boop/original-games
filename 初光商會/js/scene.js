@@ -1,27 +1,29 @@
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261110-shop-r2';
-import {createChaseCelebration} from './chase-celebration.js?v=20261110-shop-r2';
-import {buildOutdoor} from './outdoor-3d.js?v=20261110-shop-r2';
-import {environment} from './environment.js?v=20261110-shop-r2';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261110-shop-r2';
-import {addProductEdges} from './product-outlines.js?v=20261110-shop-r2';
-import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261110-shop-r2';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261110-shop-r2';
-import {decorateInterior} from './interior-v5.js?v=20261110-shop-r2';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261110-shop-r2';
-import {buildShell,buildGround,tune} from './chibi/shell.js?v=20261110-chibi1';
-import {buildYard} from './chibi/yard.js?v=20261110-chibi1';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261110-chibi2';
+import {createChaseCelebration} from './chase-celebration.js?v=20261110-chibi2';
+import {buildOutdoor} from './outdoor-3d.js?v=20261110-chibi2';
+import {environment} from './environment.js?v=20261110-chibi2';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261110-chibi2';
+import {addProductEdges} from './product-outlines.js?v=20261110-chibi2';
+import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261110-chibi2';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261110-chibi2';
+import {decorateInterior} from './interior-v5.js?v=20261110-chibi2';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261110-chibi2';
+import {buildShell,buildGround,tune} from './chibi/shell.js?v=20261110-chibi2';
+import {buildYard} from './chibi/yard.js?v=20261110-chibi2';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261110-shop-r2';
-import {createAssets} from './asset-resolver.js?v=20261110-shop-r2';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261110-shop-r2';
-import {sampleTrail,turnToward} from './motion.js?v=20261110-shop-r2';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261110-shop-r2';
-import {eventEmployee} from './patrol-events.js?v=20261110-shop-r2';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261110-shop-r2';
-import {createPlacementCells} from './placement-cells.js?v=20261110-shop-r2';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261110-shop-r2';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261110-shop-r2';
+/* 店內幻靈員工：比原本大 1.3 倍；外框跟 Q 版店面一樣是深咖啡色、只描外輪廓 */
+const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3,outlineColor:0x4a2e1c,outlineThickness:.009,paleLines:false};
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261110-chibi2';
+import {createAssets} from './asset-resolver.js?v=20261110-chibi2';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261110-chibi2';
+import {sampleTrail,turnToward} from './motion.js?v=20261110-chibi2';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261110-chibi2';
+import {eventEmployee} from './patrol-events.js?v=20261110-chibi2';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261110-chibi2';
+import {createPlacementCells} from './placement-cells.js?v=20261110-chibi2';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261110-chibi2';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261110-chibi2';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
@@ -101,8 +103,8 @@ const tall=innerHeight>innerWidth;/* Q 版店面：鏡頭從門面那側俯看�
  let canvasRect=null,overlayFrame=0;const LOW_POWER=matchMedia('(max-width:900px)').matches;
  /* 顧客與一般場景同比例：世界裡主角 2.55、店裡 1.65。太高的再壓到店裡放得下 */
  const CUSTOMER_ROOM={footprint:2.2,diameter:2.5,walkingBird:true},customerHeight=def=>Math.min(2.05,(Number(def?.height)||1.275)*1.65/2.55);
- function ensureActor(key,data,type){const id=type==='manager'?'hero':type==='customer'&&data.customerType?`human-${data.customerType}-${data.variant||'m'}`:data.spiritId;if(!id)return;let v=actorViews.get(key);if(v&&v.id!==id){v.feedback?.dispose();scene.remove(v.root);if(v.contactShadow)scene.remove(v.contactShadow);v.dispose();releaseTree(v.root);actorViews.delete(key);v=null;}const failure=failed.get(key+id);if(v||pending.has(key)||(failure&&(failure.attempts>=3||time<failure.retryAt)))return;const def=species.get(id),path=id==='hero'?(CHIBI?'chibi://hero':'models/hero.glb'):id.startsWith('human-')?'human://'+id.slice(6):def?.model;if(!path)return;pending.add(key);assets.actor(path,id==='hero'?1.6:id.startsWith('human-')?1.5:type==='promoter'?2.4:type==='customer'?customerHeight(def):1.12,type==='manager'?{footprint:2.2,diameter:2.5}:type==='customer'||type==='promoter'?CUSTOMER_ROOM:undefined).then(a=>{pending.delete(key);/* 商會的三色蛋用顏色區分進化鏈 */const eggTint={'egg-gu':0xe0402e,'egg-ma':0x4fae4a,'egg-ying':0x3f78e0}[data.baseId];if(eggTint&&id==='jigglypuff')a.root.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material)){o.material=o.material.clone();o.material.color.lerp(new T.Color(eggTint),.92);}});const latest=state();const stillPresent=type==='manager'?latest.manager:type==='promoter'?(latest.promoter?.id===id&&latest.promoter):(type==='staff'?(latest.employees||latest.staff||[]):latest.customers||[]).find(d=>d.id===key&&(d.spiritId===id||id.startsWith('human-')));if(!alive||!stillPresent||(type==='staff'&&stillPresent.role==='standby')){a.dispose();return;}failed.delete(key+id);a.id=id;a.contactShadow=contactShadow();a.root.position.set(data.x||0,0,data.z||0);a.root.userData.pick={type,id:key};a.lastX=data.x;a.lastZ=data.z;if(type==='staff'){a.coin=cylinder(.026,.009,gold,0,0,0,a.root);a.coin.visible=false;a.crate=box(.20,.16,.15,lightWood,0,.32,.20,a.root);box(.21,.025,.16,dark,0,.08,0,a.crate);a.crate.visible=false;}if(type==='promoter'){const paper=new T.Mesh(new T.PlaneGeometry(.30,.42),new T.MeshBasicMaterial({color:0xfff4cc,side:T.DoubleSide}));paper.name='宣傳單';paper.userData.ownedGeometry=true;paper.userData.ownedMaterial=true;a.flyer=paper;scene.add(paper);}
- a.baseScale=a.root.scale.clone();a.feedback=null;if(type==='customer'){a.carry=new T.Group();a.carrySku=null;a.root.add(a.carry);}actorViews.set(key,a);scene.add(a.root);metrics.actors=actorViews.size;}).catch(e=>{pending.delete(key);if(!alive)return;const attempts=(failed.get(key+id)?.attempts||0)+1;failed.set(key+id,{attempts,retryAt:time+2});if(attempts>=3){const error=new Error(`${def?.name||'主管'}：${e.message||e}`);metrics.assetFailures||=[];metrics.assetFailures.push({id,path,attempts,message:error.message});report(error);}});}
+ function ensureActor(key,data,type){const id=type==='manager'?'hero':type==='customer'&&data.customerType?`human-${data.customerType}-${data.variant||'m'}`:data.spiritId;if(!id)return;let v=actorViews.get(key);if(v&&v.id!==id){v.feedback?.dispose();scene.remove(v.root);if(v.contactShadow)scene.remove(v.contactShadow);v.dispose();releaseTree(v.root);actorViews.delete(key);v=null;}const failure=failed.get(key+id);if(v||pending.has(key)||(failure&&(failure.attempts>=3||time<failure.retryAt)))return;const def=species.get(id),path=id==='hero'?(CHIBI?'chibi://hero':'models/hero.glb'):id.startsWith('human-')?'human://'+id.slice(6):def?.model;if(!path)return;pending.add(key);assets.actor(path,id==='hero'?1.6:id.startsWith('human-')?1.5:type==='promoter'?2.4:type==='customer'?customerHeight(def):1.12,type==='manager'?{footprint:2.2,diameter:2.5}:type==='customer'||type==='promoter'?CUSTOMER_ROOM:type==='staff'?STAFF_STYLE:undefined).then(a=>{pending.delete(key);/* 商會的三色蛋用顏色區分進化鏈 */const eggTint={'egg-gu':0xe0402e,'egg-ma':0x4fae4a,'egg-ying':0x3f78e0}[data.baseId];if(eggTint&&id==='jigglypuff')a.root.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material)){o.material=o.material.clone();o.material.color.lerp(new T.Color(eggTint),.92);}});const latest=state();const stillPresent=type==='manager'?latest.manager:type==='promoter'?(latest.promoter?.id===id&&latest.promoter):(type==='staff'?(latest.employees||latest.staff||[]):latest.customers||[]).find(d=>d.id===key&&(d.spiritId===id||id.startsWith('human-')));if(!alive||!stillPresent||(type==='staff'&&stillPresent.role==='standby')){a.dispose();return;}failed.delete(key+id);a.id=id;a.contactShadow=contactShadow();a.root.position.set(data.x||0,0,data.z||0);a.root.userData.pick={type,id:key};a.lastX=data.x;a.lastZ=data.z;if(type==='staff'){a.coin=cylinder(.026,.009,gold,0,0,0,a.root);a.coin.visible=false;a.crate=box(.20,.16,.15,lightWood,0,.32,.20,a.root);box(.21,.025,.16,dark,0,.08,0,a.crate);a.crate.visible=false;}if(type==='promoter'){const paper=new T.Mesh(new T.PlaneGeometry(.30,.42),new T.MeshBasicMaterial({color:0xfff4cc,side:T.DoubleSide}));paper.name='宣傳單';paper.userData.ownedGeometry=true;paper.userData.ownedMaterial=true;a.flyer=paper;scene.add(paper);}
+ if(type==='staff')a.root.scale.multiplyScalar(STAFF_SCALE);a.baseScale=a.root.scale.clone();a.feedback=null;if(type==='customer'){a.carry=new T.Group();a.carrySku=null;a.root.add(a.carry);}actorViews.set(key,a);scene.add(a.root);metrics.actors=actorViews.size;}).catch(e=>{pending.delete(key);if(!alive)return;const attempts=(failed.get(key+id)?.attempts||0)+1;failed.set(key+id,{attempts,retryAt:time+2});if(attempts>=3){const error=new Error(`${def?.name||'主管'}：${e.message||e}`);metrics.assetFailures||=[];metrics.assetFailures.push({id,path,attempts,message:error.message});report(error);}});}
  function state(){return game.state;}
  function furniture(s=state()){return [...s.shelves,...(s.decorations||[])];}
  function itemDefinition(item){return item.decoration?decorDefinition(item):shelfDefinition(item);}

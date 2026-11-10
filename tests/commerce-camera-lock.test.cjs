@@ -17,7 +17,7 @@ test('camera pose is preserved when entering and exiting shelf editing',()=>{
 test('mobile cache includes new scene version so browsers receive the change',()=>{
  assert.match(read('index.html'),/app\.js\?v=\d{8}-/);
  assert.match(read('js/app.js'),/scene\.js\?v=\d{8}-/);
- assert.match(read('index.html'),/shop-interactions-v9\.css\?v=20261110-shop-r2/);
+ assert.match(read('index.html'),/shop-interactions-v9\.css\?v=20261110-chibi2/);
 });
 test('focused patrol keeps the {actors,notices} shape for the overlay',()=>{
  const app=read('js/app.js');

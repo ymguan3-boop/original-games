@@ -1,5 +1,5 @@
-import {decorTypes,decorDefinition,decorLimit,obstacles} from './decorations.js?v=20261110-shop-r2';
-import {isLayoutValid,walkable,findPath,ENTRANCE,dimensions} from './nav.js?v=20261110-shop-r2';
+import {decorTypes,decorDefinition,decorLimit,obstacles} from './decorations.js?v=20261110-chibi2';
+import {isLayoutValid,walkable,findPath,ENTRANCE,dimensions} from './nav.js?v=20261110-chibi2';
 const check=(v,m)=>{if(!v)throw Error(m)};
 export function validateDecorLayout(g,s){const all=obstacles(s),floor=(s.decorations||[]).filter(d=>decorDefinition(d)?.ground);for(let i=0;i<floor.length;i++){const d=floor[i];check(Number.isInteger(d.x)&&Number.isInteger(d.z)&&d.x>=1&&d.z>=1&&d.x<=dimensions(s.level).width-2&&d.z<=dimensions(s.level).height-2,'地毯超出店內範圍');for(let j=i+1;j<floor.length;j++)check(Math.abs(d.x-floor[j].x)>=1.8||Math.abs(d.z-floor[j].z)>=1.8,'地毯不能互相重疊');}check(isLayoutValid(all,s.level),'裝潢重疊或阻擋通路');check(g.actors(s).every(a=>walkable(a,all,s.level)),'裝潢與角色重疊');if(s.forge)check(findPath(ENTRANCE,s.forge.station,all,s.level)!==null,'裝潢阻擋鍛造通路');}
 export function decorAction(g,s,type,p){if(!['purchaseDecor','placeDecor','moveDecor','storeDecor','sellDecor'].includes(type))return null;

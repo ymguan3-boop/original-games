@@ -1,7 +1,7 @@
-import {employeeSpot,employeePath} from './staff-routing.js?v=20261110-shop-r2';
-import {obstacles,decorEffects} from './decorations.js?v=20261110-shop-r2';
-import {findPath,walkable,dimensions} from './nav.js?v=20261110-shop-r2';
-import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261110-shop-r2';
+import {employeeSpot,employeePath} from './staff-routing.js?v=20261110-chibi2';
+import {obstacles,decorEffects} from './decorations.js?v=20261110-chibi2';
+import {findPath,walkable,dimensions} from './nav.js?v=20261110-chibi2';
+import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261110-chibi2';
 const stations={stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
 /* The rear wall is z=1. Each resting worker gets their own place and is never
  * mistaken for an idling / slacking employee at an active work station. */

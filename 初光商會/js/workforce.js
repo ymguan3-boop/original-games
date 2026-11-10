@@ -1,4 +1,4 @@
-import {preferredJob} from './management.js?v=20261110-shop-r2';
+import {preferredJob} from './management.js?v=20261110-chibi2';
 export const RELIEF_RULES={threshold:85,ready:30,interval:30,restCooldown:60,busyFatigue:.12,restRecovery:.4};
 export function releaseWork(s,e){if(e.workTask?.phase==='carry')s.inventory[e.workTask.sku]=(s.inventory[e.workTask.sku]||0)+e.workTask.qty;e.workTask=null;e.path=[];e.blocked=0;if(s.forge?.employeeId===e.id)s.forge.employeeId=null;}
 export function syncWorkforce(g,s){
