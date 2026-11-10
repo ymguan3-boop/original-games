@@ -1,22 +1,23 @@
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261110-chibi4';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261110-chibi4';
-import {clockText} from './shop-clock.js?v=20261110-chibi4';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261110-chibi4';
-import {pendingRewards} from './reward-collection.js?v=20261110-chibi4';
+import {canStartTutorial,promoterHireCost} from './shop-entry-rules.js?v=20261110-shop-pk-r1';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261110-shop-pk-r1';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261110-shop-pk-r1';
+import {clockText} from './shop-clock.js?v=20261110-shop-pk-r1';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261110-shop-pk-r1';
+import {pendingRewards} from './reward-collection.js?v=20261110-shop-pk-r1';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
-import {spiritPortrait} from './spirit-cards.js?v=20261110-chibi4';
-import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261110-chibi4';
-import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity} from './furniture.js?v=20261110-chibi4';
-import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261110-chibi4';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261110-chibi4';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261110-chibi4';
-import {chapterObjectives} from './shop-chapters.js?v=20261110-chibi4';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261110-chibi4';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261110-chibi4';
-import {requiresManagerPatrol} from './event-routing.js?v=20261110-chibi4';
-import {eventEmployee} from './patrol-events.js?v=20261110-chibi4';
-import {ledgerPanel} from './ledger-panel.js?v=20261110-chibi4';
+import {spiritPortrait} from './spirit-cards.js?v=20261110-shop-pk-r1';
+import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261110-shop-pk-r1';
+import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity} from './furniture.js?v=20261110-shop-pk-r1';
+import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261110-shop-pk-r1';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261110-shop-pk-r1';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261110-shop-pk-r1';
+import {chapterObjectives} from './shop-chapters.js?v=20261110-shop-pk-r1';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261110-shop-pk-r1';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261110-shop-pk-r1';
+import {requiresManagerPatrol} from './event-routing.js?v=20261110-shop-pk-r1';
+import {eventEmployee} from './patrol-events.js?v=20261110-shop-pk-r1';
+import {ledgerPanel} from './ledger-panel.js?v=20261110-shop-pk-r1';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -56,8 +57,8 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   shelfGoods(id){const sh=s().shelves.find(x=>x.id===id);if(!sh)return {title:'貨架',note:'貨架不在店內。'};return {title:'選擇販售商品',note:`${shelfDefinition(sh).name} · 目前 ${sh.stock}/${shelfCapacity(sh)}`,cards:d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&accepts(sh,c)).map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>${c.sku===sh.sku?'販售中':'售價 '+money(s().prices[c.sku])}</small>`,tap:()=>{const r=act('setShelfGoods',{shelfId:id,sku:c.sku});if(r.ok)back();}}))};},
   staff(){const ready=s().employees.filter(e=>staffEvolutionInfo(d,e).eligible).length;return {title:'員工',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人，其餘休息中並恢復疲勞。`,actions:[['招聘',()=>push('hire')],['編組與職務',()=>push('roster')],[`自動疲勞替班：${s().autoRelief?.enabled?'開啟':'關閉'}`,relief],[ready?`進化（${ready}）`:'進化',()=>push('evolve')]]};},
   hire(){const list=d.hirePool.filter(h=>!h.evolutionOnly&&h.level<=s().level&&!s().employees.some(e=>e.baseId===h.id));return {title:'招聘',note:'招聘過的夥伴不會再出現。',empty:'目前市場沒有新夥伴。',cards:[{key:'promoter',tutor:'promoter',html:`<b>宣傳員${s().promoter?'：'+esc(s().promoter.name):''}</b><small>${s().promoter?'點擊更換':'聘請大型幻靈當吉祥物'}</small>`,tap:()=>push('promoters')},...list.map(h=>({key:h.id,tutor:'hire',html:`${spiritPortrait(spirit(h.spiritId||h.id),esc)}<b>${esc(h.name)}</b><small>${money(h.cost)}</small><small class="hub-passive">${esc(passiveDescription(game,{baseId:h.id,role:d.management.traits[h.id]?.preferredJob,evolutionHistory:[]}))}（擅長職務）</small>`,tap:()=>push('hireOne',h.id)}))]};},
-  promoters(){const now=s().promoter;return {title:'宣傳員',note:`大型幻靈在店門外當吉祥物，不佔在班名額。打烊時有機會讓當天毛利再增加 1% 到上限。${now?`<br>目前：${esc(now.name)}`:''}`,cards:PROMOTERS.map(p=>{const sp=spirit(p.id),locked=p.level>s().level,cur=now?.id===p.id;return {key:p.id,tutor:!locked&&!cur&&!PROMOTERS.slice(0,PROMOTERS.indexOf(p)).some(q=>q.level<=s().level&&now?.id!==q.id)?'promoter-pick':undefined,status:cur?'claimed':undefined,html:`${spiritPortrait(sp,esc)}<b>${esc(sp?.name||p.id)}${cur?' ✓':''}</b><small>${locked?`商會 Lv.${p.level} 解鎖`:`${money(p.cost)} · 最多 +${Math.round(p.maxBonus*100)}%`}</small>`,tap:()=>{if(locked)toast(`商會 Lv.${p.level} 才能聘請`,true);else if(!cur)push('promoterOne',p.id);}};})};},
-  promoterOne(id){const p=promoterDef(id),sp=spirit(id);return {title:sp?.name||id,art:spiritPortrait(sp,esc),note:`${esc(p.text)}<br>聘請費 ${money(p.cost)}，打烊時 ${Math.round(70)}% 機率讓毛利增加 1%～${Math.round(p.maxBonus*100)}%。${s().promoter?`<br>會取代目前的 ${esc(s().promoter.name)}。`:''}`,actions:[['聘請',()=>{const r=act('hirePromoter',{id});if(r.ok)back();},true]]};},
+  promoters(){const now=s().promoter;return {title:'宣傳員',note:`大型幻靈在店門外當吉祥物，不佔在班名額。打烊時有機會讓當天毛利再增加 1% 到上限。${now?`<br>目前：${esc(now.name)}`:''}`,cards:PROMOTERS.map(p=>{const sp=spirit(p.id),locked=p.level>s().level,cur=now?.id===p.id;return {key:p.id,tutor:!locked&&!cur&&!PROMOTERS.slice(0,PROMOTERS.indexOf(p)).some(q=>q.level<=s().level&&now?.id!==q.id)?'promoter-pick':undefined,status:cur?'claimed':undefined,html:`${spiritPortrait(sp,esc)}<b>${esc(sp?.name||p.id)}${cur?' ✓':''}</b><small>${locked?`商會 Lv.${p.level} 解鎖`:`${promoterHireCost(s(),p)===0?'首次免費':money(p.cost)} · 最多 +${Math.round(p.maxBonus*100)}%`}</small>`,tap:()=>{if(locked)toast(`商會 Lv.${p.level} 才能聘請`,true);else if(!cur)push('promoterOne',p.id);}};})};},
+  promoterOne(id){const p=promoterDef(id),sp=spirit(id);return {title:sp?.name||id,art:spiritPortrait(sp,esc),note:`${esc(p.text)}<br>聘請費 ${promoterHireCost(s(),p)===0?'首次免費':money(p.cost)}，打烊時 ${Math.round(70)}% 機率讓毛利增加 1%～${Math.round(p.maxBonus*100)}%。${s().promoter?`<br>會取代目前的 ${esc(s().promoter.name)}。`:''}`,actions:[[promoterHireCost(s(),p)===0?'免費聘請':'聘請',()=>{const r=act('hirePromoter',{id});if(r.ok)back();},true]]};},
   hireOne(id){const h=d.hirePool.find(x=>x.id===id),t=d.management.traits[id],need=(s().totals.sales||0)<h.requiredSales;return {title:h.name,art:spiritPortrait(spirit(h.spiritId||h.id),esc),note:`${money(h.cost)} · 擅長${job(t.preferredJob)}<br>專屬被動「${esc(t.name)}」：${esc(t.text)}<br>${esc(passiveDescription(game,{baseId:h.id,role:t.preferredJob,evolutionHistory:[]}))}（擅長職務）${need?`<br>需累計成交 ${h.requiredSales} 筆`:''}`,actions:[['聘用',()=>{const r=act('hire',{id});if(r.ok)back();},true]]};},
   roster(){return {title:'編組與職務',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人`,empty:'還沒有夥伴，先去招聘吧。',cards:s().employees.map(e=>({key:e.id,tutor:'worker',html:`${staffIcon(e)}<b>${esc(e.name)}${e.lockedAssignment?' 📌':' 🔄'}</b><small>${job(e.role)} · 熟練 Lv.${e.workLevel} · 疲勞 ${Math.round(e.fatigue)}%</small><small class="hub-passive">${esc(passiveDescription(game,e))}</small>`,tap:()=>push('worker',e.id)})),actions:[['一鍵最佳配置',()=>{act('autoAssign');render();},true],[`自動疲勞替班：${s().autoRelief?.enabled?'開啟':'關閉'}`,relief]]};},
   worker(id){const e=s().employees.find(x=>x.id===id);if(!e)return pages.roster();const t=traitOf(game,e),isDragon=e.spiritId===d.management.dragon.spiritId,task=dragonTask(game,s());return {title:e.name,art:staffIcon(e),note:`${job(e.role)} · 熟練 Lv.${e.workLevel} · EXP ${Math.floor(e.xp)}/${e.workLevel*25}<br>擅長${job(t?.preferredJob)} · 「${esc(t?.name||'')}」${esc(t?.text||'')}<br>${esc(passiveDescription(game,e))}<br>疲勞 ${Math.round(e.fatigue)}%${isDragon?`<br>駐點：${task?esc(task.name):'未啟用'}`:''}`,actions:[['調整職務',()=>push('jobs',id)],[e.lockedAssignment?'自動分配：關':'自動分配：開',()=>{act('lockAssignment',{employeeId:id});render();}],isDragon?['駐點任務',()=>push('dragon')]:[`經驗券（${s().xpTickets||0}）`,()=>{act('useXpTicket',{employeeId:id});render();},false,!(s().xpTickets>0)]]};},
@@ -86,7 +87,7 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   ledger(){return {title:'營業帳本',html:ledgerPanel(game,esc,money,()=>'')};},
   achievements(){return {title:'商會成就',cards:game.questList(s()).map(q=>({key:q.id,done:!!s().quests[q.id],status:rewardState(q.done,!!s().quests[q.id]),html:`<b>${esc(q.name)}</b><small>${s().quests[q.id]?'已領取':q.done?'可領取':'進行中'} · ${money(q.reward)}</small>`,tap:()=>{if(q.done&&!s().quests[q.id]){act('claimQuest',{id:q.id});render();}}}))};},
   settings(){return {title:'時間與設定',note:'每次操作都會自動存檔。',html:`<label class="hub-field">音樂音量 <input type="range" id="bgm-volume" min="0" max="100" step="5" value="${settings.volume()}"></label><label class="hub-field">畫質 <select id="quality">${[['low','省電'],['medium','標準'],['high','精緻']].map(([v,n])=>`<option value="${v}" ${settings.quality()===v?'selected':''}>${n}</option>`).join('')}</select></label>${settings.is2D()?'<div class="hub-field">畫面模式：2D <button type="button" class="hub-action" id="view-switch">切換 3D</button></div>':'<div class="hub-field"><label for="view-code">切換 2D</label><input id="view-code" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="輸入代碼"><button type="button" class="hub-action" id="view-switch">切換 2D</button></div>'}`,actions:[[s().paused?'繼續營業':'暫停',()=>{act('pause');render();}],[`速度 ${s().speed||1}×`,()=>{act('speed',{value:s().speed===2?1:2});render();}],['存檔與教學',()=>push('system')]]};},
-  system(){return {title:'存檔與教學',actions:[['重播教學',()=>{act('tutorialReplay');close();}],['匯出備份',settings.exportSave],['恢復備份',settings.recover]]};}
+  system(){return {title:'存檔與教學',note:canStartTutorial(s())?'店內沒有貨架時可重播教學。':'店內已有貨架，不會重新進行新手教學。',actions:[['重播教學',()=>{const r=act('tutorialReplay');if(r.ok)close();},false,!canStartTutorial(s())],['匯出備份',settings.exportSave],['恢復備份',settings.recover]]};}
  };
  function render(){const top=stack.at(-1);if(!top)return;root.dataset.page=top.page;const page=pages[top.page](top.arg),acts=[...(page.actions||[])];if(stack.length>1)acts.push(['返回',back]);if(acts.length>MAX_ACTIONS)throw Error(`${top.page} 超過四個操作鈕`);
   const cards=page.cards||[];box.innerHTML=`<button type="button" class="hub-x" data-close aria-label="關閉">×</button><div class="hub-head">${page.art||''}<h2>${page.title}</h2></div>${page.note?`<p class="hub-note">${page.note}</p>`:''}${page.html||''}${cards.length?`<div class="hub-cards">${cards.map((c,i)=>`<button type="button" class="hub-card ${c.done?'done':''} ${c.status?'status-'+c.status:''}" data-card="${i}" ${c.tutor?`data-tutor="${c.tutor}"`:''} ${c.tap?'':'tabindex="-1"'}>${c.status?`<span class="reward-status">${rewardLabels[c.status]}</span>`:''}${c.html}</button>`).join('')}</div>`:page.empty?`<p class="hub-note">${page.empty}</p>`:''}<div class="hub-actions">${acts.map(([label,,primary,disabled],i)=>`<button type="button" class="hub-action ${primary?'primary':''}" data-act="${i}" data-label="${esc(label)}" ${disabled?'disabled':''}>${esc(label)}</button>`).join('')}</div>${stack.length===1?'<small class="hub-hint">點空白處關閉</small>':''}`;

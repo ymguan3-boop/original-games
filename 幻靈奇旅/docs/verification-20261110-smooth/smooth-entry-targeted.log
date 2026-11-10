@@ -1,0 +1,20 @@
+✔ empty-shop tutorial, mandatory placed shelf and promoter, and first free hire survive reload (21.9623ms)
+✔ onboarding skips an already furnished shop but continues after its own first shelf placement (17.7218ms)
+✔ updated front door remains reachable at every tier and reserves the actual door cell (3.4984ms)
+✔ reloading a previous schema preserves gold and inventory; stale tab cannot charge again (4.6182ms)
+✔ checkout settles a customer once even if its old Checkout state is replayed after reload (19.421ms)
+✔ weekly report weights average price and stockouts across days without counting report twice (0.2097ms)
+✔ competition is stable within a day and a rival promotion diverts traffic (0.1662ms)
+✔ employee and promoter recruitment reject occupying the same spirit (10.0046ms)
+✔ every building tier has exactly half its former floor area (0.1267ms)
+✔ release reset backs up only merchant progress once and preserves town and defense (0.1855ms)
+✔ placing a shelf and advancing time never opens business without a player action (10.5741ms)
+✔ loading gate waits for pending actors, textures and image decoding before opening (518.7077ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1026.3263

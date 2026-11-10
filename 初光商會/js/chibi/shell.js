@@ -1,7 +1,7 @@
 /* 初光商會 Lv.1–Lv.5 剖面建築：無屋頂、室內淨空、室外只留草地與步道。
    風格：Q 版手繪感、深咖啡外框、三階卡通明暗。
    座標：室內地板頂面 y=0，室內範圍 x∈[-w/2,w/2]、z∈[-d/2,d/2]，門面朝 +z。 */
-import {addIllustratedOutline} from '../illustrated-outline.js?v=20261110-chibi4';
+import {addIllustratedOutline} from '../illustrated-outline.js?v=20261110-shop-pk-r1';
 const THREE=globalThis.THREE;
 /* 商會畫面是 sRGB 輸出：顏色與貼圖要轉成線性空間，否則會偏白 */
 export const CFG={linear:true,outline:.009,gain:.62};

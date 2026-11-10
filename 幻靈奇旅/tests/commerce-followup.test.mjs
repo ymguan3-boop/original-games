@@ -8,9 +8,48 @@ import {competitionIndex,trafficFactor} from '../../初光商會/js/economy-v2.j
 import {ENTRANCE,applyRoom,dimensions,isLayoutValid,findPath,CHECKOUT} from '../../初光商會/js/nav.js';
 import {resetMerchantRelease,SHOP_RESET_VERSION} from '../../初光商會/js/save-reset.js';
 import {createLoadingGate} from '../../初光商會/js/loading-gate.js';
+import {canStartTutorial,openingBlocker,promoterHireCost} from '../../初光商會/js/shop-entry-rules.js';
+import {installTutorial} from '../../初光商會/js/shop-tutorial.js';
 const read=n=>JSON.parse(fs.readFileSync(new URL('../../初光商會/data/'+n+'.json',import.meta.url)));
 const data=()=>Object.fromEntries([['catalog','shop-catalog'],['hirePool','hire-pool'],['spirits','spirits'],['evolution','evolution'],['levels','store-levels'],['config','economy'],['management','management']].map(([k,n])=>[k,read(n)]));
 const memory=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,v)=>m.set(k,v)};};
+
+test('empty-shop tutorial, mandatory placed shelf and promoter, and first free hire survive reload',()=>{
+ const storage=memory(),g=new Game({storage,data:data()});
+ assert.equal(canStartTutorial(g.state),true);assert.equal(g.act('open').ok,false);assert.match(openingBlocker(g.state),/貨架/);
+ g.act('purchaseShelf',{type:'apothecary'});assert.equal(g.act('open').ok,false,'a stored shelf is not placed');
+ assert.equal(g.act('placeShelf',{shelfId:g.state.lastPurchasedShelf,x:3,z:5}).ok,true);
+ assert.equal(canStartTutorial(g.state),false);assert.equal(g.act('tutorialReplay').ok,false);
+ assert.equal(g.act('open').ok,false);assert.match(g.lastError,/宣傳員/);
+ const gold=g.state.gold,expenses=g.state.stats.expenses;
+ assert.equal(g.act('hirePromoter',{id:'blissey'}).ok,false,'a rejected hire does not consume the free first hire');
+ assert.equal(g.act('hirePromoter',{id:'swampert'}).ok,true);assert.equal(g.state.gold,gold);assert.equal(g.state.stats.expenses,expenses);
+ assert.equal(g.state.promoterFirstHireClaimed,true);assert.equal(g.act('open').ok,true);
+ const reloaded=new Game({storage,data:data()});assert.equal(promoterHireCost(reloaded.state,{cost:650}),650);
+ reloaded.transaction(null,s=>{s.level=2;});const before=reloaded.state.gold;
+ assert.equal(reloaded.act('hirePromoter',{id:'feraligatr'}).ok,true);assert.equal(reloaded.state.gold,before-650);
+ assert.equal(g.act('hirePromoter',{id:'swampert'}).ok,false);
+});
+
+test('onboarding skips an already furnished shop but continues after its own first shelf placement',()=>{
+ const old={document:globalThis.document,MutationObserver:globalThis.MutationObserver};
+ const nodes=new Map();const node=()=>({hidden:false,classList:{add(){},remove(){}},contains:()=>false});
+ const box=node();box.querySelector=q=>{if(!nodes.has(q))nodes.set(q,node());return nodes.get(q);};
+ globalThis.document={getElementById:id=>id==='tutor'?box:null,querySelector:()=>null,addEventListener(){},body:{dataset:{},removeAttribute(){},classList:{contains:()=>false}}};
+ globalThis.MutationObserver=class{observe(){}};
+ try{
+  const g=new Game({storage:memory(),data:data()});
+  g.act('purchaseShelf',{type:'apothecary'});g.act('placeShelf',{shelfId:g.state.lastPurchasedShelf,x:3,z:5});
+  const tutorial=installTutorial({game:g,act:(...args)=>g.act(...args),confirmSkip(){},fullscreen(){}});tutorial.sync();
+  assert.equal(g.state.tutorialState.done,true);assert.equal(box.hidden,true);
+  const fresh=new Game({storage:memory(),data:data()});
+  const first=installTutorial({game:fresh,act:(...args)=>fresh.act(...args),confirmSkip(){},fullscreen(){}});first.sync();
+  assert.equal(nodes.get('[data-skip]').disabled,true,'a newcomer cannot skip the required promoter hire');
+  fresh.act('purchaseShelf',{type:'apothecary'});fresh.act('placeShelf',{shelfId:fresh.state.lastPurchasedShelf,x:3,z:5});first.sync();
+  assert.equal(fresh.state.tutorialState.done,false,'placing the tutorial shelf must not terminate the running tutorial');
+  fresh.act('hirePromoter',{id:'swampert'});first.sync();assert.equal(nodes.get('[data-skip]').disabled,false);
+ }finally{Object.assign(globalThis,old);}
+});
 test('updated front door remains reachable at every tier and reserves the actual door cell',()=>{
  for(let level=1;level<=10;level++){applyRoom(level);assert.equal(ENTRANCE.x,Math.round((dimensions(level).width-1)/2));assert.equal(ENTRANCE.z,Math.floor(dimensions(level).height)-2);assert.ok(findPath(ENTRANCE,CHECKOUT,[],level));assert.ok(isLayoutValid([],level));assert.equal(isLayoutValid([{...ENTRANCE}],level),false);}
 });
@@ -47,7 +86,7 @@ test('release reset backs up only merchant progress once and preserves town and 
  assert.equal(resetMerchantRelease(storage),true);assert.equal(m.get('firstlight_shop_v1.before-'+SHOP_RESET_VERSION),'invalid old save');assert.equal(m.has('firstlight_shop_v1'),false);assert.equal(m.get('phantom_journey_v1'),'town');assert.equal(m.get('phantom_defense_v1'),'defense');m.set('firstlight_shop_v1','new save');assert.equal(resetMerchantRelease(storage),false);assert.equal(m.get('firstlight_shop_v1'),'new save');
 });
 test('placing a shelf and advancing time never opens business without a player action',()=>{
- const g=new Game({storage:memory(),data:data()});g.act('purchaseShelf',{type:'apothecary'});const r=g.act('placeShelf',{shelfId:g.state.lastPurchasedShelf,x:3,z:5});assert.equal(r.ok,true);for(let i=0;i<80;i++)g.tick(.25);assert.equal(g.state.phase,'closed');assert.equal(g.state.customers.length,0);assert.equal(g.act('open').ok,true);for(let i=0;i<40;i++)g.tick(.25);assert.ok(g.state.customers.length>0);
+ const g=new Game({storage:memory(),data:data()});g.act('purchaseShelf',{type:'apothecary'});const r=g.act('placeShelf',{shelfId:g.state.lastPurchasedShelf,x:3,z:5});assert.equal(r.ok,true);for(let i=0;i<80;i++)g.tick(.25);assert.equal(g.state.phase,'closed');assert.equal(g.state.customers.length,0);g.act('hirePromoter',{id:'swampert'});assert.equal(g.act('open').ok,true);for(let i=0;i<40;i++)g.tick(.25);assert.ok(g.state.customers.length>0);
 });
 test('loading gate waits for pending actors, textures and image decoding before opening',async()=>{
  const previous=globalThis.document;let decoded=false,actors=1;globalThis.document={images:[{src:'hero.png',decode:async()=>{decoded=true;}}]};const manager={},gate=createLoadingGate({DefaultLoadingManager:manager},()=>{}),scene={metrics:{errors:[]},assetsPending:()=>actors,update(){}};

@@ -61,7 +61,7 @@ test('one version per module, so nothing is downloaded twice', () => {
 test('battle and chart scenery are batched, and phones render at 30 FPS', () => {
   assert.match(text('../js/view.js'), /batchStatic\(THREE, scenery, mapGroup/);
   assert.match(text('../js/chart-models.js'), /batchStatic\(T, \[\.\.\.root\.children\], root\)/);
-  assert.match(text('../js/main.js'), /LOW_POWER && !pendingDealingScene/);
+  assert.match(text('../js/main.js'), /\(LOW_POWER \|\| pk\) && !pendingDealingScene/);
   assert.match(text('../js/sea3d.js'), /lowPower && now - last < 30/);
 });
 

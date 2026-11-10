@@ -14,7 +14,8 @@ export function snapshot(state, events) {
   const f = state.fighters.map((o) => {
     const st = {}; for (const k of STATUS) if (o.statuses[k]?.until > state.time) st[k] = r2(o.statuses[k].until);
     return {i: o.id, s: o.side === 'ally' ? 0 : 1, p: o.species, r: o.rank, b: o.boss ? 1 : 0, fl: o.flying ? 1 : 0, x: r2(o.x), z: r2(o.z), h: Math.round(o.hp), m: o.maxHp,
-      mv: o.moving ? 1 : 0, ku: r2(o.knockUntil || 0), su: r2(o.stunUntil || 0), ua: r2(o.ultAt), uc: o.ultCd, st, lt: o.lastTarget ?? null, ro: o.role, ty: o.type, sg: o.stage, d: o.deadAt ?? null};
+      mv: o.moving ? 1 : 0, v: o.moving ? r2((o.side === 'ally' ? -1 : 1) * o.speed * (o.statuses.slow?.until > state.time ? 0.5 : 1)) : 0,
+      ku: r2(o.knockUntil || 0), su: r2(o.stunUntil || 0), ua: r2(o.ultAt), uc: o.ultCd, st, lt: o.lastTarget ?? null, ro: o.role, ty: o.type, sg: o.stage, d: o.deadAt ?? null};
   });
   const shots = state.shots.filter((s) => s.profile.ranged && !['global', 'self', 'area'].includes(s.profile.type))
     .map((s) => ({i: s.id, f: s.from, t: s.target, p: s.species, g: s.strong ? 1 : 0, tr: r2(s.travel), re: r2(s.release), et: r2(s.eta), ty: s.profile.type, e: s.element, s: s.side === 'ally' ? 0 : 1}));
@@ -47,12 +48,13 @@ export function flipEvent(e) {
 
 /* apply one snapshot to the mirror; onFire(fighter, target, strong) replays attack animations */
 export function applySnapshot(m, snap, onFire) {
-  m.time = snap.t;
+  m.time = Math.max(m.time, snap.t); m.snapshotTime = snap.t; m.predictedFor = 0;
   const live = new Set();
   for (const s of snap.f) {
     let o = m.byId.get(s.i);
     if (!o) { o = {id: s.i, statuses: {}, profile: {}, attacks: 0, kills: 0}; m.byId.set(s.i, o); }
     Object.assign(o, {side: s.s === 0 ? 'enemy' : 'ally', species: s.p, rank: s.r, boss: !!s.b, flying: !!s.fl, x: -s.x, z: s.z, hp: s.h, maxHp: s.m, moving: !!s.mv,
+      velocity: -Math.max(-12, Math.min(12, Number(s.v) || 0)),
       knockUntil: s.ku, stunUntil: s.su, ultAt: s.ua, ultCd: s.uc, lastTarget: s.lt, role: s.ro, type: s.ty, stage: s.sg, deadAt: s.d ?? undefined});
     o.statuses = {}; for (const [k, until] of Object.entries(s.st)) o.statuses[k] = {until};
     live.add(s.i);
@@ -78,6 +80,12 @@ export function applySnapshot(m, snap, onFire) {
 
 /* between snapshots the guest keeps projectiles flying and the clock running */
 export function advanceMirror(m, dt) {
-  m.time += dt;
-  for (const s of m.shots) s.travel = Math.min(s.eta, s.travel + dt);
+  // Display-only dead reckoning bridges packets; stop after 450 ms of silence.
+  // HP, attacks, cards and outcomes always come from the host.
+  const delta = Math.max(0, Math.min(dt, .45 - (m.predictedFor || 0)));
+  m.predictedFor = (m.predictedFor || 0) + delta;
+  m.time = Math.max(m.time, (m.snapshotTime || 0) + m.predictedFor);
+  for (const f of m.fighters) if (f.moving && f.hp > 0)
+    f.x = Math.max(m.left + .8, Math.min(m.right - .8, f.x + (f.velocity || 0) * delta));
+  for (const s of m.shots) s.travel = Math.min(s.eta, s.travel + delta);
 }

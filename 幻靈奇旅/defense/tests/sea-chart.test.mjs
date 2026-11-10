@@ -65,7 +65,7 @@ test('gacha gives this mode own items; the panel, boatman and landscape sortie p
   assert.ok(main.includes('class="dg-machine"'), 'own gacha layout with the machine picture');
   assert.ok(main.includes('const filmRewards'), 'the summon film still plays for this mode');
   assert.ok(main.includes('chart.snap(record.stage)') && !main.includes('await sailTo(record.stage);' + String.fromCharCode(10) + '  startGame'), 'sortie starts at once');
-  assert.ok(main.includes('async function warmBattle') && main.includes('if (game && view) {'), 'battle scripts and models are warmed; the battle view is idle in the lobby');
+  assert.ok(main.includes('async function warmBattle') && main.includes('if (game && view && !document.hidden) {'), 'battle scripts and models are warmed; the battle view is idle in the lobby');
   assert.ok(main.includes('class="bm-line">要去哪裡？'), 'short boatman dialog');
   assert.ok(css.includes('#lobby .isle-panel { width: min(200px, 29vw)'));
 });

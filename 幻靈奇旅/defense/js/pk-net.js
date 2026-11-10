@@ -6,7 +6,7 @@
    - ?pknet=local: two tabs of the same browser over a BroadcastChannel (testing).
    Every transport returns the same channel: send(obj), onmessage(obj), onclose(), close(), kind. */
 import {FIREBASE_CONFIG} from './pk-config.js?v=20261107-fixes-r1';
-import {hostHttps,joinHttps} from './pk-https.js?v=20261110-relay-r1';
+import {hostHttps,joinHttps} from './pk-https.js?v=20261110-shop-pk-r1';
 
 export const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const makeCode = (rand = Math.random) => Array.from({length: 4}, () => CODE_CHARS[Math.floor(rand() * CODE_CHARS.length)]).join('');

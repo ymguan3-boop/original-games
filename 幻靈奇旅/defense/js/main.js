@@ -4,14 +4,14 @@
    phantom-defense-v1. */
 import {STAGES, SHAPES, eggTrio, configureTutorialStep, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-fixes-r1';
 import {createPkIsland} from './pk-island.js?v=20261107-fixes-r1';
-import {createPkLobby} from './pk-lobby.js?v=20261110-cross-device-r1';
-import {mergeBattleAddon} from './battle-catalog.js?v=20261110-cross-device-r1';
-import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-fixes-r1';
+import {createPkLobby} from './pk-lobby.js?v=20261110-shop-pk-r1';
+import {mergeBattleAddon} from './battle-catalog.js?v=20261110-shop-pk-r1';
+import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261110-shop-pk-r1';
 import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-fixes-r1';
 import {createToonKit} from './style.js?v=20261107-fixes-r1';
 import {createChartModels} from './chart-models.js?v=20261107-fixes-r1';
-import {createView} from './view.js?v=20261107-fixes-r1';
-import {createSeaChart} from './sea3d.js?v=20261110-cross-device-r1';
+import {createView} from './view.js?v=20261110-shop-pk-r1';
+import {createSeaChart} from './sea3d.js?v=20261110-shop-pk-r1';
 import {defensePool, poolPreview, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-fixes-r1';
 import {buildPath} from './stages.js?v=20261107-fixes-r1';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-fixes-r1';
@@ -1324,14 +1324,14 @@ function loop(now) {
     let n = 0;
     while (acc >= 1 / 30 && n < 8) { step(game, 1 / 30); acc -= 1 / 30; n++; }
   }
-  if (game && game.events.length) { handleEvents(); hud(); }
-  else if (running && now - (loop.hudAt || 0) > 100) { hud(); loop.hudAt = now; }
-  if (game && view) {
+  if (game && game.events.length) handleEvents();
+  if (game && (running || game.events.length) && now - (loop.hudAt || 0) >= 100) { hud(); loop.hudAt = now; }
+  if (game && view && !document.hidden) {
     /* On touch phones every battle renders near 30 FPS to save battery and heat; the rules clock
        still runs at 30 Hz, so attacks keep their real damage and timings. */
-    if (LOW_POWER && !pendingDealingScene) {
+    if ((LOW_POWER || pk) && !pendingDealingScene) {
       loop.renderBank = Math.min(0.1, (loop.renderBank || 0) + (running ? dt * speed : 0));
-      if (now - (loop.lastRenderAt || 0) >= 32 || !running) {
+      if (now - (loop.lastRenderAt || 0) >= (LOW_POWER ? 32 : 16) || !running) {
         view.update(loop.renderBank); loop.renderBank = 0; loop.lastRenderAt = now;
       }
     } else {

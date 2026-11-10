@@ -1002,6 +1002,8 @@ export function createView(canvas, {spirits, catalog}) {
     zoomBy, orbitBy, resetCamera,
     debug: () => ({THREE, scene, camera, renderer, vfx3d, crystal, nest, hero, rivalHero, nestBoss, traps}),
     setGame(game) {
+      // PK can contain two full player armies. Bound desktop fill-rate too.
+      renderer.setPixelRatio(Math.min(game?.duel ? 1.25 : mobileGpu ? 1.25 : 1.75, devicePixelRatio || 1));
       for (const id of [...fighters.keys()]) removeFighter(id);
       for (const hlp of helpers.splice(0)) hlp.a.dispose();
       if (nestBoss) { nestBoss.dispose(); nestBoss = null; }

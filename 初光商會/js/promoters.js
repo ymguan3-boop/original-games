@@ -1,3 +1,4 @@
+import {promoterHireCost} from './shop-entry-rules.js?v=20261110-shop-pk-r1';
 /* 宣傳員：大型幻靈在店門外當吉祥物。不佔在班名額，一次一位；
  * 打烊結算時依機率把當天毛利再提高 1% 到該宣傳員的上限。 */
 export const PROMOTERS=[
@@ -12,7 +13,7 @@ export const promoterDef=id=>PROMOTERS.find(p=>p.id===id)||null;
 export const availablePromoters=s=>PROMOTERS.filter(p=>p.level<=s.level);
 export function hirePromoter(g,s,id){
  const p=promoterDef(id);if(!p)throw Error('沒有這位宣傳員');if(p.level>s.level)throw Error(`商會 Lv.${p.level} 才能聘請`);
- if(s.employees.some(e=>e.spiritId===id||e.baseId===id))throw Error('這位幻靈已是員工，不能同時擔任宣傳員');if(s.promoter?.id===id)throw Error('已經是目前的宣傳員');g.pay(s,p.cost);s.stats.expenses+=p.cost;
+ if(s.employees.some(e=>e.spiritId===id||e.baseId===id))throw Error('這位幻靈已是員工，不能同時擔任宣傳員');if(s.promoter?.id===id)throw Error('已經是目前的宣傳員');const cost=promoterHireCost(s,p);g.pay(s,cost);s.stats.expenses+=cost;s.promoterFirstHireClaimed=true;
  const sp=g.data.spirits.find(x=>x.id===id);s.promoter={id,name:sp?.name||id,since:s.day};g.log(s,`${s.promoter.name} 成為商會宣傳員。`);return `${s.promoter.name} 開始在門口宣傳`;
 }
 /* 只在毛利為正時加成，避免虧損的日子被放大 */

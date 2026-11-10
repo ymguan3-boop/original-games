@@ -129,7 +129,7 @@ test('sortie deck editor, flipped card descriptions, and how-to explain actual f
   assert.match(main,/卡組與升星/,'how-to also updated');
   assert.match(css,/\.deck-special-rules/);
   assert.match(css,/\.deck-special-note/);
-  assert.match(html,/20261110-cross-device-r1/);
+  assert.match(html,/20261110-shop-pk-r1/);
 });
 
 test('三色蛋：空位不足時整張卡不生效，也不能放第二組', () => {

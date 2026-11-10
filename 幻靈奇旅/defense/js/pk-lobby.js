@@ -1,7 +1,7 @@
 /* PK 競技場 lobby: pick a name, create a room (shows a 4-character code) or join one by typing the code, see both
    decks, and press 確認出戰 on both sides to start. Each player fights with their own current 出擊卡組. The lobby owns the
    room channel and hands it to the battle as a session: {role, ch, me, foe, seed, on(type, fn)}. */
-import {hostRoom, joinRoom, normalizeCode, validCode, transportKind} from './pk-net.js?v=20261110-relay-r3';
+import {hostRoom, joinRoom, normalizeCode, validCode, transportKind} from './pk-net.js?v=20261110-shop-pk-r1';
 import {PK_ITEMS} from './rules.js?v=20261107-fixes-r1';
 
 export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spirit, deck, validateDeck, inventory = () => ({}), costume = () => 'trainer', name, setName, toast, onStart, onEditDeck = () => {}, network = {hostRoom, joinRoom}}) {

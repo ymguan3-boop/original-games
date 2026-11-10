@@ -1,4 +1,4 @@
-import {spiritCard} from './spirit-cards.js?v=20261110-chibi4';
+import {spiritCard} from './spirit-cards.js?v=20261110-shop-pk-r1';
 export function createStaffOverlay({game,labels,card,onAction,escape,onEventClick=()=>{},onOpen=()=>{}}){
  const nodes=new Map(),anchors=new Map();let selected=null,detached=false,staffDrag=null;
  const esc=escape;
