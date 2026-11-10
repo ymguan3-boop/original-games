@@ -242,3 +242,46 @@ export function buildPath(level){const L=LEVELS[level],{d,t}=L,ct=cobbleTex(),g=
 
 /* 商會的燈光比檢視頁亮、還有 ACES 色調：Q 版材質不吃色調映射，顏色再壓暗一點，才會跟原圖一樣飽和 */
 export function tune(root,gain=CFG.gain??.62){const seen=new Set();root.traverse(o=>{if(!o.material)return;for(const m of Array.isArray(o.material)?o.material:[o.material]){if(seen.has(m)||m.userData.tuned)continue;seen.add(m);m.userData.tuned=true;if(m.isMeshToonMaterial){m.color.multiplyScalar(gain);m.toneMapped=false;}else if(m.isMeshBasicMaterial&&!o.userData.isHull&&!o.userData.illustratedOutline){m.toneMapped=false;}}});return root;}
+
+/* 收銀台：依商會等級換造型。原點在櫃台中心地面，長邊沿 x，正面（顧客那側）朝 +z；台面高約 .6 */
+export function buildCounter(level){
+ const g=new THREE.Group();g.name='counter-lv'+level;const mats=new Map();
+ const toon=(c,o={})=>{const k=c+JSON.stringify(o);if(!mats.has(k)){const m=new THREE.MeshToonMaterial({color:c,gradientMap:ramp(),...o});if(CFG.linear){m.color.convertSRGBToLinear();m.emissive?.convertSRGBToLinear();}mats.set(k,m);}return mats.get(k);};
+ const texMat=(t,rx,ry)=>{const m=t.clone();m.needsUpdate=true;m.repeat.set(rx,ry);return new THREE.MeshToonMaterial({map:m,gradientMap:ramp()});};
+ const add=(geo,mat,x,y,z,p=g)=>{const o=new THREE.Mesh(geo,mat);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;p.add(o);return o;};
+ const box=(w,h,d,m,x,y,z,p)=>add(new THREE.BoxGeometry(w,h,d),typeof m==='number'?toon(m):m,x,y,z,p);
+ const cyl=(r1,r2,h,m,x,y,z,seg=14)=>add(new THREE.CylinderGeometry(r1,r2,h,seg),typeof m==='number'?toon(m):m,x,y,z);
+ const W=2.5,D=.78,H=.58;
+ const register=(body,trim,x=.55)=>{box(.42,.2,.32,body,x,H+.12,-.02);const sc=box(.36,.16,.04,trim,x,H+.3,-.12);sc.rotation.x=-.35;box(.12,.08,.12,trim,x-.12,H+.26,.08);for(let i=0;i<3;i++)box(.07,.03,.07,0xfff4df,x-.1+i*.1,H+.235,.1);};
+ if(level===1){/* 舊木箱拼成的櫃台：補丁、歪掉的木板、舊錢箱和蠟燭 */
+  const wood=texMat(plankTex({base:0x8a6646,dark:0x4a3020,n:4,vertical:false,worn:6,seed:301,nails:true}),2,1);
+  box(W,H-.06,D,wood,0,(H-.06)/2,0);const top=box(W+.12,.07,D+.1,toon(0x6e4c30),0,H-.02,0);top.rotation.z=.012;
+  box(.5,.32,.04,toon(0xa58660),-.6,.3,D/2+.03).rotation.z=.12;box(.38,.24,.04,toon(0x9a7a55),.7,.22,D/2+.03).rotation.z=-.08;
+  box(.36,.18,.26,toon(0x5c3e26),.55,H+.09,0);box(.38,.03,.28,toon(0x7a5232),.55,H+.19,0);
+  cyl(.04,.05,.14,0xf3ead6,-.8,H+.07,-.05,10);add(new THREE.ConeGeometry(.025,.06,6),toon(0xffb648,{emissive:0xffa030,emissiveIntensity:.6}),-.8,H+.17,-.05);
+ }else if(level===2){/* 蜂蜜木櫃台、綠色面板、黃銅叫人鈴、帳本與小盆栽 */
+  const wood=texMat(plankTex({base:0xd9a566,dark:0x8a5a30,n:5,vertical:false,seed:302}),2,1);
+  box(W,H-.06,D,wood,0,(H-.06)/2,0);box(W+.14,.07,D+.12,toon(0x9a6438),0,H-.02,0);
+  box(W-.3,H-.22,.04,toon(0x5ea63f),0,(H-.06)/2,D/2+.02);for(const x of[-.6,0,.6])box(.36,.2,.03,toon(0x74b04a),x,(H-.06)/2,D/2+.05);
+  register(0x7a5230,0xd9a521);cyl(.07,.09,.05,0xd9a521,-.25,H+.03,.1);add(new THREE.SphereGeometry(.07,12,8,0,Math.PI*2,0,Math.PI/2),toon(0xe8b52c),-.25,H+.055,.1);
+  box(.3,.05,.22,toon(0x7a2a1c),-.75,H+.03,-.05);box(.28,.02,.2,toon(0xfff4df),-.75,H+.065,-.05);
+  cyl(.08,.06,.12,0xc0503a,-1.05,H+.06,-.1,10);add(new THREE.SphereGeometry(.11,10,8),toon(0x5fae44),-1.05,H+.18,-.1);
+ }else if(level===3){/* 石砌底座＋木台面、紅布垂幕與金星、黃銅收銀機、天秤 */
+  const stone=texMat(stoneTex({base:0xe4d6b6,mortar:0xb8a682,rows:2,cols:4,seed:303}),2,1);
+  box(W,H-.08,D,stone,0,(H-.08)/2,0);box(W+.16,.09,D+.14,texMat(plankTex({base:0xb07a44,dark:0x6e4a2a,n:3,vertical:false,seed:304}),2,1),0,H-.03,0);
+  const sh=new THREE.Shape();sh.moveTo(-.45,0);sh.lineTo(.45,0);sh.lineTo(.45,-.34);sh.lineTo(0,-.44);sh.lineTo(-.45,-.34);sh.closePath();add(new THREE.ExtrudeGeometry(sh,{depth:.03,bevelEnabled:false}),toon(0xc8382a),0,H-.08,D/2+.01);
+  const st=new THREE.Shape();for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,r=i%2?.05:.11;st.lineTo(Math.cos(a)*r,Math.sin(a)*r);}add(new THREE.ExtrudeGeometry(st,{depth:.02,bevelEnabled:false}),toon(0xd9a521),0,H-.26,D/2+.045);
+  register(0xb07a44,0xd9a521);cyl(.02,.02,.32,0xd9a521,-.75,H+.16,-.05,8);box(.36,.02,.02,toon(0xd9a521),-.75,H+.32,-.05);for(const s of[-1,1])cyl(.08,.05,.03,0xd9a521,-.75+s*.17,H+.22,-.05,12);
+ }else if(level===4){/* 白色大理石櫃台、金邊、藍色絨布面板、金色收銀機、水晶燈 */
+  const marble=texMat(stoneTex({base:0xf6f4ee,mortar:0xd8d2c2,rows:2,cols:3,seed:305,rough:.03}),2,1);
+  box(W,H-.08,D,marble,0,(H-.08)/2,0);box(W+.18,.09,D+.16,toon(0xfaf7f0),0,H-.03,0);box(W+.2,.03,D+.18,toon(0xe3b232),0,H-.085,0);box(W+.04,.06,D+.04,toon(0xe3b232),0,.03,0);
+  box(W-.4,H-.24,.04,toon(0x3f6f8c),0,(H-.08)/2,D/2+.02);for(const s of[-1,1])box(.06,H-.2,.06,toon(0xe3b232),s*(W/2-.2),(H-.08)/2,D/2+.03);
+  register(0xfaf7f0,0xe3b232);cyl(.03,.05,.3,0xe3b232,-.85,H+.15,-.1,10);const cr=add(new THREE.OctahedronGeometry(.1),toon(0x9fdcff,{emissive:0x4aa8ff,emissiveIntensity:.35}),-.85,H+.38,-.1);cr.scale.y=1.4;
+ }else{/* 金頂宮殿：紅金櫃台、金色雕花、紅絨面板、水晶與金色收銀機 */
+  box(W,H-.08,D,toon(0xa8171a),0,(H-.08)/2,0);box(W+.2,.1,D+.18,toon(0xf2c12e),0,H-.03,0);box(W+.06,.07,D+.06,toon(0xf2c12e),0,.035,0);
+  for(const x of[-.85,0,.85]){box(.62,H-.26,.03,toon(0x8a1f2a),x,(H-.08)/2,D/2+.02);const r=add(new THREE.TorusGeometry(.12,.02,6,16),toon(0xf2c12e),x,(H-.08)/2,D/2+.04);}
+  for(const s of[-1,1]){cyl(.07,.07,H-.1,0xf2c12e,s*(W/2),(H-.1)/2+.04,D/2,12);add(new THREE.SphereGeometry(.08,10,8),toon(0xf2c12e),s*(W/2),H+.08,D/2);}
+  register(0xf2c12e,0xa8171a);const cr=add(new THREE.OctahedronGeometry(.14),toon(0x9fdcff,{emissive:0x4aa8ff,emissiveIntensity:.4}),-.8,H+.3,-.05);cr.scale.y=1.4;cyl(.1,.13,.08,0xf2c12e,-.8,H+.04,-.05,12);
+ }
+ addOutline(g);g.userData.counterTop=H+.02;return g;
+}

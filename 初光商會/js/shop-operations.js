@@ -57,6 +57,8 @@ function pay(g,s,c,e){
 export function stepCustomers(g,s,dt){
  const queue=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));
  queue.forEach((c,i)=>{if(c.state==='Checkout')return;const goal={x:CHECKOUT.x,z:3+i};if(i<Math.floor(dimensions(s.level).height)-4&&(c.queueSlot!==i||!c.path.length&&Math.hypot(c.x-goal.x,c.z-goal.z)>.1)){c.queueSlot=i;g.route(s,c,goal);}});
+ /* 已經誤闖收銀台後方的顧客：帶回櫃台前面 */
+ for(const c of s.customers){if(c.path.length||Math.abs(c.x-CHECKOUT.x)>1.6||c.z>1.6||['Paid'].includes(c.state)||(c.rescueAt||0)>s.totalTime)continue;c.rescueAt=s.totalTime+1;const out=[{x:CHECKOUT.x+1,z:3},{x:CHECKOUT.x-1,z:3},{x:CHECKOUT.x+2,z:3},{x:CHECKOUT.x+2,z:2}].find(p=>walkable(p,obstacles(s),s.level));if(out)g.route(s,c,out);}
  const cashier=cashierAt(g,s);
  for(const c of [...s.customers]){
   c.timer+=dt;

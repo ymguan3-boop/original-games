@@ -8,7 +8,7 @@ import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261110-chib
 import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261110-chibi3';
 import {decorateInterior} from './interior-v5.js?v=20261110-chibi3';
 import {addIllustratedOutline} from './illustrated-outline.js?v=20261110-chibi3';
-import {buildShell,buildGround,tune} from './chibi/shell.js?v=20261110-chibi3';
+import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261110-chibi3';
 import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261110-chibi3';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
@@ -78,7 +78,8 @@ const tall=innerHeight>innerWidth;/* Q 版店面：鏡頭從門面那側俯看�
  metrics.entrance={...ENTRANCE};metrics.exteriorTier=level;
  // Checkout desk, wrapping station, office, forge and break nook.
  metrics.counterTop=.555;metrics.cashierPlatform=0;cashierChair=null;
- for(const [name,x,z]of [['cash-counter',CHECKOUT.x,2],['sesame-chair',CHECKOUT.x,1]])assets.load('@shop/assets/art-v5/interior/'+name+'.glb').then(g=>{if(!alive||generation!==roomGeneration)return;const o=assets.clone(g.scene);if(name==='cash-counter')o.traverse(n=>{if(n.isMesh&&n.material){n.material=n.material.clone();n.material.color.multiplyScalar(.68);}});o.position.set(x,0,z);building.add(o);if(name==='sesame-chair'){cashierChair=o;o.visible=false;}sceneContours.push(addIllustratedOutline(T,o,{thickness:.012}));metrics.interiorModels||={};metrics.interiorModels[name]=true;}).catch(report);
+ if(CHIBI){/* Q 版收銀台：依等級換造型 */const counter=tune(buildCounter(level));counter.position.set(CHECKOUT.x,0,2);counter.traverse(o=>{if(o.isMesh)o.userData.noOutline=true;});building.add(counter);metrics.interiorModels={...(metrics.interiorModels||{}),'cash-counter':true};metrics.counterStyle=level;}
+ for(const [name,x,z]of (CHIBI?[['sesame-chair',CHECKOUT.x,1]]:[['cash-counter',CHECKOUT.x,2],['sesame-chair',CHECKOUT.x,1]]))assets.load('@shop/assets/art-v5/interior/'+name+'.glb').then(g=>{if(!alive||generation!==roomGeneration)return;const o=assets.clone(g.scene);if(name==='cash-counter')o.traverse(n=>{if(n.isMesh&&n.material){n.material=n.material.clone();n.material.color.multiplyScalar(.68);}});o.position.set(x,0,z);building.add(o);if(name==='sesame-chair'){cashierChair=o;o.visible=false;}sceneContours.push(addIllustratedOutline(T,o,{thickness:.012}));metrics.interiorModels||={};metrics.interiorModels[name]=true;}).catch(report);
 
  // The legacy warehouse desk and forge prop were retired in v7.
  // Restocking and smith work remain gameplay services, without hidden obstacles.
