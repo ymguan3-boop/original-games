@@ -1,11 +1,11 @@
 /* 2D 版下方常駐面板：上面一條顯示最該處理的事（事件 → 顧客問題 → 章節目標），下面是員工卡。
  * 只有名單變動才重建卡片，平常只更新文字，員工 GIF 才不會一直重播。 */
-import {activeEvent} from './economy-v2.js?v=20261110-chibi3';
-import {spiritArtPath} from './spirit-cards.js?v=20261110-chibi3';
-import {chapterObjectives} from './shop-chapters.js?v=20261110-chibi3';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261110-chibi3';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261110-chibi3';
-import {capacityOf} from './management.js?v=20261110-chibi3';
+import {activeEvent} from './economy-v2.js?v=20261110-chibi4';
+import {spiritArtPath} from './spirit-cards.js?v=20261110-chibi4';
+import {chapterObjectives} from './shop-chapters.js?v=20261110-chibi4';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261110-chibi4';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261110-chibi4';
+import {capacityOf} from './management.js?v=20261110-chibi4';
 
 const SLOTS=4;
 export function createDock({game,hub,esc}){
