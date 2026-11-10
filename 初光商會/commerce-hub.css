@@ -159,3 +159,14 @@ html body.app-loading #world,html body.app-loading .world2d{visibility:hidden!im
 .prep-bar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prep-bar button{flex:none;font:inherit;font-size:15px;color:#fff;background:#6a9a3e;border:2px solid #4a2e1c;border-radius:12px;padding:7px 14px;cursor:pointer}
 @media (max-width:520px){.prep-bar span{display:none}}
+/* 員工頭上標籤：改成跟顧客心情提示同款的膠囊（位置仍由原規則決定） */
+html body #staff-labels .staff-head-label{display:flex!important;align-items:center;gap:5px;padding:5px 9px!important;border-radius:999px!important;border:2px solid currentColor!important;box-shadow:0 2px 0 #3c271a38,0 3px 9px #342a1840!important;background:#f8fbec!important;color:#3b7738!important;font:800 13px/1.15 "Microsoft JhengHei","PingFang TC",sans-serif!important;text-shadow:0 1px #fff;white-space:nowrap;width:auto!important;min-width:0!important;height:auto!important;max-width:min(230px,58vw)}
+html body #staff-labels .staff-head-label[data-mood="tired"]{color:#b5651d!important}
+html body #staff-labels .staff-head-label[data-mood="angry"]{color:#b8452f!important}
+html body #staff-labels .staff-head-label .actor-reaction-icon{font-size:17px;line-height:1}
+html body #staff-labels .staff-head-label b{display:inline-flex!important;align-items:baseline;gap:4px;font-size:13px!important;color:inherit!important;margin:0!important}
+html body #staff-labels .staff-head-label b small{font-size:11px!important;color:inherit!important;opacity:.8}
+html body #staff-labels .staff-head-label .staff-compact-fatigue{display:inline!important;font-size:12px!important;color:inherit!important;margin:0!important;width:auto!important}
+html body #staff-labels .staff-head-label{max-width:min(240px,60vw)!important;overflow:visible!important;line-height:1.15!important}
+html body #staff-labels .staff-head-label[hidden]{display:none!important}
+html body #staff-labels .staff-head-label b{overflow:visible!important;text-overflow:clip!important;min-width:max-content!important}

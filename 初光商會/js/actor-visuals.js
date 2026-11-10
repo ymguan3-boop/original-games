@@ -2,7 +2,7 @@
 export const REACTIONS={
  question:['?','缺貨','question'],confused:['?','找不到','question'],
  impatient:['⌛','快沒耐心','warning'],angry:['💢','生氣了','angry'],
- happy:['♥','買到了','happy'],training:['✦','訓練中','training'],
+ happy:['♥','買到了','happy'],greet:['👋','歡迎光臨！','happy'],training:['✦','訓練中','training'],
  proud:['★','受到表揚','happy'],stressed:['!','忙不過來','angry'],
  bored:['Zzz','無聊','tired'],sleep:['☾','休息','tired'],
  work:['✓','努力工作','happy'],restock:['▣','補貨中','training'],

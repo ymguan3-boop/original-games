@@ -22,6 +22,7 @@ export function dailyTrack(g,s,key,amount){if(amount>0)dailyState(g,s)[key]+=amo
 export function dailyTasks(g,s){const d=s.dailyTaskState?.date===dateKey(g)?s.dailyTaskState:{sales:0,gold:0,exp:0,claimed:{},bonus:false};return {tasks:g.data.management.daily.tasks.map(t=>({...t,value:Math.floor(d[t.id]||0),done:(d[t.id]||0)>=t.target,claimed:!!d.claimed[t.id]})),bonus:d.bonus};}
 export function managementAction(g,s,type,p){
  if(type==='fortuneCard')return applyFortune(g,s,p);
+ if(type==='rackReminder'){s.rackReminder={category:p.category,day:s.day};return '已記下：打烊整備時會提醒你布置貨架';}
  const m=g.data.management,assert=(v,msg)=>{if(!v)throw Error(msg);};
  if(type==='claimDaily'){const state=dailyState(g,s),task=m.daily.tasks.find(t=>t.id===p.id);assert(task&&(state[task.id]||0)>=task.target&&!state.claimed[task.id],'任務未完成或已領取');state.claimed[task.id]=true;s.gold+=task.reward;s.stats.rewards+=task.reward;return `獲得 ${task.reward} G`;}
  if(type==='claimDailyBonus'){const state=dailyState(g,s);assert(m.daily.tasks.every(t=>state.claimed[t.id])&&!state.bonus,'三項任務領完才能領全勤獎勵');state.bonus=true;s.gold+=m.daily.bonusGold;s.stats.rewards+=m.daily.bonusGold;s.xpTickets=(s.xpTickets||0)+m.daily.bonusTickets;return `全勤獎勵：${m.daily.bonusGold} G 與經驗券`;}
