@@ -1,10 +1,10 @@
-import {decorEffects,obstacles} from './decorations.js?v=20261110-commerce-r1';
-import {purchaseChance} from './economy-v2.js?v=20261110-commerce-r1';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261110-commerce-r1';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT} from './nav.js?v=20261110-commerce-r1';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261110-commerce-r1';
-import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261110-commerce-r1';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261110-commerce-r1';
+import {decorEffects,obstacles} from './decorations.js?v=20261110-shop-r2';
+import {purchaseChance} from './economy-v2.js?v=20261110-shop-r2';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261110-shop-r2';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261110-shop-r2';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261110-shop-r2';
+import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261110-shop-r2';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261110-shop-r2';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
@@ -42,7 +42,7 @@ export function operationalEvent(g,s,id,title,description,role='cashier'){
 function angry(g,s,c,reason){
  if(c.state==='Angry'||c.state==='Leave')return;c.basket=[];c.state='Angry';c.path=[];c.timer=0;c.emotion='angry';c.angerReason=reason;s.stats.lost++;const old=s.satisfaction;s.satisfaction=clamp(s.satisfaction-1);if(old>s.satisfaction)g.notice(s,c.id,'滿意 -1','bad');s.memories[c.personality]={day:s.day,satisfied:false,reason};const shortage=reason.includes('缺貨');operationalEvent(g,s,shortage?'stockout':'queue-complaint',shortage?'顧客找不到商品':'顧客生氣了',`${c.name}：${reason}。商品已退回陳列，不會計為收入。`,shortage?'stocker':'cashier');
 }
-function leave(g,s,c){c.state='Leave';c.timer=0;c.exitRerouteAt=2;c.path=[];const side={x:9,z:3};if(Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.2&&walkable(side,obstacles(s),s.level)){const a=findPath(c,side,obstacles(s),s.level),b=findPath(side,ENTRANCE,obstacles(s),s.level);if(a&&b)c.path=[...a,...b];}if(!c.path.length)g.route(s,c,ENTRANCE);}
+function leave(g,s,c){c.state='Leave';c.timer=0;c.exitRerouteAt=2;c.path=[];const side={x:CHECKOUT.x-1,z:3};if(Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.2&&walkable(side,obstacles(s),s.level)){const a=findPath(c,side,obstacles(s),s.level),b=findPath(side,ENTRANCE,obstacles(s),s.level);if(a&&b)c.path=[...a,...b];}if(!c.path.length)g.route(s,c,ENTRANCE);}
 /* 收銀由主角負責：巡店時櫃台沒人，結帳變慢 */
 const AWAY_SLOWDOWN=1.8;
 function cashierAt(g,s){return null;}
@@ -56,12 +56,14 @@ function pay(g,s,c,e){
 }
 export function stepCustomers(g,s,dt){
  const queue=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));
- queue.forEach((c,i)=>{if(c.state==='Checkout')return;const goal={x:10,z:3+i};if(i<6&&(c.queueSlot!==i||!c.path.length&&Math.hypot(c.x-goal.x,c.z-goal.z)>.1)){c.queueSlot=i;g.route(s,c,goal);}});
+ queue.forEach((c,i)=>{if(c.state==='Checkout')return;const goal={x:CHECKOUT.x,z:3+i};if(i<Math.floor(dimensions(s.level).height)-4&&(c.queueSlot!==i||!c.path.length&&Math.hypot(c.x-goal.x,c.z-goal.z)>.1)){c.queueSlot=i;g.route(s,c,goal);}});
  const cashier=cashierAt(g,s);
  for(const c of [...s.customers]){
   c.timer+=dt;
   // Never leave a departing customer stuck in the shop when a path is blocked.
-  if(c.state==='Leave'&&(Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.48||c.timer>=20)){s.customers=s.customers.filter(x=>x.id!==c.id);continue;}
+  if(c.arrivalRemaining>0){c.arrivalRemaining=Math.max(0,c.arrivalRemaining-dt);continue;}
+  if(c.exitingAtDoor){c.exitTravel=(c.exitTravel||0)+dt;if(c.exitTravel>=5)s.customers=s.customers.filter(x=>x.id!==c.id);continue;}
+  if(c.state==='Leave'&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.25){c.exitingAtDoor=true;c.exitTravel=0;c.path=[];continue;}
   if(['Cart','Queue','Checkout'].includes(c.state)){c.wait=(c.wait||0)+dt;if(c.wait>c.patience){angry(g,s,c,cashier?'排隊等太久':'沒有收銀員服務');continue;}}
   g.safeMove(s,c,dt*2.2,dt);if(c.path.length&&c.state==='Evaluate'&&(c.blocked||0)>=1.2){const t=s.shelves.find(sh=>sh.id===c.targetShelf);if(t&&Math.hypot(c.x-t.x,c.z-(t.z+1))<1.6){c.path=[];c.blocked=0;c.browsingNear=true;}}if(c.path.length)continue;
   if(c.state==='Enter'||c.state==='Browse'){
@@ -71,7 +73,7 @@ export function stepCustomers(g,s,dt){
    const sh=s.shelves.find(x=>x.id===c.targetShelf),item=g.data.catalog.find(x=>x.sku===sh?.sku),price=sh?Math.round(s.prices[sh.sku]*shelfDefinition(sh).premium*(1+decorEffects(s).premium)):0,tolerance=(c.personality===4?1.1:1.4)+(g.role(s,'host')?.3:0)+(s.buffs.sales>s.totalTime?.2:0)+(c.memory?.satisfied?.1:c.memory?-.15:0);
    if(sh&&g.available(s,sh)<=0){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}if(sh&&g.available(s,sh)>0&&price<=c.budget&&g.random(s)<purchaseChance(s,{type:c.customerType||'commoner',sku:sh.sku,price,ref:item.suggestedRetail*shelfDefinition(sh).premium*(1+decorEffects(s).premium)*(tolerance/1.4)})){c.basket=[{sku:sh.sku,shelfId:sh.id,qty:1,price,cost:s.averageCosts?.[sh.sku]??item.buyCost}];c.state='Cart';c.timer=0;c.wait=0;g.xp(s,g.role(s,'host'),.5);}else{c.state=c.visited.length<s.shelves.length?'Browse':'UnhappyExit';c.timer=0;}
   }else if(c.state==='Cart'){
-   if(s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).length>=6)continue;c.state='Queue';c.queueOrder=++s.serial;c.queueSlot=-1;c.timer=0;
+   if(s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).length>=Math.floor(dimensions(s.level).height)-4)continue;c.state='Queue';c.queueOrder=++s.serial;c.queueSlot=-1;c.timer=0;
   }else if(c.state==='Queue'){
    const first=s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0))[0];if(first===c&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1){c.state='Checkout';c.timer=0;}
   }else if(c.state==='Checkout'){

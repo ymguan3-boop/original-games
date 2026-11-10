@@ -1,24 +1,25 @@
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261110-commerce-r1';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261110-shop-r2';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261110-shop-r2';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261110-commerce-r1';
-import {ENTRANCE,dimensions} from './nav.js?v=20261110-commerce-r1';
-import {sampleTrail} from './motion.js?v=20261110-commerce-r1';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261110-commerce-r1';
-import {eventEmployee} from './patrol-events.js?v=20261110-commerce-r1';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261110-commerce-r1';
-import {stockCount} from './shelf-products.js?v=20261110-commerce-r1';
-import {createAssets} from './asset-resolver.js?v=20261110-commerce-r1';
-import {createPlacementCells} from './placement-cells.js?v=20261110-commerce-r1';
-import {environment} from './environment.js?v=20261110-commerce-r1';
-import {createEnvironment2D} from './environment-2d.js?v=20261110-commerce-r1';
-import {spiritArtPath} from './spirit-cards.js?v=20261110-commerce-r1';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261110-shop-r2';
+import {ENTRANCE} from './nav.js?v=20261110-shop-r2';
+import {sampleTrail} from './motion.js?v=20261110-shop-r2';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261110-shop-r2';
+import {eventEmployee} from './patrol-events.js?v=20261110-shop-r2';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261110-shop-r2';
+import {stockCount} from './shelf-products.js?v=20261110-shop-r2';
+import {createAssets} from './asset-resolver.js?v=20261110-shop-r2';
+import {createPlacementCells} from './placement-cells.js?v=20261110-shop-r2';
+import {environment} from './environment.js?v=20261110-shop-r2';
+import {createEnvironment2D} from './environment-2d.js?v=20261110-shop-r2';
+import {spiritArtPath} from './spirit-cards.js?v=20261110-shop-r2';
 
 const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*1.1,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
 const TRIM=[null,{base:'#7a5634',top:'#8a6a4a',pillar:'#9a8f86',cap:'#b7aca2'},{base:'#a2663b',top:'#c58a3c',pillar:'#d79a3a',cap:'#f2c35a'},{base:'#a2663b',top:'#d6a03c',pillar:'#e0a53a',cap:'#fbd46a'},{base:'#8d5a2e',top:'#e3b34a',pillar:'#e8b23e',cap:'#ffe08a'},{base:'#a3322c',top:'#f0c24c',pillar:'#c8302a',cap:'#ffd75a'}];
-const RACK_WIDTH=1.75,ACTOR_SIZE=1.5,MANAGER_SIZE=1.8,COUNTER_WIDTH=2.5,DECOR_WIDTH={sofa:1.8,plant:1.2,'lucky-cat':1.2,fountain:1.9,artwork:1.5,phoenix:1.4};
+const RACK_WIDTH=1.75,ACTOR_SIZE=1.5,MANAGER_SIZE=1.55,COUNTER_WIDTH=2.5,DECOR_WIDTH={sofa:1.8,plant:1.2,'lucky-cat':1.2,fountain:1.9,artwork:1.5,phoenix:1.4};
 const loadImage=src=>new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src;});
 const stateEmotion=(type,d,s)=>{
  if(type==='staff')return eventEmployee(s,s.event)?.id===d.id?'event-'+d.role:d.reactionUntil>s.totalTime?(d.feedbackKind||d.reaction):d.role==='standby'?null:d.fatigue>=80?'tired':d.workTask?'restock':null;
@@ -78,7 +79,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   /* 入口迎賓墊與店外盆栽 */
   g.save();g.setTransform(HW,HH,-HW,HH,x0,y0);g.fillStyle='#fff3cf';g.fillRect(-.7,ENTRANCE.z-.9,1.7,1.8);g.fillStyle='#c35a3a';g.fillRect(-.6,ENTRANCE.z-.8,1.5,1.6);g.restore();
   const front=[[oBush,-1.3,Hd-1.5,1.5],[oBush,Wd+.9,2,1.4],[oBush,Wd+.9,Hd-3,1.5],[oLamp,-1.5,ENTRANCE.z-1.7,.75],[oLamp,-1.5,ENTRANCE.z+1.7,.75],[oBed,-2.4,ENTRANCE.z-3.5,1.9],[oBed,-2.4,ENTRANCE.z+3.5,1.9],[oFence,Wd+1.2,Hd+.4,1.4],[oFence,Wd+1.2,Hd+1.6,1.4],[oTree,-2.2,Hd+1.5,2.4],[oBush,ENTRANCE.x-5.2,Hd+2.6,1.4]];front.sort((a,b)=>(a[1]+a[2])-(b[1]+b[2])).forEach(a=>prop(...a));
-  layer.querySelector('.world2d-counter')?.remove();if(counter){const el=new Image();el.src=ISO+'counter.webp';el.alt='';el.className='world2d-item world2d-counter';layer.append(el);placeItem(el,{rotation:COUNTER_FLIP?180:0},10,2,COUNTER_WIDTH);metrics.counter=true;}
+  layer.querySelector('.world2d-counter')?.remove();if(counter){const el=new Image();el.src=ISO+'counter.webp';el.alt='';el.className='world2d-item world2d-counter';layer.append(el);placeItem(el,{rotation:COUNTER_FLIP?180:0},CHECKOUT.x,2,COUNTER_WIDTH);metrics.counter=true;}
   metrics.projection='isometric';dirty=true;fit();
  }
  function fit(){
@@ -111,11 +112,11 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  /* 主管依行走方向換圖；側面圖面向右，往左時由 flip 翻轉。GIF 還沒到位時用靜態圖 */
  function setManagerImage(a,walking){const face=a.facing||'front',name=walking?'manager-'+face:face==='front'?'manager-idle':'manager-'+face+'-still';if(a.imageName===name)return;a.imageName=name;const still=name.endsWith('-still');a.img.onerror=()=>{a.img.onerror=null;a.img.src=SPRITES+(walking?name:'manager-'+face)+'.webp';};a.img.src=SPRITES+(still?'manager-'+face+'.webp':name+'.gif');a.img.onerror=still?null:a.img.onerror;}
  function syncActors(dt){
-  const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager)all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:10,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,x:-2.6,z:ENTRANCE.z+2.6},'promoter']);
+  const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager)all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:CHECKOUT.x,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,...promoterPoint()},'promoter']);
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));
   const moods=[],staffRows=[],active=new Set();
-  for(const[key,d,type]of all){active.add(key);const a=ensureActor(key,d,type),trail=type==='manager'&&mode!=='follow'||type==='promoter'?null:game.motionFrame?.trails.get(key),p=trail?sampleTrail(trail,motionProgress):d,dx=p.x-a.pos.x,dz=p.z-a.pos.z,moved=dx*dx+dz*dz>.000001;a.pos={x:p.x,z:p.z};if(moved){a.moveUntil=time+.14;if(Math.abs(dx)>.002)a.flip=dx<0?-1:1;if(type==='manager')a.facing=Math.abs(dx)>Math.abs(dz)?'side':dz<0?'back':'front';}if(type==='manager')setManagerImage(a,time<a.moveUntil);
-   const px=(type==='promoter'?2.4:type==='manager'?MANAGER_SIZE:ACTOR_SIZE)*U,leaving=type==='customer'&&d.state==='Leave'?Math.min(1,Math.max(.05,Math.hypot(d.x-ENTRANCE.x,d.z-ENTRANCE.z)/1.7)):1;a.el.style.width=px+'px';const q=P(p.x,p.z);a.el.style.left=q.X-px/2+'px';/* 主角在櫃台：腳踩在檯面後緣的高度，櫃台擋住下半身、露出上半身；巡店走近時平順移過去 */const deskPull=type==='manager'?(mode!=='follow'?1:Math.max(0,1-Math.hypot(p.x-10,p.z-1)/1.2)):0,deskFeet=P(10,2).Y+HH*.9-COUNTER_WIDTH*U*.4,feet=q.Y+HH*.6;a.el.style.top=feet+(deskFeet-feet)*deskPull-px+'px';if(deskPull>0)a.el.style.left=q.X-px/2-HW*1.3*deskPull+'px';a.el.style.zIndex=Math.round(100+(p.x+p.z)*60+30);a.screen={X:q.X,Y:q.Y+HH*.6,w:px};a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;const victory=chasePose(time-chaseStarted),celebrating=type==='manager'&&victory.active;a.el.classList.toggle('chase-celebrating',celebrating);if(celebrating)a.img.style.transform+=` translateY(${-victory.hop*U}px) rotate(${victory.lean}rad)`;a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');
+  for(const[key,d,type]of all){active.add(key);const a=ensureActor(key,d,type),trail=type==='manager'&&mode!=='follow'||type==='promoter'?null:game.motionFrame?.trails.get(key),p=type==='customer'&&(d.arrivalRemaining>0||d.exitingAtDoor)?customerDisplayPoint(d):trail?sampleTrail(trail,motionProgress):d,dx=p.x-a.pos.x,dz=p.z-a.pos.z,moved=dx*dx+dz*dz>.000001;a.pos={x:p.x,z:p.z};if(moved){a.moveUntil=time+.14;if(Math.abs(dx)>.002)a.flip=dx<0?-1:1;if(type==='manager')a.facing=Math.abs(dx)>Math.abs(dz)?'side':dz<0?'back':'front';}if(type==='manager')setManagerImage(a,time<a.moveUntil);
+   const px=(type==='promoter'?2.4:type==='manager'?MANAGER_SIZE:ACTOR_SIZE)*U,leaving=1;a.el.style.width=px+'px';const q=P(p.x,p.z);a.el.style.left=q.X-px/2+'px';/* 主角在櫃台：腳踩在檯面後緣的高度，櫃台擋住下半身、露出上半身；巡店走近時平順移過去 */const deskPull=type==='manager'?(mode!=='follow'?1:Math.max(0,1-Math.hypot(p.x-CHECKOUT.x,p.z-1)/1.2)):0,deskFeet=P(CHECKOUT.x,2).Y+HH*.9-COUNTER_WIDTH*U*.4,feet=q.Y+HH*.6;a.el.style.top=feet+(deskFeet-feet)*deskPull-px+'px';if(deskPull>0)a.el.style.left=q.X-px/2-HW*1.3*deskPull+'px';a.el.style.zIndex=Math.max(2,Math.round(100+(p.x+p.z)*60+30));a.screen={X:q.X,Y:q.Y+HH*.6,w:px};a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;const victory=chasePose(time-chaseStarted),celebrating=type==='manager'&&victory.active;a.el.classList.toggle('chase-celebrating',celebrating);if(celebrating)a.img.style.transform+=` translateY(${-victory.hop*U}px) rotate(${victory.lean}rad)`;if(type==='promoter'&&!a.flyer){a.flyer=document.createElement('span');a.flyer.className='promoter-flyer';a.flyer.textContent='初光商會';a.el.append(a.flyer);}a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');
    const emotion=stateEmotion(type,d,s),issue=type==='customer'?getCustomerComplaint(s,d,game):null,chase=type==='customer'&&s.customerChase?.customerId===d.id;
    if(emotion||issue||chase){const ev=s.event,related=!!ev&&(type==='staff'&&eventEmployee(s,ev)?.id===d.id||type==='customer'&&ev.description?.includes(d.name)&&['Angry','OutOfStock','Queue','UnhappyExit'].includes(d.state)),head=toScreen(p.x,p.z,ACTOR_SIZE*.95);moods.push({id:key,kind:chase?'impatient':emotion||'impatient',...(chase?{complaintId:d.id,complaintTitle:'🏃 追上我',chaseTarget:true}:issue?{complaintId:d.id,complaintTitle:issue.title}:related?{eventId:ev.instanceId||ev.id,eventTitle:ev.title}:{}),x:head.x,y:head.y,inFront:true});}
    if(type==='staff'){const head=toScreen(p.x,p.z,ACTOR_SIZE*.9);staffRows.push({id:key,x:head.x,y:head.y});}}
@@ -152,7 +153,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  const api={
   /* 進化仍是 3D 演出，要用時才載入模型 */
   evolutionActor(path){assets3d||=createAssets(globalThis.THREE,metrics);return assets3d.actor(path,3,{footprint:99,diameter:99});},
-  playChaseSuccess,update,resize,ready:Promise.resolve(),metrics,setQuality(q){metrics.quality=q;},selectShelf,editShelf,beginShelfPlacement,confirmPlacement,cancelPlacement,cancelEdit,
+  playChaseSuccess,update,resize,ready:buildRoom(level=Math.min(state().level||1,5)),metrics,setQuality(q){metrics.quality=q;},selectShelf,editShelf,beginShelfPlacement,confirmPlacement,cancelPlacement,cancelEdit,
   projectShelf(id){const i=furniture().find(x=>x.id===id);return i?toScreen(i.x,i.z):null;},projectShelfHead(id){return headOf(furniture().find(x=>x.id===id));},projectCell(x,z,y=0){return toScreen(x,z,y);},
   setMode(m){if(m==='follow'&&lockedView())return {ok:false,message:'請先完成貨架調整或點空白處取消選取，再切換主管巡店'};if(m!=='decorate')cancelPlacement();const result=game.setManagerActive(m==='follow');if(!result.ok){onActionResult(result);return result;}mode=m;keys.clear();joystick={x:0,y:0};game.setManagerInput(0,0);metrics.mode=m;metrics.managerVisible=m==='follow';showGrid();if(m!=='decorate')selectShelf(null);panX=0;panY=0;fit();onModeChange(m);return result;},
   setJoystick(x,y){joystick={x,y};},rotate(){return false;},zoom(delta=1){if(lockedView())return false;userZoom=Math.max(1,Math.min(2.6,userZoom-delta*.1));fit();return true;},setGestureMode(){return 'pan';},get gestureMode(){return 'pan';},get cameraLocked(){return lockedView();},get cameraPose(){return {scale,panX,panY};},

@@ -20,7 +20,7 @@ body.hub-open .toolbar,body.patrol-active .toolbar,body.decorate-active .toolbar
 body.placement-bad #placement-hint{color:#b3261e}
 #tutor{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(10px,env(safe-area-inset-bottom)) + 84px);width:min(440px,calc(100vw - 24px));z-index:70;padding:12px 14px;background:#fff8e8;border:3px solid #6b914b;border-radius:14px;color:#4a3019}#tutor[hidden]{display:none}#tutor strong{display:block;font-size:16px}#tutor p{margin:4px 0 8px;font-size:14px;line-height:1.45}#tutor .tutor-actions{display:flex;gap:8px;justify-content:flex-end}#tutor button{min-height:40px;padding:0 12px;font-weight:700}
 .tutor-focus{outline:3px solid #f2b632!important;outline-offset:2px;animation:tutor-pulse 1.1s ease-in-out infinite;position:relative;z-index:65}@keyframes tutor-pulse{50%{outline-color:#ff7a33}}
-body[data-tutorial] .toolbar button:not(.tutor-focus){visibility:hidden}
+body[data-tutorial] .toolbar button:not(.tutor-focus){visibility:visible;opacity:.42}
 body.hub-open #tutor .tutor-actions{display:none}
 body.hub-open #tutor{top:max(8px,env(safe-area-inset-top));bottom:auto}
 @media (orientation:landscape) and (max-height:500px){.toolbar{right:max(10px,env(safe-area-inset-right));left:auto;transform:none;width:190px;grid-template-columns:repeat(2,minmax(0,1fr))}#tutor{bottom:auto;top:56px;left:12px;transform:none;width:min(320px,45vw)}.hub-box{width:min(640px,100%)}}
@@ -139,3 +139,16 @@ html body header.topbar .status-row strong#gold{flex:none!important;overflow:vis
 .market-gif{display:block;width:min(220px,60%);margin:0 auto;border-radius:12px}
 .world2d-env{position:fixed;z-index:2;pointer-events:none}
 body.hub-open .world2d-env{z-index:2}
+
+html body[data-tutorial] nav.toolbar button{visibility:visible!important;display:inline-flex!important}
+html body[data-tutorial] nav.toolbar button:not(.tutor-focus){opacity:.42}
+html body header.topbar{height:auto!important;min-height:42px!important;padding:6px 10px!important}
+html body header.topbar .status-row{flex-wrap:wrap;justify-content:flex-start!important;gap:6px!important}
+html body header.topbar #level-name{flex:1 1 160px}
+html body header.topbar #return-to-game{position:static!important;display:inline-flex!important;flex:none!important;margin:0!important;min-height:28px!important;padding:3px 9px!important;font-size:12px!important;line-height:1.2;border:1px solid #c39961!important;border-radius:10px!important;background:#fff8e7!important;color:#61401e!important;box-shadow:none!important}
+html body header.topbar #start-business{background:#688b42;color:#fff;border-color:#557936;min-height:28px}
+html body.app-loading #loading{position:fixed!important;inset:0!important;z-index:100000!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#fff6df!important;color:#5b3b20;padding:24px;text-align:center}
+html body.app-loading #world,html body.app-loading .world2d{visibility:hidden!important}
+@media(max-width:540px){html body header.topbar #level-name{order:-1;flex:1 1 48%}html body header.topbar #gold{order:-1;margin-left:auto}html body header.topbar .hud-chip{font-size:11px!important}html body header.topbar #hud-clock{max-width:145px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+.promoter-flyer{position:absolute;right:12%;top:40%;width:32px;padding:8px 3px;background:#fff6d7;border:1px solid #a16c33;border-radius:2px;color:#755022;font-size:8px;text-align:center;box-shadow:0 2px 3px #4a341c44;animation:flyer-wave 2.4s ease-in-out infinite;transform-origin:bottom left}@keyframes flyer-wave{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(20deg)}}@media(prefers-reduced-motion:reduce){.promoter-flyer{animation:none}}

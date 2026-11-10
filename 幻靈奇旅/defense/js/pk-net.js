@@ -6,6 +6,7 @@
    - ?pknet=local: two tabs of the same browser over a BroadcastChannel (testing).
    Every transport returns the same channel: send(obj), onmessage(obj), onclose(), close(), kind. */
 import {FIREBASE_CONFIG} from './pk-config.js?v=20261107-fixes-r1';
+import {hostHttps,joinHttps} from './pk-https.js?v=20261110-relay-r1';
 
 export const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const makeCode = (rand = Math.random) => Array.from({length: 4}, () => CODE_CHARS[Math.floor(rand() * CODE_CHARS.length)]).join('');
@@ -15,6 +16,7 @@ const PEER_PREFIX = 'hlqj-pk-', ICE = [{urls: 'stun:stun.l.google.com:19302'}, {
 
 export function transportKind() {
   if (/[?&]pknet=local/.test(location.search)) return 'local';
+  if (/[?&]pknet=https/.test(location.search) || location.hostname?.endsWith('.chatgpt.site') || location.hostname === 'ymguan3-boop.github.io') return 'https';
   return FIREBASE_CONFIG ? 'firebase' : 'peerjs';
 }
 
@@ -31,6 +33,14 @@ export function makeChannel(kind, sendRaw, close) {
 /* host: open a room and wait for the guest. Returns {code, ready: Promise<channel>, cancel()} */
 export async function hostRoom({onStatus = () => {}} = {}) {
   const kind = transportKind();
+  if(kind==='https'){
+    onStatus('正在建立 HTTPS 對戰房間…');
+    const remote=await hostHttps(makeChannel,{onStatus}),local=hostLocal(remote.code);let chosen=false,resolve;
+    const ready=new Promise(r=>{resolve=r;});
+    const accept=(ch,isLocal)=>{if(chosen){ch.close();return;}chosen=true;if(isLocal)remote.cancel();else local.cancel();resolve(ch);};
+    local.ready.then(ch=>accept(ch,true));remote.ready.then(ch=>accept(ch,false));
+    return {code:remote.code,ready,cancel(){chosen=true;local.cancel();remote.cancel();}};
+  }
   for (let tries = 0; tries < 5; tries++) {
     const code = makeCode();
     if (kind === 'local') return hostLocal(code);
@@ -62,6 +72,7 @@ export async function joinRoom(code, {onStatus = () => {}} = {}) {
     try { return await joinLocal(code, 650); }
     catch (e) { if (e.code === 'full') throw e; }
   }
+  if(kind==='https'){onStatus('正在以 HTTPS 加入房間…');return joinHttps(code,makeChannel,{onStatus});}
   return kind === 'firebase' ? joinFirebase(code, onStatus) : joinPeer(code, onStatus);
 }
 

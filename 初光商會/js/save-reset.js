@@ -1,0 +1,3 @@
+export const SHOP_RESET_VERSION='compact-20261110-r2';
+export function resetMerchantRelease(storage){const key='firstlight_shop_v1',marker='firstlight-shop-reset-version';if(storage.getItem(marker)===SHOP_RESET_VERSION)return false;const old=storage.getItem(key);if(old)storage.setItem(key+'.before-'+SHOP_RESET_VERSION,old);storage.removeItem(key);storage.removeItem('firstlight-commerce-level-v1');storage.setItem(marker,SHOP_RESET_VERSION);return !!old;}
+export function resetMerchantOnly(storage){storage.removeItem('firstlight_shop_v1');storage.removeItem('firstlight-commerce-level-v1');storage.setItem('firstlight-shop-reset-version',SHOP_RESET_VERSION);}

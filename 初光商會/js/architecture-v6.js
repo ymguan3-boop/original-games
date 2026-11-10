@@ -1,6 +1,6 @@
-import {applyWallFinish} from './wall-finish-v7.js?v=20261110-commerce-r1';
+import {applyWallFinish} from './wall-finish-v7.js?v=20261110-shop-r2';
 export function finishes(level,mat){return {wall:mat([0,0xffedce,0xf1e2bd,0xe2e8cd,0xdce9e6,0xdde6d4][level]),floorA:mat([0,0xd9b97d,0xd4a66b,0xd9d8bd,0xe5e9e5,0xe5e6d2][level]),floorB:mat([0,0xe9d29c,0xe8c48c,0xf0e8ce,0xf9f7ec,0xf9f3db][level]),ceiling:mat([0,0x64442a,0x946834,0x526444,0xe5d8b7,0x35535c][level]),curtain:mat(level===5?0x34575c:level===4?0x607c58:0x668a3f)};}
-export function floorFinish({T,building,level,width,finish,oakTexture,metrics}){
+export function floorFinish({T,building,level,width,depth,finish,oakTexture,metrics}){
  const file='floor-lv'+level;
  const record=metrics.floorFinish={level,file:file+'.webp',status:'loading'};
  // Keep the light stone fallback visible until the asynchronous image is decoded.
@@ -12,12 +12,12 @@ export function floorFinish({T,building,level,width,finish,oakTexture,metrics}){
  },undefined,()=>{record.status='error';metrics.errors.push('地板貼圖載入失敗：'+file+'.webp');});
  material.addEventListener('dispose',()=>{disposed=true;tex.dispose();});
  tex.encoding=T.sRGBEncoding;tex.wrapS=tex.wrapT=T.RepeatWrapping;
- tex.repeat.set(width/6,(11+level)/6);
+ tex.repeat.set(width/6,depth/6);
  material.color.setScalar([0,.6,.8,.82,.86,.86][level]);
- const floor=new T.Mesh(new T.PlaneGeometry(width,11+level),material);floor.rotation.x=-Math.PI/2;floor.position.set((width-1)/2,.041,(10+level)/2);floor.receiveShadow=true;
+ const floor=new T.Mesh(new T.PlaneGeometry(width,depth),material);floor.rotation.x=-Math.PI/2;floor.position.set((width-1)/2,.041,(depth-1)/2);floor.receiveShadow=true;
  Object.assign(floor.userData,{ownedGeometry:true,ownedMaterial:true,ownedTexture:true,noOutline:true});building.add(floor);metrics.floorTexture=file+'.webp';
 }
-export function windows({T,building,level,width,box,mats,metrics}){applyWallFinish({T,building,level,width,material:mats.finishes.wall,metrics});const {gold,cream,wood,windowGlass}=mats,paint=mats.finishes.curtain,centers=[1.5,10.5,...(width>=20?[16.5]:[]),...(width>=22?[19.5]:[])];metrics.windows=[];
+export function windows({T,building,level,width,box,mats,metrics}){applyWallFinish({T,building,level,width,material:mats.finishes.wall,metrics});const {gold,cream,wood,windowGlass}=mats,paint=mats.finishes.curtain,centers=[1.5,width-2.2,...(width>=20?[16.5]:[]),...(width>=22?[19.5]:[])];metrics.windows=[];
  for(const x of centers){
   const base=box(1.68,1.90,.10,wood,x,2,-.24,building);base.userData.windowFrame=true;
   if(level<4){box(1.48,1.65,.05,windowGlass,x,2,-.155,building);for(const d of [-.76,.76])box(.08,1.78,.10,cream,x+d,2,-.09,building);for(const y of [1.14,2.86])box(1.62,.08,.10,cream,x,y,-.09,building);box(.055,1.68,.10,cream,x,2,-.055,building);box(1.5,.055,.10,cream,x,2,-.055,building);

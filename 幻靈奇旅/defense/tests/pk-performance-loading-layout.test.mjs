@@ -328,7 +328,7 @@ test('all stages share localized thunder animations and climate cannot flash scr
   assert.match(view,/sun\.intensity !== c\.sunPower/);
   assert.match(sea,/function lockWeather\(\)/);
   assert.match(rules,/state\.stage\.id === 'waterfall'/);
-  assert.match(html,/main\.js\?v=20261110-pk-r1/);
+  assert.match(html,/main\.js\?v=20261110-relay-r2/);
 });
 
 test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local barrel feedback', () => {
@@ -350,5 +350,5 @@ test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local
   assert.match(view,/Math\.sin\(b\.userData\.flash \/ 0\.18 \* Math\.PI\) \* 0\.018/);
   assert.match(css,/#world \{[^}]+background-position: center; background-size: cover;/);
   assert.match(html,/defense\.css\?v=20261107-c6/);
-  assert.match(html,/main\.js\?v=20261110-pk-r1/);
+  assert.match(html,/main\.js\?v=20261110-relay-r2/);
 });

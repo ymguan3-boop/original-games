@@ -1,13 +1,13 @@
-import {employeeSpot,employeePath} from './staff-routing.js?v=20261110-commerce-r1';
-import {obstacles,decorEffects} from './decorations.js?v=20261110-commerce-r1';
-import {findPath,walkable} from './nav.js?v=20261110-commerce-r1';
-import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261110-commerce-r1';
+import {employeeSpot,employeePath} from './staff-routing.js?v=20261110-shop-r2';
+import {obstacles,decorEffects} from './decorations.js?v=20261110-shop-r2';
+import {findPath,walkable,dimensions} from './nav.js?v=20261110-shop-r2';
+import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261110-shop-r2';
 const stations={stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
 /* The rear wall is z=1. Each resting worker gets their own place and is never
  * mistaken for an idling / slacking employee at an active work station. */
 export function restingPositions(s){
  const resting=s.employees.filter(e=>e.role==='standby').sort((a,b)=>String(a.id).localeCompare(String(b.id)));
- return new Map(resting.map((e,i)=>[e.id,{x:2+i%7,z:1+Math.floor(i/7)}]));
+ const slots=Math.max(1,Math.floor(dimensions(s.level).width)-4);return new Map(resting.map((e,i)=>[e.id,{x:2+i%slots,z:1+Math.floor(i/slots)}]));
 }
 export function sendToRest(g,s,e){e.path=[];e.reaction='sleep';e.offDuty=true;return true;}
 const wandering=(s,e)=>{
@@ -19,7 +19,7 @@ const wandering=(s,e)=>{
  };
  const points=patterns[e.role]||[{x:4,z:5},{x:7,z:6},{x:6,z:8}];
  for(let k=0;k<points.length;k++){
-  const index=(i+1+k)%points.length,p=points[index];
+  const index=(i+1+k)%points.length,p={x:Math.min(points[index].x,Math.floor(dimensions(s.level).width)-2),z:Math.min(points[index].z,Math.floor(dimensions(s.level).height)-2)};
   if(Math.hypot(p.x-e.x,p.z-e.z)<.65)continue;
   next();return p;
  }

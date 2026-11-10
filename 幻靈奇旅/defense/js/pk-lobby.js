@@ -1,7 +1,7 @@
 /* PK 競技場 lobby: pick a name, create a room (shows a 4-character code) or join one by typing the code, see both
    decks, and press 確認出戰 on both sides to start. Each player fights with their own current 出擊卡組. The lobby owns the
    room channel and hands it to the battle as a session: {role, ch, me, foe, seed, on(type, fn)}. */
-import {hostRoom, joinRoom, normalizeCode, validCode, transportKind} from './pk-net.js?v=20261110-pk-r1';
+import {hostRoom, joinRoom, normalizeCode, validCode, transportKind} from './pk-net.js?v=20261110-relay-r2';
 import {PK_ITEMS} from './rules.js?v=20261107-fixes-r1';
 
 export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spirit, deck, validateDeck, inventory = () => ({}), costume = () => 'trainer', name, setName, toast, onStart, network = {hostRoom, joinRoom}}) {
@@ -10,7 +10,7 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
   const requireDeck = () => { if (valid(deck())) return true; toast('PK 必須編滿四個基礎格（三色蛋佔三格），請先到出擊卡組補滿。'); return false; };
   const readyDecks = s => !!s && valid(s.me.deck) && valid(s.foe?.deck) && valid(deck());
   const strip = (ids) => `<div class="pk-deck">${ids.map((id) => `<img src="${picture(id)}" alt="${esc(spirit(id)?.name || id)}" title="${esc(spirit(id)?.name || id)}" data-frame="${spirit(id)?.cardFrame || 'yellow'}">`).join('')}</div>`;
-  const kindNote = () => ({local: '本機測試模式：請在同一個瀏覽器開兩個分頁', peerjs: '', firebase: ''}[transportKind()] || '');
+  const kindNote = () => ({local: '本機測試模式：請在同一個瀏覽器開兩個分頁', https: 'HTTPS 中繼連線：支援同一帳號、同一 IP；不需要玩家之間建立 WebRTC 直連。', peerjs: '', firebase: ''}[transportKind()] || '');
   const $ = (id) => document.getElementById(id);
 
   function home(msg = '') {

@@ -1,27 +1,29 @@
-import {showChaseSuccess} from './chase-celebration.js?v=20261110-commerce-r1';
-import {environment} from './environment.js?v=20261110-commerce-r1';
-import {activeEvent} from './economy-v2.js?v=20261110-commerce-r1';
-import {chapterObjectives} from './shop-chapters.js?v=20261110-commerce-r1';
-import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261110-commerce-r1';
-import {showLevelUp} from './levelup.js?v=20261110-commerce-r1';
-import {installShopNavigation} from './shop-navigation.js?v=20261110-commerce-r1';
-import {showZhaocaiNote} from './zhaocai-note.js?v=20261110-commerce-r1';
-import {installShopMusic} from './shop-music.js?v=20261110-commerce-r1';
-import {createActorVisuals} from './actor-visuals.js?v=20261110-commerce-r1';
-import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261110-commerce-r1';
-import {loadSpiritCards} from './spirit-cards.js?v=20261110-commerce-r1';
-import {createGame} from './core.js?v=20261110-commerce-r1';
-import {createStaffOverlay} from './staff-overlay.js?v=20261110-commerce-r1';
-import {installPatrolControls} from './patrol-controls.js?v=20261110-commerce-r1';
-import {playEvolution3D} from './evolution-3d.js?v=20261110-commerce-r1';
-import {createScene} from './scene.js?v=20261110-commerce-r1';
-import {createScene2D} from './scene-2d.js?v=20261110-commerce-r1';
-import {createDock} from './dock-2d.js?v=20261110-commerce-r1';
-import {createHub} from './shop-hub.js?v=20261110-commerce-r1';
-import {installTutorial} from './shop-tutorial.js?v=20261110-commerce-r1';
-import {commissionNotice} from './commissions.js?v=20261110-commerce-r1';
-import {dailyTasks} from './management.js?v=20261110-commerce-r1';
-import {installWindowControls} from './window-controls.js?v=20261110-commerce-r1';
+import {resetMerchantRelease,resetMerchantOnly} from './save-reset.js?v=20261110-shop-r2';
+import {createLoadingGate} from './loading-gate.js?v=20261110-shop-r2';
+import {showChaseSuccess} from './chase-celebration.js?v=20261110-shop-r2';
+import {environment} from './environment.js?v=20261110-shop-r2';
+import {activeEvent} from './economy-v2.js?v=20261110-shop-r2';
+import {chapterObjectives} from './shop-chapters.js?v=20261110-shop-r2';
+import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261110-shop-r2';
+import {showLevelUp} from './levelup.js?v=20261110-shop-r2';
+import {installShopNavigation} from './shop-navigation.js?v=20261110-shop-r2';
+import {showZhaocaiNote} from './zhaocai-note.js?v=20261110-shop-r2';
+import {installShopMusic} from './shop-music.js?v=20261110-shop-r2';
+import {createActorVisuals} from './actor-visuals.js?v=20261110-shop-r2';
+import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261110-shop-r2';
+import {loadSpiritCards} from './spirit-cards.js?v=20261110-shop-r2';
+import {createGame} from './core.js?v=20261110-shop-r2';
+import {createStaffOverlay} from './staff-overlay.js?v=20261110-shop-r2';
+import {installPatrolControls} from './patrol-controls.js?v=20261110-shop-r2';
+import {playEvolution3D} from './evolution-3d.js?v=20261110-shop-r2';
+import {createScene} from './scene.js?v=20261110-shop-r2';
+import {createScene2D} from './scene-2d.js?v=20261110-shop-r2';
+import {createDock} from './dock-2d.js?v=20261110-shop-r2';
+import {createHub} from './shop-hub.js?v=20261110-shop-r2';
+import {installTutorial} from './shop-tutorial.js?v=20261110-shop-r2';
+import {commissionNotice} from './commissions.js?v=20261110-shop-r2';
+import {dailyTasks} from './management.js?v=20261110-shop-r2';
+import {installWindowControls} from './window-controls.js?v=20261110-shop-r2';
 /* 2D 測試：在設定輸入代碼後切換並記住；本機開發可用 ?shopDev=1&view=2d 直接進入 */
 const VIEW_KEY='firstlight-shop-view',VIEW_CODE='741216',viewParams=new URLSearchParams(location.search),readView=()=>{try{return localStorage.getItem(VIEW_KEY);}catch{return null;}},view2d=viewParams.get('view')==='2d'&&viewParams.has('shopDev')&&['localhost','127.0.0.1'].includes(location.hostname)||readView()==='2d';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -54,11 +56,13 @@ function syncNotices(s){{const ev=activeEvent(s),key=ev?ev.id+ev.startDay:null;i
 function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncNotices(s);
  $('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels[s.level-1]?.name||''}`;
  {const info=chapterObjectives(s,game.data.levels),pct=upgradeProgress(info);$('#hud-progress').textContent=s.upgradeProject?`🔨 ${Math.ceil(s.upgradeProject.remaining)}秒`:info.last?'★ 最高級':`▲ ${pct}%`;$('#hud-progress').classList.toggle('ready',info.ready&&!s.upgradeProject);{const env=environment(s,game.data.config);$('#hud-clock').textContent=`${env.weatherInfo.icon}${env.season.name} ${clockText(s,game.data.config)} ${clockLabel(s,game.data.config)}`;$('#hud-clock').title=`${env.season.name}季・${env.weatherInfo.name}`;}if(s.phase==='report'&&reportShownDay!==s.day&&hub&&!hub.isOpen){reportShownDay=s.day;hub.open('report');}}$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
+ $('#start-business').hidden=s.phase!=='closed';
  const dot=(id,on)=>$(`.toolbar [data-hub=${id}]`).classList.toggle('has-notice',!!on&&!s.patrolFocus);
  const daily=dailyTasks(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length);dot('build',s.layoutPause);dot('tasks',s.event||commissionNotice(s)||daily.tasks.some(t=>t.done&&!t.claimed));
  tutorial?.sync();}
 const pageFor={goods:'goods',shelves:'build',staff:'staff',quests:'tasks',upgrade:'upgrade',settings:'settings'};
 const openPanel=name=>hub.open(pageFor[name]||'shop');
+$('#start-business').onclick=()=>{const r=action('open');if(r.ok)tutorial?.sync();};
 $('#hud-progress').onclick=()=>hub.open('upgrade');$('#hud-history').onclick=()=>hub.open('history');
 for(const b of document.querySelectorAll('.toolbar [data-hub]'))b.onclick=()=>{const page=b.dataset.hub;if(document.body.classList.contains('view-2d')&&hub.isOpen&&hub.rootPage===page){hub.close();return;}if(page==='tasks'&&game.state.event){hub.open('event');return;}hub.open(page);};
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!game||game.state.patrolFocus)return;
@@ -74,7 +78,11 @@ $('#camera-mode').onclick=()=>{if(!scene.cameraLocked&&!game.state.patrolFocus)s
 $('#patrol-event').onclick=()=>{if(game.state.event)hub.open('event');else toast('目前沒有事件。');};
 function exportSave(){const blob=new Blob([JSON.stringify(game.state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`初光商會-第${game.state.day}天.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 function recoverSave(){confirmAction('恢復前一個備份會取代目前進度，確定嗎？',()=>{const key='firstlight_shop_v1',backup=localStorage.getItem(key+'.backup');if(!backup)return toast('沒有可用的備份。',true);try{game.validate(JSON.parse(backup));localStorage.setItem(key,backup);location.reload();}catch(err){toast('備份無法恢復：'+err.message,true);}});}
-async function boot(){try{
+async function boot(){let gate;try{
+ const loading=$('#loading');loading.style.display='flex';loading.setAttribute('aria-busy','true');$('#load-message').textContent='正在準備商會資料與場景素材…';
+ gate=createLoadingGate(globalThis.THREE,(done,total)=>{$('#load-message').textContent='正在載入場景素材 '+done+' / '+total;});
+ const reset=resetMerchantRelease(localStorage);if(reset)loading.dataset.reset='true';
+
  shopMusic=installShopMusic();game=await createGame({storage:localStorage,key:'firstlight_shop_v1'});seenPatrolResolution=game.state.recentPatrolResolution?.id||null;seenChapterClear=game.state.chapterClear?.id||null;seenChase=game.state.customerChaseResult?.id||null;
  shopNavigation=installShopNavigation({game,onError:e=>toast(e.message,true)});
  hub=createHub({game,getScene:()=>scene,act:action,toast,esc,evolve:beginEvolution,leave:()=>$('#return-to-game').click(),settings:{volume:()=>shopMusic?.volume??40,quality:()=>quality,exportSave,recover:recoverSave,is2D:()=>view2d,switchView},onChange:()=>{game.uiBusy=evolutionInProgress||hub?.isOpen;renderHUD();}});
@@ -93,8 +101,8 @@ async function boot(){try{
   onActionResult:r=>toast(r.message,!r.ok),onError:e=>toast('模型載入異常：'+(e.message||e),true)});
  window.shopScene=scene;window.shopHub=hub;
  staffOverlay=createStaffOverlay({game,labels:$('#staff-labels'),card:$('#staff-card'),escape:esc,onEventClick:()=>hub.open('event'),onOpen:id=>hub.open('worker',id)});staffOverlay.render();
- patrolControls=installPatrolControls({joystick:$('#joystick'),stick:$('#stick'),scene});scene.setMode('play');renderHUD();await scene.ready;$('#loading').style.display='none';document.body.classList.remove('app-loading');
+ patrolControls=installPatrolControls({joystick:$('#joystick'),stick:$('#stick'),scene});scene.setMode('play');renderHUD();await scene.ready;await gate.wait(scene);gate.dispose();$('#loading').setAttribute('aria-busy','false');$('#loading').style.display='none';document.body.classList.remove('app-loading');
  let last=performance.now(),ui=0;function frame(now){requestAnimationFrame(frame);const elapsed=(now-last)/1000,dt=Math.min(.1,elapsed);last=now;if(document.hidden||shopNavigation?.leaving)return;try{if(!evolutionInProgress&&!$('#confirm').open){const result=game.tick(dt);if(result&&!result.ok)toast(result.message,true);}scene.update(dt);}catch(e){if(!window.lastShopError){console.error(e);toast('執行發生錯誤：'+e.message,true);window.lastShopError=e.message;}}ui+=dt;if(ui>.5){ui=0;renderHUD();staffOverlay?.render();if(hub.isOpen&&['chapter','upgrade','daily'].includes(document.querySelector('#hub')?.dataset.page))hub.render();}}requestAnimationFrame(frame);
  if(innerWidth<700)scene.setQuality?.('low');
-}catch(e){console.error(e);$('#loading').innerHTML=`<p>商會無法啟動：${esc(e.message)}</p>`;}}
+}catch(e){console.error(e);gate?.dispose();$('#loading').innerHTML=`<h2>商會素材尚未就緒</h2><p>${esc(e.message)}</p><button id="retry-shop">重新載入</button><button id="reset-shop">重置商會並重試</button>`;$('#retry-shop').onclick=()=>location.reload();$('#reset-shop').onclick=()=>{resetMerchantOnly(localStorage);location.reload();};}}
 boot();

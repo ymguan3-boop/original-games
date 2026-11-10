@@ -13,7 +13,7 @@ function fixture(customer){
  const g={data:{config:{checkoutSeconds:1},catalog:[{sku:'potion',category:'item',buyCost:10,suggestedRetail:20}]},available:(_,sh)=>sh.stock,role:(x,r)=>x.employees.find(e=>e.role===r)||null,efficiency:()=>1,notice:(_,id,message,tone)=>notices.push({id,message,tone}),xp:()=>{},safeMove:()=>{},route:(_,c,d)=>{c.path=[{x:d.x,z:d.z}];return true;},log:(_,message)=>s.log.push(message)};
  return {s,g,notices};
 }
-test('a departing customer is immediately removed after reaching the actual entrance',()=>{
+test('a departing customer walks through the door and along the outdoor path before removal',()=>{
  const {stepCustomers}=simulation(),c={id:'c3',state:'Leave',x:6.2,z:10.1,visited:[],basket:[],path:[{x:6,z:10}],timer:0,patience:40};
- const {s,g}=fixture(c);stepCustomers(g,s,.3);assert.equal(s.customers.length,0);
+ const {s,g}=fixture(c);stepCustomers(g,s,.3);assert.equal(s.customers.length,1);assert.equal(c.exitingAtDoor,true);stepCustomers(g,s,5);assert.equal(s.customers.length,0);
 });

@@ -8,6 +8,7 @@ const ROOT=path.join(path.dirname(fileURLToPath(import.meta.url)),'../初光商�
 const J=f=>JSON.parse(fs.readFileSync(path.join(ROOT,'data',f+'.json'),'utf8'));
 const load=p=>import(pathToFileURL(path.join(ROOT,'js',p)).href);
 const {Game,events}=await load('core.js');
+const {CHECKOUT}=await import(pathToFileURL(path.join(ROOT,'js','nav.js')).href+'?v=20261110-shop-r2');
 const {capacityOf,onDuty,jobPower,passive,dailyTasks,migrateState}=await load('management.js');
 const {staffEvolutionInfo}=await load('staff-evolution.js');
 const data=()=>({catalog:J('shop-catalog'),hirePool:J('hire-pool'),spirits:J('spirits'),evolution:J('evolution'),levels:J('store-levels'),config:J('economy'),management:J('management')});
@@ -47,17 +48,17 @@ test('每日任務只能領一次，全勤獎勵要三項都領完',()=>{
  assert.equal(g.act('claimDailyBonus').ok,true);assert.equal(g.state.xpTickets,1);assert.equal(dailyTasks(g,g.state).tasks.every(t=>t.claimed),true);
 });
 test('事件至少相隔五分鐘，布置模式不觸發',()=>{
- const g=fresh(finished);place(g,'apothecary',4,5);g.act('hire',{id:'bulbasaur'});const times=[];let last=null;
- for(let i=0;i<4*1500;i++){g.tick(.25);if(g.state.phase==='report')g.act('nextDay');const id=g.state.event?.instanceId;if(id&&id!==last){last=id;times.push(g.state.totalTime);g.transaction(null,s=>{s.event=null;return 'x';});}}
+ const g=fresh(finished);place(g,'apothecary',4,5);g.act('open');g.act('hire',{id:'bulbasaur'});const times=[];let last=null;
+ for(let i=0;i<4*1500;i++){g.tick(.25);if(g.state.phase==='report'){g.act('nextDay');g.act('open');}const id=g.state.event?.instanceId;if(id&&id!==last){last=id;times.push(g.state.totalTime);g.transaction(null,s=>{s.event=null;return 'x';});}}
  assert.ok(times.length>=2,'應出現事件');for(let i=1;i<times.length;i++)assert.ok(times[i]-times[i-1]>=299,`間隔 ${times[i]-times[i-1]}`);
  g.act('setLayoutPause',{value:true});const t=g.state.totalTime;for(let i=0;i<40;i++)g.tick(.25);assert.equal(g.state.totalTime,t);
 });
 test('事件文字與選項符合長度限制，且最多兩個選項',()=>{for(const e of events){assert.ok(e.title.length<=12,e.title);assert.ok((e.dialogue||e.description).length<=40,e.title);assert.ok(e.choices.length<=2,e.title);for(const c of e.choices)assert.ok(c.label.length<=8,c.label);}});
 test('每天 20:00 打烊停在結算，按新的一天才回到 07:00',()=>{
- const g=fresh(finished);place(g,'apothecary',4,5);for(let i=0;i<4*200;i++)g.tick(.25);assert.equal(g.state.phase,'report');const day=g.state.day;for(let i=0;i<40;i++)g.tick(.25);assert.equal(g.state.phase,'report');assert.equal(g.act('nextDay').ok,true);g.tick(.25);assert.equal(g.state.day,day+1);assert.equal(g.state.phase,'open');assert.ok(g.state.time<1);
+ const g=fresh(finished);place(g,'apothecary',4,5);g.act('open');for(let i=0;i<4*200;i++)g.tick(.25);assert.equal(g.state.phase,'report');const day=g.state.day;for(let i=0;i<40;i++)g.tick(.25);assert.equal(g.state.phase,'report');assert.equal(g.act('nextDay').ok,true);g.tick(.25);assert.equal(g.state.day,day+1);assert.equal(g.state.phase,'closed');assert.equal(g.act('open').ok,true);assert.ok(g.state.time<1);
 });
 test('沒有員工時系統仍低速結帳與補貨，不扣薪資',()=>{
- const g=fresh(finished);place(g,'apothecary',4,5);for(let i=0;i<4*400;i++){g.tick(.25);if(g.state.phase==='report')g.act('nextDay');}assert.ok(g.state.totals.sales>0,'應有交易');assert.equal(g.state.stats.wages,0);assert.equal(g.lastError,'');assert.equal(g.state.phase,'open');
+ const g=fresh(finished);place(g,'apothecary',4,5);g.act('open');for(let i=0;i<4*400;i++){g.tick(.25);if(g.state.phase==='report'){g.act('nextDay');g.act('open');}}assert.ok(g.state.totals.sales>0,'應有交易');assert.equal(g.state.stats.wages,0);assert.equal(g.lastError,'');assert.equal(g.state.phase,'open');
 });
 test('招財 Lv.5 才能招聘，到 Lv.8 未進化不算解鎖',()=>{
  const g=fresh({level:4});assert.equal(g.act('hire',{id:'zhaocai'}).ok,false);g.transaction(null,s=>{s.level=5;return 'x';});assert.equal(g.act('hire',{id:'zhaocai'}).ok,true);
@@ -80,7 +81,7 @@ test('水蛟龍王一次只有一項駐點任務，加成真實生效',()=>{
  const g=fresh({level:8});g.act('hire',{id:'kyogre'});g.transaction(null,s=>{s.employees[0].workLevel=8;s.employees[0].spiritId='mewtwo';s.employees[0].role='host';return 'x';});
  assert.equal(g.act('setDragonTask',{id:'treasure'}).ok,true);const income=passive(g,g.state,'income');assert.ok(income>=.08);g.act('setDragonTask',{id:'brew'});assert.ok(passive(g,g.state,'income')<income);assert.ok(passive(g,g.state,'potion')>=.12);
 });
-test('主角平常在櫃台收銀，巡店從櫃台後方出發',()=>{const g=fresh();g.transaction(null,s=>{s.manager.x=3;s.manager.z=3;return 'x';});g.setManagerActive(true);assert.ok(Math.abs(g.state.manager.x-10)<=1&&Math.abs(g.state.manager.z-1)<=1);});
+test('主角平常在櫃台收銀，巡店從櫃台後方出發',()=>{const g=fresh();g.transaction(null,s=>{s.manager.x=3;s.manager.z=3;return 'x';});g.setManagerActive(true);assert.ok(Math.abs(g.state.manager.x-CHECKOUT.x)<=1&&Math.abs(g.state.manager.z-1)<=1);});
 test('宣傳員：等級不足不能聘請、不佔在班名額、只在毛利為正時加成',()=>{
  const g=fresh({level:1});assert.equal(g.act('hirePromoter',{id:'blissey'}).ok,false);assert.equal(g.act('hirePromoter',{id:'swampert'}).ok,true);assert.equal(g.state.promoter.id,'swampert');assert.equal(g.state.employees.length,0);
 });
