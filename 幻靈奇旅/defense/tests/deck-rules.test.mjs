@@ -59,6 +59,9 @@ test('PK host and join entry, invalid peer hello, ready, start and rematch enfor
     channel.onmessage({t:'ready',on:true});assert.equal(starts,0);
     channel.onmessage({t:'hello',deck:base.slice(0,4),name:'valid'});
     channel.onmessage({t:'hello_ack'});
+    channel.onmessage({t:'hello',deck:[],name:'valid'});
+    channel.onmessage({t:'hello',deck:base.slice(0,4),name:'valid'});
+    assert.ok(lobby.session.foe,'a corrected deck recovers from an invalid handshake');
     nodes.get('pkReady').onclick();
     channel.onmessage({t:'hello',deck:base.slice(0,4),name:'valid'});
     assert.equal(lobby.session.ready.me,true,'a retried hello cannot undo ready');

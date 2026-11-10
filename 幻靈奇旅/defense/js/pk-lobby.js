@@ -95,7 +95,7 @@ export function createPkLobby({openModal, closeModal, ribbon, esc, picture, spir
       s.send({t:'hello_ack'});
       if (!valid(m.deck)) { s.foe = null; s.ready = {me:false, foe:false}; s.error = '對手卡組無法使用：需四個基礎格（三色蛋佔三格）。請雙方更新網頁並調整出擊編組後重新建立房間。'; room(); return; }
       const signature = JSON.stringify([m.name, m.deck]);
-      if (s.foeSignature === signature) return; // a retry must not cancel either player's confirmation
+      if (s.foe && s.foeSignature === signature) return; // a retry must not cancel either player's confirmation
       s.foeSignature = signature; s.error = '';
       const stock = {};
       for (const id of PK_ITEMS)
