@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {handlePkRelay} from '../server/pk-relay.js';
-import {relayChannel} from '../js/pk-https.js';
+import {relayChannel,coalesceSnapshot} from '../js/pk-https.js';
 import {makeChannel} from '../js/pk-net.js';
 function database(){const sql=new DatabaseSync(':memory:');const db={prepare(query){let args=[];return {bind(...values){args=values;return this;},async run(){const r=sql.prepare(query).run(...args);return {meta:{changes:Number(r.changes)}};},async first(){return sql.prepare(query).get(...args);},async all(){return {results:sql.prepare(query).all(...args)};}};},async batch(commands){const results=[];for(const c of commands)results.push(await c.run());return results;}};return {db,sql};}
 test('HTTPS relay pairs same-account/IP pages, delivers idempotent actions and latest snapshots, and closes',async()=>{
@@ -25,4 +25,7 @@ test('HTTPS relay pairs same-account/IP pages, delivers idempotent actions and l
 test('relay rejects another origin and malformed data before touching the database',async()=>{
  const response=await handlePkRelay(new Request('https://example.test/api/pk',{method:'POST',headers:{Origin:'https://evil.example'},body:'{}'}),null);assert.equal(response.status,403);
  const preflight=await handlePkRelay(new Request('https://example.test/api/pk',{method:'OPTIONS',headers:{Origin:'https://ymguan3-boop.github.io'}}),null);assert.equal(preflight.status,204);assert.equal(preflight.headers.get('Access-Control-Allow-Origin'),'https://ymguan3-boop.github.io');
+});
+test('coalescing pending frames retains battle events while replacing positional state',()=>{
+ const result=coalesceSnapshot({t:'snap',d:{t:1,f:[1],ev:[{type:'deal'}]}},{t:'snap',d:{t:2,f:[2],ev:[{type:'play'}]}});assert.equal(result.d.t,2);assert.deepEqual(result.d.f,[2]);assert.deepEqual(result.d.ev.map(e=>e.type),['deal','play']);
 });
