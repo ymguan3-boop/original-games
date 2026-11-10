@@ -1,10 +1,10 @@
-import {decorEffects,obstacles} from './decorations.js?v=20261110-chibi2';
-import {purchaseChance} from './economy-v2.js?v=20261110-chibi2';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261110-chibi2';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261110-chibi2';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261110-chibi2';
-import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261110-chibi2';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261110-chibi2';
+import {decorEffects,obstacles} from './decorations.js?v=20261110-chibi3';
+import {purchaseChance} from './economy-v2.js?v=20261110-chibi3';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261110-chibi3';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261110-chibi3';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261110-chibi3';
+import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261110-chibi3';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261110-chibi3';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
