@@ -1,0 +1,14 @@
+✔ PK requires four unique deployable base cards; supports and malformed values cannot fill holes (0.7754ms)
+✔ one-click deck ranks owned eligible cards, keeps fixed slots, and never invents missing cards (6.2959ms)
+✔ PK host and join entry, invalid peer hello, ready, start and rematch enforce deployment rules (1566.7415ms)
+✔ 三色蛋佔三個基礎格：一鍵編組與 PK 驗證都算三格 (0.3793ms)
+✔ locked desktop and unlocked phone both validate and simulate a zhaocai opponent without granting pool access (8.8069ms)
+✔ desktop and portrait PK islands have a clear water gap from all stage islands (0.1068ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2123.156

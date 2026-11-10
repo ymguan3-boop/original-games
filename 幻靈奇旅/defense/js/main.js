@@ -4,13 +4,14 @@
    phantom-defense-v1. */
 import {STAGES, SHAPES, eggTrio, configureTutorialStep, alliesOnField as alliesCount, ELEMENTS, ELEMENT_EFFECTS, SUPPORT, ITEMS, DECK_SIZE, DECK_BASE, DECK_RED, HAND_SIZE, ULT_CD, DEAL_EVERY, passiveLines, ultCooldown, TRAPS, killPoints, isBaseCard, isRedCard, profileFor, isSupport, createGame, beginDealing, step, playCard, moveCard, canPlay, useItem, itemReady, elementMultiplier, evolutionsOf, MAX_RANK, TRAP_CARDS, BAG_ITEMS, TRAP_LIFE, MAX_TRAPS, placeTrap, useBagItem, isThreeColorEgg, validEggPosition, PK_ITEMS, PK_ONLY_ITEMS, PK_STAGE, pkArenaFor, PK_TIME, PK_RAGE_AT} from './rules.js?v=20261107-fixes-r1';
 import {createPkIsland} from './pk-island.js?v=20261107-fixes-r1';
-import {createPkLobby} from './pk-lobby.js?v=20261110-relay-r3';
+import {createPkLobby} from './pk-lobby.js?v=20261110-cross-device-r1';
+import {mergeBattleAddon} from './battle-catalog.js?v=20261110-cross-device-r1';
 import {snapshot, createMirror, applySnapshot, advanceMirror} from './pk-sync.js?v=20261107-fixes-r1';
 import {loadEngine, loadThree, loadGltf, cloneModel, nativeAsset} from './actors.js?v=20261107-fixes-r1';
 import {createToonKit} from './style.js?v=20261107-fixes-r1';
 import {createChartModels} from './chart-models.js?v=20261107-fixes-r1';
 import {createView} from './view.js?v=20261107-fixes-r1';
-import {createSeaChart} from './sea3d.js?v=20261107-fixes-r1';
+import {createSeaChart} from './sea3d.js?v=20261110-cross-device-r1';
 import {defensePool, poolPreview, starterRewards, drawWithStore, DRAW_COST, STARTER_COUNT, isTrapCard, isDefenseItem} from './gacha.js?v=20261107-fixes-r1';
 import {buildPath} from './stages.js?v=20261107-fixes-r1';
 import {createStore, initialState} from '../../survivors/js/save-bridge.js?v=20261107-fixes-r1';
@@ -111,15 +112,16 @@ function shapeLabel(id, strong) {
   return ultimateFor(id)?.description || SHAPES[p.type].label;
 }
 
-/* 招財完成商會第三階後才併入資料 */
-async function zhaocaiAddon(url) { let on = false; try { on = !!JSON.parse(localStorage.getItem('phantom_shared_unlocks'))?.zhaocaiStage3Completed; } catch {} if (!on) return null; const r = await fetch(url); return r.ok ? r.json() : null; }
+/* Every device knows battle definitions; only unlocked players gain pool access. */
 async function loadData() {
   const get = (p) => fetch(new URL(p, ASSET_BASE)).then((r) => { if (!r.ok) throw Error('讀取失敗：' + p); return r.json(); });
   const [spirits, art, catalog, evolution, pool] = await Promise.all([get('data/spirits.json'), get('data/card-art.json'), get('data/spirit-catalog.json'), get('survivors/data/evolution.json'), get('survivors/data/gacha-pool.json')]);
   const crown = await get('data/crown-addon.json');
   spirits.push(...crown.spirits); catalog.entries.push(...crown.catalogEntries); Object.assign(evolution, crown.evolution); Object.assign(art.cards || art, crown.art); globalThis.PhantomAddonPassives = {...crown.passives};
-  const addon = await zhaocaiAddon(new URL('data/zhaocai-addon.json', ASSET_BASE));
-  if (addon) { Object.assign(globalThis.PhantomAddonPassives, addon.passives); spirits.push(...addon.spirits); catalog.entries.push(...addon.catalogEntries); Object.assign(evolution, addon.evolution); Object.assign(art.cards || art, addon.art); pool.purple.push(...addon.pool.purple); }
+  const addon = await get('data/zhaocai-addon.json');
+  const unlocked = !!readJson('phantom_shared_unlocks', {}).zhaocaiStage3Completed;
+  mergeBattleAddon({spirits, art, catalog, evolution, pool}, addon, unlocked);
+  Object.assign(globalThis.PhantomAddonPassives, addon.passives);
   return {spirits, art, catalog, evolution, pool, excluded: pool.excludedIds || [], spiritMap: new Map(spirits.map((s) => [s.id, s])), entries: new Map((catalog.entries || []).map((e) => [e.id, e]))};
 }
 
@@ -335,7 +337,7 @@ function openBoatman() {
 function bindLobby() {
   chart = createSeaChart($('seaChart'), {THREE: globalThis.THREE, stages: STAGES, esc, onPick: (i) => pickIsle(i), onHome: openBoatman, onPk: () => pkLobby.open()});
   pkLobby = createPkLobby({openModal, closeModal: () => $('modal').close(), ribbon, esc, picture, spirit, validateDeck: (ids) => validPkDeck(ids, data.evolution, spirit), deck: () => (normalizeDeck(), record.deck.slice()), inventory: tacticalInventory, costume: () => costumeFor(journey()).id,
-    name: () => record.pkName || (record.pkName = '旅人' + String(Math.floor(Math.random() * 90) + 10)), setName: (n) => { record.pkName = n; saveRecord(); }, toast, onStart: startPkGame});
+    name: () => record.pkName || (record.pkName = '旅人' + String(Math.floor(Math.random() * 90) + 10)), setName: (n) => { record.pkName = n; saveRecord(); }, toast, onEditDeck: openDeck, onStart: startPkGame});
   $('islePanel').onclick = (e) => {
     if (e.target.closest('#sortieBtn')) beginStage();
     else if (e.target.closest('[data-open="deck"]')) openDeck();

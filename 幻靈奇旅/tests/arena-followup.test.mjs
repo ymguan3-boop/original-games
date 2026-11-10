@@ -3,6 +3,18 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import fs from 'node:fs';
 const source=fs.readFileSync(new URL('../js/game.js',import.meta.url),'utf8');
+
+test('all outdoor zhaocai forms grow 1.5 times and remain shorter than the outdoor Arala elephant',()=>{
+ const ctx=vm.createContext({window:{}});vm.runInContext(fs.readFileSync(new URL('../js/spirit-combat.js',import.meta.url),'utf8'),ctx);
+ const sizes=JSON.parse(fs.readFileSync(new URL('../data/model-size-overrides.json',import.meta.url),'utf8'));
+ const elephantHeight=sizes.feraligatr.desiredWorldHeight*2;
+ for(let stage=1;stage<=3;stage++){
+  const id=stage===1?'zhaocai':'zhaocai-'+stage;
+  const scale=ctx.window.SpiritCombat.outdoorScale({id});assert.equal(scale,1.5);
+  const height=1.275*Math.pow(1.3,stage-1)*scale;assert.ok(height<elephantHeight);
+ }
+ assert.equal(ctx.window.SpiritCombat.outdoorScale({id:'feraligatr'}),1);
+});
 test('a fishing streak grants four fish per win and none for zero or invalid wins',async()=>{
  const fn=source.slice(source.indexOf('async function spawnRiverGoldfish('),source.indexOf('// 魚飼料：'));
  const ctx=vm.createContext({river:{},byId:{kyogre:{}},spawnOnRiver:async()=>({}),showWorldBroadcast(){},toast(){},S:{errors:[]}});

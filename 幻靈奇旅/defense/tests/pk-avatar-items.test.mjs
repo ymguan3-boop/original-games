@@ -41,7 +41,7 @@ test('the rival uses the SAME hero GLB on the far barrel with a seated pose and 
 test('room handshake shares a validated opponent appearance ID; the renderer receives that ID', () => {
   assert.match(lobby, /costume = \(\) => 'trainer'/);
   assert.match(lobby, /costume: costume\(\)/);
-  assert.match(lobby, /stock: session\.me\.stock, costume: session\.me\.costume/);
+  assert.match(lobby, /stock: connected\.me\.stock, costume: connected\.me\.costume/);
   assert.match(lobby, /session\.foe\.costume = m\.costume/);
   assert.match(main, /costume: \(\) => costumeFor\(journey\(\)\)\.id/);
   assert.match(main, /view\.rivalCostume = costumeFor\(pk\.foe\?\.costume \|\| 'trainer'\)\.id/);

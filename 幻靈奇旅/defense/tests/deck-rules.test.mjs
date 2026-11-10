@@ -36,7 +36,8 @@ test('PK host and join entry, invalid peer hello, ready, start and rematch enfor
   const nodes = new Map();
   globalThis.document = {getElementById:id=>nodes.get(id)};
   let lastHtml='', selected=base.slice(0,3), opens=0, starts=0, hostCalls=0, joinCalls=0;
-  const channel={send(){},close(){}};
+  const sent=[];
+  const channel={send(m){sent.push(m);},close(){}};
   const lobby=createPkLobby({
     openModal(html){opens++;lastHtml=html;nodes.clear();for(const m of html.matchAll(/id="([^"]+)"/g))nodes.set(m[1],{value:'ABCD',focus(){}});},
     closeModal(){},ribbon:()=>'',esc:String,picture:id=>id,spirit,deck:()=>selected.slice(),validateDeck:validate,
@@ -47,13 +48,21 @@ test('PK host and join entry, invalid peer hello, ready, start and rematch enfor
     lobby.open();assert.equal(opens,1,'an incomplete deck still opens the lobby');assert.match(lastHtml,/pk-error/,'and shows how to fill the deck');
     selected=base.slice(0,4);lobby.open();
     selected=base.slice(0,3);await nodes.get('pkCreate').onclick();assert.equal(hostCalls,0);
+    assert.match(nodes.get('pkNotice').textContent,/四個基礎格/,'local error is written inside the modal');
     nodes.get('pkJoin').onclick();assert.equal(joinCalls,0);
     selected=base.slice(0,4);lobby.open();await nodes.get('pkCreate').onclick();
     await new Promise(resolve=>setImmediate(resolve));assert.ok(lobby.session);
+    await new Promise(resolve=>setTimeout(resolve,1550));
+    assert.ok(sent.filter(m=>m.t==='hello').length>=2,'missing handshake acknowledgement triggers a resend');
     channel.onmessage({t:'hello',deck:{},name:'bad'});assert.equal(lobby.session.foe,null);
+    assert.match(lastHtml,/role="alert"[\s\S]*對手卡組無法使用/,'invalid peer status is inside the dialog');
     channel.onmessage({t:'ready',on:true});assert.equal(starts,0);
     channel.onmessage({t:'hello',deck:base.slice(0,4),name:'valid'});
-    nodes.get('pkReady').onclick();channel.onmessage({t:'ready',on:true});assert.equal(starts,1);
+    channel.onmessage({t:'hello_ack'});
+    nodes.get('pkReady').onclick();
+    channel.onmessage({t:'hello',deck:base.slice(0,4),name:'valid'});
+    assert.equal(lobby.session.ready.me,true,'a retried hello cannot undo ready');
+    channel.onmessage({t:'ready',on:true});assert.equal(starts,1);
     channel.onmessage({t:'loaded'});
     channel.onmessage({t:'snap',d:{frame:1}});
     channel.onmessage({t:'snap',d:{frame:2}});

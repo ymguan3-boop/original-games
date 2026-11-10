@@ -8,7 +8,7 @@ const HOME = [102, 556];
 export const MOBILE_SPOTS = [[170, 735], [330, 690], [470, 620], [560, 520], [480, 420], [260, 370], [230, 240], [470, 260], [600, 160], [380, 90]];
 const MOBILE_HOME = [80, 805];
 /* the PK colosseum island, just above (north of) the town pier */
-const PK_SPOT = [92, 404], MOBILE_PK_SPOT = [66, 640];
+export const PK_SPOT = [20, 296], MOBILE_PK_SPOT = [35, 505];
 const WATER_Y = -0.12, PITCH = 0.95, FOV = 38;
 const isPortrait = () => typeof window !== 'undefined' && window.matchMedia('(orientation: portrait) and (max-width: 720px)').matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));

@@ -1,7 +1,7 @@
 /* Combat presentation uses existing creature motions; world/battle scales remain independent. */
 (()=>{'use strict';
  const water=s=>s?.element==='water'||s?.type==='潮';
- const outdoorMultipliers={totodile:1.2,croconaw:1.2,typhlosion:1.2,prinplup:1.2,empoleon:1.2};
+ const outdoorMultipliers={totodile:1.2,croconaw:1.2,typhlosion:1.2,prinplup:1.2,empoleon:1.2,zhaocai:1.5,'zhaocai-2':1.5,'zhaocai-3':1.5};
  function fishingOpponents(spirits,random=Math.random){
   const pool=spirits.filter(water);if(!pool.length)return [];
   const squad=['kyogre','groudon','rayquaza'].map(id=>pool.find(s=>s.id===id));

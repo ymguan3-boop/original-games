@@ -11,8 +11,8 @@ import {createLoadingGate} from '../../初光商會/js/loading-gate.js';
 const read=n=>JSON.parse(fs.readFileSync(new URL('../../初光商會/data/'+n+'.json',import.meta.url)));
 const data=()=>Object.fromEntries([['catalog','shop-catalog'],['hirePool','hire-pool'],['spirits','spirits'],['evolution','evolution'],['levels','store-levels'],['config','economy'],['management','management']].map(([k,n])=>[k,read(n)]));
 const memory=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,v)=>m.set(k,v)};};
-test('left door remains reachable at every tier and reserves the actual door cell',()=>{
- for(let level=1;level<=10;level++){applyRoom(level);assert.equal(ENTRANCE.x,1);assert.equal(ENTRANCE.z,Math.floor(dimensions(level).height)-3);assert.ok(findPath(ENTRANCE,CHECKOUT,[],level));assert.ok(isLayoutValid([],level));assert.equal(isLayoutValid([{...ENTRANCE}],level),false);}
+test('updated front door remains reachable at every tier and reserves the actual door cell',()=>{
+ for(let level=1;level<=10;level++){applyRoom(level);assert.equal(ENTRANCE.x,Math.round((dimensions(level).width-1)/2));assert.equal(ENTRANCE.z,Math.floor(dimensions(level).height)-2);assert.ok(findPath(ENTRANCE,CHECKOUT,[],level));assert.ok(isLayoutValid([],level));assert.equal(isLayoutValid([{...ENTRANCE}],level),false);}
 });
 test('reloading a previous schema preserves gold and inventory; stale tab cannot charge again',()=>{
  const storage=memory(),d=data(),g=new Game({storage,data:d});const old=structuredClone(g.state);old.schemaVersion=2;old.gold=7777;storage.setItem(g.key,JSON.stringify(old));

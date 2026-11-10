@@ -1961,3 +1961,6 @@ body.defense-scene #lobby .chart-head .chart-tools {align-items:stretch;min-widt
 body.defense-scene #lobby .chart-head .chart-tools button.tool {margin:0;letter-spacing:0;overflow:hidden;}
 body.defense-scene #lobby .chart-head .chart-tools .ico {flex:0 0 auto;width:16px;height:16px;}
 body.defense-scene #lobby .chart-head .chart-tools span:not(.ico) {font-size:inherit;line-height:1.2;word-break:keep-all;white-space:nowrap;}
+
+/* PK validation belongs inside the top-layer dialog, including on small phones. */
+.pk-error:empty{display:none}.pk-error{padding:10px;border-radius:10px;background:#fff0dc;border:1px solid #d5a36b;line-height:1.5;overflow-wrap:anywhere}.pk .modal-actions{flex-wrap:wrap;gap:8px}.pk .modal-actions button{flex:1 1 120px}

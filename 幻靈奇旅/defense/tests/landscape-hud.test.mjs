@@ -36,6 +36,6 @@ test('fusion and evolution no longer create flying yellow stars', () => {
 });
 
 test('published HTML has updated CSS and JS versions to bypass cached old layout', () => {
-  assert.match(html,/defense\.css\?v=20261107-c6/);
-  assert.match(html,/main\.js\?v=20261110-relay-r3/);
+  assert.match(html,/defense\.css\?v=20261110-cross-device-r1/);
+  assert.match(html,/main\.js\?v=20261110-cross-device-r1/);
 });

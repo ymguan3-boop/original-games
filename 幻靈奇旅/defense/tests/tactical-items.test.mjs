@@ -90,6 +90,6 @@ test('zero-stock filtering, new item metadata and host-authoritative PK actions 
   assert.match(main,/\.filter\(\(u\) => u\.count > 0 &&/,'empty items never render');
   assert.match(main,/pk\.itemStock\[id\]--/,'the host debits guest tactical stock');
   assert.match(main,/pk\.send\(\{t:'itemUsed',id\}\)/,'guest is charged only after host approves');
-  assert.match(lobby,/stock: session\.me\.stock/,'guest inventory announced in room handshake');
+  assert.match(lobby,/stock: connected\.me\.stock/,'guest inventory announced in room handshake');
   assert.doesNotMatch(css,/body\.pk-mode #items, body\.pk-mode #speed/,'PK item icon should not be hidden');
 });
