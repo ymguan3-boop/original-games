@@ -6,7 +6,8 @@ export const ACTOR_DIAMETER=.82;
 export const buildingLevel=(level=1)=>Math.min(level,5);
 /* 店面接近正方形放大：Lv.1 14×12 到 Lv.5 18×16，門口跟著前牆往外移 */
 export const dimensions=(level=1)=>({width:(13+buildingLevel(level))*Math.SQRT1_2,height:(11+buildingLevel(level))*Math.SQRT1_2});
-export function applyRoom(level){const d=dimensions(level);ENTRANCE.x=1;ENTRANCE.z=Math.floor(d.height)-3;CHECKOUT.x=Math.floor(d.width)-3;FIXED_CELLS.splice(0,FIXED_CELLS.length,...[-1,0,1].map(dx=>`${CHECKOUT.x+dx},2`));}
+/* 新版店面：大門在正面牆中央（朝鏡頭），收銀台維持在後牆右側 */
+export function applyRoom(level){const d=dimensions(level);ENTRANCE.x=Math.round((d.width-1)/2);ENTRANCE.z=Math.floor(d.height)-2;CHECKOUT.x=Math.floor(d.width)-3;FIXED_CELLS.splice(0,FIXED_CELLS.length,...[-1,0,1].map(dx=>`${CHECKOUT.x+dx},2`));}
 export function blocked(shelves=[]){return new Set([...FIXED_CELLS,...shelves.map(s=>`${s.x},${s.z}`)]);}
 export function walkable(p,shelves=[],level=1){const {width,height}=dimensions(level);if(!(p.x>=1&&p.z>=1&&p.x<=width-2&&p.z<=height-2))return false;for(const key of blocked(shelves)){const [x,z]=key.split(',').map(Number),dx=Math.max(Math.abs(p.x-x)-.5,0),dz=Math.max(Math.abs(p.z-z)-.5,0);if(Math.hypot(dx,dz)<ACTOR_DIAMETER/2-.00001)return false;}return true;}
 export function findPath(start,end,shelves=[],level=1){
@@ -19,5 +20,5 @@ export function findPath(start,end,shelves=[],level=1){
 }
 export function isLayoutValid(shelves,level=1){const seen=new Set([...FIXED_CELLS,`${ENTRANCE.x},${ENTRANCE.z}`,'2,3',...Array.from({length:Math.floor(dimensions(level).height)-4},(_,i)=>`${CHECKOUT.x},${3+i}`)]);for(const s of shelves){const k=`${s.x},${s.z}`;if(!Number.isInteger(s.x)||!Number.isInteger(s.z)||!walkable(s,[],level)||seen.has(k))return false;seen.add(k);}return [CHECKOUT,WAREHOUSE,...shelves.filter(s=>!s.decoration).map(s=>({x:s.x,z:s.z+1}))].every(p=>findPath(ENTRANCE,p,shelves,level)!==null);}
 
-export const promoterPoint=()=>({x:-3.8,z:ENTRANCE.z-1.5});
-export function customerDisplayPoint(c){const k=c.arrivalRemaining>0?1-c.arrivalRemaining/5:c.exitingAtDoor?1-c.exitTravel/5:null;if(k===null)return c;const u=Math.max(0,Math.min(1,k));return {x:-6+7*u,z:ENTRANCE.z-2*(1-u)};}
+export const promoterPoint=()=>({x:ENTRANCE.x-2.6,z:ENTRANCE.z+3.4});
+export function customerDisplayPoint(c){const k=c.arrivalRemaining>0?1-c.arrivalRemaining/5:c.exitingAtDoor?1-c.exitTravel/5:null;if(k===null)return c;const u=Math.max(0,Math.min(1,k));return {x:ENTRANCE.x,z:ENTRANCE.z+7*(1-u)};}
