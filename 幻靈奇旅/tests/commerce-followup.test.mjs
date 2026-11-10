@@ -33,9 +33,9 @@ test('empty-shop tutorial, mandatory placed shelf and promoter, and first free h
 
 test('onboarding skips an already furnished shop but continues after its own first shelf placement',()=>{
  const old={document:globalThis.document,MutationObserver:globalThis.MutationObserver};
- const nodes=new Map();const node=()=>({hidden:false,classList:{add(){},remove(){}},contains:()=>false});
+ const nodes=new Map(),listeners=[];const node=()=>({hidden:false,classList:{add(){},remove(){}},contains:()=>false,getClientRects:()=>[{}]});
  const box=node();box.querySelector=q=>{if(!nodes.has(q))nodes.set(q,node());return nodes.get(q);};
- globalThis.document={getElementById:id=>id==='tutor'?box:null,querySelector:()=>null,addEventListener(){},body:{dataset:{},removeAttribute(){},classList:{contains:()=>false}}};
+ globalThis.document={getElementById:id=>id==='tutor'?box:null,querySelector:()=>node(),addEventListener(type,fn){if(type==='click')listeners.push(fn);},body:{dataset:{},removeAttribute(){},classList:{contains:()=>false}}};
  globalThis.MutationObserver=class{observe(){}};
  try{
   const g=new Game({storage:memory(),data:data()});
@@ -48,6 +48,12 @@ test('onboarding skips an already furnished shop but continues after its own fir
   fresh.act('purchaseShelf',{type:'apothecary'});fresh.act('placeShelf',{shelfId:fresh.state.lastPurchasedShelf,x:3,z:5});first.sync();
   assert.equal(fresh.state.tutorialState.done,false,'placing the tutorial shelf must not terminate the running tutorial');
   fresh.act('hirePromoter',{id:'swampert'});first.sync();assert.equal(nodes.get('[data-skip]').disabled,false);
+  fresh.act('tutorial',{patch:{step:'tour-tasks'}});first.sync();let blocked=0;
+  const event=target=>({target,preventDefault(){blocked++;},stopPropagation(){},stopImmediatePropagation(){}});
+  for(const listen of listeners)listen(event({closest:selector=>selector.includes('#confirm')}));
+  assert.equal(blocked,0,'confirmation dialog remains usable under a focused tutorial');
+  for(const listen of listeners)listen(event({closest:()=>false}));
+  assert.ok(blocked>0,'unrelated controls remain blocked');
  }finally{Object.assign(globalThis,old);}
 });
 test('updated front door remains reachable at every tier and reserves the actual door cell',()=>{

@@ -34,7 +34,7 @@ export function installTutorial({game,act,confirmSkip,fullscreen}){
  if(!canStartTutorial(game.state)&&!game.state.tutorialState?.done)finish();
  /* 未完成就離開：下次進來從頭開始 */
  if(game.state.tutorialState&&!game.state.tutorialState.done&&game.state.tutorialState.step!=='welcome')act('tutorial',{patch:{step:'welcome',placed:false,hired:false,assigned:false,patrolled:false,patrolReturned:false}});
- const allowed=t=>{if(!t||box.contains(t)||!focused||focused.contains(t))return true;if(t.closest?.('#hub [data-close],.fortune-mask,#loading-gate,#furniture-controls'))return true;if(document.body.classList.contains('decorate-active')&&t.closest?.('canvas,#finish-decorate,.placement-controls'))return true;return false;};
+ const allowed=t=>{if(!t||box.contains(t)||!focused||focused.contains(t))return true;if(t.closest?.('#confirm,#hub [data-close],.fortune-mask,#loading-gate,#furniture-controls'))return true;if(document.body.classList.contains('decorate-active')&&t.closest?.('canvas,#finish-decorate,.placement-controls'))return true;return false;};
  for(const ev of ['pointerdown','mousedown','touchstart','click'])document.addEventListener(ev,e=>{const st=game.state.tutorialState;if(!st||st.done||box.hidden)return;if(allowed(e.target))return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();},{capture:true,passive:false});
  /* 選單換頁時重新找要框的按鈕 */
  let pending=0;const refocus=()=>{if(pending)return;pending=requestAnimationFrame(()=>{pending=0;const t=game.state.tutorialState;if(!t||t.done)return;const step=STEPS[t.step==='welcome'?'orient':t.step];if(step)setFocus(step.focus);});};

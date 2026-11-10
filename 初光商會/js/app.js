@@ -21,7 +21,7 @@ import {createScene} from './scene.js?v=20261110-shop-pk-r1';
 import {createScene2D} from './scene-2d.js?v=20261110-shop-pk-r1';
 import {createDock} from './dock-2d.js?v=20261110-shop-pk-r1';
 import {createHub} from './shop-hub.js?v=20261110-shop-pk-r1';
-import {installTutorial} from './shop-tutorial.js?v=20261110-shop-pk-r1';
+import {installTutorial} from './shop-tutorial.js?v=20261110-shop-pk-r2';
 import {commissionNotice} from './commissions.js?v=20261110-shop-pk-r1';
 import {dailyTasks} from './management.js?v=20261110-shop-pk-r1';
 import {shelfTypes} from './furniture.js?v=20261110-shop-pk-r1';
@@ -95,7 +95,7 @@ async function boot(){let gate;try{
  shopMusic=installShopMusic();game=await createGame({storage:localStorage,key:'firstlight_shop_v1'});seenPatrolResolution=game.state.recentPatrolResolution?.id||null;seenChapterClear=game.state.chapterClear?.id||null;seenChase=game.state.customerChaseResult?.id||null;
  shopNavigation=installShopNavigation({game,onError:e=>toast(e.message,true)});
  hub=createHub({game,getScene:()=>scene,act:action,toast,esc,evolve:beginEvolution,leave:()=>$('#return-to-game').click(),settings:{volume:()=>shopMusic?.volume??40,quality:()=>quality,exportSave,recover:recoverSave,is2D:()=>view2d,switchView},onChange:()=>{game.uiBusy=evolutionInProgress||hub?.isOpen;renderHUD();}});
- tutorial=installTutorial({game,act:action,fullscreen,confirmSkip:fn=>confirmAction('要跳過新手教學嗎？之後可以到「商會 → 更多」重播。',fn)});
+ tutorial=installTutorial({game,act:action,fullscreen,confirmSkip:fn=>confirmAction('要跳過新手教學嗎？之後只有店內沒有貨架時，才可到「商會 → 存檔與教學」重播。',fn)});
  const trial=['localhost','127.0.0.1'].includes(location.hostname)&&new URLSearchParams(location.search).has('shopDev');if(innerWidth<700)game.data.config.maxCustomers=6;
  await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id)});window.shop=game;window.shopTrial=trial;
  const sceneFactory=view2d?createScene2D:createScene;document.body.classList.toggle('view-2d',view2d);if(view2d)createDock({game,hub,esc});
