@@ -27,7 +27,7 @@ export function applyFortune(g,s,p){
  if(f.queue==='serve')for(const x of s.customers)if(QUEUE.includes(x.state)){x.wait=0;x.emotion='happy';}
  if(f.queue==='leave')for(const x of s.customers)if(QUEUE.includes(x.state)){x.basket=[];x.state='Leave';x.timer=0;x.path=[];x.emotion='sad';g.route?.(s,x,ENTRANCE);}
  if(f.gift){const pool=g.data.catalog.filter(i=>i.isSellable&&!i.isRestricted&&s.level>=i.unlockStoreLevel);const item=pool[Math.floor((p.roll??Math.random())*pool.length)]||pool[0];if(item)s.inventory[item.sku]=(s.inventory[item.sku]||0)+f.gift;}
- if(f.typhoon){for(const sh of s.shelves)s.inventory[sh.sku]=(s.inventory[sh.sku]||0)+(sh.stock||0);s.shelves=[];s.undo=null;for(const x of [...s.customers,...s.employees])x.path=[];}
+ if(f.typhoon){for(const sh of s.shelves)s.inventory[sh.sku]=(s.inventory[sh.sku]||0)+(sh.stock||0);s.shelves=[];s.undo=null;for(const x of s.customers){x.basket=[];x.path=[];if(!['Leave','Paid'].includes(x.state)){x.state='Leave';x.timer=0;g.route?.(s,x,ENTRANCE);}}for(const x of s.employees){x.path=[];x.workTask=null;}}
  g.log?.(s,`${f.deck}卡「${f.title}」：${f.text}`);if(c)g.notice?.(s,c.id,`${f.icon} ${f.title}`,f.deck==='機會'?'good':'bad');
  return `${f.deck}卡：${f.title}`;
 }
