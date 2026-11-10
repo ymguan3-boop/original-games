@@ -152,3 +152,10 @@ html body.app-loading #world,html body.app-loading .world2d{visibility:hidden!im
 @media(max-width:540px){html body header.topbar #level-name{order:-1;flex:1 1 48%}html body header.topbar #gold{order:-1;margin-left:auto}html body header.topbar .hud-chip{font-size:11px!important}html body header.topbar #hud-clock{max-width:145px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 
 .promoter-flyer{position:absolute;right:12%;top:40%;width:32px;padding:8px 3px;background:#fff6d7;border:1px solid #a16c33;border-radius:2px;color:#755022;font-size:8px;text-align:center;box-shadow:0 2px 3px #4a341c44;animation:flyer-wave 2.4s ease-in-out infinite;transform-origin:bottom left}@keyframes flyer-wave{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(20deg)}}@media(prefers-reduced-motion:reduce){.promoter-flyer{animation:none}}
+
+/* 店舖整備列：打烊後選了「店舖整備」才出現，按「新的一天」開門 */
+.prep-bar{position:fixed;left:50%;bottom:74px;transform:translateX(-50%);z-index:25;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);padding:8px 10px 8px 14px;background:#fff8ea;border:3px solid #4a2e1c;border-radius:16px;box-shadow:0 3px 0 #4a2e1c;color:#4a2e1c;font-weight:800;font-size:14px}
+.prep-bar[hidden]{display:none}
+.prep-bar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prep-bar button{flex:none;font:inherit;font-size:15px;color:#fff;background:#6a9a3e;border:2px solid #4a2e1c;border-radius:12px;padding:7px 14px;cursor:pointer}
+@media (max-width:520px){.prep-bar span{display:none}}

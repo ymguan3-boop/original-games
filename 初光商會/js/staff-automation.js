@@ -26,7 +26,7 @@ const wandering=(s,e)=>{
  next();return null;
 };
 /* 一鍵最佳配置：鎖定的員工不動，其餘依擅長職務與熟練度排入在班名額 */
-export function autoAssign(g,s){
+export function autoAssign(g,s,auto=false){
  const capacity=capacityOf(g,s),jobs=WORK_JOBS,locked=s.employees.filter(e=>e.lockedAssignment&&e.role!=='standby'),chosen=new Map(locked.map(e=>[e.id,e.role])),count=j=>[...chosen.values()].filter(r=>r===j).length;
  const free=s.employees.filter(e=>!e.lockedAssignment&&e.fatigue<85).sort((a,b)=>b.workLevel-a.workLevel);
  for(const job of jobs){if(chosen.size>=capacity||count(job))continue;const pick=free.find(e=>!chosen.has(e.id)&&preferredJob(g,e)===job)||null;if(pick)chosen.set(pick.id,job);}
@@ -35,7 +35,7 @@ export function autoAssign(g,s){
  for(const e of s.employees){if(e.lockedAssignment)continue;const role=chosen.get(e.id)||'standby';if(e.role!==role&&e.workTask){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}e.role=role;e.path=[];e.nextTaskAt=0;}
  const targets=new Set();
  for(const e of s.employees){if(e.role==='standby'){sendToRest(g,s,e);continue;}const preferred=e.role==='standby'?restingPositions(s).get(e.id):stations[e.role]||{x:5,z:5},spot=employeeSpot(g,s,e,preferred,targets);if(spot){g.route(s,e,spot);targets.add(`${spot.x},${spot.z}`);}}
- g.log(s,`一鍵配置完成：${chosen.size} 位在班。`);
+ g.log(s,auto?`自動分配：${chosen.size} 位在班。`:`一鍵配置完成：${chosen.size} 位在班。`);
  return `已配置 ${chosen.size} 位在班員工`;
 }
 export function staffAutomation(g,s,dt){

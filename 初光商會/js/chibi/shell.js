@@ -92,7 +92,7 @@ export function buildShell(level,opts={}){
 
  /* 地基與地板 */
  const plinthMat=texMat(stoneTex({base:S.plinth,mortar:shade(S.plinth,-.25),rows:2,cols:4,seed:level*13,rough:worn?.3:.12}),(w+2*t)/2,1);
- box(w+2*t+.36,-GROUND,d+2*t+.36,plinthMat,0,GROUND/2,0);
+ box(w+2*t+.36,-GROUND-.015,d+2*t+.36,plinthMat,0,(GROUND-.015)/2,0);
  const floor=box(w,.06,d,texMat(floorTex(level),w/(level<=2?2.4:2),d/(level<=2?2.4:2)),0,-.03,0);floor.castShadow=false;
 
  /* 牆：面順序 +x,-x,+y,-y,+z,-z */
@@ -201,7 +201,7 @@ export function buildShell(level,opts={}){
  /* 第一階的破損：補丁、裂縫、蜘蛛網 */
  if(worn){const pm=toon(0xa58660);for(const [where,u,y,wd,ht,r] of [['frontOut',-w/2+.55,.55,.5,.38,.1],['frontOut',w/2-.6,1.9,.42,.3,-.15],['leftOut',1.2,.7,.5,.35,.08]]){const g=new THREE.Group();const p=box(wd,ht,.04,pm,0,0,.02,g);p.rotation.z=r;for(const s of[-1,1])cyl(.025,.025,.03,toon(0x2e2a26),s*(wd/2-.06),0,.05,g,6).rotation.x=Math.PI/2;face(where,u,y,g);}
   for(const [x,z] of low?[]:[[-w/2+.02,-d/2+.02]]){const web=new THREE.Group();for(let i=0;i<5;i++){const a=i/4*Math.PI/2;const l=box(.6,.012,.012,toon(0xe8e4dc),Math.cos(a)*.3,-Math.sin(a)*.3,0,web,true);l.rotation.z=-a;}web.position.set(x+.02,H-.03,z+.02);web.rotation.y=-Math.PI/4;root.add(web);}
-  /* 室內地板破洞 */for(const [x,z,r] of [[1.6,-1.2,.38],[-2.1,1.1,.28]]){const h=add(new THREE.CircleGeometry(r,10),toon(0x2a1c12),x,.002,z,root,true);h.rotation.x=-Math.PI/2;h.scale.y=.7;h.receiveShadow=false;h.castShadow=false;}
+  /* 室內地板破洞 */for(const [x,z,r] of [[1.6,-1.2,.38],[-2.1,1.1,.28]]){const h=add(new THREE.CircleGeometry(r,10),toon(0x2a1c12,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),x,.004,z,root,true);h.rotation.x=-Math.PI/2;h.scale.y=.7;h.receiveShadow=false;h.castShadow=false;}
  }
  /* 第三階：石砌轉角 */
  if(level===3){const qm=texMat(stoneTex({base:0xe4d6b6,mortar:0xb8a682,rows:1,cols:1,seed:8}),1,1);for(const sx of[-1,1])for(const sz of[-1,1])for(let y=.18,i=0;y<((low&&(sx>0||sz<0))?HB:H);y+=.36,i++){const long=i%2?.55:.36;box(sx*sz>0?.42:.42,.32,long,qm,sx*(w/2+t+.02-.21+.02),y,sz*(d/2+t-long/2+.03));box(long,.32,.42,qm,sx*(w/2+t-long/2+.03),y,sz*(d/2+t+.02-.21+.02));}}

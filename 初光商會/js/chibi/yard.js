@@ -123,10 +123,10 @@ export function buildYard(level,opts={}){
  const road=level===1?dirtTex():cobbleTex();
  const floorStrip=(x,z,ww,dd,tex,y=.02,r=1.2)=>{const m=mk(new THREE.BoxGeometry(ww,.04,dd),texMat(tex,ww/r,dd/r),x,G+y,z,root);m.castShadow=false;m.userData.noLine=true;return m;};
  floorStrip(DX,(zS+zR-1.3)/2,pw,zR-1.3-zS,road);
- floorStrip(0,zR,Y.roadHalf*2+20,2.6,road,.021);
- if(level>=3){const pz0=zF+.2,pz1=zR-1.3;floorStrip(0,(pz0+pz1)/2,half*2+[0,0,0,3,5,7][level],pz1-pz0,cobbleTex(),.015);
-  const across=[0,0,0,6,7.5,9][level];floorStrip(0,zR+1.3+across/2,[0,0,0,12,18,24][level],across,plazaTex(level),.018,level===5?2:1.2);}
- if(level===5){const c=mk(new THREE.BoxGeometry(1.4,.03,zR-1.3-zS),toon(0xb5201a),DX,G+.05,(zS+zR-1.3)/2,root);c.userData.noLine=true;c.castShadow=false;}
+ floorStrip(0,zR,Y.roadHalf*2+20,2.6,road,.05);
+ if(level>=3){const pz0=zF+.2,pz1=zR-1.3;floorStrip(0,(pz0+pz1)/2,half*2+[0,0,0,3,5,7][level],pz1-pz0,cobbleTex(),.01);
+  const across=[0,0,0,6,7.5,9][level];floorStrip(0,zR+1.3+across/2,[0,0,0,12,18,24][level],across,plazaTex(level),.035,level===5?2:1.2);}
+ if(level===5){const c=mk(new THREE.BoxGeometry(1.4,.03,zR-1.3-zS),toon(0xb5201a),DX,G+.07,(zS+zR-1.3)/2,root);c.userData.noLine=true;c.castShadow=false;}
 
  const sideX=half+1.2,across=zR+1.3;
  if(level===1){

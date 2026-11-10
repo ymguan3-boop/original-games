@@ -23,6 +23,14 @@ import {createHub} from './shop-hub.js?v=20261110-shop-r2';
 import {installTutorial} from './shop-tutorial.js?v=20261110-shop-r2';
 import {commissionNotice} from './commissions.js?v=20261110-shop-r2';
 import {dailyTasks} from './management.js?v=20261110-shop-r2';
+import {shelfTypes} from './furniture.js?v=20261110-shop-r2';
+import {decorTypes} from './decorations.js?v=20261110-shop-r2';
+import {pendingRewards} from './reward-collection.js?v=20261110-shop-r2';
+/* 快捷鍵上的「新」提示：看過該頁就記下，有新東西才再亮 */
+const SEEN_KEY='firstlight-shop-seen-v1',readSeen=()=>{try{return JSON.parse(localStorage.getItem(SEEN_KEY))||{};}catch{return {};}},seenNotice=readSeen();
+const unlockedBuild=s=>[...shelfTypes,...decorTypes].filter(t=>(t.level||1)<=s.level).map(t=>t.id),hireable=(g,s)=>g.data.hirePool.filter(h=>!h.evolutionOnly&&h.level<=s.level&&!s.employees.some(e=>e.baseId===h.id)).map(h=>h.id);
+function markSeen(page){if(!game)return;const s=game.state;if(page==='build')seenNotice.build=unlockedBuild(s);if(page==='staff')seenNotice.staff=hireable(game,s);try{localStorage.setItem(SEEN_KEY,JSON.stringify(seenNotice));}catch{}}
+const fresh=(list,seen)=>Array.isArray(seen)?list.some(id=>!seen.includes(id)):list.length>0;
 import {installWindowControls} from './window-controls.js?v=20261110-shop-r2';
 /* 2D 測試：在設定輸入代碼後切換並記住；本機開發可用 ?shopDev=1&view=2d 直接進入 */
 const VIEW_KEY='firstlight-shop-view',VIEW_CODE='741216',viewParams=new URLSearchParams(location.search),readView=()=>{try{return localStorage.getItem(VIEW_KEY);}catch{return null;}},view2d=viewParams.get('view')==='2d'&&viewParams.has('shopDev')&&['localhost','127.0.0.1'].includes(location.hostname)||readView()==='2d';
@@ -56,15 +64,15 @@ function syncNotices(s){{const ev=activeEvent(s),key=ev?ev.id+ev.startDay:null;i
 function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncNotices(s);
  $('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels[s.level-1]?.name||''}`;
  {const info=chapterObjectives(s,game.data.levels),pct=upgradeProgress(info);$('#hud-progress').textContent=s.upgradeProject?`🔨 ${Math.ceil(s.upgradeProject.remaining)}秒`:info.last?'★ 最高級':`▲ ${pct}%`;$('#hud-progress').classList.toggle('ready',info.ready&&!s.upgradeProject);{const env=environment(s,game.data.config);$('#hud-clock').textContent=`${env.weatherInfo.icon}${env.season.name} ${clockText(s,game.data.config)} ${clockLabel(s,game.data.config)}`;$('#hud-clock').title=`${env.season.name}季・${env.weatherInfo.name}`;}if(s.phase==='report'&&reportShownDay!==s.day&&hub&&!hub.isOpen){reportShownDay=s.day;hub.open('report');}}$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
- $('#start-business').hidden=s.phase!=='closed';
+ $('#prep-bar').hidden=s.phase!=='closed'||!!s.patrolFocus;$('#start-business').textContent=(s.totals?.days||0)<1&&s.day<=1?'☀ 開門營業':'☀ 新的一天';
  const dot=(id,on)=>$(`.toolbar [data-hub=${id}]`).classList.toggle('has-notice',!!on&&!s.patrolFocus);
- const daily=dailyTasks(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length);dot('build',s.layoutPause);dot('tasks',s.event||commissionNotice(s)||daily.tasks.some(t=>t.done&&!t.claimed));
+ const daily=dailyTasks(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length||fresh(hireable(game,s),seenNotice.staff));dot('build',s.layoutPause||fresh(unlockedBuild(s),seenNotice.build)||(s.decorStorage||[]).length>0);let rewards=0;try{const r=pendingRewards(game,s);rewards=typeof r==='number'?r:(r?.total??Object.values(r||{}).reduce((n,v)=>n+(Number(v)||0),0));}catch{}dot('tasks',s.event||commissionNotice(s)||daily.tasks.some(t=>t.done&&!t.claimed)||rewards>0);{const info=chapterObjectives(s,game.data.levels);dot('shop',info.canConstruct||info.ready&&!info.last&&!s.upgradeProject);}
  tutorial?.sync();}
 const pageFor={goods:'goods',shelves:'build',staff:'staff',quests:'tasks',upgrade:'upgrade',settings:'settings'};
 const openPanel=name=>hub.open(pageFor[name]||'shop');
 $('#start-business').onclick=()=>{const r=action('open');if(r.ok)tutorial?.sync();};
 $('#hud-progress').onclick=()=>hub.open('upgrade');$('#hud-history').onclick=()=>hub.open('history');
-for(const b of document.querySelectorAll('.toolbar [data-hub]'))b.onclick=()=>{const page=b.dataset.hub;if(document.body.classList.contains('view-2d')&&hub.isOpen&&hub.rootPage===page){hub.close();return;}if(page==='tasks'&&game.state.event){hub.open('event');return;}hub.open(page);};
+for(const b of document.querySelectorAll('.toolbar [data-hub]'))b.onclick=()=>{const page=b.dataset.hub;markSeen(page);setTimeout(renderHUD,0);if(document.body.classList.contains('view-2d')&&hub.isOpen&&hub.rootPage===page){hub.close();return;}if(page==='tasks'&&game.state.event){hub.open('event');return;}hub.open(page);};
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!game||game.state.patrolFocus)return;
  if(b.id==='rotate-furniture'){const r=scene.editShelf(0,0,90);if(!r.ok)toast(r.message,true);}
  if(b.id==='retract-furniture'){const r=scene.cancelEdit();toast(r.message||'已收納',!r.ok);if(r.ok)scene.setMode('play');}
@@ -91,7 +99,7 @@ async function boot(){let gate;try{
  await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id)});window.shop=game;window.shopTrial=trial;
  const sceneFactory=view2d?createScene2D:createScene;document.body.classList.toggle('view-2d',view2d);if(view2d)createDock({game,hub,esc});
  scene=sceneFactory({canvas:$('#world'),game,
-  onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='promoter'){hub.open('promoters');return;}if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){if(game.state.phase==='open'&&!game.state.layoutPause){toast('營業中不能移動貨架，請到「布置」暫停營業。',true);return;}scene.setMode('decorate');scene.selectShelf(o.id);}},
+  onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='promoter'){hub.open('promoters');return;}if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){if(game.state.phase==='open'&&!game.state.layoutPause)return;scene.setMode('decorate');scene.selectShelf(o.id);}},
   onStaffPositions:rows=>staffOverlay?.position(rows),
   onActorVisuals:view=>{const focus=game.state.patrolFocus?.employeeId;actorVisuals?.render(focus?{actors:view.actors.filter(v=>v.id===focus),notices:view.notices.filter(n=>n.targetId===focus)}:view);},
   onPlacementChange:p=>{$('#placement-hint').hidden=!p;if(p)$('#placement-message').textContent=p.ok?'點地板選位置，再按 ✓':'這裡不能放：'+p.message;document.body.classList.toggle('placement-bad',!!p&&!p.ok);},
