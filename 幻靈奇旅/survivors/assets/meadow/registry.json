@@ -1,0 +1,22 @@
+{
+  "profile": "low-poly + generated texture",
+  "terrainTriangles": 3768,
+  "triangleBudget": 5000,
+  "texture": "assets/meadow/grass-v1.webp",
+  "textureSize": [
+    1024,
+    1024
+  ],
+  "source": "imagegen generated grass albedo and original shared Three.js terrain builder",
+  "generatedSource": "C:/Users/ymguan/.codex/generated_images/01a18fbb-5899-7563-a059-3e582a4a6fef/exec-f4c6d568-1836-48f5-95bf-b64ff5fc6ebd.png",
+  "baseline": "Existing cave characters and weapon models preserved; approved detailed low-poly plus textures direction",
+  "solids": [
+    "pond",
+    "cliff",
+    "rocks",
+    "tree trunks"
+  ],
+  "verification": "TECHNICAL_PASS; new environment art remains open to user visual review",
+  "drawCalls": 6,
+  "prompt": "Seamless tileable ground albedo texture for a top-down cozy hand painted 3D fantasy grassland combat game. Orthographic flat top down, uniform soft daylight, no perspective, no shadows, no large landmarks. Muted sage and olive green short grass with sparse tiny clover, a few small cream daisies, subtle earthen patches and small stones; richly painted fine natural detail but low visual contrast so colorful characters and weapon loot remain easy to see. Tile edges must match seamlessly. No sky, no buildings, no characters, no text. Square terrain diffuse texture, mobile game ready."
+}

@@ -1,37 +1,37 @@
-import {specialDecorPose,resolveDecorPlacement,gardenSlots} from './decor-zones.js?v=20261111-ui-v23';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261111-ui-v23';
-import {createChaseCelebration} from './chase-celebration.js?v=20261111-ui-v23';
-import {buildOutdoor} from './outdoor-3d.js?v=20261111-ui-v23';
-import {environment} from './environment.js?v=20261111-ui-v23';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261111-ui-v23';
-import {addProductEdges} from './product-outlines.js?v=20261111-ui-v23';
-import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261111-ui-v23';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261111-ui-v23';
-import {decorateInterior} from './interior-v5.js?v=20261111-ui-v23';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261111-ui-v23';
-import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261111-ui-v23';
-import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261111-ui-v23';
+import {specialDecorPose,resolveDecorPlacement,gardenSlots} from './decor-zones.js?v=20261111-portrait-v24';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261111-portrait-v24';
+import {createChaseCelebration} from './chase-celebration.js?v=20261111-portrait-v24';
+import {buildOutdoor} from './outdoor-3d.js?v=20261111-portrait-v24';
+import {environment} from './environment.js?v=20261111-portrait-v24';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261111-portrait-v24';
+import {addProductEdges} from './product-outlines.js?v=20261111-portrait-v24';
+import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261111-portrait-v24';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261111-portrait-v24';
+import {decorateInterior} from './interior-v5.js?v=20261111-portrait-v24';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261111-portrait-v24';
+import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261111-portrait-v24';
+import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261111-portrait-v24';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
 /* 店內幻靈員工：比原本大 1.3 倍；外框跟 Q 版店面一樣是深咖啡色、只描外輪廓 */
 /* 宣傳員走動：在門前院子隨機選點，直線路徑上不能碰到擺設與建築 */
 const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,greetCool:0,area:null};
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261111-ui-v23';
-import {createAssets} from './asset-resolver.js?v=20261111-ui-v23';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261111-ui-v23';
-import {sampleTrail,turnToward} from './motion.js?v=20261111-ui-v23';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261111-ui-v23';
-import {eventEmployee} from './patrol-events.js?v=20261111-ui-v23';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261111-ui-v23';
-import {createPlacementCells} from './placement-cells.js?v=20261111-ui-v23';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261111-ui-v23';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261111-ui-v23';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261111-portrait-v24';
+import {createAssets} from './asset-resolver.js?v=20261111-portrait-v24';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261111-portrait-v24';
+import {sampleTrail,turnToward} from './motion.js?v=20261111-portrait-v24';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261111-portrait-v24';
+import {eventEmployee} from './patrol-events.js?v=20261111-portrait-v24';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261111-portrait-v24';
+import {createPlacementCells} from './placement-cells.js?v=20261111-portrait-v24';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261111-portrait-v24';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261111-portrait-v24';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
  const scene=new T.Scene();scene.fog=new T.Fog(0xb7dce9,42,95);const camera=new T.PerspectiveCamera(39,1,.1,100),target=new T.Vector3(6.5,0,5.1);/* 直立手機：視角轉正、拉高，讓店面佔滿上下空間 */
-const tall=innerHeight>innerWidth;/* Q 版店面：鏡頭從門面那側俯看，跟新版店面圖一致 */let yaw=0,pitch=.9,distance=18,outsideView=true,views=null,chibiShell=null,frontFade=1,mode='play',alive=true,time=0;
+/* Q 版店面：鏡頭從門面那側俯看，跟新版店面圖一致 */let yaw=0,pitch=.9,distance=18,outsideView=false,views=null,chibiShell=null,frontFade=1,mode='play',alive=true,time=0;
  const assets=createAssets(T,metrics),shelfViews=new Map(),actorViews=new Map(),pending=new Set(),failed=new Map(),pickables=[],keys=new Set();let species=new Map(),lastLevel=0,roomGeneration=0,selectedShelf=null,editingUnlocked=false,placement=null,placementView=null,editSnapshot=null,cashierChair=null,sceneContours=[],motionStamp=-1,motionProgress=1,joystick={x:0,y:0};const reported=new Set();const noticeSprites=[];let processedVisualIds=null;
  const report=e=>{const message=String(e);if(reported.has(message))return;reported.add(message);metrics.errors.push(message);onError(e);};metrics.derivedAnimations=['staff work lean','reaction hop','rest breathing'];
  const ownedMaterials=new Set();const mat=(color,extra={})=>{const m=new T.MeshStandardMaterial({color,roughness:.9,...extra});m.color.convertSRGBToLinear();ownedMaterials.add(m);return m;};
@@ -59,7 +59,7 @@ const tall=innerHeight>innerWidth;/* Q 版店面：鏡頭從門面那側俯看�
   const frame=new T.Group();frame.name='Q版店面';frame.position.set(cx,0,cz);
   chibiShell=buildShell(level,opts);frontFade=1;frame.add(chibiShell,buildGround());const yard=buildYard(level,{...opts,reserved:gardenSlots(level).map(p=>({x:p.x-cx,z:p.z-cz,r:.62}))});frame.add(yard.root);tune(frame);
   
-  outdoor=new T.Group();outdoor.add(frame);views={outside:{x:cx,z:cz+yard.root.userData.camZ,distance:Math.max(18,(width+6)*2-(Math.min(level,5)-1)*1.5),pitch:tall?.98:.88},inside:{x:cx,z:cz-.2,distance:tall?16:14,pitch:tall?1.2:1.15}};applyView();let last=0;outdoor.userData.tick=t=>{const dt=Math.min(.1,Math.max(0,t-last));last=t;yard.update(dt,t);};
+  outdoor=new T.Group();outdoor.add(frame);views={outside:{x:cx,z:cz+yard.root.userData.camZ,distance:Math.max(18,(width+6)*2-(Math.min(level,5)-1)*1.5),pitch:.98},inside:{x:cx,z:cz-.2,distance:Math.max(24,(width+1)/(2*Math.tan(39*Math.PI/360)*Math.max(.4,innerWidth/innerHeight))/Math.min(1.5,.72/(innerWidth/innerHeight))),pitch:1.2}};applyView();let last=0;outdoor.userData.tick=t=>{const dt=Math.min(.1,Math.max(0,t-last));last=t;yard.update(dt,t);};
   frame.traverse(o=>{if(o.isMesh)o.userData.noOutline=true;});building.add(outdoor);
   {frame.updateMatrixWorld(true);const Y=yardLayout(level,opts),boxes=[],props=yard.root.children[0];for(const o of props.children){if(o.userData.illustratedOutline)continue;const b=new T.Box3().setFromObject(o);if(b.isEmpty()||b.max.y<.05)continue;boxes.push({minX:b.min.x-.5,maxX:b.max.x+.5,minZ:b.min.z-.5,maxZ:b.max.z+.5});}
    boxes.push({minX:-.5-Y.t-.5,maxX:width-.5+Y.t+.5,minZ:-.5-Y.t-.5,maxZ:cz+Y.zS+.15});/* 步道留給顧客走 */boxes.push({minX:cx+Y.doorX-Y.pw/2-.45,maxX:cx+Y.doorX+Y.pw/2+.45,minZ:cz+Y.zS-.2,maxZ:cz+Y.zR});
@@ -162,7 +162,7 @@ const tall=innerHeight>innerWidth;/* Q 版店面：鏡頭從門面那側俯看�
  /* 預設看店外整條街，按鈕切換到店內近景 */
  function applyView(){if(!views||mode==='follow')return;const v=views[outsideView?'outside':'inside'];target.set(v.x,0,v.z);distance=v.distance;pitch=v.pitch;viewButton.textContent=outsideView?'進入店內':'看店外';}
  function toggleView(on=!outsideView){outsideView=on;applyView();return outsideView;}
- const viewButton=document.createElement('button');viewButton.type='button';viewButton.className='chibi-view-toggle';viewButton.textContent='進入店內';viewButton.classList.add('hud-chip');viewButton.onclick=()=>toggleView();document.querySelector('.status-row').appendChild(viewButton);
+ const viewButton=document.createElement('button');viewButton.type='button';viewButton.className='chibi-view-toggle';viewButton.textContent='進入店內';viewButton.classList.add('hud-chip');viewButton.onclick=()=>toggleView();document.querySelector('.quick-menu-items').prepend(viewButton);
  function promoterWalk(dt,s){const w=promoterWalker,A=w.area,home=promoterPoint();if(!A)return home;
   const blocked=(x,z)=>(state().decorations||[]).some(d=>d.garden&&Math.hypot(d.x-x,d.z-z)<1)||A.boxes.some(b=>x>b.minX&&x<b.maxX&&z>b.minZ&&z<b.maxZ);
   if(w.x===null){w.x=Math.max(A.minX,Math.min(A.maxX,home.x));w.z=Math.max(A.minZ,Math.min(A.maxZ,home.z));for(let i=0;i<30&&blocked(w.x,w.z);i++){w.x=A.minX+Math.random()*(A.maxX-A.minX);w.z=A.minZ+Math.random()*(A.maxZ-A.minZ);}w.tx=w.x;w.tz=w.z;w.wait=1.5;}

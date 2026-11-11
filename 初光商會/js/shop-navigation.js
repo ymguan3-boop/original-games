@@ -14,13 +14,13 @@ export function watchShopLevel(game,storage,now=Date.now,onError=()=>{}){
  const publish=()=>{const level=game.state.level;if(!Number.isInteger(level)||level<1||level>5||writtenLevel===level)return;writtenLevel=level;try{storage.setItem(SHOP_LEVEL_KEY,JSON.stringify({level,updatedAt:now()}));}catch(error){onError(error);}};
  publish();const unsubscribe=game.subscribe(publish);return unsubscribe;
 }
-export function installShopNavigation({game,storage=globalThis.localStorage,document=globalThis.document,location=globalThis.location,onError=()=>{},navigate=url=>location.assign(url),paint=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))}){
+export function installShopNavigation({game,storage=globalThis.localStorage,document=globalThis.document,location=globalThis.location,onError=()=>{},navigate=url=>(window.frameElement?.dataset.merchantPreview?window.top.location:location).assign(url),paint=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))}){
  const stop=watchShopLevel(game,storage,Date.now,onError),button=document.getElementById('return-to-game'),overlay=document.getElementById('return-loading');let leaving=false;
  // 只有一顆返回鍵：手機放在資訊列，電腦放在標題列，都不會蓋到其他面板。
  const mobileBar=document.querySelector('.mobile-strip');
  const topbar=document.querySelector('.topbar'),patrol=document.getElementById('camera-mode'),mobileSettings=mobileBar?.querySelector('[data-panel="settings"]'),desktopSettings=topbar?.querySelector('.time-controls [data-panel="settings"]');
  const updateHeaderBottom=()=>{if(topbar)document.documentElement.style.setProperty('--shop-header-bottom',Math.ceil(topbar.getBoundingClientRect().bottom)+'px');};
- const reposition=()=>{const row=topbar?.querySelector('.status-row');if(row&&button.parentNode!==row)row.appendChild(button);button.textContent='回小鎮';button.classList.add('hud-chip');updateHeaderBottom();};
+ const reposition=()=>{const row=topbar?.querySelector('.top-actions');if(row&&button.parentNode!==row)row.appendChild(button);button.textContent='回小鎮';button.classList.add('hud-chip');updateHeaderBottom();};
  const headerObserver=typeof ResizeObserver!=='undefined'&&topbar?new ResizeObserver(updateHeaderBottom):null;
  headerObserver?.observe(topbar);window.addEventListener('resize',reposition);reposition();
  const go=async()=>{if(leaving)return;leaving=true;button.disabled=true;

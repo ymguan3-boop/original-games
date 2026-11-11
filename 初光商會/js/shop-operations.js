@@ -1,10 +1,10 @@
-import {decorEffects,obstacles} from './decorations.js?v=20261111-ui-v23';
-import {purchaseChance} from './economy-v2.js?v=20261111-ui-v23';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261111-ui-v23';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261111-ui-v23';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261111-ui-v23';
-import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261111-ui-v23';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261111-ui-v23';
+import {decorEffects,obstacles} from './decorations.js?v=20261111-portrait-v24';
+import {purchaseChance} from './economy-v2.js?v=20261111-portrait-v24';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261111-portrait-v24';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261111-portrait-v24';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261111-portrait-v24';
+import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261111-portrait-v24';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261111-portrait-v24';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}

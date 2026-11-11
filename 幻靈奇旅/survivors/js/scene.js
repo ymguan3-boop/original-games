@@ -1,3 +1,5 @@
+import {isMerchantMeadow} from './merchant-meadow.js?v=20261111-meadow-v1';
+import {buildMeadow,constrainMeadow} from './meadow-terrain.js?v=20261111-meadow-v1';
 import {createPumpkinStaff,createPumpkinHead} from './pumpkin-staff.js?v=20261027-halloween';
 import {createLeekSword} from './leek-weapon.js?v=20261025-v23';
 import {createViewLimits} from './view-limits.js?v=20261025-v21';
@@ -31,7 +33,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
   const renderer = new T.WebGLRenderer({canvas, antialias: true, powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); renderer.outputEncoding = T.sRGBEncoding;
   renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = .82;
-  const scene = new T.Scene(); scene.background = new T.Color(0x07141d); scene.fog = new T.FogExp2(0x07141d,.018);
+  const scene = new T.Scene(); scene.background = new T.Color(isMerchantMeadow?0xc6dfc7:0x07141d); scene.fog = new T.FogExp2(isMerchantMeadow?0xc6dfc7:0x07141d,isMerchantMeadow?.009:.018);
   const camera = new T.PerspectiveCamera(45,1,.1,150), loader = new T.GLTFLoader();
   const metrics = {rollDuration:0,loaded:[], animationBindings:[], fallbacks:[], errors:[], activePetModels:0, drawCalls:0, triangles:0, dpr:renderer.getPixelRatio(), enemyInstances:0, activeEffects:0};
   let disposed = false, time = 0, currentRun = null, pet = null, petKey = '', petGeneration = 0, petReadyPromise=Promise.resolve(), weapon = 'Guns';
@@ -47,26 +49,28 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
   const mat = (color, emissive=0) => own(new T.MeshStandardMaterial({color, emissive, emissiveIntensity:.6, roughness:.87, flatShading:true}));
   const glow = color => own(new T.MeshBasicMaterial({color,transparent:true,opacity:.8,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending}));
   const rockGeo=own(new T.IcosahedronGeometry(1,0)), crystalGeo=own(new T.ConeGeometry(1,1,5)), rockMat=mat(0x233c48), crystalMat=mat(0x5ae0e8,0x137787);
-  scene.add(new T.HemisphereLight(0x9fe9ff,0x19262a,.52));
+  scene.add(new T.HemisphereLight(isMerchantMeadow?0xfff3cf:0x9fe9ff,isMerchantMeadow?0x658354:0x19262a,isMerchantMeadow?.9:.52));
   const keyLight=new T.DirectionalLight(0xffd6ab,.9);keyLight.position.set(-7,18,10);scene.add(keyLight);
-  const blue=new T.PointLight(0x49cfff,1.7,35);blue.position.set(4,5,-9);scene.add(blue);
-  const floor=new T.Mesh(own(new T.CircleGeometry(64,96)),mat(0x081b25));floor.rotation.x=-Math.PI/2;floor.position.y=-.06;scene.add(floor);
+  const blue=new T.PointLight(0x49cfff,1.7,35);blue.position.set(4,5,-9);if(!isMerchantMeadow)scene.add(blue);
+  const floor=new T.Mesh(own(new T.CircleGeometry(64,96)),mat(0x081b25));floor.rotation.x=-Math.PI/2;floor.position.y=-.06;scene.add(floor);if(isMerchantMeadow){const texture=own(new T.TextureLoader().load(new URL('../assets/meadow/grass-v1.webp',import.meta.url).href));texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(12,12);texture.encoding=T.sRGBEncoding;floor.material=own(new T.MeshStandardMaterial({map:texture,color:0xffffff,roughness:1}));}
   const d=new T.Object3D();let seed=8291;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
   function batch(geo,material,n,place){const b=new T.InstancedMesh(geo,material,n);for(let i=0;i<n;i++){d.position.set(0,0,0);d.rotation.set(0,0,0);d.scale.set(1,1,1);place(d,i);d.updateMatrix();b.setMatrixAt(i,d.matrix);}scene.add(b);return b;}
+  const flames=[];if(isMerchantMeadow)buildMeadow(T,scene,own,metrics);else{
   batch(rockGeo,rockMat,110,(o,i)=>{const a=i/110*Math.PI*2,r=31+random()*16,s=2+random()*5;o.position.set(Math.sin(a)*r,s*.45-1,Math.cos(a)*r);o.scale.set(s,s*(.8+random()),s);o.rotation.set(random(),random()*6,random());});
   batch(rockGeo,mat(0x29454d),170,o=>{const a=random()*6.28,r=3+random()*32;o.position.set(Math.sin(a)*r,-.1,Math.cos(a)*r);o.scale.set(.2+random()*.8,.08+random()*.15,.3+random());o.rotation.y=random()*6;});
   batch(crystalGeo,crystalMat,76,(o,i)=>{const a=i/76*6.28,r=12+random()*19,h=1+random()*4;o.position.set(Math.sin(a)*r,h*.5,Math.cos(a)*r);o.scale.set(.3+random()*.5,h,.4+random()*.5);o.rotation.z=(random()-.5)*.6;});
   metrics.centerRuneVisible=false;
-  const flames=[];for(let i=0;i<6;i++){const a=i/6*Math.PI*2,x=Math.sin(a)*24,z=Math.cos(a)*24;
+  for(let i=0;i<6;i++){const a=i/6*Math.PI*2,x=Math.sin(a)*24,z=Math.cos(a)*24;
     const pillar=new T.Mesh(own(new T.CylinderGeometry(.55,.9,2,6)),rockMat);pillar.position.set(x,1,z);scene.add(pillar);
     const flame=new T.Mesh(crystalGeo,glow(0xffa94c));flame.position.set(x,2.6,z);flame.scale.set(.45,1.1,.45);scene.add(flame);flames.push(flame);
     const light=new T.PointLight(0xff9348,1.2,13,2);light.position.set(x,3,z);scene.add(light);
+  }
   }
   function ring(color,radius=1){const m=new T.Mesh(own(new T.RingGeometry(radius*.88,radius,32)),glow(color));m.rotation.x=-Math.PI/2;m.position.y=.04;scene.add(m);return m;}
   const targetRing=ring(0xffd260,1.2);targetRing.visible=false;
   const attackRing=new T.Mesh(own(new T.RingGeometry(.988,1,128)),own(new T.MeshBasicMaterial({color:0xff3b42,transparent:true,opacity:.85,side:T.DoubleSide,depthWrite:false})));attackRing.rotation.x=-Math.PI/2;attackRing.position.y=.027;scene.add(attackRing);
   let shakeLevel=0;const vfx3d=globalThis.Vfx3D?.create({THREE:T,parent:scene})??null;metrics.vfx3d=()=>vfx3d?.stats();const combatVfx=createCombatVfx(T,scene,{metrics,onShake:amount=>{shakeLevel=Math.max(shakeLevel,amount);globalThis.navigator?.vibrate?.([25,20,65]);}});
-  const warningPool=Array.from({length:12},()=>{const m=ring(0xff584e,1);m.visible=false;return m;});
+  const warningDisc=own(new T.CircleGeometry(.985,48));const warningPool=Array.from({length:12},()=>{const m=ring(0xff584e,1),disc=new T.Mesh(warningDisc,own(new T.MeshBasicMaterial({color:0xff4939,transparent:true,opacity:.16,depthWrite:false,side:T.DoubleSide})));disc.position.z=.001;m.add(disc);m.visible=false;return m;});
   const corners=new T.Group(),cornerMat=glow(0xffdc76),cornerGeo=own(new T.BoxGeometry(.35,.045,.045));
   for(const x of [-1,1])for(const y of [-1,1]){const a=new T.Mesh(cornerGeo,cornerMat),b=new T.Mesh(cornerGeo,cornerMat);a.position.set(x*.8,y*.8,0);b.position.copy(a.position);b.rotation.z=Math.PI/2;corners.add(a,b);}scene.add(corners);corners.visible=false;
   function normalize(object,height){if(object.userData.caveBounds){const b=object.userData.caveBounds,k=height/(b.max[1]-b.min[1]);object.scale.multiplyScalar(k);object.position.y-=b.min[1]*k;return;}object.updateMatrixWorld(true);const box=new T.Box3();object.traverse(n=>{if(!n.isMesh)return;for(let p=n;p;p=p.parent)if(!p.visible||p.userData?.isEffect)return;const b=new T.Box3().setFromObject(n);if(!b.isEmpty())box.union(b);});const h=box.max.y-box.min.y;if(!Number.isFinite(h)||h<=0)throw Error('角色模型沒有有效尺寸');const s=height/h;object.scale.multiplyScalar(s);object.position.y-=box.min.y*s;}
@@ -126,7 +130,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
   const usingScythe=()=>currentRun?.weaponId==='sword-starlight-scythe';
   metrics.scythe=scythe.metrics;const reaperFx=PhantomReaperEffects.create({THREE:T,scene,camera,weapon:scytheOptions.weapon,onSound});metrics.reaper=reaperFx.metrics;await reaperFx.ready;
   function prepareView(h){viewLimits.prepare(h,camera.aspect,zoom);}
-  function constrainPet(p,h){prepareView(h);return viewLimits.clamp(p,h,heightOf(p.speciesId)+.65);}
+  function constrainPet(p,h){prepareView(h);const at=viewLimits.clamp(p,h,heightOf(p.speciesId)+.65);return isMerchantMeadow?constrainMeadow(at):at;}
   function petTargetVisible(e,h){prepareView(h);return viewLimits.contains(e,heightOf(e.speciesId)*.8);}
   function heightOf(id){return modelHeight(species.get(id));}
 
@@ -184,7 +188,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
     const ps=run?.pets?.[run.activePet??0];requestPet(ps);if(pet&&ps){pet.root.position.set(ps.x??h.x-1.6,0,ps.z??h.z+1);pet.root.rotation.y=ps.heading||0;pet.tick(dt,ps);const safe=constrainPet({...ps,x:pet.root.position.x,z:pet.root.position.z},h);pet.root.position.x=safe.x;pet.root.position.z=safe.z;}
     prepareView(h);const enemies=run?.enemies||[];let visibleEnemies=0;for(const e of enemies){if(e.hp<=0)continue;const cached=specials.get(e.id);if(!viewLimits.visible(e,heightOf(e.speciesId))){if(cached){cached.root.visible=false;cached.roomFx?.dispose();cached.roomFx=null;cached.hold=0;}continue;}if(cached)cached.root.visible=true;requestSpecial(e);const a=specials.get(e.id);if(a){visibleEnemies++;a.root.position.set(e.x,0,e.z);a.root.rotation.y=e.heading||0;if(e.attackSerial&&a.lastAttack!==e.attackSerial){a.lastAttack=e.attackSerial;skill(a,!!e.skillStrong,run.hero);}a.tick(dt,{...e,moving:!e.warning&&e.weakUntil<=run.time&&!(e.captureStunUntil>run.time)&&!(e.hitReactUntil>run.time)});}}metrics.enemyInstances=0;metrics.enemyModels=visibleEnemies;for(const e of enemies.filter(e=>e.hp>0&&['boss','elite'].includes(e.kind))){let ring=bossRings.get(e.id);if(!ring){ring=new T.Mesh(bossRingGeo,bossRingMat);ring.rotation.x=-Math.PI/2;scene.add(ring);bossRings.set(e.id,ring);}ring.position.set(e.x,.045,e.z);ring.scale.setScalar(heightOf(e.speciesId)*.8);ring.visible=true;}for(const[id,ring]of bossRings)if(!enemies.some(e=>e.id===id&&e.hp>0)){scene.remove(ring);bossRings.delete(id);}metrics.bossCircles=bossRings.size;
     for(const [id,a] of specials)if(!enemies.some(e=>e.id===id&&e.hp>0)){if(a){scene.remove(a.root);releaseActor(a);}specials.delete(id);}
-    const warnings=enemies.filter(e=>e.hp>0&&e.warning).map(e=>e.warning);warningPool.forEach((m,j)=>{const w=warnings[j];m.visible=!!w;if(w){m.position.set(w.x,.09,w.z);m.scale.setScalar(w.radius);m.material.opacity=.45+Math.sin(time*15)*.2;}});
+    const warnings=enemies.filter(e=>e.hp>0&&e.warning).map(e=>e.warning);metrics.enemyWarnings=warnings.map(w=>({...w}));warningPool.forEach((m,j)=>{const w=warnings[j];m.visible=!!w;if(w){m.position.set(w.x,.09,w.z);m.scale.setScalar(w.radius);m.material.opacity=.45+Math.sin(time*15)*.2;}});
     lootView.update(run?.pickups||[],time);
     const target=enemies.find(e=>e.id===(run?.targetId||run?.attackTargetId)&&e.hp>0);targetRing.visible=!!target;corners.visible=false;metrics.targetCrossesVisible=false;if(target){targetRing.material.color.setHex(target.weakUntil>run.time?0x78f0a9:0xffd260);targetRing.position.set(target.x,.06,target.z);targetRing.scale.setScalar((target.radius||.8)*1.4);corners.position.set(target.x,1.3,target.z);corners.quaternion.copy(camera.quaternion);}
     for(let i=ballFlights.length-1;i>=0;i--){const f=ballFlights[i];const enemy=run?.enemies?.find(e=>e.id===f.enemyId);if(enemy)f.to={x:enemy.x,z:enemy.z};f.age+=dt;const u=Math.min(1,Math.max(0,((run?.time||0)-(f.at-.55))/.55));f.root.position.set(f.from.x+(f.to.x-f.from.x)*u,1+Math.sin(u*Math.PI)*2,f.from.z+(f.to.z-f.from.z)*u);f.root.rotation.set(u*9,u*6,0);if(u>=1||run?.captureFlight?.id!==f.id){scene.remove(f.root);ballFlights.splice(i,1);f.resolve(project(f.to));}}

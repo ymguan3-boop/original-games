@@ -1,4 +1,4 @@
-import {promoterHireCost} from './shop-entry-rules.js?v=20261111-ui-v23';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261111-portrait-v24';
 /* 宣傳員：大型幻靈在店門外當吉祥物。不佔在班名額，一次一位；
  * 打烊結算時依機率把當天毛利再提高 1% 到該宣傳員的上限。 */
 export const PROMOTERS=[

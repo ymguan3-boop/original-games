@@ -1,85 +1,49 @@
-/* 清楚分行的鄉村風工具列，行動版可換行。 */
-html body header.topbar{height:auto!important;min-height:0!important;padding:7px 10px!important;background:#fff1d1!important;border:3px solid #85512f!important;box-shadow:0 3px 0 #56362055!important}
-html body header.topbar .status-row{display:flex!important;flex-wrap:wrap!important;gap:5px!important;align-items:center!important}
-html body header.topbar #level-name{flex:1 1 140px!important}
-html body header.topbar .hud-chip,html body header.topbar #start-business{position:static!important;display:inline-flex!important;align-items:center;justify-content:center;min-height:32px!important;height:auto!important;padding:4px 9px!important;border:2px solid #aa7848!important;border-radius:10px!important;background:#fff9e9!important;color:#624329!important;font-weight:700!important;font-size:12px!important;line-height:1.2!important;box-shadow:0 2px 0 #80523344!important}
-html body header.topbar #return-to-game{min-height:32px!important;padding:4px 9px!important;border:2px solid #aa7848!important;border-radius:10px!important;background:#fff9e9!important;color:#624329!important;font-weight:700!important;font-size:12px!important;box-shadow:0 2px 0 #80523344!important}
-html body header.topbar #start-business{background:#648d42!important;color:white!important;border-color:#4b6e30!important}
-html body header.topbar #start-business:disabled{opacity:.5}
-html body header.topbar .prep-bar{position:static!important;display:contents!important;transform:none!important}
-html body header.topbar .prep-bar[hidden]{display:none!important}
-html body header.topbar .prep-bar span{display:none!important}
-html body #furniture-controls{min-width:0!important;width:max-content!important;max-width:calc(100vw - 16px)!important}
-html body #furniture-controls button[hidden]{display:none!important}
-html body #camera-mode,html body.patrol-active #camera-mode,#tutor [data-full]{display:none!important}
-html body #tutor,html body.hub-open #tutor,html body.view-2d #tutor,html body.view-2d.hub-open #tutor{position:fixed!important;left:auto!important;right:10px!important;top:auto!important;bottom:58px!important;transform:none!important;width:min(300px,calc(100vw - 24px))!important;box-sizing:border-box;z-index:90;padding:9px 10px 9px 74px!important;background:#fff9e8;border:2px solid #9d6a37;border-radius:16px;box-shadow:0 3px 0 #67432555}
-html body #tutor.guide-left{left:10px!important;right:auto!important}
-html body #tutor.guide-top,html body.hub-open #tutor.guide-top{top:calc(var(--shop-header-bottom,120px) + 8px)!important;bottom:auto!important}
-#tutor .guide-hero{position:absolute;left:-4px;bottom:0;width:76px;height:105px;object-fit:contain;object-position:bottom;pointer-events:none}
-#tutor [data-minimize],#tutor [data-dismiss]{float:right;min-height:25px!important;width:25px;padding:0!important;border:1px solid #ad8c61;border-radius:8px;background:#fff6dc}
-#tutor.minimized{width:86px!important;min-height:95px;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
-#tutor.minimized strong,#tutor.minimized p,#tutor.minimized .tutor-actions{display:none!important}
-#tutor.minimized .guide-hero{left:0;width:78px}
-#tutor.minimized [data-minimize],#tutor.minimized [data-dismiss]{position:relative;z-index:2}
-body.hub-open #tutor .tutor-actions{display:flex!important}
-#hub[data-page=orders] .hub-cards{display:flex!important;flex-direction:column!important;overflow:auto!important;background:#dbe9df;padding:12px;border-radius:14px}
-#hub[data-page=orders] .hub-card{align-self:flex-start;width:min(90%,380px);min-height:65px;background:#fff;border-radius:16px 16px 16px 3px;box-shadow:0 2px 4px #44634a33}
-#hub[data-page=orders] .hub-card.status-ready{background:#d9f6bb;border-color:#76a457}
-@media(max-width:520px){html body header.topbar .status-row{gap:3px!important}html body header.topbar .hud-chip,html body header.topbar #start-business{font-size:10px!important;padding:4px 6px!important;min-height:29px!important}html body header.topbar #level-name{flex:1 1 45%!important}html body #tutor,html body.hub-open #tutor{bottom:54px!important;width:min(270px,calc(100vw - 20px))!important} }
-@media(max-width:520px){html body header.topbar #return-to-game{font-size:10px!important;padding:4px 6px!important;min-height:29px!important}}
-/* v23：左右分明的資訊與操作，生圖小圖示保留文字標籤。 */
-html body header.topbar .status-row{justify-content:flex-start!important;gap:6px!important}
-html body header.topbar #gold{order:-4;display:inline-flex!important;align-items:center;gap:4px;font-variant-numeric:tabular-nums;padding:4px 8px!important;background:#f4df9f;border:1px solid #b58b47;border-radius:9px;flex:none;margin:0!important;justify-self:start}
-html body header.topbar #level-name{order:-3;flex:1 1 130px!important}
-html body header.topbar #hud-progress{order:-2}
-html body header.topbar #hud-clock{order:-1}
-html body header.topbar #return-to-game{order:99;margin-left:auto!important;display:inline-flex!important}
-html body header.topbar button.hud-chip,html body header.topbar #start-business{height:36px!important;min-height:36px!important;gap:5px;white-space:nowrap;box-sizing:border-box}
-html body header.topbar #gold::before,html body header.topbar #top-fullscreen::before,html body header.topbar #top-patrol::before,html body header.topbar #start-business::before,html body header.topbar .chibi-view-toggle::before,html body header.topbar #return-to-game::before{content:'';display:block;flex:none;width:24px;height:24px;background-size:contain;background-position:center;background-repeat:no-repeat}
-#gold::before{background-image:url('./assets/ui-generated/tool-coin-v23.webp')}
-#top-fullscreen::before{background-image:url('./assets/ui-generated/tool-fullscreen-v23.webp')}
-#top-patrol::before{background-image:url('./assets/ui-generated/tool-patrol-v23.webp')}
-#start-business::before{background-image:url('./assets/ui-generated/tool-business-v23.webp')}
-.chibi-view-toggle::before{background-image:url('./assets/ui-generated/tool-view-v23.webp')}
-#return-to-game::before{background-image:url('./assets/ui-generated/tool-town-v23.webp')}
-/* 角色在對話框外，外層包含立繪高度，避讓引導目標時也會計入。 */
-html body #tutor,html body.hub-open #tutor,html body.view-2d #tutor,html body.view-2d.hub-open #tutor{width:min(340px,calc(100vw - 24px))!important;padding:166px 0 0!important;background:transparent!important;border:0!important;box-shadow:none!important;isolation:isolate;pointer-events:none}
-#tutor .guide-dialogue{position:relative;pointer-events:auto;padding:16px 16px 12px;border:2px solid #8c603c;border-radius:20px 20px 8px 20px;background:linear-gradient(135deg,#fffdf3,#fff0cf);box-shadow:inset 0 0 0 4px #f1d9a8,0 5px 14px #40291835}
-#tutor .guide-dialogue::before{content:'';position:absolute;right:72px;top:-9px;width:16px;height:16px;transform:rotate(45deg);background:#fff6dd;border-left:2px solid #8c603c;border-top:2px solid #8c603c;z-index:-1}
-html body #tutor .guide-hero{left:auto!important;right:14px;top:0;bottom:auto;width:136px;height:181px;object-fit:contain;object-position:top;z-index:-1;filter:drop-shadow(0 2px 1px #66442533)}
-#tutor strong{color:#764a2c;font-size:16px!important;letter-spacing:.04em;padding-right:60px}
-#tutor p{font-size:13px;line-height:1.55;margin:8px 0 10px}
-#tutor .tutor-actions{gap:6px}
-#tutor .tutor-actions button{min-height:32px!important;padding:3px 12px!important;font-size:12px;border-radius:12px;border:1px solid #a37a4b;background:#fffbec;color:#715034}
-#tutor .tutor-actions .primary{background:#668b47;color:#fff;border-color:#4e6b37}
-#tutor [data-minimize],#tutor [data-dismiss]{position:absolute;top:10px;float:none;min-height:25px!important;pointer-events:auto;color:#805638}
-#tutor [data-minimize]{right:40px}#tutor [data-dismiss]{right:10px}
-html body #tutor.minimized{width:100px!important;height:132px;min-height:0!important;padding:0!important}
-#tutor.minimized .guide-dialogue{background:none;box-shadow:none;border:0;padding:0}
-#tutor.minimized .guide-dialogue::before{display:none}
-html body #tutor.minimized .guide-hero{right:0;width:100px;height:132px}
-#tutor.minimized [data-minimize],#tutor.minimized [data-dismiss]{top:0}
-/* 2D 使用與 3D 相同的滿版場景、中央選單與底部四個入口。 */
-html body.view-2d{--scene-h:100dvh!important;--dock-h:0px!important;--side:0px!important;--bar-h:52px!important}
-html body.view-2d #world{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important}
-html body.view-2d #dock2d{display:none!important}
-html body.view-2d #hub{inset:0!important;width:auto!important;padding:12px!important;background:#2c1d0e66!important;display:flex!important;align-items:center;justify-content:center}
-html body.view-2d #hub[hidden]{display:none!important}
-html body.view-2d .hub-box{width:min(560px,100%)!important;height:auto!important;max-height:calc(100dvh - 24px)!important;padding:16px!important;gap:10px!important;border:3px solid #a77e4b!important;border-radius:18px!important}
-html body.view-2d .hub-cards{display:grid!important;grid-auto-flow:row!important;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important;grid-template-rows:none!important;grid-auto-columns:auto!important;overflow:auto!important}
-html body.view-2d nav.toolbar{left:8px!important;right:8px!important;bottom:max(6px,env(safe-area-inset-bottom))!important;width:auto!important;max-width:560px!important;height:auto!important;padding:0!important;background:none!important}
-html body.view-2d.hub-open nav.toolbar{display:none!important}
-@media(max-width:600px){
- html body header.topbar{padding:6px!important}
- html body header.topbar .status-row{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px!important}
- html body header.topbar #gold{grid-column:1;font-size:12px!important;padding:3px 5px!important}
- html body header.topbar #level-name{grid-column:2 / 4;font-size:12px!important}
- html body header.topbar #hud-progress{grid-column:1;font-size:10px!important}
- html body header.topbar #hud-clock{grid-column:2 / 4;min-height:28px!important}
- html body header.topbar .hud-chip,html body header.topbar #start-business{width:100%!important;min-width:0!important;font-size:11px!important;padding:3px!important;height:34px!important;min-height:34px!important}
- html body header.topbar #return-to-game{grid-column:3;justify-content:center!important;margin:0!important;font-size:11px!important}
- html body header.topbar button.hud-chip::before,html body header.topbar #start-business::before{width:21px;height:21px}
- html body #tutor,html body.hub-open #tutor,html body.view-2d #tutor,html body.view-2d.hub-open #tutor{padding-top:134px!important;width:min(286px,calc(100vw - 24px))!important}
- html body #tutor .guide-hero{width:110px;height:147px}
- #tutor .guide-dialogue{padding:13px 12px 10px}#tutor p{font-size:12px;line-height:1.45}
-}
+/* 直立商會：所有操作使用同一規格，主畫面僅保留四個管理入口。 */
+html body header.topbar{position:fixed!important;top:max(6px,env(safe-area-inset-top))!important;left:8px!important;right:8px!important;width:auto!important;max-width:none!important;height:auto!important;min-height:0!important;transform:none!important;display:grid!important;gap:6px!important;padding:8px!important;border:2px solid #9c7045!important;border-radius:16px!important;background:#fff4dfee!important;box-shadow:0 3px 10px #4d382333!important;z-index:45}
+html body header.topbar .status-row{display:flex!important;justify-content:space-between!important;align-items:center!important;gap:8px!important;min-height:24px!important;width:100%!important}
+html body header.topbar #gold{display:inline-flex!important;gap:5px;align-items:center;font-size:14px!important;margin:0!important;padding:0!important;background:none!important;border:0!important;white-space:nowrap}
+#gold::before{content:'';width:22px;height:22px;background:url('./assets/ui-generated/tool-coin-v23.webp') center/contain no-repeat}#gold em{font-size:11px;font-style:normal}
+html body header.topbar #hud-clock{font-size:11px!important;color:#86633e;background:none!important;border:0!important;padding:0!important;min-height:0!important;white-space:nowrap}
+html body header.topbar #shop-goal{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:3px 8px;text-align:left;width:100%;height:61px;box-sizing:border-box;padding:7px 10px;border:1px solid #c4a26e;border-radius:11px;background:#fffdf4;color:#664529;box-shadow:0 2px 0 #b8996433;min-height:0!important}
+html body header.topbar #level-name{display:block!important;font-size:13px!important;line-height:1.2!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0!important}
+html body header.topbar #hud-progress{position:static!important;padding:0!important;border:0!important;box-shadow:none!important;background:none!important;font-size:12px!important;color:#688343;white-space:nowrap}
+#goal-next{grid-column:1/-1;font-size:10px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#927049}.goal-track{grid-column:1/-1;height:4px;overflow:hidden;background:#e7d8b9;border-radius:5px}.goal-track>i{display:block;height:100%;background:#799953;border-radius:5px}
+.top-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;align-items:stretch}
+html body header.topbar .prep-bar{position:static!important;display:contents!important;transform:none!important}.prep-bar>span{display:none!important}html body header.topbar .prep-bar[hidden]{display:none!important}
+html body header.topbar .top-actions button,html body header.topbar #quick-menu>summary{appearance:none;position:static!important;display:flex!important;align-items:center;justify-content:center;gap:5px;box-sizing:border-box;min-width:0!important;width:100%!important;height:40px!important;min-height:40px!important;margin:0!important;padding:5px 7px!important;border:1px solid #ad8555!important;border-radius:10px!important;background:#fffaf0!important;color:#68472c!important;box-shadow:0 2px 0 #b3946833!important;font:700 12px/1.2 system-ui!important;white-space:nowrap;cursor:pointer}
+html body header.topbar #start-business{background:#6e914d!important;border-color:#547238!important;color:white!important}
+html body header.topbar #return-to-game{order:99!important;display:flex!important}
+html body header.topbar #quick-menu{position:relative;min-width:0}#quick-menu>summary{list-style:none}#quick-menu>summary::-webkit-details-marker{display:none}#quick-menu>summary::before{content:'•••';font-weight:900;color:#927049;font-size:17px}
+.quick-menu-items{position:absolute;top:46px;right:0;width:145px;padding:7px;background:#fff4df;border:1px solid #ab8253;border-radius:12px;box-shadow:0 5px 15px #49352244;display:grid;gap:6px;z-index:90}
+html body header.topbar .quick-menu-items button{height:40px!important;min-height:40px!important;text-align:left!important;justify-content:flex-start!important}
+#top-fullscreen::before,#top-patrol::before,#start-business::before,.chibi-view-toggle::before,#return-to-game::before{content:'';display:block;flex:none;width:22px;height:22px;background-size:contain;background-position:center;background-repeat:no-repeat}
+#top-fullscreen::before{background-image:url('./assets/ui-generated/tool-fullscreen-v23.webp')}#top-patrol::before{background-image:url('./assets/ui-generated/tool-patrol-v23.webp')}#start-business::before{background-image:url('./assets/ui-generated/tool-business-v23.webp')}.chibi-view-toggle::before{background-image:url('./assets/ui-generated/tool-view-v23.webp')}#return-to-game::before{background-image:url('./assets/ui-generated/tool-town-v23.webp')}
+html body #camera-mode,html body.patrol-active #camera-mode{display:none!important}
+html body #furniture-controls{min-width:0!important;width:max-content!important;max-width:calc(100vw - 16px)!important}html body #furniture-controls button[hidden]{display:none!important}
+html body #hub{padding:calc(var(--shop-header-bottom,154px) + 8px) 10px 60px!important;align-items:center}
+.hub-box{border-radius:16px!important;padding:12px!important;gap:8px!important}.hub-box h2{font-size:17px!important}.hub-note{font-size:12px!important;line-height:1.45!important}.hub-head{min-height:32px!important}.hub-head .hub-thumb{width:36px;height:36px}.hub-card{padding:8px!important;min-height:44px!important}.hub-action{font-size:12px!important;min-height:40px!important}
+#shop-notice{top:calc(var(--shop-header-bottom,154px) + 8px)!important;font-size:12px;max-width:calc(100vw - 24px)}
+#portrait-gate{position:fixed;inset:0;z-index:10000;background:#edf2e5;color:#63482d;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px}#portrait-gate[hidden]{display:none}#portrait-gate>div{font-size:64px;color:#779651}#portrait-gate strong{font-size:22px}#portrait-gate p{font-size:14px;margin:0}
+.orientation-blocked{overflow:hidden}
+/* 對話泡泡緊貼頭側，角色腰際由畫面底緣裁掉，不留下懸空切口。 */
+#manager-dialogue{position:fixed;right:0;bottom:0;width:max-content;max-width:100vw;display:flex;align-items:flex-start;gap:0;z-index:85;pointer-events:none;isolation:isolate}
+#manager-dialogue[hidden]{display:none}.manager-portrait{position:relative;width:112px;height:149px;overflow:hidden;flex:none;pointer-events:none}.manager-portrait img{position:absolute;width:112px;height:149px;right:0;bottom:-17px;object-fit:contain}
+.manager-bubble{position:relative;align-self:flex-start;width:max-content;max-width:calc(100vw - 124px);margin:5px -9px 0 8px;padding:9px 27px 9px 11px;border:1.5px solid #967043;border-radius:15px 15px 4px 15px;background:#fffaeb;box-shadow:0 3px 8px #49352226;color:#65482d;pointer-events:auto;box-sizing:border-box}
+.manager-bubble::after{content:'';position:absolute;right:-7px;top:23px;width:10px;height:10px;transform:rotate(45deg);background:#fffaeb;border-right:1.5px solid #967043;border-top:1.5px solid #967043;z-index:-1}
+.manager-bubble p{margin:0;font-size:12px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;max-height:min(180px,35dvh);overflow:auto}.manager-dismiss{position:absolute;right:4px;top:4px;width:20px;height:20px;min-height:20px!important;padding:0!important;border:0!important;background:transparent!important;color:#987344;font-size:16px!important}.manager-action{display:block;margin:7px 0 0 auto;min-height:30px;padding:4px 9px;border:1px solid #698446;border-radius:8px;background:#74964e;color:white;font-size:11px}.manager-action[hidden]{display:none}
+body.hub-open #manager-dialogue{display:none}
+#hub[data-page=orders] .hub-cards{display:flex!important;flex-direction:column!important;overflow:auto!important;background:#dbe9df;padding:10px;border-radius:14px}#hub[data-page=orders] .hub-card{align-self:flex-start;width:min(90%,380px);background:#fff;border-radius:16px 16px 16px 3px}#hub[data-page=orders] .hub-card.status-ready{background:#d9f6bb;border-color:#76a457}
+/* 2D 同樣保留滿版場景，沒有下方保留區。 */
+html body.view-2d{--scene-h:100dvh!important;--dock-h:0px!important;--side:0px!important;--bar-h:52px!important}html body.view-2d #world{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important}html body.view-2d #dock2d{display:none!important}
+html body.view-2d #hub{inset:0!important;width:auto!important;padding:calc(var(--shop-header-bottom,154px) + 8px) 10px 60px!important;background:#2c1d0e66!important;display:flex!important;align-items:center;justify-content:center}html body.view-2d #hub[hidden]{display:none!important}html body.view-2d .hub-box{width:min(560px,100%)!important;height:auto!important;max-height:100%!important;padding:12px!important;gap:8px!important;border:3px solid #a77e4b!important;border-radius:16px!important}
+html body.view-2d .hub-cards{display:grid!important;grid-auto-flow:row!important;grid-template-columns:repeat(auto-fill,minmax(135px,1fr))!important;grid-template-rows:none!important;grid-auto-columns:auto!important;overflow:auto!important}
+html body.view-2d nav.toolbar{left:8px!important;right:8px!important;bottom:max(6px,env(safe-area-inset-bottom))!important;width:auto!important;max-width:560px!important;height:auto!important;padding:0!important;background:none!important}html body.view-2d.hub-open nav.toolbar{display:none!important}
+
+#quick-menu{grid-column:2}html body header.topbar #return-to-game{grid-column:3}
+/* 清除舊桌機 grid 格位，資訊、目標、操作固定三列。 */
+html body header.topbar{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto auto!important}
+html body header.topbar .status-row{grid-column:1!important;grid-row:1!important;position:static!important;margin:0!important;visibility:visible!important}
+html body header.topbar #shop-goal{grid-column:1!important;grid-row:2!important}
+html body header.topbar .top-actions{grid-column:1!important;grid-row:3!important}
+html body header.topbar #gold,html body header.topbar #hud-clock{position:static!important;visibility:visible!important;opacity:1!important;flex:none!important}
+body:has(#manager-dialogue:not([hidden])) nav.toolbar{display:none!important}

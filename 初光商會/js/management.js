@@ -1,8 +1,8 @@
-import {canStartTutorial} from './shop-entry-rules.js?v=20261111-ui-v23';
+import {canStartTutorial} from './shop-entry-rules.js?v=20261111-portrait-v24';
 /* 簡化經營規則：四職務、在班名額、專屬被動、自動工作、每日任務與舊存檔遷移。
  * 所有數值都放在 data/management.json，這裡只有規則。 */
-import {shelfCapacity,accepts} from './furniture.js?v=20261111-ui-v23';
-import {applyFortune} from './fortune-cards.js?v=20261111-ui-v23';
+import {shelfCapacity,accepts} from './furniture.js?v=20261111-portrait-v24';
+import {applyFortune} from './fortune-cards.js?v=20261111-portrait-v24';
 export const WORK_JOBS=['stocker','host','cleaner'];
 const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner',cashier:'host'};
 export const legacyRole=r=>LEGACY_ROLES[r]||r;
@@ -33,7 +33,6 @@ export function managementAction(g,s,type,p){
  if(type==='setLayoutPause'){s.layoutPause=!!p.value;for(const a of [...s.employees,...s.customers])a.path=[];return s.layoutPause?'布置模式：商店暫停':'繼續營業';}
  if(type==='setShelfGoods'){const sh=s.shelves.find(x=>x.id===p.shelfId),c=g.data.catalog.find(x=>x.sku===p.sku);assert(sh&&c&&c.unlockStoreLevel<=s.level&&accepts(sh,c),'這座貨架不能賣這項商品');assert(!s.customers.some(x=>x.basket.some(b=>b.shelfId===sh.id)),'顧客正在選購，請稍候');if(sh.sku!==c.sku){s.inventory[sh.sku]+=sh.stock;sh.stock=0;sh.sku=c.sku;}g.autoStock(s,sh);return `改賣 ${c.displayName}`;}
  if(type==='tutorial'){s.tutorialState=p.done?{...s.tutorialState,step:'done',done:true}:{...s.tutorialState,...(p.patch||{})};return '教學進度已保存';}
- if(type==='tutorialReplay'){assert(canStartTutorial(s),'店內已有貨架，不能重新開始新手教學。');s.tutorialState={step:'welcome',done:false,replay:true,version:1};return '重新播放新手教學';}
  return null;
 }
 /* 沒有員工時系統仍低速運作，玩家不會被卡住 */

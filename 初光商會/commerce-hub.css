@@ -23,7 +23,7 @@ body.placement-bad #placement-hint{color:#b3261e}
 body[data-tutorial] .toolbar button:not(.tutor-focus){visibility:visible;opacity:.42}
 body.hub-open #tutor .tutor-actions{display:none}
 body.hub-open #tutor{top:max(8px,env(safe-area-inset-top));bottom:auto}
-@media (orientation:landscape) and (max-height:500px){.toolbar{right:max(10px,env(safe-area-inset-right));left:auto;transform:none;width:190px;grid-template-columns:repeat(2,minmax(0,1fr))}#tutor{bottom:auto;top:56px;left:12px;transform:none;width:min(320px,45vw)}.hub-box{width:min(640px,100%)}}
+
 @media (prefers-reduced-motion:reduce){.tutor-focus{animation:none}}
 /* 直立手機優先：上方一條細狀態列、下方一排薄按鈕，其餘都留給店面 */
 html body header.topbar{position:fixed!important;top:max(6px,env(safe-area-inset-top))!important;left:8px!important;right:8px!important;transform:none!important;width:auto!important;max-width:none!important;min-height:0!important;height:38px!important;padding:0 12px!important;border-width:2px!important;border-radius:12px!important;display:flex!important;justify-content:space-between!important;align-items:center!important;gap:8px!important;box-shadow:none!important}
@@ -35,7 +35,7 @@ html body nav.toolbar{position:fixed!important;left:8px!important;right:8px!impo
 html body nav.toolbar button{display:block!important;width:100%!important;min-width:0!important;min-height:42px!important;height:42px!important;padding:0 2px!important;margin:0!important;border:2px solid #a77e4b!important;border-radius:12px!important;background:#fff8e8ee!important;color:#4a3019!important;font-size:15px!important;font-weight:700!important;line-height:1!important;writing-mode:horizontal-tb!important;white-space:nowrap!important;box-shadow:none!important}
 html body #tutor{bottom:calc(max(6px,env(safe-area-inset-bottom)) + 52px);padding:8px 12px}#tutor strong{font-size:15px}#tutor p{margin:2px 0 6px;font-size:13px}#tutor button{min-height:36px}
 html body.hub-open #tutor{top:calc(max(6px,env(safe-area-inset-top)) + 44px);bottom:auto}
-@media (orientation:landscape) and (max-height:500px){html body nav.toolbar{left:auto!important;right:8px!important;width:220px!important}}
+
 html body.hub-open nav.toolbar,html body.patrol-active nav.toolbar,html body.decorate-active nav.toolbar,html body.editing-furniture nav.toolbar{display:none!important}
 
 /* 選單 2D 小圖與右上角 X */
@@ -95,11 +95,7 @@ html body.view-2d .hub-box h2{font-size:17px}html body.view-2d .hub-head{min-hei
 html body.view-2d nav.toolbar,html body.view-2d.hub-open nav.toolbar{display:grid!important;left:0!important;right:0!important;bottom:0!important;max-width:none!important;height:var(--bar-h)!important;padding:5px 8px!important;box-sizing:border-box;background:#fff3d6!important;z-index:70}
 html body.view-2d.patrol-active nav.toolbar,html body.view-2d.decorate-active nav.toolbar,html body.view-2d.editing-furniture nav.toolbar{display:none!important}
 html body.view-2d #tutor,html body.view-2d.hub-open #tutor{top:auto;bottom:calc(var(--bar-h) + 6px)}
-@media (orientation:landscape){body.view-2d{--dock-h:0px;--bar-h:0px;--side:min(340px,42vw);--scene-h:100dvh}
- body.view-2d #dock2d{left:auto;right:0;width:var(--side);top:44px;bottom:52px;border-top:0;border-left:3px solid #a77e4b}
- .dock-staff{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(110px,1fr);grid-auto-columns:auto;overflow:hidden auto}
- html body.view-2d #hub{inset:44px 0 52px auto;width:var(--side)}html body.view-2d .hub-box{border-width:0 0 0 3px}
- html body.view-2d nav.toolbar,html body.view-2d.hub-open nav.toolbar{left:auto!important;width:var(--side)!important;height:52px!important}}
+
 /* 員工資訊已在下方卡片，場景內不再放名牌擋貨架；心情與提醒氣泡保留 */
 html body.view-2d .staff-head-label{display:none!important}
 #view-code{width:96px;min-height:40px;padding:0 8px;border:2px solid #a77e4b;border-radius:10px;background:#fff;color:inherit;font:inherit}.hub-field .hub-action{flex:none;min-height:40px;padding:0 12px}
