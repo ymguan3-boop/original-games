@@ -1,0 +1,27 @@
+{
+  "id": "limited-armory-v45",
+  "name": "星冠限定武器櫃",
+  "profile": "low-poly",
+  "budget": {
+    "trianglesMax": 20000,
+    "staticMeshDrawCalls": 1,
+    "iconMaxPixels": [
+      384,
+      512
+    ]
+  },
+  "tool": "Local procedural Three.js builder; built-in imagegen design and inventory artwork",
+  "runtime": "../../js/limited-rack-v45.js",
+  "icon": "rack-limited-armory.webp",
+  "design": "Rounded teal woodwork, burgundy velvet folds, swept gilded crown cornice, laurel carvings, sapphire settings, four display ledges and scroll feet. Physical top plaque uses existing scene labels.",
+  "baseline": "C:/Users/ymguan/Documents/新遊戲專案/prototype/starters-gen1-3/highpoly-redesign/blender-pokedex-highpoly-v3-corrective/production/APPROVED-BASELINE.md; applies design rigor rather than literal creature style",
+  "userProfile": "細緻低模加貼圖、手機效能優先，沿用本機工具、不安裝新工具",
+  "imageSource": "C:/Users/ymguan/.codex/generated_images/01a18fbb-5899-7563-a059-3e582a4a6fef/exec-90d2c42a-6696-4cdb-a11b-cd93398be32a.png",
+  "imagePrompt": "Magnificent limited-edition weapon display cabinet, cozy hand-painted fairy-tale village game, rounded midnight teal lacquered wood, burgundy velvet, gilded laurel filigree and crown, sapphire gems, stepped display ledges, carved feet, brown silhouette, transparent background, no text.",
+  "artStatus": "ART_REVIEW_PENDING; one representative new rack, no batch expansion",
+  "verification": "artifacts/shop-v45-qa.json and shop-v45-rack-scene.png in workspace",
+  "measured": {
+    "triangles": 7484,
+    "staticMeshDrawCalls": 1
+  }
+}

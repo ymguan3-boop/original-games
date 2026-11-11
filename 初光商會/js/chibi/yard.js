@@ -1,6 +1,6 @@
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
-import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261111-decor-v22';
+import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261111-portrait-v45';
 const THREE=globalThis.THREE;
 
 const STEP_D=.36;
@@ -168,6 +168,7 @@ export function buildYard(level,opts={}){
   bunting(props,new THREE.Vector3(-3.4,G+2.5,across+1),new THREE.Vector3(3.4,G+2.5,across+1),cols);bunting(props,new THREE.Vector3(-3.4,G+2.5,across+7.6),new THREE.Vector3(3.4,G+2.5,across+7.6),cols);
   bunting(props,new THREE.Vector3(-3.4,G+2.5,across+1),new THREE.Vector3(-3.4,G+2.5,across+7.6),cols,.25);bunting(props,new THREE.Vector3(3.4,G+2.5,across+1),new THREE.Vector3(3.4,G+2.5,across+7.6),cols,.25);}
  if(opts.cull)for(const o of [...props.children]){const p=o.position;if((p.x>half-.3&&p.z<zR-1.2)||p.z<-d/2-.2)props.remove(o);}
+ if(opts.gardenArea){const a=opts.gardenArea;props.updateMatrixWorld(true);for(const o of [...props.children]){const b=new THREE.Box3().setFromObject(o),left=b.min.x<a.cx-2&&b.max.x>a.minX,right=b.max.x>a.cx+2&&b.min.x<a.maxX;if((left||right)&&b.max.z>a.minZ&&b.min.z<a.maxZ){props.remove(o);o.traverse(n=>n.geometry?.dispose());}}}
  if(opts.reserved?.length){props.updateMatrixWorld(true);for(const o of [...props.children]){const b=new THREE.Box3().setFromObject(o);if(opts.reserved.some(p=>b.max.x>p.x-p.r&&b.min.x<p.x+p.r&&b.max.z>p.z-p.r&&b.min.z<p.z+p.r)){props.remove(o);o.traverse(n=>n.geometry?.dispose());}}}
  addOutline(props);
 

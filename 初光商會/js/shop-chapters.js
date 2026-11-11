@@ -21,7 +21,9 @@ export function chapterObjectives(s,levels){
   {id:'revenue',title:'累計營業額（G）',value:s.totals.revenue||0,target:revenue},
   {id:'satisfaction',title:'顧客滿意度（%）',value:s.satisfaction||0,target:satisfaction},
   {id:'days',title:'完成營業日結',value:s.totals.days||0,target:days}
- ].map(g=>({...g,done:g.value>=g.target}));
+ ];
+ if(!last)goals.push({id:'funds',title:'升級工程預算（G）',value:s.gold||0,target:next.cost});
+ for(const goal of goals)goal.done=goal.value>=goal.target;
  const side=chapter.sides.map(([id,title,read,target,reward],i)=>({id:`lv${s.level}-${id}`,title,value:read(s),target,reward,done:read(s)>=target,claimed:!!s.chapterRewards?.[`lv${s.level}-${id}`]}));
  const ready=goals.every(g=>g.done),cost=last?0:next.cost;
  return {level:s.level,title:chapter.title,story:chapter.story,goals,side,ready,last,cost,canConstruct:ready&&!last&&!s.layoutPause&&!s.upgradeProject&&s.gold>=cost,construction:!!s.upgradeProject};
@@ -29,8 +31,19 @@ export function chapterObjectives(s,levels){
 export function autoChapterConstruction(g,s){
  const info=chapterObjectives(s,g.data.levels);
  if(!info.canConstruct)return false;
+ return beginChapterConstruction(g,s,info);
+}
+export function beginChapterConstruction(g,s,info=chapterObjectives(s,g.data.levels)){
  const next=g.data.levels[s.level],duration=next.upgradeSeconds||30;
  g.pay(s,next.cost);s.stats.expenses=(s.stats.expenses||0)+next.cost;
+ // Charge before closing so the one and only day report contains the upgrade fee.
+ if(s.phase==='open')g.close(s);
+ else if(s.phase==='report'&&s.report){
+  for(const report of [s.report,...s.history.filter(r=>r.day===s.report.day)]){
+   report.expenses=s.stats.expenses;report.gold=s.gold;
+   report.netProfit=s.stats.revenue+(s.stats.furnitureSales||0)+(s.stats.promoterBonus||0)-s.stats.cogs-s.stats.expenses;
+  }
+ }
  s.upgradeProject={from:s.level,to:next.level,duration,remaining:duration,cost:next.cost,chapter:true};
  s.chapterConstruction=`lv${s.level}-to-${next.level}`;
  g.log(s,`主線完成：${info.title}！自動投入 ${next.cost} G，開始升至 Lv.${next.level}（${duration} 秒）。`);

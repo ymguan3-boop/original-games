@@ -1,10 +1,10 @@
-import {decorEffects,obstacles} from './decorations.js?v=20261111-portrait-v25';
-import {purchaseChance} from './economy-v2.js?v=20261111-portrait-v25';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261111-portrait-v25';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261111-portrait-v25';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261111-portrait-v25';
-import {chapterObjectives,autoChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261111-portrait-v25';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261111-portrait-v25';
+import {decorEffects,obstacles} from './decorations.js?v=20261111-portrait-v45';
+import {purchaseChance} from './economy-v2.js?v=20261111-portrait-v45';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261111-portrait-v45';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261111-portrait-v45';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261111-portrait-v45';
+import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261111-portrait-v45';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261111-portrait-v45';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
@@ -13,12 +13,12 @@ export function shopAction(g,s,type,p){
  s.shelfStorage||=[];
  if(type==='resolveCustomerComplaint')return resolveCustomerComplaint(g,s,p);
  if(type==='upgrade'){
-  check(!s.upgradeProject,'店面正在施工');const l=g.data.levels[s.level];check(l,'商會已達最高級');check(chapterObjectives(s,g.data.levels).ready,'尚未完成本章主線營業目標');check(s.totals.revenue>=l.revenue&&s.satisfaction>=l.satisfaction&&s.totals.days>=l.days,`需營業額 ${l.revenue} G、滿意度 ${l.satisfaction}、日結 ${l.days} 次`);g.pay(s,l.cost);s.stats.expenses+=l.cost;const duration=l.upgradeSeconds||upgradeSeconds(l.level);s.upgradeProject={from:s.level,to:l.level,duration,remaining:duration,cost:l.cost};g.log(s,`開始升級 ${l.name}，工期 ${duration} 秒。`);return '已安排施工，倒數完成後店面才會升級';
+  check(!s.upgradeProject,'店面正在施工');const l=g.data.levels[s.level];check(l,'商會已達最高級');check(chapterObjectives(s,g.data.levels).ready,'尚未完成本章主線營業目標');check(s.totals.revenue>=l.revenue&&s.satisfaction>=l.satisfaction&&s.totals.days>=l.days,`需營業額 ${l.revenue} G、滿意度 ${l.satisfaction}、日結 ${l.days} 次`);beginChapterConstruction(g,s);return '已安排施工，倒數完成後店面才會升級';
  }
  if(!['purchaseShelf','storeShelf','placeShelf','sellShelf'].includes(type))return null;
  check(s.phase!=='open'||s.layoutPause,'請先進入布置模式');
  if(type==='purchaseShelf'){
-  const kind=shelfTypes.find(t=>t.id===p.type);check(kind,'貨架類型無效');check(s.level>=kind.level,'商會等級尚未解鎖此貨架');check(s.shelfStorage.length<50,'收納空間最多 50 座');const price=kind.cost;g.pay(s,price);s.stats.expenses+=price;const id=`rack-${++s.serial}`;s.shelfStorage.push({id,type:kind.id,sku:kind.sku,stock:0,rotation:0,purchasePrice:price});s.lastPurchasedShelf=id;g.log(s,`購入${kind.name} ${price} G，尚未放置。`);return '貨架已購入；取消放置時會留在收納區';
+  const kind=shelfTypes.find(t=>t.id===p.type);check(kind,'貨架類型無效');check(s.level>=kind.level,'商會等級尚未解鎖此貨架');check(!kind.unique||!ownsUniqueShelf(s,kind.id),'限定武器櫃限購一座（含收納中）');check(s.shelfStorage.length<50,'收納空間最多 50 座');const price=kind.cost;g.pay(s,price);s.stats.expenses+=price;const id=`rack-${++s.serial}`;s.shelfStorage.push({id,type:kind.id,sku:kind.sku,stock:0,rotation:0,purchasePrice:price});s.lastPurchasedShelf=id;g.log(s,`購入${kind.name} ${price} G，尚未放置。`);return '貨架已購入；取消放置時會留在收納區';
  }
  if(type==='storeShelf'){
   const sh=s.shelves.find(x=>x.id===p.shelfId);check(sh,'貨架不存在');check(!s.customers.some(c=>c.basket.some(b=>b.shelfId===sh.id)),'顧客正在選購這座貨架');check(s.shelfStorage.length<50,'貨架收納空間已滿');const shelves=s.shelves.filter(x=>x!==sh);validLayout(g,s,shelves);for(const e of s.employees)if(e.workTask?.shelfId===sh.id){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}s.inventory[sh.sku]+=sh.stock;const saved={...sh,type:shelfKind(sh),stock:0,purchasePrice:sh.purchasePrice??g.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);s.shelves=shelves;s.undo=null;for(const a of g.actors(s))a.path=[];g.log(s,`${shelfTypes.find(t=>t.id===saved.type)?.name}已撤銷至收納，架上商品已回庫房。`);return '貨架已收納，可再次放置或半價販售';

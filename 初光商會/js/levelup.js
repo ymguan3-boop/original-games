@@ -1,8 +1,8 @@
 /* 升級演出：彩帶與金幣動畫，列出這一級解鎖的內容與下一級條件。 */
-import {shelfTypes} from './furniture.js?v=20261111-portrait-v25';
-import {decorTypes} from './decorations.js?v=20261111-portrait-v25';
-import {PROMOTERS} from './promoters.js?v=20261111-portrait-v25';
-import {chapterObjectives} from './shop-chapters.js?v=20261111-portrait-v25';
+import {shelfTypes} from './furniture.js?v=20261111-portrait-v45';
+import {decorTypes} from './decorations.js?v=20261111-portrait-v45';
+import {PROMOTERS} from './promoters.js?v=20261111-portrait-v45';
+import {chapterObjectives} from './shop-chapters.js?v=20261111-portrait-v45';
 export function showLevelUp(game,clear,esc){
  const s=game.state,d=game.data,lv=clear.level,prev=d.levels[lv-2],cur=d.levels[lv-1],name=id=>d.spirits.find(x=>x.id===id)?.name||id;
  const unlocked=[

@@ -1,9 +1,9 @@
-import {restoreMerchantGuest,carryMerchantGuest} from './merchant-guest.js?v=20261111-meadow-v2';
+import {restoreMerchantGuest,carryMerchantGuest} from './merchant-guest.js?v=20261111-meadow-v3';
 restoreMerchantGuest();
-import {isMerchantMeadow,MEADOW_KEY,initializeMeadowStorage} from './merchant-meadow.js?v=20261111-meadow-v2';
+import {isMerchantMeadow,MEADOW_KEY,initializeMeadowStorage} from './merchant-meadow.js?v=20261111-meadow-v3';
 import {claimHalloweenWeapon} from './halloween-event.js?v=20261027-halloween';
 import {teamFirstRoster} from './team-roster.js?v=20261027-v30';
-import {caveGuide} from './cave-guide.js?v=20261111-meadow-v2';
+import {caveGuide} from './cave-guide.js?v=20261111-meadow-v3';
 import {shopWeaponEntries} from './weapon-rules.js?v=20261030-reaper-v2';
 import {weaponPassiveText} from './weapon-passives.js?v=20261030-reaper-v2';
 import {familyRoot,isTrainingBase,ownsFamily,trainingOf,familyMembers} from './family-progress.js?v=20261025-v19';
@@ -12,7 +12,7 @@ import {verifyTestPassword} from './test-access.js?v=20261025-v19';
 import {createCombatAudio} from './combat-audio-v17.js?v=20261030-reaper-v2';
 import {costumeFor} from './costume-effects.js?v=20261030-reaper-v2';
 import {chooseTestPet} from './test-pets.js?v=20261027-v30';
-import {createCaveTutorial} from './tutorial.js?v=20261111-meadow-v2';
+import {createCaveTutorial} from './tutorial.js?v=20261111-meadow-v3';
 import {passiveSummary} from './status-passives.js?v=20261025-v22';
 import {STATUS} from './combat-status.js?v=20261025-v22';
 import {groupRewards} from './reward-groups.js';
@@ -28,7 +28,7 @@ import {icon} from './ui-art.js';
 import {createStore,initialState} from './save-bridge.js?v=20261027-v30';
 import {claimStarter,draw,eligiblePool,validatePool} from './gacha.js?v=20261030-reaper-v2';
 import {ITEMS,WEAPONS,BOSS_WEAPONS,weaponStats,useItem,buyItem,buyWeapon} from './inventory.js?v=20261030-reaper-v2';
-import {CaveWorld,createRun} from './world.js?v=20261111-meadow-v2';
+import {CaveWorld,createRun} from './world.js?v=20261111-meadow-v3';
 import {CARD_GROUPS,dexSpecies,evolutionSummary,evolutionDetail,evolutionMechanics} from './dex-evolution.js?v=20261027-v30';
 
 const combatAudio=createCombatAudio();let testUnlocked=false;
@@ -38,7 +38,7 @@ function requestRoll(){if(!playing||entering||panel.open||evolving)return false;
 const $=id=>document.getElementById(id),panel=$('panel'),input={x:0,z:0},keys=new Set();
 let scenePromise=null,launchPromise=null,entering=false;
 const transition=(label,work)=>globalThis.PhantomTransition?.run(label,work)||Promise.resolve().then(work);
-async function ensureScene(){if(scene)return scene;if(scenePromise)return scenePromise;PhantomLoading.begin('正在準備洞穴戰場');scenePromise=(async()=>{try{PhantomLoading.stage('讀取旅人、武器與戰鬥動作',.12);for(const [src,ready] of [['../vendor/three.min.js',()=>!!globalThis.THREE],['../vendor/GLTFLoader.js',()=>!!globalThis.THREE?.GLTFLoader]]){if(!ready())await new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=src;el.onload=resolve;el.onerror=()=>{el.remove();reject(Error('引擎讀取失敗，請重試'));};document.head.append(el);});}PhantomLoading.install();const {createScene}=await import('./scene.js?v=20261111-meadow-v2');scene=await createScene($('world'),{spirits:Object.values(data.spirits),catalog:data.catalog,onSound:ev=>combatAudio.play(ev),onSelect:id=>{if(playing&&!panel.open)world.select(id);},onError:e=>toast('素材問題：'+(e.message||e))});feedback=createFeedback(scene);data.config.rollDuration=scene.metrics.rollDuration;PhantomLoading.stage('戰場準備完成',.97);PhantomLoading.end();return scene;}catch(e){scenePromise=null;PhantomLoading.fail('場景讀取失敗，請重試');throw e;}})();return scenePromise;}
+async function ensureScene(){if(scene)return scene;if(scenePromise)return scenePromise;PhantomLoading.begin('正在準備洞穴戰場');scenePromise=(async()=>{try{PhantomLoading.stage('讀取旅人、武器與戰鬥動作',.12);for(const [src,ready] of [['../vendor/three.min.js',()=>!!globalThis.THREE],['../vendor/GLTFLoader.js',()=>!!globalThis.THREE?.GLTFLoader]]){if(!ready())await new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=src;el.onload=resolve;el.onerror=()=>{el.remove();reject(Error('引擎讀取失敗，請重試'));};document.head.append(el);});}PhantomLoading.install();const {createScene}=await import('./scene.js?v=20261111-meadow-v3');scene=await createScene($('world'),{spirits:Object.values(data.spirits),catalog:data.catalog,onSound:ev=>combatAudio.play(ev),onSelect:id=>{if(playing&&!panel.open)world.select(id);},onError:e=>toast('素材問題：'+(e.message||e))});feedback=createFeedback(scene);data.config.rollDuration=scene.metrics.rollDuration;PhantomLoading.stage('戰場準備完成',.97);PhantomLoading.end();return scene;}catch(e){scenePromise=null;PhantomLoading.fail('場景讀取失敗，請重試');throw e;}})();return scenePromise;}
 let tutorial=null;
 let shopTab='items',trainingId='';
 let store,data,world,scene,preview,playing=false,frame=0,lastTime=0,lastSave=0,lastHud=0,toastTimer,modalType='',pendingAction=false,ball='ball-basic',autoCapture=false,autoCaptureAt=0,capturePendingPoints=0,feedback=null,captureEpoch=0,evolving=false,summonController=null;

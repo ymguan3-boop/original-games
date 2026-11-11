@@ -1,26 +1,25 @@
-import {wallSlots,gardenSlots} from './decor-zones.js?v=20261111-portrait-v25';
-import {hasDecorModel} from './decor-models-v22.js?v=20261111-portrait-v25';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261111-portrait-v25';
-import {promoterHireCost} from './shop-entry-rules.js?v=20261111-portrait-v25';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261111-portrait-v25';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261111-portrait-v25';
-import {clockText} from './shop-clock.js?v=20261111-portrait-v25';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261111-portrait-v25';
-import {pendingRewards} from './reward-collection.js?v=20261111-portrait-v25';
+import {hasDecorModel} from './decor-models-v22.js?v=20261111-portrait-v45';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261111-portrait-v45';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261111-portrait-v45';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261111-portrait-v45';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261111-portrait-v45';
+import {clockText} from './shop-clock.js?v=20261111-portrait-v45';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261111-portrait-v45';
+import {pendingRewards} from './reward-collection.js?v=20261111-portrait-v45';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
-import {spiritPortrait} from './spirit-cards.js?v=20261111-portrait-v25';
-import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261111-portrait-v25';
-import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity} from './furniture.js?v=20261111-portrait-v25';
-import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261111-portrait-v25';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261111-portrait-v25';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261111-portrait-v25';
-import {chapterObjectives} from './shop-chapters.js?v=20261111-portrait-v25';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261111-portrait-v25';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261111-portrait-v25';
-import {requiresManagerPatrol} from './event-routing.js?v=20261111-portrait-v25';
-import {eventEmployee} from './patrol-events.js?v=20261111-portrait-v25';
-import {ledgerPanel} from './ledger-panel.js?v=20261111-portrait-v25';
+import {spiritPortrait} from './spirit-cards.js?v=20261111-portrait-v45';
+import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261111-portrait-v45';
+import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261111-portrait-v45';
+import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261111-portrait-v45';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261111-portrait-v45';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261111-portrait-v45';
+import {chapterObjectives} from './shop-chapters.js?v=20261111-portrait-v45';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261111-portrait-v45';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261111-portrait-v45';
+import {requiresManagerPatrol} from './event-routing.js?v=20261111-portrait-v45';
+import {eventEmployee} from './patrol-events.js?v=20261111-portrait-v45';
+import {ledgerPanel} from './ledger-panel.js?v=20261111-portrait-v45';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -42,7 +41,7 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
  const back=()=>{stack.pop();stack.length?render():close();};
  const close=()=>{stack=[];root.hidden=true;document.body.classList.remove('hub-open');onChange();};
  const open=(page,arg)=>{stack=[];push(page,arg);};
- const startPlacing=(type,id,area)=>{const def=decorTypes.find(t=>t.id===type);if(def?.wall){push('mounts',id);return;}if(def?.outdoor&&!area){push('decorPlace',id);return;}const r=getScene().beginShelfPlacement(type,id);toast(r.message,!r.ok);if(r.ok)close();};
+ const startPlacing=(type,id)=>{const r=getScene().beginShelfPlacement(type,id);toast(r.message,!r.ok);if(r.ok)close();};
  const pending=()=>pendingRewards(game,s()),claimAll=()=>{const r=act('claimAllRewards');if(r?.ok&&s().lastClaim)push('claimed');else render();};
  const relief=()=>{act('toggleAutoRelief');render();};
  const pages={
@@ -53,13 +52,11 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   goods(shelfId){settings.importMeadow?.();const sh=shelfId&&s().shelves.find(x=>x.id===shelfId),list=d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&c.isSellable&&!c.isRestricted&&(!sh||accepts(sh,c)));return {title:sh?`${shelfDefinition(sh).name}的商品`:'商品',note:sh?'只列這座貨架能賣的商品，點進去可以補貨或調整售價。':'補貨會自動進行。要有對應的貨架才能進貨。',cards:[{key:'meadow',html:'<b>⚔ 草原武器採集</b><small>擊倒魔物拾取武器，帶回商會販售</small>',tap:settings.enterMeadow},...list.map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>${hasRack(c)?`庫存 ${s().inventory[c.sku]} · 售價 ${money(s().prices[c.sku])}`:'還沒有可放的貨架'}</small>`,tap:()=>push('product',c.sku)}))]};},
   product(sku){const c=d.catalog.find(x=>x.sku===sku),price=s().prices[sku],cfg=d.config,change=step=>{const next=Math.max(Math.ceil(c.buyCost*cfg.priceMin),Math.min(Math.floor(c.suggestedRetail*cfg.priceMax),Math.round(price*(1+step))));act('price',{sku,price:next});render();};const rack=hasRack(c),stock=s().inventory[sku],unit=Math.ceil(c.buyCost*costFactor(s(),sku)),ref=c.suggestedRetail,dem=demandFactor(s(),sku),rate=t=>Math.round(purchaseChance(s(),{type:t,sku,price,ref})*100),arrow=dem>1.05?'需求 ▲':dem<.95?'需求 ▼':'需求持平';return {title:c.displayName,art:productIcon(sku),cards:[...Object.entries(CUSTOMER_TYPES).map(([t,v])=>({key:t,html:`<b>${v.name} ${rate(t)}%</b><small>預估購買率</small>`})),{key:'reset',html:`<b>恢復參考價 ${money(ref)}</b><small>${price===ref?'目前就是參考價':'點擊恢復'}</small>`,tap:()=>{act('price',{sku,price:ref});render();}}],note:`庫存 ${stock} · 進價 ${money(unit)}${unit!==c.buyCost?'（事件影響）':''} · 售價 ${money(price)}（參考 ${money(ref)}）<br>每件毛利 ${money(price-unit)} · ${arrow}<br>${c.lootOnly?'採集取得的武器會由補貨員搬上貨架；沒有庫存時需前往草原。':rack?`補貨會自動進行。手動進貨 10 件要花 ${money(unit*10)}，庫存會從 ${stock} 變成 ${stock+10}。`:'目前沒有能放這項商品的貨架，請先擺放貨架才能進貨。'}`,actions:[[c.lootOnly?'前往草原採集':'進貨 10 件',()=>{if(c.lootOnly){settings.enterMeadow();return;}act('buy',{sku,qty:10});render();},true,!c.lootOnly&&!rack],['售價 +10%',()=>change(.1)],['售價 −10%',()=>change(-.1)]]};},
   racks(){const st=s().shelfStorage||[],owned=st.map(sh=>({key:sh.id,html:`${rackIcon(shelfDefinition(sh).id)}<b>${esc(shelfDefinition(sh).name)}</b><small>收納中，免費擺放</small>`,tap:()=>push('storedRack',sh.id)})),buy=shelfTypes.filter(t=>t.level<=s().level).map(t=>({key:t.id,tutor:'rack',html:`${rackIcon(t.id)}<b>${esc(t.name)}</b><small>${esc(t.description)} · ${money(t.cost)}</small>`,tap:()=>push('rack',t.id)}));return {title:'貨架',note:`店內 ${s().shelves.length}/${shelfLimit(s().level)} 座。點店內貨架可移動。`,cards:[...owned,...buy]};},
-  rack(id){const t=shelfTypes.find(x=>x.id===id);return {title:t.name,art:rackIcon(id),note:`${t.description} · 容量 ${t.capacity} · ${money(t.cost)}`,actions:[['購買並擺放',()=>{const r=act('purchaseShelf',{type:id});if(r.ok){if(s().shelves.length<shelfLimit(s().level))startPlacing(id,s().lastPurchasedShelf);else back();}},true]]};},
+  rack(id){const t=shelfTypes.find(x=>x.id===id),owned=t.unique&&ownsUniqueShelf(s(),id);return {title:t.name,art:rackIcon(id),note:`${t.description} · 容量 ${t.capacity} · ${money(t.cost)}`,actions:[[owned?'已擁有・限購一座':'購買並擺放',()=>{const r=act('purchaseShelf',{type:id});if(r.ok){if(s().shelves.length<shelfLimit(s().level))startPlacing(id,s().lastPurchasedShelf);else back();}},true,owned]]};},
   storedRack(id){const sh=s().shelfStorage.find(x=>x.id===id);if(!sh)return pages.racks();return {title:shelfDefinition(sh).name,art:rackIcon(shelfDefinition(sh).id),note:'收納中的貨架可以再次擺放，不重複收費。',actions:[[s().shelves.length>=shelfLimit(s().level)?'店內貨架已滿':'擺放',()=>startPlacing(sh.type,sh.id),true,s().shelves.length>=shelfLimit(s().level)],['半價賣出',()=>{act('sellShelf',{shelfId:id});back();}]]};},
   decor(group){const stored=(s().decorStorage||[]).filter(i=>decorDefinition(i)?.group===group).map(i=>({key:i.id,html:`${decorIcon(i.type)}<b>${esc(decorDefinition(i).name)}</b><small>收納中，免費擺放</small>`,tap:()=>startPlacing(i.type,i.id)})),buy=decorTypes.filter(t=>t.group===group&&t.level<=s().level).map(t=>({key:t.id,html:`${decorIcon(t.id)}<b>${esc(t.name)}</b><small>${esc(t.description)} · ${money(t.cost)}</small>`,tap:()=>push('decorBuy',t.id)}));return {title:group==='furniture'?'家具':'裝飾',note:`店內 ${s().decorations.length}/${decorLimit(s().level)} 件，全店加成上限 15%。`,cards:[...stored,...buy]};},
   decorBuy(id){const t=decorTypes.find(x=>x.id===id);return {title:t.name,art:decorIcon(id),note:`${t.description} · ${money(t.cost)}`,actions:[['購買並擺放',()=>{const r=act('purchaseDecor',{type:id});if(r.ok){if(s().decorations.length<decorLimit(s().level))startPlacing(id,s().lastPurchasedDecor);else back();}},true]]};},
-  decorPlace(id){const item=s().decorStorage.find(d=>d.id===id);if(!item)return pages.decor('decor');return {title:decorDefinition(item).name,art:decorIcon(item.type),note:'室內保留通道；門外花園不會擋住顧客與宣傳員。',actions:[['放在室內',()=>startPlacing(item.type,id,'inside'),true],['門外花園',()=>push('gardens',id)]]};},
-  mounts(id){const item=s().decorStorage.find(d=>d.id===id);if(!item)return pages.decor('furniture');return {title:'選擇牆面掛點',note:'這些位置已避開窗戶、門框、樑柱與牆角。',cards:wallSlots(s().level).map(slot=>{const occupied=s().decorations.some(d=>d.mount&&d.mount.split('-')[0]===slot.side&&Math.hypot(d.x-slot.x,d.z-slot.z)<1);return {key:slot.mount,html:`<b>${slot.label}</b><small>${occupied?'已占用':'可掛放'}</small>`,tap:()=>{if(occupied){toast('此位置已占用，請選旁邊空位');return;}const r=act('placeDecor',{decorId:id,mount:slot.mount});if(r.ok)close();}};})};},
-  gardens(id){return {title:'門口兩側花園',note:'門前中央保留通行空間，已避開既有街景擺設。',cards:gardenSlots(s().level).map(slot=>{const occupied=s().decorations.some(d=>d.garden===slot.garden);return {key:slot.garden,html:`<b>${slot.label}</b><small>${occupied?'已占用':'可放植栽'}</small>`,tap:()=>{if(occupied){toast('這個花園位置已有植栽');return;}const r=act('placeDecor',{decorId:id,garden:slot.garden});if(r.ok)close();}};})};},
+
   shelfGoods(id){const sh=s().shelves.find(x=>x.id===id);if(!sh)return {title:'貨架',note:'貨架不在店內。'};return {title:'選擇販售商品',note:`${shelfDefinition(sh).name} · 目前 ${sh.stock}/${shelfCapacity(sh)}`,cards:d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&accepts(sh,c)).map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>${c.sku===sh.sku?'販售中':'售價 '+money(s().prices[c.sku])} · 庫存 ${s().inventory[c.sku]||0}</small>`,tap:()=>{const r=act('setShelfGoods',{shelfId:id,sku:c.sku});if(r.ok)back();}}))};},
   staff(){const ready=s().employees.filter(e=>staffEvolutionInfo(d,e).eligible).length;return {title:'員工',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人，其餘休息中並恢復疲勞。`,actions:[['招聘',()=>push('hire')],['編組與職務',()=>push('roster')],[`自動疲勞替班：${s().autoRelief?.enabled?'開啟':'關閉'}`,relief],[ready?`進化（${ready}）`:'進化',()=>push('evolve')]]};},
   hire(){const list=d.hirePool.filter(h=>!h.evolutionOnly&&!isPromoterLineage(d,h.spiritId||h.id)&&h.level<=s().level&&!s().employees.some(e=>e.baseId===h.id));return {title:'招聘',note:'招聘過的夥伴不會再出現。',empty:'目前市場沒有新夥伴。',cards:[{key:'promoter',tutor:'promoter',html:`<b>宣傳員${s().promoter?'：'+esc(s().promoter.name):''}</b><small>${s().promoter?'點擊更換':'聘請大型幻靈當吉祥物'}</small>`,tap:()=>push('promoters')},...list.map(h=>({key:h.id,tutor:'hire',html:`${spiritPortrait(spirit(h.spiritId||h.id),esc)}<b>${esc(h.name)}</b><small>${money(h.cost)}</small><small class="hub-passive">${esc(passiveDescription(game,{baseId:h.id,role:d.management.traits[h.id]?.preferredJob,evolutionHistory:[]}))}（擅長職務）</small>`,tap:()=>push('hireOne',h.id)}))]};},
