@@ -1,26 +1,28 @@
-import {openingBlocker} from './shop-entry-rules.js?v=20261110-shop-pk-r1';
-import {syncWorkforce,workforceTick} from './workforce.js?v=20261110-shop-pk-r1';
-import {rollWeather,weatherTraffic} from './environment.js?v=20261110-shop-pk-r1';
-import {pickCustomerType,customerBudget,CUSTOMER_TYPES,purchaseChance,costFactor,trafficFactor,rollMarket,settleReputation,ensureMarket} from './economy-v2.js?v=20261110-shop-pk-r1';
-import {settlePromoter,hirePromoter} from './promoters.js?v=20261110-shop-pk-r1';
-import {claimAllRewards} from './reward-collection.js?v=20261110-shop-pk-r1';
-import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261110-shop-pk-r1';
-import {requiresManagerPatrol} from './event-routing.js?v=20261110-shop-pk-r1';
-import {funnyEvents,comicEventEligible} from './funny-events.js?v=20261110-shop-pk-r1';
-import {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue} from './patrol-events.js?v=20261110-shop-pk-r1';
-import {employeePath,actorPath} from './staff-routing.js?v=20261110-shop-pk-r1';
-import {autoAssign,staffAutomation,restingPositions,sendToRest} from './staff-automation.js?v=20261110-shop-pk-r1';
-import {evolveStaffOnce} from './staff-evolution.js?v=20261110-shop-pk-r1';
-import {chapterObjectives,autoChapterConstruction,awardSideChapter} from './shop-chapters.js?v=20261110-shop-pk-r1';
-import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './customer-chase.js?v=20261110-shop-pk-r1';
-import {ensureDailyGoals} from './daily-objectives.js?v=20261110-shop-pk-r1';
-import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js?v=20261110-shop-pk-r1';
-import {decorEffects,decorTypes,obstacles} from './decorations.js?v=20261110-shop-pk-r1';
-import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261110-shop-pk-r1';
-import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js?v=20261110-shop-pk-r1';
-import {pointSegmentDistance,segmentDistance} from './motion.js?v=20261110-shop-pk-r1';
-import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER,buildingLevel,dimensions,applyRoom} from './nav.js?v=20261110-shop-pk-r1';
-import {legacyRole,managementAction,migrateState,preferredJob,capacityOf,passive,jobPower,dailyTrack,dailyState,systemRestock,workXp,eventGap,eventAllowed,WORK_JOBS} from './management.js?v=20261110-shop-pk-r1';
+import {specialDecorPose,floorInBounds} from './decor-zones.js?v=20261111-decor-v22';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261111-decor-v22';
+import {openingBlocker} from './shop-entry-rules.js?v=20261111-decor-v22';
+import {syncWorkforce,workforceTick} from './workforce.js?v=20261111-decor-v22';
+import {rollWeather,weatherTraffic} from './environment.js?v=20261111-decor-v22';
+import {pickCustomerType,customerBudget,CUSTOMER_TYPES,purchaseChance,costFactor,trafficFactor,rollMarket,settleReputation,ensureMarket} from './economy-v2.js?v=20261111-decor-v22';
+import {settlePromoter,hirePromoter} from './promoters.js?v=20261111-decor-v22';
+import {claimAllRewards} from './reward-collection.js?v=20261111-decor-v22';
+import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261111-decor-v22';
+import {requiresManagerPatrol} from './event-routing.js?v=20261111-decor-v22';
+import {funnyEvents,comicEventEligible} from './funny-events.js?v=20261111-decor-v22';
+import {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue} from './patrol-events.js?v=20261111-decor-v22';
+import {employeePath,actorPath} from './staff-routing.js?v=20261111-decor-v22';
+import {autoAssign,staffAutomation,restingPositions,sendToRest} from './staff-automation.js?v=20261111-decor-v22';
+import {evolveStaffOnce} from './staff-evolution.js?v=20261111-decor-v22';
+import {chapterObjectives,autoChapterConstruction,awardSideChapter} from './shop-chapters.js?v=20261111-decor-v22';
+import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './customer-chase.js?v=20261111-decor-v22';
+import {ensureDailyGoals} from './daily-objectives.js?v=20261111-decor-v22';
+import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js?v=20261111-decor-v22';
+import {decorEffects,decorTypes,obstacles} from './decorations.js?v=20261111-decor-v22';
+import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261111-decor-v22';
+import {shelfTypes,accepts,shelfCapacity,shelfDefinition,shelfKind} from './furniture.js?v=20261111-decor-v22';
+import {pointSegmentDistance,segmentDistance} from './motion.js?v=20261111-decor-v22';
+import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER,buildingLevel,dimensions,applyRoom} from './nav.js?v=20261111-decor-v22';
+import {legacyRole,managementAction,migrateState,preferredJob,capacityOf,passive,jobPower,dailyTrack,dailyState,systemRestock,workXp,eventGap,eventAllowed,WORK_JOBS} from './management.js?v=20261111-decor-v22';
 export const jobs=[['stocker','補貨員','自動補貨、縮短缺貨'],['host','招待員','引導顧客、提高購買機率'],['cleaner','清潔員','恢復整潔、提升滿意度'],['standby','休息','離店休息，恢復疲勞；仍獲得 20% 經驗']].map(([id,name,description])=>({id,name,description}));
 const eventEffects=[['checkout',25,'神速結帳 25 秒'],['reputation',3,'顧客推薦使人氣 +3'],['stock',6,'現有倉存補上最多 6 件商品'],['logistics',25,'搬貨效率提升 25 秒'],['sales',25,'價格接受度提升 25 秒'],['reputation',5,'口碑人氣 +5'],['storage',25,'進貨折扣提升 25 秒'],['morale',8,'在班夥伴士氣 +8'],['storage',30,'倉儲採購折扣 30 秒'],['stock',10,'盤點後從倉庫補上最多 10 件'],['patience',30,'客人排隊耐心 +10 秒，持續 30 秒'],['reputation',4,'迷路客口耳相傳，人氣 +4'],['clean',5,'店面整理使滿意度 +5'],['rest',10,'夥伴精神變好'],['traffic',25,'表演加速客流 25 秒'],['rest',15,'夥伴充飽電']];
 const eventNames=[['cashier','零錢排隊跳舞'],['cashier','發票捲成圍巾'],['stocker','紙箱山滑倒'],['stocker','浮空補貨術'],['sales','熱情推銷過頭'],['sales','商品說明接龍'],['smith','鍛爐彩虹煙'],['smith','鐵鎚唱歌'],['warehouse','標籤大風吹'],['warehouse','庫房尋寶'],['security','紙箱假小偷'],['security','門口迷路客'],['cleaner','地板溜冰秀'],['cleaner','泡泡大遊行'],['host','歡迎歌太大聲'],['host','招待員打瞌睡']];
@@ -48,7 +50,7 @@ export class Game{
   if(!isLayoutValid(obstacles(s),s.level)){for(const sh of s.shelves){s.inventory[sh.sku]=(s.inventory[sh.sku]||0)+(sh.stock||0);const saved={...sh,stock:0,purchasePrice:sh.purchasePrice??this.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);}s.shelves=[];}
   s.customers=[];s.forge=s.forge&&s.employees.some(e=>e.id===s.forge.employeeId)?s.forge:null;for(const a of [...s.employees,s.manager])if(a)a.path=[];this.log?.(s,'讀檔時發現舊的擺設擋住新大門，已把家具收回倉庫，請到「店舖整備」重新擺放。');}
  /* 舊存檔的店面比較長：超出新範圍的貨架與裝潢收回倉庫，員工站回店內，不刪任何東西 */
- fitRoom(s){const {width,height}=dimensions(s.level),out=o=>o.x<1||o.z<1||o.x>width-2||o.z>height-2,keep=[];for(const sh of s.shelves){if(out(sh)||!isLayoutValid([...keep,sh],s.level)){s.inventory[sh.sku]=(s.inventory[sh.sku]||0)+sh.stock;const saved={...sh,stock:0,purchasePrice:sh.purchasePrice??this.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);}else keep.push(sh);}s.shelves=keep;s.decorStorage??=[];for(const d of [...(s.decorations||[])])if(out(d)||d.x===ENTRANCE.x&&d.z===ENTRANCE.z){s.decorations=s.decorations.filter(x=>x!==d);const saved={...d};delete saved.x;delete saved.z;s.decorStorage.push(saved);}for(const a of [...s.employees,s.manager])if(out(a)){a.x=Math.min(a.x,width-3);a.z=Math.min(a.z,height-3);a.path=[];}s.customers=s.customers.filter(c=>!out(c));}
+ fitRoom(s){const {width,height}=dimensions(s.level),out=o=>o.x<1||o.z<1||o.x>width-2||o.z>height-2,keep=[];for(const sh of s.shelves){if(out(sh)||!isLayoutValid([...keep,sh],s.level)){s.inventory[sh.sku]=(s.inventory[sh.sku]||0)+sh.stock;const saved={...sh,stock:0,purchasePrice:sh.purchasePrice??this.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);}else keep.push(sh);}s.shelves=keep;s.decorStorage??=[];for(const d of [...(s.decorations||[])]){const pose=specialDecorPose(d,s.level);if(pose)Object.assign(d,pose);if(!pose&&(d.type==='carpet'?!floorInBounds(d,s.level):out(d)||d.x===ENTRANCE.x&&d.z===ENTRANCE.z)){s.decorations=s.decorations.filter(x=>x!==d);const saved={...d};delete saved.x;delete saved.z;delete saved.mount;delete saved.garden;s.decorStorage.push(saved);}}for(const a of [...s.employees,s.manager])if(out(a)){a.x=Math.min(a.x,width-3);a.z=Math.min(a.z,height-3);a.path=[];}s.customers=s.customers.filter(c=>!out(c));}
  validate(s){validateCommissions(s,this.data.catalog);
  const finite=(n,min=0,max=Infinity)=>Number.isFinite(n)&&n>=min&&n<=max;
  assert(s&&s.version===1&&Number.isInteger(s.revision)&&s.revision>=0,'版本或revision不支援');
@@ -79,7 +81,7 @@ export class Game{
  xp(s,e,amount){if(!e)return;amount=Math.min(amount*(1+passive(this,s,'xp')),1000-e.xpToday);if(amount<=0)return;const previousLevel=e.workLevel;e.xpToday+=amount;e.xp+=amount;dailyTrack(this,s,'exp',amount);while(e.workLevel<50&&e.xp>=e.workLevel*25){e.xp-=e.workLevel*25;e.workLevel++;}if(e.workLevel===50)e.xp=0;/* Level-up unlocks evolution; a player taps the employee card to confirm. */e.efficiency=this.efficiency(e);if(e.workLevel>previousLevel)this.notice(s,e.id,`熟練 Lv.${e.workLevel}`,'level');}
  efficiency(e){const stage=this.data.spirits.find(x=>x.id===e.spiritId)?.stage||1,tiers={yellow:[1,1.3,1.6],purple:[1.45,2,2.2,2.4],red:[2.6,2.9,3.2]};return Math.min(3,(tiers[e.rarity][Math.min(stage-1,tiers[e.rarity].length-1)])*(1+Math.floor(e.workLevel/10)*.1))*(1-Math.min(100,e.fatigue||0)/200);}
  role(s,id){return s.employees.find(e=>e.role===id&&e.fatigue<95);}
- transaction(id,fn){let storageStage=true;try{const current=this.storage.getItem(this.key),stored=current?JSON.parse(current):null;assert(stored?.revision===this.state.revision,'另一分頁已更新存檔，請重新整理');if(id&&this.state.txIds.includes(id))return {ok:true,message:'此交易已完成，未重複處理',duplicate:true};storageStage=false;const next=clone(this.state),message=fn(next)||'已完成';syncWorkforce(this,next);applyRoom(next.level);next.revision++;if(id)next.txIds.push(id);storageStage=true;if(current)this.storage.setItem(this.key+'.backup',current);this.storage.setItem(this.key,JSON.stringify(next));this._state=next;this.lastError='';this.storageBlocked=false;this.emit();return {ok:true,message};}catch(e){this.lastError=e.message;if(storageStage)this.storageBlocked=true;return {ok:false,message:`未執行：${e.message}`};}}
+ transaction(id,fn){let storageStage=true;try{const current=this.storage.getItem(this.key),stored=current?JSON.parse(current):null;assert(stored?.revision===this.state.revision,'另一分頁已更新存檔，請重新整理');if(id&&this.state.txIds.includes(id))return {ok:true,message:'此交易已完成，未重複處理',duplicate:true};storageStage=false;const next=clone(this.state),message=fn(next)||'已完成';applyRoom(next.level);if(next.level!==this.state.level)this.fitRoom(next);syncWorkforce(this,next);next.revision++;if(id)next.txIds.push(id);storageStage=true;if(current)this.storage.setItem(this.key+'.backup',current);this.storage.setItem(this.key,JSON.stringify(next));this._state=next;this.lastError='';this.storageBlocked=false;this.emit();return {ok:true,message};}catch(e){this.lastError=e.message;if(storageStage)this.storageBlocked=true;return {ok:false,message:`未執行：${e.message}`};}}
  buyRate(s,c){return 1-((s.buffs.storage>s.totalTime?.05:0)+(s.buffs.forge>s.totalTime?.1:0));}
  purchase(s,c,qty){const cost=Math.ceil(c.buyCost*qty*this.buyRate(s,c)*costFactor(s,c.sku));this.pay(s,cost);const owned=s.inventory[c.sku]+s.shelves.filter(sh=>sh.sku===c.sku).reduce((n,sh)=>n+sh.stock,0);s.averageCosts||={};s.averageCosts[c.sku]=((s.averageCosts[c.sku]??c.buyCost)*owned+cost)/(owned+qty);s.inventory[c.sku]+=qty;s.stats.purchases+=cost;this.log(s,`${c.displayName}到貨 ${qty} 件，支付 ${cost} G`);return cost;}
  /* 依貨架類型自動採購到補滿為止 */
@@ -103,7 +105,7 @@ export class Game{
  case 'buy':assert(c&&c.isSellable&&!c.isRestricted&&s.level>=c.unlockStoreLevel,'商品未解鎖或禁止交易');assert(s.shelves.some(sh=>accepts(sh,c)),'請先擺放能放這項商品的貨架');assert(Number.isInteger(p.qty)&&p.qty>0&&p.qty<=500,'數量須為 1 至 500');assert(Object.values(s.inventory).reduce((a,b)=>a+b,0)+p.qty<=cfg.warehouseCapacity,'倉庫容量不足');this.purchase(s,c,p.qty);break;
  case 'restock':assert(sh&&c&&c.unlockStoreLevel<=s.level,'貨架或商品無效');assert(accepts(sh,c),'此貨架不適合陳列該類商品');assert(!s.customers.some(x=>x.basket.some(b=>b.shelfId===sh.id)),'顧客已保留此貨架商品，請待結帳');assert(Number.isInteger(p.qty)&&p.qty>0,'數量無效');if(sh.sku!==p.sku){s.inventory[sh.sku]+=sh.stock;sh.stock=0;sh.sku=p.sku;}assert(sh.stock+p.qty<=shelfCapacity(sh)&&s.inventory[p.sku]>=p.qty,'庫存不足或超過貨架容量');s.inventory[p.sku]-=p.qty;sh.stock+=p.qty;this.xp(s,this.role(s,'stocker'),4);break;
  case 'price':assert(c&&Number.isInteger(p.price)&&p.price>=Math.ceil(c.buyCost*cfg.priceMin)&&p.price<=Math.floor(c.suggestedRetail*cfg.priceMax),'售價超出允許範圍');s.prices[p.sku]=p.price;break;
- case 'hire':{assert(!(s.unpaidWages>0),'尚有欠薪，請先清償');const h=this.data.hirePool.find(x=>x.id===p.id);assert(h&&!h.evolutionOnly&&s.level>=h.level,'此幻靈僅能進化取得，或商店等級未達聘用資格');assert(!s.employees.some(x=>x.baseId===h.id),'已聘用此幻靈');assert(s.promoter?.id!==(h.spiritId||h.id),'這位幻靈正擔任宣傳員，請先更換宣傳員');assert(s.totals.sales>=h.requiredSales,`需完成商會委託：累計成交 ${h.requiredSales} 筆`);this.pay(s,h.cost);s.stats.expenses+=h.cost;const hired=this.employee(h.id,'standby');if(s.employees.filter(x=>x.role!=='standby').length<capacityOf(this,s))hired.role=this.data.management.traits[h.id]?.preferredJob||'host';const spot=this.freeSpot(s,{x:3,z:4});Object.assign(hired,spot);s.employees.push(hired);this.log(s,`${hired.name}加入商會。`);}break;
+ case 'hire':{assert(!(s.unpaidWages>0),'尚有欠薪，請先清償');const h=this.data.hirePool.find(x=>x.id===p.id);assert(h&&!h.evolutionOnly&&s.level>=h.level&&!isPromoterLineage(this.data,h.spiritId||h.id),'此幻靈屬宣傳員進化系列、僅能進化取得，或等級未達聘用資格');assert(!s.employees.some(x=>x.baseId===h.id),'已聘用此幻靈');assert(s.promoter?.id!==(h.spiritId||h.id),'這位幻靈正擔任宣傳員，請先更換宣傳員');assert(s.totals.sales>=h.requiredSales,`需完成商會委託：累計成交 ${h.requiredSales} 筆`);this.pay(s,h.cost);s.stats.expenses+=h.cost;const hired=this.employee(h.id,'standby');if(s.employees.filter(x=>x.role!=='standby').length<capacityOf(this,s))hired.role=this.data.management.traits[h.id]?.preferredJob||'host';const spot=this.freeSpot(s,{x:3,z:4});Object.assign(hired,spot);s.employees.push(hired);this.log(s,`${hired.name}加入商會。`);}break;
  case 'assign':assert(e&&jobs.some(x=>x.id===p.role),'員工或職位無效');assert(p.role==='standby'||e.role!=='standby'||s.employees.filter(x=>x.role!=='standby').length<this.data.levels[s.level-1].capacity,'在班員額已滿');e.role=p.role;e.path=[];e.nextTaskAt=0;{const preferred=p.role==='standby'?restingPositions(s).get(e.id):{x:3+s.employees.indexOf(e),z:3};if(p.role==='standby'){sendToRest(this,s,e);}else{const station=this.freeSpot(s,preferred,e);e.path=findPath(e,station,obstacles(s),s.level)||[];}}break;
  case 'train':assert(e&&e.workLevel<50&&e.xpToday<1000,'員工已達今日訓練或等級上限');this.pay(s,cfg.trainCost);s.stats.expenses+=cfg.trainCost;{const before=e.xpToday;this.xp(s,e,cfg.trainXp);this.notice(s,e.id,`熟練 +${Math.round(e.xpToday-before)}`,'xp');}react(s,e,'training',5);this.log(s,`${e.name}完成職能訓練。`);break;
  case 'upgrade':{const l=this.data.levels[s.level];assert(l,'商會已達最高級');assert(s.totals.revenue>=l.revenue&&s.satisfaction>=l.satisfaction&&s.totals.days>=l.days,`需累計營業額 ${l.revenue} G、滿意度 ${l.satisfaction}、日結 ${l.days} 次`);this.pay(s,l.cost);s.stats.expenses+=l.cost;s.level++;this.log(s,`商店擴建為 Lv.${s.level} ${l.name}！`);}break;

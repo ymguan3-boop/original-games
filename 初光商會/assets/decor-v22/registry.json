@@ -1,0 +1,190 @@
+{
+  "version": 22,
+  "profile": "low-poly",
+  "triangleBudget": 4000,
+  "textureBytes": 262144,
+  "source": "Original procedural Three.js geometry and hand-authored SVG; no downloaded models or imagery.",
+  "baseline": "V3 design-rigor reference: deliberate silhouette, differentiated forms, plausible joints; these countryside props are new unapproved designs.",
+  "front": "+Z",
+  "up": "+Y",
+  "origin": "bottom",
+  "outline": "Runtime adds existing .012 brown outline; not baked into geometry.",
+  "assets": [
+    {
+      "type": "clock",
+      "decorType": "clock",
+      "assetVersion": 22,
+      "triangles": 636,
+      "materialCount": 4,
+      "origin": "bottom",
+      "front": "+Z",
+      "bounds": {
+        "min": [
+          -0.3499999940395355,
+          5.9604645663569045e-09,
+          -0.03750000149011612
+        ],
+        "max": [
+          0.3499999940395355,
+          0.699999988079071,
+          0.0956602543592453
+        ],
+        "size": [
+          0.699999988079071,
+          0.6999999821186065,
+          0.13316025584936142
+        ]
+      },
+      "sprite": "assets/decor-v22/clock.svg",
+      "status": "TECHNICAL_PASS_ROOT_VISUAL_CHECKED"
+    },
+    {
+      "type": "painting",
+      "decorType": "painting",
+      "assetVersion": 22,
+      "triangles": 119,
+      "materialCount": 7,
+      "origin": "bottom",
+      "front": "+Z",
+      "bounds": {
+        "min": [
+          -0.36000001430511475,
+          8.344650304081824e-09,
+          -0.032499998807907104
+        ],
+        "max": [
+          0.36000001430511475,
+          0.5799999833106995,
+          0.09149999916553497
+        ],
+        "size": [
+          0.7200000286102295,
+          0.5799999749660492,
+          0.12399999797344208
+        ]
+      },
+      "sprite": "assets/decor-v22/painting.svg",
+      "status": "TECHNICAL_PASS_ROOT_VISUAL_CHECKED"
+    },
+    {
+      "type": "couplet",
+      "decorType": "couplet",
+      "assetVersion": 22,
+      "triangles": 374,
+      "materialCount": 4,
+      "origin": "bottom",
+      "front": "+Z",
+      "bounds": {
+        "min": [
+          -0.33000001311302185,
+          2.2351741291171123e-10,
+          -0.014999999664723873
+        ],
+        "max": [
+          0.33000001311302185,
+          0.699999988079071,
+          0.035999998450279236
+        ],
+        "size": [
+          0.6600000262260437,
+          0.6999999878555536,
+          0.05099999811500311
+        ]
+      },
+      "sprite": "assets/decor-v22/couplet.svg",
+      "status": "TECHNICAL_PASS_ROOT_VISUAL_CHECKED"
+    },
+    {
+      "type": "fern",
+      "decorType": "fern",
+      "assetVersion": 22,
+      "triangles": 3000,
+      "materialCount": 4,
+      "origin": "bottom",
+      "front": "+Z",
+      "bounds": {
+        "min": [
+          -0.3077133893966675,
+          3.3527614018424856e-10,
+          -0.32246899604797363
+        ],
+        "max": [
+          0.3257523775100708,
+          0.844581127166748,
+          0.32288211584091187
+        ],
+        "size": [
+          0.6334657669067383,
+          0.8445811268314719,
+          0.6453511118888855
+        ]
+      },
+      "sprite": "assets/decor-v22/fern.svg",
+      "status": "TECHNICAL_PASS_ROOT_VISUAL_CHECKED"
+    },
+    {
+      "type": "lavender",
+      "decorType": "lavender",
+      "assetVersion": 22,
+      "triangles": 2460,
+      "materialCount": 5,
+      "origin": "bottom",
+      "front": "+Z",
+      "bounds": {
+        "min": [
+          -0.20499999821186066,
+          3.3527614018424856e-10,
+          -0.23907950520515442
+        ],
+        "max": [
+          0.22541289031505585,
+          0.9462500214576721,
+          0.20499999821186066
+        ],
+        "size": [
+          0.4304128885269165,
+          0.946250021122396,
+          0.4440795034170151
+        ]
+      },
+      "sprite": "assets/decor-v22/lavender.svg",
+      "status": "TECHNICAL_PASS_ROOT_VISUAL_CHECKED"
+    },
+    {
+      "type": "citrus",
+      "decorType": "citrus",
+      "assetVersion": 22,
+      "triangles": 1224,
+      "materialCount": 6,
+      "origin": "bottom",
+      "front": "+Z",
+      "bounds": {
+        "min": [
+          -0.3067017197608948,
+          3.3527614018424856e-10,
+          -0.2978532314300537
+        ],
+        "max": [
+          0.31039556860923767,
+          1.1200000047683716,
+          0.2887316644191742
+        ],
+        "size": [
+          0.6170972883701324,
+          1.1200000044330953,
+          0.5865848958492279
+        ]
+      },
+      "sprite": "assets/decor-v22/citrus.svg",
+      "status": "TECHNICAL_PASS_ROOT_VISUAL_CHECKED"
+    }
+  ],
+  "textures": {
+    "couplet": {
+      "source": "couplet.svg",
+      "width": 256,
+      "height": 256,
+      "note": "Traditional Chinese printed lettering; adds two front decal triangles"
+    }
+  }
+}

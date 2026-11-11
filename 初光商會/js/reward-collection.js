@@ -1,9 +1,9 @@
-import {dailyTasks,managementAction} from './management.js?v=20261110-shop-pk-r1';
-import {activeCommissions,commissionProgress,commissionAction} from './commissions.js?v=20261110-shop-pk-r1';
-import {chapterObjectives,awardSideChapter} from './shop-chapters.js?v=20261110-shop-pk-r1';
+import {dailyTasks,managementAction} from './management.js?v=20261111-decor-v22';
+import {activeCommissions,commissionProgress,commissionAction} from './commissions.js?v=20261111-decor-v22';
+import {chapterObjectives,awardSideChapter} from './shop-chapters.js?v=20261111-decor-v22';
 /* 各分類目前可領幾項，任務頁的標示與一鍵領取按鈕都用這個 */
 export function pendingRewards(g,s){
- const quests=g.questList(s).filter(q=>q.done&&!s.quests[q.id]).length,daily=dailyTasks(g,s),dailyN=quests+daily.tasks.filter(q=>q.done&&!q.claimed).length+(!daily.bonus&&daily.tasks.every(q=>q.done)?1:0);
+ const quests=g.questList(s).filter(q=>q.done&&!s.quests[q.id]).length,daily=dailyTasks(g,s),dailyN=quests+daily.tasks.filter(q=>q.done&&!q.claimed).length+(!daily.bonus&&daily.tasks.every(q=>q.claimed)?1:0);
  const chapter=chapterObjectives(s,g.data.levels).side.filter(q=>q.done&&!q.claimed).length,orders=activeCommissions(s).filter(q=>commissionProgress(s,q)>=q.qty).length;
  return {daily:dailyN,orders,chapter,total:dailyN+orders+chapter};
 }

@@ -1,7 +1,7 @@
 export const shelfTypes=[
  {id:'apothecary',name:'草木藥櫃',description:'藥水與補給道具',sku:'potion',color:'#70a48b',level:1,cost:160,capacity:30,premium:1,top:1.46},
  {id:'orbs',name:'星藍靈核櫃',description:'球形展示櫃・各式靈核球',sku:'ball-basic',color:'#648fc6',level:1,cost:160,capacity:30,premium:1,top:1.44,productLayout:'orb-v3',productMaxSize:.09},
- {id:'armory',name:'赤銅武器架',description:'刀劍與武器',sku:'sword-starter',color:'#ae6248',level:2,cost:240,capacity:36,premium:1.08,top:1.43,productLayout:'weapon-rack',productMaxSize:.34},
+ {id:'armory',name:'赤銅武器架',description:'刀劍與武器',sku:'sword-starter',color:'#ae6248',level:1,cost:240,capacity:36,premium:1.08,top:1.43,productLayout:'weapon-rack',productMaxSize:.34},
  {id:'materials',name:'蜜金素材櫃',description:'礦石、木材與採集素材',sku:'shop-iron',color:'#ccaa61',level:3,cost:240,capacity:36,premium:1.08,top:1.44},
  {id:'arcane',name:'月桂秘藥櫃',description:'道具與靈核球',sku:'potion',color:'#9b7bc5',level:5,cost:480,capacity:45,premium:1.15,top:1.64,rows:3,columns:5,depth:3,spacing:.51},
  {id:'relic',name:'琥珀珍品櫃',description:'武器與素材',sku:'shop-iron',color:'#be8844',level:7,cost:850,capacity:60,premium:1.25,top:1.77,rows:4,columns:5,depth:3,spacing:.39},

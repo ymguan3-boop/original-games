@@ -1,0 +1,29 @@
+/* 清楚分行的鄉村風工具列，行動版可換行。 */
+html body header.topbar{height:auto!important;min-height:0!important;padding:7px 10px!important;background:#fff1d1!important;border:3px solid #85512f!important;box-shadow:0 3px 0 #56362055!important}
+html body header.topbar .status-row{display:flex!important;flex-wrap:wrap!important;gap:5px!important;align-items:center!important}
+html body header.topbar #level-name{flex:1 1 140px!important}
+html body header.topbar .hud-chip,html body header.topbar #start-business{position:static!important;display:inline-flex!important;align-items:center;justify-content:center;min-height:32px!important;height:auto!important;padding:4px 9px!important;border:2px solid #aa7848!important;border-radius:10px!important;background:#fff9e9!important;color:#624329!important;font-weight:700!important;font-size:12px!important;line-height:1.2!important;box-shadow:0 2px 0 #80523344!important}
+html body header.topbar #return-to-game{min-height:32px!important;padding:4px 9px!important;border:2px solid #aa7848!important;border-radius:10px!important;background:#fff9e9!important;color:#624329!important;font-weight:700!important;font-size:12px!important;box-shadow:0 2px 0 #80523344!important}
+html body header.topbar #start-business{background:#648d42!important;color:white!important;border-color:#4b6e30!important}
+html body header.topbar #start-business:disabled{opacity:.5}
+html body header.topbar .prep-bar{position:static!important;display:contents!important;transform:none!important}
+html body header.topbar .prep-bar[hidden]{display:none!important}
+html body header.topbar .prep-bar span{display:none!important}
+html body #furniture-controls{min-width:0!important;width:max-content!important;max-width:calc(100vw - 16px)!important}
+html body #furniture-controls button[hidden]{display:none!important}
+html body #camera-mode,html body.patrol-active #camera-mode,#tutor [data-full]{display:none!important}
+html body #tutor,html body.hub-open #tutor,html body.view-2d #tutor,html body.view-2d.hub-open #tutor{position:fixed!important;left:auto!important;right:10px!important;top:auto!important;bottom:58px!important;transform:none!important;width:min(300px,calc(100vw - 24px))!important;box-sizing:border-box;z-index:90;padding:9px 10px 9px 74px!important;background:#fff9e8;border:2px solid #9d6a37;border-radius:16px;box-shadow:0 3px 0 #67432555}
+html body #tutor.guide-left{left:10px!important;right:auto!important}
+html body #tutor.guide-top,html body.hub-open #tutor.guide-top{top:calc(var(--shop-header-bottom,120px) + 8px)!important;bottom:auto!important}
+#tutor .guide-hero{position:absolute;left:-4px;bottom:0;width:76px;height:105px;object-fit:contain;object-position:bottom;pointer-events:none}
+#tutor [data-minimize],#tutor [data-dismiss]{float:right;min-height:25px!important;width:25px;padding:0!important;border:1px solid #ad8c61;border-radius:8px;background:#fff6dc}
+#tutor.minimized{width:86px!important;min-height:95px;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+#tutor.minimized strong,#tutor.minimized p,#tutor.minimized .tutor-actions{display:none!important}
+#tutor.minimized .guide-hero{left:0;width:78px}
+#tutor.minimized [data-minimize],#tutor.minimized [data-dismiss]{position:relative;z-index:2}
+body.hub-open #tutor .tutor-actions{display:flex!important}
+#hub[data-page=orders] .hub-cards{display:flex!important;flex-direction:column!important;overflow:auto!important;background:#dbe9df;padding:12px;border-radius:14px}
+#hub[data-page=orders] .hub-card{align-self:flex-start;width:min(90%,380px);min-height:65px;background:#fff;border-radius:16px 16px 16px 3px;box-shadow:0 2px 4px #44634a33}
+#hub[data-page=orders] .hub-card.status-ready{background:#d9f6bb;border-color:#76a457}
+@media(max-width:520px){html body header.topbar .status-row{gap:3px!important}html body header.topbar .hud-chip,html body header.topbar #start-business{font-size:10px!important;padding:4px 6px!important;min-height:29px!important}html body header.topbar #level-name{flex:1 1 45%!important}html body #tutor,html body.hub-open #tutor{bottom:54px!important;width:min(270px,calc(100vw - 20px))!important} }
+@media(max-width:520px){html body header.topbar #return-to-game{font-size:10px!important;padding:4px 6px!important;min-height:29px!important}}

@@ -1,7 +1,8 @@
-import {addPaleFeatureLines} from './pale-feature-lines.js?v=20261110-shop-pk-r1';
-import {cashierPose,resetCashierPose} from './cashier-pose.js?v=20261110-shop-pk-r1';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261110-shop-pk-r1';
-import {ART_STYLE} from './art-style.js?v=20261110-shop-pk-r1';
+import {decorModelAsset} from './decor-models-v22.js?v=20261111-decor-v22';
+import {addPaleFeatureLines} from './pale-feature-lines.js?v=20261111-decor-v22';
+import {cashierPose,resetCashierPose} from './cashier-pose.js?v=20261111-decor-v22';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261111-decor-v22';
+import {ART_STYLE} from './art-style.js?v=20261111-decor-v22';
 const BASE='../幻靈奇旅/';
 const scripts=new Map();
 function script(path){if(!scripts.has(path))scripts.set(path,new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=BASE+path;el.onload=resolve;el.onerror=()=>{scripts.delete(path);el.remove();reject(Error('無法載入原資產 '+path));};document.head.appendChild(el);}));return scripts.get(path);}
@@ -9,12 +10,12 @@ export function createAssets(T,metrics){
  const loader=new T.GLTFLoader(),cache=new Map();
  /* 地毯是一張貼在地上的貼圖，不再用 2MB 的模型 */
  function carpet(level){return new Promise((resolve,reject)=>new T.TextureLoader().load('./assets/art-v11/carpet-lv'+level+'.webp?v=5',tex=>{tex.encoding=T.sRGBEncoding;const scene=new T.Group(),m=new T.Mesh(new T.PlaneGeometry(2.7,1.9),new T.MeshBasicMaterial({map:tex,transparent:true,alphaTest:.4}));m.rotation.x=-Math.PI/2;m.position.y=.05;scene.add(m);resolve({scene,animations:[]});},undefined,reject));}
- function load(path){if(path.startsWith('@carpet/')){if(!cache.has(path))cache.set(path,carpet(path.slice(8)));return cache.get(path);}if(!cache.has(path))cache.set(path,new Promise((resolve,reject)=>{let attempt=0;const request=()=>{attempt++;loader.load(path.startsWith('@shop/')?path.slice(6):BASE+path,resolve,undefined,()=>{if(attempt<3){metrics.assetRetries||=[];metrics.assetRetries.push({path,attempt});setTimeout(request,attempt*250);}else{cache.delete(path);reject(Error('模型讀取失敗：'+path));}});};request();}));return cache.get(path);}
+ function load(path){if(path.startsWith('@decor/')){if(!cache.has(path)){const type=path.slice(7),asset=decorModelAsset(T,type);cache.set(path,type==='couplet'?new Promise((resolve,reject)=>new T.TextureLoader().load('./assets/decor-v22/couplet.svg',tex=>{tex.encoding=T.sRGBEncoding;const face=new T.Mesh(new T.PlaneGeometry(.66,.70),new T.MeshBasicMaterial({map:tex,transparent:true,alphaTest:.1}));face.position.set(0,.35,.041);face.userData.noOutline=true;asset.scene.add(face);asset.scene.userData.triangles+=2;asset.scene.userData.materialCount++;resolve(asset);},undefined,reject)):Promise.resolve(asset));}return cache.get(path);}if(path.startsWith('@carpet/')){if(!cache.has(path))cache.set(path,carpet(path.slice(8)));return cache.get(path);}if(!cache.has(path))cache.set(path,new Promise((resolve,reject)=>{let attempt=0;const request=()=>{attempt++;loader.load(path.startsWith('@shop/')?path.slice(6):BASE+path,resolve,undefined,()=>{if(attempt<3){metrics.assetRetries||=[];metrics.assetRetries.push({path,attempt});setTimeout(request,attempt*250);}else{cache.delete(path);reject(Error('模型讀取失敗：'+path));}});};request();}));return cache.get(path);}
  function clone(source){const root=source.clone(true),map=new Map();function pair(a,b){map.set(a,b);a.children.forEach((c,i)=>pair(c,b.children[i]));}pair(source,root);source.traverse(n=>{if(n.isSkinnedMesh){const c=map.get(n);c.skeleton=n.skeleton.clone();c.skeleton.bones=n.skeleton.bones.map(b=>map.get(b));c.bind(c.skeleton,n.bindMatrix);}});return root;}
  function normalize(o,height,fitMax=false){o.updateMatrixWorld(true);const box=new T.Box3().setFromObject(o),size=box.getSize(new T.Vector3());const s=height/Math.max(fitMax?Math.max(size.x,size.y,size.z):size.y,.001);o.scale.multiplyScalar(s);o.position.y-=box.min.y*s;}
  async function native(path){const [prefix,id]=path.split('://');let api;
- if(prefix==='chibi'){const mod=await import('./chibi/yard.js?v=20261110-shop-pk-r1');return {g:{create:()=>mod.createHeroChibi()}};}
- if(prefix==='human'){const mod=await import('./human-customers.js?v=20261110-shop-pk-r1');const [t,v]=id.split('-');return {g:{create:()=>mod.createHuman(T,t,v)}};}
+ if(prefix==='chibi'){const mod=await import('./chibi/yard.js?v=20261111-decor-v22');return {g:{create:()=>mod.createHeroChibi()}};}
+ if(prefix==='human'){const mod=await import('./human-customers.js?v=20261111-decor-v22');const [t,v]=id.split('-');return {g:{create:()=>mod.createHuman(T,t,v)}};}
  if(prefix==='zhaocai'){await script('js/commerce-gate.js');return {g:{create:()=>globalThis.PhantomCommerceGate.mascot(T,Number(id)||1)}};}
  if(prefix==='crown'){await script('models/native/small-birds.js');await script('models/native/crown-birds.js');return {g:{create:()=>globalThis.CrownBirds.create({kind:id})}};}
  if(prefix==='native'){await script('js/fx/toon-outline.js');await script('models/native/birds-blueprint.js');await script('models/native/elephants-blueprint.js');await script('models/native/families.js');return {g:globalThis.NativeFamilies.build(path)};}

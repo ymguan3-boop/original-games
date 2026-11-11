@@ -22,4 +22,4 @@ export function isLayoutValid(shelves,level=1){const seen=new Set([...FIXED_CELL
 
 /* 宣傳員（幻靈吉祥物）站在門前台階右側，面向街道發傳單 */
 export const promoterPoint=()=>({x:ENTRANCE.x+2.4,z:ENTRANCE.z+3.2});
-export function customerDisplayPoint(c){const k=c.arrivalRemaining>0?1-c.arrivalRemaining/5:c.exitingAtDoor?1-c.exitTravel/5:null;if(k===null)return c;const u=Math.max(0,Math.min(1,k));return {x:ENTRANCE.x,z:ENTRANCE.z+7*(1-u)};}
+export function customerDisplayPoint(c,progress=1,step=.25){const lag=Math.max(0,step*(1-progress));const k=c.arrivalRemaining>0||c.arrivingNow?1-((c.arrivalRemaining||0)+lag)/5:c.exitingAtDoor?1-((c.exitTravel||0)-lag)/5:null;if(k===null)return c;const u=Math.max(0,Math.min(1,k));return {x:ENTRANCE.x,z:ENTRANCE.z+7*(1-u)};}
