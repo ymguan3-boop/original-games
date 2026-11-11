@@ -47,3 +47,6 @@ html body header.topbar #shop-goal{grid-column:1!important;grid-row:2!important}
 html body header.topbar .top-actions{grid-column:1!important;grid-row:3!important}
 html body header.topbar #gold,html body header.topbar #hud-clock{position:static!important;visibility:visible!important;opacity:1!important;flex:none!important}
 body:has(#manager-dialogue:not([hidden])) nav.toolbar{display:none!important}
+
+#manager-dialogue .manager-portrait{align-self:flex-end}
+
