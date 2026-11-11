@@ -1,39 +1,41 @@
-import {MEADOW_KEY} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261111-meadow-v1';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261111-portrait-v24';
-import {openingBlocker} from './shop-entry-rules.js?v=20261111-portrait-v24';
-import {resetMerchantRelease,resetMerchantOnly} from './save-reset.js?v=20261111-portrait-v24';
-import {createLoadingGate} from './loading-gate.js?v=20261111-portrait-v24';
-import {showChaseSuccess} from './chase-celebration.js?v=20261111-portrait-v24';
-import {environment} from './environment.js?v=20261111-portrait-v24';
-import {activeEvent} from './economy-v2.js?v=20261111-portrait-v24';
-import {chapterObjectives} from './shop-chapters.js?v=20261111-portrait-v24';
-import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261111-portrait-v24';
-import {showLevelUp} from './levelup.js?v=20261111-portrait-v24';
-import {installShopNavigation} from './shop-navigation.js?v=20261111-portrait-v24';
-import {showZhaocaiNote} from './zhaocai-note.js?v=20261111-portrait-v24';
-import {installShopMusic} from './shop-music.js?v=20261111-portrait-v24';
-import {createActorVisuals} from './actor-visuals.js?v=20261111-portrait-v24';
-import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261111-portrait-v24';
-import {loadSpiritCards} from './spirit-cards.js?v=20261111-portrait-v24';
-import {createGame} from './core.js?v=20261111-portrait-v24';
-import {createStaffOverlay} from './staff-overlay.js?v=20261111-portrait-v24';
-import {installPatrolControls} from './patrol-controls.js?v=20261111-portrait-v24';
-import {playEvolution3D} from './evolution-3d.js?v=20261111-portrait-v24';
-import {createScene} from './scene.js?v=20261111-portrait-v24';
-import {createScene2D} from './scene-2d.js?v=20261111-portrait-v24';
-import {createHub} from './shop-hub.js?v=20261111-portrait-v24';
-import {showManagerDialogue} from './manager-dialogue.js?v=20261111-portrait-v24';
-import {commissionNotice} from './commissions.js?v=20261111-portrait-v24';
-import {dailyTasks} from './management.js?v=20261111-portrait-v24';
-import {shelfTypes} from './furniture.js?v=20261111-portrait-v24';
-import {decorTypes} from './decorations.js?v=20261111-portrait-v24';
-import {pendingRewards} from './reward-collection.js?v=20261111-portrait-v24';
+import {restoreMerchantGuest,carryMerchantGuest} from '../../幻靈奇旅/survivors/js/merchant-guest.js?v=20261111-meadow-v2';
+restoreMerchantGuest();
+import {MEADOW_KEY} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261111-meadow-v2';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261111-portrait-v25';
+import {openingBlocker} from './shop-entry-rules.js?v=20261111-portrait-v25';
+import {resetMerchantRelease,resetMerchantOnly} from './save-reset.js?v=20261111-portrait-v25';
+import {createLoadingGate} from './loading-gate.js?v=20261111-portrait-v25';
+import {showChaseSuccess} from './chase-celebration.js?v=20261111-portrait-v25';
+import {environment} from './environment.js?v=20261111-portrait-v25';
+import {activeEvent} from './economy-v2.js?v=20261111-portrait-v25';
+import {chapterObjectives} from './shop-chapters.js?v=20261111-portrait-v25';
+import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261111-portrait-v25';
+import {showLevelUp} from './levelup.js?v=20261111-portrait-v25';
+import {installShopNavigation} from './shop-navigation.js?v=20261111-portrait-v25';
+import {showZhaocaiNote} from './zhaocai-note.js?v=20261111-portrait-v25';
+import {installShopMusic} from './shop-music.js?v=20261111-portrait-v25';
+import {createActorVisuals} from './actor-visuals.js?v=20261111-portrait-v25';
+import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261111-portrait-v25';
+import {loadSpiritCards} from './spirit-cards.js?v=20261111-portrait-v25';
+import {createGame} from './core.js?v=20261111-portrait-v25';
+import {createStaffOverlay} from './staff-overlay.js?v=20261111-portrait-v25';
+import {installPatrolControls} from './patrol-controls.js?v=20261111-portrait-v25';
+import {playEvolution3D} from './evolution-3d.js?v=20261111-portrait-v25';
+import {createScene} from './scene.js?v=20261111-portrait-v25';
+import {createScene2D} from './scene-2d.js?v=20261111-portrait-v25';
+import {createHub} from './shop-hub.js?v=20261111-portrait-v25';
+import {showManagerDialogue} from './manager-dialogue.js?v=20261111-portrait-v25';
+import {commissionNotice} from './commissions.js?v=20261111-portrait-v25';
+import {dailyTasks} from './management.js?v=20261111-portrait-v25';
+import {shelfTypes} from './furniture.js?v=20261111-portrait-v25';
+import {decorTypes} from './decorations.js?v=20261111-portrait-v25';
+import {pendingRewards} from './reward-collection.js?v=20261111-portrait-v25';
 /* 快捷鍵上的「新」提示：看過該頁就記下，有新東西才再亮 */
 const SEEN_KEY='firstlight-shop-seen-v1',readSeen=()=>{try{return JSON.parse(localStorage.getItem(SEEN_KEY))||{};}catch{return {};}},seenNotice=readSeen();
 const unlockedBuild=s=>[...shelfTypes,...decorTypes].filter(t=>(t.level||1)<=s.level).map(t=>t.id),hireable=(g,s)=>g.data.hirePool.filter(h=>!h.evolutionOnly&&!isPromoterLineage(g.data,h.spiritId||h.id)&&h.level<=s.level&&!s.employees.some(e=>e.baseId===h.id)).map(h=>h.id);
 function markSeen(page){if(!game)return;const s=game.state;if(page==='build')seenNotice.build=unlockedBuild(s);if(page==='staff')seenNotice.staff=hireable(game,s);try{localStorage.setItem(SEEN_KEY,JSON.stringify(seenNotice));}catch{}}
 const fresh=(list,seen)=>Array.isArray(seen)?list.some(id=>!seen.includes(id)):list.length>0;
-import {installWindowControls} from './window-controls.js?v=20261111-portrait-v24';
+import {installWindowControls} from './window-controls.js?v=20261111-portrait-v25';
 /* 2D 測試：在設定輸入代碼後切換並記住；本機開發可用 ?shopDev=1&view=2d 直接進入 */
 const VIEW_KEY='firstlight-shop-view',VIEW_CODE='741216',viewParams=new URLSearchParams(location.search),readView=()=>{try{return localStorage.getItem(VIEW_KEY);}catch{return null;}},view2d=viewParams.get('view')==='2d'&&viewParams.has('shopDev')&&['localhost','127.0.0.1'].includes(location.hostname)||readView()==='2d';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -89,7 +91,7 @@ $('#patrol-event').onclick=()=>{if(game.state.event)hub.open('event');else toast
 function exportSave(){const blob=new Blob([JSON.stringify(game.state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`初光商會-第${game.state.day}天.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 function recoverSave(){confirmAction('恢復前一個備份會取代目前進度，確定嗎？',()=>{const key='firstlight_shop_v1',backup=localStorage.getItem(key+'.backup');if(!backup)return toast('沒有可用的備份。',true);try{game.validate(JSON.parse(backup));localStorage.setItem(key,backup);location.reload();}catch(err){toast('備份無法恢復：'+err.message,true);}});}
 function importMeadow(){try{const field=JSON.parse(localStorage.getItem(MEADOW_KEY)||'null'),totals=field?.merchantCargo;if(!totals)return null;const result=game.act('importMeadowCargo',{totals});if(result.ok&&result.message?.startsWith('帶回'))toast(result.message);return result;}catch(e){toast('採集物暫未入庫：'+e.message,true);return null;}}
-function enterMeadow(){hub.close();showManagerDialogue('去草原擊倒魔物、走近拾取武器，再帶回商會販售。出發後請先依教學開啟「自動補血」，並確認藥水庫存。',{actionLabel:'前往草原',onAction:()=>{game.act('save');const url=new URL('../幻靈奇旅/survivors/?merchantMeadow=1',location.href);if(new URLSearchParams(location.search).get('guest')==='1')url.searchParams.set('guest','1');location.assign(url);}});}
+function enterMeadow(){hub.close();showManagerDialogue('去草原擊倒魔物、走近拾取武器，再帶回商會販售。出發後請先依教學開啟「自動補血」，並確認藥水庫存。',{actionLabel:'前往草原',onAction:()=>{game.act('save');const url=new URL('../幻靈奇旅/survivors/?merchantMeadow=1',location.href);if(globalThis.PORTAL_GUEST){url.searchParams.set('guest','1');if(url.pathname.startsWith('/game/'))url.pathname=url.pathname.replace('/game/','/game/guest/');carryMerchantGuest();}location.assign(url);}});}
 async function boot(){let gate;try{
  const loading=$('#loading');loading.style.display='flex';loading.setAttribute('aria-busy','true');$('#load-message').textContent='正在準備商會資料與場景素材…';
  gate=createLoadingGate(globalThis.THREE,(done,total)=>{$('#load-message').textContent='正在載入場景素材 '+done+' / '+total;});

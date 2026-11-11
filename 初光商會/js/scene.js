@@ -1,32 +1,32 @@
-import {specialDecorPose,resolveDecorPlacement,gardenSlots} from './decor-zones.js?v=20261111-portrait-v24';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261111-portrait-v24';
-import {createChaseCelebration} from './chase-celebration.js?v=20261111-portrait-v24';
-import {buildOutdoor} from './outdoor-3d.js?v=20261111-portrait-v24';
-import {environment} from './environment.js?v=20261111-portrait-v24';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261111-portrait-v24';
-import {addProductEdges} from './product-outlines.js?v=20261111-portrait-v24';
-import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261111-portrait-v24';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261111-portrait-v24';
-import {decorateInterior} from './interior-v5.js?v=20261111-portrait-v24';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261111-portrait-v24';
-import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261111-portrait-v24';
-import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261111-portrait-v24';
+import {specialDecorPose,resolveDecorPlacement,gardenSlots} from './decor-zones.js?v=20261111-portrait-v25';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261111-portrait-v25';
+import {createChaseCelebration} from './chase-celebration.js?v=20261111-portrait-v25';
+import {buildOutdoor} from './outdoor-3d.js?v=20261111-portrait-v25';
+import {environment} from './environment.js?v=20261111-portrait-v25';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261111-portrait-v25';
+import {addProductEdges} from './product-outlines.js?v=20261111-portrait-v25';
+import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261111-portrait-v25';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261111-portrait-v25';
+import {decorateInterior} from './interior-v5.js?v=20261111-portrait-v25';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261111-portrait-v25';
+import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261111-portrait-v25';
+import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261111-portrait-v25';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
 /* 店內幻靈員工：比原本大 1.3 倍；外框跟 Q 版店面一樣是深咖啡色、只描外輪廓 */
 /* 宣傳員走動：在門前院子隨機選點，直線路徑上不能碰到擺設與建築 */
 const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,greetCool:0,area:null};
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261111-portrait-v24';
-import {createAssets} from './asset-resolver.js?v=20261111-portrait-v24';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261111-portrait-v24';
-import {sampleTrail,turnToward} from './motion.js?v=20261111-portrait-v24';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261111-portrait-v24';
-import {eventEmployee} from './patrol-events.js?v=20261111-portrait-v24';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261111-portrait-v24';
-import {createPlacementCells} from './placement-cells.js?v=20261111-portrait-v24';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261111-portrait-v24';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261111-portrait-v24';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261111-portrait-v25';
+import {createAssets} from './asset-resolver.js?v=20261111-portrait-v25';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261111-portrait-v25';
+import {sampleTrail,turnToward} from './motion.js?v=20261111-portrait-v25';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261111-portrait-v25';
+import {eventEmployee} from './patrol-events.js?v=20261111-portrait-v25';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261111-portrait-v25';
+import {createPlacementCells} from './placement-cells.js?v=20261111-portrait-v25';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261111-portrait-v25';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261111-portrait-v25';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;

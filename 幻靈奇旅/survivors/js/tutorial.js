@@ -1,4 +1,4 @@
-import {isMerchantMeadow} from './merchant-meadow.js?v=20261111-meadow-v1';
+import {isMerchantMeadow} from './merchant-meadow.js?v=20261111-meadow-v2';
 export function createCaveTutorial(api){
  const qa=new URLSearchParams(location.search).has('qa'),saved=api.store.state,firstVisit=!qa&&!(saved.tutorial?.firstVisitSeen||saved.starterClaimed||saved.run||saved.history?.length);
  const healReady=()=>!!api.store.state.autoItems?.potion?.enabled&&api.store.state.autoItems.potion.threshold===.4;

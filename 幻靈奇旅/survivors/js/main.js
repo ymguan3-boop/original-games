@@ -1,7 +1,9 @@
-import {isMerchantMeadow,MEADOW_KEY,initializeMeadowStorage} from './merchant-meadow.js?v=20261111-meadow-v1';
+import {restoreMerchantGuest,carryMerchantGuest} from './merchant-guest.js?v=20261111-meadow-v2';
+restoreMerchantGuest();
+import {isMerchantMeadow,MEADOW_KEY,initializeMeadowStorage} from './merchant-meadow.js?v=20261111-meadow-v2';
 import {claimHalloweenWeapon} from './halloween-event.js?v=20261027-halloween';
 import {teamFirstRoster} from './team-roster.js?v=20261027-v30';
-import {caveGuide} from './cave-guide.js?v=20261111-meadow-v1';
+import {caveGuide} from './cave-guide.js?v=20261111-meadow-v2';
 import {shopWeaponEntries} from './weapon-rules.js?v=20261030-reaper-v2';
 import {weaponPassiveText} from './weapon-passives.js?v=20261030-reaper-v2';
 import {familyRoot,isTrainingBase,ownsFamily,trainingOf,familyMembers} from './family-progress.js?v=20261025-v19';
@@ -10,7 +12,7 @@ import {verifyTestPassword} from './test-access.js?v=20261025-v19';
 import {createCombatAudio} from './combat-audio-v17.js?v=20261030-reaper-v2';
 import {costumeFor} from './costume-effects.js?v=20261030-reaper-v2';
 import {chooseTestPet} from './test-pets.js?v=20261027-v30';
-import {createCaveTutorial} from './tutorial.js?v=20261111-meadow-v1';
+import {createCaveTutorial} from './tutorial.js?v=20261111-meadow-v2';
 import {passiveSummary} from './status-passives.js?v=20261025-v22';
 import {STATUS} from './combat-status.js?v=20261025-v22';
 import {groupRewards} from './reward-groups.js';
@@ -26,7 +28,7 @@ import {icon} from './ui-art.js';
 import {createStore,initialState} from './save-bridge.js?v=20261027-v30';
 import {claimStarter,draw,eligiblePool,validatePool} from './gacha.js?v=20261030-reaper-v2';
 import {ITEMS,WEAPONS,BOSS_WEAPONS,weaponStats,useItem,buyItem,buyWeapon} from './inventory.js?v=20261030-reaper-v2';
-import {CaveWorld,createRun} from './world.js?v=20261111-meadow-v1';
+import {CaveWorld,createRun} from './world.js?v=20261111-meadow-v2';
 import {CARD_GROUPS,dexSpecies,evolutionSummary,evolutionDetail,evolutionMechanics} from './dex-evolution.js?v=20261027-v30';
 
 const combatAudio=createCombatAudio();let testUnlocked=false;
@@ -36,7 +38,7 @@ function requestRoll(){if(!playing||entering||panel.open||evolving)return false;
 const $=id=>document.getElementById(id),panel=$('panel'),input={x:0,z:0},keys=new Set();
 let scenePromise=null,launchPromise=null,entering=false;
 const transition=(label,work)=>globalThis.PhantomTransition?.run(label,work)||Promise.resolve().then(work);
-async function ensureScene(){if(scene)return scene;if(scenePromise)return scenePromise;PhantomLoading.begin('正在準備洞穴戰場');scenePromise=(async()=>{try{PhantomLoading.stage('讀取旅人、武器與戰鬥動作',.12);for(const [src,ready] of [['../vendor/three.min.js',()=>!!globalThis.THREE],['../vendor/GLTFLoader.js',()=>!!globalThis.THREE?.GLTFLoader]]){if(!ready())await new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=src;el.onload=resolve;el.onerror=()=>{el.remove();reject(Error('引擎讀取失敗，請重試'));};document.head.append(el);});}PhantomLoading.install();const {createScene}=await import('./scene.js?v=20261111-meadow-v1');scene=await createScene($('world'),{spirits:Object.values(data.spirits),catalog:data.catalog,onSound:ev=>combatAudio.play(ev),onSelect:id=>{if(playing&&!panel.open)world.select(id);},onError:e=>toast('素材問題：'+(e.message||e))});feedback=createFeedback(scene);data.config.rollDuration=scene.metrics.rollDuration;PhantomLoading.stage('戰場準備完成',.97);PhantomLoading.end();return scene;}catch(e){scenePromise=null;PhantomLoading.fail('場景讀取失敗，請重試');throw e;}})();return scenePromise;}
+async function ensureScene(){if(scene)return scene;if(scenePromise)return scenePromise;PhantomLoading.begin('正在準備洞穴戰場');scenePromise=(async()=>{try{PhantomLoading.stage('讀取旅人、武器與戰鬥動作',.12);for(const [src,ready] of [['../vendor/three.min.js',()=>!!globalThis.THREE],['../vendor/GLTFLoader.js',()=>!!globalThis.THREE?.GLTFLoader]]){if(!ready())await new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=src;el.onload=resolve;el.onerror=()=>{el.remove();reject(Error('引擎讀取失敗，請重試'));};document.head.append(el);});}PhantomLoading.install();const {createScene}=await import('./scene.js?v=20261111-meadow-v2');scene=await createScene($('world'),{spirits:Object.values(data.spirits),catalog:data.catalog,onSound:ev=>combatAudio.play(ev),onSelect:id=>{if(playing&&!panel.open)world.select(id);},onError:e=>toast('素材問題：'+(e.message||e))});feedback=createFeedback(scene);data.config.rollDuration=scene.metrics.rollDuration;PhantomLoading.stage('戰場準備完成',.97);PhantomLoading.end();return scene;}catch(e){scenePromise=null;PhantomLoading.fail('場景讀取失敗，請重試');throw e;}})();return scenePromise;}
 let tutorial=null;
 let shopTab='items',trainingId='';
 let store,data,world,scene,preview,playing=false,frame=0,lastTime=0,lastSave=0,lastHud=0,toastTimer,modalType='',pendingAction=false,ball='ball-basic',autoCapture=false,autoCaptureAt=0,capturePendingPoints=0,feedback=null,captureEpoch=0,evolving=false,summonController=null;
@@ -106,7 +108,7 @@ if(item.kind!=='ball'){const setting=store.state.autoItems?.[id]||{enabled:false
 $('bagItems').append(row);}
 button('測試',openTestGate,$('pauseActions'),'quiet-danger').id='openTestGate';if(!store.state.weapons.includes('staff-pumpkin'))button('萬聖節活動',openHalloween,$('pauseActions')).id='halloweenEvent';}
 function openHalloween(){open('萬聖節活動','<p class="compact-note">輸入活動密碼即可永久領取南瓜魔杖。</p><form id="halloweenForm" class="test-gate"><label for="halloweenCode">活動密碼</label><input id="halloweenCode" type="password" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" autocomplete="off" required><p id="halloweenError" role="status"></p><button type="submit" class="primary">領取活動物品</button></form>','halloween');$('halloweenForm').onsubmit=e=>{e.preventDefault();const field=$('halloweenCode'),value=field.value;field.value='';try{const result=claimHalloweenWeapon(store,value);if(!result.value.claimed){$('halloweenError').textContent='您已領取南瓜魔杖。';return;}open('萬聖節活動','<p class="compact-note">已取得萬聖節活動物品：南瓜魔杖</p><div id="halloweenDone"></div>','halloween-reward');button('收下並返回探險補給',()=>{bag();hud();},$('halloweenDone'),'primary');}catch(error){$('halloweenError').textContent=error.message;field.focus();}};setTimeout(()=>$('halloweenCode')?.focus(),0);}
-function returnToTown(){panel.close();modalType='';if(world.run)world.save();const url=new URL(isMerchantMeadow?(location.pathname.includes('/game/')?'../../shop/':'../../初光商會/'):'../?fromCave=1',location.href);if(new URLSearchParams(location.search).get('guest')==='1')url.searchParams.set('guest','1');if(globalThis.PhantomTransition)return PhantomTransition.navigate(url.href,isMerchantMeadow?'正在帶回商會':'正在返回初光鎮');PhantomLoading.begin('正在返回');location.href=url.href;}
+function returnToTown(){panel.close();modalType='';if(world.run)world.save();const url=new URL(isMerchantMeadow?(location.pathname.startsWith('/game/')?'/shop/':'../../初光商會/'):'../?fromCave=1',location.href);if(globalThis.PORTAL_GUEST){url.searchParams.set('guest','1');if(isMerchantMeadow)carryMerchantGuest();}if(globalThis.PhantomTransition)return PhantomTransition.navigate(url.href,isMerchantMeadow?'正在帶回商會':'正在返回初光鎮');PhantomLoading.begin('正在返回');location.href=url.href;}
 function settle(reason){panel.close();modalType='';return transition('正在結算並返回主畫面',()=>finish(reason));}
 function musicSettings(){open('音樂與音效','<p class="compact-note">設定全遊戲共用並自動保存；背景音樂與戰鬥音效可分別調整。洞穴已提高攻擊音效，攻擊時會自動壓低BGM，讓音效更清楚。</p><label class="audio-setting">背景音樂 <output id="caveVolumeValue">'+PhantomBgm.volume+'%</output><input id="caveVolume" aria-label="背景音樂音量" type="range" min="0" max="100" value="'+PhantomBgm.volume+'" style="width:100%"></label><button id="caveMute">'+(PhantomBgm.muted?'開啟音樂':'關閉音樂')+'</button><hr><label class="audio-setting">戰鬥音效 <output id="caveSfxValue">'+PhantomBgm.sfxVolume+'%</output><input id="caveSfx" aria-label="戰鬥音效音量" type="range" min="0" max="100" value="'+PhantomBgm.sfxVolume+'" style="width:100%"></label><button id="caveSfxMute">'+(PhantomBgm.sfxMuted?'開啟音效':'關閉音效')+'</button>','music');$('caveVolume').oninput=e=>{$('caveVolumeValue').textContent=PhantomBgm.setVolume(e.target.value)+'%';};$('caveMute').onclick=()=>{PhantomBgm.toggle();$('caveMute').textContent=PhantomBgm.muted?'開啟音樂':'關閉音樂';};$('caveSfx').oninput=e=>{$('caveSfxValue').textContent=PhantomBgm.setSfxVolume(e.target.value)+'%';};$('caveSfxMute').onclick=()=>{PhantomBgm.toggleSfx();$('caveSfxMute').textContent=PhantomBgm.sfxMuted?'開啟音效':'關閉音效';};if(playing)button('返回探險補給',bag);}
 function finish(reason){combatAudio.stop();if(!world.run)return;world.finish(reason);captureEpoch++;capturePendingPoints=0;autoCapture=!!store.state.autoCapture;scene?.resetTransient();feedback?.clear();$('lockedHealth').hidden=true;panel.close();modalType='';keys.clear();input.x=input.z=0;lobby();}
