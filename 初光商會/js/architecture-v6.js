@@ -1,4 +1,4 @@
-import {applyWallFinish} from './wall-finish-v7.js?v=20261111-decor-v22';
+import {applyWallFinish} from './wall-finish-v7.js?v=20261111-ui-v23';
 export function finishes(level,mat){return {wall:mat([0,0xffedce,0xf1e2bd,0xe2e8cd,0xdce9e6,0xdde6d4][level]),floorA:mat([0,0xd9b97d,0xd4a66b,0xd9d8bd,0xe5e9e5,0xe5e6d2][level]),floorB:mat([0,0xe9d29c,0xe8c48c,0xf0e8ce,0xf9f7ec,0xf9f3db][level]),ceiling:mat([0,0x64442a,0x946834,0x526444,0xe5d8b7,0x35535c][level]),curtain:mat(level===5?0x34575c:level===4?0x607c58:0x668a3f)};}
 export function floorFinish({T,building,level,width,depth,finish,oakTexture,metrics}){
  const file='floor-lv'+level;

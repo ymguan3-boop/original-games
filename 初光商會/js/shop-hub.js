@@ -1,26 +1,26 @@
-import {wallSlots,gardenSlots} from './decor-zones.js?v=20261111-decor-v22';
-import {hasDecorModel} from './decor-models-v22.js?v=20261111-decor-v22';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261111-decor-v22';
-import {canStartTutorial,promoterHireCost} from './shop-entry-rules.js?v=20261111-decor-v22';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261111-decor-v22';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261111-decor-v22';
-import {clockText} from './shop-clock.js?v=20261111-decor-v22';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261111-decor-v22';
-import {pendingRewards} from './reward-collection.js?v=20261111-decor-v22';
+import {wallSlots,gardenSlots} from './decor-zones.js?v=20261111-ui-v23';
+import {hasDecorModel} from './decor-models-v22.js?v=20261111-ui-v23';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261111-ui-v23';
+import {canStartTutorial,promoterHireCost} from './shop-entry-rules.js?v=20261111-ui-v23';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261111-ui-v23';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261111-ui-v23';
+import {clockText} from './shop-clock.js?v=20261111-ui-v23';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261111-ui-v23';
+import {pendingRewards} from './reward-collection.js?v=20261111-ui-v23';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
-import {spiritPortrait} from './spirit-cards.js?v=20261111-decor-v22';
-import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261111-decor-v22';
-import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity} from './furniture.js?v=20261111-decor-v22';
-import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261111-decor-v22';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261111-decor-v22';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261111-decor-v22';
-import {chapterObjectives} from './shop-chapters.js?v=20261111-decor-v22';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261111-decor-v22';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261111-decor-v22';
-import {requiresManagerPatrol} from './event-routing.js?v=20261111-decor-v22';
-import {eventEmployee} from './patrol-events.js?v=20261111-decor-v22';
-import {ledgerPanel} from './ledger-panel.js?v=20261111-decor-v22';
+import {spiritPortrait} from './spirit-cards.js?v=20261111-ui-v23';
+import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261111-ui-v23';
+import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity} from './furniture.js?v=20261111-ui-v23';
+import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261111-ui-v23';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261111-ui-v23';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261111-ui-v23';
+import {chapterObjectives} from './shop-chapters.js?v=20261111-ui-v23';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261111-ui-v23';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261111-ui-v23';
+import {requiresManagerPatrol} from './event-routing.js?v=20261111-ui-v23';
+import {eventEmployee} from './patrol-events.js?v=20261111-ui-v23';
+import {ledgerPanel} from './ledger-panel.js?v=20261111-ui-v23';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;

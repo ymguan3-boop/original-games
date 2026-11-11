@@ -27,3 +27,59 @@ body.hub-open #tutor .tutor-actions{display:flex!important}
 #hub[data-page=orders] .hub-card.status-ready{background:#d9f6bb;border-color:#76a457}
 @media(max-width:520px){html body header.topbar .status-row{gap:3px!important}html body header.topbar .hud-chip,html body header.topbar #start-business{font-size:10px!important;padding:4px 6px!important;min-height:29px!important}html body header.topbar #level-name{flex:1 1 45%!important}html body #tutor,html body.hub-open #tutor{bottom:54px!important;width:min(270px,calc(100vw - 20px))!important} }
 @media(max-width:520px){html body header.topbar #return-to-game{font-size:10px!important;padding:4px 6px!important;min-height:29px!important}}
+/* v23：左右分明的資訊與操作，生圖小圖示保留文字標籤。 */
+html body header.topbar .status-row{justify-content:flex-start!important;gap:6px!important}
+html body header.topbar #gold{order:-4;display:inline-flex!important;align-items:center;gap:4px;font-variant-numeric:tabular-nums;padding:4px 8px!important;background:#f4df9f;border:1px solid #b58b47;border-radius:9px;flex:none;margin:0!important;justify-self:start}
+html body header.topbar #level-name{order:-3;flex:1 1 130px!important}
+html body header.topbar #hud-progress{order:-2}
+html body header.topbar #hud-clock{order:-1}
+html body header.topbar #return-to-game{order:99;margin-left:auto!important;display:inline-flex!important}
+html body header.topbar button.hud-chip,html body header.topbar #start-business{height:36px!important;min-height:36px!important;gap:5px;white-space:nowrap;box-sizing:border-box}
+html body header.topbar #gold::before,html body header.topbar #top-fullscreen::before,html body header.topbar #top-patrol::before,html body header.topbar #start-business::before,html body header.topbar .chibi-view-toggle::before,html body header.topbar #return-to-game::before{content:'';display:block;flex:none;width:24px;height:24px;background-size:contain;background-position:center;background-repeat:no-repeat}
+#gold::before{background-image:url('./assets/ui-generated/tool-coin-v23.webp')}
+#top-fullscreen::before{background-image:url('./assets/ui-generated/tool-fullscreen-v23.webp')}
+#top-patrol::before{background-image:url('./assets/ui-generated/tool-patrol-v23.webp')}
+#start-business::before{background-image:url('./assets/ui-generated/tool-business-v23.webp')}
+.chibi-view-toggle::before{background-image:url('./assets/ui-generated/tool-view-v23.webp')}
+#return-to-game::before{background-image:url('./assets/ui-generated/tool-town-v23.webp')}
+/* 角色在對話框外，外層包含立繪高度，避讓引導目標時也會計入。 */
+html body #tutor,html body.hub-open #tutor,html body.view-2d #tutor,html body.view-2d.hub-open #tutor{width:min(340px,calc(100vw - 24px))!important;padding:166px 0 0!important;background:transparent!important;border:0!important;box-shadow:none!important;isolation:isolate;pointer-events:none}
+#tutor .guide-dialogue{position:relative;pointer-events:auto;padding:16px 16px 12px;border:2px solid #8c603c;border-radius:20px 20px 8px 20px;background:linear-gradient(135deg,#fffdf3,#fff0cf);box-shadow:inset 0 0 0 4px #f1d9a8,0 5px 14px #40291835}
+#tutor .guide-dialogue::before{content:'';position:absolute;right:72px;top:-9px;width:16px;height:16px;transform:rotate(45deg);background:#fff6dd;border-left:2px solid #8c603c;border-top:2px solid #8c603c;z-index:-1}
+html body #tutor .guide-hero{left:auto!important;right:14px;top:0;bottom:auto;width:136px;height:181px;object-fit:contain;object-position:top;z-index:-1;filter:drop-shadow(0 2px 1px #66442533)}
+#tutor strong{color:#764a2c;font-size:16px!important;letter-spacing:.04em;padding-right:60px}
+#tutor p{font-size:13px;line-height:1.55;margin:8px 0 10px}
+#tutor .tutor-actions{gap:6px}
+#tutor .tutor-actions button{min-height:32px!important;padding:3px 12px!important;font-size:12px;border-radius:12px;border:1px solid #a37a4b;background:#fffbec;color:#715034}
+#tutor .tutor-actions .primary{background:#668b47;color:#fff;border-color:#4e6b37}
+#tutor [data-minimize],#tutor [data-dismiss]{position:absolute;top:10px;float:none;min-height:25px!important;pointer-events:auto;color:#805638}
+#tutor [data-minimize]{right:40px}#tutor [data-dismiss]{right:10px}
+html body #tutor.minimized{width:100px!important;height:132px;min-height:0!important;padding:0!important}
+#tutor.minimized .guide-dialogue{background:none;box-shadow:none;border:0;padding:0}
+#tutor.minimized .guide-dialogue::before{display:none}
+html body #tutor.minimized .guide-hero{right:0;width:100px;height:132px}
+#tutor.minimized [data-minimize],#tutor.minimized [data-dismiss]{top:0}
+/* 2D 使用與 3D 相同的滿版場景、中央選單與底部四個入口。 */
+html body.view-2d{--scene-h:100dvh!important;--dock-h:0px!important;--side:0px!important;--bar-h:52px!important}
+html body.view-2d #world{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important}
+html body.view-2d #dock2d{display:none!important}
+html body.view-2d #hub{inset:0!important;width:auto!important;padding:12px!important;background:#2c1d0e66!important;display:flex!important;align-items:center;justify-content:center}
+html body.view-2d #hub[hidden]{display:none!important}
+html body.view-2d .hub-box{width:min(560px,100%)!important;height:auto!important;max-height:calc(100dvh - 24px)!important;padding:16px!important;gap:10px!important;border:3px solid #a77e4b!important;border-radius:18px!important}
+html body.view-2d .hub-cards{display:grid!important;grid-auto-flow:row!important;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important;grid-template-rows:none!important;grid-auto-columns:auto!important;overflow:auto!important}
+html body.view-2d nav.toolbar{left:8px!important;right:8px!important;bottom:max(6px,env(safe-area-inset-bottom))!important;width:auto!important;max-width:560px!important;height:auto!important;padding:0!important;background:none!important}
+html body.view-2d.hub-open nav.toolbar{display:none!important}
+@media(max-width:600px){
+ html body header.topbar{padding:6px!important}
+ html body header.topbar .status-row{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px!important}
+ html body header.topbar #gold{grid-column:1;font-size:12px!important;padding:3px 5px!important}
+ html body header.topbar #level-name{grid-column:2 / 4;font-size:12px!important}
+ html body header.topbar #hud-progress{grid-column:1;font-size:10px!important}
+ html body header.topbar #hud-clock{grid-column:2 / 4;min-height:28px!important}
+ html body header.topbar .hud-chip,html body header.topbar #start-business{width:100%!important;min-width:0!important;font-size:11px!important;padding:3px!important;height:34px!important;min-height:34px!important}
+ html body header.topbar #return-to-game{grid-column:3;justify-content:center!important;margin:0!important;font-size:11px!important}
+ html body header.topbar button.hud-chip::before,html body header.topbar #start-business::before{width:21px;height:21px}
+ html body #tutor,html body.hub-open #tutor,html body.view-2d #tutor,html body.view-2d.hub-open #tutor{padding-top:134px!important;width:min(286px,calc(100vw - 24px))!important}
+ html body #tutor .guide-hero{width:110px;height:147px}
+ #tutor .guide-dialogue{padding:13px 12px 10px}#tutor p{font-size:12px;line-height:1.45}
+}

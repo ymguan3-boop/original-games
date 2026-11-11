@@ -1,22 +1,22 @@
-import {specialDecorPose,resolveDecorPlacement,wallWindowCenters} from './decor-zones.js?v=20261111-decor-v22';
-import {hasDecorModel} from './decor-models-v22.js?v=20261111-decor-v22';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261111-decor-v22';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261111-decor-v22';
+import {specialDecorPose,resolveDecorPlacement,wallWindowCenters} from './decor-zones.js?v=20261111-ui-v23';
+import {hasDecorModel} from './decor-models-v22.js?v=20261111-ui-v23';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261111-ui-v23';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261111-ui-v23';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261111-decor-v22';
-import {ENTRANCE} from './nav.js?v=20261111-decor-v22';
-import {sampleTrail} from './motion.js?v=20261111-decor-v22';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261111-decor-v22';
-import {eventEmployee} from './patrol-events.js?v=20261111-decor-v22';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261111-decor-v22';
-import {stockCount} from './shelf-products.js?v=20261111-decor-v22';
-import {createAssets} from './asset-resolver.js?v=20261111-decor-v22';
-import {createPlacementCells} from './placement-cells.js?v=20261111-decor-v22';
-import {environment} from './environment.js?v=20261111-decor-v22';
-import {createEnvironment2D} from './environment-2d.js?v=20261111-decor-v22';
-import {spiritArtPath} from './spirit-cards.js?v=20261111-decor-v22';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261111-ui-v23';
+import {ENTRANCE} from './nav.js?v=20261111-ui-v23';
+import {sampleTrail} from './motion.js?v=20261111-ui-v23';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261111-ui-v23';
+import {eventEmployee} from './patrol-events.js?v=20261111-ui-v23';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261111-ui-v23';
+import {stockCount} from './shelf-products.js?v=20261111-ui-v23';
+import {createAssets} from './asset-resolver.js?v=20261111-ui-v23';
+import {createPlacementCells} from './placement-cells.js?v=20261111-ui-v23';
+import {environment} from './environment.js?v=20261111-ui-v23';
+import {createEnvironment2D} from './environment-2d.js?v=20261111-ui-v23';
+import {spiritArtPath} from './spirit-cards.js?v=20261111-ui-v23';
 
 const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*2.2,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
@@ -85,7 +85,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  }
  function fit(){
   const r=canvas.getBoundingClientRect();cw=Math.max(1,r.width);ch=Math.max(1,r.height);if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch;}
-  const full=r.height>innerHeight*.9,top=50,bottom=full?64:6,base=Math.min(cw/roomW(),(ch-top-bottom)/roomH());scale=base*userZoom;
+  const full=r.height>innerHeight*.9,top=Math.ceil(document.querySelector('.topbar')?.getBoundingClientRect().bottom||50)+8,bottom=full?64:6,base=Math.min(cw/roomW(),(ch-top-bottom)/roomH());scale=base*userZoom;
   if(mode==='follow'&&state().manager){scale=Math.max(base,.9)*userZoom;const m=actors.get('manager')?.pos||state().manager,q=P(m.x,m.z);panX=cw/2-q.X*scale;panY=ch/2-q.Y*scale;}
   else{const free=roomW()*scale,used=roomH()*scale;panX=Math.max(Math.min(0,cw-free),Math.min(free<cw?(cw-free)/2:0,panX||(cw-free)/2));panY=used<ch-top-bottom?top+(ch-top-bottom-used)/2:Math.max(ch-bottom-used,Math.min(top,panY||top));}
   layer.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;layer.style.width=roomW()+'px';layer.style.height=roomH()+'px';dirty=true;

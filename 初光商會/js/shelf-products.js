@@ -1,6 +1,6 @@
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261111-decor-v22';
-import {addProductEdges} from './product-outlines.js?v=20261111-decor-v22';
-import {hasProcedural,productModel} from './product-models.js?v=20261111-decor-v22';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261111-ui-v23';
+import {addProductEdges} from './product-outlines.js?v=20261111-ui-v23';
+import {hasProcedural,productModel} from './product-models.js?v=20261111-ui-v23';
 export const loadProduct=(T,assets,sku)=>hasProcedural(sku)?Promise.resolve(productModel(T,sku)):assets.load(productPath(sku));
 export function stockCount(available,capacity=30){return Math.max(0,Math.min(capacity,Math.floor(available||0)));}
 /* 武器架：每排 6 把直立靠在掛桿上，三排掛滿後第二層疊在前方，共 36 格 */

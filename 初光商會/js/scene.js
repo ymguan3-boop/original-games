@@ -1,32 +1,32 @@
-import {specialDecorPose,resolveDecorPlacement,gardenSlots} from './decor-zones.js?v=20261111-decor-v22';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261111-decor-v22';
-import {createChaseCelebration} from './chase-celebration.js?v=20261111-decor-v22';
-import {buildOutdoor} from './outdoor-3d.js?v=20261111-decor-v22';
-import {environment} from './environment.js?v=20261111-decor-v22';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261111-decor-v22';
-import {addProductEdges} from './product-outlines.js?v=20261111-decor-v22';
-import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261111-decor-v22';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261111-decor-v22';
-import {decorateInterior} from './interior-v5.js?v=20261111-decor-v22';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261111-decor-v22';
-import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261111-decor-v22';
-import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261111-decor-v22';
+import {specialDecorPose,resolveDecorPlacement,gardenSlots} from './decor-zones.js?v=20261111-ui-v23';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261111-ui-v23';
+import {createChaseCelebration} from './chase-celebration.js?v=20261111-ui-v23';
+import {buildOutdoor} from './outdoor-3d.js?v=20261111-ui-v23';
+import {environment} from './environment.js?v=20261111-ui-v23';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261111-ui-v23';
+import {addProductEdges} from './product-outlines.js?v=20261111-ui-v23';
+import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261111-ui-v23';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261111-ui-v23';
+import {decorateInterior} from './interior-v5.js?v=20261111-ui-v23';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261111-ui-v23';
+import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261111-ui-v23';
+import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261111-ui-v23';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
 /* 店內幻靈員工：比原本大 1.3 倍；外框跟 Q 版店面一樣是深咖啡色、只描外輪廓 */
 /* 宣傳員走動：在門前院子隨機選點，直線路徑上不能碰到擺設與建築 */
 const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,greetCool:0,area:null};
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261111-decor-v22';
-import {createAssets} from './asset-resolver.js?v=20261111-decor-v22';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261111-decor-v22';
-import {sampleTrail,turnToward} from './motion.js?v=20261111-decor-v22';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261111-decor-v22';
-import {eventEmployee} from './patrol-events.js?v=20261111-decor-v22';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261111-decor-v22';
-import {createPlacementCells} from './placement-cells.js?v=20261111-decor-v22';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261111-decor-v22';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261111-decor-v22';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261111-ui-v23';
+import {createAssets} from './asset-resolver.js?v=20261111-ui-v23';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261111-ui-v23';
+import {sampleTrail,turnToward} from './motion.js?v=20261111-ui-v23';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261111-ui-v23';
+import {eventEmployee} from './patrol-events.js?v=20261111-ui-v23';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261111-ui-v23';
+import {createPlacementCells} from './placement-cells.js?v=20261111-ui-v23';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261111-ui-v23';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261111-ui-v23';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
@@ -160,9 +160,9 @@ const tall=innerHeight>innerWidth;/* Q 版店面：鏡頭從門面那側俯看�
  }
  const ray=new T.Raycaster(),pointer=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),0),point=new T.Vector3();let down=null,drag=null,lastKey=0,gesture=null,touchDragMode='rotate';const activeTouches=new Map();
  /* 預設看店外整條街，按鈕切換到店內近景 */
- function applyView(){if(!views||mode==='follow')return;const v=views[outsideView?'outside':'inside'];target.set(v.x,0,v.z);distance=v.distance;pitch=v.pitch;viewButton.textContent=outsideView?'🏠 進入店內':'🌳 看店外';}
+ function applyView(){if(!views||mode==='follow')return;const v=views[outsideView?'outside':'inside'];target.set(v.x,0,v.z);distance=v.distance;pitch=v.pitch;viewButton.textContent=outsideView?'進入店內':'看店外';}
  function toggleView(on=!outsideView){outsideView=on;applyView();return outsideView;}
- const viewButton=document.createElement('button');viewButton.type='button';viewButton.className='chibi-view-toggle';viewButton.textContent='🏠 進入店內';viewButton.classList.add('hud-chip');viewButton.onclick=()=>toggleView();document.querySelector('.status-row').appendChild(viewButton);
+ const viewButton=document.createElement('button');viewButton.type='button';viewButton.className='chibi-view-toggle';viewButton.textContent='進入店內';viewButton.classList.add('hud-chip');viewButton.onclick=()=>toggleView();document.querySelector('.status-row').appendChild(viewButton);
  function promoterWalk(dt,s){const w=promoterWalker,A=w.area,home=promoterPoint();if(!A)return home;
   const blocked=(x,z)=>(state().decorations||[]).some(d=>d.garden&&Math.hypot(d.x-x,d.z-z)<1)||A.boxes.some(b=>x>b.minX&&x<b.maxX&&z>b.minZ&&z<b.maxZ);
   if(w.x===null){w.x=Math.max(A.minX,Math.min(A.maxX,home.x));w.z=Math.max(A.minZ,Math.min(A.maxZ,home.z));for(let i=0;i<30&&blocked(w.x,w.z);i++){w.x=A.minX+Math.random()*(A.maxX-A.minX);w.z=A.minZ+Math.random()*(A.maxZ-A.minZ);}w.tx=w.x;w.tz=w.z;w.wait=1.5;}

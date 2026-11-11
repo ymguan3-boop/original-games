@@ -1,4 +1,4 @@
-import {canStartTutorial} from './shop-entry-rules.js?v=20261111-decor-v22';
+import {canStartTutorial} from './shop-entry-rules.js?v=20261111-ui-v23';
 /* 首次進商會的新手引導：一次一個目標，動作完成才過關。進度存在 tutorialState，重新整理會接續。 */
 const seq=['orient','tour-build','tour-staff','promoter','tour-tasks','tour-shop','shelf','goods','hire','assign','open','sale','reward','evolve','events','patrol','patrol-back','home'];
 const STEPS={
@@ -19,7 +19,7 @@ const STEPS={
  events:{title:'事件',text:'事件出現時「任務」會亮起，最多兩個選項，不會打斷經營。',info:true,focus:['.toolbar [data-hub=tasks]'],show:true},
  patrol:{title:'主管巡查',text:'按上方主管巡查，用搖桿走動。',done:s=>s.tutorialState?.patrolled,focus:['#top-patrol']},
  'patrol-back':{title:'返回商會',text:'逛完後按「返回商會」回到總覽。',done:s=>s.tutorialState?.patrolReturned,focus:['#top-patrol'],show:true},
- home:{title:'返回初光鎮',text:'想回去時：上方快捷列 → 初光鎮。進度會先存好，也隨時能再回來。',info:true,last:true,focus:['#return-to-game'],show:true}
+ home:{title:'返回初光鎮',text:'想回去時：上方最右側 → 回小鎮。進度會先存好，也隨時能再回來。',info:true,last:true,focus:['#return-to-game'],show:true}
 };
 export const TUTORIAL_STEPS=seq;
 export function installTutorial({game,act,confirmSkip,fullscreen,closeHub=()=>{},openHub=()=>{}}){

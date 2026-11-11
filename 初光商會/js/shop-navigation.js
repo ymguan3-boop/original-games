@@ -20,7 +20,7 @@ export function installShopNavigation({game,storage=globalThis.localStorage,docu
  const mobileBar=document.querySelector('.mobile-strip');
  const topbar=document.querySelector('.topbar'),patrol=document.getElementById('camera-mode'),mobileSettings=mobileBar?.querySelector('[data-panel="settings"]'),desktopSettings=topbar?.querySelector('.time-controls [data-panel="settings"]');
  const updateHeaderBottom=()=>{if(topbar)document.documentElement.style.setProperty('--shop-header-bottom',Math.ceil(topbar.getBoundingClientRect().bottom)+'px');};
- const reposition=()=>{const row=topbar?.querySelector('.status-row');if(row&&button.parentNode!==row)row.insertBefore(button,row.firstChild);button.textContent='← 初光鎮';button.classList.add('hud-chip');updateHeaderBottom();};
+ const reposition=()=>{const row=topbar?.querySelector('.status-row');if(row&&button.parentNode!==row)row.appendChild(button);button.textContent='回小鎮';button.classList.add('hud-chip');updateHeaderBottom();};
  const headerObserver=typeof ResizeObserver!=='undefined'&&topbar?new ResizeObserver(updateHeaderBottom):null;
  headerObserver?.observe(topbar);window.addEventListener('resize',reposition);reposition();
  const go=async()=>{if(leaving)return;leaving=true;button.disabled=true;
