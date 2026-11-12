@@ -1,5 +1,6 @@
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
+import {addIllustratedOutline} from '../illustrated-outline.js?v=20261111-decor-v22';
 import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261112-v31c';
 const THREE=globalThis.THREE;
 
@@ -121,14 +122,11 @@ function fieldBattle(parent,x,z,anim){
  const blade=new THREE.Group();blade.position.set(0,-.02,.02);hero.arms[1].hand.add(blade);
  mk(new THREE.BoxGeometry(.05,.5,.02),toon(0xdfe8ee),0,-.3,0,blade);mk(new THREE.BoxGeometry(.16,.04,.05),toon(0xd9a521),0,-.04,0,blade);mk(new THREE.BoxGeometry(.04,.1,.04),toon(0x6e4a2a),0,.04,0,blade);blade.rotation.x=Math.PI;
  const shield=mk(new THREE.CylinderGeometry(.13,.13,.04,14),toon(0xc0503a),0,-.02,.05,hero.arms[0].hand,true);shield.rotation.x=Math.PI/2;
- /* 幻靈：圓滾滾的嫩芽小靈，五官貼在臉上 */
+ /* 幻靈：遊戲裡的「小熊」模型，面向冒險者 */
  const mon=new THREE.Group();mon.position.set(1.7,0,0);g.add(mon);const body=new THREE.Group();mon.add(body);
- const skin=toon(0x8fd36a,{emissive:0xffffff,emissiveIntensity:0}),belly=toon(0xe6f7c8);
- const blob=mk(new THREE.SphereGeometry(.42,22,16),skin,0,.4,0,body,true);blob.scale.set(1,.88,1);
- mk(new THREE.SphereGeometry(.26,16,12),belly,-.27,.34,0,body).scale.set(.45,.8,.8);
- for(const s of[-1,1]){const eye=mk(new THREE.SphereGeometry(.055,10,8),toon(0x2a1c12),-.36,.5,s*.13,body);eye.scale.set(.35,1,.8);mk(new THREE.SphereGeometry(.018,6,5),toon(0xffffff),-.385,.52,s*.13-.01,body);const ear=mk(new THREE.ConeGeometry(.08,.22,8),skin,.05,.78,s*.2,body,true);ear.rotation.x=s*.5;}
- const sprout=new THREE.Group();sprout.position.set(.05,.78,0);body.add(sprout);for(const s of[-1,1]){const lf=mk(new THREE.SphereGeometry(.09,10,8),toon(0x4f9a3a),s*.08,.1,0,sprout,true);lf.scale.set(1.6,.45,.8);lf.rotation.z=-s*.5;}
- const mouth=mk(new THREE.SphereGeometry(.04,8,6),toon(0x7a2a1c),-.4,.38,0,body);mouth.scale.set(.3,.6,1.4);
+ const flash=[],skin={set emissiveIntensity(v){for(const m of flash)m.emissive?.setRGB(v*.9,v*.9,v*.9);}},sprout={rotation:{z:0}};
+ if(THREE.GLTFLoader)new THREE.GLTFLoader().load('../幻靈奇旅/models/spirits/fire-bear-1.glb',gl=>{const o=gl.scene;o.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(o),size=box.getSize(new THREE.Vector3()),k=1.05/Math.max(size.y,.001);o.scale.setScalar(k);o.position.y=-box.min.y*k;o.rotation.y=-Math.PI/2;o.traverse(n=>{if(n.isMesh){n.castShadow=true;n.material=n.material.clone();flash.push(n.material);n.userData.noOutline=false;}});body.add(o);addIllustratedOutline(THREE,o,{thickness:.045});},undefined,()=>{});
+ hero.g.traverse(o=>{if(o.userData.isHull)o.parent.remove(o);});addIllustratedOutline(THREE,hero.g,{thickness:.045});
  const shadow=mk(new THREE.CircleGeometry(.4,18),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.18,depthWrite:false}),0,.01,0,mon);shadow.rotation.x=-Math.PI/2;shadow.castShadow=false;
  /* 命中特效：金色星芒＋「砰！」 */
  const spark=new THREE.Group();g.add(spark);for(let i=0;i<6;i++){const st=mk(new THREE.OctahedronGeometry(.08),toon(0xffd84a,{emissive:0xffb020,emissiveIntensity:.8}),0,0,0,spark);st.userData.a=i/6*Math.PI*2;}spark.visible=false;
@@ -206,7 +204,7 @@ export function buildYard(level,opts={}){
  if(opts.cull)for(const o of [...props.children]){const p=o.position;if((p.x>half-.3&&p.z<zR-1.2)||p.z<-d/2-.2)props.remove(o);}
  if(opts.gardenArea){const a=opts.gardenArea;props.updateMatrixWorld(true);for(const o of [...props.children]){const b=new THREE.Box3().setFromObject(o),left=b.min.x<a.cx-2&&b.max.x>a.minX,right=b.max.x>a.cx+2&&b.min.x<a.maxX;if((left||right)&&b.max.z>a.minZ&&b.min.z<a.maxZ){props.remove(o);o.traverse(n=>n.geometry?.dispose());}}}
  if(opts.reserved?.length){props.updateMatrixWorld(true);for(const o of [...props.children]){const b=new THREE.Box3().setFromObject(o);if(opts.reserved.some(p=>b.max.x>p.x-p.r&&b.min.x<p.x+p.r&&b.max.z>p.z-p.r&&b.min.z<p.z+p.r)){props.remove(o);o.traverse(n=>n.geometry?.dispose());}}}
- const battleAt=level===1?{x:DX-3.6,z:zF+1.75}:null;
+ const battleAt=level===1?{x:DX-1.6,z:across+1.1}:null;
  if(battleAt)for(const o of [...props.children]){if(Math.hypot(o.position.x-battleAt.x-.8,o.position.z-battleAt.z)<2.2){props.remove(o);o.traverse(n=>n.geometry?.dispose?.());}}
  addOutline(props);
  if(battleAt)fieldBattle(root,battleAt.x,battleAt.z,anim);
