@@ -1,7 +1,7 @@
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
 import {addIllustratedOutline} from '../illustrated-outline.js?v=20261111-decor-v22';
-import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261112-v31f';
+import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261112-v31h';
 const THREE=globalThis.THREE;
 
 const STEP_D=.36;
@@ -156,10 +156,10 @@ export function buildYard(level,opts={}){
  /* 地面：L1 泥土路；L2 石板小徑；L3 以上整片石板廣場 */
  const road=level===1?dirtTex():cobbleTex();
  const floorStrip=(x,z,ww,dd,tex,y=.02,r=1.2)=>{const m=mk(new THREE.BoxGeometry(ww,.04,dd),texMat(tex,ww/r,dd/r),x,G+y,z,root);m.castShadow=false;m.userData.noLine=true;return m;};
- floorStrip(DX,(zS+zR-1.3)/2,pw,zR-1.3-zS,road);
+ floorStrip(DX,(zS+zR)/2,pw,zR-zS,road);/* 步道一路接到馬路 */
  floorStrip(0,zR,Y.roadHalf*2+20,2.2,road,.05);
  /* 門前保留草皮（放植栽用），只鋪步道與馬路 */if(level>=3){
-  const across=[0,0,0,6,7.5,9][level];floorStrip(0,zR+1.3+across/2,[0,0,0,10,14,18][level],across,plazaTex(level),.035,level===5?2:1.2);}
+  const across=[0,0,0,6,7.5,9][level];floorStrip(0,zR+1+(across+.3)/2,[0,0,0,10,14,18][level],across+.3,plazaTex(level),.035,level===5?2:1.2);}
  if(level===5){const c=mk(new THREE.BoxGeometry(1.4,.03,zR-1.3-zS),toon(0xb5201a),DX,G+.07,(zS+zR-1.3)/2,root);c.userData.noLine=true;c.castShadow=false;}
 
  const sideX=half+1.2,across=zR+1.3;

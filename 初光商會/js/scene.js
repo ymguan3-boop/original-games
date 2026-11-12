@@ -1,32 +1,32 @@
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261112-v31f';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261112-v31f';
-import {createChaseCelebration} from './chase-celebration.js?v=20261112-v31f';
-import {buildOutdoor} from './outdoor-3d.js?v=20261112-v31f';
-import {environment} from './environment.js?v=20261112-v31f';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261112-v31f';
-import {addProductEdges} from './product-outlines.js?v=20261112-v31f';
-import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261112-v31f';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261112-v31f';
-import {decorateInterior} from './interior-v5.js?v=20261112-v31f';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261112-v31f';
-import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261112-v31f';
-import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261112-v31f';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261112-v31h';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261112-v31h';
+import {createChaseCelebration} from './chase-celebration.js?v=20261112-v31h';
+import {buildOutdoor} from './outdoor-3d.js?v=20261112-v31h';
+import {environment} from './environment.js?v=20261112-v31h';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261112-v31h';
+import {addProductEdges} from './product-outlines.js?v=20261112-v31h';
+import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261112-v31h';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261112-v31h';
+import {decorateInterior} from './interior-v5.js?v=20261112-v31h';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261112-v31h';
+import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261112-v31h';
+import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261112-v31h';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
 /* 店內幻靈員工：比原本大 1.3 倍；外框跟 Q 版店面一樣是深咖啡色、只描外輪廓 */
 /* 宣傳員走動：在門前院子隨機選點，直線路徑上不能碰到擺設與建築 */
 const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,greetCool:0,area:null};
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261112-v31f';
-import {createAssets} from './asset-resolver.js?v=20261112-v31f';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261112-v31f';
-import {sampleTrail,turnToward} from './motion.js?v=20261112-v31f';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31f';
-import {eventEmployee} from './patrol-events.js?v=20261112-v31f';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261112-v31f';
-import {createPlacementCells} from './placement-cells.js?v=20261112-v31f';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261112-v31f';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261112-v31f';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261112-v31h';
+import {createAssets} from './asset-resolver.js?v=20261112-v31h';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261112-v31h';
+import {sampleTrail,turnToward} from './motion.js?v=20261112-v31h';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31h';
+import {eventEmployee} from './patrol-events.js?v=20261112-v31h';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261112-v31h';
+import {createPlacementCells} from './placement-cells.js?v=20261112-v31h';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261112-v31h';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261112-v31h';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
