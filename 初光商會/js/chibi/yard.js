@@ -1,6 +1,6 @@
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
-import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261112-v31b';
+import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261112-v31c';
 const THREE=globalThis.THREE;
 
 const STEP_D=.36;
@@ -114,6 +114,42 @@ export function person(opt={}){
 function bubble(text){const t=canvasTex(256,96,(g,W,H)=>{g.font='900 34px "Microsoft JhengHei","Noto Sans TC",sans-serif';const tw=Math.min(W-16,g.measureText(text).width+34);const x=(W-tw)/2;g.fillStyle='#fff';g.strokeStyle='#4a2e1c';g.lineWidth=5;g.beginPath();g.roundRect(x,6,tw,62,22);g.fill();g.stroke();g.beginPath();g.moveTo(W/2-10,66);g.lineTo(W/2,88);g.lineTo(W/2+10,66);g.fill();g.stroke();g.fillStyle='#fff';g.fillRect(W/2-8,62,16,6);g.fillStyle='#4a2e1c';g.textAlign='center';g.textBaseline='middle';g.fillText(text,W/2,38);});
  t.wrapS=THREE.ClampToEdgeWrapping;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false}));s.scale.set(1.9,.71,1);s.renderOrder=10;return s;}
 
+/* 冒險者在草地上和一隻幻靈對打：揮劍、命中閃光、幻靈被擊退後彈回來反撲，三秒一輪 */
+function fieldBattle(parent,x,z,anim){
+ const g=new THREE.Group();g.position.set(x,G,z);g.scale.setScalar(1.2);parent.add(g);
+ const hero=person({seed:5151,shirt:0x4f7fc8,pants:0x6e5a44,hair:0x8a4a2a,style:'short',skirt:false,scale:1.15});hero.g.rotation.y=Math.PI/2;g.add(hero.g);
+ const blade=new THREE.Group();blade.position.set(0,-.02,.02);hero.arms[1].hand.add(blade);
+ mk(new THREE.BoxGeometry(.05,.5,.02),toon(0xdfe8ee),0,-.3,0,blade);mk(new THREE.BoxGeometry(.16,.04,.05),toon(0xd9a521),0,-.04,0,blade);mk(new THREE.BoxGeometry(.04,.1,.04),toon(0x6e4a2a),0,.04,0,blade);blade.rotation.x=Math.PI;
+ const shield=mk(new THREE.CylinderGeometry(.13,.13,.04,14),toon(0xc0503a),0,-.02,.05,hero.arms[0].hand,true);shield.rotation.x=Math.PI/2;
+ /* 幻靈：圓滾滾的嫩芽小靈，五官貼在臉上 */
+ const mon=new THREE.Group();mon.position.set(1.7,0,0);g.add(mon);const body=new THREE.Group();mon.add(body);
+ const skin=toon(0x8fd36a,{emissive:0xffffff,emissiveIntensity:0}),belly=toon(0xe6f7c8);
+ const blob=mk(new THREE.SphereGeometry(.42,22,16),skin,0,.4,0,body,true);blob.scale.set(1,.88,1);
+ mk(new THREE.SphereGeometry(.26,16,12),belly,-.27,.34,0,body).scale.set(.45,.8,.8);
+ for(const s of[-1,1]){const eye=mk(new THREE.SphereGeometry(.055,10,8),toon(0x2a1c12),-.36,.5,s*.13,body);eye.scale.set(.35,1,.8);mk(new THREE.SphereGeometry(.018,6,5),toon(0xffffff),-.385,.52,s*.13-.01,body);const ear=mk(new THREE.ConeGeometry(.08,.22,8),skin,.05,.78,s*.2,body,true);ear.rotation.x=s*.5;}
+ const sprout=new THREE.Group();sprout.position.set(.05,.78,0);body.add(sprout);for(const s of[-1,1]){const lf=mk(new THREE.SphereGeometry(.09,10,8),toon(0x4f9a3a),s*.08,.1,0,sprout,true);lf.scale.set(1.6,.45,.8);lf.rotation.z=-s*.5;}
+ const mouth=mk(new THREE.SphereGeometry(.04,8,6),toon(0x7a2a1c),-.4,.38,0,body);mouth.scale.set(.3,.6,1.4);
+ const shadow=mk(new THREE.CircleGeometry(.4,18),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.18,depthWrite:false}),0,.01,0,mon);shadow.rotation.x=-Math.PI/2;shadow.castShadow=false;
+ /* 命中特效：金色星芒＋「砰！」 */
+ const spark=new THREE.Group();g.add(spark);for(let i=0;i<6;i++){const st=mk(new THREE.OctahedronGeometry(.08),toon(0xffd84a,{emissive:0xffb020,emissiveIntensity:.8}),0,0,0,spark);st.userData.a=i/6*Math.PI*2;}spark.visible=false;
+ const pow=bubble('砰！');pow.scale.set(1.3,.49,1);g.add(pow);pow.visible=false;
+ const ease=k=>k<0?0:k>1?1:k*k*(3-2*k);
+ anim.push(t=>{const u=t%3;
+  /* 冒險者：預備 → 衝刺揮劍 → 收招後退 → 被反撲時後仰 */
+  const lunge=u<1.2?0:u<1.5?ease((u-1.2)/.3)*.55:u<2.2?.55*(1-ease((u-1.5)/.7)):0,recoil=u>2.55&&u<2.85?Math.sin((u-2.55)/.3*Math.PI)*.18:0;
+  hero.g.position.x=lunge-recoil;hero.body.position.y=u<1.2?Math.abs(Math.sin(u*6))*.03:0;hero.body.rotation.z=-recoil*.8;
+  const swing=u<1.2?-2.3+Math.sin(u*4)*.12:u<1.55?-2.3+ease((u-1.2)/.35)*3:u<2.2?.7-ease((u-1.55)/.65)*3:-2.3;hero.arms[1].sh.rotation.x=swing;hero.arms[0].sh.rotation.x=-.9;hero.arms[0].sh.rotation.z=.3;
+  const step=u>1.2&&u<1.5?Math.sin((u-1.2)/.3*Math.PI)*.6:0;hero.legs[0].rotation.x=step;hero.legs[1].rotation.x=-step;
+  /* 幻靈：原地彈跳 → 被擊中閃白、壓扁、擊退 → 彈回 → 反撲 */
+  const hit=u>1.45&&u<1.75,knock=u<1.45?0:u<1.8?ease((u-1.45)/.35)*.75:u<2.4?.75*(1-ease((u-1.8)/.6)):0,tackle=u>2.4&&u<2.9?Math.sin((u-2.4)/.5*Math.PI)*.7:0;
+  mon.position.x=1.7+knock-tackle;const hop=u<1.45?Math.abs(Math.sin(u*5))*.18:u>2.4?Math.abs(Math.sin((u-2.4)*6.3))*.25:0;body.position.y=hop;
+  const squash=hit?1-Math.sin((u-1.45)/.3*Math.PI)*.35:1;body.scale.set(1/Math.sqrt(squash),squash,1/Math.sqrt(squash));body.rotation.z=hit?-.35:tackle*.4;
+  skin.emissiveIntensity=hit?.55:0;shadow.scale.setScalar(1-hop*.8);sprout.rotation.z=Math.sin(t*9)*.25;
+  spark.visible=hit;if(hit){const k=(u-1.45)/.3;spark.position.set(1.25,.6,0);spark.children.forEach(st=>{const r=.15+k*.45;st.position.set(Math.cos(st.userData.a)*r*.4,Math.sin(st.userData.a)*r,Math.sin(st.userData.a*2)*.1);st.scale.setScalar(1-k*.6);});}
+  pow.visible=u>1.45&&u<2.05;if(pow.visible){pow.position.set(1.4,1.55+(u-1.45)*.5,0);pow.material.opacity=Math.min(1,(2.05-u)*4);}
+ });
+ return g;}
+
 /* ---------- 主程式 ---------- */
 export const CROWD=[null,{shop:1,pass:2,idle:0},{shop:3,pass:2,idle:0},{shop:5,pass:3,idle:1},{shop:8,pass:5,idle:2},{shop:12,pass:7,idle:3}];
 export function buildYard(level,opts={}){
@@ -170,7 +206,10 @@ export function buildYard(level,opts={}){
  if(opts.cull)for(const o of [...props.children]){const p=o.position;if((p.x>half-.3&&p.z<zR-1.2)||p.z<-d/2-.2)props.remove(o);}
  if(opts.gardenArea){const a=opts.gardenArea;props.updateMatrixWorld(true);for(const o of [...props.children]){const b=new THREE.Box3().setFromObject(o),left=b.min.x<a.cx-2&&b.max.x>a.minX,right=b.max.x>a.cx+2&&b.min.x<a.maxX;if((left||right)&&b.max.z>a.minZ&&b.min.z<a.maxZ){props.remove(o);o.traverse(n=>n.geometry?.dispose());}}}
  if(opts.reserved?.length){props.updateMatrixWorld(true);for(const o of [...props.children]){const b=new THREE.Box3().setFromObject(o);if(opts.reserved.some(p=>b.max.x>p.x-p.r&&b.min.x<p.x+p.r&&b.max.z>p.z-p.r&&b.min.z<p.z+p.r)){props.remove(o);o.traverse(n=>n.geometry?.dispose());}}}
+ const battleAt=level===1?{x:DX-3.6,z:zF+1.75}:null;
+ if(battleAt)for(const o of [...props.children]){if(Math.hypot(o.position.x-battleAt.x-.8,o.position.z-battleAt.z)<2.2){props.remove(o);o.traverse(n=>n.geometry?.dispose?.());}}
  addOutline(props);
+ if(battleAt)fieldBattle(root,battleAt.x,battleAt.z,anim);
 
  /* ---------- 人群 ---------- */
  const people=[],crowd=ambient?{...CROWD[level],shop:0}:CROWD[level],RX=Y.roadHalf;

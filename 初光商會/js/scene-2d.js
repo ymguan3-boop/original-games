@@ -1,22 +1,22 @@
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261112-v31b';
-import {hasDecorModel} from './decor-models-v22.js?v=20261112-v31b';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261112-v31b';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261112-v31b';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261112-v31c';
+import {hasDecorModel} from './decor-models-v22.js?v=20261112-v31c';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261112-v31c';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261112-v31c';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261112-v31b';
-import {ENTRANCE} from './nav.js?v=20261112-v31b';
-import {sampleTrail} from './motion.js?v=20261112-v31b';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31b';
-import {eventEmployee} from './patrol-events.js?v=20261112-v31b';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261112-v31b';
-import {stockCount} from './shelf-products.js?v=20261112-v31b';
-import {createAssets} from './asset-resolver.js?v=20261112-v31b';
-import {createPlacementCells} from './placement-cells.js?v=20261112-v31b';
-import {environment} from './environment.js?v=20261112-v31b';
-import {createEnvironment2D} from './environment-2d.js?v=20261112-v31b';
-import {spiritArtPath} from './spirit-cards.js?v=20261112-v31b';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261112-v31c';
+import {ENTRANCE} from './nav.js?v=20261112-v31c';
+import {sampleTrail} from './motion.js?v=20261112-v31c';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31c';
+import {eventEmployee} from './patrol-events.js?v=20261112-v31c';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261112-v31c';
+import {stockCount} from './shelf-products.js?v=20261112-v31c';
+import {createAssets} from './asset-resolver.js?v=20261112-v31c';
+import {createPlacementCells} from './placement-cells.js?v=20261112-v31c';
+import {environment} from './environment.js?v=20261112-v31c';
+import {createEnvironment2D} from './environment-2d.js?v=20261112-v31c';
+import {spiritArtPath} from './spirit-cards.js?v=20261112-v31c';
 
 const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*2.2,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
