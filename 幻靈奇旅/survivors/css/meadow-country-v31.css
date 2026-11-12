@@ -58,3 +58,15 @@ body.merchant-meadow dialog .bag-footer,body.merchant-meadow dialog .supply-tool
 body.merchant-meadow dialog button.primary,body.merchant-meadow dialog button.primary *,body.merchant-meadow dialog button.selected,body.merchant-meadow dialog button.selected *{color:#fff!important}
 body.merchant-meadow dialog button:disabled,body.merchant-meadow dialog button:disabled *{color:#8a7458!important;opacity:.85}
 body.merchant-meadow dialog .panel-notice{background:#fff0c4!important;border:2px solid #4a2e1c!important}
+
+/* 教學卡同樣使用奶油底咖啡字；掛在 body 或 dialog 時都保持相同對比。 */
+body.merchant-meadow #caveTutorial{background:#fff8ea!important;background-image:none!important;color:#4a2e1c!important;border:3px solid #4a2e1c!important;border-image:none!important;border-radius:16px;box-shadow:0 4px 0 #4a2e1c,0 8px 24px #0003!important;text-shadow:none!important;max-height:min(320px,48dvh);overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box}
+body.merchant-meadow #caveTutorial :where(h3,p,small,div){color:#4a2e1c!important;opacity:1!important;text-shadow:none!important}
+body.merchant-meadow #caveTutorial small{color:#6e5232!important}
+body.merchant-meadow #caveTutorial h3{font-size:17px;line-height:1.4;margin:6px 0}
+body.merchant-meadow #caveTutorial p{font-size:13px;line-height:1.65;margin:6px 0 10px}
+body.merchant-meadow #caveTutorial button{background:#f3dfb2!important;color:#4a2e1c!important;border:2px solid #4a2e1c!important;border-radius:10px;min-height:38px;box-shadow:0 2px 0 #4a2e1c!important}
+body.merchant-meadow #caveTutorial button[data-tutorial=next]{background:#365c24!important;color:#fff!important}
+body.merchant-meadow #caveTutorial button:disabled{background:#e8dfcd!important;color:#65543b!important;opacity:1;box-shadow:none!important}
+body.merchant-meadow #tutorialFocus{border:3px solid #365c24;box-shadow:0 0 0 2px #fff8ea,0 0 14px #365c2466}
+@media(max-height:500px){body.merchant-meadow #caveTutorial{padding:8px 12px;max-height:45dvh}body.merchant-meadow #caveTutorial h3{font-size:15px}body.merchant-meadow #caveTutorial p{font-size:12px}}

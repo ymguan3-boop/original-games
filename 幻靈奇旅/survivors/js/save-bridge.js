@@ -14,7 +14,7 @@ export function validateState(s) {
     for (const n of Object.values(s[key])) if (!Number.isSafeInteger(n) || n < 0) throw new Error('倉庫數量異常。');
   }
   if (typeof s.starterClaimed !== 'boolean' || s.transactions.some(t=>!plain(t)||typeof t.id!=='string')) throw new Error('交易紀錄異常。');
-  if (s.run !== null && (!plain(s.run) || typeof s.run.id!=='string' || !['active','depth-cleared','defeated'].includes(s.run.status) || !plain(s.run.hero) || !Number.isFinite(s.run.hero.hp) || !Array.isArray(s.run.pets))) throw new Error('戰局檢查點異常。');
+  if (s.run !== null && (!plain(s.run) || typeof s.run.id!=='string' || !['active','depth-cleared','defeated','meadow-completed'].includes(s.run.status) || !plain(s.run.hero) || !Number.isFinite(s.run.hero.hp) || !Array.isArray(s.run.pets))) throw new Error('戰局檢查點異常。');
   if(s.loadoutVersion!==9){const untouched=!s.run&&s.weapons.length===1&&s.weapons[0]==='sword-starter'&&s.equipped[0]==='sword-starter';if(!s.weapons.includes('guns-starter'))s.weapons.push('guns-starter');if(untouched)s.equipped=['guns-starter'];s.loadoutVersion=9;}
   s.autoPetUltimates||=[false,false,false];if(!Array.isArray(s.autoPetUltimates)||s.autoPetUltimates.length!==3||s.autoPetUltimates.some(v=>typeof v!=='boolean'))throw Error('自動大絕設定異常');
   s.weaponUpgrades||={};if(!plain(s.weaponUpgrades)||Object.values(s.weaponUpgrades).some(n=>!Number.isSafeInteger(n)||n<0))throw Error('永久武器加成異常');
@@ -54,7 +54,7 @@ export function createStore(storage = globalThis.localStorage, key = SAVE_KEY) {
       return {ok:true,replayed:false,value,state};
     },
     checkpoint(run) {
-      if (!run || !['active','depth-cleared','defeated'].includes(run.status)) throw new Error('只能保存進行中的戰局。');
+      if (!run || !['active','depth-cleared','defeated','meadow-completed'].includes(run.status)) throw new Error('只能保存進行中的戰局。');
       return store.transact(store.newId('checkpoint'), next=> {
         if (next.transactions.some(t=>t.id===`end:${run.id}`)) throw new Error('已結束戰局不能復原。');
         if (next.run && next.run.id!==run.id) throw new Error('尚有未結束戰局。');
