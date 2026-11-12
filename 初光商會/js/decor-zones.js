@@ -13,14 +13,14 @@ export function wallSlots(level,free=false){
  for(const [a,b]of segs){const len=b-a-1.1,n=Math.max(1,Math.floor(len/2.3)),us=l<=3?[(a+b)/2]:Array.from({length:n},(_,i)=>a+.55+len*(i+.5)/n);for(const u of us)add('front',u,frontW/2+.18);}
  add('front',doorX,DW/2+.3); // door and both jamb columns
  const slots=[];
- for(const side of Object.keys(cuts)){const len=['front','back'].includes(side)?w:d;let index=0,last=-Infinity;for(let u=-len/2+1.15;u<=len/2-1.15;u+=free?.1:.25){if((!free&&u-last<1)||cuts[side].some(([a,b])=>u+.4>a&&u-.4<b))continue;last=u;const pos=side==='back'?{x:cx+u,z:-.43,rotation:0}:side==='front'?{x:cx+u,z:d-.57,rotation:180}:side==='left'?{x:-.43,z:cz+u,rotation:90}:{x:w-.57,z:cz+u,rotation:270};slots.push({mount:free?`${side}-free-${u.toFixed(2)}`:`${side}-${index++}`,side,label:free?sideNames[side]:`${sideNames[side]} ${index}`,y:.88,...pos});}}
+ for(const side of Object.keys(cuts)){const len=['front','back'].includes(side)?w:d;let index=0,last=-Infinity;for(let u=-len/2+1.15;u<=len/2-1.15;u+=free?.1:.25){if((!free&&u-last<1)||cuts[side].some(([a,b])=>u+.4>a&&u-.4<b))continue;last=u;const pos=side==='back'?{x:cx+u,z:-.43,rotation:0}:side==='front'?{x:cx+u,z:d-.57,rotation:180}:side==='left'?{x:-.43,z:cz+u,rotation:90}:{x:w-.57,z:cz+u,rotation:270};slots.push({mount:free?`${side}-free-${u.toFixed(2)}`:`${side}-${index++}`,side,label:free?sideNames[side]:`${sideNames[side]} ${index}`,y:1.45,...pos});}}
  return slots;
 }
 export function gardenSlots(level){const {width,height}=dimensions(level),door=Math.round((width-1)/2);return [-1,1].flatMap((sign,i)=>[0,1].map(row=>({garden:`garden-${i}-${row}`,label:`門口${sign<0?'左':'右'}側花園 ${row+1}`,x:door+sign*3,z:height-.5+2+row*1.2,y:-.07,rotation:0})));}
 export const nearestSlot=(list,p)=>list.slice().sort((a,b)=>Math.hypot(a.x-p.x,a.z-p.z)-Math.hypot(b.x-p.x,b.z-p.z))[0];
 export function specialDecorPose(item,level){
  if(item.mount)return wallSlots(level,item.mount.includes('-free-')).find(s=>s.mount===item.mount);
- if(item.garden==='garden-free'){const {width,height}=dimensions(level),door=Math.round((width-1)/2);return item.x>=-.1&&item.x<=width-.9&&item.z>=height+1.3&&item.z<=height+4.8&&Math.abs(item.x-door)>=2?{garden:'garden-free',x:item.x,z:item.z,y:-.07,rotation:item.rotation||0}:null;}
+ if(item.garden==='garden-free'){const {width,height}=dimensions(level),door=Math.round((width-1)/2);return item.x>=-.1&&item.x<=width-.9&&item.z>=height+1.1&&item.z<=height+2.9&&Math.abs(item.x-door)>=2?{garden:'garden-free',x:item.x,z:item.z,y:-.07,rotation:item.rotation||0}:null;}
  return item.garden?gardenSlots(level).find(s=>s.garden===item.garden):null;
 }
 export const specialDecor=item=>!!(item.mount||item.garden);
