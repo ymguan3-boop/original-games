@@ -1,0 +1,20 @@
+/* v31：擊破與點數移到深度波次下方、道具／暫停上移、拿掉視角縮放、寵物卡變矮、暴擊／絕招數字加底框、怪物倍率選擇 */
+.cave-zoom{display:none!important}
+#hud .clock .battle-wallet{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:12px!important;margin-top:4px;font-size:13px}
+#hud .clock .battle-wallet span{color:#ecf0e8}
+#hud .clock .battle-wallet strong{font-size:13px}
+#hud .hud-menu{align-self:flex-start;margin-top:-4px}
+#hud #pause{margin-top:0!important}
+/* 寵物卡片：不顯示被動欄位數與被動說明 */
+#party .pet-passive,#party .pet-proc{display:none!important}
+/* 暴擊黃字紅底；絕招紅字紫底（絕招暴擊用絕招樣式） */
+.damage-number.critical b,.damage-number.ultimate-hit b{display:inline-block;padding:1px 8px 2px;border-radius:7px;border:2px solid #fff6;font-style:normal;line-height:1.15;box-shadow:0 2px 0 #0006}
+.damage-number.critical b{background:#c8221a;color:#ffe23a;text-shadow:0 1px 0 #5a0b04,1px 0 #5a0b04,-1px 0 #5a0b04}
+.damage-number.ultimate-hit b{background:#6a2ab8;color:#ff4a4a;text-shadow:0 1px 0 #2a0638,1px 0 #2a0638,-1px 0 #2a0638}
+.damage-number.critical small,.damage-number.ultimate-hit small{display:block;margin-bottom:1px}
+/* 進場前的怪物數量倍率 */
+.monster-mult{display:flex;align-items:center;justify-content:center;gap:6px;margin:8px 0 2px;flex-wrap:wrap;font-size:13px}
+.monster-mult>span{opacity:.85}
+.monster-mult button{min-width:52px;padding:6px 10px;border-radius:999px;border:1px solid #c7dac355;background:#1b333a;color:#ecf0e8;font:inherit;font-weight:800;cursor:pointer}
+.monster-mult button.selected{background:#e2c58d;color:#1b2a2e;border-color:#e2c58d}
+.monster-mult small{width:100%;text-align:center;opacity:.75;font-size:11px}

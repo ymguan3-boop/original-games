@@ -1,0 +1,41 @@
+/* 無盡草原：大廳、對話框與讀取畫面改成初光商會的鄉村風（奶油底、咖啡框、綠色主鈕） */
+body.merchant-meadow{--c-ink:#4a2e1c;--c-cream:#fff8ea;--c-paper:#f8ecd2;--c-green:#6a9a3e;--c-green-d:#557936;--c-gold:#e8b52c}
+body.merchant-meadow #brand{background:var(--c-cream)!important;border:3px solid var(--c-ink)!important;border-radius:16px!important;box-shadow:0 3px 0 var(--c-ink)!important;color:var(--c-ink)!important;padding:8px 10px!important}
+body.merchant-meadow #brand>span{color:var(--c-ink)!important;font-weight:800}
+body.merchant-meadow #brand button,body.merchant-meadow #brand a{background:#f3dfb2!important;color:var(--c-ink)!important;border:2px solid var(--c-ink)!important;border-radius:12px!important;box-shadow:0 2px 0 var(--c-ink)!important;font-weight:800}
+body.merchant-meadow .intro h1{color:#fff8ea!important;text-shadow:0 3px 0 var(--c-ink),0 0 2px var(--c-ink),2px 0 var(--c-ink),-2px 0 var(--c-ink)!important}
+body.merchant-meadow .intro p{color:#fff!important;text-shadow:0 1px 2px #2c3a1c!important}
+body.merchant-meadow .intro small,body.merchant-meadow .intro .eyebrow{color:#fff4c8!important}
+body.merchant-meadow .intro span,body.merchant-meadow .intro li{background:var(--c-cream)!important;color:var(--c-ink)!important;border:2px solid var(--c-ink)!important;box-shadow:0 2px 0 var(--c-ink)!important}
+body.merchant-meadow .preparation{background:var(--c-cream)!important;border:3px solid var(--c-ink)!important;border-radius:20px!important;box-shadow:0 5px 0 var(--c-ink)!important;color:var(--c-ink)!important}
+body.merchant-meadow .preparation *{color:var(--c-ink)}
+body.merchant-meadow .preparation .section-top{color:var(--c-ink)!important}
+body.merchant-meadow #partyPreview>*{background:var(--c-paper)!important;border:2px solid var(--c-ink)!important;color:var(--c-ink)!important}
+body.merchant-meadow #partyPreview *{color:var(--c-ink)!important}
+body.merchant-meadow .preparation button{background:#f3dfb2!important;color:var(--c-ink)!important;border:2px solid var(--c-ink)!important;border-radius:14px!important;box-shadow:0 3px 0 var(--c-ink)!important;font-weight:800!important}
+body.merchant-meadow .preparation button.primary,body.merchant-meadow #start,body.merchant-meadow #resume{background:var(--c-green)!important;color:#fff!important;text-shadow:0 1px 0 #2f4a1c}
+body.merchant-meadow .preparation button:disabled{opacity:.55}
+body.merchant-meadow .monster-mult button{background:#f3dfb2!important}
+body.merchant-meadow .monster-mult button.selected{background:var(--c-gold)!important}
+body.merchant-meadow .preparation details,body.merchant-meadow .preparation summary{color:var(--c-ink)!important}
+body.merchant-meadow .preparation hr,body.merchant-meadow .preparation details{border-color:#4a2e1c33!important}
+/* 對話框（背包、商店、編組…） */
+body.merchant-meadow dialog{background:var(--c-cream)!important;color:var(--c-ink)!important;border:4px solid var(--c-ink)!important;border-radius:22px!important;box-shadow:0 6px 0 var(--c-ink)!important}
+body.merchant-meadow dialog *{color:var(--c-ink)}
+body.merchant-meadow dialog button{background:#f3dfb2!important;color:var(--c-ink)!important;border:2px solid var(--c-ink)!important;border-radius:12px!important;box-shadow:0 2px 0 var(--c-ink)!important}
+body.merchant-meadow dialog button.primary,body.merchant-meadow dialog button.selected{background:var(--c-green)!important;color:#fff!important}
+body.merchant-meadow dialog .inventory-row,body.merchant-meadow dialog .bag-item,body.merchant-meadow dialog .shop-row,body.merchant-meadow dialog article{background:var(--c-paper)!important;border-color:#4a2e1c55!important}
+body.merchant-meadow dialog select{background:#fff;color:var(--c-ink);border:2px solid var(--c-ink);border-radius:8px}
+/* 下方返回商會 */
+.meadow-back{display:none}
+body.merchant-meadow .meadow-back{display:block;width:100%;margin:14px 0 2px;padding:12px;font:inherit;font-size:17px;font-weight:900;color:#fff!important;background:#9a6438!important;border:3px solid var(--c-ink)!important;border-radius:16px!important;box-shadow:0 4px 0 var(--c-ink)!important;cursor:pointer}
+/* 草原專屬讀取畫面 */
+body.merchant-meadow #loading{background:linear-gradient(180deg,#bfe6f5cc,#7fb84ecc),url('../assets/meadow/grass-v1.webp') center/cover!important;color:var(--c-ink)!important}
+body.merchant-meadow #loading .loading-rune{color:#fff8ea!important;text-shadow:0 2px 0 var(--c-ink);border-color:var(--c-ink)!important;background:var(--c-green)!important}
+body.merchant-meadow #loading strong{color:var(--c-ink)!important;background:var(--c-cream);border:3px solid var(--c-ink);border-radius:16px;padding:8px 18px;box-shadow:0 3px 0 var(--c-ink)}
+body.merchant-meadow #loading small,body.merchant-meadow #loading span{color:var(--c-ink)!important;text-shadow:0 1px 0 #fff8}
+body.merchant-meadow #loading .scene-loading-track{background:#fff8ea!important;border:2px solid var(--c-ink)!important;border-radius:999px}
+body.merchant-meadow #loading .scene-loading-track i{background:var(--c-green)!important}
+body.merchant-meadow .preparation #points,body.merchant-meadow .preparation #points *{color:#b5651d!important}
+body.merchant-meadow .preparation .muted,body.merchant-meadow .preparation #lobbyHint{color:#6e5232!important}
+body.merchant-meadow .preparation .meadow-back{background:#9a6438!important;color:#fff!important}

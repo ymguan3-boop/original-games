@@ -4,7 +4,15 @@ export function createCaveTutorial(api){
  const healReady=()=>!!api.store.state.autoItems?.potion?.enabled&&api.store.state.autoItems.potion.threshold===.4;
  const sheet=document.createElement('aside');sheet.id='caveTutorial';sheet.hidden=true;sheet.setAttribute('role','region');sheet.setAttribute('aria-label','副本操作教學');document.body.append(sheet);
  const focus=document.createElement('div');focus.id='tutorialFocus';focus.hidden=true;document.body.append(focus);let phase='',index=0;
- const heal={title:'設定自動補血',text:'在治療藥水下勾選「自動使用」，將門檻設為「任一角色 ≤40%」。設定後才會亮起下一步；必須持有藥水才會自動消耗並替主角與存活寵物回血。',target:'[data-auto-item=potion]',open:()=>api.bag(),ready:healReady};
+ /* 自動補血：幫玩家打開道具背包，再依序框出治療藥水、自動使用、門檻；沒有藥水就先補到 1 瓶 */
+ const ensurePotion=()=>{if((api.store.state.inventory?.potion||0)<1)api.store.transact(api.store.newId('tutorial-potion'),s=>{s.inventory||={};s.inventory.potion=1;});};
+ const potionOn=()=>!!api.store.state.autoItems?.potion?.enabled;
+ const healSteps=[
+  {title:'打開道具背包',text:'已經幫你打開「道具／暫停」的背包。框起來的是治療藥水'+'，沒有藥水時已先送你 1 瓶。',target:'[data-bag-item=potion]',open:()=>{ensurePotion();api.bag();}},
+  {title:'勾選自動使用',text:'點框起來的「自動使用」打勾，藥水就會在需要時自動喝。勾好才會亮起下一步。',target:'[data-auto-item=potion] label',open:()=>{ensurePotion();if(!document.querySelector('[data-auto-item=potion]'))api.bag();},ready:potionOn},
+  {title:'設定補血門檻',text:'在框起來的選單選「任一角色 ≤40%」。主角或寵物血量低於 40% 時就會自動補血。',target:'[data-auto-item=potion] select',open:()=>{if(!document.querySelector('[data-auto-item=potion]'))api.bag();},ready:healReady}
+ ];
+ const heal=healSteps;
  const steps={lobby:isMerchantMeadow?[
   {title:'商會武器採集',text:'沿用無盡洞穴的武器、寵物與操作。草原另存戰局，首次帶入洞穴收藏；不會覆蓋原洞穴進度。',target:'#start'},
   {title:'拾取才能帶回',text:'所有魔物都有機會掉落武器。小魔王與大魔王會掉落更高價的限定武器；請走近拾取，離開前按「回商會」自動入庫，重整不會重複領取。',target:'#returnTown'},
@@ -15,7 +23,7 @@ export function createCaveTutorial(api){
   {title:'購買補給',text:'商店購買治療藥水；入場後會教你開啟自動補血及設定觸發門檻。',target:'#shopTabs',open:()=>api.shop()},
   {title:'準備出發',text:'編好三位夥伴後開始挑戰。重整可續戰，永久收藏保留。',target:'#start',open:()=>api.close()}
  ],combat:[
-  {title:'移動與翻滾',text:'拖曳搖桿移動。只有小魔王與大魔王會施放大絕，地面紅圈亮起後至少有 1.25 秒可移動或翻滾離開；小怪只有普攻。',target:'#joystick',open:()=>api.close()},heal,
+  {title:'移動與翻滾',text:'拖曳搖桿移動。只有小魔王與大魔王會施放大絕，地面紅圈亮起後至少有 1.25 秒可移動或翻滾離開；小怪只有普攻。',target:'#joystick',open:()=>api.close()},...healSteps,
   {title:'確認補血庫存',text:'自動補血每次會消耗藥水。庫存為 0 時不會補血，請到補給商店購買；設定會跨局保留。',target:'[data-auto-item=potion]',open:()=>api.bag()},
   {title:isMerchantMeadow?'武器採集與返回':'武器與寵物',text:isMerchantMeadow?'走近掉落武器即可收進採集袋。背包按「帶回商會」返回，上架武器櫃販售；未拾取的物品仍留在戰場。':'點武器按鈕換裝、點寵物卡切換；長按卡牌開關自動大絕。',target:isMerchantMeadow?'#bagTown':'#weapon',open:()=>isMerchantMeadow?api.bag():api.close()}
  ]};
