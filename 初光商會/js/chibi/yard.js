@@ -1,10 +1,12 @@
+import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261113-v36';
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
 import {addIllustratedOutline} from '../illustrated-outline.js?v=20261111-decor-v22';
-import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261112-v31h';
+import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261113-v36';
 const THREE=globalThis.THREE;
 
 const STEP_D=.36;
+const weatherPeople=new WeakMap(),weatherBattles=new WeakMap();
 export function layout(level,o={}){const L={...LEVELS[level],...(o.w?{w:o.w}:{}),...(o.d?{d:o.d}:{})},{w,d,t,H}=L,n=Math.max(2,Math.ceil(-GROUND/.16)),half=w/2+t,zF=d/2+t,zS=zF+.18+n*STEP_D,pathLen=[0,2.4,2.6,2.8,3,3.2][level],zR=zS+pathLen+1.3;
  return {doorX:o.doorX||0,L,w,d,t,H,half,zF,zS,zR,nSteps:n,stepW:(level===1?1.05:level>=4?2.1:1.8)+.9+.25,pw:level===1?1.8:level>=4?3.4:2.6,roadHalf:half+[0,5,6,7,8,10][level]};}
 
@@ -104,12 +106,12 @@ export function person(opt={}){
  if(o.flyers){props.stack=B(.16,.06,.2,0xfff8e8,0,-.03,.06,arms[0].hand);props.stack.rotation.x=.3;}
  props.flyer=B(.15,.2,.01,0xfff2c0,0,-.08,.08,arms[1].hand);props.flyer.visible=false;props.flyer.userData.noLine=true;
  props.bag=new THREE.Group();arms[1].hand.add(props.bag);B(.2,.22,.1,pick([0xf2c040,0xe8705a,0x7fb84e,0xfff4df]),0,-.16,0,props.bag).userData.noLine=true;mk(new THREE.TorusGeometry(.06,.012,4,10,Math.PI),toon(0x6e4a2a),0,-.05,0,props.bag);props.bag.visible=false;
- const p={g,body,legs,arms,head,skull,faceM,props,phase:R()*6,talk:0};
+ const p={g,body,legs,arms,head,skull,faceM,props,appearanceKey:String(o.seed||7),phase:R()*6,talk:0};
  p.pose=(dt,moving,speed=1)=>{if(moving)p.phase+=dt*8*speed;const sw=moving?Math.sin(p.phase):0;
   p.legs[0].rotation.x=sw*.6;p.legs[1].rotation.x=-sw*.6;p.body.position.y=moving?Math.abs(Math.cos(p.phase))*.035:0;
   if(!p.armOverride){p.arms[0].sh.rotation.x=-sw*.5;p.arms[1].sh.rotation.x=p.props.bag.visible?-.15+sw*.2:sw*.5;}
   p.talk=Math.max(0,p.talk-dt);p.skull.material=p.faceM[p.talk>0&&Math.sin(performance.now()*.02)>0?1:0];};
- return p;}
+ weatherPeople.set(g,p);return p;}
 
 /* 對話泡泡 */
 function bubble(text){const t=canvasTex(256,96,(g,W,H)=>{g.font='900 34px "Microsoft JhengHei","Noto Sans TC",sans-serif';const tw=Math.min(W-16,g.measureText(text).width+34);const x=(W-tw)/2;g.fillStyle='#fff';g.strokeStyle='#4a2e1c';g.lineWidth=5;g.beginPath();g.roundRect(x,6,tw,62,22);g.fill();g.stroke();g.beginPath();g.moveTo(W/2-10,66);g.lineTo(W/2,88);g.lineTo(W/2+10,66);g.fill();g.stroke();g.fillStyle='#fff';g.fillRect(W/2-8,62,16,6);g.fillStyle='#4a2e1c';g.textAlign='center';g.textBaseline='middle';g.fillText(text,W/2,38);});
@@ -118,15 +120,18 @@ function bubble(text){const t=canvasTex(256,96,(g,W,H)=>{g.font='900 34px "Micro
 /* 冒險者在草地上和一隻幻靈對打：揮劍、命中閃光、幻靈被擊退後彈回來反撲，三秒一輪 */
 function fieldBattle(parent,x,z,anim){
  const g=new THREE.Group();g.position.set(x,G,z);g.scale.setScalar(1.2);parent.add(g);
- const hero=person({seed:5151,shirt:0x4f7fc8,pants:0x6e5a44,hair:0x8a4a2a,style:'short',skirt:false,scale:1.15});hero.g.rotation.y=Math.PI/2;g.add(hero.g);
+ const hero=person({seed:5151,shirt:0x4f7fc8,pants:0x6e5a44,hair:0x8a4a2a,style:'short',skirt:false,scale:1.15});hero.weatherExposed=true;hero.g.name='yard-sparring-person';hero.g.rotation.y=Math.PI/2;g.add(hero.g);
  const blade=new THREE.Group();blade.position.set(0,-.02,.02);hero.arms[1].hand.add(blade);
  mk(new THREE.BoxGeometry(.05,.5,.02),toon(0xdfe8ee),0,-.3,0,blade);mk(new THREE.BoxGeometry(.16,.04,.05),toon(0xd9a521),0,-.04,0,blade);mk(new THREE.BoxGeometry(.04,.1,.04),toon(0x6e4a2a),0,.04,0,blade);blade.rotation.x=Math.PI;
  const shield=mk(new THREE.CylinderGeometry(.13,.13,.04,14),toon(0xc0503a),0,-.02,.05,hero.arms[0].hand,true);shield.rotation.x=Math.PI/2;
  /* 幻靈：遊戲裡的「小熊」模型，面向冒險者 */
  const mon=new THREE.Group();mon.position.set(1.7,0,0);g.add(mon);const body=new THREE.Group();mon.add(body);
+ let heroExposure=null,bearExposure=null,battleWeather='sunny',battleDisposed=false;
  const flash=[],skin={set emissiveIntensity(v){for(const m of flash)m.emissive?.setRGB(v*.9,v*.9,v*.9);}},sprout={rotation:{z:0}};
- if(THREE.GLTFLoader)new THREE.GLTFLoader().load('../幻靈奇旅/models/spirits/fire-bear-1.glb',gl=>{const o=gl.scene;o.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(o),size=box.getSize(new THREE.Vector3()),k=1.05/Math.max(size.y,.001);o.scale.setScalar(k);o.position.y=-box.min.y*k;o.rotation.y=-Math.PI/2;o.traverse(n=>{if(n.isMesh){n.castShadow=true;n.material=n.material.clone();flash.push(n.material);n.userData.noOutline=false;}});body.add(o);addIllustratedOutline(THREE,o,{thickness:.045});},undefined,()=>{});
+ if(THREE.GLTFLoader)new THREE.GLTFLoader().load('../幻靈奇旅/models/spirits/fire-bear-1.glb',gl=>{if(battleDisposed)return;const o=gl.scene;o.name='yard-sparring-bear';o.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(o),size=box.getSize(new THREE.Vector3()),k=1.05/Math.max(size.y,.001);o.scale.setScalar(k);o.position.y=-box.min.y*k;o.rotation.y=-Math.PI/2;o.traverse(n=>{if(n.isMesh){n.castShadow=true;n.material=n.material.clone();flash.push(n.material);n.userData.noOutline=false;}});body.add(o);addIllustratedOutline(THREE,o,{thickness:.045});bearExposure=createWeatherExposure(THREE,{target:o,snowParent:body,snowPatches:surfaceSnowPatches(THREE,o,body,[{x:0,y:1.045,z:0,rx:.10,rz:.09},{x:.12,y:.73,z:-.19,rx:.075,rz:.06},{x:.12,y:.73,z:.19,rx:.075,rz:.06},{x:.23,y:.73,z:0,rx:.08,rz:.10}])});bearExposure.update(battleWeather);},undefined,()=>{});
  hero.g.traverse(o=>{if(o.userData.isHull)o.parent.remove(o);});addIllustratedOutline(THREE,hero.g,{thickness:.045});
+ heroExposure=createWeatherExposure(THREE,{target:hero.g,snowParent:hero.body,snowPatches:[{x:0,y:1.299,z:0,rx:.19,rz:.16},{x:-.22,y:.755,z:.04,rx:.065,rz:.07},{x:.22,y:.755,z:.04,rx:.065,rz:.07},{x:0,y:.66,z:-.16,rx:.12,rz:.045}]});
+ g.name='yard-sparring-pair';weatherBattles.set(g,{update(weather){battleWeather=weather;heroExposure.update(weather);bearExposure?.update(weather);},dispose(){battleDisposed=true;heroExposure.dispose();bearExposure?.dispose();}});
  const shadow=mk(new THREE.CircleGeometry(.4,18),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.18,depthWrite:false}),0,.01,0,mon);shadow.rotation.x=-Math.PI/2;shadow.castShadow=false;
  /* 命中特效：金色星芒＋「砰！」 */
  const spark=new THREE.Group();g.add(spark);for(let i=0;i<6;i++){const st=mk(new THREE.OctahedronGeometry(.08),toon(0xffd84a,{emissive:0xffb020,emissiveIntensity:.8}),0,0,0,spark);st.userData.a=i/6*Math.PI*2;}spark.visible=false;
@@ -233,7 +238,9 @@ export function buildYard(level,opts={}){
  const THANKS=['好喔！','♪','去看看！','謝謝～'];
  let staffCool=1.5,give=0,giveTarget=null,waveT=0;
  const v=new THREE.Vector3();
- function update(dt,t){
+ const dressedPeople=[],exposedBattles=[];root.traverse(o=>{const p=weatherPeople.get(o);if(p&&!p.weatherExposed)dressedPeople.push(p);const b=weatherBattles.get(o);if(b)exposedBattles.push(b);});
+ const weatherPoint=new THREE.Vector3();
+ function update(dt,t,weather='sunny'){
   for(const f of anim)f(t);
   for(const p of people){
    if(p.delay>0){p.delay-=dt;if(p.delay<=0){spawnRoute(p,p.shopper);p.g.visible=true;}continue;}
@@ -258,10 +265,21 @@ export function buildYard(level,opts={}){
   else if(!best&&staffCool<=0){say(staff,LINES[Math.floor(R()*4)],1.8);waveT=1;staffCool=4+R()*2;}
   staff.pose(dt,false);staff.body.position.y=Math.abs(Math.sin(t*2))*.01;}
   for(const p of idlers){p.idleT+=dt;p.pose(dt,false);p.head.rotation.y=Math.sin(p.idleT*.7)*.5;p.body.rotation.z=Math.sin(p.idleT*1.6)*.02;if(p.idleT%9<dt&&R()<.5)say(p,['這個好！','多少錢？','真熱鬧～','嗯…'][Math.floor(R()*4)],1.6);}
+  for(const b of exposedBattles)b.update(weather);
+  root.updateMatrixWorld(true);
+  for(const p of dressedPeople){
+   p.g.getWorldPosition(weatherPoint);root.worldToLocal(weatherPoint);
+   const outdoors=weatherPoint.z>=zF-.08,kind=weatherOutfitKind(weather,outdoors);
+   if(kind&&!p.weatherOutfit)p.weatherOutfit=createWeatherOutfit(THREE,{parent:p.body,height:1.3,width:.55,appearanceKey:p.appearanceKey});
+   if(p.weatherOutfit)p.weatherOutfit.update({weather,outdoors,armAngles:p.arms.map(a=>a.sh.rotation.x)});
+   if(kind==='umbrella')p.arms[0].sh.rotation.x=-1.1;
+   else if(p.lastWeatherKind==='umbrella')p.arms[0].sh.rotation.x=0;
+   p.lastWeatherKind=kind;
+  }
   for(const p of [...people,...(ambient?[]:[staff]),...idlers])if(p.bub){p.bubT-=dt;p.bub.material.opacity=Math.min(1,p.bubT*3);if(p.bubT<=0){p.g.remove(p.bub);p.bub=null;}}
  }
  root.userData={level,lineMats:props.userData.lineMats,camZ:(zR+(level>=3?[0,0,0,6,7.5,9][level]:2))/2-.6,extent:Y.roadHalf};
- return {root,update,people,staff};
+ return {root,update,people,staff,dispose(){for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
 }
 
 /* 商會用的主角：同一套 Q 版畫風（黑髮、藍外套、黃色背帶與背包），提供商會角色控制介面 */
@@ -278,5 +296,5 @@ export function createHeroChibi(){
  return {root:p.g,human:p,setMode(m){mode=m;},setMood(m){mood=m||'';},setAction(){},
   update(dt){time+=dt;const moving=mode==='Walk'||mode==='Run';p.pose(dt,moving,mode==='Run'?1.4:1);if(!moving){p.body.position.y=Math.sin(time*2.2)*.01;p.head.rotation.z=Math.sin(time*.9)*.04;}
    if(mood==='happy'||mood==='proud'){p.talk=.3;}},
-  dispose(){p.g.traverse(o=>o.geometry?.dispose?.());}};
+  dispose(){p.weatherOutfit?.dispose();p.g.traverse(o=>o.geometry?.dispose?.());}};
 }

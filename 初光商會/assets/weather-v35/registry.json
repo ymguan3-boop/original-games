@@ -1,0 +1,22 @@
+{
+  "profile": "low-poly",
+  "source": "Original local procedural geometry, 64x64 grain texture and 32x32 reflection cube; no downloads",
+  "runtime": "../../js/weather-outfits.js",
+  "umbrella": {
+    "triangles": 436,
+    "drawCalls": 3,
+    "textureBytes": 0
+  },
+  "coat": {
+    "triangles": 456,
+    "drawCalls": 8,
+    "textureBytes": 0
+  },
+  "design": "Segmented canopy, ribs, hem and curved handle; overcoat with sleeves, lapels, buttons, pockets and cuffs",
+  "baseline": "Previously selected mobile low-poly profile; V3 design rigor for readable silhouette and deliberate joints; new accessory art has not been user-approved",
+  "lifecycle": "Lazy creation on first outdoor rain or snow; hidden indoors; owned geometries and materials disposed on actor removal or scene rebuild",
+  "validation": "qa/weather-materials-v33.json and weather-materials-regression-v33.json PASS; workspace artifacts/nov12-weather-integrated.json PASS",
+  "sharedMaterialTextureBytes": 40960,
+  "material": "Five stable palettes; clearcoated leather umbrellas, leather coats with furry collars and cuffs",
+  "exception": "Yard sparring person and bear use isolated wet materials and fitted snow patches, no outfits"
+}

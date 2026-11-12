@@ -70,3 +70,10 @@ body.merchant-meadow #caveTutorial button[data-tutorial=next]{background:#365c24
 body.merchant-meadow #caveTutorial button:disabled{background:#e8dfcd!important;color:#65543b!important;opacity:1;box-shadow:none!important}
 body.merchant-meadow #tutorialFocus{border:3px solid #365c24;box-shadow:0 0 0 2px #fff8ea,0 0 14px #365c2466}
 @media(max-height:500px){body.merchant-meadow #caveTutorial{padding:8px 12px;max-height:45dvh}body.merchant-meadow #caveTutorial h3{font-size:15px}body.merchant-meadow #caveTutorial p{font-size:12px}}
+
+/* 採集袋固定兩列，同欄對齊，不隨手機寬度改為同行。 */
+body.merchant-meadow #kills{display:block!important;white-space:pre-line!important;text-align:left!important;line-height:1.45!important;min-width:0!important}
+body.merchant-meadow .battle-wallet{align-items:center!important}
+/* 十波採集完成：先獨立淡入勝利，再顯示帶回商會的結算。 */
+body.merchant-meadow #meadowVictory{position:fixed;inset:0;z-index:9000;display:grid;place-items:center;background:radial-gradient(ellipse at center,#234220b3,#142116eb);pointer-events:auto;touch-action:none}
+body.merchant-meadow #meadowVictory strong{font-family:serif;font-weight:900;font-size:clamp(64px,18vw,112px);letter-spacing:.16em;padding-left:.16em;color:#fff0a8;text-shadow:0 3px 0 #633b18,0 0 28px #edc25d88;line-height:1.4}

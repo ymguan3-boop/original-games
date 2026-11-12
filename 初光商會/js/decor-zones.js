@@ -1,6 +1,6 @@
-import {dimensions,buildingLevel} from './nav.js?v=20261112-v31h';
+import {dimensions,buildingLevel} from './nav.js?v=20261113-v36';
 /* 小件掛得比較高（眼睛高度），大幅掛畫底邊較低 */
-export const wallLift=type=>({couplet:.45,clock:.4,painting:.2,'painting-large':0})[type]||0;
+export const wallLift=type=>({couplet:.45,clock:0,painting:.2,'painting-large':0})[type]||0;
 export const WALL_TYPES=new Set(['clock','painting','painting-large','couplet']);
 export const PLANT_TYPES=new Set(['plant','fern','lavender','citrus']);
 const sideNames={back:'後牆',front:'門面牆',left:'左牆',right:'右牆'};
@@ -22,7 +22,7 @@ export function gardenSlots(level){const {width,height}=dimensions(level),door=M
 export const nearestSlot=(list,p)=>list.slice().sort((a,b)=>Math.hypot(a.x-p.x,a.z-p.z)-Math.hypot(b.x-p.x,b.z-p.z))[0];
 export function specialDecorPose(item,level){
  if(item.mount){const slot=wallSlots(level,item.mount.includes('-free-')).find(s=>s.mount===item.mount);return slot&&{...slot,y:slot.y+wallLift(item.type)};}
- if(item.garden==='garden-free'){const {width,height}=dimensions(level),door=Math.round((width-1)/2);return item.x>=-.1&&item.x<=width-.9&&item.z>=height+1.1&&item.z<=height+2.9&&Math.abs(item.x-door)>=2?{garden:'garden-free',x:item.x,z:item.z,y:-.07,rotation:item.rotation||0}:null;}
+ if(item.garden==='garden-free'){const {width,height}=dimensions(level),door=Math.round((width-1)/2);return item.x>=-.1&&item.x<=width-.9&&item.z>=height+1.1&&item.z<=height+4.8&&Math.abs(item.x-door)>=2?{garden:'garden-free',x:item.x,z:Math.min(item.z,Math.floor((height+2.9)*4)/4),y:-.07,rotation:item.rotation||0}:null;}
  return item.garden?gardenSlots(level).find(s=>s.garden===item.garden):null;
 }
 export const specialDecor=item=>!!(item.mount||item.garden);
@@ -31,7 +31,7 @@ export function resolveDecorPlacement(item,p,level){
  const {height}=dimensions(level);
  if(PLANT_TYPES.has(item.type)&&(p.garden||p.z>=height+.5)){
   if(p.garden&&p.garden!=='garden-free'){const slot=gardenSlots(level).find(x=>x.garden===p.garden);if(!slot)throw Error('沒有可用的花園位置');return {...slot};}
-  const pose=specialDecorPose({garden:'garden-free',x:Math.round(p.x*4)/4,z:Math.round(p.z*4)/4,rotation:p.rotation??item.rotation},level);if(!pose)throw Error('請放在門口兩側花園，門前中央與道路保留通行');return pose;
+  if(p.z<height+1.1||p.z>height+2.9)throw Error('請放在門口兩側花園，保留道路通行');const pose=specialDecorPose({garden:'garden-free',x:Math.round(p.x*4)/4,z:Math.round(p.z*4)/4,rotation:p.rotation??item.rotation},level);if(!pose)throw Error('請放在門口兩側花園，門前中央與道路保留通行');return pose;
  }
  return {x:p.x,z:p.z,rotation:p.rotation??item.rotation??0};
 }
@@ -45,3 +45,6 @@ export function wallWindowCenters(level){
 
 export function floorFootprint(item){const turn=Math.abs(item.rotation||0)%180;return turn===90?{w:1.9,d:2.7}:{w:2.7,d:1.9};}
 export function floorInBounds(item,level){const {width,height}=dimensions(level),{w,d}=floorFootprint(item);return Number.isInteger(item.x*2)&&Number.isInteger(item.z*2)&&(item.rotation||0)%90===0&&item.x-w/2>=-.5&&item.z-d/2>=-.5&&item.x+w/2<=width-.5&&item.z+d/2<=height-.5;}
+
+/* 舊版本的花園較深：逐件搬回道路前的可見範圍，不能因兩件壓在一起而整批收納。 */
+export function rehomeGardenDecor(s){const {width,height}=dimensions(s.level),door=Math.round((width-1)/2),settled=(s.decorations||[]).filter(d=>d.garden&&d.garden!=='garden-free');for(const item of [...(s.decorations||[])]){if(item.garden!=='garden-free')continue;const pose=specialDecorPose(item,s.level),clear=p=>settled.every(other=>Math.hypot(other.x-p.x,other.z-p.z)>=1-.00001);if(pose&&clear(pose)){Object.assign(item,pose);settled.push(item);continue;}const candidates=[];for(let x=0;x<=width-.9;x+=.25)for(let z=Math.ceil((height+1.1)*4)/4;z<=height+2.9;z+=.25)if(Math.abs(x-door)>=2&&clear({x,z}))candidates.push({x,z});candidates.sort((a,b)=>Math.hypot(a.x-item.x,a.z-item.z)-Math.hypot(b.x-item.x,b.z-item.z));if(candidates.length){Object.assign(item,{...candidates[0],y:-.07});settled.push(item);}else{s.decorations=s.decorations.filter(d=>d!==item);const saved={...item};for(const key of ['x','z','garden','y'])delete saved[key];(s.decorStorage||=[]).push(saved);}}}

@@ -1,22 +1,23 @@
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261112-v31h';
-import {hasDecorModel} from './decor-models-v22.js?v=20261112-v31h';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261112-v31h';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261112-v31h';
+import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261113-v36';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261113-v36';
+import {hasDecorModel} from './decor-models-v22.js?v=20261113-v36';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261113-v36';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261113-v36';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261112-v31h';
-import {ENTRANCE} from './nav.js?v=20261112-v31h';
-import {sampleTrail} from './motion.js?v=20261112-v31h';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31h';
-import {eventEmployee} from './patrol-events.js?v=20261112-v31h';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261112-v31h';
-import {stockCount} from './shelf-products.js?v=20261112-v31h';
-import {createAssets} from './asset-resolver.js?v=20261112-v31h';
-import {createPlacementCells} from './placement-cells.js?v=20261112-v31h';
-import {environment} from './environment.js?v=20261112-v31h';
-import {createEnvironment2D} from './environment-2d.js?v=20261112-v31h';
-import {spiritArtPath} from './spirit-cards.js?v=20261112-v31h';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261113-v36';
+import {ENTRANCE} from './nav.js?v=20261113-v36';
+import {sampleTrail} from './motion.js?v=20261113-v36';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261113-v36';
+import {eventEmployee} from './patrol-events.js?v=20261113-v36';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261113-v36';
+import {stockCount} from './shelf-products.js?v=20261113-v36';
+import {createAssets} from './asset-resolver.js?v=20261113-v36';
+import {createPlacementCells} from './placement-cells.js?v=20261113-v36';
+import {environment} from './environment.js?v=20261113-v36';
+import {createEnvironment2D} from './environment-2d.js?v=20261113-v36';
+import {spiritArtPath} from './spirit-cards.js?v=20261113-v36';
 
 const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*2.2,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
@@ -123,7 +124,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));
   const moods=[],staffRows=[],active=new Set();
   for(const[key,d,type]of all){active.add(key);const a=ensureActor(key,d,type),trail=type==='manager'&&mode!=='follow'||type==='promoter'?null:game.motionFrame?.trails.get(key),p=type==='customer'&&(d.arrivalRemaining>0||d.arrivingNow||d.exitingAtDoor)?customerDisplayPoint(d,motionProgress,game.motionFrame?.duration||.25):trail?sampleTrail(trail,motionProgress):d,dx=p.x-a.pos.x,dz=p.z-a.pos.z,moved=dx*dx+dz*dz>.000001;a.pos={x:p.x,z:p.z};if(moved){a.moveUntil=time+.14;if(Math.abs(dx)>.002)a.flip=dx<0?-1:1;if(type==='manager')a.facing=Math.abs(dx)>Math.abs(dz)?'side':dz<0?'back':'front';}if(type==='manager')setManagerImage(a,time<a.moveUntil);
-   const px=(type==='promoter'?2.4:type==='manager'?MANAGER_SIZE:ACTOR_SIZE)*U,leaving=1;a.el.style.width=px+'px';const q=P(p.x,p.z);a.el.style.left=q.X-px/2+'px';/* 主角在櫃台：腳踩在檯面後緣的高度，櫃台擋住下半身、露出上半身；巡店走近時平順移過去 */const deskPull=type==='manager'?(mode!=='follow'?1:Math.max(0,1-Math.hypot(p.x-CHECKOUT.x,p.z-1)/1.2)):0,deskFeet=P(CHECKOUT.x,2).Y+HH*.9-COUNTER_WIDTH*U*.4,feet=q.Y+HH*.6;a.el.style.top=feet+(deskFeet-feet)*deskPull-px+'px';if(deskPull>0)a.el.style.left=q.X-px/2-HW*1.3*deskPull+'px';a.el.style.zIndex=Math.max(2,Math.round(100+(p.x+p.z)*60+30));a.screen={X:q.X,Y:q.Y+HH*.6,w:px};a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;const victory=chasePose(time-chaseStarted),celebrating=type==='manager'&&victory.active;a.el.classList.toggle('chase-celebrating',celebrating);if(celebrating)a.img.style.transform+=` translateY(${-victory.hop*U}px) rotate(${victory.lean}rad)`;if(type==='promoter'&&!a.flyer){a.flyer=document.createElement('span');a.flyer.className='promoter-flyer';a.flyer.textContent='初光商會';a.el.append(a.flyer);}a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');
+   const px=(type==='promoter'?2.4:type==='manager'?MANAGER_SIZE:ACTOR_SIZE)*U,leaving=1;a.el.style.width=px+'px';const q=P(p.x,p.z);a.el.style.left=q.X-px/2+'px';/* 主角在櫃台：腳踩在檯面後緣的高度，櫃台擋住下半身、露出上半身；巡店走近時平順移過去 */const deskPull=type==='manager'?(mode!=='follow'?1:Math.max(0,1-Math.hypot(p.x-CHECKOUT.x,p.z-1)/1.2)):0,deskFeet=P(CHECKOUT.x,2).Y+HH*.9-COUNTER_WIDTH*U*.4,feet=q.Y+HH*.6;a.el.style.top=feet+(deskFeet-feet)*deskPull-px+'px';if(deskPull>0)a.el.style.left=q.X-px/2-HW*1.3*deskPull+'px';a.el.style.zIndex=Math.max(2,Math.round(100+(p.x+p.z)*60+30));a.screen={X:q.X,Y:q.Y+HH*.6,w:px};a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;const victory=chasePose(time-chaseStarted),celebrating=type==='manager'&&victory.active;a.el.classList.toggle('chase-celebrating',celebrating);if(celebrating)a.img.style.transform+=` translateY(${-victory.hop*U}px) rotate(${victory.lean}rad)`;if(type==='promoter'&&!a.flyer){a.flyer=document.createElement('span');a.flyer.className='promoter-flyer';a.flyer.textContent='初光商會';a.el.append(a.flyer);}a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');const weather=environment(s,game.data.config).weather,weatherKind=updateWeatherOutfit2D(a.el,{weather,appearanceKey:key,outdoors:p.z>dimensions(s.level).height-.3});metrics.weatherOutfits||={};if(weatherKind)metrics.weatherOutfits[key]=weatherKind;else delete metrics.weatherOutfits[key];
    const emotion=stateEmotion(type,d,s),issue=type==='customer'?getCustomerComplaint(s,d,game):null,chase=type==='customer'&&s.customerChase?.customerId===d.id;
    if(emotion||issue||chase){const ev=s.event,related=!!ev&&(type==='staff'&&eventEmployee(s,ev)?.id===d.id||type==='customer'&&ev.description?.includes(d.name)&&['Angry','OutOfStock','Queue','UnhappyExit'].includes(d.state)),head=toScreen(p.x,p.z,ACTOR_SIZE*.95);moods.push({id:key,kind:chase?'impatient':emotion||'impatient',...(chase?{complaintId:d.id,complaintTitle:'🏃 追上我',chaseTarget:true}:issue?{complaintId:d.id,complaintTitle:issue.title}:related?{eventId:ev.instanceId||ev.id,eventTitle:ev.title}:{}),x:head.x,y:head.y,inFront:true});}
    if(type==='staff'){const head=toScreen(p.x,p.z,ACTOR_SIZE*.9);staffRows.push({id:key,x:head.x,y:head.y});}}

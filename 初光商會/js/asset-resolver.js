@@ -1,8 +1,8 @@
-import {decorModelAsset} from './decor-models-v22.js?v=20261112-v31h';
-import {addPaleFeatureLines} from './pale-feature-lines.js?v=20261112-v31h';
-import {cashierPose,resetCashierPose} from './cashier-pose.js?v=20261112-v31h';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261112-v31h';
-import {ART_STYLE} from './art-style.js?v=20261112-v31h';
+import {decorModelAsset} from './decor-models-v22.js?v=20261113-v36';
+import {addPaleFeatureLines} from './pale-feature-lines.js?v=20261113-v36';
+import {cashierPose,resetCashierPose} from './cashier-pose.js?v=20261113-v36';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261113-v36';
+import {ART_STYLE} from './art-style.js?v=20261113-v36';
 const BASE='../幻靈奇旅/';
 const scripts=new Map();
 function script(path){if(!scripts.has(path))scripts.set(path,new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=BASE+path;el.onload=resolve;el.onerror=()=>{scripts.delete(path);el.remove();reject(Error('無法載入原資產 '+path));};document.head.appendChild(el);}));return scripts.get(path);}
@@ -14,8 +14,8 @@ export function createAssets(T,metrics){
  function clone(source){const root=source.clone(true),map=new Map();function pair(a,b){map.set(a,b);a.children.forEach((c,i)=>pair(c,b.children[i]));}pair(source,root);source.traverse(n=>{if(n.isSkinnedMesh){const c=map.get(n);c.skeleton=n.skeleton.clone();c.skeleton.bones=n.skeleton.bones.map(b=>map.get(b));c.bind(c.skeleton,n.bindMatrix);}});return root;}
  function normalize(o,height,fitMax=false){o.updateMatrixWorld(true);const box=new T.Box3().setFromObject(o),size=box.getSize(new T.Vector3());const s=height/Math.max(fitMax?Math.max(size.x,size.y,size.z):size.y,.001);o.scale.multiplyScalar(s);o.position.y-=box.min.y*s;}
  async function native(path){const [prefix,id]=path.split('://');let api;
- if(prefix==='chibi'){const mod=await import('./chibi/yard.js?v=20261112-v31h');return {g:{create:()=>mod.createHeroChibi()}};}
- if(prefix==='human'){const mod=await import('./human-customers.js?v=20261112-v31h');const [t,v]=id.split('-');return {g:{create:()=>mod.createHuman(T,t,v)}};}
+ if(prefix==='chibi'){const mod=await import('./chibi/yard.js?v=20261113-v36');return {g:{create:()=>mod.createHeroChibi()}};}
+ if(prefix==='human'){const mod=await import('./human-customers.js?v=20261113-v36');const [t,v]=id.split('-');return {g:{create:()=>mod.createHuman(T,t,v)}};}
  if(prefix==='zhaocai'){await script('js/commerce-gate.js');return {g:{create:()=>globalThis.PhantomCommerceGate.mascot(T,Number(id)||1)}};}
  if(prefix==='crown'){await script('models/native/small-birds.js');await script('models/native/crown-birds.js');return {g:{create:()=>globalThis.CrownBirds.create({kind:id})}};}
  if(prefix==='native'){await script('js/fx/toon-outline.js');await script('models/native/birds-blueprint.js');await script('models/native/elephants-blueprint.js');await script('models/native/families.js');return {g:globalThis.NativeFamilies.build(path)};}

@@ -1,5 +1,5 @@
 /* 進場前選的怪物數量倍率：×1／×2／×3，掉落率跟著 ×1／×1.5／×2。洞穴與草原分開記住。 */
-import {isMerchantMeadow} from './merchant-meadow.js?v=20261111-meadow-v3';
+import {isMerchantMeadow} from './merchant-meadow.js?v=20261113-v36';
 const KEY='firstlight-cave-monster-mult'+(isMerchantMeadow?'-meadow':'');
 export const MONSTER_MULTS=[1,2,3];
 export const dropMultOf=n=>({1:1,2:1.5,3:2})[n]||1;

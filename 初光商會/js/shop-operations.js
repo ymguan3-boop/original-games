@@ -1,10 +1,10 @@
-import {decorEffects,obstacles} from './decorations.js?v=20261112-v31h';
-import {purchaseChance} from './economy-v2.js?v=20261112-v31h';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261112-v31h';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261112-v31h';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261112-v31h';
-import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261112-v31h';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261112-v31h';
+import {decorEffects,obstacles} from './decorations.js?v=20261113-v36';
+import {purchaseChance} from './economy-v2.js?v=20261113-v36';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261113-v36';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261113-v36';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261113-v36';
+import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261113-v36';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261113-v36';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
@@ -55,6 +55,8 @@ function pay(g,s,c,e){
  s.txIds.push(saleId);s.stats.units=(s.stats.units||0)+c.basket.reduce((n,b)=>n+b.qty,0);c.budget-=listed;s.gold+=sale;dailyTrack(g,s,'sales',1);dailyTrack(g,s,'gold',sale);s.stats.revenue+=sale;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.stats.sales++;s.stats.served++;s.totals.revenue+=sale;s.totals.sales++;s.ledger.push({id:`sale-${c.id}`,day:s.day,customerType:c.customerType||'commoner',revenue:sale,cogs:cost,items:structuredClone(c.basket)});s.ledger=s.ledger.slice(-200);c.purchaseItems=structuredClone(c.basket);c.basket=[];c.state='Paid';c.timer=0;c.emotion='happy';{const previous=s.satisfaction,bonus=(g.role(s,'cleaner')?2:1)*(1+passive(g,s,'satisfaction'));s.satisfaction=clamp(s.satisfaction+bonus);const gained=Math.round((s.satisfaction-previous)*10)/10;if(gained>0)g.notice(s,c.id,`滿意 +${gained}`,'good');}g.xp(s,e,1);g.xp(s,g.role(s,'cleaner'),.5);if(e&&!(e.reactionUntil>s.totalTime&&['training','proud','stressed'].includes(e.feedbackKind)))react(s,e,'work',2);g.log(s,`${c.name}在收銀台完成付款 +${sale} G`);s.memories[c.personality]={day:s.day,satisfied:true,spent:sale};
 }
 export function stepCustomers(g,s,dt){
+ /* 出口優先：入場動畫結束時若門內有人，先在室外等，不在同一格互相擋路。也修復舊存檔已重疊的入場顧客。 */
+ for(const c of s.customers)if(c.state!=='Leave'&&!c.exitingAtDoor&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.3&&s.customers.some(o=>o!==c&&o.state==='Leave'&&!o.exitingAtDoor&&Math.hypot(o.x-ENTRANCE.x,o.z-ENTRANCE.z)<3))c.arrivalRemaining=Math.max(c.arrivalRemaining||0,.25);
  const queue=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));
  queue.forEach((c,i)=>{if(c.state==='Checkout')return;const goal={x:CHECKOUT.x,z:3+i};if(i<Math.floor(dimensions(s.level).height)-4&&(c.queueSlot!==i||!c.path.length&&Math.hypot(c.x-goal.x,c.z-goal.z)>.1)){c.queueSlot=i;g.route(s,c,goal);}});
  /* 已經誤闖收銀台後方的顧客：帶回櫃台前面 */
@@ -63,7 +65,7 @@ export function stepCustomers(g,s,dt){
  for(const c of [...s.customers]){
   c.timer+=dt;
   // Never leave a departing customer stuck in the shop when a path is blocked.
-  c.arrivingNow=false;if(c.arrivalRemaining>0){c.arrivalRemaining=Math.max(0,c.arrivalRemaining-dt);if(c.arrivalRemaining>0)continue;c.arrivingNow=true;}
+  c.arrivingNow=false;if(c.arrivalRemaining>0){if(c.arrivalRemaining<=dt&&!g.clearOfActors(s,ENTRANCE,c)){c.arrivalRemaining=.25;continue;}c.arrivalRemaining=Math.max(0,c.arrivalRemaining-dt);if(c.arrivalRemaining>0)continue;c.arrivingNow=true;}
   if(c.exitingAtDoor){c.exitTravel=(c.exitTravel||0)+dt;if(c.exitTravel>=5)s.customers=s.customers.filter(x=>x.id!==c.id);continue;}
   if(c.state==='Leave'&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.25){c.exitingAtDoor=true;c.exitTravel=0;c.path=[];continue;}
   if(['Cart','Queue','Checkout'].includes(c.state)){c.wait=(c.wait||0)+dt;if(c.wait>c.patience){angry(g,s,c,cashier?'排隊等太久':'沒有收銀員服務');continue;}}

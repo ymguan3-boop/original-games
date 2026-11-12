@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import{applyFortune}from'../js/fortune-cards.js';
+const setup=()=>({gold:1000,level:1,stats:{expenses:0},satisfaction:70,inventory:{},customers:[{id:'c',state:'Queue',wait:20,fortuneDrawn:true}]});
+test('同位顧客與舊版已抽標記都可再抽，每次僅套用當次結果',()=>{const s=setup(),g={data:{catalog:[]}};applyFortune(g,s,{customerId:'c',outcome:'tip'});applyFortune(g,s,{customerId:'c',outcome:'jam'});assert.equal(s.gold,1050);assert.equal(s.stats.expenses,150);assert.equal(s.customers[0].fortuneDrawCount,2);assert.equal(s.customers[0].fortuneDrawn,undefined);});
+test('商人贈貨使用現有可採購商品，不會憑空產出草原限定商品',()=>{const s=setup(),g={data:{catalog:[{sku:'weapon',lootOnly:true,isSellable:true,unlockStoreLevel:1},{sku:'potion',isSellable:true,unlockStoreLevel:1}]}};applyFortune(g,s,{customerId:'c',outcome:'merchant',roll:0});assert.equal(s.inventory.potion,5);assert.equal(s.inventory.weapon,undefined);});

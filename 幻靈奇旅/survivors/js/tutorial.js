@@ -1,5 +1,5 @@
-import {isMerchantMeadow} from './merchant-meadow.js?v=20261111-meadow-v3';
-import {autoPotionLearned,rememberAutoPotionLesson} from './tutorial-progress.js?v=20261112-guide-v33';
+import {isMerchantMeadow} from './merchant-meadow.js?v=20261113-v36';
+import {autoPotionLearned,rememberAutoPotionLesson} from './tutorial-progress.js?v=20261113-v36';
 export function createCaveTutorial(api){
  rememberAutoPotionLesson(api.store);
  const qa=new URLSearchParams(location.search).has('qa'),saved=api.store.state,firstVisit=!qa&&!(saved.tutorial?.firstVisitSeen||saved.starterClaimed||saved.run||saved.history?.length);

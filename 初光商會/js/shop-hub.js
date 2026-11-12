@@ -1,26 +1,26 @@
-import {hasDecorModel} from './decor-models-v22.js?v=20261112-v31h';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261112-v31h';
-import {promoterHireCost} from './shop-entry-rules.js?v=20261112-v31h';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261112-v31h';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261112-v31h';
-import {clockText} from './shop-clock.js?v=20261112-v31h';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261112-v31h';
-import {pendingRewards} from './reward-collection.js?v=20261112-v31h';
+import {hasDecorModel} from './decor-models-v22.js?v=20261113-v36';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261113-v36';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261113-v36';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261113-v36';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261113-v36';
+import {clockText} from './shop-clock.js?v=20261113-v36';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261113-v36';
+import {pendingRewards} from './reward-collection.js?v=20261113-v36';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
 import {WEAPONS} from '../../幻靈奇旅/survivors/js/inventory.js?v=20261030-reaper-v2';
-import {spiritPortrait} from './spirit-cards.js?v=20261112-v31h';
-import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261112-v31h';
-import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261112-v31h';
-import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261112-v31h';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261112-v31h';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261112-v31h';
-import {chapterObjectives} from './shop-chapters.js?v=20261112-v31h';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261112-v31h';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31h';
-import {requiresManagerPatrol} from './event-routing.js?v=20261112-v31h';
-import {eventEmployee} from './patrol-events.js?v=20261112-v31h';
-import {ledgerPanel} from './ledger-panel.js?v=20261112-v31h';
+import {spiritPortrait} from './spirit-cards.js?v=20261113-v36';
+import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261113-v36';
+import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261113-v36';
+import {decorTypes,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261113-v36';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261113-v36';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261113-v36';
+import {chapterObjectives} from './shop-chapters.js?v=20261113-v36';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261113-v36';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261113-v36';
+import {requiresManagerPatrol} from './event-routing.js?v=20261113-v36';
+import {eventEmployee} from './patrol-events.js?v=20261113-v36';
+import {ledgerPanel} from './ledger-panel.js?v=20261113-v36';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -46,10 +46,11 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
  const pending=()=>pendingRewards(game,s()),claimAll=()=>{const r=act('claimAllRewards');if(r?.ok&&s().lastClaim)push('claimed');else render();};
  const relief=()=>{act('toggleAutoRelief');render();};
  const pages={
-  build(){const open=s().phase==='open',paused=open&&s().layoutPause,lv=s().level,rk=`${s().shelves.length}/${shelfLimit(lv)}`,dc=`${(s().decorations||[]).length}/${decorLimit(lv)}`,place=[[`貨架（${rk}）`,()=>push('racks')],[`家具（${dc}）`,()=>push('decor','furniture')],[`裝飾（${dc}）`,()=>push('decor','decor')]],resume=()=>{act('setLayoutPause',{value:false});close();};
-   if(open&&!paused)return {title:'布置',note:'營業中不能擺放貨架與家具。打烊結算時選「店舖整備」就能布置。',actions:[['商品',()=>push('goods')]]};
-   if(paused)return {title:'布置（已暫停營業）',note:'現在可以買貨架、家具並擺放。點店內物件可移動，布置完記得恢復營業。',actions:[...place,['恢復營業',resume,true]]};
-   return {title:'布置',note:`買貨架與家具，自由擺放。${s().rackReminder&&!s().shelves.some(sh=>d.catalog.some(x=>x.category===s().rackReminder.category&&accepts(sh,x)))?`<br>📌 顧客想買${({item:'道具',weapon:'武器',material:'素材'})[s().rackReminder.category]||''}類商品，記得布置能放它的貨架。`:''}`,actions:[['商品',()=>push('goods')],...place]};},
+  build(){const open=s().phase==='open',paused=open&&s().layoutPause,lv=s().level,rk=`${s().shelves.length}/${shelfLimit(lv)}`,dc=group=>decorCounts(s(),group).placed,place=[[`貨架（${rk}）`,()=>push('racks')],[`家具（${dc('furniture')}）`,()=>push('decor','furniture')],[`裝飾（${dc('decor')}）`,()=>push('decor','decor')]],resume=()=>{act('setLayoutPause',{value:false});close();};
+   const notice=settings.buildNotice?.(),hint=notice?`<br>📌 ${esc(notice.message)}`:'';
+   if(open&&!paused)return {title:'布置',note:`營業中不能擺放貨架與家具。打烊結算時選「店舖整備」就能布置。${hint}`,actions:[['商品',()=>push('goods')]]};
+   if(paused)return {title:'布置（已暫停營業）',note:`現在可以買貨架、家具並擺放。點店內物件可移動，布置完記得恢復營業。${hint}`,actions:[...place,['恢復營業',resume,true]]};
+   return {title:'布置',note:`買貨架與家具，自由擺放。${hint}`,actions:[['商品',()=>push('goods')],...place]};},
   goods(shelfId){settings.importMeadow?.();const sh=shelfId&&s().shelves.find(x=>x.id===shelfId),list=d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&c.isSellable&&!c.isRestricted&&(!sh||accepts(sh,c)));const shown=sh?list:list.filter(c=>!c.lootOnly),weaponCount=d.catalog.filter(c=>c.lootOnly).reduce((n,c)=>n+(s().inventory[c.sku]||0),0);return {title:sh?`${shelfDefinition(sh).name}的商品`:'商品',note:sh?'只列這座貨架能賣的商品，點進去可以補貨或調整售價。':'補貨會自動進行。要有對應的貨架才能進貨。',cards:[...(sh?[]:[{key:'weapons',tutor:'weapon-goods',html:`${productIcon('sword-flame')}<b>武器商品</b><small>武器・限定武器 · 倉庫 ${weaponCount} 件</small>`,tap:()=>push('weaponGoods')}]),...shown.map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>${hasRack(c)?`庫存 ${s().inventory[c.sku]} · 售價 ${money(s().prices[c.sku])}`:'還沒有可放的貨架'}</small>`,tap:()=>push('product',c.sku)}))]};},
   /* 武器商品：分成武器與限定武器兩類，項下不再細分；武器只能到草原採集 */
   weaponGoods(){return {title:'武器商品',note:'武器要到草原擊倒魔物、走近拾取，帶回商會後由補貨員上架販售。',actions:[['武器',()=>push('weaponList','normal'),true],['限定武器',()=>push('weaponList','limited')]]};},
@@ -63,7 +64,7 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   rackStore(){const p=pages.racks();return {title:'已購買、未擺放的貨架',note:'倉庫裡的貨架免費擺放。',empty:'倉庫裡沒有貨架。',cards:p._owned};},
   rack(id){const t=shelfTypes.find(x=>x.id===id),owned=t.unique&&ownsUniqueShelf(s(),id);return {title:t.name,art:rackIcon(id),note:`${t.description} · 容量 ${t.capacity} · ${money(t.cost)}`,actions:[[owned?'已擁有・限購一座':'購買並擺放',()=>{const r=act('purchaseShelf',{type:id});if(r.ok){if(s().shelves.length<shelfLimit(s().level))startPlacing(id,s().lastPurchasedShelf);else back();}},true,owned]]};},
   storedRack(id){const sh=s().shelfStorage.find(x=>x.id===id);if(!sh)return pages.racks();return {title:shelfDefinition(sh).name,art:rackIcon(shelfDefinition(sh).id),note:'收納中的貨架可以再次擺放，不重複收費。',actions:[[s().shelves.length>=shelfLimit(s().level)?'店內貨架已滿':'擺放',()=>startPlacing(sh.type,sh.id),true,s().shelves.length>=shelfLimit(s().level)],['半價賣出',()=>{act('sellShelf',{shelfId:id});back();}]]};},
-  decor(group){const stored=(s().decorStorage||[]).filter(i=>decorDefinition(i)?.group===group).map(i=>({key:i.id,html:`${decorIcon(i.type)}<b>${esc(decorDefinition(i).name)}</b><small>收納中，免費擺放</small>`,tap:()=>startPlacing(i.type,i.id)})),buy=decorTypes.filter(t=>t.group===group&&t.level<=s().level).map(t=>({key:t.id,html:`${decorIcon(t.id)}<b>${esc(t.name)}</b><small>${esc(t.description)} · ${money(t.cost)}</small>`,tap:()=>push('decorBuy',t.id)}));const name=group==='furniture'?'家具':'裝飾';return {title:name,note:`店內 ${s().decorations.length}/${decorLimit(s().level)} 件，全店加成上限 15%。`,actions:[[`購買新${name}`,()=>push('decorShop',group),true],[`已購買、未擺放（${stored.length}）`,()=>push('decorStore',group),false,!stored.length]],_buy:buy,_stored:stored};},
+  decor(group){const stored=(s().decorStorage||[]).filter(i=>decorDefinition(i)?.group===group).map(i=>({key:i.id,html:`${decorIcon(i.type)}<b>${esc(decorDefinition(i).name)}</b><small>收納中，免費擺放</small>`,tap:()=>startPlacing(i.type,i.id)})),buy=decorTypes.filter(t=>t.group===group&&t.level<=s().level).map(t=>({key:t.id,html:`${decorIcon(t.id)}<b>${esc(t.name)}</b><small>${esc(t.description)} · ${money(t.cost)}</small>`,tap:()=>push('decorBuy',t.id)}));const name=group==='furniture'?'家具':'裝飾';return {title:name,note:`${name}已擺放 ${decorCounts(s(),group).placed} 件 · 收納 ${stored.length} 件。全店共 ${s().decorations.length}/${decorLimit(s().level)} 件，加成上限 15%。`,actions:[[`購買新${name}`,()=>push('decorShop',group),true],[`已購買、未擺放（${stored.length}）`,()=>push('decorStore',group),false,!stored.length]],_buy:buy,_stored:stored};},
   decorShop(group){const p=pages.decor(group);return {title:`購買新${group==='furniture'?'家具':'裝飾'}`,note:'選一件購買後擺放。',cards:p._buy};},
   decorStore(group){const p=pages.decor(group);return {title:`已購買、未擺放的${group==='furniture'?'家具':'裝飾'}`,note:'倉庫裡的物品免費擺放。',empty:'倉庫裡沒有這類物品。',cards:p._stored};},
   decorBuy(id){const t=decorTypes.find(x=>x.id===id);return {title:t.name,art:decorIcon(id),note:`${t.description} · ${money(t.cost)}`,actions:[['購買並擺放',()=>{const r=act('purchaseDecor',{type:id});if(r.ok){if(s().decorations.length<decorLimit(s().level))startPlacing(id,s().lastPurchasedDecor);else back();}},true]]};},
@@ -91,7 +92,7 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   event(){const ev=s().event;if(!ev)return {title:'事件',note:'事件已結束。'};const who=eventEmployee(s(),ev)?.name,patrol=requiresManagerPatrol(ev);return {title:'⚠ 突發委託：'+ev.title,note:`${who?esc(who)+'：':''}${esc(ev.dialogue||ev.description)}`,actions:patrol?[['主管巡查',()=>{close();getScene().setMode('follow');},true]]:ev.choices.slice(0,3).map((c,i)=>[`${c.label}${c.cost?` ${c.cost}G`:''}`,()=>{const r=act('resolveEvent',{choice:c.id});if(r.ok)close();},i===0,c.cost>s().gold])};},
   complaint(id){const c=s().customers.find(x=>x.id===id),info=c&&getCustomerComplaint(s(),c,game);
    /* 排隊太久、沒有收銀員：改抽命運／機會卡 */
-   if(c&&isQueueComplaint(c,info?.description)){if(c.fortuneDrawn)return {title:'顧客等太久',note:'這位顧客已經抽過命運／機會卡了。'};return {title:'顧客等太久',note:`${esc(c.name||'顧客')}：${esc(c.angerReason||info?.description||'排隊等太久')}。抽一張命運／機會卡來解決吧！可能賺錢、賠錢，也可能發生怪事。`,actions:[['抽命運／機會卡',()=>{close();showFortune({onPick:()=>{const f=pickFortune(),r=act('fortuneCard',{customerId:id,outcome:f.id});return r?.ok===false?null:f;}});},true]]};}
+   if(c&&isQueueComplaint(c,info?.description)){return {title:'顧客等太久',note:`${esc(c.name||'顧客')}：${esc(c.angerReason||info?.description||'排隊等太久')}。抽一張命運／機會卡來解決吧！可再次抽卡，每次都會套用獎勵或風險。`,actions:[['抽命運／機會卡',()=>{close();showFortune({onPick:()=>{const f=pickFortune(),r=act('fortuneCard',{customerId:id,outcome:f.id});return r?.ok===false?null:f;}});},true]]};}
    /* 缺貨但其實是店裡沒有這類貨架：改走布置貨架／安撫顧客的引導 */
    if(c&&info&&['stockout','disappointed'].includes(info.kind)){const why=customerWhy({...c,angerReason:c.angerReason||'想買的商品缺貨'});if(why?.title==='店裡沒有賣這類商品的貨架')return {title:why.title,note:`${esc(c.name||'顧客')}：${esc(why.reason)}。怎麼解決：${esc(why.fix)}`,actions:why.actions};}
    if(!info){const why=c&&customerWhy(c);if(!why)return {title:'顧客',note:'顧客已離開或問題已解決。'};return {title:why.title,note:`${esc(c.name||'顧客')}：${esc(why.reason)}。怎麼解決：${esc(why.fix)}`,actions:why.actions};}return {title:info.title,note:`${esc(info.customerName)}：${esc(info.description)}`,actions:[...info.options.map((o,i)=>[`${o.label}${o.cost?` ${o.cost}G`:''}`,()=>{const r=act('resolveCustomerComplaint',{customerId:id,choice:o.id,complaintId:info.id});if(r.ok)close();},i===0]),['主管追客',()=>{close();getScene().setMode('follow');act('startCustomerChase',{customerId:id});}]]};},
