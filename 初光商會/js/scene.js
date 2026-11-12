@@ -1,32 +1,32 @@
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES} from './decor-zones.js?v=20261112-v31e';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261112-v31e';
-import {createChaseCelebration} from './chase-celebration.js?v=20261112-v31e';
-import {buildOutdoor} from './outdoor-3d.js?v=20261112-v31e';
-import {environment} from './environment.js?v=20261112-v31e';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261112-v31e';
-import {addProductEdges} from './product-outlines.js?v=20261112-v31e';
-import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261112-v31e';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261112-v31e';
-import {decorateInterior} from './interior-v5.js?v=20261112-v31e';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261112-v31e';
-import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261112-v31e';
-import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261112-v31e';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261112-v31f';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261112-v31f';
+import {createChaseCelebration} from './chase-celebration.js?v=20261112-v31f';
+import {buildOutdoor} from './outdoor-3d.js?v=20261112-v31f';
+import {environment} from './environment.js?v=20261112-v31f';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261112-v31f';
+import {addProductEdges} from './product-outlines.js?v=20261112-v31f';
+import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261112-v31f';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261112-v31f';
+import {decorateInterior} from './interior-v5.js?v=20261112-v31f';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261112-v31f';
+import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261112-v31f';
+import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261112-v31f';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
 /* 店內幻靈員工：比原本大 1.3 倍；外框跟 Q 版店面一樣是深咖啡色、只描外輪廓 */
 /* 宣傳員走動：在門前院子隨機選點，直線路徑上不能碰到擺設與建築 */
 const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,greetCool:0,area:null};
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261112-v31e';
-import {createAssets} from './asset-resolver.js?v=20261112-v31e';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261112-v31e';
-import {sampleTrail,turnToward} from './motion.js?v=20261112-v31e';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31e';
-import {eventEmployee} from './patrol-events.js?v=20261112-v31e';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261112-v31e';
-import {createPlacementCells} from './placement-cells.js?v=20261112-v31e';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261112-v31e';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261112-v31e';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261112-v31f';
+import {createAssets} from './asset-resolver.js?v=20261112-v31f';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261112-v31f';
+import {sampleTrail,turnToward} from './motion.js?v=20261112-v31f';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31f';
+import {eventEmployee} from './patrol-events.js?v=20261112-v31f';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261112-v31f';
+import {createPlacementCells} from './placement-cells.js?v=20261112-v31f';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261112-v31f';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261112-v31f';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
@@ -63,7 +63,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
   frame.traverse(o=>{if(o.isMesh)o.userData.noOutline=true;});building.add(outdoor);
   {frame.updateMatrixWorld(true);const Y=yardLayout(level,opts),boxes=[],props=yard.root.children[0];for(const o of props.children){if(o.userData.illustratedOutline)continue;const b=new T.Box3().setFromObject(o);if(b.isEmpty()||b.max.y<.05)continue;boxes.push({minX:b.min.x-.5,maxX:b.max.x+.5,minZ:b.min.z-.5,maxZ:b.max.z+.5});}
    boxes.push({minX:-.5-Y.t-.5,maxX:width-.5+Y.t+.5,minZ:-.5-Y.t-.5,maxZ:cz+Y.zS+.15});/* 步道留給顧客走 */boxes.push({minX:cx+Y.doorX-Y.pw/2-.45,maxX:cx+Y.doorX+Y.pw/2+.45,minZ:cz+Y.zS-.2,maxZ:cz+Y.zR});
-   promoterWalker.area={minX:cx+Y.doorX-3.6,maxX:cx+Y.doorX+3.6,minZ:cz+Y.zR-.85,maxZ:cz+Y.zR+.85,road:true,boxes:[],passers:()=>yard.people.filter(p=>p.g.visible).map(p=>({x:cx+p.g.position.x,z:cz+p.g.position.z}))};promoterWalker.x=null;}metrics.chibiShell={level,doorX:opts.doorX};
+   promoterWalker.area={minX:cx+Y.doorX-3.6,maxX:cx+Y.doorX+3.6,minZ:cz+Y.zR-.7,maxZ:cz+Y.zR+.7,road:true,boxes:[],passers:()=>yard.people.filter(p=>p.g.visible).map(p=>({x:cx+p.g.position.x,z:cz+p.g.position.z}))};promoterWalker.x=null;}metrics.chibiShell={level,doorX:opts.doorX};
  }else{outdoor=buildOutdoor(T,{width,depth,entrance:ENTRANCE,level,grassMat:grass});building.add(outdoor);
  // Windows, timber frames, brass lights and a striped entrance awning.
  floorFinish({T,building,level,width,depth,finish,oakTexture,metrics});windows({T,building,level,width,box,mats:{gold,cream,wood,windowGlass,finishes:finish},metrics});
@@ -128,7 +128,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
  const wallMarkers=new T.Group();scene.add(wallMarkers);let wallMarkerKey='';
  function syncWallMarkers(){const on=!!placement&&WALL_TYPES.has(placement.type);wallMarkers.visible=on;if(!on)return;const lv=Math.min(state().level||1,5),key=lv+':'+placement.type;
   if(wallMarkerKey!==key){wallMarkerKey=key;for(const c of [...wallMarkers.children]){wallMarkers.remove(c);c.geometry?.dispose();}const def=decorTypes.find(t=>t.id===placement.type),hgt=def?.height||.6,wid=placement.type==='painting-large'?1.2:placement.type==='couplet'?.4:.75;
-   for(const slot of wallSlots(lv,false)){const g=new T.Group();g.position.set(slot.x,slot.y+hgt/2,slot.z);g.rotation.y=(slot.rotation||0)*Math.PI/180;const fill=new T.Mesh(new T.PlaneGeometry(wid+.18,hgt+.18),new T.MeshBasicMaterial({color:0xffd23f,transparent:true,opacity:.35,depthTest:false,side:T.DoubleSide}));fill.position.z=.07;fill.renderOrder=20;const edge=new T.LineSegments(new T.EdgesGeometry(new T.PlaneGeometry(wid+.22,hgt+.22)),new T.LineBasicMaterial({color:0xff8a00,depthTest:false}));edge.position.z=.075;edge.renderOrder=21;g.add(fill,edge);g.userData.slot=slot;wallMarkers.add(g);}}
+   for(const slot of wallSlots(lv,false)){const g=new T.Group();g.position.set(slot.x,slot.y+wallLift(placement.type)+hgt/2,slot.z);g.rotation.y=(slot.rotation||0)*Math.PI/180;const fill=new T.Mesh(new T.PlaneGeometry(wid+.18,hgt+.18),new T.MeshBasicMaterial({color:0xffd23f,transparent:true,opacity:.35,depthTest:false,side:T.DoubleSide}));fill.position.z=.07;fill.renderOrder=20;const edge=new T.LineSegments(new T.EdgesGeometry(new T.PlaneGeometry(wid+.22,hgt+.22)),new T.LineBasicMaterial({color:0xff8a00,depthTest:false}));edge.position.z=.075;edge.renderOrder=21;g.add(fill,edge);g.userData.slot=slot;wallMarkers.add(g);}}
   const near=placement.mount;for(const g of wallMarkers.children){const pick=g.userData.slot&&Math.hypot(g.userData.slot.x-placement.x,g.userData.slot.z-placement.z)<.35;g.children[0].material.color.setHex(pick?0x4fd35a:0xffd23f);g.children[0].material.opacity=pick?.7:.5+Math.sin(time*5)*.18;g.children[1].material.color.setHex(pick?0x2f8a24:0xff8a00);}}
  function cancelPlacement(){cellMesh.visible=false;wallMarkers.visible=false;if(placementView){scene.remove(placementView);releaseTree(placementView);}placementView=null;placement=null;metrics.placement=null;onPlacementChange(null);onFurnitureSelect(null);}
  function refreshPlacement(){if(!placement)return;paintCells();const result=game.placementStatus(placement);placementView.position.set(placement.x,specialDecorPose(placement,state().level)?.y||0,placement.z);placementView.rotation.y=placement.rotation*Math.PI/180;placementView.traverse(o=>{for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[])m.color?.setHex(result.ok?0x73cbbb:0xe37862);});metrics.placement={...placement,...result,wall:WALL_TYPES.has(placement.type)};onPlacementChange(metrics.placement);onFurniturePosition(projectPlacementHead());}

@@ -170,3 +170,12 @@ html body #staff-labels .staff-head-label b{overflow:visible!important;text-over
 /* 選單按鈕不斷字：字放不下就縮小，不讓單字自成一行 */
 /* 文字全部顯示：允許換行但以詞為單位，不讓單一個字掉到下一行 */
 #hub .hub-actions .hub-action,#hub .hub-actions button{white-space:normal;word-break:keep-all;overflow-wrap:normal;text-wrap:balance;line-break:strict;min-width:0;font-size:clamp(12px,3.4vw,15px);padding-left:8px;padding-right:8px;line-height:1.25;overflow:visible;text-overflow:clip}
+/* 選單按鈕：高度跟著文字長，兩行字也完整包在框內 */
+#hub .hub-actions .hub-action,#hub .hub-actions button{height:auto!important;min-height:52px;padding-top:6px!important;padding-bottom:6px!important;display:flex;align-items:center;justify-content:center;text-align:center}
+/* 擺放時的 ✓／旋轉：縮小一點 */
+#furniture-controls{gap:4px!important;padding:4px!important}
+#furniture-controls button,#finish-decorate{min-height:32px!important;min-width:32px!important;height:32px!important;width:auto!important;padding:0 8px!important;font-size:16px!important;border-radius:9px!important}
+/* 長的按鈕分到較寬的欄位，短的較窄，文字都包在框內 */
+#hub .hub-actions{grid-auto-columns:auto!important}
+#hub .hub-actions .hub-action,#hub .hub-actions button{padding-left:6px!important;padding-right:6px!important}
+#furniture-controls button,#finish-decorate{min-height:28px!important;min-width:28px!important;height:28px!important;font-size:14px!important}

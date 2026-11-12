@@ -1,4 +1,4 @@
-import {PROMOTERS} from './promoters.js?v=20261112-v31e';
+import {PROMOTERS} from './promoters.js?v=20261112-v31f';
 /* 從角色 previous 與商會進化資料共同建立後代鏈，王族分支可進化為水蛟龍王。 */
 export function isPromoterLineage(data,id){
  const edges=new Map(),add=(a,b)=>{if(!a||!b)return;if(!edges.has(a))edges.set(a,new Set());edges.get(a).add(b);};

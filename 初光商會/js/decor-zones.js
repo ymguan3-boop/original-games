@@ -1,4 +1,6 @@
-import {dimensions,buildingLevel} from './nav.js?v=20261112-v31e';
+import {dimensions,buildingLevel} from './nav.js?v=20261112-v31f';
+/* 小件掛得比較高（眼睛高度），大幅掛畫底邊較低 */
+export const wallLift=type=>({couplet:.45,clock:.4,painting:.2,'painting-large':0})[type]||0;
 export const WALL_TYPES=new Set(['clock','painting','painting-large','couplet']);
 export const PLANT_TYPES=new Set(['plant','fern','lavender','citrus']);
 const sideNames={back:'後牆',front:'門面牆',left:'左牆',right:'右牆'};
@@ -19,7 +21,7 @@ export function wallSlots(level,free=false){
 export function gardenSlots(level){const {width,height}=dimensions(level),door=Math.round((width-1)/2);return [-1,1].flatMap((sign,i)=>[0,1].map(row=>({garden:`garden-${i}-${row}`,label:`門口${sign<0?'左':'右'}側花園 ${row+1}`,x:door+sign*3,z:height-.5+2+row*1.2,y:-.07,rotation:0})));}
 export const nearestSlot=(list,p)=>list.slice().sort((a,b)=>Math.hypot(a.x-p.x,a.z-p.z)-Math.hypot(b.x-p.x,b.z-p.z))[0];
 export function specialDecorPose(item,level){
- if(item.mount)return wallSlots(level,item.mount.includes('-free-')).find(s=>s.mount===item.mount);
+ if(item.mount){const slot=wallSlots(level,item.mount.includes('-free-')).find(s=>s.mount===item.mount);return slot&&{...slot,y:slot.y+wallLift(item.type)};}
  if(item.garden==='garden-free'){const {width,height}=dimensions(level),door=Math.round((width-1)/2);return item.x>=-.1&&item.x<=width-.9&&item.z>=height+1.1&&item.z<=height+2.9&&Math.abs(item.x-door)>=2?{garden:'garden-free',x:item.x,z:item.z,y:-.07,rotation:item.rotation||0}:null;}
  return item.garden?gardenSlots(level).find(s=>s.garden===item.garden):null;
 }

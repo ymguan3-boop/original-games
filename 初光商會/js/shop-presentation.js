@@ -1,4 +1,4 @@
-import {traitOf,passiveValue} from './management.js?v=20261112-v31e';
+import {traitOf,passiveValue} from './management.js?v=20261112-v31f';
 export const visibleStaff=employees=>employees.filter(e=>e.role&&e.role!=='standby');
 export function rewardState(done,claimed=false){return claimed?'claimed':done?'ready':'pending';}
 export const rewardLabels={pending:'尚未完成',ready:'可領獎',claimed:'已完成・已領取',complete:'已完成',urgent:'突發委託'};

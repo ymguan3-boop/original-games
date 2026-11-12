@@ -1,7 +1,7 @@
 /* Click-to-resolve customer problems. Uses normal shop transactions; never grants a free sale. */
-import {shelfCapacity} from './furniture.js?v=20261112-v31e';
-import {ENTRANCE} from './nav.js?v=20261112-v31e';
-import {applyFreeEventFatigue} from './patrol-events.js?v=20261112-v31e';
+import {shelfCapacity} from './furniture.js?v=20261112-v31f';
+import {ENTRANCE} from './nav.js?v=20261112-v31f';
+import {applyFreeEventFatigue} from './patrol-events.js?v=20261112-v31f';
 const clamp=n=>Math.max(0,Math.min(100,n));
 const stockShelf=(g,s)=>s.shelves.find(sh=>{const product=g.data.catalog.find(p=>p.sku===sh.sku);return product&&product.unlockStoreLevel<=s.level&&sh.stock<shelfCapacity(sh);});
 const availableShelf=(g,s)=>s.shelves.find(sh=>g.available(s,sh)>0);
