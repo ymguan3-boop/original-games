@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" xml:lang="zh-Hant" role="img" aria-label="生意興隆，招財進寶，迎春納福">
- <g stroke="#493b31" stroke-width="3" stroke-linejoin="round"><path d="M24 46h52v184H24zM180 46h52v184h-52z" fill="#b74437"/><path d="M14 20h228v43H14z" fill="#b74437"/><path d="M50 231v12m156-12v12" stroke="#dab267" stroke-width="5"/></g>
- <g fill="#ffe3a0" font-family="BiauKai, DFKai-SB, KaiTi, Noto Serif TC, PMingLiU, serif" font-weight="700" text-anchor="middle">
- <text x="128" y="50" font-size="29" letter-spacing="8">生意興隆</text>
- <text x="50" font-size="32"><tspan x="50" y="99">招</tspan><tspan x="50" y="138">財</tspan><tspan x="50" y="177">進</tspan><tspan x="50" y="216">寶</tspan></text>
- <text x="206" font-size="32"><tspan x="206" y="99">迎</tspan><tspan x="206" y="138">春</tspan><tspan x="206" y="177">納</tspan><tspan x="206" y="216">福</tspan></text>
- </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="34" y="16" width="60" height="96" rx="4" fill="#78513c" stroke="#3a2a1e" stroke-width="4"/><rect x="41" y="23" width="46" height="82" fill="#dab267"/><rect x="45" y="27" width="38" height="74" fill="#f6e6bc"/><path d="M64 92V54" stroke="#607d47" stroke-width="4" stroke-linecap="round"/><path d="M64 78c-9-2-13-8-12-14 6 1 11 6 12 14zM64 70c9-2 13-8 12-14-6 1-11 6-12 14z" fill="#94ad62" stroke="#3f5a2c" stroke-width="2"/><circle cx="64" cy="48" r="8" fill="#b74437" stroke="#6e2218" stroke-width="2"/><circle cx="53" cy="60" r="5" fill="#e9a840"/><circle cx="75" cy="64" r="5" fill="#9474b6"/></svg>

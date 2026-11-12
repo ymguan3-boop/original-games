@@ -21,5 +21,5 @@ export function findPath(start,end,shelves=[],level=1){
 export function isLayoutValid(shelves,level=1){const seen=new Set([...FIXED_CELLS,`${ENTRANCE.x},${ENTRANCE.z}`,'2,3',...Array.from({length:Math.floor(dimensions(level).height)-4},(_,i)=>`${CHECKOUT.x},${3+i}`)]);for(const s of shelves){const k=`${s.x},${s.z}`;if(!Number.isInteger(s.x)||!Number.isInteger(s.z)||!walkable(s,[],level)||seen.has(k))return false;seen.add(k);}return [CHECKOUT,WAREHOUSE,...shelves.filter(s=>!s.decoration).map(s=>({x:s.x,z:s.z+1}))].every(p=>findPath(ENTRANCE,p,shelves,level)!==null);}
 
 /* 宣傳員（幻靈吉祥物）站在門前台階右側，面向街道發傳單 */
-export const promoterPoint=()=>({x:ENTRANCE.x+2.4,z:ENTRANCE.z+3.2});
+export const promoterPoint=()=>({x:ENTRANCE.x+1.6,z:ENTRANCE.z+5.8});
 export function customerDisplayPoint(c,progress=1,step=.25){const lag=Math.max(0,step*(1-progress));const k=c.arrivalRemaining>0||c.arrivingNow?1-((c.arrivalRemaining||0)+lag)/5:c.exitingAtDoor?1-((c.exitTravel||0)-lag)/5:null;if(k===null)return c;const u=Math.max(0,Math.min(1,k));return {x:ENTRANCE.x,z:ENTRANCE.z+7*(1-u)};}

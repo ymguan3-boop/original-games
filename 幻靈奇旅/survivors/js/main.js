@@ -18,7 +18,7 @@ import {STATUS} from './combat-status.js?v=20261025-v22';
 import {groupRewards} from './reward-groups.js';
 import {itemPicture} from './item-pictures.js?v=20261029-reaper-v1';
 import {itemReady,setAutoItem,runAutoItems} from './auto-items.js?v=20261030-reaper-v2';
-import {createFeedback} from './feedback.js?v=20261027-v30';
+import {createFeedback} from './feedback.js?v=20261112-v31d';
 import {petUltimateCooldown} from './manual-evolution.js?v=20261025-v19';
 import {summonMarkup,summonDuration,startSummon} from './summon-view.js?v=20261030-reaper-v2';
 import {skillDescription} from './combat-profile.js?v=20261027-v30';

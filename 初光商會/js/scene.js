@@ -1,32 +1,32 @@
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES} from './decor-zones.js?v=20261112-v31d';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261112-v31d';
-import {createChaseCelebration} from './chase-celebration.js?v=20261112-v31d';
-import {buildOutdoor} from './outdoor-3d.js?v=20261112-v31d';
-import {environment} from './environment.js?v=20261112-v31d';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261112-v31d';
-import {addProductEdges} from './product-outlines.js?v=20261112-v31d';
-import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261112-v31d';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261112-v31d';
-import {decorateInterior} from './interior-v5.js?v=20261112-v31d';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261112-v31d';
-import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261112-v31d';
-import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261112-v31d';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES} from './decor-zones.js?v=20261112-v31e';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261112-v31e';
+import {createChaseCelebration} from './chase-celebration.js?v=20261112-v31e';
+import {buildOutdoor} from './outdoor-3d.js?v=20261112-v31e';
+import {environment} from './environment.js?v=20261112-v31e';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261112-v31e';
+import {addProductEdges} from './product-outlines.js?v=20261112-v31e';
+import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261112-v31e';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261112-v31e';
+import {decorateInterior} from './interior-v5.js?v=20261112-v31e';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261112-v31e';
+import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261112-v31e';
+import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261112-v31e';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
 /* 店內幻靈員工：比原本大 1.3 倍；外框跟 Q 版店面一樣是深咖啡色、只描外輪廓 */
 /* 宣傳員走動：在門前院子隨機選點，直線路徑上不能碰到擺設與建築 */
 const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,greetCool:0,area:null};
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261112-v31d';
-import {createAssets} from './asset-resolver.js?v=20261112-v31d';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261112-v31d';
-import {sampleTrail,turnToward} from './motion.js?v=20261112-v31d';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31d';
-import {eventEmployee} from './patrol-events.js?v=20261112-v31d';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261112-v31d';
-import {createPlacementCells} from './placement-cells.js?v=20261112-v31d';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261112-v31d';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261112-v31d';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261112-v31e';
+import {createAssets} from './asset-resolver.js?v=20261112-v31e';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261112-v31e';
+import {sampleTrail,turnToward} from './motion.js?v=20261112-v31e';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31e';
+import {eventEmployee} from './patrol-events.js?v=20261112-v31e';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261112-v31e';
+import {createPlacementCells} from './placement-cells.js?v=20261112-v31e';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261112-v31e';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261112-v31e';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
@@ -63,7 +63,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
   frame.traverse(o=>{if(o.isMesh)o.userData.noOutline=true;});building.add(outdoor);
   {frame.updateMatrixWorld(true);const Y=yardLayout(level,opts),boxes=[],props=yard.root.children[0];for(const o of props.children){if(o.userData.illustratedOutline)continue;const b=new T.Box3().setFromObject(o);if(b.isEmpty()||b.max.y<.05)continue;boxes.push({minX:b.min.x-.5,maxX:b.max.x+.5,minZ:b.min.z-.5,maxZ:b.max.z+.5});}
    boxes.push({minX:-.5-Y.t-.5,maxX:width-.5+Y.t+.5,minZ:-.5-Y.t-.5,maxZ:cz+Y.zS+.15});/* 步道留給顧客走 */boxes.push({minX:cx+Y.doorX-Y.pw/2-.45,maxX:cx+Y.doorX+Y.pw/2+.45,minZ:cz+Y.zS-.2,maxZ:cz+Y.zR});
-   promoterWalker.area={minX:cx+Y.doorX-4.6,maxX:cx+Y.doorX+4.6,minZ:cz+Y.zS+.35,maxZ:cz+Y.zR-1.55,boxes,passers:()=>yard.people.filter(p=>p.g.visible).map(p=>({x:cx+p.g.position.x,z:cz+p.g.position.z}))};promoterWalker.x=null;}metrics.chibiShell={level,doorX:opts.doorX};
+   promoterWalker.area={minX:cx+Y.doorX-3.6,maxX:cx+Y.doorX+3.6,minZ:cz+Y.zR-.85,maxZ:cz+Y.zR+.85,road:true,boxes:[],passers:()=>yard.people.filter(p=>p.g.visible).map(p=>({x:cx+p.g.position.x,z:cz+p.g.position.z}))};promoterWalker.x=null;}metrics.chibiShell={level,doorX:opts.doorX};
  }else{outdoor=buildOutdoor(T,{width,depth,entrance:ENTRANCE,level,grassMat:grass});building.add(outdoor);
  // Windows, timber frames, brass lights and a striped entrance awning.
  floorFinish({T,building,level,width,depth,finish,oakTexture,metrics});windows({T,building,level,width,box,mats:{gold,cream,wood,windowGlass,finishes:finish},metrics});
@@ -118,14 +118,20 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
  function headHeight(item){const def=itemDefinition(item);return (item.decoration?def.height:def.top)+.40+(specialDecorPose(item,state().level)?.y||0);}
  const cellsFor=createPlacementCells(game),cellColor=new T.Color(),cellMesh=new T.InstancedMesh(new T.PlaneGeometry(.92,.92),new T.MeshBasicMaterial({transparent:true,opacity:.42,depthWrite:false,side:T.DoubleSide}),400);cellMesh.rotation.x=0;cellMesh.visible=false;cellMesh.renderOrder=2;scene.add(cellMesh);
  /* 擺放時地板上的可放置格子：綠色可放、紅色不可放 */
- function paintCells(){if(WALL_TYPES.has(placement?.type)){cellMesh.visible=false;return;}const list=cellsFor(placement),m=new T.Matrix4(),q=new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),-Math.PI/2),one=new T.Vector3(1,1,1);cellMesh.count=Math.min(400,list.length);list.slice(0,400).forEach((c,i)=>{m.compose(new T.Vector3(c.x,.075,c.z),q,one);cellMesh.setMatrixAt(i,m);cellMesh.setColorAt(i,cellColor.setHex(c.ok?0x4fc38a:0xf05e53));});cellMesh.instanceMatrix.needsUpdate=true;if(cellMesh.instanceColor)cellMesh.instanceColor.needsUpdate=true;cellMesh.visible=true;}
+ function paintCells(){if(WALL_TYPES.has(placement?.type)){cellMesh.visible=false;syncWallMarkers();return;}syncWallMarkers();const list=cellsFor(placement),m=new T.Matrix4(),q=new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),-Math.PI/2),one=new T.Vector3(1,1,1);cellMesh.count=Math.min(400,list.length);list.slice(0,400).forEach((c,i)=>{m.compose(new T.Vector3(c.x,.075,c.z),q,one);cellMesh.setMatrixAt(i,m);cellMesh.setColorAt(i,cellColor.setHex(c.ok?0x4fc38a:0xf05e53));});cellMesh.instanceMatrix.needsUpdate=true;if(cellMesh.instanceColor)cellMesh.instanceColor.needsUpdate=true;cellMesh.visible=true;}
  /* 門外花園提示：門口兩側、道路前的綠色區塊（與 decor-zones 的 garden-free 範圍相同） */
  const gardenHint=new T.Group();gardenHint.visible=false;scene.add(gardenHint);let gardenHintLevel=0;
  function syncGardenHint(){const lv=Math.min(state().level||1,5),show=!!placement&&PLANT_TYPES.has(placement.type);if(show&&gardenHintLevel!==lv){gardenHintLevel=lv;for(const c of [...gardenHint.children]){gardenHint.remove(c);c.geometry.dispose();}const {width,height}=dimensions(lv),door=Math.round((width-1)/2),z0=height+1.1,z1=height+2.9;
   for(const [x0,x1] of [[-.1,door-2],[door+2,width-.9]]){if(x1-x0<.4)continue;const w=x1-x0,d=z1-z0,fill=new T.Mesh(new T.PlaneGeometry(w,d),new T.MeshBasicMaterial({color:0x8fe060,transparent:true,opacity:.5,depthWrite:false}));fill.rotation.x=-Math.PI/2;fill.position.set((x0+x1)/2,.02,(z0+z1)/2);fill.userData.ownedGeometry=true;const edge=new T.LineSegments(new T.EdgesGeometry(new T.PlaneGeometry(w,d)),new T.LineBasicMaterial({color:0x2f6a14}));edge.rotation.x=-Math.PI/2;edge.position.copy(fill.position);edge.position.y=.03;gardenHint.add(fill,edge);}}
   gardenHint.visible=show;}
- function cancelPlacement(){cellMesh.visible=false;if(placementView){scene.remove(placementView);releaseTree(placementView);}placementView=null;placement=null;metrics.placement=null;onPlacementChange(null);onFurnitureSelect(null);}
- function refreshPlacement(){if(!placement)return;paintCells();const result=game.placementStatus(placement);placementView.position.set(placement.x,specialDecorPose(placement,state().level)?.y||0,placement.z);placementView.rotation.y=placement.rotation*Math.PI/180;placementView.traverse(o=>{for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[])m.color?.setHex(result.ok?0x73cbbb:0xe37862);});metrics.placement={...placement,...result};onPlacementChange(metrics.placement);onFurniturePosition(projectPlacementHead());}
+ /* 牆面位置提示：每個可掛點一個亮框（貼在牆前），選中的變綠 */
+ const wallMarkers=new T.Group();scene.add(wallMarkers);let wallMarkerKey='';
+ function syncWallMarkers(){const on=!!placement&&WALL_TYPES.has(placement.type);wallMarkers.visible=on;if(!on)return;const lv=Math.min(state().level||1,5),key=lv+':'+placement.type;
+  if(wallMarkerKey!==key){wallMarkerKey=key;for(const c of [...wallMarkers.children]){wallMarkers.remove(c);c.geometry?.dispose();}const def=decorTypes.find(t=>t.id===placement.type),hgt=def?.height||.6,wid=placement.type==='painting-large'?1.2:placement.type==='couplet'?.4:.75;
+   for(const slot of wallSlots(lv,false)){const g=new T.Group();g.position.set(slot.x,slot.y+hgt/2,slot.z);g.rotation.y=(slot.rotation||0)*Math.PI/180;const fill=new T.Mesh(new T.PlaneGeometry(wid+.18,hgt+.18),new T.MeshBasicMaterial({color:0xffd23f,transparent:true,opacity:.35,depthTest:false,side:T.DoubleSide}));fill.position.z=.07;fill.renderOrder=20;const edge=new T.LineSegments(new T.EdgesGeometry(new T.PlaneGeometry(wid+.22,hgt+.22)),new T.LineBasicMaterial({color:0xff8a00,depthTest:false}));edge.position.z=.075;edge.renderOrder=21;g.add(fill,edge);g.userData.slot=slot;wallMarkers.add(g);}}
+  const near=placement.mount;for(const g of wallMarkers.children){const pick=g.userData.slot&&Math.hypot(g.userData.slot.x-placement.x,g.userData.slot.z-placement.z)<.35;g.children[0].material.color.setHex(pick?0x4fd35a:0xffd23f);g.children[0].material.opacity=pick?.7:.5+Math.sin(time*5)*.18;g.children[1].material.color.setHex(pick?0x2f8a24:0xff8a00);}}
+ function cancelPlacement(){cellMesh.visible=false;wallMarkers.visible=false;if(placementView){scene.remove(placementView);releaseTree(placementView);}placementView=null;placement=null;metrics.placement=null;onPlacementChange(null);onFurnitureSelect(null);}
+ function refreshPlacement(){if(!placement)return;paintCells();const result=game.placementStatus(placement);placementView.position.set(placement.x,specialDecorPose(placement,state().level)?.y||0,placement.z);placementView.rotation.y=placement.rotation*Math.PI/180;placementView.traverse(o=>{for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[])m.color?.setHex(result.ok?0x73cbbb:0xe37862);});metrics.placement={...placement,...result,wall:WALL_TYPES.has(placement.type)};onPlacementChange(metrics.placement);onFurniturePosition(projectPlacementHead());}
  function projectPlacementHead(){if(!placement)return null;const p=new T.Vector3(placement.x,(specialDecorPose(placement,state().level)?.y||0)+headHeight(placement),placement.z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}
  function placementPoint(item,p){const snap=item.decoration&&decorDefinition(item)?.ground?2:item.decoration&&decorDefinition(item)?.outdoor&&p.z>=dimensions(state().level).height+.5?4:1;const raw={x:Math.round(p.x*snap)/snap,z:Math.round(p.z*snap)/snap,rotation:item.rotation};if(WALL_TYPES.has(item.type)){return resolveDecorPlacement(item,raw,state().level);}return raw;}
  function previewPose(item,p){try{return {...item,...resolveDecorPlacement(item,{x:p.x,z:p.z,rotation:p.rotation},state().level)};}catch{return {...item,x:p.x,z:p.z};}}
@@ -147,7 +153,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
   const falling=w==='rain'||w==='typhoon'||w==='snow';particles.visible=falling;if(falling){particles.material.color.set(w==='snow'?0xffffff:0xcfe3f5);particles.material.size=w==='snow'?.24:.13;particles.material.opacity=w==='typhoon'?.95:.8;const sp=w==='snow'?1.2:w==='typhoon'?14:9,wind=w==='typhoon'?5:w==='rain'?1:.4,a=particles.geometry.attributes.position.array,width=13+Math.min(state().level||1,5),depth=11+Math.min(state().level||1,5);for(let k=0;k<PN;k++){a[k*3+1]-=sp*dt;a[k*3]+=wind*dt;if(a[k*3+1]<0){a[k*3+1]=14;let x,z;do{x=Math.random()*60-20;z=Math.random()*60-20;}while(x>-1&&x<width&&z>-1&&z<depth);a[k*3]=x;a[k*3+2]=z;}}particles.geometry.attributes.position.needsUpdate=true;}
   metrics.environment={slot:env.slot,weather:w,season:env.season.id};}
  let outdoor=null;
- function update(dt){if(!alive)return;const frameStart=performance.now();dt=Math.min(dt,.1);time+=dt;outdoor?.userData.tick?.(time);syncGardenHint();if(chibiShell?.userData.setFrontFade){const goal=outsideView?1:.1;if(Math.abs(frontFade-goal)>.004){frontFade+=(goal-frontFade)*Math.min(1,dt*6);chibiShell.userData.setFrontFade(frontFade);}}applyEnvironment(dt);const s=state();room(Math.min(s.level||1,5));const shelfIds=new Set(furniture(s).map(sh=>sh.id));for(const [id,v]of shelfViews)if(!shelfIds.has(id)){v.alive=false;v.contour?.dispose();scene.remove(v.root);releaseTree(v.root);shelfViews.delete(id);delete metrics.decorations?.[id];delete metrics.shelves?.[id];delete metrics.shelfKinds?.[id];for(let i=pickables.length-1;i>=0;i--)if(pickables[i].userData.pick.id===id)pickables.splice(i,1);}if(selectedShelf&&!shelfIds.has(selectedShelf)){selectShelf(null);mode='play';metrics.mode=mode;grid.visible=false;onModeChange(mode);}for(const sh of furniture(s))shelf(sh);if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));const all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];const actorMoods=[];if(s.manager)all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:CHECKOUT.x,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,...promoterWalk(dt,s)},'promoter']);metrics.managerVisible=mode==='follow';for(const [key,d,type] of all){ensureActor(key,d,type);const a=actorViews.get(key);if(!a)continue;const trail=type==='manager'&&mode!=='follow'||type==='promoter'?null:game.motionFrame?.trails.get(key),p=type==='customer'&&(d.arrivalRemaining>0||d.arrivingNow||d.exitingAtDoor)?customerDisplayPoint(d,motionProgress,game.motionFrame?.duration||.25):trail?sampleTrail(trail,motionProgress):d;const dx=p.x-a.root.position.x,dz=p.z-a.root.position.z,moving=dx*dx+dz*dz>.000001;a.root.position.x=p.x;a.root.position.z=p.z;if(moving)a.facing=Math.atan2(dx,dz);if(a.facing!==undefined){a.yaw=turnToward(a.yaw||0,a.facing,dt);a.root.rotation.set(0,a.yaw,0);}a.walkUntil=moving?time+.12:a.walkUntil||0;const emotion=type==='promoter'?(promoterWalker.greetUntil>time?'greet':null):type==='staff'
+ function update(dt){if(!alive)return;const frameStart=performance.now();dt=Math.min(dt,.1);time+=dt;outdoor?.userData.tick?.(time);syncGardenHint();if(placement&&WALL_TYPES.has(placement.type))syncWallMarkers();if(chibiShell?.userData.setFrontFade){const goal=outsideView?1:.1;if(Math.abs(frontFade-goal)>.004){frontFade+=(goal-frontFade)*Math.min(1,dt*6);chibiShell.userData.setFrontFade(frontFade);}}applyEnvironment(dt);const s=state();room(Math.min(s.level||1,5));const shelfIds=new Set(furniture(s).map(sh=>sh.id));for(const [id,v]of shelfViews)if(!shelfIds.has(id)){v.alive=false;v.contour?.dispose();scene.remove(v.root);releaseTree(v.root);shelfViews.delete(id);delete metrics.decorations?.[id];delete metrics.shelves?.[id];delete metrics.shelfKinds?.[id];for(let i=pickables.length-1;i>=0;i--)if(pickables[i].userData.pick.id===id)pickables.splice(i,1);}if(selectedShelf&&!shelfIds.has(selectedShelf)){selectShelf(null);mode='play';metrics.mode=mode;grid.visible=false;onModeChange(mode);}for(const sh of furniture(s))shelf(sh);if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));const all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];const actorMoods=[];if(s.manager)all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:CHECKOUT.x,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,...promoterWalk(dt,s)},'promoter']);metrics.managerVisible=mode==='follow';for(const [key,d,type] of all){ensureActor(key,d,type);const a=actorViews.get(key);if(!a)continue;const trail=type==='manager'&&mode!=='follow'||type==='promoter'?null:game.motionFrame?.trails.get(key),p=type==='customer'&&(d.arrivalRemaining>0||d.arrivingNow||d.exitingAtDoor)?customerDisplayPoint(d,motionProgress,game.motionFrame?.duration||.25):trail?sampleTrail(trail,motionProgress):d;const dx=p.x-a.root.position.x,dz=p.z-a.root.position.z,moving=dx*dx+dz*dz>.000001;a.root.position.x=p.x;a.root.position.z=p.z;if(moving)a.facing=Math.atan2(dx,dz);if(a.facing!==undefined){a.yaw=turnToward(a.yaw||0,a.facing,dt);a.root.rotation.set(0,a.yaw,0);}a.walkUntil=moving?time+.12:a.walkUntil||0;const emotion=type==='promoter'?(promoterWalker.greetUntil>time?'greet':null):type==='staff'
  ?(eventEmployee(s,s.event)?.id===d.id?'event-'+d.role:d.reactionUntil>s.totalTime?(d.feedbackKind||d.reaction):d.role==='standby'?null:d.fatigue>=80?'tired':d.workTask?'restock':null)
  :type==='customer'
  ?(d.state==='OutOfStock'?'question':['UnhappyExit','AbandonCart'].includes(d.state)?'confused':d.state==='Paid'?'happy':d.state==='Angry'?'angry':d.state==='Leave'?d.emotion:['Queue','Checkout','Cart'].includes(d.state)?((d.wait||0)/Math.max(1,d.patience||35)>.90?'angry':(d.wait||0)/Math.max(1,d.patience||35)>.5?'impatient':null):null)
@@ -158,7 +164,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
  const screenPositions=new Map();const screenRect=canvasRect||(canvasRect=canvas.getBoundingClientRect());
  for(const [id] of all){const actor=actorViews.get(id);if(!actor)continue;
   const height=actor.root.userData.visualHeight||.8;
-  const p=new T.Vector3(actor.root.position.x,actor.root.position.y+height+1.05,actor.root.position.z).project(camera);
+  const p=new T.Vector3(actor.root.position.x,actor.root.position.y+height+(id==='promoter'?.25:1.05),actor.root.position.z).project(camera);
   screenPositions.set(id,{id,x:screenRect.left+(p.x+1)*screenRect.width/2,y:screenRect.top+(1-p.y)*screenRect.height/2,inFront:p.z>=-1&&p.z<=1});
  }
  if(!LOW_POWER||overlayFrame%2===0)onActorVisuals({actors:actorMoods.map(a=>({...a,...screenPositions.get(a.id)})).filter(a=>a.x!==undefined),
@@ -175,10 +181,12 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
   if(w.x===null){w.x=Math.max(A.minX,Math.min(A.maxX,home.x));w.z=Math.max(A.minZ,Math.min(A.maxZ,home.z));for(let i=0;i<30&&blocked(w.x,w.z);i++){w.x=A.minX+Math.random()*(A.maxX-A.minX);w.z=A.minZ+Math.random()*(A.maxZ-A.minZ);}w.tx=w.x;w.tz=w.z;w.wait=1.5;}
   const targets=[...(s.customers||[]).filter(c=>c.arrivalRemaining>0||c.exitingAtDoor).map(c=>customerDisplayPoint(c)),...A.passers()];let near=null,nd=3.4;for(const p of targets){const d=Math.hypot(p.x-w.x,p.z-w.z);if(d<nd){nd=d;near=p;}}
   if(near&&time>w.greetCool){w.wait=2.4;w.greetUntil=time+2.2;w.greetCool=time+7;w.tx=w.x;w.tz=w.z;}
+  /* 路人太近就閃開：往遠離路人的方向退一步，留在馬路範圍內 */
+  for(const p of A.passers()){const ox=w.x-p.x,oz=w.z-p.z,dd=Math.hypot(ox,oz);if(dd<1.1){const push=(1.1-dd)*3*dt;w.x=Math.max(A.minX,Math.min(A.maxX,w.x+(ox/(dd||1))*push));w.z=Math.max(A.minZ,Math.min(A.maxZ,w.z+(oz/(dd||1))*push+(dd<.4?(w.z<(A.minZ+A.maxZ)/2?-1:1)*dt:0)));w.tx=w.x;w.tz=w.z;}}
   if(w.wait>0){w.wait-=dt;w.face=near?Math.atan2(near.x-w.x,near.z-w.z):w.face;return {x:w.x,z:w.z};}
   const dx=w.tx-w.x,dz=w.tz-w.z,d=Math.hypot(dx,dz);
   if(d<.05){w.wait=1.5+Math.random()*3;w.face=null;for(let i=0;i<24;i++){const x=A.minX+Math.random()*(A.maxX-A.minX),z=A.minZ+Math.random()*(A.maxZ-A.minZ);if(blocked(x,z))continue;let ok=true;for(let k=1;k<=12&&ok;k++){const f=k/12;if(blocked(w.x+(x-w.x)*f,w.z+(z-w.z)*f))ok=false;}if(ok){w.tx=x;w.tz=z;break;}}return {x:w.x,z:w.z};}
-  const st=Math.min(d,.8*dt);w.x+=dx/d*st;w.z+=dz/d*st;metrics.promoterWalk={x:+w.x.toFixed(2),z:+w.z.toFixed(2)};return {x:w.x,z:w.z};}
+  let st=Math.min(d,.8*dt),mx=dx/d*st,mz=dz/d*st;w.x+=mx;w.z+=mz;metrics.promoterWalk={x:+w.x.toFixed(2),z:+w.z.toFixed(2)};return {x:w.x,z:w.z};}
  function cameraLocked(){return !!selectedShelf||!!placement;}
  function panCamera(dx,dy){if(cameraLocked())return;const factor=distance*.0028;target.x+=(-Math.cos(yaw)*dx+Math.sin(yaw)*dy)*factor;target.z+=(Math.sin(yaw)*dx+Math.cos(yaw)*dy)*factor;const w=13+Math.min(state().level,5);target.x=Math.max(-18,Math.min(w+18,target.x));target.z=Math.max(-18,Math.min(34,target.z));}
  /* 巡店鏡頭有自己的遠近，不影響總覽視角 */

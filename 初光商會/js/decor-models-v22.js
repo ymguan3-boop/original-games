@@ -1,6 +1,6 @@
 /* Original procedural countryside props. +Y up, +Z front, bottom origin.
  * Each call owns its geometries/materials; no shared disposable resources. */
-const TYPES=['clock','painting','couplet','fern','lavender','citrus'];
+const TYPES=['clock','painting','painting-large','couplet','fern','lavender','citrus'];
 export const hasDecorModel=type=>TYPES.includes(type);
 export function decorModelAsset(T,type){
  if(!hasDecorModel(type))throw new Error('Unknown countryside decoration: '+type);
@@ -29,12 +29,19 @@ export function decorModelAsset(T,type){
   face([[-.285,.075],[-.285,.17],[-.08,.235],[.13,.115],[.285,.19],[.285,.075]],'light',.073);
   box(.095,.08,.012,'cream',.075,.215,.079);face([[.014,.255],[.075,.306],[.136,.255]],'terra',.089);box(.018,.046,.005,'wood',.074,.2,.089);
   face([[-.04,.075],[.015,.075],[.075,.177],[.061,.177]],'cream',.077);
+ }else if(type==='painting-large'){
+  /* 大幅：橫向全景，左右對稱金框 */
+  box(1.18,.84,.07,'wood',0,.42,0);box(1.1,.76,.012,'gold',0,.42,.042);box(1.04,.7,.01,'cream',0,.42,.052);box(.99,.65,.008,'sky',0,.42,.06);
+  sphere(.06,'orange',-.3,.64,.068,1,1,.08);
+  face([[-.495,.1],[-.495,.36],[-.3,.5],[-.08,.31],[.16,.47],[.495,.33],[.495,.1]],'green',.07);
+  face([[-.495,.1],[-.495,.22],[-.16,.3],[.12,.2],[.495,.27],[.495,.1]],'light',.074);
+  for(const x of [-.2,.02,.24]){box(.1,.085,.012,'cream',x,.235,.08);face([[x-.062,.276],[x,.33],[x+.062,.276]],'terra',.09);}
+  for(const x of [-.53,.53])box(.05,.05,.02,'gold',x,.82,.06);
  }else if(type==='couplet'){
-  for(const side of [-1,1]){const x=side*.23;box(.16,.64,.025,'wood',x,.34,0);box(.14,.61,.008,'red',x,.34,.018);for(const y of [.49,.34,.19]){const m=box(.064,.064,.008,'gold',x,y,.027);m.rotation.z=Math.PI/4;box(.037,.009,.006,'red',x,y,.033);}}
-  box(.66,.12,.03,'wood',0,.64,0);box(.63,.095,.008,'red',0,.64,.021);
-  // Geometric auspicious seal; no font dependency or falsely legible glyphs.
-  for(const x of [-.18,0,.18]){box(.06,.009,.006,'gold',x,.66,.03);box(.012,.045,.006,'gold',x,.64,.03);box(.06,.009,.006,'gold',x,.619,.03);}
-  for(const x of [-.23,.23]){rod([x,.02,0],[x,0,0],.012,'gold');}
+  /* 小幅：直式花草小畫 */
+  box(.36,.42,.055,'wood',0,.21,0);box(.31,.37,.01,'gold',0,.21,.033);box(.28,.34,.008,'cream',0,.21,.042);
+  rod([0,.07,.05],[0,.26,.05],.008,'green');for(const [x,y,c] of [[0,.29,'red'],[-.06,.23,'orange'],[.06,.2,'purple']])sphere(.04,c,x,y,.052,1,1,.3);
+  leaf([0,.15,.05],[-.08,.2,.05],.03);leaf([0,.12,.05],[.08,.17,.05],.03);
  }else if(type==='fern'){
   pot();for(let i=0;i<9;i++){const angle=i*Math.PI*2/9,tip=[Math.cos(angle)*.32,.66+(i%3)*.09,Math.sin(angle)*.32];rod([0,.31,0],tip,.009,'green');for(let j=1;j<=4;j++){const t=j/5,a=[tip[0]*t,.31+(tip[1]-.31)*t,tip[2]*t],span=.105*(1-t*.6);for(const sign of [-1,1])leaf(a,[a[0]+Math.cos(angle+sign*1.1)*span,a[1]+.055,a[2]+Math.sin(angle+sign*1.1)*span],.026,j%2?'green':'light');}}
  }else if(type==='lavender'){

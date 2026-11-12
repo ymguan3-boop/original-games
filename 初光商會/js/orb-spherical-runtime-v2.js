@@ -1,4 +1,4 @@
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261112-v31d';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261112-v31e';
 
 // Shared safe derivative used by the approved local game integration and reviews.
 export function createSphericalOrbRuntime(T,source){

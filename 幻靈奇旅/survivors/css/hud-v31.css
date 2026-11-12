@@ -7,11 +7,15 @@
 #hud #pause{margin-top:0!important}
 /* 寵物卡片：不顯示被動欄位數與被動說明 */
 #party .pet-passive,#party .pet-proc{display:none!important}
-/* 暴擊黃字紅底；絕招紅字紫底（絕招暴擊用絕招樣式） */
-.damage-number.critical b,.damage-number.ultimate-hit b{display:inline-block;padding:1px 8px 2px;border-radius:7px;border:2px solid #fff6;font-style:normal;line-height:1.15;box-shadow:0 2px 0 #0006}
-.damage-number.critical b{background:#c8221a;color:#ffe23a;text-shadow:0 1px 0 #5a0b04,1px 0 #5a0b04,-1px 0 #5a0b04}
-.damage-number.ultimate-hit b{background:#6a2ab8;color:#ff4a4a;text-shadow:0 1px 0 #2a0638,1px 0 #2a0638,-1px 0 #2a0638}
-.damage-number.critical small,.damage-number.ultimate-hit small{display:block;margin-bottom:1px}
+/* 暴擊／絕招：參考圖的粗體大數字＋左側爆擊箭頭，不加文字；暴擊橘色、絕招紫色 */
+.damage-number.critical,.damage-number.ultimate-hit{display:flex!important;align-items:center;gap:2px;flex-wrap:nowrap}
+.damage-number.critical b,.damage-number.ultimate-hit b{font-size:22px!important;font-weight:900!important;font-style:italic!important;letter-spacing:-.3px;line-height:1;-webkit-text-stroke:2.5px #2a1206;paint-order:stroke fill;text-shadow:none!important;filter:drop-shadow(0 2px 0 #2a1206) drop-shadow(0 3px 4px #0006)!important}
+.damage-number.critical b{color:#ff9a1f!important;-webkit-text-fill-color:#ff9a1f}
+.damage-number.ultimate-hit b{color:#d96bff!important;-webkit-text-fill-color:#d96bff}
+.damage-number .hit-burst{display:block;width:22px;height:22px;flex:none;position:relative;filter:drop-shadow(1.3px 0 0 #2a1206) drop-shadow(-1.3px 0 0 #2a1206) drop-shadow(0 1.3px 0 #2a1206) drop-shadow(0 -1.3px 0 #2a1206)}.damage-number .hit-burst::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,62% 24%,52% 40%,100% 62%,74% 66%,92% 100%,40% 70%,46% 56%,0 40%,30% 30%);background:inherit}
+.damage-number.critical .hit-burst::before{background:linear-gradient(135deg,#ffe07a,#ff9a1f 60%,#e5560a)}
+.damage-number.ultimate-hit .hit-burst::before{background:linear-gradient(135deg,#f6c8ff,#c45cff 60%,#7a1fd0)}
+@media(max-width:760px){.damage-number.critical b,.damage-number.ultimate-hit b{font-size:19px!important;-webkit-text-stroke:2px #2a1206}.damage-number .hit-burst{width:19px;height:19px}}
 /* 進場前的怪物數量倍率 */
 .monster-mult{display:flex;align-items:center;justify-content:center;gap:6px;margin:8px 0 2px;flex-wrap:wrap;font-size:13px}
 .monster-mult>span{opacity:.85}

@@ -1,5 +1,5 @@
-import {dimensions,buildingLevel} from './nav.js?v=20261112-v31d';
-export const WALL_TYPES=new Set(['clock','painting','couplet']);
+import {dimensions,buildingLevel} from './nav.js?v=20261112-v31e';
+export const WALL_TYPES=new Set(['clock','painting','painting-large','couplet']);
 export const PLANT_TYPES=new Set(['plant','fern','lavender','citrus']);
 const sideNames={back:'後牆',front:'門面牆',left:'左牆',right:'右牆'};
 /* 與 chibi/shell.js 的窗、門及柱列同一組尺寸。裝飾外框以 .95m 寬保守保留間距。 */

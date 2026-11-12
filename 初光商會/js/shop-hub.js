@@ -1,26 +1,26 @@
-import {hasDecorModel} from './decor-models-v22.js?v=20261112-v31d';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261112-v31d';
-import {promoterHireCost} from './shop-entry-rules.js?v=20261112-v31d';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261112-v31d';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261112-v31d';
-import {clockText} from './shop-clock.js?v=20261112-v31d';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261112-v31d';
-import {pendingRewards} from './reward-collection.js?v=20261112-v31d';
+import {hasDecorModel} from './decor-models-v22.js?v=20261112-v31e';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261112-v31e';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261112-v31e';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261112-v31e';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261112-v31e';
+import {clockText} from './shop-clock.js?v=20261112-v31e';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261112-v31e';
+import {pendingRewards} from './reward-collection.js?v=20261112-v31e';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
 import {WEAPONS} from '../../幻靈奇旅/survivors/js/inventory.js?v=20261030-reaper-v2';
-import {spiritPortrait} from './spirit-cards.js?v=20261112-v31d';
-import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261112-v31d';
-import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261112-v31d';
-import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261112-v31d';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261112-v31d';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261112-v31d';
-import {chapterObjectives} from './shop-chapters.js?v=20261112-v31d';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261112-v31d';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31d';
-import {requiresManagerPatrol} from './event-routing.js?v=20261112-v31d';
-import {eventEmployee} from './patrol-events.js?v=20261112-v31d';
-import {ledgerPanel} from './ledger-panel.js?v=20261112-v31d';
+import {spiritPortrait} from './spirit-cards.js?v=20261112-v31e';
+import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261112-v31e';
+import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261112-v31e';
+import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261112-v31e';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261112-v31e';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261112-v31e';
+import {chapterObjectives} from './shop-chapters.js?v=20261112-v31e';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261112-v31e';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31e';
+import {requiresManagerPatrol} from './event-routing.js?v=20261112-v31e';
+import {eventEmployee} from './patrol-events.js?v=20261112-v31e';
+import {ledgerPanel} from './ledger-panel.js?v=20261112-v31e';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -50,7 +50,7 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
    if(open&&!paused)return {title:'布置',note:'營業中不能擺放貨架與家具。打烊結算時選「店舖整備」就能布置。',actions:[['商品',()=>push('goods')]]};
    if(paused)return {title:'布置（已暫停營業）',note:'現在可以買貨架、家具並擺放。點店內物件可移動，布置完記得恢復營業。',actions:[...place,['恢復營業',resume,true]]};
    return {title:'布置',note:`買貨架與家具，自由擺放。${s().rackReminder&&!s().shelves.some(sh=>d.catalog.some(x=>x.category===s().rackReminder.category&&accepts(sh,x)))?`<br>📌 顧客想買${({item:'道具',weapon:'武器',material:'素材'})[s().rackReminder.category]||''}類商品，記得布置能放它的貨架。`:''}`,actions:[['商品',()=>push('goods')],...place]};},
-  goods(shelfId){settings.importMeadow?.();const sh=shelfId&&s().shelves.find(x=>x.id===shelfId),list=d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&c.isSellable&&!c.isRestricted&&(!sh||accepts(sh,c)));const shown=sh?list:list.filter(c=>!c.lootOnly),weaponCount=d.catalog.filter(c=>c.lootOnly).reduce((n,c)=>n+(s().inventory[c.sku]||0),0);return {title:sh?`${shelfDefinition(sh).name}的商品`:'商品',note:sh?'只列這座貨架能賣的商品，點進去可以補貨或調整售價。':'補貨會自動進行。要有對應的貨架才能進貨。',cards:[...(sh?[]:[{key:'weapons',tutor:'weapon-goods',html:`<b>⚔ 武器商品</b><small>武器・限定武器 · 倉庫 ${weaponCount} 件</small>`,tap:()=>push('weaponGoods')}]),...shown.map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>${hasRack(c)?`庫存 ${s().inventory[c.sku]} · 售價 ${money(s().prices[c.sku])}`:'還沒有可放的貨架'}</small>`,tap:()=>push('product',c.sku)}))]};},
+  goods(shelfId){settings.importMeadow?.();const sh=shelfId&&s().shelves.find(x=>x.id===shelfId),list=d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&c.isSellable&&!c.isRestricted&&(!sh||accepts(sh,c)));const shown=sh?list:list.filter(c=>!c.lootOnly),weaponCount=d.catalog.filter(c=>c.lootOnly).reduce((n,c)=>n+(s().inventory[c.sku]||0),0);return {title:sh?`${shelfDefinition(sh).name}的商品`:'商品',note:sh?'只列這座貨架能賣的商品，點進去可以補貨或調整售價。':'補貨會自動進行。要有對應的貨架才能進貨。',cards:[...(sh?[]:[{key:'weapons',tutor:'weapon-goods',html:`${productIcon('sword-flame')}<b>武器商品</b><small>武器・限定武器 · 倉庫 ${weaponCount} 件</small>`,tap:()=>push('weaponGoods')}]),...shown.map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>${hasRack(c)?`庫存 ${s().inventory[c.sku]} · 售價 ${money(s().prices[c.sku])}`:'還沒有可放的貨架'}</small>`,tap:()=>push('product',c.sku)}))]};},
   /* 武器商品：分成武器與限定武器兩類，項下不再細分；武器只能到草原採集 */
   weaponGoods(){return {title:'武器商品',note:'武器要到草原擊倒魔物、走近拾取，帶回商會後由補貨員上架販售。',actions:[['武器',()=>push('weaponList','normal'),true],['限定武器',()=>push('weaponList','limited')]]};},
   weaponList(kind='normal'){const limited=kind==='limited',items=d.catalog.filter(c=>c.lootOnly&&(limited?c.merchantGrade!=='normal':c.merchantGrade==='normal')),open=items.filter(c=>c.unlockStoreLevel<=s().level),label=c=>(WEAPONS[c.sourceWeaponId]?.name||c.displayName)+(c.merchantGrade==='boss'?'（大魔王）':c.merchantGrade==='elite'?'（小魔王）':'');
@@ -69,12 +69,12 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   decorBuy(id){const t=decorTypes.find(x=>x.id===id);return {title:t.name,art:decorIcon(id),note:`${t.description} · ${money(t.cost)}`,actions:[['購買並擺放',()=>{const r=act('purchaseDecor',{type:id});if(r.ok){if(s().decorations.length<decorLimit(s().level))startPlacing(id,s().lastPurchasedDecor);else back();}},true]]};},
 
   shelfGoods(id){const sh=s().shelves.find(x=>x.id===id);if(!sh)return {title:'貨架',note:'貨架不在店內。'};return {title:'選擇販售商品',note:`${shelfDefinition(sh).name} · 目前 ${sh.stock}/${shelfCapacity(sh)}`,cards:d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&accepts(sh,c)).map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>${c.sku===sh.sku?'販售中':'售價 '+money(s().prices[c.sku])} · 庫存 ${s().inventory[c.sku]||0}</small>`,tap:()=>{const r=act('setShelfGoods',{shelfId:id,sku:c.sku});if(r.ok)back();}}))};},
-  staff(){const ready=s().employees.filter(e=>staffEvolutionInfo(d,e).eligible).length;return {title:'員工',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人，其餘休息中並恢復疲勞。`,actions:[['招聘',()=>push('hire')],['編組與職務',()=>push('roster')],[`疲勞替班：${s().autoRelief?.enabled?'開':'關'}`,relief],[ready?`進化（${ready}）`:'進化',()=>push('evolve')]]};},
+  staff(){const ready=s().employees.filter(e=>staffEvolutionInfo(d,e).eligible).length;return {title:'員工',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人，其餘休息中並恢復疲勞。`,actions:[['招聘',()=>push('hire')],['編組與職務',()=>push('roster')],[`自動疲勞替班：${s().autoRelief?.enabled?'開啟':'關閉'}`,relief],[ready?`進化（${ready}）`:'進化',()=>push('evolve')]]};},
   hire(){const list=d.hirePool.filter(h=>!h.evolutionOnly&&!isPromoterLineage(d,h.spiritId||h.id)&&h.level<=s().level&&!s().employees.some(e=>e.baseId===h.id));return {title:'招聘',note:'招聘過的夥伴不會再出現。',empty:'目前市場沒有新夥伴。',cards:[{key:'promoter',tutor:'promoter',html:`${(()=>{const pid=s().promoter?.id||PROMOTERS.find(p=>p.level<=s().level)?.id;return pid?spiritPortrait(spirit(pid),esc):'';})()}<b>宣傳員${s().promoter?'：'+esc(s().promoter.name):''}</b><small>${s().promoter?'點擊更換':'聘請大型幻靈當吉祥物'}</small>`,tap:()=>push('promoters')},...list.map(h=>({key:h.id,tutor:'hire',html:`${spiritPortrait(spirit(h.spiritId||h.id),esc)}<b>${esc(h.name)}</b><small>${money(h.cost)}</small><small class="hub-passive">${esc(passiveDescription(game,{baseId:h.id,role:d.management.traits[h.id]?.preferredJob,evolutionHistory:[]}))}（擅長職務）</small>`,tap:()=>push('hireOne',h.id)}))]};},
   promoters(){const now=s().promoter;return {title:'宣傳員',note:`大型幻靈在店門外當吉祥物，不佔在班名額。打烊時有機會讓當天毛利再增加 1% 到上限。${now?`<br>目前：${esc(now.name)}`:''}`,empty:'目前沒有可聘請的宣傳員。',cards:PROMOTERS.filter(p=>p.level<=s().level).map(p=>{const sp=spirit(p.id),locked=p.level>s().level,cur=now?.id===p.id;return {key:p.id,tutor:!locked&&!cur&&!PROMOTERS.slice(0,PROMOTERS.indexOf(p)).some(q=>q.level<=s().level&&now?.id!==q.id)?'promoter-pick':undefined,html:`${spiritPortrait(sp,esc)}<b>${esc(sp?.name||p.id)}${cur?'（目前）':''}</b><small>${locked?`商會 Lv.${p.level} 解鎖`:`${promoterHireCost(s(),p)===0?'首次免費':money(p.cost)} · 最多 +${Math.round(p.maxBonus*100)}%`}</small>`,tap:()=>{if(locked)toast(`商會 Lv.${p.level} 才能聘請`,true);else if(!cur)push('promoterOne',p.id);}};})};},
   promoterOne(id){const p=promoterDef(id),sp=spirit(id);return {title:sp?.name||id,art:spiritPortrait(sp,esc),note:`${esc(p.text)}<br>聘請費 ${promoterHireCost(s(),p)===0?'首次免費':money(p.cost)}，打烊時 ${Math.round(70)}% 機率讓毛利增加 1%～${Math.round(p.maxBonus*100)}%。${s().promoter?`<br>會取代目前的 ${esc(s().promoter.name)}。`:''}`,actions:[[promoterHireCost(s(),p)===0?'免費聘請':'聘請',()=>{const r=act('hirePromoter',{id});if(r.ok)back();},true]]};},
   hireOne(id){const h=d.hirePool.find(x=>x.id===id),t=d.management.traits[id],need=(s().totals.sales||0)<h.requiredSales;return {title:h.name,art:spiritPortrait(spirit(h.spiritId||h.id),esc),note:`${money(h.cost)} · 擅長${job(t.preferredJob)}<br>專屬被動「${esc(t.name)}」：${esc(t.text)}<br>${esc(passiveDescription(game,{baseId:h.id,role:t.preferredJob,evolutionHistory:[]}))}（擅長職務）${need?`<br>需累計成交 ${h.requiredSales} 筆`:''}`,actions:[['聘用',()=>{const r=act('hire',{id});if(r.ok)back();},true]]};},
-  roster(){const pr=s().promoter,promoterCard=pr?[{key:'promoter',html:`${spiritPortrait(spirit(pr.id),esc)}<b>${esc(pr.name)}</b><small>宣傳員 · 在門口招呼客人</small><small class="hub-passive">不佔在班名額，打烊時有機會提高當天毛利</small>`,tap:()=>push('promoters')}]:[];return {title:'編組與職務',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人${pr?' · 宣傳員 1 位':''}`,empty:'還沒有夥伴，先去招聘吧。',cards:[...promoterCard,...s().employees.map(e=>({key:e.id,tutor:'worker',html:`${staffIcon(e)}<b>${esc(e.name)}${e.lockedAssignment?' 📌':' 🔄'}</b><small>${job(e.role)} · 熟練 Lv.${e.workLevel} · 疲勞 ${Math.round(e.fatigue)}%</small><small class="hub-passive">${esc(passiveDescription(game,e))}</small>`,tap:()=>push('worker',e.id)}))],actions:[['一鍵最佳配置',()=>{act('autoAssign');render();},true],[`疲勞替班：${s().autoRelief?.enabled?'開':'關'}`,relief]]};},
+  roster(){const pr=s().promoter,promoterCard=pr?[{key:'promoter',html:`${spiritPortrait(spirit(pr.id),esc)}<b>${esc(pr.name)}</b><small>宣傳員 · 在門口招呼客人</small><small class="hub-passive">不佔在班名額，打烊時有機會提高當天毛利</small>`,tap:()=>push('promoters')}]:[];return {title:'編組與職務',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人${pr?' · 宣傳員 1 位':''}`,empty:'還沒有夥伴，先去招聘吧。',cards:[...promoterCard,...s().employees.map(e=>({key:e.id,tutor:'worker',html:`${staffIcon(e)}<b>${esc(e.name)}${e.lockedAssignment?' 📌':' 🔄'}</b><small>${job(e.role)} · 熟練 Lv.${e.workLevel} · 疲勞 ${Math.round(e.fatigue)}%</small><small class="hub-passive">${esc(passiveDescription(game,e))}</small>`,tap:()=>push('worker',e.id)}))],actions:[['一鍵最佳配置',()=>{act('autoAssign');render();},true],[`自動疲勞替班：${s().autoRelief?.enabled?'開啟':'關閉'}`,relief]]};},
   worker(id){const e=s().employees.find(x=>x.id===id);if(!e)return pages.roster();const t=traitOf(game,e),isDragon=e.spiritId===d.management.dragon.spiritId,task=dragonTask(game,s());return {title:e.name,art:staffIcon(e),note:`${job(e.role)} · 熟練 Lv.${e.workLevel} · EXP ${Math.floor(e.xp)}/${e.workLevel*25}<br>擅長${job(t?.preferredJob)} · 「${esc(t?.name||'')}」${esc(t?.text||'')}<br>${esc(passiveDescription(game,e))}<br>疲勞 ${Math.round(e.fatigue)}%${isDragon?`<br>駐點：${task?esc(task.name):'未啟用'}`:''}`,actions:[['調整職務',()=>push('jobs',id)],[e.lockedAssignment?'自動分配：關':'自動分配：開',()=>{act('lockAssignment',{employeeId:id});render();}],isDragon?['駐點任務',()=>push('dragon')]:[`經驗券（${s().xpTickets||0}）`,()=>{act('useXpTicket',{employeeId:id});render();},false,!(s().xpTickets>0)]]};},
   jobs(id){const e=s().employees.find(x=>x.id===id);return {title:'調整職務',note:'第二人起效率遞減，換職不影響熟練度。',cards:[...WORK_JOBS,'standby'].map(j=>({key:j,html:`<b>${job(j)}${traitOf(game,e)?.preferredJob===j?' ★擅長':''}</b><small>${j==='standby'?'休息中：離開店面、恢復疲勞，獲得 20% 經驗':esc(d.management.jobs[j].work)}</small>`,tap:()=>{const r=act('assign',{employeeId:id,role:j});if(r.ok)back();}}))};},
   dragon(){return {title:'水蛟龍王駐點',note:'一次只能啟用一項任務。',cards:d.management.dragon.tasks.filter(t=>t.level<=s().level).map(t=>({key:t.id,html:`<b>${esc(t.name)}${s().dragonTask===t.id?' ✓':''}</b><small>${esc(t.text)}</small>`,tap:()=>{act('setDragonTask',{id:t.id});render();}}))};},
