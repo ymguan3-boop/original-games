@@ -7,7 +7,7 @@ import {modelRoomPlan,originalPresentation,createModelRoomEffect} from './model-
 import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261030-reaper-v2';
 import {flightMotion} from './avian-motion-v17.js?v=20261025-v18';
 import {createCostumeView} from './costume-view.js?v=20261030-reaper-v2';
-import {createLootView} from './loot-view.js?v=20261025-v23';
+import {createLootView} from './loot-view.js?v=20261112-v31b';
 import {createStatusView} from './status-view.js?v=20261027-v30';
 import {immobilized} from './combat-status.js?v=20261025-v22';
 import {modelHeight} from './actor-layout.js?v=20261027-v30';

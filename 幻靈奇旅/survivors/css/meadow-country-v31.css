@@ -39,3 +39,5 @@ body.merchant-meadow #loading .scene-loading-track i{background:var(--c-green)!i
 body.merchant-meadow .preparation #points,body.merchant-meadow .preparation #points *{color:#b5651d!important}
 body.merchant-meadow .preparation .muted,body.merchant-meadow .preparation #lobbyHint{color:#6e5232!important}
 body.merchant-meadow .preparation .meadow-back{background:#9a6438!important;color:#fff!important}
+body.merchant-meadow dialog .wallet-strip{background:#f8ecd2!important;border:2px solid #4a2e1c!important}
+body.merchant-meadow dialog .wallet-strip *{color:#4a2e1c!important}

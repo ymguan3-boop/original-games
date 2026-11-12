@@ -166,3 +166,6 @@ html body #staff-labels .staff-head-label .staff-compact-fatigue{display:inline!
 html body #staff-labels .staff-head-label{max-width:min(240px,60vw)!important;overflow:visible!important;line-height:1.15!important}
 html body #staff-labels .staff-head-label[hidden]{display:none!important}
 html body #staff-labels .staff-head-label b{overflow:visible!important;text-overflow:clip!important;min-width:max-content!important}
+
+/* 選單按鈕不斷字：字放不下就縮小，不讓單字自成一行 */
+#hub .hub-actions .hub-action,#hub .hub-actions button{white-space:nowrap;word-break:keep-all;min-width:0;font-size:clamp(12px,3.5vw,15px);padding-left:8px;padding-right:8px;overflow:hidden;text-overflow:ellipsis}
