@@ -27,7 +27,7 @@ import {createHub} from './shop-hub.js?v=20261111-portrait-v45';
 import {showManagerDialogue} from './manager-dialogue.js?v=20261111-portrait-v45';
 import {commissionNotice} from './commissions.js?v=20261111-portrait-v45';
 import {dailyTasks} from './management.js?v=20261111-portrait-v45';
-import {shelfTypes} from './furniture.js?v=20261111-portrait-v45';
+import {shelfTypes,accepts as shelfAccepts} from './furniture.js?v=20261111-portrait-v45';
 import {decorTypes} from './decorations.js?v=20261111-portrait-v45';
 import {pendingRewards} from './reward-collection.js?v=20261111-portrait-v45';
 /* 快捷鍵上的「新」提示：看過該頁就記下，有新東西才再亮 */
@@ -65,7 +65,7 @@ function syncNotices(s){{const ev=activeEvent(s),key=ev?ev.id+ev.startDay:null;i
  const chase=s.customerChaseResult;if(chase&&seenChase!==chase.id){seenChase=chase.id;if(chase.success){showChaseSuccess(chase);showManagerDialogue('追上顧客了！謝謝你願意再給我們一次機會。',{duration:4200});scene?.playChaseSuccess?.();}else showZhaocaiNote('追客失敗了……');}
  const notice=$('#shop-notice');notice.hidden=!s.event||s.patrolFocus||hub?.isOpen;if(!notice.hidden)notice.textContent=`⚠ ${s.event.title}：按「任務」處理`;
 }
-function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncNotices(s);
+function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncNotices(s);setTimeout(weaponGuide,0);
  $('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels[s.level-1]?.name||''}`;
  {const info=chapterObjectives(s,game.data.levels),pct=upgradeProgress(info);$('#hud-progress').textContent=s.upgradeProject?`🔨 ${Math.ceil(s.upgradeProject.remaining)}秒`:info.last?'★ 最高級':`▲ ${pct}%`;$('#hud-progress').classList.toggle('ready',info.ready&&!s.upgradeProject);$('#goal-fill').style.width=pct+'%';const next=info.goals.find(g=>!g.done);$('#goal-next').textContent=s.upgradeProject?'施工升級中':next?`${next.title} ${Math.floor(Math.min(next.value,next.target))}/${next.target}`:info.last?'已達最高級':'目標已完成';{const env=environment(s,game.data.config);$('#hud-clock').textContent=`${env.weatherInfo.icon}${env.season.name} ${clockText(s,game.data.config)} ${clockLabel(s,game.data.config)}`;$('#hud-clock').title=`${env.season.name}季・${env.weatherInfo.name}`;}if(s.phase==='report'&&reportShownDay!==s.day&&hub&&!hub.isOpen){reportShownDay=s.day;hub.open('report');}}$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
  $('#prep-bar').hidden=!!s.patrolFocus;const blocked=openingBlocker(s);$('#start-business').disabled=false;$('#start-business').title=blocked;$('#prep-bar span').textContent=blocked||'🧰 店舖整備中：可以布置、招聘、調整職務';$('#start-business').textContent=s.phase==='open'?'打烊結算':s.phase==='report'?'查看結算':'開門營業';
@@ -91,6 +91,9 @@ $('#patrol-event').onclick=()=>{if(game.state.event)hub.open('event');else toast
 function exportSave(){const blob=new Blob([JSON.stringify(game.state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`初光商會-第${game.state.day}天.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 function recoverSave(){confirmAction('恢復前一個備份會取代目前進度，確定嗎？',()=>{const key='firstlight_shop_v1',backup=localStorage.getItem(key+'.backup');if(!backup)return toast('沒有可用的備份。',true);try{game.validate(JSON.parse(backup));localStorage.setItem(key,backup);location.reload();}catch(err){toast('備份無法恢復：'+err.message,true);}});}
 function importMeadow(){try{const field=JSON.parse(localStorage.getItem(MEADOW_KEY)||'null'),totals=field?.merchantCargo;if(!totals)return null;const result=game.act('importMeadowCargo',{totals});if(result.ok&&result.message?.startsWith('帶回'))toast(result.message);return result;}catch(e){toast('採集物暫未入庫：'+e.message,true);return null;}}
+/* 第一次擺好能放武器的貨架、但倉庫還沒有武器時：引導到「武器商品 → 武器 → 前往草原採集」 */
+const WEAPON_GUIDE_KEY='firstlight-weapon-guide-v1';
+function weaponGuide(){let seen=false;try{seen=!!localStorage.getItem(WEAPON_GUIDE_KEY);}catch{}if(seen||!game||hub?.isOpen)return;const s=game.state,weapons=game.data.catalog.filter(c=>c.lootOnly);if(s.phase==='open'||!weapons.length)return;const rack=s.shelves.some(sh=>weapons.some(c=>shelfAccepts(sh,c)));const stock=weapons.some(c=>(s.inventory[c.sku]||0)>0)||s.shelves.some(sh=>sh.stock>0&&weapons.some(c=>c.sku===sh.sku));if(!rack||stock)return;try{localStorage.setItem(WEAPON_GUIDE_KEY,'1');}catch{}showManagerDialogue('武器架擺好了！武器不能用買的，要到草原擊倒魔物拾取。我帶你到「武器商品」，按「前往草原採集」就能出發。',{actionLabel:'帶我去',onAction:()=>{hub.open('goods');setTimeout(()=>{document.querySelector('#hub [data-tutor=weapon-goods]')?.click();setTimeout(()=>{document.querySelector('#hub [data-label="武器"]')?.click();setTimeout(()=>document.querySelector('#hub [data-label="前往草原採集"]')?.classList.add('tutor-focus'),80);},80);},80);}});}
 function enterMeadow(){hub.close();showManagerDialogue('去草原擊倒魔物、走近拾取武器，再帶回商會販售。出發後請先依教學開啟「自動補血」，並確認藥水庫存。',{actionLabel:'前往草原',onAction:()=>{game.act('save');const url=new URL('../幻靈奇旅/survivors/?merchantMeadow=1',location.href);if(globalThis.PORTAL_GUEST){url.searchParams.set('guest','1');if(url.pathname.startsWith('/game/'))url.pathname=url.pathname.replace('/game/','/game/guest/');carryMerchantGuest();}location.assign(url);}});}
 async function boot(){let gate;try{
  const loading=$('#loading');loading.style.display='flex';loading.setAttribute('aria-busy','true');$('#load-message').textContent='正在準備商會資料與場景素材…';
