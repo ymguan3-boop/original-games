@@ -41,3 +41,8 @@ body.merchant-meadow .preparation .muted,body.merchant-meadow .preparation #lobb
 body.merchant-meadow .preparation .meadow-back{background:#9a6438!important;color:#fff!important}
 body.merchant-meadow dialog .wallet-strip{background:#f8ecd2!important;border:2px solid #4a2e1c!important}
 body.merchant-meadow dialog .wallet-strip *{color:#4a2e1c!important}
+/* 探險補給的持有點數欄：跟商會一樣的奶油底、咖啡框 */
+body.merchant-meadow .wallet-strip{background:#f8ecd2!important;background-image:none!important;border:2px solid #4a2e1c!important;box-shadow:0 2px 0 #4a2e1c!important}
+body.merchant-meadow .wallet-strip span,body.merchant-meadow .wallet-strip strong,body.merchant-meadow .wallet-strip small{color:#4a2e1c!important}
+body.merchant-meadow .wallet-strip strong{color:#b5651d!important}
+body.merchant-meadow .wallet-strip svg,body.merchant-meadow .wallet-strip i{color:#b5651d!important;fill:currentColor}
