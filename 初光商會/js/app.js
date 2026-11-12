@@ -18,10 +18,10 @@ import {createActorVisuals} from './actor-visuals.js?v=20261112-v31h';
 import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261112-v31h';
 import {loadSpiritCards} from './spirit-cards.js?v=20261112-v31h';
 import {createGame} from './core.js?v=20261112-v31h';
-import {createStaffOverlay} from './staff-overlay.js?v=20261112-v31h';
+import {createStaffOverlay} from './staff-overlay.js?v=20261112-furniture-v34';
 import {installPatrolControls} from './patrol-controls.js?v=20261112-v31h';
 import {playEvolution3D} from './evolution-3d.js?v=20261112-v31h';
-import {createScene} from './scene.js?v=20261112-v31h';
+import {createScene} from './scene.js?v=20261112-furniture-v34';
 import {createScene2D} from './scene-2d.js?v=20261112-v31h';
 import {createHub} from './shop-hub.js?v=20261112-v31h';
 import {showManagerDialogue} from './manager-dialogue.js?v=20261112-v31h';
@@ -94,7 +94,7 @@ function importMeadow(){try{const field=JSON.parse(localStorage.getItem(MEADOW_K
 /* 第一次擺好能放武器的貨架、但倉庫還沒有武器時：引導到「武器商品 → 武器 → 前往草原採集」 */
 const WEAPON_GUIDE_KEY='firstlight-weapon-guide-v1';
 function weaponGuide(){let seen=false;try{seen=!!localStorage.getItem(WEAPON_GUIDE_KEY);}catch{}if(seen||!game||hub?.isOpen)return;const s=game.state,weapons=game.data.catalog.filter(c=>c.lootOnly);if(s.phase==='open'||!weapons.length)return;const rack=s.shelves.some(sh=>weapons.some(c=>shelfAccepts(sh,c)));const stock=weapons.some(c=>(s.inventory[c.sku]||0)>0)||s.shelves.some(sh=>sh.stock>0&&weapons.some(c=>c.sku===sh.sku));if(!rack||stock)return;try{localStorage.setItem(WEAPON_GUIDE_KEY,'1');}catch{}showManagerDialogue('武器架擺好了！武器不能用買的，要到草原擊倒魔物拾取。我帶你到「武器商品」，按「前往草原採集」就能出發。',{actionLabel:'帶我去',onAction:()=>{hub.open('goods');setTimeout(()=>{document.querySelector('#hub [data-tutor=weapon-goods]')?.click();setTimeout(()=>{document.querySelector('#hub [data-label="武器"]')?.click();setTimeout(()=>document.querySelector('#hub [data-label="前往草原採集"]')?.classList.add('tutor-focus'),80);},80);},80);}});}
-function enterMeadow(){hub.close();showManagerDialogue('去草原擊倒魔物、走近拾取武器，再帶回商會販售。出發後請先依教學開啟「自動補血」，並確認藥水庫存。',{actionLabel:'前往草原',onAction:()=>{game.act('save');const url=new URL('../幻靈奇旅/survivors/?merchantMeadow=1',location.href);if(globalThis.PORTAL_GUEST){url.searchParams.set('guest','1');if(url.pathname.startsWith('/game/'))url.pathname=url.pathname.replace('/game/','/game/guest/');carryMerchantGuest();}location.assign(url);}});}
+function enterMeadow(){hub.close();const depart=()=>{game.act('save');const url=new URL('../幻靈奇旅/survivors/?merchantMeadow=1',location.href);if(globalThis.PORTAL_GUEST){url.searchParams.set('guest','1');if(url.pathname.startsWith('/game/'))url.pathname=url.pathname.replace('/game/','/game/guest/');carryMerchantGuest();}location.assign(url);};let visited=!!game.state.tutorialSeen?.['meadow-entry'];try{visited||=localStorage.getItem(MEADOW_KEY)!==null;}catch{}if(visited){if(!game.state.tutorialSeen?.['meadow-entry'])game.act('ackTutorial',{id:'meadow-entry'});depart();return;}showManagerDialogue('草原每波 24 秒，共 10 波。擊倒魔物後走近拾取武器，再帶回商會販售；首次入場會協助設定自動補血。',{actionLabel:'前往草原',onAction:()=>{const result=game.act('ackTutorial',{id:'meadow-entry'});if(!result.ok){toast(result.message,true);return;}depart();}});}
 async function boot(){let gate;try{
  const loading=$('#loading');loading.style.display='flex';loading.setAttribute('aria-busy','true');$('#load-message').textContent='正在準備商會資料與場景素材…';
  gate=createLoadingGate(globalThis.THREE,(done,total)=>{$('#load-message').textContent='正在載入場景素材 '+done+' / '+total;});

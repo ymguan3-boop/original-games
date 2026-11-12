@@ -190,3 +190,8 @@ html body header.topbar .status-row #hud-clock{word-break:keep-all!important;ove
 /* 底部四個入口開出的選單：貼在畫面下方、位於入口列上方，不再擋在正中間 */
 html body #hub:not([hidden]){align-items:flex-end!important;justify-content:center!important;padding-bottom:calc(var(--dock-h,64px) + 12px + env(safe-area-inset-bottom,0px))!important}
 #hub .hub-box,#hub>div,#hub>section{margin-bottom:0!important;max-height:min(62vh,calc(100dvh - 190px))!important;overflow:auto}
+
+/* 店內員工的無框簡潔資訊；滑鼠與觸控仍可點選查看員工。 */
+html body #staff-labels .staff-head-label,html body #staff-labels .staff-head-label:hover{display:flex!important;align-items:center;justify-content:center;gap:6px!important;width:auto!important;max-width:none!important;min-width:0!important;padding:2px 3px!important;border:0!important;border-radius:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;color:#3e2818!important;font-size:12px!important;text-shadow:0 1px 2px #fff,1px 0 2px #fff,-1px 0 2px #fff!important}
+html body #staff-labels .staff-head-label b,html body #staff-labels .staff-head-label .staff-compact-fatigue{font-size:12px!important;color:inherit!important}
+html body #staff-labels .staff-head-label[hidden]{display:none!important}

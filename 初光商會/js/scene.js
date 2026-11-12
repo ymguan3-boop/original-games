@@ -17,7 +17,7 @@ const CHIBI=true;
 /* 宣傳員走動：在門前院子隨機選點，直線路徑上不能碰到擺設與建築 */
 const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,greetCool:0,area:null};
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261112-v31h';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261112-furniture-v34';
 import {createAssets} from './asset-resolver.js?v=20261112-v31h';
 import {isLayoutValid,ENTRANCE} from './nav.js?v=20261112-v31h';
 import {sampleTrail,turnToward} from './motion.js?v=20261112-v31h';
