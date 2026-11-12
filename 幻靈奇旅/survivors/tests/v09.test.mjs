@@ -1,7 +1,7 @@
 import {familyRoot} from '../js/family-progress.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {cardBase,CARD_TIERS,PASSIVE_UNITS} from '../js/card-balance.js';
 import {basicStats,passiveAt} from '../js/growth.js';
 import {makePet} from '../js/pet-party.js';
@@ -32,6 +32,7 @@ test('all yellow stage 3 <= purple stage 2 <= every red in base stats and same-i
  const yellow=species.filter(s=>(s.cardFrame||'yellow')==='yellow'&&s.stage===3),purple=species.filter(s=>s.cardFrame==='purple'&&s.stage===2),red=species.filter(s=>s.cardFrame==='red');assert.ok(yellow.length&&purple.length&&red.length);
  let comparisons=0;for(const level of[1,10,20,30,40,50])for(const rank of[0,10])for(const [left,right] of[[yellow,purple],[purple,red]])for(const a of left)for(const b of right){const state={training:{[a.id]:{hp:rank,attack:rank,defense:rank},[b.id]:{hp:rank,attack:rank,defense:rank}},growth:{[a.id]:{level},[b.id]:{level}}},A=basicStats(a,state),B=basicStats(b,state);for(const key of['hp','attack','defense'])assert.ok(A[key]<=B[key],`${a.id}/${b.id} ${key}`);comparisons++;}
  const rows=species.map(s=>({id:s.id,name:s.name,frame:s.cardFrame||'yellow',stage:s.stage,...cardBase(s),passive:defs[s.id]}));
+ mkdirSync(new URL('../qa/',import.meta.url),{recursive:true});/* 報告資料夾可能不在版本庫裡，寫檔前先建立 */
  writeFileSync(new URL('../qa/v09-balance.json',import.meta.url),JSON.stringify({baseline:'Equal growth level, training, local level, element and combat buffs. Different passive categories compare via common rarity power and per-effect unit.',comparisons,tiers:CARD_TIERS,passiveUnits:PASSIVE_UNITS,rows},null,2));
 });
 test('all 64 passive definitions use the declared tier and effect units; milestone potency remains ordered',()=>{
