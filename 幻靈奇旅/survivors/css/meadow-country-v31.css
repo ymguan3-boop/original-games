@@ -46,3 +46,15 @@ body.merchant-meadow .wallet-strip{background:#f8ecd2!important;background-image
 body.merchant-meadow .wallet-strip span,body.merchant-meadow .wallet-strip strong,body.merchant-meadow .wallet-strip small{color:#4a2e1c!important}
 body.merchant-meadow .wallet-strip strong{color:#b5651d!important}
 body.merchant-meadow .wallet-strip svg,body.merchant-meadow .wallet-strip i{color:#b5651d!important;fill:currentColor}
+/* 草原的探險補給、商店、編組等視窗：說明文字、數量徽章、深色底框全部改成奶油底咖啡字 */
+body.merchant-meadow dialog :where(p,small,span,strong,b,em,i,li,label,h2,h3,h4,summary,div,legend){color:#4a2e1c!important;text-shadow:none!important}
+body.merchant-meadow dialog .item-copy p,body.merchant-meadow dialog .compact-note,body.merchant-meadow dialog .weapon-passive{color:#6e5232!important;opacity:1!important}
+body.merchant-meadow dialog .item-emblem{background:#fff8ea!important;border:2px solid #4a2e1c66!important;box-shadow:none!important}
+body.merchant-meadow dialog .item-emblem b{background:#4a2e1c!important;color:#fff8ea!important;border:0!important}
+body.merchant-meadow dialog .auto-item-control,body.merchant-meadow dialog .party-vitals span,body.merchant-meadow dialog .segmented,body.merchant-meadow dialog .buff-details,body.merchant-meadow dialog .shop-row,body.merchant-meadow dialog .inventory-row{background:#f8ecd2!important;border:2px solid #4a2e1c33!important;box-shadow:none!important;opacity:1!important}
+body.merchant-meadow dialog .auto-item-control input{accent-color:#6a9a3e}
+body.merchant-meadow dialog .auto-item-control.enabled{background:#e4f0c8!important}
+body.merchant-meadow dialog .bag-footer,body.merchant-meadow dialog .supply-tools+*{background:transparent!important}
+body.merchant-meadow dialog button.primary,body.merchant-meadow dialog button.primary *,body.merchant-meadow dialog button.selected,body.merchant-meadow dialog button.selected *{color:#fff!important}
+body.merchant-meadow dialog button:disabled,body.merchant-meadow dialog button:disabled *{color:#8a7458!important;opacity:.85}
+body.merchant-meadow dialog .panel-notice{background:#fff0c4!important;border:2px solid #4a2e1c!important}
