@@ -1,26 +1,26 @@
-import {hasDecorModel} from './decor-models-v22.js?v=20261112-v31c';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261112-v31c';
-import {promoterHireCost} from './shop-entry-rules.js?v=20261112-v31c';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261112-v31c';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261112-v31c';
-import {clockText} from './shop-clock.js?v=20261112-v31c';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261112-v31c';
-import {pendingRewards} from './reward-collection.js?v=20261112-v31c';
+import {hasDecorModel} from './decor-models-v22.js?v=20261112-v31d';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261112-v31d';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261112-v31d';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261112-v31d';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261112-v31d';
+import {clockText} from './shop-clock.js?v=20261112-v31d';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261112-v31d';
+import {pendingRewards} from './reward-collection.js?v=20261112-v31d';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
 import {WEAPONS} from '../../幻靈奇旅/survivors/js/inventory.js?v=20261030-reaper-v2';
-import {spiritPortrait} from './spirit-cards.js?v=20261112-v31c';
-import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261112-v31c';
-import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261112-v31c';
-import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261112-v31c';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261112-v31c';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261112-v31c';
-import {chapterObjectives} from './shop-chapters.js?v=20261112-v31c';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261112-v31c';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31c';
-import {requiresManagerPatrol} from './event-routing.js?v=20261112-v31c';
-import {eventEmployee} from './patrol-events.js?v=20261112-v31c';
-import {ledgerPanel} from './ledger-panel.js?v=20261112-v31c';
+import {spiritPortrait} from './spirit-cards.js?v=20261112-v31d';
+import {pickFortune,showFortune,isQueueComplaint} from './fortune-cards.js?v=20261112-v31d';
+import {shelfTypes,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261112-v31d';
+import {decorTypes,decorLimit,decorDefinition} from './decorations.js?v=20261112-v31d';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261112-v31d';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261112-v31d';
+import {chapterObjectives} from './shop-chapters.js?v=20261112-v31d';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261112-v31d';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261112-v31d';
+import {requiresManagerPatrol} from './event-routing.js?v=20261112-v31d';
+import {eventEmployee} from './patrol-events.js?v=20261112-v31d';
+import {ledgerPanel} from './ledger-panel.js?v=20261112-v31d';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;

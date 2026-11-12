@@ -1,4 +1,4 @@
-import {dimensions,buildingLevel} from './nav.js?v=20261112-v31c';
+import {dimensions,buildingLevel} from './nav.js?v=20261112-v31d';
 export const WALL_TYPES=new Set(['clock','painting','couplet']);
 export const PLANT_TYPES=new Set(['plant','fern','lavender','citrus']);
 const sideNames={back:'後牆',front:'門面牆',left:'左牆',right:'右牆'};

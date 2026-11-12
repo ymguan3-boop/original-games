@@ -1,5 +1,5 @@
 /* 星冠限定武器櫃：雕金弧楣、月桂、寶石與紅絨階台。靜態零件合併為一個網格。 */
-import {builder} from './product-models.js?v=20261112-v31c';
+import {builder} from './product-models.js?v=20261112-v31d';
 let cached;
 export function limitedRack(T){
  if(cached)return cached;

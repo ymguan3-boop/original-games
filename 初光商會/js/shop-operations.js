@@ -1,10 +1,10 @@
-import {decorEffects,obstacles} from './decorations.js?v=20261112-v31c';
-import {purchaseChance} from './economy-v2.js?v=20261112-v31c';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261112-v31c';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261112-v31c';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261112-v31c';
-import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261112-v31c';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261112-v31c';
+import {decorEffects,obstacles} from './decorations.js?v=20261112-v31d';
+import {purchaseChance} from './economy-v2.js?v=20261112-v31d';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261112-v31d';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261112-v31d';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261112-v31d';
+import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261112-v31d';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261112-v31d';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}

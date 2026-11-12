@@ -1,6 +1,6 @@
 /* 命運／機會卡：處理「顧客等太久、沒有收銀員」時，從三張蓋著的卡選一張，結果可能賺錢、賠錢或發生怪事。
  * 結果由 applyFortune 在存檔交易內套用；畫面只負責翻牌。 */
-import {ENTRANCE} from './nav.js?v=20261112-v31c';
+import {ENTRANCE} from './nav.js?v=20261112-v31d';
 
 export const FORTUNE=[
  {id:'tip',deck:'機會',icon:'💰',title:'客人塞小費',text:'等到的客人心情大好，多給了小費。',gold:200,weight:5},
