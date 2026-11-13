@@ -1,4 +1,4 @@
-/* 命運／機會卡：處理「顧客等太久、沒有收銀員」時，從三張蓋著的卡選一張，結果可能賺錢、賠錢或發生怪事。
+/* 命運／機會卡：主管收銀時可決定本次營業機會是否抽卡，結果在交易中鎖定。
  * 結果由 applyFortune 在存檔交易內套用；畫面只負責翻牌。 */
 import {ENTRANCE} from './nav.js?v=20261113-v36';
 
@@ -6,7 +6,8 @@ export const FORTUNE=[
  {id:'tip',deck:'機會',icon:'💰',title:'客人塞小費',text:'等到的客人心情大好，多給了小費。',gold:200,weight:5},
  {id:'wallet',deck:'機會',icon:'👛',title:'撿到錢包',text:'把客人掉的錢包還回去，收到一筆謝禮。',gold:500,weight:3},
  {id:'laugh',deck:'機會',icon:'😄',title:'排隊講笑話',text:'主角在隊伍旁講笑話，大家都笑了。滿意度 +2。',satisfaction:2,weight:4},
- {id:'zhaocai',deck:'機會',icon:'🐶',title:'招財來幫忙',text:'招財跑來收銀，排隊的客人都不用再等。',queue:'serve',weight:4},
+ {id:'zhaocai',deck:'機會',icon:'🐶',title:'招財來幫忙',text:'招財協助櫃台，收銀加速 25 秒，排隊顧客重新安心等待。',queue:'serve',checkout:25,weight:4},
+ {id:'calm',deck:'機會',icon:'🎀',title:'付費安撫服務',text:'花費 25 G 準備小禮物，暫時清除排隊顧客的不耐。資金不足則無法發送，本次機會仍會結束。',cost:25,queue:'serve',weight:3},
  {id:'merchant',deck:'機會',icon:'🎁',title:'神秘商人',text:'路過的商人留下一箱貨，倉庫多了 5 件商品。',gift:5,weight:3},
  {id:'jam',deck:'命運',icon:'🧾',title:'收銀機卡紙',text:'收銀機卡住了，請人修理花了一筆錢。',gold:-150,weight:5},
  {id:'change',deck:'命運',icon:'🪙',title:'找錯錢',text:'手忙腳亂找錯錢，損失了一些營收。',gold:-300,weight:4},
@@ -16,17 +17,24 @@ export const FORTUNE=[
 ];
 const QUEUE=['Queue','Checkout','Cart'];
 export function pickFortune(rand=Math.random){const total=FORTUNE.reduce((n,f)=>n+f.weight,0);let r=rand()*total;for(const f of FORTUNE){r-=f.weight;if(r<0)return f;}return FORTUNE[0];}
-/* 只有排隊、收銀類的客訴才用抽卡處理 */
+/* 辨識排隊、收銀類客訴；安撫與主管抽卡各自處理。 */
 export function isQueueComplaint(c,reason=''){return !!c&&(/排隊|收銀|等太久|等得/.test(`${reason||''} ${c.angerReason||''}`)||QUEUE.includes(c.state)&&(c.wait||0)>=Math.max(2,(c.patience||30)*.5));}
 
 export function applyFortune(g,s,p){
- const f=FORTUNE.find(x=>x.id===p.outcome);if(!f)throw Error('沒有這張卡');
+ const opportunity=s.fortuneOpportunity;
+ if(s.phase!=='open'||s.managerDuty!=='cashier'||g.managerActive)throw Error('只有主管正在櫃台收銀時可決定抽卡');
+ if(!opportunity||opportunity.day!==s.day||opportunity.id!==p.opportunityId||opportunity.status!=='pending')throw Error('這次機會已決定或已過期，不能重新選擇');
+ if(p.decision==='skip'){opportunity.status='skipped';g.log?.(s,'主管決定不抽本次命運／機會卡。');return '本次選擇不抽，已鎖定決定';}
+ if(p.decision!=='draw')throw Error('請選擇抽卡或不抽');
+ const f=pickFortune(()=>g.random(s));opportunity.status='drawn';opportunity.outcome=f.id;opportunity.result={...f};
+ if(f.checkout)s.buffs.checkout=s.totalTime+f.checkout;
  const c=s.customers.find(x=>x.id===p.customerId);if(c){c.fortuneDrawCount=(c.fortuneDrawCount||0)+1;delete c.fortuneDrawn;if(QUEUE.includes(c.state)){c.wait=0;c.emotion='happy';}}
+ if(f.cost){if(s.gold<f.cost){opportunity.result.text='資金不足，無法準備安撫禮物；本次機會已結束。';return opportunity.result.text;}g.pay(s,f.cost);s.stats.expenses=(s.stats.expenses||0)+f.cost;}
  if(f.gold>0){s.gold+=f.gold;}else if(f.gold<0){const lost=Math.min(s.gold,-f.gold);s.gold-=lost;s.stats.expenses=(s.stats.expenses||0)+lost;}
  if(f.satisfaction)s.satisfaction=Math.max(0,Math.min(100,(s.satisfaction||0)+f.satisfaction));
- if(f.queue==='serve')for(const x of s.customers)if(QUEUE.includes(x.state)){x.wait=0;x.emotion='happy';}
+ if(f.queue==='serve')for(const x of s.customers)if(QUEUE.includes(x.state)){x.wait=0;x.emotion='happy';x.calmUntil=Math.max(x.calmUntil||0,s.totalTime+20);}
  if(f.queue==='leave')for(const x of s.customers)if(QUEUE.includes(x.state)){x.basket=[];x.state='Leave';x.timer=0;x.path=[];x.emotion='sad';g.route?.(s,x,ENTRANCE);}
- if(f.gift){const pool=g.data.catalog.filter(i=>i.isSellable&&!i.isRestricted&&!i.lootOnly&&s.level>=i.unlockStoreLevel);const item=pool[Math.floor((p.roll??Math.random())*pool.length)]||pool[0];if(item)s.inventory[item.sku]=(s.inventory[item.sku]||0)+f.gift;}
+ if(f.gift){const pool=g.data.catalog.filter(i=>i.isSellable&&!i.isRestricted&&!i.lootOnly&&s.level>=i.unlockStoreLevel);const item=pool[Math.floor(g.random(s)*pool.length)]||pool[0];if(item)s.inventory[item.sku]=(s.inventory[item.sku]||0)+f.gift;}
  if(f.typhoon){for(const sh of s.shelves)s.inventory[sh.sku]=(s.inventory[sh.sku]||0)+(sh.stock||0);s.shelves=[];s.undo=null;for(const x of s.customers){x.basket=[];x.path=[];if(!['Leave','Paid'].includes(x.state)){x.state='Leave';x.timer=0;g.route?.(s,x,ENTRANCE);}}for(const x of s.employees){x.path=[];x.workTask=null;}}
  g.log?.(s,`${f.deck}卡「${f.title}」：${f.text}`);if(c)g.notice?.(s,c.id,`${f.icon} ${f.title}`,f.deck==='機會'?'good':'bad');
  return `${f.deck}卡：${f.title}`;
@@ -63,12 +71,12 @@ export function showFortune({onPick,onClose=()=>{}}){
 .fortune-buttons{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .fortune-buttons .fortune-ok{padding:8px 16px;font-size:14px;min-width:0}
 `;document.head.appendChild(st);}
- const mask=document.createElement('div');mask.className='fortune-mask';mask.innerHTML=`<div class="fortune-box" role="dialog" aria-label="命運機會卡"><h3>命運／機會</h3><p>顧客等太久了！選一張卡，看看會發生什麼事。每次抽卡都會套用結果，可再次抽取。</p><div class="fortune-row"></div><div class="fortune-buttons"><button type="button" class="fortune-ok fortune-again" hidden>再抽一次</button><button type="button" class="fortune-ok fortune-close" hidden>完成</button></div></div>`;
- const row=mask.querySelector('.fortune-row'),ok=mask.querySelector('.fortune-close'),again=mask.querySelector('.fortune-again'),cards=[];let revealTimer;
+ const mask=document.createElement('div');mask.className='fortune-mask';mask.innerHTML=`<div class="fortune-box" role="dialog" aria-label="命運機會卡"><h3>命運／機會</h3><p>這是主管收銀的本次機會。選一張卡後立即套用結果，每次機會只能抽一次。</p><div class="fortune-row"></div><div class="fortune-buttons"><button type="button" class="fortune-ok fortune-close" hidden>完成</button></div></div>`;
+ const row=mask.querySelector('.fortune-row'),ok=mask.querySelector('.fortune-close'),cards=[];let revealTimer;
  const close=()=>{clearTimeout(revealTimer);mask.remove();onClose();};ok.onclick=close;
- again.onclick=()=>{clearTimeout(revealTimer);row.classList.remove('revealed');for(const c of cards){c.classList.remove('done','dim','flip');c.querySelector('.fortune-front').replaceChildren();}again.hidden=true;ok.hidden=true;cards[0].focus();};
+
  for(let i=0;i<3;i++){const b=document.createElement('button');b.type='button';b.className='fortune-card';const deck=i===1?'機會':'命運';b.innerHTML=`<span class="fortune-inner"><span class="fortune-face fortune-back ${deck==='機會'?'blue':''}"><i>${deck==='機會'?'？':'！'}</i><b>${deck}</b></span><span class="fortune-face fortune-front"></span></span>`;
-  b.onclick=()=>{if(cards.some(c=>c.classList.contains('done')))return;const f=onPick();if(!f){close();return;}b.querySelector('.fortune-front').innerHTML=`<span class="tag ${f.deck==='命運'?'bad':''}">${f.deck}</span><i>${f.icon}</i><b>${f.title}</b><small>${f.text}</small>`;for(const c of cards){c.classList.add('done');if(c!==b)c.classList.add('dim');}row.classList.add('revealed');b.classList.add('flip');revealTimer=setTimeout(()=>{ok.hidden=false;again.hidden=false;ok.focus();},650);};
+  b.onclick=()=>{if(cards.some(c=>c.classList.contains('done')))return;const f=onPick();if(!f){close();return;}b.querySelector('.fortune-front').innerHTML=`<span class="tag ${f.deck==='命運'?'bad':''}">${f.deck}</span><i>${f.icon}</i><b>${f.title}</b><small>${f.text}</small>`;for(const c of cards){c.classList.add('done');if(c!==b)c.classList.add('dim');}row.classList.add('revealed');b.classList.add('flip');revealTimer=setTimeout(()=>{ok.hidden=false;ok.focus();},650);};
   cards.push(b);row.appendChild(b);}
  document.body.appendChild(mask);return {close};
 }

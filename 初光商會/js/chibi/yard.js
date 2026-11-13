@@ -12,7 +12,8 @@ export function layout(level,o={}){const L={...LEVELS[level],...(o.w?{w:o.w}:{})
 
 const mats=new Map();
 const toon=(c,o={})=>{const k=c+JSON.stringify(o);if(!mats.has(k)){const m=new THREE.MeshToonMaterial({color:c,gradientMap:ramp(),...o});if(CFG.linear){m.color.convertSRGBToLinear();m.emissive?.convertSRGBToLinear();}mats.set(k,m);}return mats.get(k);};
-const texMat=(tex,rx,ry)=>{const m=tex.clone();m.needsUpdate=true;m.repeat.set(rx,ry);return new THREE.MeshToonMaterial({map:m,gradientMap:ramp()});};
+const roadMaps=new Set();
+const texMat=(tex,rx,ry)=>{const m=tex.clone();if(tex.userData?.road){roadMaps.add(m);m.addEventListener('dispose',()=>roadMaps.delete(m));}m.needsUpdate=true;m.repeat.set(rx,ry);return new THREE.MeshToonMaterial({map:m,gradientMap:ramp()});};
 function mk(geo,mat,x=0,y=0,z=0,parent,round=false){const o=new THREE.Mesh(geo,mat);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent?.add(o);if(round)hull(o,.012);return o;}
 const B=(w,h,d,c,x,y,z,p)=>mk(new THREE.BoxGeometry(w,h,d),typeof c==='number'?toon(c):c,x,y,z,p);
 const C=(r1,r2,h,c,x,y,z,p,seg=14,round=true)=>mk(new THREE.CylinderGeometry(r1,r2,h,seg),typeof c==='number'?toon(c):c,x,y,z,p,round);
@@ -118,7 +119,7 @@ function bubble(text){const t=canvasTex(256,96,(g,W,H)=>{g.font='900 34px "Micro
  t.wrapS=THREE.ClampToEdgeWrapping;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false}));s.scale.set(1.9,.71,1);s.renderOrder=10;return s;}
 
 /* 冒險者在草地上和一隻幻靈對打：揮劍、命中閃光、幻靈被擊退後彈回來反撲，三秒一輪 */
-function fieldBattle(parent,x,z,anim){
+function fieldBattle(parent,x,z,anim,{duo=false}={}){
  const g=new THREE.Group();g.position.set(x,G,z);g.scale.setScalar(1.2);parent.add(g);
  const hero=person({seed:5151,shirt:0x4f7fc8,pants:0x6e5a44,hair:0x8a4a2a,style:'short',skirt:false,scale:1.15});hero.weatherExposed=true;hero.g.name='yard-sparring-person';hero.g.rotation.y=Math.PI/2;g.add(hero.g);
  const blade=new THREE.Group();blade.position.set(0,-.02,.02);hero.arms[1].hand.add(blade);
@@ -126,12 +127,24 @@ function fieldBattle(parent,x,z,anim){
  const shield=mk(new THREE.CylinderGeometry(.13,.13,.04,14),toon(0xc0503a),0,-.02,.05,hero.arms[0].hand,true);shield.rotation.x=Math.PI/2;
  /* 幻靈：遊戲裡的「小熊」模型，面向冒險者 */
  const mon=new THREE.Group();mon.position.set(1.7,0,0);g.add(mon);const body=new THREE.Group();mon.add(body);
+ let mage=null,mageExposure=null,orb=null,magicRing=null;
+ if(duo){
+  mage=person({seed:5252,shirt:0x34599a,pants:0x283b6b,hair:0x493747,style:'short',skirt:false,scale:1.08});mage.weatherExposed=true;mage.g.name='yard-sparring-mage';mage.g.position.set(-.45,0,1.25);mage.g.rotation.y=Math.PI/2;g.add(mage.g);
+  C(.19,.29,.48,0x34599a,0,.48,0,mage.body,12);C(.29,.29,.025,0xd9b75d,0,.245,0,mage.body,12,false);
+  const brim=C(.34,.34,.035,0x283b6b,0,1.23,0,mage.body,14,false);const hat=mk(new THREE.ConeGeometry(.27,.48,12),toon(0x34599a),0,1.48,0,mage.body,true);hat.rotation.z=-.12;C(.27,.27,.035,0xd9b75d,0,1.265,0,mage.body,12,false);
+  const staff=new THREE.Group();mage.arms[1].hand.add(staff);C(.018,.022,.7,0x78513b,0,.12,0,staff,6,false);mk(new THREE.OctahedronGeometry(.085),toon(0x8deaff,{emissive:0x3baed6,emissiveIntensity:.4}),0,.51,0,staff);
+  mage.g.traverse(o=>{if(o.userData.isHull)o.parent.remove(o);});addIllustratedOutline(THREE,mage.g,{thickness:.035});
+  mageExposure=createWeatherExposure(THREE,{target:mage.g,snowParent:mage.body,snowPatches:[{x:0,y:1.72,z:0,rx:.055,rz:.055},{x:0,y:1.25,z:.23,rx:.14,rz:.065},{x:-.22,y:.755,z:.04,rx:.065,rz:.07},{x:.22,y:.755,z:.04,rx:.065,rz:.07}]});
+  orb=mk(new THREE.IcosahedronGeometry(.1,0),toon(0x91e9ff,{emissive:0x38bce8,emissiveIntensity:.6}),0,0,0,g);orb.name='yard-mage-projectile';orb.visible=false;
+  magicRing=mk(new THREE.TorusGeometry(.28,.014,4,20),toon(0xe8c76d,{emissive:0x77c9ee,emissiveIntensity:.3}),0,0,0,g);magicRing.name='yard-mage-shield';magicRing.rotation.y=Math.PI/2;
+ }
+
  let heroExposure=null,bearExposure=null,battleWeather='sunny',battleDisposed=false;
  const flash=[],skin={set emissiveIntensity(v){for(const m of flash)m.emissive?.setRGB(v*.9,v*.9,v*.9);}},sprout={rotation:{z:0}};
  if(THREE.GLTFLoader)new THREE.GLTFLoader().load('../幻靈奇旅/models/spirits/fire-bear-1.glb',gl=>{if(battleDisposed)return;const o=gl.scene;o.name='yard-sparring-bear';o.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(o),size=box.getSize(new THREE.Vector3()),k=1.05/Math.max(size.y,.001);o.scale.setScalar(k);o.position.y=-box.min.y*k;o.rotation.y=-Math.PI/2;o.traverse(n=>{if(n.isMesh){n.castShadow=true;n.material=n.material.clone();flash.push(n.material);n.userData.noOutline=false;}});body.add(o);addIllustratedOutline(THREE,o,{thickness:.045});bearExposure=createWeatherExposure(THREE,{target:o,snowParent:body,snowPatches:surfaceSnowPatches(THREE,o,body,[{x:0,y:1.045,z:0,rx:.10,rz:.09},{x:.12,y:.73,z:-.19,rx:.075,rz:.06},{x:.12,y:.73,z:.19,rx:.075,rz:.06},{x:.23,y:.73,z:0,rx:.08,rz:.10}])});bearExposure.update(battleWeather);},undefined,()=>{});
  hero.g.traverse(o=>{if(o.userData.isHull)o.parent.remove(o);});addIllustratedOutline(THREE,hero.g,{thickness:.045});
  heroExposure=createWeatherExposure(THREE,{target:hero.g,snowParent:hero.body,snowPatches:[{x:0,y:1.299,z:0,rx:.19,rz:.16},{x:-.22,y:.755,z:.04,rx:.065,rz:.07},{x:.22,y:.755,z:.04,rx:.065,rz:.07},{x:0,y:.66,z:-.16,rx:.12,rz:.045}]});
- g.name='yard-sparring-pair';weatherBattles.set(g,{update(weather){battleWeather=weather;heroExposure.update(weather);bearExposure?.update(weather);},dispose(){battleDisposed=true;heroExposure.dispose();bearExposure?.dispose();}});
+ g.name=duo?'yard-sparring-trio':'yard-sparring-pair';g.userData.battleParticipants=duo?3:2;weatherBattles.set(g,{update(weather){battleWeather=weather;heroExposure.update(weather);bearExposure?.update(weather);mageExposure?.update(weather);},dispose(){battleDisposed=true;heroExposure.dispose();bearExposure?.dispose();mageExposure?.dispose();}});
  const shadow=mk(new THREE.CircleGeometry(.4,18),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.18,depthWrite:false}),0,.01,0,mon);shadow.rotation.x=-Math.PI/2;shadow.castShadow=false;
  /* 命中特效：金色星芒＋「砰！」 */
  const spark=new THREE.Group();g.add(spark);for(let i=0;i<6;i++){const st=mk(new THREE.OctahedronGeometry(.08),toon(0xffd84a,{emissive:0xffb020,emissiveIntensity:.8}),0,0,0,spark);st.userData.a=i/6*Math.PI*2;}spark.visible=false;
@@ -144,27 +157,38 @@ function fieldBattle(parent,x,z,anim){
   const swing=u<1.2?-2.3+Math.sin(u*4)*.12:u<1.55?-2.3+ease((u-1.2)/.35)*3:u<2.2?.7-ease((u-1.55)/.65)*3:-2.3;hero.arms[1].sh.rotation.x=swing;hero.arms[0].sh.rotation.x=-.9;hero.arms[0].sh.rotation.z=.3;
   const step=u>1.2&&u<1.5?Math.sin((u-1.2)/.3*Math.PI)*.6:0;hero.legs[0].rotation.x=step;hero.legs[1].rotation.x=-step;
   /* 幻靈：原地彈跳 → 被擊中閃白、壓扁、擊退 → 彈回 → 反撲 */
-  const hit=u>1.45&&u<1.75,knock=u<1.45?0:u<1.8?ease((u-1.45)/.35)*.75:u<2.4?.75*(1-ease((u-1.8)/.6)):0,tackle=u>2.4&&u<2.9?Math.sin((u-2.4)/.5*Math.PI)*.7:0;
+  const magicHit=duo&&u>.98&&u<1.16,hit=(u>1.45&&u<1.75)||magicHit,knock=u<1.45?0:u<1.8?ease((u-1.45)/.35)*.75:u<2.4?.75*(1-ease((u-1.8)/.6)):0,tackle=u>2.4&&u<2.9?Math.sin((u-2.4)/.5*Math.PI)*.7:0;
   mon.position.x=1.7+knock-tackle;const hop=u<1.45?Math.abs(Math.sin(u*5))*.18:u>2.4?Math.abs(Math.sin((u-2.4)*6.3))*.25:0;body.position.y=hop;
-  const squash=hit?1-Math.sin((u-1.45)/.3*Math.PI)*.35:1;body.scale.set(1/Math.sqrt(squash),squash,1/Math.sqrt(squash));body.rotation.z=hit?-.35:tackle*.4;
+  const squash=magicHit?.86:hit?1-Math.sin((u-1.45)/.3*Math.PI)*.35:1;body.scale.set(1/Math.sqrt(squash),squash,1/Math.sqrt(squash));body.rotation.z=hit?-.35:tackle*.4;
   skin.emissiveIntensity=hit?.55:0;shadow.scale.setScalar(1-hop*.8);sprout.rotation.z=Math.sin(t*9)*.25;
-  spark.visible=hit;if(hit){const k=(u-1.45)/.3;spark.position.set(1.25,.6,0);spark.children.forEach(st=>{const r=.15+k*.45;st.position.set(Math.cos(st.userData.a)*r*.4,Math.sin(st.userData.a)*r,Math.sin(st.userData.a*2)*.1);st.scale.setScalar(1-k*.6);});}
+  spark.visible=hit;if(hit){const k=magicHit?(u-.98)/.18:(u-1.45)/.3;spark.position.set(1.25,.6,0);spark.children.forEach(st=>{const r=.15+k*.45;st.position.set(Math.cos(st.userData.a)*r*.4,Math.sin(st.userData.a)*r,Math.sin(st.userData.a*2)*.1);st.scale.setScalar(1-k*.6);});}
+  if(mage){const casting=u>.35&&u<1.08,defending=u>2.4;mage.pose(.016,false);mage.arms[1].sh.rotation.x=casting?-.75:-.15;mage.arms[0].sh.rotation.x=defending?-1.25:-.3;mage.body.rotation.z=defending?Math.sin((u-2.4)*Math.PI/.6)*.12:0;mage.body.position.y=Math.sin(t*2.5)*.012;const k=(u-.58)/.42;orb.visible=k>=0&&k<=1;if(orb.visible){orb.position.set(-.25+(mon.position.x+.25)*k,1.05+Math.sin(k*Math.PI)*.16,1.25*(1-k));orb.rotation.y=t*8;}magicRing.visible=casting||defending;magicRing.position.set(-.08,.8,1.25);magicRing.scale.setScalar(defending?1.1:.6+Math.sin(u*8)*.08);magicRing.rotation.x=t*.7;}
   pow.visible=u>1.45&&u<2.05;if(pow.visible){pow.position.set(1.4,1.55+(u-1.45)*.5,0);pow.material.opacity=Math.min(1,(2.05-u)*4);}
  });
  return g;}
 
+/* Warm, quiet flagstones: road-only, with a narrow flush stone border. */
+let paintedRoad;
+function roadPavingTex(){
+ if(paintedRoad)return paintedRoad;
+ paintedRoad=canvasTex(1024,1024,(c,W,H)=>{c.fillStyle='#d1c8b7';c.fillRect(0,0,W,H);});
+ paintedRoad.userData={road:true};paintedRoad.anisotropy=4;
+ const image=new Image();image.onload=()=>{const c=paintedRoad.image;c.getContext('2d').drawImage(image,0,0,c.width,c.height);paintedRoad.needsUpdate=true;for(const t of roadMaps)t.needsUpdate=true;};image.src='./assets/roads-v37/limestone-v37.webp';
+ return paintedRoad;
+}
 /* ---------- 主程式 ---------- */
 export const CROWD=[null,{shop:1,pass:2,idle:0},{shop:3,pass:2,idle:0},{shop:5,pass:3,idle:1},{shop:8,pass:5,idle:2},{shop:12,pass:7,idle:3}];
 export function buildYard(level,opts={}){
  G=GROUND;const ambient=!!opts.ambient;const Y=layout(level,opts),{w,d,half,zF,zS,zR,pw,H,doorX:DX}=Y,root=new THREE.Group(),props=new THREE.Group(),anim=[];root.add(props);
  const R=rng(level*131+17);
  /* 地面：L1 泥土路；L2 石板小徑；L3 以上整片石板廣場 */
- const road=level===1?dirtTex():cobbleTex();
+ const road=level===1?dirtTex():roadPavingTex();
  const floorStrip=(x,z,ww,dd,tex,y=.02,r=1.2)=>{const m=mk(new THREE.BoxGeometry(ww,.04,dd),texMat(tex,ww/r,dd/r),x,G+y,z,root);m.castShadow=false;m.userData.noLine=true;return m;};
  floorStrip(DX,(zS+zR)/2,pw,zR-zS,road);/* 步道一路接到馬路 */
- floorStrip(0,zR,Y.roadHalf*2+20,2.2,road,.05);
+ floorStrip(0,zR,Y.roadHalf*2+20,2.2,road,.05,level===1?1.2:4);
+ if(level>=2){const trim=level>=4?0xc7b79b:0xb7ad9b;for(const side of [-1,1]){const curb=B(Y.roadHalf*2+20,.045,.09,trim,0,G+.079,zR+side*1.055,root);curb.castShadow=false;curb.userData.noLine=true;const edge=B(.08,.035,zR-zS-1.1,trim,DX+side*(pw/2-.045),G+.045,(zS+zR-1.1)/2,root);edge.castShadow=false;edge.userData.noLine=true;}}
  /* 門前保留草皮（放植栽用），只鋪步道與馬路 */if(level>=3){
-  const across=[0,0,0,6,7.5,9][level];floorStrip(0,zR+1+(across+.3)/2,[0,0,0,10,14,18][level],across+.3,plazaTex(level),.035,level===5?2:1.2);}
+  const across=[0,0,0,6,7.5,9][level];floorStrip(0,zR+1+(across+.3)/2,[0,0,0,10,14,18][level],across+.3,road,.035,4);}
  if(level===5){const c=mk(new THREE.BoxGeometry(1.4,.03,zR-1.3-zS),toon(0xb5201a),DX,G+.07,(zS+zR-1.3)/2,root);c.userData.noLine=true;c.castShadow=false;}
 
  const sideX=half+1.2,across=zR+1.3;
@@ -209,10 +233,10 @@ export function buildYard(level,opts={}){
  if(opts.cull)for(const o of [...props.children]){const p=o.position;if((p.x>half-.3&&p.z<zR-1.2)||p.z<-d/2-.2)props.remove(o);}
  if(opts.gardenArea){const a=opts.gardenArea;props.updateMatrixWorld(true);for(const o of [...props.children]){const b=new THREE.Box3().setFromObject(o),left=b.min.x<a.cx-2&&b.max.x>a.minX,right=b.max.x>a.cx+2&&b.min.x<a.maxX;if((left||right)&&b.max.z>a.minZ&&b.min.z<a.maxZ){props.remove(o);o.traverse(n=>n.geometry?.dispose());}}}
  if(opts.reserved?.length){props.updateMatrixWorld(true);for(const o of [...props.children]){const b=new THREE.Box3().setFromObject(o);if(opts.reserved.some(p=>b.max.x>p.x-p.r&&b.min.x<p.x+p.r&&b.max.z>p.z-p.r&&b.min.z<p.z+p.r)){props.remove(o);o.traverse(n=>n.geometry?.dispose());}}}
- const battleAt=level===1?{x:DX-1.6,z:across+1.1}:null;
+ const battleAt=level<=2?{x:DX-1.6,z:across+1.1}:null;
  if(battleAt)for(const o of [...props.children]){if(Math.hypot(o.position.x-battleAt.x-.8,o.position.z-battleAt.z)<2.2){props.remove(o);o.traverse(n=>n.geometry?.dispose?.());}}
  addOutline(props);
- if(battleAt)fieldBattle(root,battleAt.x,battleAt.z,anim);
+ if(battleAt)fieldBattle(root,battleAt.x,battleAt.z,anim,{duo:level===2});
 
  /* ---------- 人群 ---------- */
  const people=[],crowd=ambient?{...CROWD[level],shop:0}:CROWD[level],RX=Y.roadHalf;
@@ -279,7 +303,7 @@ export function buildYard(level,opts={}){
   for(const p of [...people,...(ambient?[]:[staff]),...idlers])if(p.bub){p.bubT-=dt;p.bub.material.opacity=Math.min(1,p.bubT*3);if(p.bubT<=0){p.g.remove(p.bub);p.bub=null;}}
  }
  root.userData={level,lineMats:props.userData.lineMats,camZ:(zR+(level>=3?[0,0,0,6,7.5,9][level]:2))/2-.6,extent:Y.roadHalf};
- return {root,update,people,staff,dispose(){for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
+ return {root,update,people,staff,dispose(){root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(roadMaps.has(m?.map)){roadMaps.delete(m.map);m.map.dispose();}});for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
 }
 
 /* 商會用的主角：同一套 Q 版畫風（黑髮、藍外套、黃色背帶與背包），提供商會角色控制介面 */

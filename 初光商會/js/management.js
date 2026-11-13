@@ -2,7 +2,7 @@ import {canStartTutorial} from './shop-entry-rules.js?v=20261113-v36';
 /* 簡化經營規則：四職務、在班名額、專屬被動、自動工作、每日任務與舊存檔遷移。
  * 所有數值都放在 data/management.json，這裡只有規則。 */
 import {shelfCapacity,accepts} from './furniture.js?v=20261113-v36';
-import {applyFortune} from './fortune-cards.js?v=20261113-v36';
+import {applyFortune} from './fortune-cards.js?v=20261113-v37';
 export const WORK_JOBS=['stocker','host','cleaner'];
 const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner',cashier:'host'};
 export const legacyRole=r=>LEGACY_ROLES[r]||r;
@@ -39,7 +39,7 @@ export function managementAction(g,s,type,p){
 export function systemRestock(g,s,dt){const n=g.data.management.noStaff;s.systemRestockTimer=(s.systemRestockTimer||0)+dt;if(s.systemRestockTimer<n.restockInterval)return;s.systemRestockTimer=0;const sh=s.shelves.find(x=>x.autoRestock!==false&&x.stock<shelfCapacity(x)&&s.inventory[x.sku]>0);if(!sh)return;const qty=Math.min(n.restockQty,s.inventory[sh.sku],shelfCapacity(sh)-sh.stock);s.inventory[sh.sku]-=qty;sh.stock+=qty;}
 export function workXp(g,s,dt){const x=g.data.management.xp;for(const e of s.employees)g.xp(s,e,x.perSecond*dt*(e.role==='standby'?x.reserveRate:1));}
 export function eventGap(g,s){const m=g.data.management.events,calm=dragonTask(g,s)?.kind==='calm'?dragonTask(g,s).value:0;return (m.minGap+g.random(s)*m.jitter)/(1-calm)*(s.speed||1);}
-export function eventAllowed(g,s){return !s.event&&!s.layoutPause&&!s.patrolFocus&&!g.uiBusy&&!!s.tutorialState?.done&&(s.cooldowns.autoEvent??0)<=s.totalTime;}
+export function eventAllowed(g,s){return false; /* Periodic events now use foreground real-time clock, not accelerated simulation. */}
 /* 舊存檔只補欄位，不刪任何貨架、家具、員工或金幣 */
 export function migrateState(g,s){
  const m=g.data.management;if((s.schemaVersion||1)>m.schemaVersion)throw Error('存檔來自較新版本，請更新遊戲');

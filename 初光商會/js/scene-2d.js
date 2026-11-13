@@ -1,3 +1,4 @@
+import {createYardBattle2D} from './yard-battle-2d.js';
 import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261113-v36';
 import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261113-v36';
 import {hasDecorModel} from './decor-models-v22.js?v=20261113-v36';
@@ -9,7 +10,7 @@ import {visibleStaff,chasePose} from './shop-presentation.js?v=20261113-v36';
 import {decorTypes,decorDefinition} from './decorations.js?v=20261113-v36';
 import {ENTRANCE} from './nav.js?v=20261113-v36';
 import {sampleTrail} from './motion.js?v=20261113-v36';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261113-v36';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261113-v37';
 import {eventEmployee} from './patrol-events.js?v=20261113-v36';
 import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261113-v36';
 import {stockCount} from './shelf-products.js?v=20261113-v36';
@@ -34,7 +35,7 @@ const stateEmotion=(type,d,s)=>{
 
 export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const metrics={assets:[],errors:[],actors:0,frames:0,renderer:'2d'},ctx=canvas.getContext('2d'),state=()=>game.state;
- const layer=document.createElement('div');layer.className='world2d';canvas.after(layer);
+ const layer=document.createElement('div');layer.className='world2d';canvas.after(layer);const yardBattle=createYardBattle2D(layer);
  let grassImg=null;const grassReady=loadImage(OUT+'grass.webp').then(i=>{grassImg=i;dirty=true;});let bgGrass='#8fc56b',windowSpots=[];const envLayer=createEnvironment2D({world:canvas,getView:()=>{const x0=X0(),y0=Y0(),c=(x,z)=>({X:x0+(x-z)*HW,Y:y0+(x+z)*HH}),a=c(0,0),r=c(dim.width,0),b=c(dim.width,dim.height),l=c(0,dim.height);return {panX,panY,scale,poly:[{X:a.X,Y:a.Y-WALL},{X:r.X,Y:r.Y-WALL},r,b,l,{X:l.X,Y:l.Y-WALL}],windows:windowSpots};}});
  const roomCanvas=document.createElement('canvas'),cellCanvas=document.createElement('canvas');cellCanvas.className='world2d-cells';layer.prepend(cellCanvas);const cellsFor=createPlacementCells(game);let cellKey='';
  /* 布置模式：擺放時綠格可放、紅格不可放；只選取物件時顯示淡格線 */
@@ -54,6 +55,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  async function buildRoom(l){
   const tag=++metrics.roomBuild||(metrics.roomBuild=1);dim=dimensions(l);roomCanvas.width=roomW();roomCanvas.height=roomH();
   const [floor,wall,win,banner,counter,door,plant,oTree,oBush,oBed,oFence,oLamp,oBanner]=await Promise.all([loadImage(`./assets/art-v11/floor-lv${l}.webp`),loadImage(`./assets/art-v11/wall-lv${l}.webp`),loadImage(SPRITES+'window.webp'),loadImage(SPRITES+'banner.webp'),loadImage(SPRITES+'counter.webp'),loadImage(SPRITES+'door.webp'),loadImage(SPRITES+'decor-plant.webp'),...['tree','bush','flowerbed','fence','lamp','banner'].map(n=>loadImage(OUT+n+'.webp'))]);
+  const roadImage=l>=2?await loadImage('./assets/roads-v37/limestone-v37.webp').catch(()=>null):null;
   if(tag!==metrics.roomBuild||!alive)return;
   const g=roomCanvas.getContext('2d'),Wd=dim.width,Hd=dim.height,x0=X0(),y0=Y0(),t=TRIM[Math.min(l,5)];g.clearRect(0,0,roomCanvas.width,roomCanvas.height);
   const corner=(x,z)=>({X:x0+(x-z)*HW,Y:y0+(x+z)*HH});const cR=corner(Wd,0),cL=corner(0,Hd),cB=corner(Wd,Hd);
@@ -62,7 +64,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   /* 道路為連續鋪面，沿店面正門接上街道；不依靠可能被裁切的小石頭貼圖。 */
   g.save();g.setTransform(HW,HH,-HW,HH,x0,y0);const doorX=Math.round((Wd-1)/2),roadZ=Hd+5;
   g.fillStyle=l===1?'#bb9160':l>=4?'#d8c7a5':'#b6aaa0';g.strokeStyle=l>=4?'#a18b57':'#847669';g.lineWidth=.035;
-  const paving=(x,z,w,d)=>{g.fillRect(x,z,w,d);g.strokeRect(x,z,w,d);for(let zz=z;zz<z+d;zz+=.55){g.beginPath();g.moveTo(x,zz);g.lineTo(x+w,zz);g.stroke();}for(let xx=x;xx<x+w;xx+=.8){g.beginPath();g.moveTo(xx,z);g.lineTo(xx,z+d);g.stroke();}};
+  const paving=(x,z,w,d)=>{if(roadImage){g.save();const pat=g.createPattern(roadImage,'repeat');pat.setTransform(new DOMMatrix().scale(4/roadImage.width));g.fillStyle=pat;g.fillRect(x,z,w,d);g.restore();g.strokeRect(x,z,w,d);return;}g.fillRect(x,z,w,d);g.strokeRect(x,z,w,d);for(let zz=z;zz<z+d;zz+=.55){g.beginPath();g.moveTo(x,zz);g.lineTo(x+w,zz);g.stroke();}for(let xx=x;xx<x+w;xx+=.8){g.beginPath();g.moveTo(xx,z);g.lineTo(xx,z+d);g.stroke();}};
   paving(doorX-1,Hd-.1,2,5.2);paving(-5,roadZ,Wd+10,2.2);
   /* 2D 的左側門框亦保留接道，避免原版存檔入口視覺中斷。 */
   paving(-4,ENTRANCE.z-.65,4,1.8);g.restore();metrics.exteriorRoad=true;
@@ -120,7 +122,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  /* 主管依行走方向換圖；側面圖面向右，往左時由 flip 翻轉。GIF 還沒到位時用靜態圖 */
  function setManagerImage(a,walking){const face=a.facing||'front',name=walking?'manager-'+face:face==='front'?'manager-idle':'manager-'+face+'-still';if(a.imageName===name)return;a.imageName=name;const still=name.endsWith('-still');a.img.onerror=()=>{a.img.onerror=null;a.img.src=SPRITES+(walking?name:'manager-'+face)+'.webp';};a.img.src=SPRITES+(still?'manager-'+face+'.webp':name+'.gif');a.img.onerror=still?null:a.img.onerror;}
  function syncActors(dt){
-  const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager)all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:CHECKOUT.x,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,...promoterPoint()},'promoter']);
+  const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager&&(mode==='follow'||s.managerDuty!=='standby'))all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:CHECKOUT.x,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,...promoterPoint()},'promoter']);
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));
   const moods=[],staffRows=[],active=new Set();
   for(const[key,d,type]of all){active.add(key);const a=ensureActor(key,d,type),trail=type==='manager'&&mode!=='follow'||type==='promoter'?null:game.motionFrame?.trails.get(key),p=type==='customer'&&(d.arrivalRemaining>0||d.arrivingNow||d.exitingAtDoor)?customerDisplayPoint(d,motionProgress,game.motionFrame?.duration||.25):trail?sampleTrail(trail,motionProgress):d,dx=p.x-a.pos.x,dz=p.z-a.pos.z,moved=dx*dx+dz*dz>.000001;a.pos={x:p.x,z:p.z};if(moved){a.moveUntil=time+.14;if(Math.abs(dx)>.002)a.flip=dx<0?-1:1;if(type==='manager')a.facing=Math.abs(dx)>Math.abs(dz)?'side':dz<0?'back':'front';}if(type==='manager')setManagerImage(a,time<a.moveUntil);
@@ -133,7 +135,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   if(s.manager&&mode==='follow'){const open=document.querySelector('dialog[open]'),ix=open?0:joystick.x+(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0),iy=open?0:joystick.y+(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);game.setManagerInput(ix,iy);fit();}
  }
  function headOf(item){if(!item)return null;const sp=spriteFor(item);return toScreen(item.x,item.z,(sp.ground?.3:sp.width*1.1)+(specialDecorPose(item,level)?.y||0));}
- function update(dt){if(!alive)return;dt=Math.min(dt,.1);time+=dt;const l=Math.min(state().level||1,5);if(l!==level){level=l;buildRoom(l);}syncItems();syncActors(dt);drawCells();if(placement)refreshPlacement();else if(selected)onFurniturePosition(headOf(furniture().find(i=>i.id===selected)));drawRoom();const env=environment(state(),game.data.config);envLayer.draw(env,dt);metrics.environment={slot:env.slot,weather:env.weather,season:env.season.id};metrics.frames++;}
+ function update(dt){if(!alive)return;dt=Math.min(dt,.1);time+=dt;const l=Math.min(state().level||1,5);if(l!==level){level=l;buildRoom(l);}syncItems();syncActors(dt);drawCells();if(placement)refreshPlacement();else if(selected)onFurniturePosition(headOf(furniture().find(i=>i.id===selected)));drawRoom();const env=environment(state(),game.data.config);envLayer.draw(env,dt);const battlePoint=P(Math.round((dim.width-1)/2)-.6,dim.height+8.2);yardBattle.update({level:l,time,weather:env.weather,x:battlePoint.X,y:battlePoint.Y,zIndex:Math.round(100+(dim.width/2+dim.height+8.2)*60)});metrics.yardBattle={visible:l===2,participants:l===2?3:0,weather:env.weather};metrics.environment={slot:env.slot,weather:env.weather,season:env.season.id};metrics.frames++;}
  /* 擺放 */
  const clearGhost=()=>{ghost?.remove();ghost=null;};
  function cancelPlacement(){clearGhost();placement=null;metrics.placement=null;onPlacementChange(null);onFurnitureSelect(null);}
@@ -167,7 +169,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   projectShelf(id){const i=furniture().find(x=>x.id===id);return i?toScreen(i.x,i.z):null;},projectShelfHead(id){return headOf(furniture().find(x=>x.id===id));},projectCell(x,z,y=0){return toScreen(x,z,y);},
   setMode(m){if(m==='follow'&&lockedView())return {ok:false,message:'請先完成貨架調整或點空白處取消選取，再切換主管巡店'};if(m!=='decorate')cancelPlacement();const result=game.setManagerActive(m==='follow');if(!result.ok){onActionResult(result);return result;}mode=m;keys.clear();joystick={x:0,y:0};game.setManagerInput(0,0);metrics.mode=m;metrics.managerVisible=m==='follow';showGrid();if(m!=='decorate')selectShelf(null);panX=0;panY=0;fit();onModeChange(m);return result;},
   setJoystick(x,y){joystick={x,y};},rotate(){return false;},zoom(delta=1){if(lockedView())return false;userZoom=Math.max(1,Math.min(2.6,userZoom-delta*.1));fit();return true;},setGestureMode(){return 'pan';},get gestureMode(){return 'pan';},get cameraLocked(){return lockedView();},get cameraPose(){return {scale,panX,panY};},
-  dispose(){alive=false;envLayer.dispose();cancelPlacement();observer?.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('keydown',keyDown);window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',blur);for(const[n,f]of listeners)canvas.removeEventListener(n,f);canvas.removeEventListener('wheel',wheel);layer.remove();}
+  dispose(){alive=false;yardBattle.dispose();envLayer.dispose();cancelPlacement();observer?.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('keydown',keyDown);window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',blur);for(const[n,f]of listeners)canvas.removeEventListener(n,f);canvas.removeEventListener('wheel',wheel);layer.remove();}
  };
  return api;
 }

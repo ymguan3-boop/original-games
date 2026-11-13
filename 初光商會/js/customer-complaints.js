@@ -8,7 +8,7 @@ const availableShelf=(g,s)=>s.shelves.find(sh=>g.available(s,sh)>0);
 export function complaintKind(s,c){
  if(!c||['Paid','Leave','Enter'].includes(c.state))return null;
  if(c.state==='OutOfStock')return 'stockout';
- if(c.state==='Angry')return 'angry';
+ if(c.state==='Angry')return /排隊|收銀|等太久/.test(c.angerReason||'')?'queue':'angry';
  if(['UnhappyExit','AbandonCart'].includes(c.state))return 'disappointed';
  if(['Queue','Checkout','Cart'].includes(c.state)&&((c.wait||0)>=Math.max(2,(c.patience||30)*.5)))return 'queue';
  return null;
@@ -23,7 +23,7 @@ export function getCustomerComplaint(s,c,g){
  const kind=complaintKind(s,c);if(!kind)return null;
  const config=formats[kind],id='customer:'+c.id;
  const shelf=g?stockShelf(g,s):null,available=g?availableShelf(g,s):null;
- const cashier=s.employees.some(e=>e.role==='cashier'&&e.fatigue<95);
+ const comforter=s.employees.find(e=>e.role!=='standby'&&(e.fatigue||0)<=87);
  const product=shelf&&g.data.catalog.find(p=>p.sku===shelf.sku);
  const price=shelf&&(!s.inventory[shelf.sku]||s.inventory[shelf.sku]<=0)?product?.buyCost||0:0;
  const used=c.helpedChoices||[];
@@ -36,9 +36,8 @@ export function getCustomerComplaint(s,c,g){
   ];
  }else if(kind==='queue'){
   options=[
-   {id:'assist',label:'主管支援',detail:'加速收銀並重設等待',cost:0,disabled:!cashier,reason:'請先指派收銀員'},
-   {id:'compensate',label:'補償小禮',detail:'增加耐心與滿意度',cost:25,disabled:s.gold<25,reason:'金幣不足'},
-   {id:'reassure',label:'幽默安撫',detail:'免費安撫並延長耐心',cost:0}
+   {id:'paid-calm',label:'付費安撫',detail:'25 G，重設等待，20 秒內暫停不耐累積',cost:25,disabled:s.gold<25,reason:s.gold<25?'金幣不足，需 25 G':''},
+   {id:'staff-calm',label:'安排在班員工安撫',detail:'員工疲勞 +8，重設等待，20 秒內暫停不耐累積',cost:0,disabled:!comforter,reason:!comforter?'沒有疲勞 87 以下的在班員工，請先排班或休息':''}
   ];
  }else if(kind==='angry'){
   options=[
@@ -54,7 +53,7 @@ export function getCustomerComplaint(s,c,g){
   ];
  }
  options=options.map(o=>({...o,disabled:!!o.disabled||used.includes(kind+':'+o.id),reason:used.includes(kind+':'+o.id)?'此方法已使用':o.reason||''}));
- return {...config,kind,id,customerId:c.id,customerName:c.name,role:'customer',title:config.title,options:[...options.filter(o=>!o.disabled&& !['apologize','farewell'].includes(o.id)).slice(0,1),{id:'farewell',label:'道歉並友善送客',detail:'結束這次客訴，不產生交易',cost:0}],funny:false};
+ return {...config,kind,id,customerId:c.id,customerName:c.name,role:'customer',title:config.title,options:[...(kind==='queue'?options:options.filter(o=>!o.disabled&& !['apologize','farewell'].includes(o.id)).slice(0,1)),{id:'farewell',label:'道歉並友善送客',detail:'結束這次客訴，不產生交易',cost:0}],funny:false};
 }
 export function resolveCustomerComplaint(g,s,p){
  p={...p,choice:p.choice??p.option};
@@ -64,7 +63,7 @@ export function resolveCustomerComplaint(g,s,p){
  const option=info.options.find(o=>o.id===p.choice);
  if(!option||option.disabled)throw Error(option?.reason||'無效或無法使用的解決方法');
  const cost=option.cost||0;if(cost){g.pay(s,cost);s.stats.expenses=(s.stats.expenses||0)+cost;}
- else{
+ else if(info.kind!=='queue'){
   const leadRole=info.kind==='stockout'?'stocker':'cashier';
   const lead=s.employees.find(e=>e.role===leadRole)||s.employees[0]||null;
   for(const change of applyFreeEventFatigue(s,lead,{direct:5,team:1})){
@@ -83,10 +82,9 @@ export function resolveCustomerComplaint(g,s,p){
   else if(p.choice==='alternate'){retry();mood(1);}
   else {goodbye();s.stats.lost=(s.stats.lost||0)+1;mood(1);}
  }else if(info.kind==='queue'){
-  if(p.choice==='assist'){s.buffs.checkout=s.totalTime+25;c.wait=0;c.patience=(c.patience||30)+15;mood(1);}
-  if(p.choice==='compensate'){c.wait=0;c.patience=(c.patience||30)+30;mood(2);}
-  if(p.choice==='reassure'){c.wait=0;c.patience=(c.patience||30)+15;mood(1);}
-  c.timer=0;c.emotion='happy';
+  if(p.choice==='staff-calm'){const worker=s.employees.find(e=>e.role!=='standby'&&(e.fatigue||0)<=87);if(!worker)throw Error('沒有可協助的在班員工');worker.fatigue=Math.min(100,(worker.fatigue||0)+8);worker.efficiency=g.efficiency(worker);g.notice(s,worker.id,'安撫客人・疲勞 +8','bad');}
+  if(c.state==='Angry'){retry();s.stats.lost=Math.max(0,(s.stats.lost||0)-1);}
+  c.wait=0;c.calmUntil=s.totalTime+20;c.patience=Math.max(30,c.patience||30)+15;c.timer=0;c.emotion='happy';mood(p.choice==='paid-calm'?2:1);
  }else if(info.kind==='angry'){
   if(p.choice==='farewell'){goodbye();mood(1);}
   else{retry();s.stats.lost=Math.max(0,(s.stats.lost||0)-1);mood(p.choice==='gift'?3:1);}

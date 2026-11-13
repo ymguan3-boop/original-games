@@ -17,16 +17,16 @@ import {installShopMusic} from './shop-music.js?v=20261113-v36';
 import {createActorVisuals} from './actor-visuals.js?v=20261113-v36';
 import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261113-v36';
 import {loadSpiritCards} from './spirit-cards.js?v=20261113-v36';
-import {createGame} from './core.js?v=20261113-v36';
+import {createGame} from './core.js?v=20261113-v37';
 import {createStaffOverlay} from './staff-overlay.js?v=20261113-v36';
 import {installPatrolControls} from './patrol-controls.js?v=20261113-v36';
 import {playEvolution3D} from './evolution-3d.js?v=20261113-v36';
-import {createScene} from './scene.js?v=20261113-v36';
-import {createScene2D} from './scene-2d.js?v=20261113-v36';
-import {createHub} from './shop-hub.js?v=20261113-v36';
+import {createScene} from './scene.js?v=20261113-v37';
+import {createScene2D} from './scene-2d.js?v=20261113-v37';
+import {createHub} from './shop-hub.js?v=20261113-v37';
 import {showManagerDialogue} from './manager-dialogue.js?v=20261113-v36';
 import {commissionNotice} from './commissions.js?v=20261113-v36';
-import {dailyTasks} from './management.js?v=20261113-v36';
+import {dailyTasks} from './management.js?v=20261113-v37';
 import {shelfTypes,accepts as shelfAccepts} from './furniture.js?v=20261113-v36';
 import {decorTypes} from './decorations.js?v=20261113-v36';
 import {buildNotice} from './build-notices.js?v=20261112-notices-v1';
@@ -72,7 +72,7 @@ function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncN
  {const info=chapterObjectives(s,game.data.levels),pct=upgradeProgress(info);$('#hud-progress').textContent=s.upgradeProject?`🔨 ${Math.ceil(s.upgradeProject.remaining)}秒`:info.last?'★ 最高級':`▲ ${pct}%`;$('#hud-progress').classList.toggle('ready',info.ready&&!s.upgradeProject);$('#goal-fill').style.width=pct+'%';const next=info.goals.find(g=>!g.done);$('#goal-next').textContent=s.upgradeProject?'施工升級中':next?`${next.title} ${Math.floor(Math.min(next.value,next.target))}/${next.target}`:info.last?'已達最高級':'目標已完成';{const env=environment(s,game.data.config);$('#hud-clock').textContent=`${env.weatherInfo.icon}${env.season.name} ${clockText(s,game.data.config)} ${clockLabel(s,game.data.config)}`;$('#hud-clock').title=`${env.season.name}季・${env.weatherInfo.name}`;}if(s.phase==='report'&&reportShownDay!==s.day&&hub&&!hub.isOpen){reportShownDay=s.day;hub.open('report');}}$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
  $('#prep-bar').hidden=!!s.patrolFocus;const blocked=openingBlocker(s);$('#start-business').disabled=false;$('#start-business').title=blocked;$('#prep-bar span').textContent=blocked||'🧰 店舖整備中：可以布置、招聘、調整職務';$('#start-business').textContent=s.phase==='open'?'打烊結算':s.phase==='report'?'查看結算':'開門營業';
  const dot=(id,on,message='')=>{const button=$(`.toolbar [data-hub=${id}]`);button.classList.toggle('has-notice',!!on&&!s.patrolFocus);button.title=on?message:'';if(message&&on)button.setAttribute('aria-label',button.textContent.trim()+'：'+message);else button.removeAttribute('aria-label');};
- const build=buildNotice(game,s,seenNotice.build),rewards=pendingRewards(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length||fresh(hireable(game,s),seenNotice.staff),'有新夥伴可招聘或員工可進化，請到「員工」查看。');dot('build',!!build,build?.message);dot('tasks',!!s.event||rewards.daily+rewards.chapter>0,s.event?'有營業事件待處理。':`有 ${rewards.daily+rewards.chapter} 項任務獎勵可領取。`);dot('shop',commissionNotice(s)&&(s.commissionBoard?.unread||rewards.orders>0),rewards.orders?`有 ${rewards.orders} 件委託可交付。`:'收到新商會委託，請開啟訊息。');$('#top-patrol').textContent=scene?.metrics.mode==='follow'?'返回總覽':'主管巡查';
+ const build=buildNotice(game,s,seenNotice.build),rewards=pendingRewards(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length||fresh(hireable(game,s),seenNotice.staff),'有新夥伴可招聘或員工可進化，請到「員工」查看。');dot('build',!!build,build?.message);dot('tasks',!!s.event||(s.fortuneOpportunity?.day===s.day&&s.fortuneOpportunity.status==='pending')||rewards.daily+rewards.chapter>0,s.event?'有營業事件待處理。':s.fortuneOpportunity?.day===s.day&&s.fortuneOpportunity.status==='pending'?'主管收銀有本次命運機會待決定。':`有 ${rewards.daily+rewards.chapter} 項任務獎勵可領取。`);dot('shop',commissionNotice(s)&&(s.commissionBoard?.unread||rewards.orders>0),rewards.orders?`有 ${rewards.orders} 件委託可交付。`:'收到新商會委託，請開啟訊息。');$('#top-patrol').textContent=scene?.metrics.mode==='follow'?'返回總覽':'主管巡查';
 }
 const pageFor={goods:'goods',shelves:'build',staff:'staff',quests:'tasks',upgrade:'upgrade',settings:'settings'};
 const openPanel=name=>hub.open(pageFor[name]||'shop');
@@ -120,7 +120,7 @@ async function boot(){let gate;try{
  window.shopScene=scene;window.shopHub=hub;
  staffOverlay=createStaffOverlay({game,labels:$('#staff-labels'),card:$('#staff-card'),escape:esc,onEventClick:()=>hub.open('event'),onOpen:id=>hub.open('worker',id)});staffOverlay.render();
  patrolControls=installPatrolControls({joystick:$('#joystick'),stick:$('#stick'),scene});scene.setMode('play');renderHUD();await scene.ready;await gate.wait(scene);gate.dispose();$('#loading').setAttribute('aria-busy','false');$('#loading').style.display='none';document.body.classList.remove('app-loading');
- let last=performance.now(),ui=0;function frame(now){requestAnimationFrame(frame);const elapsed=(now-last)/1000,dt=Math.min(.1,elapsed);last=now;if(document.hidden||document.body.classList.contains('orientation-blocked')||shopNavigation?.leaving)return;try{if(!evolutionInProgress&&!$('#confirm').open){const result=game.tick(dt);if(result&&!result.ok)toast(result.message,true);}scene.update(dt);}catch(e){if(!window.lastShopError){console.error(e);toast('執行發生錯誤：'+e.message,true);window.lastShopError=e.message;}}ui+=dt;if(ui>.5){ui=0;renderHUD();staffOverlay?.render();if(hub.isOpen&&['chapter','upgrade','daily'].includes(document.querySelector('#hub')?.dataset.page))hub.render();}}requestAnimationFrame(frame);
+ let last=performance.now(),ui=0;function frame(now){requestAnimationFrame(frame);const elapsed=(now-last)/1000,dt=Math.min(.1,elapsed);last=now;if(document.hidden||document.body.classList.contains('orientation-blocked')||shopNavigation?.leaving)return;try{if(!evolutionInProgress&&!$('#confirm').open){const result=game.tick(dt,elapsed);if(result&&!result.ok)toast(result.message,true);}scene.update(dt);}catch(e){if(!window.lastShopError){console.error(e);toast('執行發生錯誤：'+e.message,true);window.lastShopError=e.message;}}ui+=dt;if(ui>.5){ui=0;renderHUD();staffOverlay?.render();if(hub.isOpen&&['chapter','upgrade','daily'].includes(document.querySelector('#hub')?.dataset.page))hub.render();}}requestAnimationFrame(frame);
  if(innerWidth<700)scene.setQuality?.('low');
 }catch(e){console.error(e);gate?.dispose();$('#loading').innerHTML=`<h2>商會素材尚未就緒</h2><p>${esc(e.message)}</p><button id="retry-shop">重新載入</button><button id="reset-shop">重置商會並重試</button>`;$('#retry-shop').onclick=()=>location.reload();$('#reset-shop').onclick=()=>{resetMerchantOnly(localStorage);location.reload();};}}
 boot();

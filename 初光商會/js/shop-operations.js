@@ -2,9 +2,9 @@ import {decorEffects,obstacles} from './decorations.js?v=20261113-v36';
 import {purchaseChance} from './economy-v2.js?v=20261113-v36';
 import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261113-v36';
 import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261113-v36';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261113-v36';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261113-v37';
 import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261113-v36';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261113-v36';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261113-v37';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
@@ -45,7 +45,7 @@ function angry(g,s,c,reason){
 function leave(g,s,c){c.state='Leave';c.timer=0;c.exitRerouteAt=2;c.path=[];const side={x:CHECKOUT.x-1,z:3};if(Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.2&&walkable(side,obstacles(s),s.level)){const a=findPath(c,side,obstacles(s),s.level),b=findPath(side,ENTRANCE,obstacles(s),s.level);if(a&&b)c.path=[...a,...b];}if(!c.path.length)g.route(s,c,ENTRANCE);}
 /* 收銀由主角負責：巡店時櫃台沒人，結帳變慢 */
 const AWAY_SLOWDOWN=1.8;
-function cashierAt(g,s){return null;}
+function cashierAt(g,s){return s.employees.find(e=>e.role==='cashier'&&e.fatigue<95&&Math.hypot(e.x-CHECKOUT.x,e.z-1)<1.3)||(s.managerDuty==='cashier'&&!g.managerActive?s.manager:null);}
 function pay(g,s,c,e){
  const saleId='sale-'+c.id;
  if(s.txIds.includes(saleId)||s.ledger.some(x=>x.id===saleId)){c.basket=[];c.state='Paid';c.timer=0;return;}
@@ -68,7 +68,7 @@ export function stepCustomers(g,s,dt){
   c.arrivingNow=false;if(c.arrivalRemaining>0){if(c.arrivalRemaining<=dt&&!g.clearOfActors(s,ENTRANCE,c)){c.arrivalRemaining=.25;continue;}c.arrivalRemaining=Math.max(0,c.arrivalRemaining-dt);if(c.arrivalRemaining>0)continue;c.arrivingNow=true;}
   if(c.exitingAtDoor){c.exitTravel=(c.exitTravel||0)+dt;if(c.exitTravel>=5)s.customers=s.customers.filter(x=>x.id!==c.id);continue;}
   if(c.state==='Leave'&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.25){c.exitingAtDoor=true;c.exitTravel=0;c.path=[];continue;}
-  if(['Cart','Queue','Checkout'].includes(c.state)){c.wait=(c.wait||0)+dt;if(c.wait>c.patience){angry(g,s,c,cashier?'排隊等太久':'沒有收銀員服務');continue;}}
+  if(['Cart','Queue','Checkout'].includes(c.state)){if(!(c.calmUntil>s.totalTime))c.wait=(c.wait||0)+dt;if(c.wait>c.patience){angry(g,s,c,cashier?'排隊等太久':'沒有收銀員服務');continue;}}
   g.safeMove(s,c,dt*2.2,dt);if(c.path.length&&c.state==='Evaluate'&&(c.blocked||0)>=1.2){const t=s.shelves.find(sh=>sh.id===c.targetShelf);if(t&&Math.hypot(c.x-t.x,c.z-(t.z+1))<1.6){c.path=[];c.blocked=0;c.browsingNear=true;}}if(c.path.length)continue;
   if(c.state==='Enter'||c.state==='Browse'){
    const eligible=s.shelves.filter(sh=>g.available(s,sh)>0&&!c.visited.includes(sh.id));eligible.sort((a,b)=>{const ca=g.data.catalog.find(x=>x.sku===a.sku),cb=g.data.catalog.find(x=>x.sku===b.sku),preferred=['item','weapon','item','material','item','item','weapon','material'][c.personality];return Number(cb.category===preferred)-Number(ca.category===preferred);});const sh=eligible[0];if(!sh){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}c.targetShelf=sh.id;c.visited.push(sh.id);c.state='Evaluate';c.timer=0;g.route(s,c,{x:sh.x,z:sh.z+1});
@@ -81,7 +81,7 @@ export function stepCustomers(g,s,dt){
   }else if(c.state==='Queue'){
    const first=s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0))[0];if(first===c&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1){c.state='Checkout';c.timer=0;}
   }else if(c.state==='Checkout'){
-   const duration=g.data.config.checkoutSeconds*(g.managerActive?AWAY_SLOWDOWN:1)/(1+passive(g,s,'checkout'))/(s.buffs.show>s.totalTime||s.buffs.checkout>s.totalTime?1.6:1);if(c.timer>=duration&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1)pay(g,s,c,cashier);
+   const duration=g.data.config.checkoutSeconds*(g.managerActive?AWAY_SLOWDOWN:1)/(1+passive(g,s,'checkout'))/(s.buffs.show>s.totalTime||s.buffs.checkout>s.totalTime?1.6:1);if(cashier&&c.timer>=duration&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1)pay(g,s,c,cashier===s.manager?null:cashier);
   }else if(c.state==='Paid'&&c.timer>.6)leave(g,s,c);
   else if(c.state==='Angry'&&c.timer>14&&s.customerChase?.customerId!==c.id)leave(g,s,c);
   else if(['OutOfStock','UnhappyExit','AbandonCart'].includes(c.state)){if(c.timer>=16&&s.customerChase?.customerId!==c.id)angry(g,s,c,c.state==='OutOfStock'?'想買的商品缺貨':'沒有買到合適商品');else c.emotion=c.state==='OutOfStock'?'question':'confused';}
