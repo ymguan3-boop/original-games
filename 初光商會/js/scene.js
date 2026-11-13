@@ -1,3 +1,4 @@
+import {fortuneAvailable} from './fortune-cards.js?v=20261113-v38';
 import {createWeatherOutfit,weatherOutfitKind} from './weather-outfits.js?v=20261113-v36';
 import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261113-v36';
 import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261113-v36';
@@ -167,9 +168,10 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
  const screenPositions=new Map();const screenRect=canvasRect||(canvasRect=canvas.getBoundingClientRect());
  for(const [id] of all){const actor=actorViews.get(id);if(!actor)continue;
   const height=actor.root.userData.visualHeight||.8;
-  const p=new T.Vector3(actor.root.position.x,actor.root.position.y+height+(id==='promoter'?.25:1.05),actor.root.position.z).project(camera);
+  const p=new T.Vector3(actor.root.position.x,actor.root.position.y+height+(id==='manager'?.2:id==='promoter'?.25:1.05),actor.root.position.z).project(camera);
   screenPositions.set(id,{id,x:screenRect.left+(p.x+1)*screenRect.width/2,y:screenRect.top+(1-p.y)*screenRect.height/2,inFront:p.z>=-1&&p.z<=1});
  }
+ if(fortuneAvailable(game,s))actorMoods.push({id:'manager',kind:'fortune',fortuneId:s.fortuneOpportunity.id});
  if(!LOW_POWER||overlayFrame%2===0)onActorVisuals({actors:actorMoods.map(a=>({...a,...screenPositions.get(a.id)})).filter(a=>a.x!==undefined),
   notices:(s.visualEvents||[]).map(n=>({id:n.id,targetId:n.targetId,text:n.text,tone:n.tone}))});
  if(placement)refreshPlacement();else if(selectedShelf)onFurniturePosition(projectShelfHead(selectedShelf));const staffPositions=[];for(const e of s.employees){const a=actorViews.get(e.id);if(!a)continue;a.labelHeight=Math.max(a.labelHeight||0,a.root.userData.visualHeight||.8);const labelBase=a.root.userData.cashierPose?.seatOffset??.055;const head=new T.Vector3(a.root.position.x,labelBase+a.labelHeight+.12,a.root.position.z).project(camera),r=canvas.getBoundingClientRect();staffPositions.push({id:e.id,x:r.left+(head.x+1)*r.width/2,y:r.top+(1-head.y)*r.height/2});}if(!LOW_POWER||overlayFrame++%2===0)onStaffPositions(staffPositions);metrics.staffPositions=staffPositions;renderer.render(scene,camera);metrics.frames++;metrics.actors=actorViews.size;metrics.frameMs=Math.round((performance.now()-frameStart)*10)/10;metrics.drawCalls=renderer.info.render.calls;metrics.triangles=renderer.info.render.triangles;

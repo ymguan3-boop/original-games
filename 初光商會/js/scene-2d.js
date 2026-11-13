@@ -1,3 +1,4 @@
+import {fortuneAvailable} from './fortune-cards.js?v=20261113-v38';
 import {createYardBattle2D} from './yard-battle-2d.js';
 import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261113-v36';
 import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261113-v36';
@@ -131,6 +132,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
    if(emotion||issue||chase){const ev=s.event,related=!!ev&&(type==='staff'&&eventEmployee(s,ev)?.id===d.id||type==='customer'&&ev.description?.includes(d.name)&&['Angry','OutOfStock','Queue','UnhappyExit'].includes(d.state)),head=toScreen(p.x,p.z,ACTOR_SIZE*.95);moods.push({id:key,kind:chase?'impatient':emotion||'impatient',...(chase?{complaintId:d.id,complaintTitle:'🏃 追上我',chaseTarget:true}:issue?{complaintId:d.id,complaintTitle:issue.title}:related?{eventId:ev.instanceId||ev.id,eventTitle:ev.title}:{}),x:head.x,y:head.y,inFront:true});}
    if(type==='staff'){const head=toScreen(p.x,p.z,ACTOR_SIZE*.9);staffRows.push({id:key,x:head.x,y:head.y});}}
   for(const[key,a]of actors)if(!active.has(key)){a.el.remove();actors.delete(key);}metrics.actors=actors.size;metrics.staffPositions=staffRows;
+  if(fortuneAvailable(game,s)){const a=actors.get('manager');if(a){const b=a.el.getBoundingClientRect();moods.push({id:'manager',kind:'fortune',fortuneId:s.fortuneOpportunity.id,x:b.left+b.width/2,y:b.top+8,inFront:true});}}
   if(frame++%2===0){onActorVisuals({actors:moods,notices:(s.visualEvents||[]).map(n=>({id:n.id,targetId:n.targetId,text:n.text,tone:n.tone}))});onStaffPositions(staffRows);}
   if(s.manager&&mode==='follow'){const open=document.querySelector('dialog[open]'),ix=open?0:joystick.x+(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0),iy=open?0:joystick.y+(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);game.setManagerInput(ix,iy);fit();}
  }

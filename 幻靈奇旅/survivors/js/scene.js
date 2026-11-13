@@ -1,4 +1,4 @@
-import {isMerchantMeadow} from './merchant-meadow.js?v=20261113-v36';
+import {isMerchantMeadow} from './merchant-meadow.js?v=20261113-v38';
 import {buildMeadow,constrainMeadow} from './meadow-terrain.js?v=20261113-v36';
 import {createPumpkinStaff,createPumpkinHead} from './pumpkin-staff.js?v=20261027-halloween';
 import {createLeekSword} from './leek-weapon.js?v=20261025-v23';

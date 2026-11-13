@@ -1,4 +1,4 @@
-import {employeeSpot,employeePath} from './staff-routing.js?v=20261113-v36';
+import {employeeSpot,employeePath} from './staff-routing.js?v=20261113-v38';
 import {obstacles,decorEffects} from './decorations.js?v=20261113-v36';
 import {findPath,walkable,dimensions} from './nav.js?v=20261113-v36';
 import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261113-v37';

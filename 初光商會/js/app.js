@@ -1,6 +1,6 @@
 import {restoreMerchantGuest,carryMerchantGuest} from '../../幻靈奇旅/survivors/js/merchant-guest.js?v=20261111-meadow-v2';
 restoreMerchantGuest();
-import {MEADOW_KEY} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261111-meadow-v2';
+import {MEADOW_KEY} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261113-v38';
 import {isPromoterLineage} from './promoter-lineage.js?v=20261113-v36';
 import {openingBlocker} from './shop-entry-rules.js?v=20261113-v36';
 import {resetMerchantRelease,resetMerchantOnly} from './save-reset.js?v=20261113-v36';
@@ -14,18 +14,18 @@ import {showLevelUp} from './levelup.js?v=20261113-v36';
 import {installShopNavigation} from './shop-navigation.js?v=20261113-v36';
 import {showZhaocaiNote} from './zhaocai-note.js?v=20261113-v36';
 import {installShopMusic} from './shop-music.js?v=20261113-v36';
-import {createActorVisuals} from './actor-visuals.js?v=20261113-v36';
+import {createActorVisuals} from './actor-visuals.js?v=20261113-v38';
 import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261113-v36';
 import {loadSpiritCards} from './spirit-cards.js?v=20261113-v36';
-import {createGame} from './core.js?v=20261113-v37';
+import {createGame} from './core.js?v=20261113-v38';
 import {createStaffOverlay} from './staff-overlay.js?v=20261113-v36';
 import {installPatrolControls} from './patrol-controls.js?v=20261113-v36';
 import {playEvolution3D} from './evolution-3d.js?v=20261113-v36';
-import {createScene} from './scene.js?v=20261113-v37';
-import {createScene2D} from './scene-2d.js?v=20261113-v37';
-import {createHub} from './shop-hub.js?v=20261113-v37';
+import {createScene} from './scene.js?v=20261113-v38';
+import {createScene2D} from './scene-2d.js?v=20261113-v38';
+import {createHub} from './shop-hub.js?v=20261113-v38';
 import {showManagerDialogue} from './manager-dialogue.js?v=20261113-v36';
-import {commissionNotice} from './commissions.js?v=20261113-v36';
+import {commissionNotice} from './commissions.js?v=20261113-v38';
 import {dailyTasks} from './management.js?v=20261113-v37';
 import {shelfTypes,accepts as shelfAccepts} from './furniture.js?v=20261113-v36';
 import {decorTypes} from './decorations.js?v=20261113-v36';
@@ -62,7 +62,7 @@ async function beginEvolution(employeeId){
 }
 function syncPatrolSolved(){const info=game.state.recentPatrolResolution;if(!info||seenPatrolResolution===info.id)return;seenPatrolResolution=info.id;if(info.focused&&scene?.metrics.mode==='follow')scene.setMode('play');showManagerDialogue(`問題解決了！${info.employeeName}：${info.title}`,{duration:4200});}
 let reportShownDay=null,seenMarket=undefined;
-function syncNotices(s){{const ev=activeEvent(s),key=ev?ev.id+ev.startDay:null;if(seenMarket!==undefined&&key&&key!==seenMarket)toast(`📢 市場消息：${ev.title}，點「任務 → 今日歷程」查看`);seenMarket=key;}
+function syncNotices(s){{const ev=activeEvent(s),key=ev?ev.id+ev.startDay:null;if(seenMarket!==undefined&&key&&key!==seenMarket)toast(`📢 市場消息：${ev.title}，點「任務 → 突發事件」查看`);seenMarket=key;}
  const clear=s.chapterClear;if(clear&&seenChapterClear!==clear.id){const first=seenChapterClear===undefined;seenChapterClear=clear.id;if(!first)showLevelUp(game,clear,esc);}
  const chase=s.customerChaseResult;if(chase&&seenChase!==chase.id){seenChase=chase.id;if(chase.success){showChaseSuccess(chase);showManagerDialogue('追上顧客了！謝謝你願意再給我們一次機會。',{duration:4200});scene?.playChaseSuccess?.();}else showZhaocaiNote('追客失敗了……');}
  const build=buildNotice(game,s,seenNotice.build),notice=$('#shop-notice');notice.hidden=(!s.event&&!build)||s.patrolFocus||hub?.isOpen;if(!notice.hidden)notice.textContent=s.event?`⚠ ${s.event.title}：按「任務」處理`:`📌 ${build.message}`;
@@ -72,7 +72,7 @@ function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncN
  {const info=chapterObjectives(s,game.data.levels),pct=upgradeProgress(info);$('#hud-progress').textContent=s.upgradeProject?`🔨 ${Math.ceil(s.upgradeProject.remaining)}秒`:info.last?'★ 最高級':`▲ ${pct}%`;$('#hud-progress').classList.toggle('ready',info.ready&&!s.upgradeProject);$('#goal-fill').style.width=pct+'%';const next=info.goals.find(g=>!g.done);$('#goal-next').textContent=s.upgradeProject?'施工升級中':next?`${next.title} ${Math.floor(Math.min(next.value,next.target))}/${next.target}`:info.last?'已達最高級':'目標已完成';{const env=environment(s,game.data.config);$('#hud-clock').textContent=`${env.weatherInfo.icon}${env.season.name} ${clockText(s,game.data.config)} ${clockLabel(s,game.data.config)}`;$('#hud-clock').title=`${env.season.name}季・${env.weatherInfo.name}`;}if(s.phase==='report'&&reportShownDay!==s.day&&hub&&!hub.isOpen){reportShownDay=s.day;hub.open('report');}}$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
  $('#prep-bar').hidden=!!s.patrolFocus;const blocked=openingBlocker(s);$('#start-business').disabled=false;$('#start-business').title=blocked;$('#prep-bar span').textContent=blocked||'🧰 店舖整備中：可以布置、招聘、調整職務';$('#start-business').textContent=s.phase==='open'?'打烊結算':s.phase==='report'?'查看結算':'開門營業';
  const dot=(id,on,message='')=>{const button=$(`.toolbar [data-hub=${id}]`);button.classList.toggle('has-notice',!!on&&!s.patrolFocus);button.title=on?message:'';if(message&&on)button.setAttribute('aria-label',button.textContent.trim()+'：'+message);else button.removeAttribute('aria-label');};
- const build=buildNotice(game,s,seenNotice.build),rewards=pendingRewards(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length||fresh(hireable(game,s),seenNotice.staff),'有新夥伴可招聘或員工可進化，請到「員工」查看。');dot('build',!!build,build?.message);dot('tasks',!!s.event||(s.fortuneOpportunity?.day===s.day&&s.fortuneOpportunity.status==='pending')||rewards.daily+rewards.chapter>0,s.event?'有營業事件待處理。':s.fortuneOpportunity?.day===s.day&&s.fortuneOpportunity.status==='pending'?'主管收銀有本次命運機會待決定。':`有 ${rewards.daily+rewards.chapter} 項任務獎勵可領取。`);dot('shop',commissionNotice(s)&&(s.commissionBoard?.unread||rewards.orders>0),rewards.orders?`有 ${rewards.orders} 件委託可交付。`:'收到新商會委託，請開啟訊息。');$('#top-patrol').textContent=scene?.metrics.mode==='follow'?'返回總覽':'主管巡查';
+ const build=buildNotice(game,s,seenNotice.build),rewards=pendingRewards(game,s);dot('staff',readyStaffEvolutions(game.data,s.employees).length||fresh(hireable(game,s),seenNotice.staff),'有新夥伴可招聘或員工可進化，請到「員工」查看。');dot('build',!!build,build?.message);dot('tasks',!!s.event||!!activeEvent(s)||rewards.daily+rewards.chapter>0,s.event?'有營業事件待處理。':activeEvent(s)?'有市場突發事件與特殊加成可查看。':`有 ${rewards.daily+rewards.chapter} 項任務獎勵可領取。`);dot('shop',commissionNotice(s)&&(s.commissionBoard?.unread||rewards.orders>0),rewards.orders?`有 ${rewards.orders} 件委託可交付。`:'收到新商會委託，請開啟訊息。');$('#top-patrol').textContent=scene?.metrics.mode==='follow'?'返回總覽':'主管巡查';
 }
 const pageFor={goods:'goods',shelves:'build',staff:'staff',quests:'tasks',upgrade:'upgrade',settings:'settings'};
 const openPanel=name=>hub.open(pageFor[name]||'shop');
@@ -106,7 +106,7 @@ async function boot(){let gate;try{
  shopNavigation=installShopNavigation({game,onError:e=>toast(e.message,true)});
  hub=createHub({game,getScene:()=>scene,act:action,toast,esc,evolve:beginEvolution,leave:()=>$('#return-to-game').click(),settings:{enterMeadow,importMeadow,buildNotice:()=>buildNotice(game,game.state,seenNotice.build)||buildUnlockNotice,volume:()=>shopMusic?.volume??40,quality:()=>quality,exportSave,recover:recoverSave,is2D:()=>view2d,switchView},onChange:()=>{if(!hub?.isOpen)buildUnlockNotice=null;game.uiBusy=evolutionInProgress||hub?.isOpen;renderHUD();}});
  const trial=['localhost','127.0.0.1'].includes(location.hostname)&&new URLSearchParams(location.search).has('shopDev');if(innerWidth<700)game.data.config.maxCustomers=6;
- await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id)});window.shop=game;window.shopTrial=trial;window.addEventListener('focus',()=>{importMeadow();renderHUD();});
+ await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id),onFortuneClick:()=>hub.openFortune()});window.shop=game;window.shopTrial=trial;window.addEventListener('focus',()=>{importMeadow();renderHUD();});
  const sceneFactory=view2d?createScene2D:createScene;document.body.classList.toggle('view-2d',view2d);
  scene=sceneFactory({canvas:$('#world'),game,
   onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='promoter'){hub.open('promoters');return;}if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){if(game.state.phase==='open'&&!game.state.layoutPause)return;scene.setMode('decorate');scene.selectShelf(o.id);}},

@@ -1,4 +1,4 @@
-import {isMerchantMeadow} from './merchant-meadow.js?v=20261113-v36';
+import {isMerchantMeadow} from './merchant-meadow.js?v=20261113-v38';
 import {autoPotionLearned,rememberAutoPotionLesson} from './tutorial-progress.js?v=20261113-v36';
 export function createCaveTutorial(api){
  rememberAutoPotionLesson(api.store);

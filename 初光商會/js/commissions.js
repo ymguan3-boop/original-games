@@ -1,5 +1,7 @@
 const check=(ok,message)=>{if(!ok)throw Error(message);};
-export function commissionState(s){return s.commissionBoard??={clock:0,nextAt:12,serial:0,unread:false,entries:[]};}
+export const limitedWeaponCommission=q=>q.kind==='delivery'&&(/-merchant-(elite|boss)$/.test(q.sku||'')||/限定武器/.test(q.name||''));
+export function boostLimitedCommission(q){if(q.status==='active'&&limitedWeaponCommission(q)&&q.limitedRewardVersion!==1){q.baseReward=q.reward;q.reward*=2;q.limitedRewardVersion=1;}return q;}
+export function commissionState(s){const b=s.commissionBoard??={clock:0,nextAt:12,serial:0,unread:false,entries:[]};for(const q of b.entries)boostLimitedCommission(q);return b;}
 export function commissionProgress(s,q){return q.kind==='delivery'?Math.min(q.qty,s.inventory[q.sku]||0):Math.min(q.qty,Math.max(0,s.totals.sales-q.startSales));}
 export function commissionVisibleEntries(s){
  const b=s.commissionBoard;if(!b)return [];
@@ -27,7 +29,7 @@ export function commissionsTick(g,s,dt){if(s.phase!=='open'||s.paused)return;con
  const level=s.level,kind=g.random(s)<.7?'delivery':'sales',catalog=g.data.catalog.filter(p=>p.unlockStoreLevel<=level&&p.isSellable&&!p.isRestricted),product=catalog[Math.floor(g.random(s)*catalog.length)],qty=kind==='delivery'?3+level*2+Math.floor(g.random(s)*3):2+level*2,duration=150+level*15;
  const clients=['森野採集隊','晨星旅行團','初光研究室','小鎮冒險公會'],client=clients[Math.floor(g.random(s)*clients.length)];
  const q={id:`commission-${++b.serial}`,createdDay:s.day,kind,level,client,sku:kind==='delivery'?product.sku:null,name:kind==='delivery'?product.displayName:'商店成交',qty,reward:kind==='delivery'?Math.ceil(product.buyCost*qty*1.7+level*75):level*180+qty*35,startSales:s.totals.sales,createdAt:b.clock,expiresAt:b.clock+duration,status:'active'};
- b.entries.push(q);b.entries=b.entries.slice(-12);b.unread=true;g.log(s,`${client}傳來限時委託，請查看商會訊息。`);
+ boostLimitedCommission(q);b.entries.push(q);b.entries=b.entries.slice(-12);b.unread=true;g.log(s,`${client}傳來限時委託，請查看商會訊息。`);
 }
 export function commissionAction(g,s,type,p){if(!['readCommissions','claimCommission'].includes(type))return null;const b=commissionState(s);if(type==='readCommissions'){b.unread=false;return '已讀取商會訊息';}const q=b.entries.find(q=>q.id===p.id);check(q&&q.status==='active'&&q.expiresAt>b.clock&&(q.createdDay===undefined||q.createdDay===s.day),'委託已結束或獎勵已領取');check(commissionProgress(s,q)>=q.qty,q.kind==='delivery'?'庫房商品不足，請先採購':'成交目標尚未達成');
  if(q.kind==='delivery'){s.inventory[q.sku]-=q.qty;const product=g.data.catalog.find(p=>p.sku===q.sku),cost=Math.round((s.averageCosts?.[q.sku]??product.buyCost)*q.qty*100)/100;s.stats.revenue+=q.reward;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.totals.revenue+=q.reward;s.ledger.push({id:q.id,day:s.day,revenue:q.reward,cogs:cost,items:[{sku:q.sku,qty:q.qty}],kind:'commission'});s.ledger=s.ledger.slice(-200);}else s.stats.rewards+=q.reward;

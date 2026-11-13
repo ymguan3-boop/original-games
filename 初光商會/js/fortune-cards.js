@@ -20,15 +20,24 @@ export function pickFortune(rand=Math.random){const total=FORTUNE.reduce((n,f)=>
 /* 辨識排隊、收銀類客訴；安撫與主管抽卡各自處理。 */
 export function isQueueComplaint(c,reason=''){return !!c&&(/排隊|收銀|等太久|等得/.test(`${reason||''} ${c.angerReason||''}`)||QUEUE.includes(c.state)&&(c.wait||0)>=Math.max(2,(c.patience||30)*.5));}
 
+// A customer gets one opportunity per visit, with no reroll after drawing.
+export function impatientQueue(s){return (s.customers||[]).filter(c=>['Queue','Checkout'].includes(c.state)&&!(c.calmUntil>s.totalTime)&&(c.wait||0)>=Math.max(2,(c.patience||30)*.5));}
+export function fortuneAvailable(g,s){const op=s.fortuneOpportunity;return s.phase==='open'&&s.managerDuty==='cashier'&&!g.managerActive&&op?.source==='queue'&&op.day===s.day&&op.status==='pending'&&impatientQueue(s).some(c=>c.id===op.customerId);}
+export function syncQueueFortune(g,s){
+ const old=s.fortuneOpportunity;
+ if(old?.status==='pending'&&!fortuneAvailable(g,s))old.status='expired';
+ if(s.phase!=='open'||s.managerDuty!=='cashier'||g.managerActive||fortuneAvailable(g,s))return;
+ const c=impatientQueue(s).find(c=>!c.fortuneOpportunityId);if(!c)return;
+ const id=`queue-${s.day}-${c.id}`;c.fortuneOpportunityId=id;s.fortuneOpportunity={id,source:'queue',customerId:c.id,day:s.day,status:'pending'};
+}
 export function applyFortune(g,s,p){
  const opportunity=s.fortuneOpportunity;
  if(s.phase!=='open'||s.managerDuty!=='cashier'||g.managerActive)throw Error('只有主管正在櫃台收銀時可決定抽卡');
- if(!opportunity||opportunity.day!==s.day||opportunity.id!==p.opportunityId||opportunity.status!=='pending')throw Error('這次機會已決定或已過期，不能重新選擇');
- if(p.decision==='skip'){opportunity.status='skipped';g.log?.(s,'主管決定不抽本次命運／機會卡。');return '本次選擇不抽，已鎖定決定';}
- if(p.decision!=='draw')throw Error('請選擇抽卡或不抽');
+ if(!fortuneAvailable(g,s)||opportunity.id!==p.opportunityId)throw Error('這次機會已決定或已過期，不能重新選擇');
+ if(p.decision!=='draw')throw Error('請選擇一張命運／機會卡');
  const f=pickFortune(()=>g.random(s));opportunity.status='drawn';opportunity.outcome=f.id;opportunity.result={...f};
  if(f.checkout)s.buffs.checkout=s.totalTime+f.checkout;
- const c=s.customers.find(x=>x.id===p.customerId);if(c){c.fortuneDrawCount=(c.fortuneDrawCount||0)+1;delete c.fortuneDrawn;if(QUEUE.includes(c.state)){c.wait=0;c.emotion='happy';}}
+ const c=s.customers.find(x=>x.id===opportunity.customerId);if(c){c.fortuneDrawCount=(c.fortuneDrawCount||0)+1;delete c.fortuneDrawn;if(QUEUE.includes(c.state)){c.wait=0;c.emotion='happy';}}
  if(f.cost){if(s.gold<f.cost){opportunity.result.text='資金不足，無法準備安撫禮物；本次機會已結束。';return opportunity.result.text;}g.pay(s,f.cost);s.stats.expenses=(s.stats.expenses||0)+f.cost;}
  if(f.gold>0){s.gold+=f.gold;}else if(f.gold<0){const lost=Math.min(s.gold,-f.gold);s.gold-=lost;s.stats.expenses=(s.stats.expenses||0)+lost;}
  if(f.satisfaction)s.satisfaction=Math.max(0,Math.min(100,(s.satisfaction||0)+f.satisfaction));
@@ -71,7 +80,7 @@ export function showFortune({onPick,onClose=()=>{}}){
 .fortune-buttons{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .fortune-buttons .fortune-ok{padding:8px 16px;font-size:14px;min-width:0}
 `;document.head.appendChild(st);}
- const mask=document.createElement('div');mask.className='fortune-mask';mask.innerHTML=`<div class="fortune-box" role="dialog" aria-label="命運機會卡"><h3>命運／機會</h3><p>這是主管收銀的本次機會。選一張卡後立即套用結果，每次機會只能抽一次。</p><div class="fortune-row"></div><div class="fortune-buttons"><button type="button" class="fortune-ok fortune-close" hidden>完成</button></div></div>`;
+ const mask=document.createElement('div');mask.className='fortune-mask';mask.innerHTML=`<div class="fortune-box" role="dialog" aria-label="命運機會卡"><h3>命運／機會</h3><p>顧客排隊等得不耐煩了。選一張卡處理這次狀況，翻牌後不能重選。</p><div class="fortune-row"></div><div class="fortune-buttons"><button type="button" class="fortune-ok fortune-close" hidden>完成</button></div></div>`;
  const row=mask.querySelector('.fortune-row'),ok=mask.querySelector('.fortune-close'),cards=[];let revealTimer;
  const close=()=>{clearTimeout(revealTimer);mask.remove();onClose();};ok.onclick=close;
 

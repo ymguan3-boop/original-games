@@ -1,5 +1,5 @@
 import {dailyTasks,managementAction} from './management.js?v=20261113-v37';
-import {activeCommissions,commissionProgress,commissionAction} from './commissions.js?v=20261113-v36';
+import {activeCommissions,commissionProgress,commissionAction} from './commissions.js?v=20261113-v38';
 import {chapterObjectives,awardSideChapter} from './shop-chapters.js?v=20261113-v36';
 /* 各分類目前可領幾項，任務頁的標示與一鍵領取按鈕都用這個 */
 export function pendingRewards(g,s){
