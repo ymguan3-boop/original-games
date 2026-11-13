@@ -11,5 +11,5 @@ if(!is2D&&!mobile&&!params.has('portraitFrame')&&innerWidth>innerHeight){
 }else{
  const gate=document.createElement('aside');gate.id='portrait-gate';gate.hidden=true;gate.setAttribute('role','status');gate.innerHTML='<div aria-hidden="true">↻</div><strong>請將手機轉為直立</strong><p>初光商會採用直立畫面遊玩</p>';document.body.append(gate);
  const orient=()=>{const blocked=!is2D&&innerWidth>innerHeight;gate.hidden=!blocked;document.body.classList.toggle('orientation-blocked',blocked);};
- addEventListener('resize',orient);orient();await import('./app.js?v=20261113-v38');
+ addEventListener('resize',orient);orient();await import('./app.js?v=20261113-v39');
 }

@@ -1,6 +1,6 @@
 /* 升級演出：彩帶與金幣動畫，列出這一級解鎖的內容與下一級條件。 */
-import {shelfTypes} from './furniture.js?v=20261113-v36';
-import {decorTypes} from './decorations.js?v=20261113-v36';
+import {shelfTypes} from './furniture.js?v=20261113-v39';
+import {decorTypes} from './decorations.js?v=20261113-v39';
 import {PROMOTERS} from './promoters.js?v=20261113-v36';
 import {chapterObjectives} from './shop-chapters.js?v=20261113-v36';
 export function showLevelUp(game,clear,esc){

@@ -1,5 +1,5 @@
-import {shelfTypes,shelfKind,shelfModel} from './furniture.js?v=20261113-v36';
-import {decorDefinition,decorModel} from './decorations.js?v=20261113-v36';
+import {shelfTypes,shelfKind,shelfModel} from './furniture.js?v=20261113-v39';
+import {decorDefinition,decorModel} from './decorations.js?v=20261113-v39';
 import {addIllustratedOutline} from './illustrated-outline.js?v=20261113-v36';
 import {createSphericalOrbRuntime} from './orb-spherical-runtime-v2.js?v=20261113-v36';
 import {hasRackModel,rackModel} from './rack-models.js?v=20261113-v36';

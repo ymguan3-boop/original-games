@@ -1,19 +1,19 @@
-import {fortuneAvailable} from './fortune-cards.js?v=20261113-v38';
+import {fortuneAvailable} from './fortune-cards.js?v=20261113-v39';
 import {createYardBattle2D} from './yard-battle-2d.js';
 import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261113-v36';
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261113-v36';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261113-v39';
 import {hasDecorModel} from './decor-models-v22.js?v=20261113-v36';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261113-v36';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261113-v39';
 import {visibleStaff,chasePose} from './shop-presentation.js?v=20261113-v36';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261113-v36';
-import {ENTRANCE} from './nav.js?v=20261113-v36';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261113-v39';
+import {ENTRANCE} from './nav.js?v=20261113-v39';
 import {sampleTrail} from './motion.js?v=20261113-v36';
 import {getCustomerComplaint} from './customer-complaints.js?v=20261113-v37';
 import {eventEmployee} from './patrol-events.js?v=20261113-v36';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261113-v36';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261113-v39';
 import {stockCount} from './shelf-products.js?v=20261113-v36';
 import {createAssets} from './asset-resolver.js?v=20261113-v36';
 import {createPlacementCells} from './placement-cells.js?v=20261113-v36';
@@ -144,7 +144,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  function refreshPlacement(){if(!placement)return;const r=game.placementStatus(placement),item={...placement,decoration:placement.decoration},sp=spriteFor(placement.decoration?{...item}:{...item,type:placement.type});if(ghost){placeItem(ghost,item,placement.x,placement.z,sp.width,sp.ground);ghost.classList.toggle('bad',!r.ok);}metrics.placement={...placement,...r};onPlacementChange(metrics.placement);onFurniturePosition(headOf(placement));}
  function placementPoint(item,p){const snap=item.decoration&&decorDefinition(item)?.ground?2:item.decoration&&decorDefinition(item)?.outdoor&&p.z>=dimensions(state().level).height+.5?4:1;const raw={x:Math.round(p.x*snap)/snap,z:Math.round(p.z*snap)/snap,rotation:item.rotation};if(WALL_TYPES.has(item.type)){return resolveDecorPlacement(item,raw,state().level);}return raw;}
  function previewPose(item,p){try{return {...item,...resolveDecorPlacement(item,{x:p.x,z:p.z,rotation:p.rotation},state().level)};}catch{return {...item,x:p.x,z:p.z};}}
- function beginShelfPlacement(type,shelfId){const decoration=decorTypes.some(t=>t.id===type),kind=(decoration?decorTypes:shelfTypes).find(t=>t.id===type);if(!kind)return {ok:false,message:'貨架類型無效'};if((state().phase==='open'&&!state().layoutPause))return {ok:false,message:'請先打烊再放置貨架'};cancelPlacement();api.setMode('decorate');selectShelf(null);placement={type,shelfId,decoration,x:3,z:4,rotation:0};if(kind.wall)Object.assign(placement,wallSlots(state().level,true)[0]);const sp=spriteFor(decoration?{type,decoration:true}:{type});clearGhost();ghost=new Image();ghost.src=sp.src;ghost.className='world2d-item ghost'+(sp.ground?' ground':'');layer.append(ghost);onFurnitureSelect({...placement,id:'__new__',isPlacement:true});refreshPlacement();if(kind.outdoor){userZoom=Math.min(userZoom,.9);fit();}return {ok:true,message:kind.wall?'直接點牆面空白處，再按 ✓ 掛放':'點室內地板或門外兩側花園，再按 ✓ 放置'};}
+ function beginShelfPlacement(type,shelfId){const decoration=decorTypes.some(t=>t.id===type),kind=(decoration?decorTypes:shelfTypes).find(t=>t.id===type);if(!kind)return {ok:false,message:'貨架類型無效'};if((state().phase==='open'&&!state().layoutPause))return {ok:false,message:'請先打烊再放置貨架'};cancelPlacement();api.setMode('decorate');selectShelf(null);placement={type,shelfId,decoration,x:3,z:4,rotation:0};if(kind.wall)Object.assign(placement,wallSlots(state().level,true,placement?.type)[0]);const sp=spriteFor(decoration?{type,decoration:true}:{type});clearGhost();ghost=new Image();ghost.src=sp.src;ghost.className='world2d-item ghost'+(sp.ground?' ground':'');layer.append(ghost);onFurnitureSelect({...placement,id:'__new__',isPlacement:true});refreshPlacement();if(kind.outdoor){userZoom=Math.min(userZoom,.9);fit();}return {ok:true,message:kind.wall?'直接點牆面空白處，再按 ✓ 掛放':'點室內地板或門外兩側花園，再按 ✓ 放置'};}
  function confirmPlacement(){if(!placement)return {ok:false,message:'沒有待放置貨架'};const p={...placement},result=game.act(p.decoration?'placeDecor':p.shelfId?'placeShelf':'addShelf',p.decoration?{...p,decorId:p.shelfId}:p);if(result.ok){cancelPlacement();selectShelf(null);mode='play';metrics.mode=mode;showGrid();onModeChange(mode);}onActionResult(result);return result;}
  function selectShelf(id,unlock=false){if(id!==selected)unlocked=false;if(unlock)unlocked=true;metrics.selectionLocked=!!id&&!unlocked;if(id!==selected){const o=furniture().find(i=>i.id===id);snapshot=o?{id:o.id,x:o.x,z:o.z,rotation:o.rotation||0}:null;}selected=id;metrics.selection=id;onFurnitureSelect(id?{...furniture().find(i=>i.id===id),lockedOnly:!unlocked}:null);if(id)onFurniturePosition(headOf(furniture().find(i=>i.id===id)));}
  function cancelEdit(){if(placement){cancelPlacement();return {ok:true,message:'已取消放置，貨架保留於收納'};}if(!selected)return {ok:true,message:'沒有選取貨架'};const result=game.act(furniture().find(d=>d.id===selected)?.decoration?'storeDecor':'storeShelf',{shelfId:selected,decorId:selected});if(result.ok){selectShelf(null);snapshot=null;}onActionResult(result);return result;}

@@ -1,6 +1,6 @@
 /* 命運／機會卡：主管收銀時可決定本次營業機會是否抽卡，結果在交易中鎖定。
  * 結果由 applyFortune 在存檔交易內套用；畫面只負責翻牌。 */
-import {ENTRANCE} from './nav.js?v=20261113-v36';
+import {ENTRANCE} from './nav.js?v=20261113-v39';
 
 export const FORTUNE=[
  {id:'tip',deck:'機會',icon:'💰',title:'客人塞小費',text:'等到的客人心情大好，多給了小費。',gold:200,weight:5},
@@ -12,7 +12,7 @@ export const FORTUNE=[
  {id:'jam',deck:'命運',icon:'🧾',title:'收銀機卡紙',text:'收銀機卡住了，請人修理花了一筆錢。',gold:-150,weight:5},
  {id:'change',deck:'命運',icon:'🪙',title:'找錯錢',text:'手忙腳亂找錯錢，損失了一些營收。',gold:-300,weight:4},
  {id:'review',deck:'命運',icon:'😠',title:'留下負評',text:'等太久的客人在門口抱怨，滿意度 -2。',satisfaction:-2,weight:4},
- {id:'blackout',deck:'命運',icon:'⚡',title:'停電',text:'店裡突然停電，排隊的客人全都回家了。',queue:'leave',weight:2},
+ {id:'blackout',deck:'命運',icon:'⚡',title:'停電',text:'店裡突然停電，所有顧客立刻回家，員工留店繼續工作。',queue:'leave',weight:2},
  {id:'typhoon',deck:'命運',icon:'🌀',title:'颱風來襲',text:'強風灌進店裡，所有貨架都壞了，要重新購買。上架的商品已搬回倉庫。',typhoon:true,weight:1}
 ];
 const QUEUE=['Queue','Checkout','Cart'];
@@ -42,14 +42,14 @@ export function applyFortune(g,s,p){
  if(f.gold>0){s.gold+=f.gold;}else if(f.gold<0){const lost=Math.min(s.gold,-f.gold);s.gold-=lost;s.stats.expenses=(s.stats.expenses||0)+lost;}
  if(f.satisfaction)s.satisfaction=Math.max(0,Math.min(100,(s.satisfaction||0)+f.satisfaction));
  if(f.queue==='serve')for(const x of s.customers)if(QUEUE.includes(x.state)){x.wait=0;x.emotion='happy';x.calmUntil=Math.max(x.calmUntil||0,s.totalTime+20);}
- if(f.queue==='leave')for(const x of s.customers)if(QUEUE.includes(x.state)){x.basket=[];x.state='Leave';x.timer=0;x.path=[];x.emotion='sad';g.route?.(s,x,ENTRANCE);}
+ if(f.queue==='leave'){s.customers=[];s.spawnTimer=0;s.customerChase=null;s.incidents=(s.incidents||[]).filter(e=>e.role!=='customer'&&!e.customerId);if(s.event?.role==='customer'||s.event?.customerId)s.event=null;}
  if(f.gift){const pool=g.data.catalog.filter(i=>i.isSellable&&!i.isRestricted&&!i.lootOnly&&s.level>=i.unlockStoreLevel);const item=pool[Math.floor(g.random(s)*pool.length)]||pool[0];if(item)s.inventory[item.sku]=(s.inventory[item.sku]||0)+f.gift;}
  if(f.typhoon){for(const sh of s.shelves)s.inventory[sh.sku]=(s.inventory[sh.sku]||0)+(sh.stock||0);s.shelves=[];s.undo=null;for(const x of s.customers){x.basket=[];x.path=[];if(!['Leave','Paid'].includes(x.state)){x.state='Leave';x.timer=0;g.route?.(s,x,ENTRANCE);}}for(const x of s.employees){x.path=[];x.workTask=null;}}
  g.log?.(s,`${f.deck}卡「${f.title}」：${f.text}`);if(c)g.notice?.(s,c.id,`${f.icon} ${f.title}`,f.deck==='機會'?'good':'bad');
  return `${f.deck}卡：${f.title}`;
 }
 
-/* 翻牌畫面：三張蓋著的卡，點一張翻開；onPick 回傳結果才顯示 */
+/* 翻牌畫面：兩張蓋著的卡，點一張翻開；onPick 回傳結果才顯示 */
 export function showFortune({onPick,onClose=()=>{}}){
  if(!document.getElementById('fortune-style')){const st=document.createElement('style');st.id='fortune-style';st.textContent=`
 .fortune-mask{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:rgba(40,24,12,.55);font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif}
@@ -71,7 +71,7 @@ export function showFortune({onPick,onClose=()=>{}}){
 .fortune-mask,.fortune-mask *{box-sizing:border-box}
 .fortune-box{max-width:calc(100vw - 24px);max-height:calc(100dvh - 28px);overflow:auto;padding:16px 12px}
 .fortune-box p{overflow-wrap:anywhere;line-height:1.5}.fortune-row{gap:8px;min-width:0}
-.fortune-mask .fortune-card{min-width:0;min-height:0;width:calc((100% - 16px)/3);height:145px;aspect-ratio:auto;flex:1}
+.fortune-mask .fortune-card{min-width:0;min-height:0;width:calc((100% - 8px)/2);height:145px;aspect-ratio:auto;flex:1}
 .fortune-row.revealed .fortune-card.dim{display:none}
 .fortune-row.revealed .fortune-card.flip{flex:none;width:min(100%,290px);height:290px}
 .fortune-front{padding:14px;gap:8px;overflow:auto}
@@ -80,11 +80,11 @@ export function showFortune({onPick,onClose=()=>{}}){
 .fortune-buttons{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .fortune-buttons .fortune-ok{padding:8px 16px;font-size:14px;min-width:0}
 `;document.head.appendChild(st);}
- const mask=document.createElement('div');mask.className='fortune-mask';mask.innerHTML=`<div class="fortune-box" role="dialog" aria-label="命運機會卡"><h3>命運／機會</h3><p>顧客排隊等得不耐煩了。選一張卡處理這次狀況，翻牌後不能重選。</p><div class="fortune-row"></div><div class="fortune-buttons"><button type="button" class="fortune-ok fortune-close" hidden>完成</button></div></div>`;
+ const mask=document.createElement('div');mask.className='fortune-mask';mask.innerHTML=`<div class="fortune-box" role="dialog" aria-label="命運機會卡"><h3>命運／機會</h3><p>顧客排隊等得不耐煩了。二選一，選一張卡處理這次狀況，翻牌後不能重選。</p><div class="fortune-row"></div><div class="fortune-buttons"><button type="button" class="fortune-ok fortune-close" hidden>完成</button></div></div>`;
  const row=mask.querySelector('.fortune-row'),ok=mask.querySelector('.fortune-close'),cards=[];let revealTimer;
  const close=()=>{clearTimeout(revealTimer);mask.remove();onClose();};ok.onclick=close;
 
- for(let i=0;i<3;i++){const b=document.createElement('button');b.type='button';b.className='fortune-card';const deck=i===1?'機會':'命運';b.innerHTML=`<span class="fortune-inner"><span class="fortune-face fortune-back ${deck==='機會'?'blue':''}"><i>${deck==='機會'?'？':'！'}</i><b>${deck}</b></span><span class="fortune-face fortune-front"></span></span>`;
+ for(let i=0;i<2;i++){const b=document.createElement('button');b.type='button';b.className='fortune-card';const deck=i===1?'機會':'命運';b.innerHTML=`<span class="fortune-inner"><span class="fortune-face fortune-back ${deck==='機會'?'blue':''}"><i>${deck==='機會'?'？':'！'}</i><b>${deck}</b></span><span class="fortune-face fortune-front"></span></span>`;
   b.onclick=()=>{if(cards.some(c=>c.classList.contains('done')))return;const f=onPick();if(!f){close();return;}b.querySelector('.fortune-front').innerHTML=`<span class="tag ${f.deck==='命運'?'bad':''}">${f.deck}</span><i>${f.icon}</i><b>${f.title}</b><small>${f.text}</small>`;for(const c of cards){c.classList.add('done');if(c!==b)c.classList.add('dim');}row.classList.add('revealed');b.classList.add('flip');revealTimer=setTimeout(()=>{ok.hidden=false;ok.focus();},650);};
   cards.push(b);row.appendChild(b);}
  document.body.appendChild(mask);return {close};

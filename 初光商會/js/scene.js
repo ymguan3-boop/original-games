@@ -1,14 +1,14 @@
-import {fortuneAvailable} from './fortune-cards.js?v=20261113-v38';
+import {fortuneAvailable} from './fortune-cards.js?v=20261113-v39';
 import {createWeatherOutfit,weatherOutfitKind} from './weather-outfits.js?v=20261113-v36';
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261113-v36';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261113-v36';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261113-v39';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261113-v39';
 import {createChaseCelebration} from './chase-celebration.js?v=20261113-v36';
 import {buildOutdoor} from './outdoor-3d.js?v=20261113-v36';
 import {environment} from './environment.js?v=20261113-v36';
 import {visibleStaff,chasePose} from './shop-presentation.js?v=20261113-v36';
 import {addProductEdges} from './product-outlines.js?v=20261113-v36';
 import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261113-v36';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261113-v36';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261113-v39';
 import {decorateInterior} from './interior-v5.js?v=20261113-v36';
 import {addIllustratedOutline} from './illustrated-outline.js?v=20261113-v36';
 import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261113-v36';
@@ -21,11 +21,11 @@ const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,gree
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
 import {createShelfView,tintShelf} from './shelf-view.js?v=20261113-v36';
 import {createAssets} from './asset-resolver.js?v=20261113-v36';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261113-v36';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261113-v39';
 import {sampleTrail,turnToward} from './motion.js?v=20261113-v36';
 import {getCustomerComplaint} from './customer-complaints.js?v=20261113-v37';
 import {eventEmployee} from './patrol-events.js?v=20261113-v36';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261113-v36';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261113-v39';
 import {createPlacementCells} from './placement-cells.js?v=20261113-v36';
 import {hasRackModel,rackModel} from './rack-models.js?v=20261113-v36';
 import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261113-v36';
@@ -137,7 +137,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
  function projectPlacementHead(){if(!placement)return null;const p=new T.Vector3(placement.x,headHeight(placement),placement.z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}
  function placementPoint(item,p){const snap=item.decoration&&decorDefinition(item)?.ground?2:item.decoration&&decorDefinition(item)?.outdoor&&p.z>=dimensions(state().level).height+.5?4:1;const raw={x:Math.round(p.x*snap)/snap,z:Math.round(p.z*snap)/snap,rotation:item.rotation};if(WALL_TYPES.has(item.type)){return resolveDecorPlacement(item,raw,state().level);}return raw;}
  function previewPose(item,p){try{return {...item,...resolveDecorPlacement(item,{x:p.x,z:p.z,rotation:p.rotation},state().level)};}catch{return {...item,x:p.x,z:p.z};}}
- function beginShelfPlacement(type,shelfId){const decoration=decorTypes.some(t=>t.id===type),kind=(decoration?decorTypes:shelfTypes).find(t=>t.id===type);if(!kind)return {ok:false,message:'貨架類型無效'};if((state().phase==='open'&&!state().layoutPause))return {ok:false,message:'請先打烊再放置貨架'};cancelPlacement();selectShelf(null);if(kind.outdoor)toggleView(true);this.setMode('decorate');placement={type,shelfId,decoration,x:3,z:4,rotation:0};if(kind.wall)Object.assign(placement,wallSlots(state().level,true)[0]);const view=new T.Group();placementView=view;scene.add(view);(!decoration&&hasRackModel(type)?Promise.resolve(rackModel(T,type)):assets.load(decoration?decorModel(type,state().level):shelfModel(type))).then(g=>{if(placementView!==view)return;const model=assets.clone(g.scene);model.traverse(o=>{if(o.material){o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();for(const m of Array.isArray(o.material)?o.material:[o.material]){m.transparent=true;m.opacity=.65;m.depthWrite=false;}o.userData.ownedMaterial=true;}});view.add(model);refreshPlacement();}).catch(report);onFurnitureSelect({...placement,id:'__new__',isPlacement:true});refreshPlacement();return {ok:true,message:kind.wall?'直接點選牆面空白處掛放，避開窗戶與門框':kind.outdoor?'直接點室內地板或門外兩側花園，再按 ✓ 放置':'點地板或 ✓ 放置，取消保留於收納'};}
+ function beginShelfPlacement(type,shelfId){const decoration=decorTypes.some(t=>t.id===type),kind=(decoration?decorTypes:shelfTypes).find(t=>t.id===type);if(!kind)return {ok:false,message:'貨架類型無效'};if((state().phase==='open'&&!state().layoutPause))return {ok:false,message:'請先打烊再放置貨架'};cancelPlacement();selectShelf(null);if(kind.outdoor)toggleView(true);this.setMode('decorate');placement={type,shelfId,decoration,x:3,z:4,rotation:0};if(kind.wall)Object.assign(placement,wallSlots(state().level,true,placement?.type)[0]);const view=new T.Group();placementView=view;scene.add(view);(!decoration&&hasRackModel(type)?Promise.resolve(rackModel(T,type)):assets.load(decoration?decorModel(type,state().level):shelfModel(type))).then(g=>{if(placementView!==view)return;const model=assets.clone(g.scene);model.traverse(o=>{if(o.material){o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();for(const m of Array.isArray(o.material)?o.material:[o.material]){m.transparent=true;m.opacity=.65;m.depthWrite=false;}o.userData.ownedMaterial=true;}});view.add(model);refreshPlacement();}).catch(report);onFurnitureSelect({...placement,id:'__new__',isPlacement:true});refreshPlacement();return {ok:true,message:kind.wall?'直接點選牆面空白處掛放，避開窗戶與門框':kind.outdoor?'直接點室內地板或門外兩側花園，再按 ✓ 放置':'點地板或 ✓ 放置，取消保留於收納'};}
  function confirmPlacement(){if(!placement)return {ok:false,message:'沒有待放置貨架'};const p={...placement},result=game.act(p.decoration?'placeDecor':p.shelfId?'placeShelf':'addShelf',p.decoration?{...p,decorId:p.shelfId}:p);if(result.ok){const sh=(p.decoration?state().decorations:state().shelves).at(-1);cancelPlacement();shelf(sh);selectShelf(null);if(p.decoration)toggleView(!!sh.garden);mode='play';grid.visible=false;metrics.mode=mode;onModeChange(mode);}onActionResult(result);return result;}
 
  function selectShelf(id,unlock=false){if(id!==selectedShelf)editingUnlocked=false;if(unlock)editingUnlocked=true;metrics.selectionLocked=!!id&&!editingUnlocked;if(id!==selectedShelf){const old=furniture().find(sh=>sh.id===id);editSnapshot=old?{id:old.id,x:old.x,z:old.z,rotation:old.rotation||0}:null;}selectedShelf=id;metrics.selection=id;for(const [key,v]of shelfViews)tintShelf(v,key===id);ghost.visible=!!id;if(id){const sh=furniture().find(sh=>sh.id===id);if(sh){ghost.position.set(sh.x,.12,sh.z);ghost.material.color.setHex(0xffbf35);}}onFurnitureSelect(id?{...furniture().find(sh=>sh.id===id),lockedOnly:!editingUnlocked}:null);if(id){const sh=furniture().find(sh=>sh.id===id),v=shelfViews.get(id);if(sh&&v)v.root.position.set(sh.x,0,sh.z);onFurniturePosition(projectShelfHead(id));}}

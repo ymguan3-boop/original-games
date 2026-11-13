@@ -1,7 +1,7 @@
-import {decorEffects,obstacles} from './decorations.js?v=20261113-v36';
+import {decorEffects,obstacles} from './decorations.js?v=20261113-v39';
 import {purchaseChance} from './economy-v2.js?v=20261113-v36';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261113-v36';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261113-v36';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261113-v39';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261113-v39';
 import {resolveCustomerComplaint} from './customer-complaints.js?v=20261113-v37';
 import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261113-v36';
 import {passive,jobPower,dailyTrack} from './management.js?v=20261113-v37';
@@ -27,7 +27,7 @@ export function shopAction(g,s,type,p){
  if(type==='sellShelf'){
   const price=Math.floor((sh.purchasePrice??g.data.config.shelfCost)/2);s.gold+=price;s.stats.furnitureSales=(s.stats.furnitureSales||0)+price;s.shelfStorage=s.shelfStorage.filter(x=>x!==sh);g.log(s,`販售收納貨架 +${price} G（購入半價）。`);return `已販售貨架，收入 ${price} G`;
  }
- check(s.shelves.length<2+Math.min(s.level,5)*2,'店內貨架已滿');const placed={...sh,x:p.x,z:p.z,rotation:p.rotation||0};validLayout(g,s,[...s.shelves,placed]);s.shelves.push(placed);s.shelfStorage=s.shelfStorage.filter(x=>x!==sh);s.undo=null;/* 新貨架立刻上架，不必等補貨員 */g.autoStock(s,placed);{const qty=Math.min(s.inventory[placed.sku]||0,shelfCapacity(placed)-placed.stock);s.inventory[placed.sku]-=qty;placed.stock+=qty;}for(const a of g.actors(s))a.path=[];return '貨架已放置，未重複扣款';
+ check(s.shelves.length<2+s.level*2,'店內貨架已滿');const placed={...sh,x:p.x,z:p.z,rotation:p.rotation||0};validLayout(g,s,[...s.shelves,placed]);s.shelves.push(placed);s.shelfStorage=s.shelfStorage.filter(x=>x!==sh);s.undo=null;/* 新貨架立刻上架，不必等補貨員 */g.autoStock(s,placed);{const qty=Math.min(s.inventory[placed.sku]||0,shelfCapacity(placed)-placed.stock);s.inventory[placed.sku]-=qty;placed.stock+=qty;}for(const a of g.actors(s))a.path=[];return '貨架已放置，未重複扣款';
 }
 export function operationsTick(g,s,dt){
  if(!s.upgradeProject&&!s.layoutPause)autoChapterConstruction(g,s);
@@ -57,8 +57,9 @@ function pay(g,s,c,e){
 export function stepCustomers(g,s,dt){
  /* 出口優先：入場動畫結束時若門內有人，先在室外等，不在同一格互相擋路。也修復舊存檔已重疊的入場顧客。 */
  for(const c of s.customers)if(c.state!=='Leave'&&!c.exitingAtDoor&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.3&&s.customers.some(o=>o!==c&&o.state==='Leave'&&!o.exitingAtDoor&&Math.hypot(o.x-ENTRANCE.x,o.z-ENTRANCE.z)<3))c.arrivalRemaining=Math.max(c.arrivalRemaining||0,.25);
+ const queued=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));for(const c of queued.slice(4)){c.state='Cart';c.path=[];c.queueSlot=-1;c.wait=0;const p=g.freeSpot(s,{x:2,z:4},c);g.route(s,c,p);}
  const queue=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));
- queue.forEach((c,i)=>{if(c.state==='Checkout')return;const goal={x:CHECKOUT.x,z:3+i};if(i<Math.floor(dimensions(s.level).height)-4&&(c.queueSlot!==i||!c.path.length&&Math.hypot(c.x-goal.x,c.z-goal.z)>.1)){c.queueSlot=i;g.route(s,c,goal);}});
+ queue.forEach((c,i)=>{if(c.state==='Checkout')return;const goal={x:CHECKOUT.x,z:3+i};if(i<4&&(c.queueSlot!==i||!c.path.length&&Math.hypot(c.x-goal.x,c.z-goal.z)>.1)){c.queueSlot=i;g.route(s,c,goal);}});
  /* 已經誤闖收銀台後方的顧客：帶回櫃台前面 */
  for(const c of s.customers){if(c.path.length||Math.abs(c.x-CHECKOUT.x)>1.6||c.z>1.6||['Paid'].includes(c.state)||(c.rescueAt||0)>s.totalTime)continue;c.rescueAt=s.totalTime+1;const out=[{x:CHECKOUT.x+1,z:3},{x:CHECKOUT.x-1,z:3},{x:CHECKOUT.x+2,z:3},{x:CHECKOUT.x+2,z:2}].find(p=>walkable(p,obstacles(s),s.level));if(out)g.route(s,c,out);}
  const cashier=cashierAt(g,s);
@@ -77,7 +78,7 @@ export function stepCustomers(g,s,dt){
    const sh=s.shelves.find(x=>x.id===c.targetShelf),item=g.data.catalog.find(x=>x.sku===sh?.sku),price=sh?Math.round(s.prices[sh.sku]*shelfDefinition(sh).premium*(1+decorEffects(s).premium)):0,tolerance=(c.personality===4?1.1:1.4)+(g.role(s,'host')?.3:0)+(s.buffs.sales>s.totalTime?.2:0)+(c.memory?.satisfied?.1:c.memory?-.15:0);
    if(sh&&g.available(s,sh)<=0){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}if(sh&&g.available(s,sh)>0&&price<=c.budget&&g.random(s)<purchaseChance(s,{type:c.customerType||'commoner',sku:sh.sku,price,ref:item.suggestedRetail*shelfDefinition(sh).premium*(1+decorEffects(s).premium)*(tolerance/1.4)})){c.basket=[{sku:sh.sku,shelfId:sh.id,qty:1,price,cost:s.averageCosts?.[sh.sku]??item.buyCost}];c.state='Cart';c.timer=0;c.wait=0;g.xp(s,g.role(s,'host'),.5);}else{c.state=c.visited.length<s.shelves.length?'Browse':'UnhappyExit';c.timer=0;}
   }else if(c.state==='Cart'){
-   if(s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).length>=Math.floor(dimensions(s.level).height)-4)continue;c.state='Queue';c.queueOrder=++s.serial;c.queueSlot=-1;c.timer=0;
+   if(s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).length>=4)continue;c.state='Queue';c.queueOrder=++s.serial;c.queueSlot=-1;c.timer=0;
   }else if(c.state==='Queue'){
    const first=s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0))[0];if(first===c&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1){c.state='Checkout';c.timer=0;}
   }else if(c.state==='Checkout'){

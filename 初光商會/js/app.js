@@ -17,18 +17,18 @@ import {installShopMusic} from './shop-music.js?v=20261113-v36';
 import {createActorVisuals} from './actor-visuals.js?v=20261113-v38';
 import {staffEvolutionInfo,readyStaffEvolutions} from './staff-evolution.js?v=20261113-v36';
 import {loadSpiritCards} from './spirit-cards.js?v=20261113-v36';
-import {createGame} from './core.js?v=20261113-v38';
+import {createGame} from './core.js?v=20261113-v39';
 import {createStaffOverlay} from './staff-overlay.js?v=20261113-v36';
 import {installPatrolControls} from './patrol-controls.js?v=20261113-v36';
 import {playEvolution3D} from './evolution-3d.js?v=20261113-v36';
-import {createScene} from './scene.js?v=20261113-v38';
-import {createScene2D} from './scene-2d.js?v=20261113-v38';
-import {createHub} from './shop-hub.js?v=20261113-v38';
+import {createScene} from './scene.js?v=20261113-v39';
+import {createScene2D} from './scene-2d.js?v=20261113-v39';
+import {createHub} from './shop-hub.js?v=20261113-v39';
 import {showManagerDialogue} from './manager-dialogue.js?v=20261113-v36';
 import {commissionNotice} from './commissions.js?v=20261113-v38';
 import {dailyTasks} from './management.js?v=20261113-v37';
-import {shelfTypes,accepts as shelfAccepts} from './furniture.js?v=20261113-v36';
-import {decorTypes} from './decorations.js?v=20261113-v36';
+import {shelfTypes,accepts as shelfAccepts} from './furniture.js?v=20261113-v39';
+import {decorTypes} from './decorations.js?v=20261113-v39';
 import {buildNotice} from './build-notices.js?v=20261112-notices-v1';
 import {pendingRewards} from './reward-collection.js?v=20261113-v36';
 /* 快捷鍵上的「新」提示：看過該頁就記下，有新東西才再亮 */
@@ -78,7 +78,7 @@ const pageFor={goods:'goods',shelves:'build',staff:'staff',quests:'tasks',upgrad
 const openPanel=name=>hub.open(pageFor[name]||'shop');
 $('#start-business').onclick=()=>{if(game.state.phase==='open'){confirmAction('現在打烊並結算今日營業？',()=>action('close'));return;}if(game.state.phase==='report'){hub.open('report');return;}const blocked=openingBlocker(game.state);if(blocked){showManagerDialogue(blocked,{actionLabel:game.state.shelves.length?'去招聘':'去布置',onAction:()=>hub.open(game.state.shelves.length?'promoters':'racks')});return;}action('open');};
 $('#shop-goal').onclick=()=>hub.open('upgrade');$('#quick-settings').onclick=()=>hub.open('settings');$('#top-fullscreen').onclick=fullscreen;$('#top-patrol').onclick=()=>scene.setMode(scene.metrics.mode==='follow'?'play':'follow');document.querySelector('.top-actions').prepend($('#prep-bar'));document.addEventListener('click',e=>{const menu=$('#quick-menu');if(!menu.contains(e.target)||e.target.closest('.quick-menu-items button'))menu.open=false;});
-for(const b of document.querySelectorAll('.toolbar [data-hub]'))b.onclick=()=>{const page=b.dataset.hub;if(page==='build'){const notice=buildNotice(game,game.state,seenNotice.build);buildUnlockNotice=notice?.kind==='unlock'?notice:null;}markSeen(page);setTimeout(renderHUD,0);if(document.body.classList.contains('view-2d')&&hub.isOpen&&hub.rootPage===page){hub.close();return;}if(page==='tasks'&&game.state.event){hub.open('event');return;}if(page==='shop'){if(game.state.commissionBoard?.unread)action('readCommissions');hub.open('orders');}else hub.open(page);};
+for(const b of document.querySelectorAll('.toolbar [data-hub]'))b.onclick=()=>{const page=b.dataset.hub;if(page==='build'){const notice=buildNotice(game,game.state,seenNotice.build);buildUnlockNotice=notice?.kind==='unlock'?notice:null;}hub.prepareNotices();markSeen(page);setTimeout(renderHUD,0);if(document.body.classList.contains('view-2d')&&hub.isOpen&&hub.rootPage===page){hub.close();return;}if(page==='shop'){if(game.state.commissionBoard?.unread)action('readCommissions');hub.open('orders');}else hub.open(page);};
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!game||game.state.patrolFocus)return;
  if(b.id==='rotate-furniture'){const r=scene.editShelf(0,0,90);if(!r.ok)toast(r.message,true);}
  if(b.id==='retract-furniture'){const r=scene.cancelEdit();toast(r.message||'已收納',!r.ok);if(r.ok)scene.setMode('play');}
@@ -104,7 +104,7 @@ async function boot(){let gate;try{
 
  shopMusic=installShopMusic();game=await createGame({storage:localStorage,key:'firstlight_shop_v1'});game.act('tutorial',{done:true});importMeadow();seenPatrolResolution=game.state.recentPatrolResolution?.id||null;seenChapterClear=game.state.chapterClear?.id||null;seenChase=game.state.customerChaseResult?.id||null;
  shopNavigation=installShopNavigation({game,onError:e=>toast(e.message,true)});
- hub=createHub({game,getScene:()=>scene,act:action,toast,esc,evolve:beginEvolution,leave:()=>$('#return-to-game').click(),settings:{enterMeadow,importMeadow,buildNotice:()=>buildNotice(game,game.state,seenNotice.build)||buildUnlockNotice,volume:()=>shopMusic?.volume??40,quality:()=>quality,exportSave,recover:recoverSave,is2D:()=>view2d,switchView},onChange:()=>{if(!hub?.isOpen)buildUnlockNotice=null;game.uiBusy=evolutionInProgress||hub?.isOpen;renderHUD();}});
+ hub=createHub({game,getScene:()=>scene,act:action,toast,esc,evolve:beginEvolution,leave:()=>$('#return-to-game').click(),settings:{enterMeadow,importMeadow,notices:()=>{const st=game.state,buildIds=unlockedBuild(st).filter(id=>!(seenNotice.build||[]).includes(id)),hireIds=hireable(game,st).filter(id=>!(seenNotice.staff||[]).includes(id));return {buildIds,hireIds,racks:shelfTypes.some(t=>buildIds.includes(t.id)),furniture:decorTypes.some(t=>t.group==='furniture'&&buildIds.includes(t.id)),decor:decorTypes.some(t=>t.group==='decor'&&buildIds.includes(t.id))};},buildNotice:()=>buildNotice(game,game.state,seenNotice.build)||buildUnlockNotice,volume:()=>shopMusic?.volume??40,quality:()=>quality,exportSave,recover:recoverSave,is2D:()=>view2d,switchView},onChange:()=>{if(!hub?.isOpen)buildUnlockNotice=null;game.uiBusy=evolutionInProgress||game.fortunePaused||hub?.isOpen;renderHUD();}});
  const trial=['localhost','127.0.0.1'].includes(location.hostname)&&new URLSearchParams(location.search).has('shopDev');if(innerWidth<700)game.data.config.maxCustomers=6;
  await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id),onFortuneClick:()=>hub.openFortune()});window.shop=game;window.shopTrial=trial;window.addEventListener('focus',()=>{importMeadow();renderHUD();});
  const sceneFactory=view2d?createScene2D:createScene;document.body.classList.toggle('view-2d',view2d);
