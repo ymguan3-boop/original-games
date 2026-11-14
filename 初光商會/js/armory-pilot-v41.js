@@ -1,0 +1,15 @@
+import {builder} from './product-models.js?v=20261114-v45';
+let cached;
+// Review pilot: single mobile low-poly rack, same one-tile origin in all three stock states.
+export function artisanArmory(T){if(cached)return cached;const b=builder(T),geometries=[],box=new T.BoxGeometry(1,1,1),cyl=new T.CylinderGeometry(1,1,1,10),ball=new T.SphereGeometry(1,10,6);geometries.push(box,cyl,ball);const W=0xd6a166,D=0x6c4934,L=0xecc48b,S=0xa8b49a,G=0xd4af62;
+ const B=(col,x,y,z,w,h,d)=>b.put(box,col,x,y,z,w,h,d);
+ const rounded=(w,h,d)=>{const s=new T.Shape(),r=Math.min(.035,w/6,h/6);s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);s.lineTo(w/2,h/2-r);s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);s.lineTo(-w/2+r,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);s.lineTo(-w/2,-h/2+r);s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);const g=new T.ExtrudeGeometry(s,{depth:d,steps:1,bevelEnabled:true,bevelSize:.009,bevelThickness:.009,bevelSegments:1,curveSegments:3});g.translate(0,0,-d/2);geometries.push(g);return g;};
+ for(const side of[-1,1]){b.put(rounded(.13,1.2,.14),W,side*.37,.75,-.15);b.put(rounded(.19,.11,.64),D,side*.36,.095,0);b.put(rounded(.14,.15,.16),D,side*.37,1.38,-.15);B(L,side*.37,.8,-.065,.021,1.05,.014);B(G,side*.37,.24,-.055,.14,.08,.024);B(G,side*.37,1.23,-.055,.14,.08,.024);}
+ b.put(rounded(.82,.20,.18),D,0,.23,-.08);for(let i=0;i<3;i++){b.put(rounded(.23,.13,.025),S,(i-1)*.25,.23,.027);b.put(ball,G,(i-1)*.25,.23,.045,.018,.018,.012);}
+ // Diagonal bracing, mortise caps and three slotted rails all sit behind the products.
+ for(const side of[-1,1])b.put(box,D,side*.19,.72,-.235,.045,1.08,.045,0,0,-side*.36);
+ for(const y of[.28,.70,1.12]){b.put(rounded(.83,.075,.13),W,0,y,-.10);B(L,0,y+.03,-.025,.79,.02,.018);for(let i=0;i<6;i++){b.put(cyl,D,(i-2.5)*.143,y+.05,-.016,.018,.026,.018,Math.PI/2);b.put(cyl,G,(i-2.5)*.143,y+.055,.025,.009,.035,.009,Math.PI/2);}}
+ const crest=new T.Shape();crest.moveTo(-.43,0);crest.lineTo(-.43,.10);crest.bezierCurveTo(-.25,.09,-.18,.17,-.10,.23);crest.quadraticCurveTo(0,.31,.10,.23);crest.bezierCurveTo(.18,.17,.25,.09,.43,.10);crest.lineTo(.43,0);crest.closePath();const cg=new T.ExtrudeGeometry(crest,{depth:.10,steps:1,bevelEnabled:true,bevelSize:.012,bevelThickness:.01,bevelSegments:1,curveSegments:8});geometries.push(cg);b.put(cg,W,0,1.3,-.19);B(S,0,1.38,-.075,.28,.08,.025);B(G,0,1.48,-.062,.025,.16,.022);B(G,0,1.43,-.062,.12,.023,.026);for(const side of[-1,1])b.put(ball,G,side*.35,1.35,-.06,.022,.022,.013);
+ // Fine end-grain strokes and wrought corner fixings are geometry, not flat floating labels.
+ for(const side of[-1,1])for(const y of[.24,1.23])for(const dx of[-.045,.045])b.put(ball,D,side*.37+dx,y,-.036,.009,.009,.005);
+ const scene=new T.Group(),mesh=b.mesh(.75,.06);scene.name='artisan-armory-review-v41';scene.add(mesh);scene.userData.artStatus='ART_REVIEW_PENDING';scene.userData.triangles=mesh.geometry.attributes.position.count/3;scene.userData.footprint=[1,1];geometries.forEach(g=>g.dispose());cached={scene};return cached;}

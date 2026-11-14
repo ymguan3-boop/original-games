@@ -110,3 +110,8 @@ html body #hub:is([data-page=roster],[data-page=worker],[data-page=jobs],[data-p
 html body #hub :is(.hub-action,.hub-card).has-notice{position:relative;border-color:#bd793b!important}
 html body #hub :is(.hub-action,.hub-card).has-notice:after{content:'';position:absolute;top:4px;right:5px;width:8px;height:8px;border-radius:50%;background:#d9402f;box-shadow:0 0 0 2px #fff8e8;pointer-events:none}
 
+
+#shop-goal.upgrade-ready{position:relative;overflow:visible;border-color:#538339;box-shadow:0 0 0 2px #b5ce82}
+#shop-goal.upgrade-ready:before{content:'可升級 · 點我';display:block;color:#39712e;font-weight:800;font-size:10px;line-height:1.15}
+#patrol-rack-hint{position:fixed;left:50%;transform:translateX(-50%);z-index:18;width:max-content;max-width:calc(100vw - 24px);padding:8px 12px;background:#fff8e9ed;border:1.5px solid #59432f;border-radius:12px;color:#49331f;font-size:12px;pointer-events:none;box-shadow:0 3px 8px #35261430}
+.exhausted-label{display:block;color:#a93329;font-size:11px!important;white-space:normal}

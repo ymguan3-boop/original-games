@@ -62,7 +62,7 @@ html body.hub-open nav.toolbar,html body.patrol-active nav.toolbar,html body.dec
 .world2d-item.ground{object-fit:fill}
 .world2d-item.empty{filter:saturate(.55) brightness(.92)}
 .world2d-item.selected{filter:drop-shadow(0 0 4px #ffbf35) drop-shadow(0 0 8px #ffbf35)}
-.world2d-item.ghost{opacity:.75;filter:drop-shadow(0 0 5px #4fc38a)}.world2d-item.ghost.bad{filter:drop-shadow(0 0 6px #f05e53) saturate(.6)}
+.world2d-item.ghost{opacity:1;filter:drop-shadow(0 0 5px #4fc38a)}.world2d-item.ghost.bad{filter:drop-shadow(0 0 6px #f05e53)}
 .world2d-actor{position:absolute;aspect-ratio:1;display:block}
 .world2d-actor img{position:relative;display:block;width:100%;height:100%;object-fit:contain;transform-origin:50% 90%}
 .world2d-actor i{position:absolute;left:18%;right:18%;bottom:4%;height:12%;border-radius:50%;background:#3a2a1a40}

@@ -1,5 +1,7 @@
 /* Native HTML text stays sharp on high-DPI mobile screens (no low-res CanvasTextures). */
 export const REACTIONS={
+ 'found-money':['🪙','撿到錢了！','happy'],
+ exhausted:['💤','已累暴了','warning'],
  fortune:['🎴','命運機會','warning'],
  question:['?','缺貨','question'],confused:['?','找不到','question'],
  impatient:['⌛','快沒耐心','warning'],angry:['💢','生氣了','angry'],
@@ -15,23 +17,24 @@ export const REACTIONS={
  silly:['😂','搞笑狀況','funny'],laugh:['😄','笑翻了','funny'],surprised:['!','嚇一跳','warning'],wake:['‼','驚醒了！','warning']
 };
 export function moodTone(kind){return REACTIONS[kind]?.[2]||'neutral';}
-export function createActorVisuals(host,{onEventClick=()=>{},onComplaintClick=()=>{},onFortuneClick=()=>{}}={}){
+export function createActorVisuals(host,{onEventClick=()=>{},onComplaintClick=()=>{},onFortuneClick=()=>{},onStaffClick=()=>{}}={}){
  const statuses=new Map(),popups=new Map(),seen=new Set();let initialized=false,vw=innerWidth,vh=innerHeight;globalThis.addEventListener?.('resize',()=>{vw=innerWidth;vh=innerHeight;});
  const make=(cls)=>{const el=document.createElement('div');el.className=cls;host.append(el);return el;};
  const visible=p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y)&&p.x>=-30&&p.x<=vw+30&&p.y>=0&&p.y<=vh+30&&p.inFront!==false;
  function render({actors=[],notices=[]}={}){
   const positions=new Map(actors.map(a=>[a.id,a]));
-  for(const a of actors){if(!a.kind||!REACTIONS[a.kind]||!visible(a))continue;
+  const positioned=[],headerBottom=document.querySelector('.topbar')?.getBoundingClientRect().bottom||0;
+  for(const a of [...actors].sort((a,b)=>Number(!!b.staffId)-Number(!!a.staffId))){if(!a.kind||!REACTIONS[a.kind]||!visible(a))continue;
    let node=statuses.get(a.id);if(!node){node=make('actor-reaction');const glyph=document.createElement('span'),caption=document.createElement('b');glyph.className='actor-reaction-icon';caption.className='actor-reaction-text';node.append(glyph,caption);
- node.addEventListener('click',()=>{if(node.dataset.fortuneId)onFortuneClick();else if(node.dataset.complaintId)onComplaintClick(node.dataset.complaintId);else if(node.dataset.eventId)onEventClick(node.dataset.eventId);});
- node.addEventListener('keydown',e=>{if((node.dataset.fortuneId||node.dataset.complaintId||node.dataset.eventId)&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(node.dataset.fortuneId)onFortuneClick();else if(node.dataset.complaintId)onComplaintClick(node.dataset.complaintId);else onEventClick(node.dataset.eventId);}});
+ node.addEventListener('click',()=>{if(node.dataset.staffId)onStaffClick(node.dataset.staffId);else if(node.dataset.fortuneId)onFortuneClick();else if(node.dataset.complaintId)onComplaintClick(node.dataset.complaintId);else if(node.dataset.eventId)onEventClick(node.dataset.eventId);});
+ node.addEventListener('keydown',e=>{if((node.dataset.staffId||node.dataset.fortuneId||node.dataset.complaintId||node.dataset.eventId)&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(node.dataset.staffId)onStaffClick(node.dataset.staffId);else if(node.dataset.fortuneId)onFortuneClick();else if(node.dataset.complaintId)onComplaintClick(node.dataset.complaintId);else onEventClick(node.dataset.eventId);}});
  statuses.set(a.id,node);}
    const spec=REACTIONS[a.kind];if(node.dataset.kind!==a.kind){node.dataset.kind=a.kind;node.dataset.tone=spec[2];node.children[0].textContent=spec[0];node.children[1].textContent=spec[1];}node.children[0].textContent=a.chaseTarget?'🏃':spec[0];if(a.chaseTarget)node.dataset.chaseTarget='true';else delete node.dataset.chaseTarget;
-   const eventId=a.eventId||'',complaintId=a.complaintId||'';if(a.fortuneId)node.dataset.fortuneId=a.fortuneId;else delete node.dataset.fortuneId;
-   if(a.fortuneId||complaintId||eventId){
+   if(a.staffId)node.dataset.staffId=a.staffId;else delete node.dataset.staffId;const eventId=a.eventId||'',complaintId=a.complaintId||'';if(a.fortuneId)node.dataset.fortuneId=a.fortuneId;else delete node.dataset.fortuneId;
+   if(a.staffId||a.fortuneId||complaintId||eventId){
     if(complaintId){node.dataset.complaintId=complaintId;delete node.dataset.eventId;}
     else{node.dataset.eventId=eventId;delete node.dataset.complaintId;}
-    const title=a.fortuneId?'命運機會':complaintId?a.complaintTitle||spec[1]:a.eventTitle||spec[1];
+    const title=a.staffId?'已累暴了 · 點我替班':a.fortuneId?'命運機會':complaintId?a.complaintTitle||spec[1]:a.eventTitle||spec[1];
     node.children[1].textContent=title;node.title='點擊查看並解決：'+title;
     node.setAttribute?.('role','button');node.setAttribute?.('tabindex','0');
     node.setAttribute?.('aria-label','查看並處理'+title);
@@ -40,7 +43,8 @@ export function createActorVisuals(host,{onEventClick=()=>{},onComplaintClick=()
     delete node.dataset.eventId;delete node.dataset.complaintId;
     node.removeAttribute?.('role');node.removeAttribute?.('tabindex');node.removeAttribute?.('aria-label');node.removeAttribute?.('title');
    }
-   node.style.left=a.x+'px';node.style.top=(a.y-6)+'px';node.hidden=false;
+   node.hidden=false;const w=node.offsetWidth||140,h=node.offsetHeight||32;let x=Math.max(w/2+5,Math.min(vw-w/2-5,a.x)),y=Math.max(headerBottom+h+5,Math.min(vh-66,a.y-6));for(const p of positioned){if(Math.abs(x-p.x)<(w+p.w)/2+5&&y-h<p.y+5&&y>p.y-p.h-5){const up=p.y-p.h-6;if(up-h>headerBottom+5)y=up;else y=Math.min(vh-66,p.y+h+6);}}positioned.push({x,y,w,h});node.style.left=x+'px';node.style.top=y+'px';node.style.zIndex=a.staffId?'3':'1';
+
   }
   for(const [id,node]of statuses)if(!positions.has(id)||!positions.get(id).kind||!visible(positions.get(id)))node.hidden=true;
   const now=performance.now();

@@ -1,3 +1,6 @@
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v45';
+import {shelfDefinition} from './furniture.js?v=20261114-v45';
+import {decorDefinition} from './decorations.js?v=20261114-v45';
 /* Five self-contained shop chapters. Main objectives gate automatic construction.
  * Side quests grant optional gold but never silently bypass the original level fee. */
 const LEVELS={
@@ -28,26 +31,18 @@ export function chapterObjectives(s,levels){
  const ready=goals.every(g=>g.done),cost=last?0:next.cost;
  return {level:s.level,title:chapter.title,story:chapter.story,goals,side,ready,last,cost,canConstruct:ready&&!last&&!s.layoutPause&&!s.upgradeProject&&s.gold>=cost,construction:!!s.upgradeProject};
 }
-export function autoChapterConstruction(g,s){
- const info=chapterObjectives(s,g.data.levels);
- if(!info.canConstruct)return false;
- return beginChapterConstruction(g,s,info);
-}
+export function autoChapterConstruction(){return false;}
+export function upgradeRefund(s){const racks=[...(s.shelves||[]),...(s.shelfStorage||[])],decor=[...(s.decorations||[]),...(s.decorStorage||[])];const items=[...racks.map(x=>({id:x.id,name:shelfDefinition(x).name,refund:Math.floor((x.purchasePrice??shelfDefinition(x).cost)/2)})),...decor.map(x=>({id:x.id,name:decorDefinition(x)?.name||x.type,refund:Math.floor((x.purchasePrice??decorDefinition(x)?.cost??0)/2)}))];return {items,count:items.length,gold:items.reduce((n,x)=>n+x.refund,0)};}
 export function beginChapterConstruction(g,s,info=chapterObjectives(s,g.data.levels)){
- const next=g.data.levels[s.level],duration=next.upgradeSeconds||30;
+ if(!info.canConstruct)throw Error('升級條件尚未達成。');const from=s.level,next=g.data.levels[from],refund=upgradeRefund(s);
  g.pay(s,next.cost);s.stats.expenses=(s.stats.expenses||0)+next.cost;
- // Charge before closing so the one and only day report contains the upgrade fee.
  if(s.phase==='open')g.close(s);
- else if(s.phase==='report'&&s.report){
-  for(const report of [s.report,...s.history.filter(r=>r.day===s.report.day)]){
-   report.expenses=s.stats.expenses;report.gold=s.gold;
-   report.netProfit=s.stats.revenue+(s.stats.furnitureSales||0)+(s.stats.promoterBonus||0)-s.stats.cogs-s.stats.expenses;
-  }
- }
- s.upgradeProject={from:s.level,to:next.level,duration,remaining:duration,cost:next.cost,chapter:true};
- s.chapterConstruction=`lv${s.level}-to-${next.level}`;
- g.log(s,`主線完成：${info.title}！自動投入 ${next.cost} G，開始升至 Lv.${next.level}（${duration} 秒）。`);
- return true;
+ for(const e of s.employees){if(e.workTask?.phase==='carry')s.inventory[e.workTask.sku]=(s.inventory[e.workTask.sku]||0)+e.workTask.qty;e.workTask=null;e.path=[];}
+ for(const sh of s.shelves)returnShelfStock(s,sh);
+ s.gold+=refund.gold;s.stats.furnitureSales=(s.stats.furnitureSales||0)+refund.gold;s.shelves=[];s.shelfStorage=[];s.decorations=[];s.decorStorage=[];s.undo=null;s.patrolShelf=null;s.customers=[];
+ s.level=next.level;s.upgradeProject=null;s.lastUpgradeRefund={...refund,from,to:s.level,cost:next.cost};
+ if(s.report){Object.assign(s.report,{gold:s.gold,expenses:s.stats.expenses,furnitureSales:s.stats.furnitureSales,netProfit:s.stats.revenue+(s.stats.furnitureSales||0)+(s.stats.promoterBonus||0)-s.stats.cogs-s.stats.expenses});for(const r of s.history)if(r.day===s.report.day)Object.assign(r,s.report);}
+ finishChapterConstruction(g,s,from);g.log(s,`升級完成！已回收 ${refund.count} 件舊擺設，半價返還 ${refund.gold} G；架上商品保留於倉庫。`);return true;
 }
 export function awardSideChapter(g,s,id){
  const mission=chapterObjectives(s,g.data.levels).side.find(x=>x.id===id);

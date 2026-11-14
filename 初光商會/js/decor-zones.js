@@ -1,5 +1,5 @@
-import {wallFixtures,wallItemWidth} from './architecture-reservations.js?v=20261113-v39';
-import {dimensions,buildingLevel} from './nav.js?v=20261113-v39';
+import {wallFixtures,wallItemWidth} from './architecture-reservations.js?v=20261114-v45';
+import {dimensions,buildingLevel} from './nav.js?v=20261114-v45';
 /* 小件掛得比較高（眼睛高度），大幅掛畫底邊較低 */
 export const wallLift=type=>({couplet:.45,clock:0,painting:.2,'painting-large':0})[type]||0;
 export const WALL_TYPES=new Set(['clock','painting','painting-large','couplet']);

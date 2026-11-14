@@ -1,10 +1,12 @@
-import {decorEffects,obstacles} from './decorations.js?v=20261113-v39';
-import {purchaseChance} from './economy-v2.js?v=20261113-v36';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261113-v39';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261113-v39';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261113-v37';
-import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261113-v36';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261113-v37';
+import{shelfApproach}from'./nav.js?v=20261114-v45';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v45';
+import {decorEffects,obstacles} from './decorations.js?v=20261114-v45';
+import {purchaseChance} from './economy-v2.js?v=20261114-v45';
+import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261114-v45';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261114-v45';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261114-v45';
+import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261114-v45';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261114-v45';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
@@ -12,27 +14,24 @@ function validLayout(g,s,shelves){const all=obstacles({...s,shelves});check(isLa
 export function shopAction(g,s,type,p){
  s.shelfStorage||=[];
  if(type==='resolveCustomerComplaint')return resolveCustomerComplaint(g,s,p);
- if(type==='upgrade'){
-  check(!s.upgradeProject,'店面正在施工');const l=g.data.levels[s.level];check(l,'商會已達最高級');check(chapterObjectives(s,g.data.levels).ready,'尚未完成本章主線營業目標');check(s.totals.revenue>=l.revenue&&s.satisfaction>=l.satisfaction&&s.totals.days>=l.days,`需營業額 ${l.revenue} G、滿意度 ${l.satisfaction}、日結 ${l.days} 次`);beginChapterConstruction(g,s);return '已安排施工，倒數完成後店面才會升級';
- }
+ if(type==='upgrade'){check(p.confirm===true,'請先確認回收舊擺設與半價返還。');check(p.expectedLevel===s.level,'商會等級已變更，請重新確認。');beginChapterConstruction(g,s);return '已打烊並完成升級，舊擺設已半價返還。';}
  if(!['purchaseShelf','storeShelf','placeShelf','sellShelf'].includes(type))return null;
  check(s.phase!=='open'||s.layoutPause,'請先進入布置模式');
  if(type==='purchaseShelf'){
-  const kind=shelfTypes.find(t=>t.id===p.type);check(kind,'貨架類型無效');check(s.level>=kind.level,'商會等級尚未解鎖此貨架');check(!kind.unique||!ownsUniqueShelf(s,kind.id),'限定武器櫃限購一座（含收納中）');check(s.shelfStorage.length<50,'收納空間最多 50 座');const price=kind.cost;g.pay(s,price);s.stats.expenses+=price;const id=`rack-${++s.serial}`;s.shelfStorage.push({id,type:kind.id,sku:kind.sku,stock:0,rotation:0,purchasePrice:price});s.lastPurchasedShelf=id;g.log(s,`購入${kind.name} ${price} G，尚未放置。`);return '貨架已購入；取消放置時會留在收納區';
+  const kind=shelvesForLevel(s.level).find(t=>t.id===p.type);check(kind,'貨架類型無效');check(s.level>=kind.level,'商會等級尚未解鎖此貨架');check(!kind.unique||!ownsUniqueShelf(s,kind.id),'限定武器櫃限購一座（含收納中）');check(s.shelfStorage.length<50,'收納空間最多 50 座');const price=kind.cost;g.pay(s,price);s.stats.expenses+=price;const id=`rack-${++s.serial}`;s.shelfStorage.push({id,type:kind.id,tier:s.level,sku:kind.sku,stock:0,rotation:0,purchasePrice:price});s.lastPurchasedShelf=id;g.log(s,`購入${kind.name} ${price} G，尚未放置。`);return '貨架已購入；取消放置時會留在收納區';
  }
  if(type==='storeShelf'){
-  const sh=s.shelves.find(x=>x.id===p.shelfId);check(sh,'貨架不存在');check(!s.customers.some(c=>c.basket.some(b=>b.shelfId===sh.id)),'顧客正在選購這座貨架');check(s.shelfStorage.length<50,'貨架收納空間已滿');const shelves=s.shelves.filter(x=>x!==sh);validLayout(g,s,shelves);for(const e of s.employees)if(e.workTask?.shelfId===sh.id){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}s.inventory[sh.sku]+=sh.stock;const saved={...sh,type:shelfKind(sh),stock:0,purchasePrice:sh.purchasePrice??g.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);s.shelves=shelves;s.undo=null;for(const a of g.actors(s))a.path=[];g.log(s,`${shelfTypes.find(t=>t.id===saved.type)?.name}已撤銷至收納，架上商品已回庫房。`);return '貨架已收納，可再次放置或半價販售';
+  const sh=s.shelves.find(x=>x.id===p.shelfId);check(sh,'貨架不存在');check(!s.customers.some(c=>c.basket.some(b=>b.shelfId===sh.id)),'顧客正在選購這座貨架');check(s.shelfStorage.length<50,'貨架收納空間已滿');const shelves=s.shelves.filter(x=>x!==sh);validLayout(g,s,shelves);for(const e of s.employees)if(e.workTask?.shelfId===sh.id){if(e.workTask.phase==='carry')s.inventory[e.workTask.sku]+=e.workTask.qty;e.workTask=null;}returnShelfStock(s,sh);const saved={...sh,type:shelfKind(sh),stock:0,purchasePrice:sh.purchasePrice??g.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);s.shelves=shelves;s.undo=null;for(const a of g.actors(s))a.path=[];g.log(s,`${shelfTypes.find(t=>t.id===saved.type)?.name}已撤銷至收納，架上商品已回庫房。`);return '貨架已收納，可再次放置或半價販售';
  }
  const sh=s.shelfStorage.find(x=>x.id===p.shelfId);check(sh,'收納貨架不存在');
  if(type==='sellShelf'){
   const price=Math.floor((sh.purchasePrice??g.data.config.shelfCost)/2);s.gold+=price;s.stats.furnitureSales=(s.stats.furnitureSales||0)+price;s.shelfStorage=s.shelfStorage.filter(x=>x!==sh);g.log(s,`販售收納貨架 +${price} G（購入半價）。`);return `已販售貨架，收入 ${price} G`;
  }
- check(s.shelves.length<2+s.level*2,'店內貨架已滿');const placed={...sh,x:p.x,z:p.z,rotation:p.rotation||0};validLayout(g,s,[...s.shelves,placed]);s.shelves.push(placed);s.shelfStorage=s.shelfStorage.filter(x=>x!==sh);s.undo=null;/* 新貨架立刻上架，不必等補貨員 */g.autoStock(s,placed);{const qty=Math.min(s.inventory[placed.sku]||0,shelfCapacity(placed)-placed.stock);s.inventory[placed.sku]-=qty;placed.stock+=qty;}for(const a of g.actors(s))a.path=[];return '貨架已放置，未重複扣款';
+ check(s.shelves.length<shelfLimit(s.level),'店內貨架已滿');const placed={...sh,x:p.x,z:p.z,rotation:p.rotation||0};validLayout(g,s,[...s.shelves,placed]);s.shelves.push(placed);s.shelfStorage=s.shelfStorage.filter(x=>x!==sh);s.undo=null;/* 新貨架立刻上架，不必等補貨員 */g.autoStock(s,placed);for(const part of trayOffers(placed)){const qty=Math.min(s.inventory[part.sku]||0,shelfCapacity(part)-part.stock);s.inventory[part.sku]-=qty;part.stock+=qty;}for(const a of g.actors(s))a.path=[];return '貨架已放置，未重複扣款';
 }
 export function operationsTick(g,s,dt){
- if(!s.upgradeProject&&!s.layoutPause)autoChapterConstruction(g,s);
+
  if(s.phase==='open'){const n=g.data.management.noStaff,power=jobPower(g,s,'cleaner'),target=power?100:n.cleanTarget;s.satisfaction=clamp(s.satisfaction+decorEffects(s).satisfaction*dt);if(s.satisfaction<target)s.satisfaction=Math.min(target,s.satisfaction+n.cleanPerSecond*(1+power)*(1+passive(g,s,'clean'))*dt);}
- if(s.upgradeProject){s.upgradeProject.remaining=Math.max(0,s.upgradeProject.remaining-dt);if(!s.upgradeProject.remaining){const previous=s.level;s.level=s.upgradeProject.to;s.upgradeProject=null;finishChapterConstruction(g,s,previous);g.log(s,`裝修完成！商會升至 Lv.${s.level} ${g.data.levels[s.level-1].name}。`);}}
  for(const e of s.employees)if(e.reactionUntil&&e.reactionUntil<=s.totalTime){e.reaction='idle';e.feedbackKind=null;e.reactionUntil=0;}
 }
 export function operationalEvent(g,s,id,title,description,role='cashier'){
@@ -45,14 +44,14 @@ function angry(g,s,c,reason){
 function leave(g,s,c){c.state='Leave';c.timer=0;c.exitRerouteAt=2;c.path=[];const side={x:CHECKOUT.x-1,z:3};if(Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.2&&walkable(side,obstacles(s),s.level)){const a=findPath(c,side,obstacles(s),s.level),b=findPath(side,ENTRANCE,obstacles(s),s.level);if(a&&b)c.path=[...a,...b];}if(!c.path.length)g.route(s,c,ENTRANCE);}
 /* 收銀由主角負責：巡店時櫃台沒人，結帳變慢 */
 const AWAY_SLOWDOWN=1.8;
-function cashierAt(g,s){return s.employees.find(e=>e.role==='cashier'&&e.fatigue<95&&Math.hypot(e.x-CHECKOUT.x,e.z-1)<1.3)||(s.managerDuty==='cashier'&&!g.managerActive?s.manager:null);}
+function cashierAt(g,s){return s.employees.find(e=>e.role==='cashier'&&e.fatigue<100&&Math.hypot(e.x-CHECKOUT.x,e.z-1)<1.3)||(s.managerDuty==='cashier'&&!g.managerActive?s.manager:null);}
 function pay(g,s,c,e){
  const saleId='sale-'+c.id;
  if(s.txIds.includes(saleId)||s.ledger.some(x=>x.id===saleId)){c.basket=[];c.state='Paid';c.timer=0;return;}
  if(!c.basket.length)return;
 
- const listed=c.basket.reduce((n,b)=>n+b.price*b.qty,0),sale=Math.round(listed*(1+passive(g,s,'income'))),cost=Math.round(c.basket.reduce((n,b)=>n+b.cost*b.qty,0)*100)/100;check(c.budget>=listed,'顧客預算不足');for(const b of c.basket){const sh=s.shelves.find(x=>x.id===b.shelfId);check(sh&&sh.stock>=b.qty,'結帳庫存不足');sh.stock-=b.qty;}
- s.txIds.push(saleId);s.stats.units=(s.stats.units||0)+c.basket.reduce((n,b)=>n+b.qty,0);c.budget-=listed;s.gold+=sale;dailyTrack(g,s,'sales',1);dailyTrack(g,s,'gold',sale);s.stats.revenue+=sale;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.stats.sales++;s.stats.served++;s.totals.revenue+=sale;s.totals.sales++;s.ledger.push({id:`sale-${c.id}`,day:s.day,customerType:c.customerType||'commoner',revenue:sale,cogs:cost,items:structuredClone(c.basket)});s.ledger=s.ledger.slice(-200);c.purchaseItems=structuredClone(c.basket);c.basket=[];c.state='Paid';c.timer=0;c.emotion='happy';{const previous=s.satisfaction,bonus=(g.role(s,'cleaner')?2:1)*(1+passive(g,s,'satisfaction'));s.satisfaction=clamp(s.satisfaction+bonus);const gained=Math.round((s.satisfaction-previous)*10)/10;if(gained>0)g.notice(s,c.id,`滿意 +${gained}`,'good');}g.xp(s,e,1);g.xp(s,g.role(s,'cleaner'),.5);if(e&&!(e.reactionUntil>s.totalTime&&['training','proud','stressed'].includes(e.feedbackKind)))react(s,e,'work',2);g.log(s,`${c.name}在收銀台完成付款 +${sale} G`);s.memories[c.personality]={day:s.day,satisfied:true,spent:sale};
+ const listed=c.basket.reduce((n,b)=>n+b.price*b.qty,0),sale=Math.round(listed*(1+passive(g,s,'income'))),cost=Math.round(c.basket.reduce((n,b)=>n+b.cost*b.qty,0)*100)/100;check(c.budget>=listed,'顧客預算不足');for(const b of c.basket){const sh=saleShelf(s,b.shelfId,b.sku);check(sh&&sh.stock>=b.qty,'結帳庫存不足');sh.stock-=b.qty;}
+ s.txIds.push(saleId);s.stats.units=(s.stats.units||0)+c.basket.reduce((n,b)=>n+b.qty,0);c.budget-=listed;s.gold+=sale;dailyTrack(g,s,'sales',1);dailyTrack(g,s,'gold',sale);s.stats.revenue+=sale;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.stats.sales++;s.stats.served++;s.totals.revenue+=sale;s.totals.sales++;s.ledger.push({id:`sale-${c.id}`,day:s.day,customerType:c.customerType||'commoner',revenue:sale,cogs:cost,items:structuredClone(c.basket)});s.ledger=s.ledger.slice(-200);for(const b of c.basket){const sh=saleShelf(s,b.shelfId,b.sku);if(sh)sh.lastSaleAt=s.totalTime;}c.purchaseItems=structuredClone(c.basket);c.basket=[];c.state='Paid';c.timer=0;c.emotion='happy';{const previous=s.satisfaction,bonus=(g.role(s,'cleaner')?2:1)*(1+passive(g,s,'satisfaction'));s.satisfaction=clamp(s.satisfaction+bonus);const gained=Math.round((s.satisfaction-previous)*10)/10;if(gained>0)g.notice(s,c.id,`滿意 +${gained}`,'good');}g.xp(s,e,1);g.xp(s,g.role(s,'cleaner'),.5);if(e&&!(e.reactionUntil>s.totalTime&&['training','proud','stressed'].includes(e.feedbackKind)))react(s,e,'work',2);g.log(s,`${c.name}在收銀台完成付款 +${sale} G`);s.memories[c.personality]={day:s.day,satisfied:true,spent:sale};
 }
 export function stepCustomers(g,s,dt){
  /* 出口優先：入場動畫結束時若門內有人，先在室外等，不在同一格互相擋路。也修復舊存檔已重疊的入場顧客。 */
@@ -72,11 +71,11 @@ export function stepCustomers(g,s,dt){
   if(['Cart','Queue','Checkout'].includes(c.state)){if(!(c.calmUntil>s.totalTime))c.wait=(c.wait||0)+dt;if(c.wait>c.patience){angry(g,s,c,cashier?'排隊等太久':'沒有收銀員服務');continue;}}
   g.safeMove(s,c,dt*2.2,dt);if(c.path.length&&c.state==='Evaluate'&&(c.blocked||0)>=1.2){const t=s.shelves.find(sh=>sh.id===c.targetShelf);if(t&&Math.hypot(c.x-t.x,c.z-(t.z+1))<1.6){c.path=[];c.blocked=0;c.browsingNear=true;}}if(c.path.length)continue;
   if(c.state==='Enter'||c.state==='Browse'){
-   const eligible=s.shelves.filter(sh=>g.available(s,sh)>0&&!c.visited.includes(sh.id));eligible.sort((a,b)=>{const ca=g.data.catalog.find(x=>x.sku===a.sku),cb=g.data.catalog.find(x=>x.sku===b.sku),preferred=['item','weapon','item','material','item','item','weapon','material'][c.personality];return Number(cb.category===preferred)-Number(ca.category===preferred);});const sh=eligible[0];if(!sh){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}c.targetShelf=sh.id;c.visited.push(sh.id);c.state='Evaluate';c.timer=0;g.route(s,c,{x:sh.x,z:sh.z+1});
+   const desired=s.shelves.find(sh=>sh.id===c.plannedShelfId),wanted=g.data.catalog.find(x=>x.sku===c.wantedSku);if(wanted?.lootOnly&&desired&&g.available(s,desired)<=0&&!s.shelves.some(sh=>g.available(s,sh)>0&&g.data.catalog.find(x=>x.sku===sh.sku)?.merchantGrade===wanted.merchantGrade)){c.weaponShortage=true;c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}const eligible=salesShelves(s).filter(sh=>g.available(s,sh)>0&&!c.visited.includes(sh.id));eligible.sort((a,b)=>{const ca=g.data.catalog.find(x=>x.sku===a.sku),cb=g.data.catalog.find(x=>x.sku===b.sku),preferred=['item','weapon','item','material','item','item','weapon','material'][c.personality];return Number(b.id===c.plannedShelfId)-Number(a.id===c.plannedShelfId)||Number(b.sku===c.wantedSku)-Number(a.sku===c.wantedSku)||Number(cb.category===preferred)-Number(ca.category===preferred);});const sh=eligible[0];if(!sh){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}c.targetShelf=sh.id;c.targetSku=sh.sku;c.visited.push(sh.id);c.state='Evaluate';c.timer=0;g.route(s,c,shelfApproach(sh));
   }else if(c.state==='Evaluate'&&c.timer>1){
    const target=s.shelves.find(sh=>sh.id===c.targetShelf);if(target&&!c.browsingNear&&Math.hypot(c.x-target.x,c.z-(target.z+1))>.15){g.route(s,c,{x:target.x,z:target.z+1});continue;}c.browsingNear=false;
-   const sh=s.shelves.find(x=>x.id===c.targetShelf),item=g.data.catalog.find(x=>x.sku===sh?.sku),price=sh?Math.round(s.prices[sh.sku]*shelfDefinition(sh).premium*(1+decorEffects(s).premium)):0,tolerance=(c.personality===4?1.1:1.4)+(g.role(s,'host')?.3:0)+(s.buffs.sales>s.totalTime?.2:0)+(c.memory?.satisfied?.1:c.memory?-.15:0);
-   if(sh&&g.available(s,sh)<=0){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}if(sh&&g.available(s,sh)>0&&price<=c.budget&&g.random(s)<purchaseChance(s,{type:c.customerType||'commoner',sku:sh.sku,price,ref:item.suggestedRetail*shelfDefinition(sh).premium*(1+decorEffects(s).premium)*(tolerance/1.4)})){c.basket=[{sku:sh.sku,shelfId:sh.id,qty:1,price,cost:s.averageCosts?.[sh.sku]??item.buyCost}];c.state='Cart';c.timer=0;c.wait=0;g.xp(s,g.role(s,'host'),.5);}else{c.state=c.visited.length<s.shelves.length?'Browse':'UnhappyExit';c.timer=0;}
+   const sh=saleShelf(s,c.targetShelf,c.targetSku),item=g.data.catalog.find(x=>x.sku===sh?.sku),price=sh?Math.round(s.prices[sh.sku]*shelfDefinition(sh).premium*(1+decorEffects(s).premium)):0,tolerance=(c.personality===4?1.1:1.4)+(g.role(s,'host')?.3:0)+(s.buffs.sales>s.totalTime?.2:0)+(c.memory?.satisfied?.1:c.memory?-.15:0);
+   if(sh&&g.available(s,sh)<=0){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.weaponShortage=!!item?.lootOnly;c.wantedSku=sh.sku;c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}if(sh&&g.available(s,sh)>0&&price<=c.budget&&g.random(s)<purchaseChance(s,{type:c.customerType||'commoner',sku:sh.sku,price,ref:item.suggestedRetail*shelfDefinition(sh).premium*(1+decorEffects(s).premium)*(tolerance/1.4)})){c.basket=[{sku:sh.sku,shelfId:sh.id,qty:1,price,cost:s.averageCosts?.[sh.sku]??item.buyCost}];c.state='Cart';c.timer=0;c.wait=0;g.xp(s,g.role(s,'host'),.5);}else{c.state=c.visited.length<s.shelves.length?'Browse':'UnhappyExit';c.timer=0;}
   }else if(c.state==='Cart'){
    if(s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).length>=4)continue;c.state='Queue';c.queueOrder=++s.serial;c.queueSlot=-1;c.timer=0;
   }else if(c.state==='Queue'){

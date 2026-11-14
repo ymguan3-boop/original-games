@@ -1,10 +1,11 @@
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v45';
 /* Click-to-resolve customer problems. Uses normal shop transactions; never grants a free sale. */
-import {shelfCapacity} from './furniture.js?v=20261113-v39';
-import {ENTRANCE} from './nav.js?v=20261113-v39';
-import {applyFreeEventFatigue} from './patrol-events.js?v=20261113-v36';
+import {shelfCapacity} from './furniture.js?v=20261114-v45';
+import {ENTRANCE} from './nav.js?v=20261114-v45';
+import {applyFreeEventFatigue} from './patrol-events.js?v=20261114-v45';
 const clamp=n=>Math.max(0,Math.min(100,n));
-const stockShelf=(g,s)=>s.shelves.find(sh=>{const product=g.data.catalog.find(p=>p.sku===sh.sku);return product&&product.unlockStoreLevel<=s.level&&sh.stock<shelfCapacity(sh);});
-const availableShelf=(g,s)=>s.shelves.find(sh=>g.available(s,sh)>0);
+const stockShelf=(g,s)=>salesShelves(s).find(sh=>{const product=g.data.catalog.find(p=>p.sku===sh.sku);return product&&!product.lootOnly&&product.unlockStoreLevel<=s.level&&sh.stock<shelfCapacity(sh);});
+const availableShelf=(g,s)=>salesShelves(s).find(sh=>g.available(s,sh)>0);
 export function complaintKind(s,c){
  if(!c||['Paid','Leave','Enter'].includes(c.state))return null;
  if(c.state==='OutOfStock')return 'stockout';
@@ -20,6 +21,7 @@ const formats={
  disappointed:{title:'沒有買到想要的商品',description:'顧客對商品選擇不滿意。可以推薦其他現貨或提供協助。',emoji:['🤷','🛍️','✨'],animation:'pop',effectText:'推薦商品可挽回購物意願'}
 };
 export function getCustomerComplaint(s,c,g){
+ if(c?.weaponShortage&&['OutOfStock','Angry','UnhappyExit'].includes(c.state))return {kind:'weapon-stockout',id:'customer:'+c.id,customerId:c.id,customerName:c.name,title:'想買的武器商品缺貨',description:'武器只能從草原採集取得，可以暫停營業出發，或安撫顧客下次再來。',options:[{id:'collect',label:'前往草原採集',cost:0},{id:'later',label:'安撫顧客，下次再來買',cost:0}]};
  const kind=complaintKind(s,c);if(!kind)return null;
  const config=formats[kind],id='customer:'+c.id;
  const shelf=g?stockShelf(g,s):null,available=g?availableShelf(g,s):null;
@@ -62,6 +64,7 @@ export function resolveCustomerComplaint(g,s,p){
  if(!info)throw Error('這個顧客目前沒有待解決的問題');
  const option=info.options.find(o=>o.id===p.choice);
  if(!option||option.disabled)throw Error(option?.reason||'無效或無法使用的解決方法');
+ if(info.kind==='weapon-stockout'){c.basket=[];c.path=[];c.state='Leave';c.timer=0;c.emotion='happy';c.weaponShortage=false;c.exitRerouteAt=2;g.route(s,c,ENTRANCE);s.satisfaction=clamp(s.satisfaction+1);g.log(s,`${c.name}：已安撫武器缺貨，邀請下次光臨。`);return p.choice==='collect'?'已安撫顧客，準備前往草原採集。':'顧客已安心，會下次再來。';}
  const cost=option.cost||0;if(cost){g.pay(s,cost);s.stats.expenses=(s.stats.expenses||0)+cost;}
  else if(info.kind!=='queue'){
   const leadRole=info.kind==='stockout'?'stocker':'cashier';

@@ -1,6 +1,6 @@
-import {CHECKOUT,dimensions,walkable} from './nav.js?v=20261113-v39';
-import {obstacles} from './decorations.js?v=20261113-v39';
-import {doorwayBuffer,employeeSpot,actorPath} from './staff-routing.js?v=20261113-v38';
+import {CHECKOUT,dimensions,walkable} from './nav.js?v=20261114-v45';
+import {obstacles} from './decorations.js?v=20261114-v45';
+import {doorwayBuffer,employeeSpot,actorPath} from './staff-routing.js?v=20261114-v45';
 const near=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 export function nearestShelfRefuge(g,s,e){
  const candidates=s.shelves.flatMap(sh=>[[0,1],[-1,0],[1,0],[0,-1]].map(([dx,dz])=>({x:sh.x+dx,z:sh.z+dz,shelfId:sh.id}))),room=dimensions(s.level);
@@ -9,7 +9,7 @@ export function nearestShelfRefuge(g,s,e){
 }
 export function staffTraffic(g,s,dt){
  const customers=s.customers.filter(c=>!(c.arrivalRemaining>0)&&!c.exitingAtDoor);
- for(const e of s.employees){if(e.role==='standby'){e.crowdingSeconds=0;continue;}
+ for(const e of s.employees){if(e.role==='standby'||e.fatigue>=100){e.crowdingSeconds=0;continue;}
   const c=customers.slice().sort((a,b)=>near(e,a)-near(e,b))[0],crowded=c&&near(e,c)<1.05;
   e.crowdingSeconds=crowded?(e.crowdingSeconds||0)+dt:0;
   if(e.crowdingSeconds>=3){const refuge=nearestShelfRefuge(g,s,e);if(refuge){Object.assign(e,{x:refuge.x,z:refuge.z,path:[],blocked:0,crowdingSeconds:0,nextTaskAt:s.totalTime+.8});g.pendingMotion?.set(e.id,[{x:e.x,z:e.z,t:0},{x:e.x,z:e.z,t:1}]);g.notice(s,e.id,'讓路・回到貨架旁','good');}continue;}

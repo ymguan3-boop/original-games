@@ -1,8 +1,8 @@
-import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261113-v36';
+import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261114-v45';
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
 import {addIllustratedOutline} from '../illustrated-outline.js?v=20261111-decor-v22';
-import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261113-v36';
+import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261114-v45';
 const THREE=globalThis.THREE;
 
 const STEP_D=.36;
@@ -245,13 +245,13 @@ export function buildYard(level,opts={}){
  const staff=person({seed:900+level,shirt:level===1?0x9a8a70:0xfffaf0,apron:staffColor,hat:level>=2?staffColor:null,style:'short',skirt:false,flyers:true,patch:level===1,scale:1.3});
  const staffPos=new THREE.Vector3(DX+Math.max(Y.stepW/2+.35,pw/2+.45),G,zS+.45);staff.g.position.copy(staffPos);if(!ambient)root.add(staff.g);staff.home=staffPos.clone();
  staff.arms[0].sh.rotation.x=-.9;staff.arms[0].sh.rotation.z=.25;staff.armOverride=true;
- const spawnRoute=(p,shop)=>{const s=R()<.5?-1:1,lane=zR+(R()-.5)*1.4,jx=(R()-.5)*.6;p.route=[];p.wait=0;p.inside=false;
+ const spawnRoute=(p,shop)=>{p.visit=(p.visit||0)+1;p.visitorId=`passer-${level}-${p.passerIndex}-${p.visit}`;p.g.userData.pick={type:'passer',id:p.visitorId};const s=R()<.5?-1:1,lane=zR+(R()-.5)*1.4,jx=(R()-.5)*.6;p.route=[];p.wait=0;p.inside=false;
   p.g.position.set(p.first?(R()-.5)*RX*1.6:s*RX,G,lane);p.first=false;
   if(shop){p.route.push({x:jx,z:lane},{x:jx*.5,z:zS+.25},{x:0,z:zF+.25},{x:0,z:d/2-.5});const bx=(R()-.5)*(w-1.6),bz=-d/2+.8+R()*(d-2.2);p.route.push({x:bx,z:bz,wait:2.5+R()*4,browse:true},{x:0,z:d/2-.5},{x:0,z:zF+.25,bag:true},{x:jx*.5,z:zS+.25},{x:-jx,z:lane+(R()-.5)*.6},{x:(R()<.5?-1:1)*RX,z:lane});}
   else p.route.push({x:-s*RX,z:lane,pass:true});
   p.speed=(.85+R()*.4)*(shop?1:1.1);p.flyer=false;p.props.flyer.visible=false;p.props.bag.visible=false;p.got=false;};
  const N=crowd.shop+crowd.pass;
- for(let i=0;i<N;i++){const p=person({seed:level*1000+i*37+3});p.shopper=i<crowd.shop;p.first=true;p.delay=.2+R()*(i<crowd.shop?5:3);p.g.visible=false;root.add(p.g);people.push(p);}
+ for(let i=0;i<N;i++){const p=person({seed:level*1000+i*37+3});p.passerIndex=i;p.shopper=i<crowd.shop;p.first=true;p.delay=.2+R()*(i<crowd.shop?5:3);p.g.visible=false;root.add(p.g);people.push(p);}
  /* 站著聊天或逛攤位的鎮民 */
  const idlers=[];const spots=level===3?[[4.6,across+2.4,0]]:level===4?[[-5.6,across+2.4,0],[5.6,across+2.4,0],[1.9,across+2.2,-2.2],[2.6,across+2.6,-1.6]]:level===5?[[-6.8,across+2.4,0],[6.8,across+2.4,0],[-1.6,across+2.1,2.6],[-2.2,across+2.6,1.8],[2.4,across+2.3,-2.4],[-9.3,across+5.2,.3]]:[];
  const vendorSpots=level===3?[[4.6,across+4.1,Math.PI]]:level===4?[[-5.6,across+4.2,Math.PI],[5.6,across+4.2,Math.PI]]:level===5?[[-6.8,across+4.2,Math.PI],[6.8,across+4.2,Math.PI],[-9.6,across+7.1,Math.PI+.3],[9.6,across+7.1,Math.PI-.3]]:[];
@@ -303,7 +303,7 @@ export function buildYard(level,opts={}){
   for(const p of [...people,...(ambient?[]:[staff]),...idlers])if(p.bub){p.bubT-=dt;p.bub.material.opacity=Math.min(1,p.bubT*3);if(p.bubT<=0){p.g.remove(p.bub);p.bub=null;}}
  }
  root.userData={level,lineMats:props.userData.lineMats,camZ:(zR+(level>=3?[0,0,0,6,7.5,9][level]:2))/2-.6,extent:Y.roadHalf};
- return {root,update,people,staff,dispose(){root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(roadMaps.has(m?.map)){roadMaps.delete(m.map);m.map.dispose();}});for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
+ return {root,update,people,staff,greet(id,converted){const p=people.find(p=>p.visitorId===id&&p.g.visible);if(!p)return; say(p,converted?'好啊，去看看！':'謝謝招呼！',2);p.talk=1.2;if(converted)p.route=[{x:DX,z:zS+.25},{x:DX,z:zF+.25}];},dispose(){root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(roadMaps.has(m?.map)){roadMaps.delete(m.map);m.map.dispose();}});for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
 }
 
 /* 商會用的主角：同一套 Q 版畫風（黑髮、藍外套、黃色背帶與背包），提供商會角色控制介面 */

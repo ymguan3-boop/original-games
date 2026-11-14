@@ -1,0 +1,112 @@
+{
+  "profile": "low-poly",
+  "runtimeTriangleBudget": {
+    "rack": 15000,
+    "decor": 12000
+  },
+  "textureBudget": "shared existing 1024px wood; generated concept used for review only",
+  "visualBaseline": [
+    "assets/art-v8/pilots-v3/orb-spherical-pilot-v3.glb",
+    "assets/art-v41/armory-three-states-concept.png"
+  ],
+  "outline": {
+    "color": "#16120e",
+    "worldThickness": 0.004
+  },
+  "floorFootprint": "blocking furniture and racks: centered 1x1 tile; carpets 2.7x1.9 passable; walls use architecture reservations",
+  "levels": {
+    "1": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    },
+    "2": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    },
+    "3": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    },
+    "4": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    },
+    "5": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    },
+    "6": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    },
+    "7": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    },
+    "8": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    },
+    "9": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    },
+    "10": {
+      "status": "ART_REVIEW_PENDING",
+      "shelfStates": [
+        "full",
+        "half",
+        "sold-out"
+      ]
+    }
+  },
+  "pilot": "Lv2 artisan weapons rack",
+  "generator": "built-in image_gen",
+  "generatedSource": "armory-three-states-concept.png",
+  "prompt": "Storybook artisan honey oak, walnut tenons, sage enamel, brass rivets, copper sword crest, thin black contours; identical full/half/sold-out orthographic 3-panel reference; physically attached top plaque; 1-tile standing footprint.",
+  "pilotTechnical": {
+    "triangles": 4732,
+    "status": "TECHNICAL_PASS",
+    "artStatus": "ART_REVIEW_PENDING",
+    "review": "../../reviews/armory-v41.html",
+    "screenshot": "C:/Users/ymguan/Documents/新遊戲專案/artifacts/nov14-v41-armory-review.png"
+  },
+  "supersededBy": "../art-v42/asset-registry.json",
+  "historicalSnapshot": true
+}

@@ -36,6 +36,7 @@ export const funnyEvents=sketches.map(([role,title,dialogue,emojiA,emojiB,emojiC
  ]
 }));
 export function comicEventEligible(s,ev){
+ if((s.level||1)<(ev.minLevel||1))return false;if((ev.effect==='forge'||/鍛爐|鐵鎚|工匠/.test(ev.title||''))&&!s.forge)return false;if(ev.effect==='rest'&&!(s.employees||[]).some(e=>e.fatigue>0))return false;if(/神劍|磨刀/.test(ev.title||'')&&!(s.shelves||[]).some(sh=>/armory|relic|royal/.test(sh.type)))return false;if(['stock','logistics'].includes(ev.effect)&&!(s.shelves||[]).length)return false;if(ev.effect==='storage'&&!Object.values(s.inventory||{}).some(n=>n>0))return false;
  if(!ev.funny)return true;
  if((s.level||1)<(ev.minLevel||1))return false;
  const condition=ev.condition||'any';

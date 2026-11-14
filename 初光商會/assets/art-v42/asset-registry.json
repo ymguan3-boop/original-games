@@ -1,0 +1,35 @@
+{
+  "profile": "low-poly",
+  "runtimeTriangleBudget": {
+    "rack": 20000,
+    "decor": 12000
+  },
+  "observedMaxTriangles": {
+    "rack": 17718,
+    "decor": 5000
+  },
+  "triangleBudgetReason": "retained approved spherical cabinet baseline; no geometry simplification of approved silhouette",
+  "outline": {
+    "color": "#16120e",
+    "worldThickness": 0.004
+  },
+  "approval": "User approved actual armory pilot for expansion; expanded collection available for visual review",
+  "materialTray": "Latest user sketch supersedes tall materials cabinets; low open bin with raised rim, short runners, attached front plaque",
+  "source": [
+    "js/tier-models.js",
+    "js/armory-pilot-v41.js",
+    "js/rack-plaque.js",
+    "js/furniture-footprint.js",
+    "assets/art-v8/pilots-v3/orb-spherical-pilot-v3.glb"
+  ],
+  "concepts": "generation-record.json",
+  "runtime": "runtime-assets.json",
+  "technicalStatus": "TECHNICAL_PASS",
+  "referenceCount": 301,
+  "runtimeThumbnailBytes": 1909374,
+  "saveKey": "firstlight_shop_v1",
+  "resetVersion": "compact-20261110-r2",
+  "publication": "local only, not pushed or deployed",
+  "review": "reviews/tiers-v42.html",
+  "qa": "artifacts/nov14-v42-ui.json"
+}

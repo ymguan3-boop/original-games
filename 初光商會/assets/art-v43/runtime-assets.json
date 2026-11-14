@@ -1,0 +1,3922 @@
+{
+  "status": "TECHNICAL_PASS",
+  "profile": "low-poly",
+  "approvedPilot": "armory-pilot-v41",
+  "artApproval": "approved pathway; expanded assets available for review",
+  "assets": [
+    {
+      "tier": 1,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv1/rack-apothecary-full.webp",
+      "triangles": 4530,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 1,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv1/rack-apothecary-half.webp",
+      "triangles": 4530,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 1,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv1/rack-apothecary-sold-out.webp",
+      "triangles": 4530,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 1,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv1/rack-orbs-full.webp",
+      "triangles": 17638,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 1,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv1/rack-orbs-half.webp",
+      "triangles": 17638,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 1,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv1/rack-orbs-sold-out.webp",
+      "triangles": 17638,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 1,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv1/rack-armory-full.webp",
+      "triangles": 4770,
+      "bounds": {
+        "width": 0.9280000329017639,
+        "height": 1.6990000059455632,
+        "depth": 0.6829999961853028
+      }
+    },
+    {
+      "tier": 1,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv1/rack-armory-half.webp",
+      "triangles": 4770,
+      "bounds": {
+        "width": 0.9280000329017639,
+        "height": 1.6990000059455632,
+        "depth": 0.6829999961853028
+      }
+    },
+    {
+      "tier": 1,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv1/rack-armory-sold-out.webp",
+      "triangles": 4770,
+      "bounds": {
+        "width": 0.9280000329017639,
+        "height": 1.6990000059455632,
+        "depth": 0.6829999961853028
+      }
+    },
+    {
+      "tier": 1,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv1/decor-clock.webp",
+      "triangles": 828,
+      "bounds": {
+        "width": 0.5264610648155212,
+        "height": 0.7000000290572643,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 1,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv1/decor-couplet.webp",
+      "triangles": 1056,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.37200000090524554,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 1,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv1/decor-fern.webp",
+      "triangles": 1808,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 1,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv1/decor-carpet.webp",
+      "triangles": 836,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 1,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv1/decor-plant.webp",
+      "triangles": 1808,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 2,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv2/rack-apothecary-full.webp",
+      "triangles": 4666,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 2,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv2/rack-apothecary-half.webp",
+      "triangles": 4666,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 2,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv2/rack-apothecary-sold-out.webp",
+      "triangles": 4666,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 2,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv2/rack-orbs-full.webp",
+      "triangles": 17718,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 2,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv2/rack-orbs-half.webp",
+      "triangles": 17718,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 2,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv2/rack-orbs-sold-out.webp",
+      "triangles": 17718,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 2,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv2/rack-armory-full.webp",
+      "triangles": 6738,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 2,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv2/rack-armory-half.webp",
+      "triangles": 6738,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 2,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv2/rack-armory-sold-out.webp",
+      "triangles": 6738,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 2,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv2/rack-limited-armory-full.webp",
+      "triangles": 9670,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 2,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv2/rack-limited-armory-half.webp",
+      "triangles": 9670,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 2,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv2/rack-limited-armory-sold-out.webp",
+      "triangles": 9670,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 2,
+      "type": "materials",
+      "group": "rack",
+      "state": "full",
+      "path": "lv2/rack-materials-full.webp",
+      "triangles": 2686,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.5450892545663777,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 2,
+      "type": "materials",
+      "group": "rack",
+      "state": "half",
+      "path": "lv2/rack-materials-half.webp",
+      "triangles": 2686,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 2,
+      "type": "materials",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv2/rack-materials-sold-out.webp",
+      "triangles": 2686,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 2,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv2/decor-clock.webp",
+      "triangles": 828,
+      "bounds": {
+        "width": 0.5264610648155212,
+        "height": 0.7000000290572643,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 2,
+      "type": "painting",
+      "group": "decor",
+      "state": "full",
+      "path": "lv2/decor-painting.webp",
+      "triangles": 1056,
+      "bounds": {
+        "width": 0.7120000123977661,
+        "height": 0.5320000257343054,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 2,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv2/decor-couplet.webp",
+      "triangles": 1056,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.37200000090524554,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 2,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv2/decor-fern.webp",
+      "triangles": 1808,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 2,
+      "type": "lavender",
+      "group": "decor",
+      "state": "full",
+      "path": "lv2/decor-lavender.webp",
+      "triangles": 4040,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.065000057220459,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 2,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv2/decor-carpet.webp",
+      "triangles": 844,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 2,
+      "type": "sofa",
+      "group": "decor",
+      "state": "full",
+      "path": "lv2/decor-sofa.webp",
+      "triangles": 1728,
+      "bounds": {
+        "width": 0.9262391924858093,
+        "height": 0.8370000142604113,
+        "depth": 0.621999979019165
+      }
+    },
+    {
+      "tier": 2,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv2/decor-plant.webp",
+      "triangles": 1808,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 3,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv3/rack-apothecary-full.webp",
+      "triangles": 4666,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 3,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv3/rack-apothecary-half.webp",
+      "triangles": 4666,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 3,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv3/rack-apothecary-sold-out.webp",
+      "triangles": 4666,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 3,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv3/rack-orbs-full.webp",
+      "triangles": 17558,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 3,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv3/rack-orbs-half.webp",
+      "triangles": 17558,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 3,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv3/rack-orbs-sold-out.webp",
+      "triangles": 17558,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 3,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv3/rack-armory-full.webp",
+      "triangles": 6738,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 3,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv3/rack-armory-half.webp",
+      "triangles": 6738,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 3,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv3/rack-armory-sold-out.webp",
+      "triangles": 6738,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 3,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv3/rack-limited-armory-full.webp",
+      "triangles": 9670,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 3,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv3/rack-limited-armory-half.webp",
+      "triangles": 9670,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 3,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv3/rack-limited-armory-sold-out.webp",
+      "triangles": 9670,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 3,
+      "type": "materials",
+      "group": "rack",
+      "state": "full",
+      "path": "lv3/rack-materials-full.webp",
+      "triangles": 2686,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.6650892593347493,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 3,
+      "type": "materials",
+      "group": "rack",
+      "state": "half",
+      "path": "lv3/rack-materials-half.webp",
+      "triangles": 2686,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 3,
+      "type": "materials",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv3/rack-materials-sold-out.webp",
+      "triangles": 2686,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 3,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-clock.webp",
+      "triangles": 828,
+      "bounds": {
+        "width": 0.5264610648155212,
+        "height": 0.7000000290572643,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 3,
+      "type": "painting",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-painting.webp",
+      "triangles": 1056,
+      "bounds": {
+        "width": 0.7120000123977661,
+        "height": 0.5320000257343054,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 3,
+      "type": "painting-large",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-painting-large.webp",
+      "triangles": 1056,
+      "bounds": {
+        "width": 1.1619999408721924,
+        "height": 0.7120000361464918,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 3,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-couplet.webp",
+      "triangles": 1056,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.37200000090524554,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 3,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-fern.webp",
+      "triangles": 1808,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 3,
+      "type": "lavender",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-lavender.webp",
+      "triangles": 4040,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.065000057220459,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 3,
+      "type": "citrus",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-citrus.webp",
+      "triangles": 2408,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.2245599031448364,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 3,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-carpet.webp",
+      "triangles": 828,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 3,
+      "type": "sofa",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-sofa.webp",
+      "triangles": 1728,
+      "bounds": {
+        "width": 0.9262391924858093,
+        "height": 0.8370000142604113,
+        "depth": 0.621999979019165
+      }
+    },
+    {
+      "tier": 3,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv3/decor-plant.webp",
+      "triangles": 1808,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 4,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv4/rack-apothecary-full.webp",
+      "triangles": 4974,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5723137287423015,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 4,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv4/rack-apothecary-half.webp",
+      "triangles": 4974,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5723137287423015,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 4,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv4/rack-apothecary-sold-out.webp",
+      "triangles": 4974,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5723137287423015,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 4,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv4/rack-orbs-full.webp",
+      "triangles": 17278,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 4,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv4/rack-orbs-half.webp",
+      "triangles": 17278,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 4,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv4/rack-orbs-sold-out.webp",
+      "triangles": 17278,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 4,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv4/rack-armory-full.webp",
+      "triangles": 7046,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.752313676290214,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 4,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv4/rack-armory-half.webp",
+      "triangles": 7046,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.752313676290214,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 4,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv4/rack-armory-sold-out.webp",
+      "triangles": 7046,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.752313676290214,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 4,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv4/rack-limited-armory-full.webp",
+      "triangles": 9978,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 4,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv4/rack-limited-armory-half.webp",
+      "triangles": 9978,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 4,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv4/rack-limited-armory-sold-out.webp",
+      "triangles": 9978,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 4,
+      "type": "materials",
+      "group": "rack",
+      "state": "full",
+      "path": "lv4/rack-materials-full.webp",
+      "triangles": 3046,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.6650892593347493,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 4,
+      "type": "materials",
+      "group": "rack",
+      "state": "half",
+      "path": "lv4/rack-materials-half.webp",
+      "triangles": 3046,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 4,
+      "type": "materials",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv4/rack-materials-sold-out.webp",
+      "triangles": 3046,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 4,
+      "type": "lantern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-lantern.webp",
+      "triangles": 796,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 1.3600000143051147,
+        "depth": 0.5799999833106995
+      }
+    },
+    {
+      "tier": 4,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-clock.webp",
+      "triangles": 732,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 0.7399999909102917,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 4,
+      "type": "painting",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-painting.webp",
+      "triangles": 1236,
+      "bounds": {
+        "width": 0.7120000123977661,
+        "height": 0.6545000281184912,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 4,
+      "type": "painting-large",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-painting-large.webp",
+      "triangles": 1236,
+      "bounds": {
+        "width": 1.1619999408721924,
+        "height": 0.8344999789260328,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 4,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-couplet.webp",
+      "triangles": 1236,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.4945000032894314,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 4,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-fern.webp",
+      "triangles": 2528,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 4,
+      "type": "lavender",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-lavender.webp",
+      "triangles": 4760,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.065000057220459,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 4,
+      "type": "citrus",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-citrus.webp",
+      "triangles": 3128,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.2245599031448364,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 4,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-carpet.webp",
+      "triangles": 836,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 4,
+      "type": "sofa",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-sofa.webp",
+      "triangles": 1728,
+      "bounds": {
+        "width": 0.9262391924858093,
+        "height": 0.8370000142604113,
+        "depth": 0.621999979019165
+      }
+    },
+    {
+      "tier": 4,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv4/decor-plant.webp",
+      "triangles": 2528,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 5,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv5/rack-apothecary-full.webp",
+      "triangles": 5270,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.549779954366386,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 5,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv5/rack-apothecary-half.webp",
+      "triangles": 5270,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.549779954366386,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 5,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv5/rack-apothecary-sold-out.webp",
+      "triangles": 5270,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.549779954366386,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 5,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv5/rack-orbs-full.webp",
+      "triangles": 17286,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 5,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv5/rack-orbs-half.webp",
+      "triangles": 17286,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 5,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv5/rack-orbs-sold-out.webp",
+      "triangles": 17286,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 5,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv5/rack-armory-full.webp",
+      "triangles": 7342,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7297799019142985,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 5,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv5/rack-armory-half.webp",
+      "triangles": 7342,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7297799019142985,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 5,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv5/rack-armory-sold-out.webp",
+      "triangles": 7342,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7297799019142985,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 5,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv5/rack-limited-armory-full.webp",
+      "triangles": 10274,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 5,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv5/rack-limited-armory-half.webp",
+      "triangles": 10274,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 5,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv5/rack-limited-armory-sold-out.webp",
+      "triangles": 10274,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 5,
+      "type": "materials",
+      "group": "rack",
+      "state": "full",
+      "path": "lv5/rack-materials-full.webp",
+      "triangles": 3798,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.6650892593347493,
+        "depth": 0.7259999811649323
+      }
+    },
+    {
+      "tier": 5,
+      "type": "materials",
+      "group": "rack",
+      "state": "half",
+      "path": "lv5/rack-materials-half.webp",
+      "triangles": 3798,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7259999811649323
+      }
+    },
+    {
+      "tier": 5,
+      "type": "materials",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv5/rack-materials-sold-out.webp",
+      "triangles": 3798,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7259999811649323
+      }
+    },
+    {
+      "tier": 5,
+      "type": "arcane",
+      "group": "rack",
+      "state": "full",
+      "path": "lv5/rack-arcane-full.webp",
+      "triangles": 6718,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7297799019142985,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 5,
+      "type": "arcane",
+      "group": "rack",
+      "state": "half",
+      "path": "lv5/rack-arcane-half.webp",
+      "triangles": 6718,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7297799019142985,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 5,
+      "type": "arcane",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv5/rack-arcane-sold-out.webp",
+      "triangles": 6718,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7297799019142985,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 5,
+      "type": "lantern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-lantern.webp",
+      "triangles": 1172,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 1.3600000143051147,
+        "depth": 0.5799999833106995
+      }
+    },
+    {
+      "tier": 5,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-clock.webp",
+      "triangles": 1384,
+      "bounds": {
+        "width": 0.5264610648155212,
+        "height": 0.7463999800384045,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 5,
+      "type": "painting",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-painting.webp",
+      "triangles": 1612,
+      "bounds": {
+        "width": 0.7120000123977661,
+        "height": 0.6732000317424536,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 5,
+      "type": "painting-large",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-painting-large.webp",
+      "triangles": 1612,
+      "bounds": {
+        "width": 1.1619999408721924,
+        "height": 0.8531999825499952,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 5,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-couplet.webp",
+      "triangles": 1612,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.5132000069133937,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 5,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-fern.webp",
+      "triangles": 2528,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 5,
+      "type": "lavender",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-lavender.webp",
+      "triangles": 4760,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.065000057220459,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 5,
+      "type": "citrus",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-citrus.webp",
+      "triangles": 3128,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.2245599031448364,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 5,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-carpet.webp",
+      "triangles": 844,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 5,
+      "type": "sofa",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-sofa.webp",
+      "triangles": 2284,
+      "bounds": {
+        "width": 0.9262391924858093,
+        "height": 0.9115999955683947,
+        "depth": 0.621999979019165
+      }
+    },
+    {
+      "tier": 5,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-plant.webp",
+      "triangles": 2528,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 5,
+      "type": "lucky-cat",
+      "group": "decor",
+      "state": "full",
+      "path": "lv5/decor-lucky-cat.webp",
+      "triangles": 1332,
+      "bounds": {
+        "width": 0.6742449402809143,
+        "height": 1.0209999717772007,
+        "depth": 0.5619999766349792
+      }
+    },
+    {
+      "tier": 6,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv6/rack-apothecary-full.webp",
+      "triangles": 6698,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 6,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv6/rack-apothecary-half.webp",
+      "triangles": 6698,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 6,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv6/rack-apothecary-sold-out.webp",
+      "triangles": 6698,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 6,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv6/rack-orbs-full.webp",
+      "triangles": 17270,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 6,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv6/rack-orbs-half.webp",
+      "triangles": 17270,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 6,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv6/rack-orbs-sold-out.webp",
+      "triangles": 17270,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 6,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv6/rack-armory-full.webp",
+      "triangles": 8770,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 6,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv6/rack-armory-half.webp",
+      "triangles": 8770,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 6,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv6/rack-armory-sold-out.webp",
+      "triangles": 8770,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 6,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv6/rack-limited-armory-full.webp",
+      "triangles": 11702,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 6,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv6/rack-limited-armory-half.webp",
+      "triangles": 11702,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 6,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv6/rack-limited-armory-sold-out.webp",
+      "triangles": 11702,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 6,
+      "type": "materials",
+      "group": "rack",
+      "state": "full",
+      "path": "lv6/rack-materials-full.webp",
+      "triangles": 4126,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.6650892593347493,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 6,
+      "type": "materials",
+      "group": "rack",
+      "state": "half",
+      "path": "lv6/rack-materials-half.webp",
+      "triangles": 4126,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.5450892545663777,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 6,
+      "type": "materials",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv6/rack-materials-sold-out.webp",
+      "triangles": 4126,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 6,
+      "type": "arcane",
+      "group": "rack",
+      "state": "full",
+      "path": "lv6/rack-arcane-full.webp",
+      "triangles": 8146,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7210000030323862,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 6,
+      "type": "arcane",
+      "group": "rack",
+      "state": "half",
+      "path": "lv6/rack-arcane-half.webp",
+      "triangles": 8146,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7210000030323862,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 6,
+      "type": "arcane",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv6/rack-arcane-sold-out.webp",
+      "triangles": 8146,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7210000030323862,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 6,
+      "type": "lantern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-lantern.webp",
+      "triangles": 1336,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 1.3600000143051147,
+        "depth": 0.5799999833106995
+      }
+    },
+    {
+      "tier": 6,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-clock.webp",
+      "triangles": 1548,
+      "bounds": {
+        "width": 0.5264610648155212,
+        "height": 0.7348977737128735,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 6,
+      "type": "painting",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-painting.webp",
+      "triangles": 1776,
+      "bounds": {
+        "width": 0.7120000123977661,
+        "height": 0.669043680652976,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 6,
+      "type": "painting-large",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-painting-large.webp",
+      "triangles": 1776,
+      "bounds": {
+        "width": 1.1619999408721924,
+        "height": 0.8490436910651624,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 6,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-couplet.webp",
+      "triangles": 1776,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.5090436558239162,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 6,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-fern.webp",
+      "triangles": 2528,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 6,
+      "type": "lavender",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-lavender.webp",
+      "triangles": 4760,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.065000057220459,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 6,
+      "type": "citrus",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-citrus.webp",
+      "triangles": 3128,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.2245599031448364,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 6,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-carpet.webp",
+      "triangles": 828,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 6,
+      "type": "sofa",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-sofa.webp",
+      "triangles": 2448,
+      "bounds": {
+        "width": 0.9262391924858093,
+        "height": 0.8927518744021654,
+        "depth": 0.621999979019165
+      }
+    },
+    {
+      "tier": 6,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-plant.webp",
+      "triangles": 2528,
+      "bounds": {
+        "width": 0.6540000438690186,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 6,
+      "type": "lucky-cat",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-lucky-cat.webp",
+      "triangles": 1332,
+      "bounds": {
+        "width": 0.6742449402809143,
+        "height": 1.0209999717772007,
+        "depth": 0.5619999766349792
+      }
+    },
+    {
+      "tier": 6,
+      "type": "fountain",
+      "group": "decor",
+      "state": "full",
+      "path": "lv6/decor-fountain.webp",
+      "triangles": 1016,
+      "bounds": {
+        "width": 0.8999999761581421,
+        "height": 1.3699999954551458,
+        "depth": 0.8999999761581421
+      }
+    },
+    {
+      "tier": 7,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv7/rack-apothecary-full.webp",
+      "triangles": 6010,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 7,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv7/rack-apothecary-half.webp",
+      "triangles": 6010,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 7,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv7/rack-apothecary-sold-out.webp",
+      "triangles": 6010,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5410000030323863,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 7,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv7/rack-orbs-full.webp",
+      "triangles": 17278,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 7,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv7/rack-orbs-half.webp",
+      "triangles": 17278,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 7,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv7/rack-orbs-sold-out.webp",
+      "triangles": 17278,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 7,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv7/rack-armory-full.webp",
+      "triangles": 8082,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 7,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv7/rack-armory-half.webp",
+      "triangles": 8082,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 7,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv7/rack-armory-sold-out.webp",
+      "triangles": 8082,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7210000030323862,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 7,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv7/rack-limited-armory-full.webp",
+      "triangles": 11014,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 7,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv7/rack-limited-armory-half.webp",
+      "triangles": 11014,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 7,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv7/rack-limited-armory-sold-out.webp",
+      "triangles": 11014,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 7,
+      "type": "materials",
+      "group": "rack",
+      "state": "full",
+      "path": "lv7/rack-materials-full.webp",
+      "triangles": 3326,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.7850892641031209,
+        "depth": 0.7280884385108948
+      }
+    },
+    {
+      "tier": 7,
+      "type": "materials",
+      "group": "rack",
+      "state": "half",
+      "path": "lv7/rack-materials-half.webp",
+      "triangles": 3326,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.5450892545663777,
+        "depth": 0.7280884385108948
+      }
+    },
+    {
+      "tier": 7,
+      "type": "materials",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv7/rack-materials-sold-out.webp",
+      "triangles": 3326,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7280884385108948
+      }
+    },
+    {
+      "tier": 7,
+      "type": "arcane",
+      "group": "rack",
+      "state": "full",
+      "path": "lv7/rack-arcane-full.webp",
+      "triangles": 7458,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7210000030323862,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 7,
+      "type": "arcane",
+      "group": "rack",
+      "state": "half",
+      "path": "lv7/rack-arcane-half.webp",
+      "triangles": 7458,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7210000030323862,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 7,
+      "type": "arcane",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv7/rack-arcane-sold-out.webp",
+      "triangles": 7458,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7210000030323862,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 7,
+      "type": "relic",
+      "group": "rack",
+      "state": "full",
+      "path": "lv7/rack-relic-full.webp",
+      "triangles": 7522,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 7,
+      "type": "relic",
+      "group": "rack",
+      "state": "half",
+      "path": "lv7/rack-relic-half.webp",
+      "triangles": 7522,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 7,
+      "type": "relic",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv7/rack-relic-sold-out.webp",
+      "triangles": 7522,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 7,
+      "type": "lantern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-lantern.webp",
+      "triangles": 936,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 1.3600000143051147,
+        "depth": 0.5799999833106995
+      }
+    },
+    {
+      "tier": 7,
+      "type": "crystal-art",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-crystal-art.webp",
+      "triangles": 212,
+      "bounds": {
+        "width": 0.6520000100135803,
+        "height": 1.2559999986551702,
+        "depth": 0.5320000350475311
+      }
+    },
+    {
+      "tier": 7,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-clock.webp",
+      "triangles": 1148,
+      "bounds": {
+        "width": 0.5264610648155212,
+        "height": 0.7362999729812145,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 7,
+      "type": "painting",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-painting.webp",
+      "triangles": 1376,
+      "bounds": {
+        "width": 0.7120000123977661,
+        "height": 0.6613999810069799,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 7,
+      "type": "painting-large",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-painting-large.webp",
+      "triangles": 1376,
+      "bounds": {
+        "width": 1.1619999408721924,
+        "height": 0.8413999914191663,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 7,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-couplet.webp",
+      "triangles": 1376,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.5014000157825649,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 7,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-fern.webp",
+      "triangles": 2768,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 7,
+      "type": "lavender",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-lavender.webp",
+      "triangles": 5000,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.065000057220459,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 7,
+      "type": "citrus",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-citrus.webp",
+      "triangles": 3368,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.2245599031448364,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 7,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-carpet.webp",
+      "triangles": 836,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 7,
+      "type": "sofa",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-sofa.webp",
+      "triangles": 2048,
+      "bounds": {
+        "width": 0.9262391924858093,
+        "height": 0.9032000321894884,
+        "depth": 0.621999979019165
+      }
+    },
+    {
+      "tier": 7,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-plant.webp",
+      "triangles": 2768,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 7,
+      "type": "lucky-cat",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-lucky-cat.webp",
+      "triangles": 1332,
+      "bounds": {
+        "width": 0.6742449402809143,
+        "height": 1.0209999717772007,
+        "depth": 0.5619999766349792
+      }
+    },
+    {
+      "tier": 7,
+      "type": "fountain",
+      "group": "decor",
+      "state": "full",
+      "path": "lv7/decor-fountain.webp",
+      "triangles": 1016,
+      "bounds": {
+        "width": 0.8999999761581421,
+        "height": 1.3699999954551458,
+        "depth": 0.8999999761581421
+      }
+    },
+    {
+      "tier": 8,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv8/rack-apothecary-full.webp",
+      "triangles": 5906,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5723137287423015,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 8,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv8/rack-apothecary-half.webp",
+      "triangles": 5906,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5723137287423015,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 8,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv8/rack-apothecary-sold-out.webp",
+      "triangles": 5906,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5723137287423015,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 8,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv8/rack-orbs-full.webp",
+      "triangles": 17286,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 8,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv8/rack-orbs-half.webp",
+      "triangles": 17286,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 8,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv8/rack-orbs-sold-out.webp",
+      "triangles": 17286,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 8,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv8/rack-armory-full.webp",
+      "triangles": 7978,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.752313676290214,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 8,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv8/rack-armory-half.webp",
+      "triangles": 7978,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.752313676290214,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 8,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv8/rack-armory-sold-out.webp",
+      "triangles": 7978,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.752313676290214,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 8,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv8/rack-limited-armory-full.webp",
+      "triangles": 10910,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 8,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv8/rack-limited-armory-half.webp",
+      "triangles": 10910,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 8,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv8/rack-limited-armory-sold-out.webp",
+      "triangles": 10910,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 8,
+      "type": "materials",
+      "group": "rack",
+      "state": "full",
+      "path": "lv8/rack-materials-full.webp",
+      "triangles": 3566,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.7850892641031209,
+        "depth": 0.7484523952007294
+      }
+    },
+    {
+      "tier": 8,
+      "type": "materials",
+      "group": "rack",
+      "state": "half",
+      "path": "lv8/rack-materials-half.webp",
+      "triangles": 3566,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.5450892545663777,
+        "depth": 0.7484523952007294
+      }
+    },
+    {
+      "tier": 8,
+      "type": "materials",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv8/rack-materials-sold-out.webp",
+      "triangles": 3566,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7484523952007294
+      }
+    },
+    {
+      "tier": 8,
+      "type": "arcane",
+      "group": "rack",
+      "state": "full",
+      "path": "lv8/rack-arcane-full.webp",
+      "triangles": 7354,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.752313676290214,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 8,
+      "type": "arcane",
+      "group": "rack",
+      "state": "half",
+      "path": "lv8/rack-arcane-half.webp",
+      "triangles": 7354,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.752313676290214,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 8,
+      "type": "arcane",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv8/rack-arcane-sold-out.webp",
+      "triangles": 7354,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.752313676290214,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 8,
+      "type": "relic",
+      "group": "rack",
+      "state": "full",
+      "path": "lv8/rack-relic-full.webp",
+      "triangles": 7418,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 8,
+      "type": "relic",
+      "group": "rack",
+      "state": "half",
+      "path": "lv8/rack-relic-half.webp",
+      "triangles": 7418,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 8,
+      "type": "relic",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv8/rack-relic-sold-out.webp",
+      "triangles": 7418,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 8,
+      "type": "lantern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-lantern.webp",
+      "triangles": 1056,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 1.3600000143051147,
+        "depth": 0.5799999833106995
+      }
+    },
+    {
+      "tier": 8,
+      "type": "crystal-art",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-crystal-art.webp",
+      "triangles": 212,
+      "bounds": {
+        "width": 0.6520000100135803,
+        "height": 1.2559999986551702,
+        "depth": 0.5320000350475311
+      }
+    },
+    {
+      "tier": 8,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-clock.webp",
+      "triangles": 1172,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 0.7399999909102917,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 8,
+      "type": "painting",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-painting.webp",
+      "triangles": 1496,
+      "bounds": {
+        "width": 0.7120000123977661,
+        "height": 0.6611591782420874,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 8,
+      "type": "painting-large",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-painting-large.webp",
+      "triangles": 1496,
+      "bounds": {
+        "width": 1.1619999408721924,
+        "height": 0.8411591886542737,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 8,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-couplet.webp",
+      "triangles": 1496,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.5011592130176723,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 8,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-fern.webp",
+      "triangles": 2768,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 8,
+      "type": "lavender",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-lavender.webp",
+      "triangles": 5000,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.065000057220459,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 8,
+      "type": "citrus",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-citrus.webp",
+      "triangles": 3368,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.2245599031448364,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 8,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-carpet.webp",
+      "triangles": 844,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 8,
+      "type": "sofa",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-sofa.webp",
+      "triangles": 2168,
+      "bounds": {
+        "width": 0.9262391924858093,
+        "height": 0.9028789419680834,
+        "depth": 0.621999979019165
+      }
+    },
+    {
+      "tier": 8,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-plant.webp",
+      "triangles": 2768,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 8,
+      "type": "lucky-cat",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-lucky-cat.webp",
+      "triangles": 1332,
+      "bounds": {
+        "width": 0.6742449402809143,
+        "height": 1.0209999717772007,
+        "depth": 0.5619999766349792
+      }
+    },
+    {
+      "tier": 8,
+      "type": "fountain",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-fountain.webp",
+      "triangles": 1016,
+      "bounds": {
+        "width": 0.8999999761581421,
+        "height": 1.3699999954551458,
+        "depth": 0.8999999761581421
+      }
+    },
+    {
+      "tier": 8,
+      "type": "artwork",
+      "group": "decor",
+      "state": "full",
+      "path": "lv8/decor-artwork.webp",
+      "triangles": 2872,
+      "bounds": {
+        "width": 0.7919999957084656,
+        "height": 1.801318353973329,
+        "depth": 0.4020000100135803
+      }
+    },
+    {
+      "tier": 9,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv9/rack-apothecary-full.webp",
+      "triangles": 6198,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.549779954366386,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv9/rack-apothecary-half.webp",
+      "triangles": 6198,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.549779954366386,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv9/rack-apothecary-sold-out.webp",
+      "triangles": 6198,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.549779954366386,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv9/rack-orbs-full.webp",
+      "triangles": 17270,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 9,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv9/rack-orbs-half.webp",
+      "triangles": 17270,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 9,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv9/rack-orbs-sold-out.webp",
+      "triangles": 17270,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 9,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv9/rack-armory-full.webp",
+      "triangles": 8270,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7297799019142985,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 9,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv9/rack-armory-half.webp",
+      "triangles": 8270,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7297799019142985,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 9,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv9/rack-armory-sold-out.webp",
+      "triangles": 8270,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.7297799019142985,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 9,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv9/rack-limited-armory-full.webp",
+      "triangles": 11202,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 9,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv9/rack-limited-armory-half.webp",
+      "triangles": 11202,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 9,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv9/rack-limited-armory-sold-out.webp",
+      "triangles": 11202,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 9,
+      "type": "materials",
+      "group": "rack",
+      "state": "full",
+      "path": "lv9/rack-materials-full.webp",
+      "triangles": 3798,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.7850892641031209,
+        "depth": 0.7259999811649323
+      }
+    },
+    {
+      "tier": 9,
+      "type": "materials",
+      "group": "rack",
+      "state": "half",
+      "path": "lv9/rack-materials-half.webp",
+      "triangles": 3798,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.5450892545663777,
+        "depth": 0.7259999811649323
+      }
+    },
+    {
+      "tier": 9,
+      "type": "materials",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv9/rack-materials-sold-out.webp",
+      "triangles": 3798,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7259999811649323
+      }
+    },
+    {
+      "tier": 9,
+      "type": "arcane",
+      "group": "rack",
+      "state": "full",
+      "path": "lv9/rack-arcane-full.webp",
+      "triangles": 7646,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7297799019142985,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "arcane",
+      "group": "rack",
+      "state": "half",
+      "path": "lv9/rack-arcane-half.webp",
+      "triangles": 7646,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7297799019142985,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "arcane",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv9/rack-arcane-sold-out.webp",
+      "triangles": 7646,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.7297799019142985,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "relic",
+      "group": "rack",
+      "state": "full",
+      "path": "lv9/rack-relic-full.webp",
+      "triangles": 7710,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "relic",
+      "group": "rack",
+      "state": "half",
+      "path": "lv9/rack-relic-half.webp",
+      "triangles": 7710,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "relic",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv9/rack-relic-sold-out.webp",
+      "triangles": 7710,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "royal",
+      "group": "rack",
+      "state": "full",
+      "path": "lv9/rack-royal-full.webp",
+      "triangles": 7946,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.284200015477836,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "royal",
+      "group": "rack",
+      "state": "half",
+      "path": "lv9/rack-royal-half.webp",
+      "triangles": 7946,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.284200015477836,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "royal",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv9/rack-royal-sold-out.webp",
+      "triangles": 7946,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.284200015477836,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 9,
+      "type": "lantern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-lantern.webp",
+      "triangles": 1172,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 1.3600000143051147,
+        "depth": 0.5799999833106995
+      }
+    },
+    {
+      "tier": 9,
+      "type": "crystal-art",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-crystal-art.webp",
+      "triangles": 212,
+      "bounds": {
+        "width": 0.6520000100135803,
+        "height": 1.2559999986551702,
+        "depth": 0.5320000350475311
+      }
+    },
+    {
+      "tier": 9,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-clock.webp",
+      "triangles": 1384,
+      "bounds": {
+        "width": 0.5264610648155212,
+        "height": 0.7463999800384045,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 9,
+      "type": "painting",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-painting.webp",
+      "triangles": 1612,
+      "bounds": {
+        "width": 0.7120000123977661,
+        "height": 0.6732000317424536,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 9,
+      "type": "painting-large",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-painting-large.webp",
+      "triangles": 1612,
+      "bounds": {
+        "width": 1.1619999408721924,
+        "height": 0.8531999825499952,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 9,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-couplet.webp",
+      "triangles": 1612,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.5132000069133937,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 9,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-fern.webp",
+      "triangles": 2768,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 9,
+      "type": "lavender",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-lavender.webp",
+      "triangles": 5000,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.065000057220459,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 9,
+      "type": "citrus",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-citrus.webp",
+      "triangles": 3368,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.2245599031448364,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 9,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-carpet.webp",
+      "triangles": 828,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 9,
+      "type": "sofa",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-sofa.webp",
+      "triangles": 2284,
+      "bounds": {
+        "width": 0.9262391924858093,
+        "height": 0.9115999955683947,
+        "depth": 0.621999979019165
+      }
+    },
+    {
+      "tier": 9,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-plant.webp",
+      "triangles": 2768,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 9,
+      "type": "lucky-cat",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-lucky-cat.webp",
+      "triangles": 1332,
+      "bounds": {
+        "width": 0.6742449402809143,
+        "height": 1.0209999717772007,
+        "depth": 0.5619999766349792
+      }
+    },
+    {
+      "tier": 9,
+      "type": "fountain",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-fountain.webp",
+      "triangles": 1016,
+      "bounds": {
+        "width": 0.8999999761581421,
+        "height": 1.3699999954551458,
+        "depth": 0.8999999761581421
+      }
+    },
+    {
+      "tier": 9,
+      "type": "artwork",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-artwork.webp",
+      "triangles": 2988,
+      "bounds": {
+        "width": 0.7919999957084656,
+        "height": 1.8033999865874648,
+        "depth": 0.4020000100135803
+      }
+    },
+    {
+      "tier": 9,
+      "type": "phoenix",
+      "group": "decor",
+      "state": "full",
+      "path": "lv9/decor-phoenix.webp",
+      "triangles": 1588,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.2859999659704044,
+        "depth": 0.5119999945163727
+      }
+    },
+    {
+      "tier": 10,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "full",
+      "path": "lv10/rack-apothecary-full.webp",
+      "triangles": 5986,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5723137287423015,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "half",
+      "path": "lv10/rack-apothecary-half.webp",
+      "triangles": 5986,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5723137287423015,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "apothecary",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv10/rack-apothecary-sold-out.webp",
+      "triangles": 5986,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.5723137287423015,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "orbs",
+      "group": "rack",
+      "state": "full",
+      "path": "lv10/rack-orbs-full.webp",
+      "triangles": 17278,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 10,
+      "type": "orbs",
+      "group": "rack",
+      "state": "half",
+      "path": "lv10/rack-orbs-half.webp",
+      "triangles": 17278,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 10,
+      "type": "orbs",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv10/rack-orbs-sold-out.webp",
+      "triangles": 17278,
+      "bounds": {
+        "width": 0.9283300119638442,
+        "height": 1.4584434447249697,
+        "depth": 0.9486253291925715
+      }
+    },
+    {
+      "tier": 10,
+      "type": "armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv10/rack-armory-full.webp",
+      "triangles": 8058,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.752313676290214,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 10,
+      "type": "armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv10/rack-armory-half.webp",
+      "triangles": 8058,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.752313676290214,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 10,
+      "type": "armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv10/rack-armory-sold-out.webp",
+      "triangles": 8058,
+      "bounds": {
+        "width": 0.9120000004768372,
+        "height": 1.752313676290214,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 10,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "full",
+      "path": "lv10/rack-limited-armory-full.webp",
+      "triangles": 10990,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 10,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "half",
+      "path": "lv10/rack-limited-armory-half.webp",
+      "triangles": 10990,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 10,
+      "type": "limited-armory",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv10/rack-limited-armory-sold-out.webp",
+      "triangles": 10990,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.072599950246513,
+        "depth": 0.7050000109672547
+      }
+    },
+    {
+      "tier": 10,
+      "type": "materials",
+      "group": "rack",
+      "state": "full",
+      "path": "lv10/rack-materials-full.webp",
+      "triangles": 3214,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.7850892641031209,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 10,
+      "type": "materials",
+      "group": "rack",
+      "state": "half",
+      "path": "lv10/rack-materials-half.webp",
+      "triangles": 3214,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.5450892545663777,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 10,
+      "type": "materials",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv10/rack-materials-sold-out.webp",
+      "triangles": 3214,
+      "bounds": {
+        "width": 1.9140000343322754,
+        "height": 0.4670000104233623,
+        "depth": 0.7199999859333038
+      }
+    },
+    {
+      "tier": 10,
+      "type": "arcane",
+      "group": "rack",
+      "state": "full",
+      "path": "lv10/rack-arcane-full.webp",
+      "triangles": 7434,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.752313676290214,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "arcane",
+      "group": "rack",
+      "state": "half",
+      "path": "lv10/rack-arcane-half.webp",
+      "triangles": 7434,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.752313676290214,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "arcane",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv10/rack-arcane-sold-out.webp",
+      "triangles": 7434,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.752313676290214,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "relic",
+      "group": "rack",
+      "state": "full",
+      "path": "lv10/rack-relic-full.webp",
+      "triangles": 7498,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "relic",
+      "group": "rack",
+      "state": "half",
+      "path": "lv10/rack-relic-half.webp",
+      "triangles": 7498,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "relic",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv10/rack-relic-sold-out.webp",
+      "triangles": 7498,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.0109000829979777,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "royal",
+      "group": "rack",
+      "state": "full",
+      "path": "lv10/rack-royal-full.webp",
+      "triangles": 7734,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.284200015477836,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "royal",
+      "group": "rack",
+      "state": "half",
+      "path": "lv10/rack-royal-half.webp",
+      "triangles": 7734,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.284200015477836,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "royal",
+      "group": "rack",
+      "state": "sold-out",
+      "path": "lv10/rack-royal-sold-out.webp",
+      "triangles": 7734,
+      "bounds": {
+        "width": 0.94,
+        "height": 2.284200015477836,
+        "depth": 0.7443449199199677
+      }
+    },
+    {
+      "tier": 10,
+      "type": "lantern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-lantern.webp",
+      "triangles": 880,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 1.3600000143051147,
+        "depth": 0.5799999833106995
+      }
+    },
+    {
+      "tier": 10,
+      "type": "crystal-art",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-crystal-art.webp",
+      "triangles": 212,
+      "bounds": {
+        "width": 0.6520000100135803,
+        "height": 1.2559999986551702,
+        "depth": 0.5320000350475311
+      }
+    },
+    {
+      "tier": 10,
+      "type": "sun-art",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-sun-art.webp",
+      "triangles": 636,
+      "bounds": {
+        "width": 0.8284000158309937,
+        "height": 1.4202000661753118,
+        "depth": 0.5320000350475311
+      }
+    },
+    {
+      "tier": 10,
+      "type": "clock",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-clock.webp",
+      "triangles": 996,
+      "bounds": {
+        "width": 0.5799999833106995,
+        "height": 0.7399999909102917,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 10,
+      "type": "painting",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-painting.webp",
+      "triangles": 1320,
+      "bounds": {
+        "width": 0.7120000123977661,
+        "height": 0.6545000281184912,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 10,
+      "type": "painting-large",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-painting-large.webp",
+      "triangles": 1320,
+      "bounds": {
+        "width": 1.1619999408721924,
+        "height": 0.8344999789260328,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 10,
+      "type": "couplet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-couplet.webp",
+      "triangles": 1320,
+      "bounds": {
+        "width": 0.492000013589859,
+        "height": 0.4945000032894314,
+        "depth": 0.13
+      }
+    },
+    {
+      "tier": 10,
+      "type": "fern",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-fern.webp",
+      "triangles": 2768,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 0.9995599389076233,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 10,
+      "type": "lavender",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-lavender.webp",
+      "triangles": 5000,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.065000057220459,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 10,
+      "type": "citrus",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-citrus.webp",
+      "triangles": 3368,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.2245599031448364,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 10,
+      "type": "carpet",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-carpet.webp",
+      "triangles": 836,
+      "bounds": {
+        "width": 2.7,
+        "height": 0.10029754554852843,
+        "depth": 1.9
+      }
+    },
+    {
+      "tier": 10,
+      "type": "sofa",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-sofa.webp",
+      "triangles": 1992,
+      "bounds": {
+        "width": 0.9262391924858093,
+        "height": 0.8939999956637621,
+        "depth": 0.621999979019165
+      }
+    },
+    {
+      "tier": 10,
+      "type": "plant",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-plant.webp",
+      "triangles": 2768,
+      "bounds": {
+        "width": 0.7569913268089294,
+        "height": 1.4645599126815796,
+        "depth": 0.6540000438690186
+      }
+    },
+    {
+      "tier": 10,
+      "type": "lucky-cat",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-lucky-cat.webp",
+      "triangles": 1332,
+      "bounds": {
+        "width": 0.6742449402809143,
+        "height": 1.0209999717772007,
+        "depth": 0.5619999766349792
+      }
+    },
+    {
+      "tier": 10,
+      "type": "fountain",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-fountain.webp",
+      "triangles": 1016,
+      "bounds": {
+        "width": 0.8999999761581421,
+        "height": 1.3699999954551458,
+        "depth": 0.8999999761581421
+      }
+    },
+    {
+      "tier": 10,
+      "type": "artwork",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-artwork.webp",
+      "triangles": 2696,
+      "bounds": {
+        "width": 0.7919999957084656,
+        "height": 1.7880000537261367,
+        "depth": 0.4020000100135803
+      }
+    },
+    {
+      "tier": 10,
+      "type": "phoenix",
+      "group": "decor",
+      "state": "full",
+      "path": "lv10/decor-phoenix.webp",
+      "triangles": 1588,
+      "bounds": {
+        "width": 0.94,
+        "height": 1.2859999659704044,
+        "depth": 0.5119999945163727
+      }
+    }
+  ],
+  "errors": []
+}

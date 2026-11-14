@@ -1,7 +1,8 @@
-import {employeeSpot,employeePath} from './staff-routing.js?v=20261113-v38';
-import {obstacles,decorEffects} from './decorations.js?v=20261113-v39';
-import {findPath,walkable,dimensions} from './nav.js?v=20261113-v39';
-import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261113-v37';
+import{shelfApproach}from'./nav.js?v=20261114-v45';
+import {employeeSpot,employeePath} from './staff-routing.js?v=20261114-v45';
+import {obstacles,decorEffects} from './decorations.js?v=20261114-v45';
+import {findPath,walkable,dimensions} from './nav.js?v=20261114-v45';
+import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261114-v45';
 const stations={stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
 /* The rear wall is z=1. Each resting worker gets their own place and is never
  * mistaken for an idling / slacking employee at an active work station. */
@@ -13,7 +14,7 @@ export function sendToRest(g,s,e){e.path=[];e.reaction='sleep';e.offDuty=true;re
 const wandering=(s,e)=>{
  const shelves=s.shelves||[],i=(e.patrolStep||0),next=()=>{e.patrolStep=i+1;};
  const patterns={
-  stocker:[stations.stocker,...shelves.map(sh=>({x:sh.x,z:sh.z+1})),{x:2,z:4}],
+  stocker:[stations.stocker,...shelves.map(sh=>(shelfApproach(sh))),{x:2,z:4}],
   host:[{x:5,z:9},{x:6,z:8},{x:7,z:9}],
   cleaner:[{x:3,z:6},{x:7,z:8},{x:8,z:3}],
  };
@@ -43,6 +44,7 @@ export function staffAutomation(g,s,dt){
  const rear=restingPositions(s);
  for(const e of s.employees){
   if(e.role==='standby'){sendToRest(g,s,e);continue;}
+  if(e.fatigue>=100){e.path=[];e.reaction='exhausted';continue;}
   // Only a named slacking incident allows an on-duty worker to stand still.
   if(e.workTask){e.reaction='work';continue;}
   if((e.path||[]).length&&(e.blocked||0)<2){e.reaction='walk';continue;}

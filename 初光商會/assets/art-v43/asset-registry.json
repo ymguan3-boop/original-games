@@ -1,0 +1,47 @@
+{
+  "profile": "low-poly",
+  "sourceBaseline": "assets/art-v41/armory-three-states-concept.png + js/armory-pilot-v41.js",
+  "userOverrides": [
+    "Low open divided material tray, left iron/right wood",
+    "Material tray occupies two floor cells and counts as one rack",
+    "Exterior contour thickness reduced to 2/3 of v43 first iteration"
+  ],
+  "outline": {
+    "rack": {
+      "color": "#000000",
+      "worldThickness": 0.006,
+      "priorThickness": 0.009
+    },
+    "decor": {
+      "worldThickness": 0.002667,
+      "priorThickness": 0.004
+    }
+  },
+  "materialTray": {
+    "footprint": [
+      2,
+      1
+    ],
+    "capacitySplit": "equal independent compartments",
+    "stockAccounting": "primary stock + secondaryStock; per-SKU reservation/sale/restock/refund",
+    "migration": "excess old primary stock returns to same-SKU inventory"
+  },
+  "preview": "original colors, opacity >= 0.98; validity via footprint colors",
+  "placement": "occupied cells red; green legal cells; moving item excluded from its old obstacle footprint; outdoor garden and wall markers",
+  "technicalStatus": "TECHNICAL_PASS",
+  "renderedReferences": 301,
+  "runtimeTriangleBudget": {
+    "rack": 20000,
+    "decor": 12000
+  },
+  "observedTriangles": {
+    "rack": 17718,
+    "decor": 5000
+  },
+  "qa": {
+    "rules": "27 targeted tests passed",
+    "phone2D3D": "artifacts/nov14-v44-placement-ui.json"
+  },
+  "saveReset": "manual local test reset was requested by user; timestamped backup before removal; no global reset-version change",
+  "publication": "local only"
+}
