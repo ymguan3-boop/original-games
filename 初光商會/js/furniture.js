@@ -1,4 +1,4 @@
-import {tierDefinition} from './tier-designs.js?v=20261114-v49';
+import {tierDefinition} from './tier-designs.js?v=20261114-v50';
 export const shelfTypes=[
  {id:'apothecary',name:'草木藥櫃',description:'藥水、補給道具、星露果與小型採集素材',sku:'potion',color:'#70a48b',level:1,cost:160,capacity:30,premium:1,top:1.46},
  {id:'orbs',name:'星藍靈核櫃',description:'球形展示櫃・各式靈核球',sku:'ball-basic',color:'#648fc6',level:1,cost:160,capacity:30,premium:1,top:1.44,productLayout:'orb-v3',productMaxSize:.09},

@@ -1,7 +1,7 @@
-import{occupiedCells}from'./placement-footprint.js?v=20261114-v49';
-import{ENTRANCE,shelfApproach,walkable,dimensions}from'./nav.js?v=20261114-v49';
-import{obstacles}from'./decorations.js?v=20261114-v49';
-import{actorPath}from'./staff-routing.js?v=20261114-v49';
+import{occupiedCells}from'./placement-footprint.js?v=20261114-v50';
+import{ENTRANCE,shelfApproach,walkable,dimensions}from'./nav.js?v=20261114-v50';
+import{obstacles}from'./decorations.js?v=20261114-v50';
+import{actorPath}from'./staff-routing.js?v=20261114-v50';
 export function shoppingSpots(s,sh){
  const front=shelfApproach(sh),points=new Map();for(const cell of occupiedCells(sh))for(const[dx,dz]of[[0,1],[-1,0],[1,0],[0,-1]]){const p={x:cell.x+dx,z:cell.z+dz};if(walkable(p,obstacles(s),s.level))points.set(`${p.x},${p.z}`,p);}
  return [...points.values()].sort((a,b)=>Math.hypot(a.x-front.x,a.z-front.z)-Math.hypot(b.x-front.x,b.z-front.z));
