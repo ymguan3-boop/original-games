@@ -64,7 +64,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
 
 }
  if(CHIBI){/* 新版店面：門面朝 +z（鏡頭那側），大門在正面牆中央 */
-  const cz=(depth-1)/2,cx=(width-1)/2,opts={w:width,d:depth,doorX:ENTRANCE.x-cx,ground:-.07,ambient:true,onPasserArrive:id=>game.act('arrivePasser',{visitorId:id}).ok};
+  const cz=(depth-1)/2,cx=(width-1)/2,opts={w:width,d:depth,doorX:ENTRANCE.x-cx,ground:-.07,ambient:true,onPasserArrive:id=>{if(!game.state.customers.some(c=>c.visitorId===id))game.act('arrivePasser',{visitorId:id});return game.state.customers.some(c=>c.visitorId===id);}};
   const frame=new T.Group();frame.name='Q版店面';frame.position.set(cx,0,cz);
   chibiShell=buildShell(level,opts);frontFade=1;frame.add(chibiShell,buildGround());yard=buildYard(level,{...opts,gardenArea:{cx:Math.round(cx)-cx,minX:-.1-cx,maxX:width-.9-cx,minZ:depth+1.1-cz,maxZ:depth+2.9-cz},reserved:gardenSlots(level).map(p=>({x:p.x-cx,z:p.z-cz,r:1.35}))});frame.add(yard.root);tune(frame);metrics.outdoorDoorZ=cz+yardLayout(level,opts).zF-.08;outdoorYardDispose=()=>yard.dispose?.();
 

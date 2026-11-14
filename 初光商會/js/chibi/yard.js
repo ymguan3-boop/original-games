@@ -268,7 +268,7 @@ export function buildYard(level,opts={}){
   for(const f of anim)f(t);
   for(const p of people){
    if(p.delay>0){p.delay-=dt;if(p.delay<=0){spawnRoute(p,p.shopper);p.g.visible=true;}continue;}
-   if(p.invited&&p.route?.length===0){if(opts.onPasserArrive?.(p.visitorId)){p.invited=false;p.g.visible=false;p.delay=1+R()*5;p.route=null;}continue;}if(!p.route)continue;const tg=p.route[0];if(!tg){p.g.visible=false;p.delay=1+R()*5;p.route=null;continue;}
+   if(p.invited&&p.route?.length===0){p.arrivalRetry=(p.arrivalRetry||0)-dt;if(p.arrivalRetry>0)continue;p.arrivalRetry=.5;if(opts.onPasserArrive?.(p.visitorId)){p.invited=false;p.g.visible=false;p.delay=1+R()*5;p.route=null;}continue;}if(!p.route)continue;const tg=p.route[0];if(!tg){p.g.visible=false;p.delay=1+R()*5;p.route=null;continue;}
    if(p.wait>0){p.wait-=dt;p.pose(dt,false);p.head.rotation.y=Math.sin(t*1.3+p.phase)*.6;if(p.wait<=0){p.route.shift();p.head.rotation.y=0;}continue;}
    const dx=tg.x-p.g.position.x,dz=tg.z-p.g.position.z,dist=Math.hypot(dx,dz),step=p.speed*1.1*dt;
    if(dist<=step){p.g.position.x=tg.x;p.g.position.z=tg.z;if(tg.bag)p.props.bag.visible=true;if(tg.wait){p.wait=tg.wait;}else p.route.shift();}
