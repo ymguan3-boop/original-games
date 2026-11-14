@@ -1,4 +1,4 @@
-import {builder} from './product-models.js?v=20261114-v50';
+import {builder} from './product-models.js?v=20261114-v51';
 let cached;
 // Review pilot: single mobile low-poly rack, same one-tile origin in all three stock states.
 export function artisanArmory(T){if(cached)return cached;const b=builder(T),geometries=[],box=new T.BoxGeometry(1,1,1),cyl=new T.CylinderGeometry(1,1,1,10),ball=new T.SphereGeometry(1,10,6);geometries.push(box,cyl,ball);const W=0xd6a166,D=0x6c4934,L=0xecc48b,S=0xa8b49a,G=0xd4af62;

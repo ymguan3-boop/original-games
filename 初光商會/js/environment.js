@@ -1,7 +1,7 @@
 /* 店外環境：時段、天氣與季節。2D 與 3D 共用同一份結果，只差在怎麼畫。
  * 天氣每天開店時決定並存檔；市場事件「暴風雨」會強制變成颱風天。 */
-import {clockMinutes} from './shop-clock.js?v=20261114-v50';
-import {activeEvent} from './economy-v2.js?v=20261114-v50';
+import {clockMinutes} from './shop-clock.js?v=20261114-v51';
+import {activeEvent} from './economy-v2.js?v=20261114-v51';
 export const SEASONS=[
  {id:'spring',name:'春',grass:'#8fd06a',accent:'#ffc4dc',weights:{sunny:6,rain:3,typhoon:0}},
  {id:'summer',name:'夏',grass:'#5fae3a',accent:'#ffe36e',weights:{sunny:6,rain:2,typhoon:1.2}},

@@ -1,8 +1,8 @@
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v50';
-import {ENTRANCE,walkable,findPath} from './nav.js?v=20261114-v50';
-import {obstacles} from './decorations.js?v=20261114-v50';
-import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v50';
-import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v50';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v51';
+import {ENTRANCE,walkable,findPath} from './nav.js?v=20261114-v51';
+import {obstacles} from './decorations.js?v=20261114-v51';
+import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v51';
+import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v51';
 export function spawnShopper(g,s,{visitorId=null,arrived=false}={}){
  const shelves=salesShelves(s).filter(sh=>g.data.catalog.some(c=>c.sku===sh.sku&&c.isSellable&&c.unlockStoreLevel<=s.level));
  const unique=new Map();for(const sh of shelves)if(!unique.has(sh.id)||g.available(s,sh)>g.available(s,unique.get(sh.id)))unique.set(sh.id,sh);const targets=[...unique.values()].filter(sh=>g.available(s,sh)>0||g.data.catalog.find(c=>c.sku===sh.sku)?.lootOnly),index=s.rackDemandCursor||0,target=targets.length?targets[index%targets.length]:null;s.rackDemandCursor=index+1;
@@ -31,6 +31,9 @@ export function admitInvited(g,s,visit){
  if(s.customers.length>=g.data.config.maxCustomers)return null;const landing=entryLanding(g,s);if(!landing)return null;
  const c=spawnShopper(g,s,{visitorId:id,arrived:true});Object.assign(c,landing);s.invitedVisitors=s.invitedVisitors.filter(v=>(typeof v==='string'?v:v.id)!==id);return c;
 }
+// Outdoor actors are transient. A saved accepted invitation must survive reload
+// as an entry ticket instead of waiting forever for an actor that no longer exists.
+export function restoreInvitations(s){const ids=new Set();s.invitedVisitors=(s.invitedVisitors||[]).map(v=>typeof v==='string'?{id:v}:v).filter(v=>v?.id&&!ids.has(v.id)&&!s.customers.some(c=>c.visitorId===v.id)&&(ids.add(v.id),true)).map(v=>({...v,ready:true}));}
 export function passerArrival(g,s,id){const visit=s.invitedVisitors?.find(v=>(typeof v==='string'?v:v.id)===id);if(!visit)return '已完成進店';if(typeof visit!=='string')visit.ready=true;return admitInvited(g,s,visit)?'已加入進店顧客':'店內忙碌，正在等候安全進店位置';}
 export function stockState(stock,capacity){return stock<=0?'sold-out':stock<=capacity/2?'half':'full';}
 export function patrolDiscovery(g,s,dt){

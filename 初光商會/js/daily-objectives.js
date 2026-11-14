@@ -1,6 +1,6 @@
 /* Daily targets are deterministic, persistent, and based on actual sales/revenue.
  * Targets do not award invented currency and do not replace chapter main quests. */
-import {chapterObjectives} from './shop-chapters.js?v=20261114-v50';
+import {chapterObjectives} from './shop-chapters.js?v=20261114-v51';
 export function generateDailyGoals(s,levels){
  const chapter=chapterObjectives(s,levels),day=s.day||1,level=s.level||1,base=level*2+Math.min(3,Math.floor((day-1)/3));
  const revenue=80+level*125+Math.floor((day-1)*35);
