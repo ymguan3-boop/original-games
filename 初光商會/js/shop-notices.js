@@ -1,11 +1,11 @@
-import {readyStaffEvolutions} from './staff-evolution.js?v=20261114-v57';
-import {shelfTypes} from './furniture.js?v=20261114-v57';
-import {decorTypes} from './decorations.js?v=20261114-v57';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261114-v57';
-import {buildNotice} from './build-notices.js?v=20261114-v57';
-import {pendingRewards} from './reward-collection.js?v=20261114-v57';
-import {activeEvent} from './economy-v2.js?v=20261114-v57';
-import {commissionNotice} from './commissions.js?v=20261114-v57';
+import {readyStaffEvolutions} from './staff-evolution.js?v=20261114-v57r2';
+import {shelfTypes} from './furniture.js?v=20261114-v57r2';
+import {decorTypes} from './decorations.js?v=20261114-v57r2';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261114-v57r2';
+import {buildNotice} from './build-notices.js?v=20261114-v57r2';
+import {pendingRewards} from './reward-collection.js?v=20261114-v57r2';
+import {activeEvent} from './economy-v2.js?v=20261114-v57r2';
+import {commissionNotice} from './commissions.js?v=20261114-v57r2';
 // 所有層級讀取相同狀態；可執行提醒不因開啟選單而消失。
 export function shopNotices(game,s,seen={}){
  const buildIds=[...shelfTypes,...decorTypes].filter(t=>(t.level||1)<=s.level&&!(seen.build||[]).includes(t.id)).map(t=>t.id);

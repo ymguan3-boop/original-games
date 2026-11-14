@@ -1,12 +1,12 @@
-import{auctionDemand}from'./plaza-auction.js?v=20261114-v57';
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v57';
-import {ENTRANCE,walkable,findPath} from './nav.js?v=20261114-v57';
-import {obstacles} from './decorations.js?v=20261114-v57';
-import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v57';
-import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v57';
+import{auctionDemand}from'./plaza-auction.js?v=20261114-v57r2';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v57r2';
+import {ENTRANCE,walkable,findPath} from './nav.js?v=20261114-v57r2';
+import {obstacles} from './decorations.js?v=20261114-v57r2';
+import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v57r2';
+import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v57r2';
 export function spawnShopper(g,s,{visitorId=null,arrived=false}={}){
  const shelves=salesShelves(s).filter(sh=>g.data.catalog.some(c=>c.sku===sh.sku&&c.isSellable&&c.unlockStoreLevel<=s.level));
- const unique=new Map();for(const sh of shelves)if(!unique.has(sh.id)||g.available(s,sh)>g.available(s,unique.get(sh.id)))unique.set(sh.id,sh);const targets=[...unique.values()].filter(sh=>g.available(s,sh)>0||g.data.catalog.find(c=>c.sku===sh.sku)?.lootOnly),index=s.rackDemandCursor||0;let target=targets.length?targets[index%targets.length]:null;if(s.plazaAuction?.day===s.day&&s.plazaAuction.effect&&targets.length){const sum=targets.reduce((n,p)=>n+auctionDemand(s,p.sku),0);let roll=g.random(s)*sum;target=targets.find(p=>(roll-=auctionDemand(s,p.sku))<0)||targets.at(-1);}s.rackDemandCursor=index+1;
+ const unique=new Map();for(const sh of shelves)if(!unique.has(sh.id)||g.available(s,sh)>g.available(s,unique.get(sh.id)))unique.set(sh.id,sh);const targets=[...unique.values()].filter(sh=>g.available(s,sh)>0||g.data.catalog.find(c=>c.sku===sh.sku)?.lootOnly),index=s.rackDemandCursor||0;let target=targets.length?targets[index%targets.length]:null;if(s.plazaAuction?.day===s.day&&s.plazaAuction.effect&&targets.length){const offers=shelves.filter(p=>g.available(s,p)>0||g.data.catalog.find(c=>c.sku===p.sku)?.lootOnly),counts=new Map();for(const p of offers)counts.set(p.id,(counts.get(p.id)||0)+1);const weight=p=>auctionDemand(s,p.sku)/counts.get(p.id),sum=offers.reduce((n,p)=>n+weight(p),0);let roll=g.random(s)*sum;target=offers.find(p=>(roll-=weight(p))<0)||targets.at(-1);}s.rackDemandCursor=index+1;
  const product=g.data.catalog.find(c=>c.sku===target?.sku),ctype=product?.category==='weapon'?'adventurer':pickCustomerType(g,s),cb=customerBudget(g,ctype),personality=['commoner','adventurer','mage','rich'].indexOf(ctype)*2+(g.random(s)<.5?0:1),pool=g.data.hirePool.filter(h=>!h.recruitOnly),sp=pool[Math.floor(g.random(s)*pool.length)];
  const price=target?Math.round(s.prices[target.sku]*shelfDefinition(target).premium):0;
  const c={id:`c-${++s.serial}`,name:CUSTOMER_TYPES[ctype].name,customerType:ctype,visitorId,variant:g.random(s)<.5?'m':'f',personality,spiritId:sp?.spiritId||sp?.id,...ENTRANCE,arrivalRemaining:arrived?0:5,state:'Enter',path:[],basket:[],budget:Math.max(cb.min+Math.floor(g.random(s)*(cb.max-cb.min)),Math.ceil(price*1.25)),patience:45,timer:0,wait:0,visited:[],memory:s.memories[personality]||null,plannedShelfId:target?.id,wantedSku:product?.sku,wantedCategory:product?.category};

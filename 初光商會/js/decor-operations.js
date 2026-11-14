@@ -1,7 +1,7 @@
-import {wallItemWidth} from './architecture-reservations.js?v=20261114-v57';
-import {resolveDecorPlacement,specialDecorPose,WALL_TYPES,PLANT_TYPES,floorFootprint,floorInBounds} from './decor-zones.js?v=20261114-v57';
-import {decorTypes,decorForLevel,decorDefinition,decorLimit,obstacles} from './decorations.js?v=20261114-v57';
-import {isLayoutValid,walkable,findPath,ENTRANCE,dimensions} from './nav.js?v=20261114-v57';
+import {wallItemWidth} from './architecture-reservations.js?v=20261114-v57r2';
+import {resolveDecorPlacement,specialDecorPose,WALL_TYPES,PLANT_TYPES,floorFootprint,floorInBounds} from './decor-zones.js?v=20261114-v57r2';
+import {decorTypes,decorForLevel,decorDefinition,decorLimit,obstacles} from './decorations.js?v=20261114-v57r2';
+import {isLayoutValid,walkable,findPath,ENTRANCE,dimensions} from './nav.js?v=20261114-v57r2';
 const check=(v,m)=>{if(!v)throw Error(m)};
 export function validateDecorLayout(g,s){const specials=(s.decorations||[]).filter(d=>d.mount||d.garden);for(const d of specials){const pose=specialDecorPose(d,s.level);check(pose&&Math.hypot(d.x-pose.x,d.z-pose.z)<.001&&(d.mount?WALL_TYPES.has(d.type):PLANT_TYPES.has(d.type)),'請選可用牆面或門口花園位置');for(const other of specials)if(other.id!==d.id&&((d.mount&&other.mount&&d.mount.split('-')[0]===other.mount.split('-')[0])||(d.garden&&other.garden)))check(Math.hypot(d.x-other.x,d.z-other.z)>=(d.mount?(wallItemWidth(d.type)+wallItemWidth(other.type))/2+.08:1),'裝飾位置已被占用，請選旁邊空位');}for(const d of s.decorations||[])check(!WALL_TYPES.has(d.type)||!!d.mount,'牆面家具必須掛在可用牆面');const all=obstacles(s),floor=(s.decorations||[]).filter(d=>decorDefinition(d)?.ground);for(let i=0;i<floor.length;i++){const d=floor[i];check(floorInBounds(d,s.level),'地毯僅能放在店門入口區域，且不可超出地板');for(let j=i+1;j<floor.length;j++){const a=floorFootprint(d),b=floorFootprint(floor[j]);check(Math.abs(d.x-floor[j].x)>=(a.w+b.w)/2||Math.abs(d.z-floor[j].z)>=(a.d+b.d)/2,'地毯不能互相重疊');}}check(isLayoutValid(all,s.level),'裝潢重疊或阻擋通路');check(g.actors(s).every(a=>walkable(a,all,s.level)),'裝潢與角色重疊');if(s.forge)check(findPath(ENTRANCE,s.forge.station,all,s.level)!==null,'裝潢阻擋鍛造通路');}
 export function decorAction(g,s,type,p){if(!['purchaseDecor','placeDecor','moveDecor','storeDecor','sellDecor'].includes(type))return null;

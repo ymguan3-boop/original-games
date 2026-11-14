@@ -1,5 +1,5 @@
-import {shelfTypes,accepts} from './furniture.js?v=20261114-v57';
-import {decorTypes} from './decorations.js?v=20261114-v57';
+import {shelfTypes,accepts} from './furniture.js?v=20261114-v57r2';
+import {decorTypes} from './decorations.js?v=20261114-v57r2';
 /* Only actionable work or unseen unlocks light the build shortcut. Stored furniture is intentional. */
 export function buildNotice(g,s,seen=[]){
  if(s.layoutPause)return {kind:'resume',page:'build',message:'布置已暫停營業：完成後按「恢復營業」。'};

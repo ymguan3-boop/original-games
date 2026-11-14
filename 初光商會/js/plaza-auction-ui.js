@@ -1,4 +1,4 @@
-import{auctionState,auctionProducts,AUCTION_RULES}from'./plaza-auction.js?v=20261114-v57';
+import{auctionState,auctionProducts,AUCTION_RULES}from'./plaza-auction.js?v=20261114-v57r2';
 export function installPlazaAuction({game,toast,onOpen=()=>{}}){
  const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('../plaza-auction.css',import.meta.url).href;document.head.append(style);
  const dialog=document.createElement('dialog');dialog.className='plaza-auction';dialog.setAttribute('aria-label','廣場競價大戰');document.body.append(dialog);

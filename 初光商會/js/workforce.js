@@ -1,4 +1,4 @@
-import {preferredJob} from './management.js?v=20261114-v57';
+import {preferredJob} from './management.js?v=20261114-v57r2';
 export const RELIEF_RULES={threshold:100,ready:100,interval:0,restCooldown:0,busyFatigue:.12,restRecovery:1/60};
 export function recoverResting(g,s,realSeconds){if(!Number.isFinite(realSeconds)||realSeconds<=0)return;for(const e of s.employees)if(e.role==='standby'){e.fatigue=Math.max(0,e.fatigue-realSeconds/60);e.efficiency=g.efficiency(e);}}
 export function replaceExhausted(g,s,id,replacementId){const old=s.employees.find(e=>e.id===id);if(!old||old.role==='standby'||old.fatigue<100)throw Error('這位員工尚未累到需要替換。');
