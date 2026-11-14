@@ -1,12 +1,12 @@
-import{shelfApproach}from'./nav.js?v=20261114-v45';
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v45';
-import {decorEffects,obstacles} from './decorations.js?v=20261114-v45';
-import {purchaseChance} from './economy-v2.js?v=20261114-v45';
-import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261114-v45';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261114-v45';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261114-v45';
-import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261114-v45';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261114-v45';
+import{shelfApproach}from'./nav.js?v=20261114-v46';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v46';
+import {decorEffects,obstacles} from './decorations.js?v=20261114-v46';
+import {purchaseChance} from './economy-v2.js?v=20261114-v46';
+import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261114-v46';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261114-v46';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261114-v46';
+import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261114-v46';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261114-v46';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}

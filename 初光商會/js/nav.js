@@ -1,4 +1,4 @@
-import{occupiedCells}from'./placement-footprint.js?v=20261114-v45';
+import{occupiedCells}from'./placement-footprint.js?v=20261114-v46';
 export const ENTRANCE={x:1,z:5}, CHECKOUT={x:6,z:3}, WAREHOUSE={x:2,z:3};
 // Conservative occupied cells include the real furniture silhouette plus actor clearance.
 export const FIXED_CELLS=['5,2','6,2','7,2'];

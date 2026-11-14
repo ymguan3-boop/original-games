@@ -1,6 +1,6 @@
-import {dailyTasks,managementAction} from './management.js?v=20261114-v45';
-import {activeCommissions,commissionProgress,commissionAction} from './commissions.js?v=20261114-v45';
-import {chapterObjectives,awardSideChapter} from './shop-chapters.js?v=20261114-v45';
+import {dailyTasks,managementAction} from './management.js?v=20261114-v46';
+import {activeCommissions,commissionProgress,commissionAction} from './commissions.js?v=20261114-v46';
+import {chapterObjectives,awardSideChapter} from './shop-chapters.js?v=20261114-v46';
 /* 各分類目前可領幾項，任務頁的標示與一鍵領取按鈕都用這個 */
 export function pendingRewards(g,s){
  const quests=g.questList(s).filter(q=>q.done&&!s.quests[q.id]).length,daily=dailyTasks(g,s),dailyN=quests+daily.tasks.filter(q=>q.done&&!q.claimed).length+(!daily.bonus&&daily.tasks.every(q=>q.claimed)?1:0);

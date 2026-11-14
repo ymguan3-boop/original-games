@@ -1,5 +1,5 @@
 /* Count only supplied foreground business time. No Date.now/offline catch-up or speed multiplier. */
-import {comicEventEligible} from './funny-events.js?v=20261114-v45';
+import {comicEventEligible} from './funny-events.js?v=20261114-v46';
 export const BUSINESS_EVENT_SECONDS=180;
 export function realBusinessClock(s){if(!s.realEventClock||s.realEventClock.day!==s.day){s.realEventClock={day:s.day,elapsed:s.realEventClock?.elapsed||0,serial:s.realEventClock?.serial||0};if(s.fortuneOpportunity?.status==='pending')s.fortuneOpportunity.status='expired';}return s.realEventClock;}
 export function tickRealEvents(g,s,seconds,closing=false){

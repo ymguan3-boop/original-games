@@ -115,3 +115,7 @@ html body #hub :is(.hub-action,.hub-card).has-notice:after{content:'';position:a
 #shop-goal.upgrade-ready:before{content:'可升級 · 點我';display:block;color:#39712e;font-weight:800;font-size:10px;line-height:1.15}
 #patrol-rack-hint{position:fixed;left:50%;transform:translateX(-50%);z-index:18;width:max-content;max-width:calc(100vw - 24px);padding:8px 12px;background:#fff8e9ed;border:1.5px solid #59432f;border-radius:12px;color:#49331f;font-size:12px;pointer-events:none;box-shadow:0 3px 8px #35261430}
 .exhausted-label{display:block;color:#a93329;font-size:11px!important;white-space:normal}
+
+/* Unlock notice follows the bottom shortcut bar, and leaves every modal unobscured. */
+html body #shop-notice{top:auto!important;left:auto!important;right:12px!important;bottom:var(--shop-notice-bottom,84px)!important;transform:none!important;width:max-content;max-width:min(240px,calc(100vw - 24px));font-size:11px;line-height:1.5;padding:8px 10px;box-shadow:0 3px 9px #65432322;z-index:25}
+body.hub-open #shop-notice,body:has(dialog[open]) #shop-notice,body:has(#manager-dialogue:not([hidden])) #shop-notice{display:none!important}

@@ -1,11 +1,11 @@
-import{addRackInk}from'./rack-ink.js?v=20261114-v45';
-import {fitFurniture} from './furniture-footprint.js?v=20261114-v45';
-import {createTierModel,createOrbTrim} from './tier-models.js?v=20261114-v45';
-import {addRackPlaque} from './rack-plaque.js?v=20261114-v45';
-import {shelfKind,shelfDefinition,shelfModel} from './furniture.js?v=20261114-v45';
-import {decorDefinition} from './decorations.js?v=20261114-v45';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261114-v45';
-import {createSphericalOrbRuntime} from './orb-spherical-runtime-v2.js?v=20261114-v45';
+import{addRackInk}from'./rack-ink.js?v=20261114-v46';
+import {fitFurniture} from './furniture-footprint.js?v=20261114-v46';
+import {createTierModel,createOrbTrim} from './tier-models.js?v=20261114-v46';
+import {addRackPlaque} from './rack-plaque.js?v=20261114-v46';
+import {shelfKind,shelfDefinition,shelfModel} from './furniture.js?v=20261114-v46';
+import {decorDefinition} from './decorations.js?v=20261114-v46';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261114-v46';
+import {createSphericalOrbRuntime} from './orb-spherical-runtime-v2.js?v=20261114-v46';
 export function createShelfView({T,assets,level=1,sh,box,onReady,onError}){
  const tier=sh.tier||level,decoration=!!sh.decoration,type=decoration?sh.type:shelfKind(sh),definition=decoration?decorDefinition({...sh,tier}):shelfDefinition({...sh,tier}),kind=(decoration?'decor:':'')+type+':lv'+tier,root=new T.Group(),products=new T.Group();root.add(products);
  const h=definition.height||definition.top+.25,hit=box(definition.footprintWidth||.98,h,decoration&&definition.wall?.16:.98,new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),0,h/2,0,root);hit.userData.ownedMaterial=true;hit.userData.pick={type:'shelf',id:sh.id};const view={root,products,kind,hit,sku:null,tints:[],alive:true};

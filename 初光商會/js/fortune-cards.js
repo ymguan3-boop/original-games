@@ -1,6 +1,6 @@
 /* 命運／機會卡：主管收銀時可決定本次營業機會是否抽卡，結果在交易中鎖定。
  * 結果由 applyFortune 在存檔交易內套用；畫面只負責翻牌。 */
-import {ENTRANCE} from './nav.js?v=20261114-v45';
+import {ENTRANCE} from './nav.js?v=20261114-v46';
 
 export const FORTUNE=[
  {id:'tip',deck:'機會',icon:'💰',title:'客人塞小費',text:'等到的客人心情大好，多給了小費。',gold:200,weight:5},
