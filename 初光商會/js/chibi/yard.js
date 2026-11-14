@@ -1,8 +1,8 @@
-import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261114-v51';
+import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261114-v57';
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
 import {addIllustratedOutline} from '../illustrated-outline.js?v=20261111-decor-v22';
-import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261114-v51';
+import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261114-v57';
 const THREE=globalThis.THREE;
 
 const STEP_D=.36;
@@ -192,6 +192,8 @@ export function buildYard(level,opts={}){
  if(level===5){const c=mk(new THREE.BoxGeometry(1.4,.03,zR-1.3-zS),toon(0xb5201a),DX,G+.07,(zS+zR-1.3)/2,root);c.userData.noLine=true;c.castShadow=false;}
 
  const sideX=half+1.2,across=zR+1.3;
+ let rival=null;if(level>=3){const x=level===3?3.7:level===5?4:4.7,z=across+2.7,stand=stall(props,x,z);stand.name='金幣商販競價地攤';stand.userData.pick={type:'rivalStall',id:'plaza'};rival={root:stand,x,z,crowd:[],coins:[]};for(let i=0;i<7;i++){const c=C(.065,.065,.025,0xffd34f,x,1,z,props,10,false);c.visible=false;c.raycast=()=>{};rival.coins.push(c);}const merchant=person({seed:61,shirt:0xb53d32,pants:0x725039,hair:0x36251c,hat:0xbc3c30,skin:0xffd0a0});merchant.g.position.set(x,G,z+.7);merchant.g.rotation.y=Math.PI;merchant.g.userData.pick={type:'rivalStall',id:'plaza'};props.add(merchant.g);rival.merchant=merchant;S(.15,0xbe9653,.18,.42,.16,merchant.body,1,.9,.65);C(.085,.085,.025,0xeac14d,.18,.47,.29,merchant.body,12);const paddle=B(.045,.35,.04,0x8a542c,0,-.13,.08,merchant.arms[1].hand);S(.13,0xeac895,0,-.32,.08,merchant.arms[1].hand,1,1,.15);aBoard(props,x-1.45,z+.65,0,'廣場競價');for(let i=0;i<3;i++){const a=person({seed:211+i});a.g.position.set(x-1.25+i*1.2,G,z-1.4);props.add(a.g);rival.crowd.push(a);anim.push(t=>a.pose(.016,false));}rival.triangles=0;stand.traverse(o=>{if(o.isMesh)rival.triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;});}
+
  if(level===1){
   fence(props,-half-.6,zF-1.8,-half-.6,zR-1.6,{color:0x9a7a5a,broken:true});fence(props,half+.6,zF-.5,half+.6,zR-1.8,{color:0x9a7a5a,broken:true});
   stump(props,-half-1.5,zF-2.6);deadTree(props,half+2,-d/2+.3);barrel(props,half+.95,zF+.5,1,true);crate(props,-half-1.2,zF+1.2,.45,.5);
@@ -217,8 +219,8 @@ export function buildYard(level,opts={}){
   aBoard(props,DX-pw/2-.7,zS+.5,.35,level>=4?'新品上架':'今日特價');
   barrel(props,-half-1.1,zF-.6);crate(props,-half-1.1,zF+.3,.5,.3,[0xf25a3a,0x8ac24a]);sack(props,-half-1.6,zF);
  }
- if(level===3){well(props,-4.8,across+3.2);stall(props,4.6,across+3.3);crate(props,6.2,across+3,.45,.2,[0xf7c840]);}
- if(level===4){fountain(props,0,across+3.8,1.5,anim);stall(props,-5.6,across+3.4,{c1:0x3f6fb8});stall(props,5.6,across+3.4,{c1:0xd94a3a,goods:[0xb07ad8,0x5ab8b0,0xf7c840]});
+ if(level===3){well(props,-4.8,across+3.2);crate(props,6.2,across+3,.45,.2,[0xf7c840]);}
+ if(level===4){fountain(props,0,across+3.8,1.5,anim);stall(props,-5.6,across+3.4,{c1:0x3f6fb8});
   for(const s of[-1,1])lampPost(props,s*3,across+1,{gold:true});cart(props,-9.5,across+2.5,.4);
   for(let i=0;i<8;i++)bush(props,-half-.6,zF-3+i*.75,.75);for(let i=0;i<8;i++)bush(props,half+.6,zF-3+i*.75,.75);
   const cols=[0xc22d1c,0xf2c040,0x3f6fb8,0xfffaf0];for(const s of[-1,1])bunting(props,new THREE.Vector3(s*half,G+(-G)+H+.1,zF+.1),new THREE.Vector3(s*(half+.3),G+2.5,zR-1.75),cols);bunting(props,new THREE.Vector3(-3,G+2.5,across+1),new THREE.Vector3(3,G+2.5,across+1),cols);}
@@ -264,7 +266,7 @@ export function buildYard(level,opts={}){
  const v=new THREE.Vector3();
  const dressedPeople=[],exposedBattles=[];root.traverse(o=>{const p=weatherPeople.get(o);if(p&&!p.weatherExposed)dressedPeople.push(p);const b=weatherBattles.get(o);if(b)exposedBattles.push(b);});
  const weatherPoint=new THREE.Vector3();
- function update(dt,t,weather='sunny'){
+ function update(dt,t,weather='sunny'){if(rival){const p=rival.merchant;p.pose(dt,false);p.arms[0].sh.rotation.z=-.12;p.arms[1].sh.rotation.z=.12;p.head.rotation.x=0;p.arms[1].sh.rotation.x=-1.3+Math.sin(t*2)*.2;p.head.rotation.y=Math.sin(t*.6)*.14;const r=opts.auctionVisual?.().result;if(r&&r.id!==rival.resultId){rival.resultId=r.id;rival.resultAt=t;rival.won=r.won;}const u=t-(rival.resultAt??-100),celebrate=u<4;if(celebrate){p.arms[0].sh.rotation.z=rival.won?-.15:-1.2;p.arms[1].sh.rotation.z=rival.won?.3:1.2;p.head.rotation.x=rival.won?.25:0;}for(let i=0;i<rival.coins.length;i++){const c=rival.coins[i];c.visible=celebrate;if(celebrate){const k=(u*.7+i*.13)%1;c.position.set(rival.x+Math.sin(i*2.4)*k,1.3+k*1.4,rival.z+Math.cos(i*2.4)*k);c.rotation.z=t*3+i;}}for(let i=0;i<rival.crowd.length;i++){const a=rival.crowd[i],toward=celebrate?(rival.won?-Math.min(2,u)*1.6:Math.min(.5,u)*.4):0;a.g.position.z=rival.z-1.4+toward;a.g.rotation.y=rival.won&&celebrate?Math.PI:0;a.pose(dt,celebrate);}}
   for(const f of anim)f(t);
   for(const p of people){
    if(p.delay>0){p.delay-=dt;if(p.delay<=0){spawnRoute(p,p.shopper);p.g.visible=true;}continue;}
@@ -303,7 +305,7 @@ export function buildYard(level,opts={}){
   for(const p of [...people,...(ambient?[]:[staff]),...idlers])if(p.bub){p.bubT-=dt;p.bub.material.opacity=Math.min(1,p.bubT*3);if(p.bubT<=0){p.g.remove(p.bub);p.bub=null;}}
  }
  root.userData={level,lineMats:props.userData.lineMats,camZ:(zR+(level>=3?[0,0,0,6,7.5,9][level]:2))/2-.6,extent:Y.roadHalf};
- return {root,update,people,staff,greet(id,converted){const p=people.find(p=>p.visitorId===id&&p.g.visible);if(!p)return; say(p,converted?'好啊，去看看！':'謝謝招呼！',2);p.talk=1.2;if(converted){p.invited=true;p.wait=0;p.route=[{x:DX,z:zS+.25},{x:DX,z:zF+.25}];}},dispose(){root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(roadMaps.has(m?.map)){roadMaps.delete(m.map);m.map.dispose();}});for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
+ return {root,update,people,staff,rival,greet(id,converted){const p=people.find(p=>p.visitorId===id&&p.g.visible);if(!p)return; p.talk=1.2;if(converted){p.invited=true;p.wait=0;p.route=[{x:DX,z:zS+.25},{x:DX,z:zF+.25}];}},dispose(){root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(roadMaps.has(m?.map)){roadMaps.delete(m.map);m.map.dispose();}});for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
 }
 
 /* 商會用的主角：同一套 Q 版畫風（黑髮、藍外套、黃色背帶與背包），提供商會角色控制介面 */

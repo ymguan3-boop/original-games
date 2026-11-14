@@ -1,28 +1,28 @@
-import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261114-v51';
-import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261114-v51';
-import {hasDecorModel} from './decor-models-v22.js?v=20261114-v51';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261114-v51';
-import {promoterHireCost} from './shop-entry-rules.js?v=20261114-v51';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261114-v51';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261114-v51';
-import {clockText} from './shop-clock.js?v=20261114-v51';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261114-v51';
-import {pendingRewards} from './reward-collection.js?v=20261114-v51';
+import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261114-v57';
+import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261114-v57';
+import {hasDecorModel} from './decor-models-v22.js?v=20261114-v57';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261114-v57';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261114-v57';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261114-v57';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261114-v57';
+import {clockText} from './shop-clock.js?v=20261114-v57';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261114-v57';
+import {pendingRewards} from './reward-collection.js?v=20261114-v57';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
 import {WEAPONS} from '../../幻靈奇旅/survivors/js/inventory.js?v=20261030-reaper-v2';
-import {spiritPortrait} from './spirit-cards.js?v=20261114-v51';
-import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261114-v51';
-import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261114-v51';
-import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261114-v51';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261114-v51';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261114-v51';
-import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261114-v51';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261114-v51';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261114-v51';
-import {requiresManagerPatrol} from './event-routing.js?v=20261114-v51';
-import {eventEmployee} from './patrol-events.js?v=20261114-v51';
-import {ledgerPanel} from './ledger-panel.js?v=20261114-v51';
+import {spiritPortrait} from './spirit-cards.js?v=20261114-v57';
+import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261114-v57';
+import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261114-v57';
+import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261114-v57';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261114-v57';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261114-v57';
+import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261114-v57';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261114-v57';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261114-v57';
+import {requiresManagerPatrol} from './event-routing.js?v=20261114-v57';
+import {eventEmployee} from './patrol-events.js?v=20261114-v57';
+import {ledgerPanel} from './ledger-panel.js?v=20261114-v57';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -105,7 +105,7 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   shop(){return {title:`Lv.${s().level} ${esc(d.levels[s().level-1].name)}`,note:`第 ${s().day} 天 · 滿意度 ${Math.round(s().satisfaction)}`,actions:[['升級商會',()=>push('upgrade')],['主管巡查',()=>{close();getScene().setMode('follow');}],['返回初光鎮',leave],['更多',()=>push('more')]]};},
   upgrade(){const c=chapterObjectives(s(),d.levels),next=d.levels[s().level];if(!next)return {title:'已達最高等級',note:'商會已是傳說。'};return {title:`升級到 Lv.${next.level} ${esc(next.name)}`,note:`費用 ${money(next.cost)}。達標後可自行選擇打烊並升級，也可以留在目前等級繼續營業。`,cards:c.goals.map(g=>({key:g.id,done:g.done,status:g.done?'complete':'pending',html:`<b>${esc(g.title)}</b><small>${Math.floor(Math.min(g.value,g.target))}/${g.target}</small>`})),actions:[[c.canConstruct?'打烊並升級':'升級條件尚未達成',()=>push('upgradeConfirm'),true,!c.canConstruct,c.canConstruct]]};},
   upgradeConfirm(){const c=chapterObjectives(s(),d.levels),level=s().level,refund=upgradeRefund(s());return {title:'確認打烊並升級',note:`將回收所有本級貨架、家具與裝飾，包含已購買未擺放者，共 ${refund.count} 件，按各件購入價半價返還 ${money(refund.gold)}。<br>架上商品退回倉庫，員工保留。另支付升級費 ${money(c.cost)}，確認後立即升級，不倒數。`,actions:[['確認回收並升級',()=>{const r=act('upgrade',{confirm:true,expectedLevel:level});if(r.ok){close();getScene().setMode('play');}},true,!c.canConstruct],['暫不升級，繼續遊玩',close]]};},
-  more(){return {title:'更多',actions:[['營業帳本',()=>push('ledger')],['商會成就',()=>push('achievements')],['時間與設定',()=>push('settings')]]};},
+  more(){return {title:'更多',cards:s().level>=3?[{html:'<b>廣場競價大戰</b><small>金幣商販 · 每日一局 · 可贏額外訂單</small>',tap:settings.openAuction}]:[],actions:[['營業帳本',()=>push('ledger')],['商會成就',()=>push('achievements')],['時間與設定',()=>push('settings')]]};},
   ledger(){return {title:'營業帳本',html:ledgerPanel(game,esc,money,()=>'')};},
   achievements(){return {title:'商會成就',cards:game.questList(s()).map(q=>({key:q.id,done:!!s().quests[q.id],status:rewardState(q.done,!!s().quests[q.id]),html:`<b>${esc(q.name)}</b><small>${s().quests[q.id]?'已領取':q.done?'可領取':'進行中'} · ${money(q.reward)}</small>`,tap:()=>{if(q.done&&!s().quests[q.id]){act('claimQuest',{id:q.id});render();}}}))};},
   settings(){return {title:'時間與設定',note:'每次操作都會自動存檔。',html:`<label class="hub-field">音樂音量 <input type="range" id="bgm-volume" min="0" max="100" step="5" value="${settings.volume()}"></label><label class="hub-field">畫質 <select id="quality">${[['low','省電'],['medium','標準'],['high','精緻']].map(([v,n])=>`<option value="${v}" ${settings.quality()===v?'selected':''}>${n}</option>`).join('')}</select></label>${settings.is2D()?'<div class="hub-field">畫面模式：2D <button type="button" class="hub-action" id="view-switch">切換 3D</button></div>':'<div class="hub-field"><label for="view-code">切換 2D</label><input id="view-code" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="輸入代碼"><button type="button" class="hub-action" id="view-switch">切換 2D</button></div>'}`,actions:[[s().paused?'繼續營業':'暫停',()=>{act('pause');render();}],[`速度 ${s().speed||1}×`,()=>{act('speed',{value:s().speed===2?1:2});render();}],['存檔備份',()=>push('system')]]};},

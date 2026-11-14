@@ -12,4 +12,4 @@ export const TIER_DESIGNS=[null,
  {name:'天曜神話',wood:0xf1e5c7,dark:0xa48a64,panel:0xc4e0d9,trim:0xe9c975,accent:0x77c9c9,shape:'celestial',motif:'sun'}];
 export const tierNumber=n=>Math.max(1,Math.min(10,Math.floor(Number(n)||1)));
 export function tierDefinition(base,tier){const n=tierNumber(tier),theme=TIER_DESIGNS[n],delta=Math.max(0,n-base.level),capacity=base.capacity?base.capacity+delta*(base.id==='materials'?4:3):undefined;return {...base,tier:n,baseName:base.name,name:`${theme.name}・${base.name}`,cost:Math.round(base.cost*(1+delta*.18)),...(capacity?{capacity,premium:Math.round((base.premium+delta*.025)*1000)/1000,columns:base.columns||5,depth:base.depth||3,spacing:(base.top-.46)/Math.max(1,Math.ceil(capacity/((base.columns||5)*(base.depth||3)))-1)}:{})};}
-export const tierThumb=(group,type,tier,state='full')=>`./assets/tier-v43/lv${tierNumber(tier)}/${group}-${type}${group==='rack'?'-'+state:''}.webp?v=20261114-v51`;
+export const tierThumb=(group,type,tier,state='full')=>`./assets/tier-v43/lv${tierNumber(tier)}/${group}-${type}${group==='rack'?'-'+state:''}.webp?v=20261114-v57`;

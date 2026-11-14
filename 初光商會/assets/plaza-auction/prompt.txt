@@ -1,0 +1,5 @@
+Tool: built-in image_gen__imagegen
+transparent_background: true
+Output: exec-d2da0072-674e-44ab-8060-be495ed95e94.png
+
+Create ONE isolated game asset: charming isometric fantasy market auction stall, camera 45 degree facing front-left. Red and ivory striped cloth canopy with scalloped edge, detailed honey oak wood joinery counter, coin pouch, merchandise baskets, crates, small flowers, blank hanging price board. Behind counter one cute 2.5-heads-tall male merchant short dark hair, red cap and red vest brown trousers, waving a small wooden bidding paddle. Cozy hand-painted cel shaded mobile game low-poly look, crisp thin dark brown-black contour lines, readable at small scale, warm sunny colors. Entire stall and merchant fully within canvas, no ground plane no background no text no watermark, transparent background. Single cohesive stall sprite for 2D game; do not create a contact sheet.

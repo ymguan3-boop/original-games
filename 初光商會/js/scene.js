@@ -1,41 +1,41 @@
-import{addRackInk}from'./rack-ink.js?v=20261114-v51';
-import{createPlacementGuide}from'./placement-guide.js?v=20261114-v51';
-import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261114-v51';
-import{footprintCenter,occupiedCells,footprintSize}from'./placement-footprint.js?v=20261114-v51';
-import {createTierModel,createOrbTrim} from './tier-models.js?v=20261114-v51';
-import {fitFurniture} from './furniture-footprint.js?v=20261114-v51';
-import {stockState} from './shop-interactions.js?v=20261114-v51';
-import {fortuneAvailable} from './fortune-cards.js?v=20261114-v51';
-import {createWeatherOutfit,weatherOutfitKind} from './weather-outfits.js?v=20261114-v51';
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261114-v51';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261114-v51';
-import {createChaseCelebration} from './chase-celebration.js?v=20261114-v51';
-import {buildOutdoor} from './outdoor-3d.js?v=20261114-v51';
-import {environment} from './environment.js?v=20261114-v51';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261114-v51';
-import {addProductEdges} from './product-outlines.js?v=20261114-v51';
-import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261114-v51';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261114-v51';
-import {decorateInterior} from './interior-v5.js?v=20261114-v51';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261114-v51';
-import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261114-v51';
-import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261114-v51';
+import{addRackInk}from'./rack-ink.js?v=20261114-v57';
+import{createPlacementGuide}from'./placement-guide.js?v=20261114-v57';
+import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261114-v57';
+import{footprintCenter,occupiedCells,footprintSize}from'./placement-footprint.js?v=20261114-v57';
+import {createTierModel,createOrbTrim} from './tier-models.js?v=20261114-v57';
+import {fitFurniture} from './furniture-footprint.js?v=20261114-v57';
+import {stockState} from './shop-interactions.js?v=20261114-v57';
+import {fortuneAvailable} from './fortune-cards.js?v=20261114-v57';
+import {createWeatherOutfit,weatherOutfitKind} from './weather-outfits.js?v=20261114-v57';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261114-v57';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261114-v57';
+import {createChaseCelebration} from './chase-celebration.js?v=20261114-v57';
+import {buildOutdoor} from './outdoor-3d.js?v=20261114-v57';
+import {environment} from './environment.js?v=20261114-v57';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261114-v57';
+import {addProductEdges} from './product-outlines.js?v=20261114-v57';
+import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261114-v57';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261114-v57';
+import {decorateInterior} from './interior-v5.js?v=20261114-v57';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261114-v57';
+import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261114-v57';
+import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261114-v57';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
 /* 店內幻靈員工：比原本大 1.3 倍；外框跟 Q 版店面一樣是深咖啡色、只描外輪廓 */
 /* 宣傳員走動：在門前院子隨機選點，直線路徑上不能碰到擺設與建築 */
 const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,greetCool:0,area:null};
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261114-v51';
-import {createAssets} from './asset-resolver.js?v=20261114-v51';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261114-v51';
-import {sampleTrail,turnToward} from './motion.js?v=20261114-v51';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261114-v51';
-import {eventEmployee} from './patrol-events.js?v=20261114-v51';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261114-v51';
-import {createPlacementCells} from './placement-cells.js?v=20261114-v51';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261114-v51';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261114-v51';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261114-v57';
+import {createAssets} from './asset-resolver.js?v=20261114-v57';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261114-v57';
+import {sampleTrail,turnToward} from './motion.js?v=20261114-v57';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261114-v57';
+import {eventEmployee} from './patrol-events.js?v=20261114-v57';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261114-v57';
+import {createPlacementCells} from './placement-cells.js?v=20261114-v57';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261114-v57';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261114-v57';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
@@ -66,7 +66,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
  if(CHIBI){/* 新版店面：門面朝 +z（鏡頭那側），大門在正面牆中央 */
   const cz=(depth-1)/2,cx=(width-1)/2,opts={w:width,d:depth,doorX:ENTRANCE.x-cx,ground:-.07,ambient:true,onPasserArrive:id=>{if(!game.state.customers.some(c=>c.visitorId===id))game.act('arrivePasser',{visitorId:id});return game.state.customers.some(c=>c.visitorId===id);}};
   const frame=new T.Group();frame.name='Q版店面';frame.position.set(cx,0,cz);
-  chibiShell=buildShell(level,opts);frontFade=1;frame.add(chibiShell,buildGround());yard=buildYard(level,{...opts,gardenArea:{cx:Math.round(cx)-cx,minX:-.1-cx,maxX:width-.9-cx,minZ:depth+1.1-cz,maxZ:depth+2.9-cz},reserved:gardenSlots(level).map(p=>({x:p.x-cx,z:p.z-cz,r:1.35}))});frame.add(yard.root);tune(frame);metrics.outdoorDoorZ=cz+yardLayout(level,opts).zF-.08;outdoorYardDispose=()=>yard.dispose?.();
+  chibiShell=buildShell(level,opts);frontFade=1;frame.add(chibiShell,buildGround());yard=buildYard(level,{...opts,auctionVisual:()=>({result:state().plazaAuction?.day===state().day?state().plazaAuction?.result:null}),gardenArea:{cx:Math.round(cx)-cx,minX:-.1-cx,maxX:width-.9-cx,minZ:depth+1.1-cz,maxZ:depth+2.9-cz},reserved:gardenSlots(level).map(p=>({x:p.x-cx,z:p.z-cz,r:1.35}))});frame.add(yard.root);tune(frame);metrics.outdoorDoorZ=cz+yardLayout(level,opts).zF-.08;outdoorYardDispose=()=>yard.dispose?.();
 
   outdoor=new T.Group();outdoor.add(frame);views={outside:{x:cx,z:cz+yard.root.userData.camZ,distance:Math.max(18,(width+6)*2-(Math.min(level,5)-1)*1.5),pitch:.98},inside:{x:cx,z:cz-.2+(level===1?2.3:0),distance:Math.max(24,(width+1)/(2*Math.tan(39*Math.PI/360)*Math.max(.4,innerWidth/innerHeight))/Math.min(1.5,.72/(innerWidth/innerHeight))),pitch:1.2}};applyView();let last=0;outdoor.userData.tick=t=>{const dt=Math.min(.1,Math.max(0,t-last));last=t;yard.update(dt,t,environment(state(),game.data.config).weather);};
   frame.traverse(o=>{if(o.isMesh)o.userData.noOutline=true;});building.add(outdoor);
@@ -174,7 +174,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
  celebration.update(chasePose(time-chaseStarted),actorViews.get('manager')?.root.position);if(cashierChair)cashierChair.visible=[...actorViews.values()].some(a=>!!a.root.userData.cashierPose);metrics.cashiers={};for(const e of s.employees){const a=actorViews.get(e.id);if(!a||e.role!=='cashier')continue;const pose=a.root.userData.cashierPose;metrics.cashiers[e.id]={kind:pose?'seated':'standing',chair:!!pose,collecting:s.customers.some(c=>c.state==='Checkout'),...pose};}metrics.contactShadows=0;for(const a of actorViews.values()){if(a.contactShadow){a.contactShadow.position.set(a.root.position.x,.058,a.root.position.z);a.contactShadow.visible=a.root.visible;metrics.contactShadows++;}}metrics.actorGround={};for(const [key,a]of actorViews)metrics.actorGround[key]={y:a.root.position.y,groundOffset:a.root.userData.groundOffset||0,base:a.root.position.y-(a.root.userData.groundOffset||0)};const active=new Set(all.map(a=>a[0]));for(const [key,a]of actorViews)if(!active.has(key)){scene.remove(a.root);if(a.contactShadow)scene.remove(a.contactShadow);if(a.flyer){scene.remove(a.flyer);a.flyer.geometry.dispose();a.flyer.material.dispose();}a.feedback?.dispose();a.weatherOutfit?.dispose();a.dispose();releaseTree(a.root);actorViews.delete(key);}ring.visible=mode==='follow';if(s.manager&&mode==='follow'){ring.position.x=actorViews.get('manager')?.root.position.x??s.manager.x;ring.position.z=actorViews.get('manager')?.root.position.z??s.manager.z;const ix=document.querySelector('dialog[open]')?0:joystick.x+(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0),iy=document.querySelector('dialog[open]')?0:joystick.y+(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);game.setManagerInput(Math.cos(yaw)*ix+Math.sin(yaw)*iy,-Math.sin(yaw)*ix+Math.cos(yaw)*iy);}
  if(mode==='follow'&&s.manager){target.lerp(new T.Vector3(actorViews.get('manager')?.root.position.x??s.manager.x,1,actorViews.get('manager')?.root.position.z??s.manager.z),Math.min(1,dt*6));}
  const fitFactor=camera.aspect<1?Math.min(1.5,.72/camera.aspect):1;const viewDistance=mode==='follow'?followDistance:(distance+(Math.min(s.level,5)-1)*1.5)*fitFactor,viewPitch=mode==='follow'?.48:pitch;camera.position.set(target.x+Math.sin(yaw)*Math.cos(viewPitch)*viewDistance,target.y+Math.sin(viewPitch)*viewDistance,target.z+Math.cos(yaw)*Math.cos(viewPitch)*viewDistance);camera.lookAt(target);
- metrics.passers=(yard?.people||[]).filter(p=>p.g.visible).map(p=>{const w=p.g.getWorldPosition(new T.Vector3()),screen=w.clone().add(new T.Vector3(0,.8,0)).project(camera),r=canvas.getBoundingClientRect();return {id:p.visitorId,x:w.x,z:w.z,screenX:r.left+(screen.x+1)*r.width/2,screenY:r.top+(1-screen.y)*r.height/2};});
+ if(yard?.rival){const w=yard.rival.root.getWorldPosition(new T.Vector3()),p=w.clone().add(new T.Vector3(0,1,0)).project(camera),r=canvas.getBoundingClientRect();metrics.rival={screenX:r.left+(p.x+1)*r.width/2,screenY:r.top+(1-p.y)*r.height/2,triangles:yard.rival.triangles};}else metrics.rival=null;metrics.passers=(yard?.people||[]).filter(p=>p.g.visible).map(p=>{const w=p.g.getWorldPosition(new T.Vector3()),screen=w.clone().add(new T.Vector3(0,.8,0)).project(camera),r=canvas.getBoundingClientRect();return {id:p.visitorId,x:w.x,z:w.z,screenX:r.left+(screen.x+1)*r.width/2,screenY:r.top+(1-screen.y)*r.height/2};});
  const screenPositions=new Map();const screenRect=canvasRect||(canvasRect=canvas.getBoundingClientRect());
  for(const [id] of all){const actor=actorViews.get(id);if(!actor)continue;
   const height=actor.root.userData.visualHeight||.8;
@@ -210,7 +210,7 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
  function zoomView(scale,delta=0){if(mode==='follow')followDistance=Math.max(4.5,Math.min(16,followDistance*scale+delta));else distance=Math.max(8,Math.min(85,distance*scale+delta));}
  function getTouchGesture(){const points=[...activeTouches.values()].slice(0,2);if(points.length<2)return null;const dx=points[0].x-points[1].x,dy=points[0].y-points[1].y;return {distance:Math.max(8,Math.hypot(dx,dy)),x:(points[0].x+points[1].x)/2,y:(points[0].y+points[1].y)/2};}
  function locate(e,item=placement||drag){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(pointer,camera);plane.constant=WALL_TYPES.has(item?.type)?-.88:0;return ray.ray.intersectPlane(plane,point);}
- function pick(e){locate(e);const objects=[...pickables,...[...actorViews.values()].map(a=>a.root),...(yard?.people||[]).filter(p=>p.g.visible).map(p=>p.g)];for(const hit of ray.intersectObjects(objects,true)){let o=hit.object;while(o&&!o.userData.pick)o=o.parent;if(o?.userData.pick)return o.userData.pick;}return null;}
+ function pick(e){locate(e);const objects=[...pickables,...[...actorViews.values()].map(a=>a.root),...(yard?.people||[]).filter(p=>p.g.visible).map(p=>p.g),...(yard?.rival?[yard.rival.root,yard.rival.merchant.g]:[])];for(const hit of ray.intersectObjects(objects,true)){let o=hit.object;while(o&&!o.userData.pick)o=o.parent;if(o?.userData.pick)return o.userData.pick;}return null;}
  function thisModeDecorate(){mode='decorate';game.setManagerActive(false);grid.visible=true;metrics.mode=mode;onModeChange(mode);}
  function pointerDown(e){canvas.setPointerCapture(e.pointerId);if(e.pointerType==='touch'){activeTouches.set(e.pointerId,{x:e.clientX,y:e.clientY});if(activeTouches.size>=2){gesture=cameraLocked()?null:getTouchGesture();down=null;drag=null;return;}}if(placement){down={placing:true,pointerType:e.pointerType};const p=locate(e);if(p){Object.assign(placement,placementPoint(placement,p));refreshPlacement();}return;}down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,button:e.button,shift:e.shiftKey};const found=pick(e);if(found?.type==='shelf'&&!(state().phase==='open'&&!state().layoutPause)){if(selectedShelf!==found.id){down.shelfCandidate=found.id;return;}if((state().phase==='open'&&!state().layoutPause)){selectShelf(found.id,true);down.lockOnly=true;return;}thisModeDecorate();selectShelf(found.id,true);const sh=furniture().find(s=>s.id===found.id),p=locate(e,sh);drag={...sh,moved:false,offsetX:sh.x-p.x,offsetZ:sh.z-p.z};}}
 

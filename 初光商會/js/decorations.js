@@ -1,4 +1,4 @@
-import {tierDefinition} from './tier-designs.js?v=20261114-v51';
+import {tierDefinition} from './tier-designs.js?v=20261114-v57';
 export const decorTypes=[
  {id:'lantern',name:'守夜工藝立燈',group:'decor',level:4,cost:320,height:1.25,description:'柔和燈光・顧客耐心 +4 秒',effect:{patience:4}},
  {id:'crystal-art',name:'晶礦收藏雕塑',group:'decor',level:7,cost:850,height:1.15,description:'收藏藝術・成交價 +3%',effect:{premium:.03}},

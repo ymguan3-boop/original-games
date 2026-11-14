@@ -1,0 +1,18 @@
+{
+  "id": "plaza-auction-v57",
+  "profile": "low-poly",
+  "baseline": "approved mobile armory pilot js/armory-pilot-v41.js and existing chibi/yard.js person rig",
+  "budgets": {"stallTrianglesMax": 12000, "spritePixelsMax": 640, "spriteBytesMax": 150000},
+  "measured": {"stallTriangles": 10868, "webpBytes": 105540},
+  "runtime3D": "procedural Three.js stall plus existing articulated person with red hat/vest, paddle and pouch; three audience actors; seven reusable coin meshes",
+  "runtime2D": "stall.webp plus existing customer GIFs and native CSS animation",
+  "generatedBy": "built-in image_gen__imagegen; IMAGEN unavailable",
+  "generatedSource": "stall.png",
+  "runtimeSprite": "stall.webp",
+  "originalOutput": "exec-d2da0072-674e-44ab-8060-be495ed95e94.png",
+  "technicalStatus": "PASS_LOCAL_2D_3D",
+  "artStatus": "NEW_PILOT_READY_FOR_PLAYER_REVIEW",
+  "installations": [],
+  "external3DServices": [],
+  "notes": "No GLB claimed. One representative asset, no unapproved character batch. Existing mobile profile and character hierarchy retained. No memory or player-save reset."
+}

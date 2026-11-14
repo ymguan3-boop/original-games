@@ -1,6 +1,6 @@
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v51';
-import {shelfDefinition} from './furniture.js?v=20261114-v51';
-import {decorDefinition} from './decorations.js?v=20261114-v51';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v57';
+import {shelfDefinition} from './furniture.js?v=20261114-v57';
+import {decorDefinition} from './decorations.js?v=20261114-v57';
 /* Five self-contained shop chapters. Main objectives gate automatic construction.
  * Side quests grant optional gold but never silently bypass the original level fee. */
 const LEVELS={
