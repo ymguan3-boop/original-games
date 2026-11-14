@@ -1,6 +1,6 @@
-import {artisanArmory} from './armory-pilot-v41.js?v=20261114-v46';
+import {artisanArmory} from './armory-pilot-v41.js?v=20261114-v47';
 /* 高階貨架的程序模型：層板對齊 productSlot 的商品高度，每座貨架併成單一網格，等級越高零件越講究。 */
-import {builder,armoryRack} from './product-models.js?v=20261114-v46';
+import {builder,armoryRack} from './product-models.js?v=20261114-v47';
 import {limitedRack} from './limited-rack-v45.js?v=20261111-v45';
 const cache=new Map();
 function shapes(T){return{box:new T.BoxGeometry(1,1,1),cyl:new T.CylinderGeometry(1,1,1,14),hex:new T.CylinderGeometry(1,1,1,6),ball:new T.SphereGeometry(1,12,9),cone:new T.ConeGeometry(1,1,8),gem:new T.OctahedronGeometry(1,0),dome:new T.SphereGeometry(1,16,8,0,Math.PI*2,0,Math.PI/2),ring:new T.TorusGeometry(1,.1,8,28),arc:new T.TorusGeometry(1,.13,8,24,Math.PI*1.25)};}

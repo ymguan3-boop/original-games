@@ -1,9 +1,9 @@
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v46';
-import {canStartTutorial} from './shop-entry-rules.js?v=20261114-v46';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v47';
+import {canStartTutorial} from './shop-entry-rules.js?v=20261114-v47';
 /* 簡化經營規則：四職務、在班名額、專屬被動、自動工作、每日任務與舊存檔遷移。
  * 所有數值都放在 data/management.json，這裡只有規則。 */
-import {shelfCapacity,accepts} from './furniture.js?v=20261114-v46';
-import {applyFortune} from './fortune-cards.js?v=20261114-v46';
+import {shelfCapacity,accepts} from './furniture.js?v=20261114-v47';
+import {applyFortune} from './fortune-cards.js?v=20261114-v47';
 export const WORK_JOBS=['stocker','host','cleaner'];
 const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner',cashier:'host'};
 export const legacyRole=r=>LEGACY_ROLES[r]||r;
@@ -32,7 +32,7 @@ export function managementAction(g,s,type,p){
  if(type==='lockAssignment'){const e=s.employees.find(x=>x.id===p.employeeId);assert(e,'找不到員工');e.lockedAssignment=!e.lockedAssignment;s.autoStaffAt=0;return e.lockedAssignment?'已關閉自動分配，職務固定不動':'已開啟自動分配：人手不足時會自動替補';}
  if(type==='setDragonTask'){assert(s.employees.some(e=>e.spiritId===m.dragon.spiritId),'需要水蛟龍王');const task=m.dragon.tasks.find(t=>t.id===p.id);assert(task&&task.level<=s.level,'任務尚未解鎖');s.dragonTask=task.id;return `水蛟龍王開始「${task.name}」`;}
  if(type==='setLayoutPause'){s.layoutPause=!!p.value;for(const a of [...s.employees,...s.customers])a.path=[];return s.layoutPause?'布置模式：商店暫停':'繼續營業';}
- if(type==='setShelfGoods'){const sh=s.shelves.find(x=>x.id===p.shelfId),c=g.data.catalog.find(x=>x.sku===p.sku);assert(sh&&c&&c.unlockStoreLevel<=s.level&&accepts(sh,c),'這座貨架不能賣這項商品');assert(!s.customers.some(x=>x.basket.some(b=>b.shelfId===sh.id)),'顧客正在選購，請稍候');if(isMaterialTray(sh)){g.autoStock(s,sh);return '左右各半固定販售鐵礦與木材，已檢查兩側補貨';}if(sh.sku!==c.sku){s.inventory[sh.sku]+=sh.stock;sh.stock=0;sh.sku=c.sku;}g.autoStock(s,sh);return `改賣 ${c.displayName}`;}
+ if(type==='setShelfGoods'){const sh=s.shelves.find(x=>x.id===p.shelfId),c=g.data.catalog.find(x=>x.sku===p.sku);assert(sh&&c&&c.unlockStoreLevel<=s.level&&accepts(sh,c),'這座貨架不能賣這項商品');assert(!s.customers.some(x=>x.basket.some(b=>b.shelfId===sh.id)),'顧客正在選購，請稍候');if(isMaterialTray(sh)){g.autoStock(s,sh);return '左右各半固定販售鐵礦與木材，已檢查兩側補貨';}if(sh.sku!==c.sku){if(sh.offerSkus){sh.stockBySku??={};sh.stockBySku[sh.sku]=sh.stock;sh.stock=sh.stockBySku[c.sku]||0;delete sh.stockBySku[c.sku];sh.sku=c.sku;}else{s.inventory[sh.sku]+=sh.stock;sh.stock=0;sh.sku=c.sku;}}g.autoStock(s,sh);return `改賣 ${c.displayName}`;}
  if(type==='tutorial'){s.tutorialState=p.done?{...s.tutorialState,step:'done',done:true}:{...s.tutorialState,...(p.patch||{})};return '教學進度已保存';}
  return null;
 }

@@ -1,29 +1,29 @@
-import{trayOffers}from'./material-tray.js?v=20261114-v46';
-import{footprintCenter,occupiedCells}from'./placement-footprint.js?v=20261114-v46';
-import {tierThumb} from './tier-designs.js?v=20261114-v46';
-import {stockState} from './shop-interactions.js?v=20261114-v46';
-import {fortuneAvailable} from './fortune-cards.js?v=20261114-v46';
+import{trayOffers}from'./material-tray.js?v=20261114-v47';
+import{footprintCenter,occupiedCells}from'./placement-footprint.js?v=20261114-v47';
+import {tierThumb} from './tier-designs.js?v=20261114-v47';
+import {stockState} from './shop-interactions.js?v=20261114-v47';
+import {fortuneAvailable} from './fortune-cards.js?v=20261114-v47';
 import {createYardBattle2D} from './yard-battle-2d.js';
-import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261114-v46';
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261114-v46';
-import {hasDecorModel} from './decor-models-v22.js?v=20261114-v46';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261114-v46';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261114-v46';
+import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261114-v47';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261114-v47';
+import {hasDecorModel} from './decor-models-v22.js?v=20261114-v47';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261114-v47';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261114-v47';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261114-v46';
-import {ENTRANCE} from './nav.js?v=20261114-v46';
-import {sampleTrail} from './motion.js?v=20261114-v46';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261114-v46';
-import {eventEmployee} from './patrol-events.js?v=20261114-v46';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261114-v46';
-import {stockCount} from './shelf-products.js?v=20261114-v46';
-import {createAssets} from './asset-resolver.js?v=20261114-v46';
-import {createPlacementCells} from './placement-cells.js?v=20261114-v46';
-import {environment} from './environment.js?v=20261114-v46';
-import {createEnvironment2D} from './environment-2d.js?v=20261114-v46';
-import {spiritArtPath} from './spirit-cards.js?v=20261114-v46';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261114-v47';
+import {ENTRANCE} from './nav.js?v=20261114-v47';
+import {sampleTrail} from './motion.js?v=20261114-v47';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261114-v47';
+import {eventEmployee} from './patrol-events.js?v=20261114-v47';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261114-v47';
+import {stockCount} from './shelf-products.js?v=20261114-v47';
+import {createAssets} from './asset-resolver.js?v=20261114-v47';
+import {createPlacementCells} from './placement-cells.js?v=20261114-v47';
+import {environment} from './environment.js?v=20261114-v47';
+import {createEnvironment2D} from './environment-2d.js?v=20261114-v47';
+import {spiritArtPath} from './spirit-cards.js?v=20261114-v47';
 
 const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*2.2,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
@@ -131,7 +131,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  /* 主管依行走方向換圖；側面圖面向右，往左時由 flip 翻轉。GIF 還沒到位時用靜態圖 */
  function setManagerImage(a,walking){const face=a.facing||'front',name=walking?'manager-'+face:face==='front'?'manager-idle':'manager-'+face+'-still';if(a.imageName===name)return;a.imageName=name;const still=name.endsWith('-still');a.img.onerror=()=>{a.img.onerror=null;a.img.src=SPRITES+(walking?name:'manager-'+face)+'.webp';};a.img.src=SPRITES+(still?'manager-'+face+'.webp':name+'.gif');a.img.onerror=still?null:a.img.onerror;}
  function updatePassers(dt){const weather=environment(state(),game.data.config).weather;while(passers.length<3){const i=passers.length,el=document.createElement('div'),img=new Image();el.className='world2d-actor world2d-passer';el.dataset.passerId=`passer-2d-${++passerSerial}`;img.src=`./assets/customers/${i%2?'adventurer-f':'commoner-m'}.gif`;el.append(img);layer.append(el);passers.push({id:el.dataset.passerId,el,x:-3+i*5,z:dim.height+5.9,speed:i%2?-.75:.75});}
- metrics.passers=passers.map(a=>({id:a.id,x:a.x,z:a.z}));for(const a of passers){a.x+=dt*a.speed;if(a.x>dim.width+4||a.x< -4){a.x=a.speed>0?-3:dim.width+3;a.id=`passer-2d-${++passerSerial}`;a.el.dataset.passerId=a.id;a.invited=false;}a.z=dim.height+5.9;const q=P(a.x,a.z),px=ACTOR_SIZE*U;a.el.style.width=px+'px';a.el.style.left=q.X-px/2+'px';a.el.style.top=q.Y-px+'px';a.el.style.zIndex=Math.round(100+(a.x+a.z)*60);a.el.style.opacity=a.invited?'.4':'1';a.el.querySelector('img').style.transform=`scaleX(${a.speed>0?1:-1})`;updateWeatherOutfit2D(a.el,{weather,appearanceKey:a.id,outdoors:true});}}
+ metrics.passers=passers.map(a=>({id:a.id,x:a.x,z:a.z}));for(const a of passers){if(a.invited){const gx=ENTRANCE.x,gz=dim.height+.15,dx=gx-a.x,dz=gz-a.z,d=Math.hypot(dx,dz),n=Math.min(d,dt*2.2);if(d>.05){a.x+=dx/d*n;a.z+=dz/d*n;}else if(game.act('arrivePasser',{visitorId:a.id}).ok){a.invited=false;a.x= -3;a.z=dim.height+5.9;a.id=`passer-2d-${++passerSerial}`;a.el.dataset.passerId=a.id;}}else a.x+=dt*a.speed;if(a.x>dim.width+4||a.x< -4){a.x=a.speed>0?-3:dim.width+3;a.id=`passer-2d-${++passerSerial}`;a.el.dataset.passerId=a.id;a.invited=false;}if(!a.invited)a.z=dim.height+5.9;const q=P(a.x,a.z),px=ACTOR_SIZE*U;a.el.style.width=px+'px';a.el.style.left=q.X-px/2+'px';a.el.style.top=q.Y-px+'px';a.el.style.zIndex=Math.round(100+(a.x+a.z)*60);a.el.style.opacity='1';a.el.querySelector('img').style.transform=`scaleX(${a.speed>0?1:-1})`;updateWeatherOutfit2D(a.el,{weather,appearanceKey:a.id,outdoors:true});}}
  function syncActors(dt){
   const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager&&(mode==='follow'||s.managerDuty!=='standby'))all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:CHECKOUT.x,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,...promoterPoint()},'promoter']);
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));

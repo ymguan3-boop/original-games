@@ -1,8 +1,9 @@
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v46';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v47';
+import{waitingAtQueue}from'./customer-health.js?v=20261114-v47';
 /* Click-to-resolve customer problems. Uses normal shop transactions; never grants a free sale. */
-import {shelfCapacity} from './furniture.js?v=20261114-v46';
-import {ENTRANCE} from './nav.js?v=20261114-v46';
-import {applyFreeEventFatigue} from './patrol-events.js?v=20261114-v46';
+import {shelfCapacity} from './furniture.js?v=20261114-v47';
+import {ENTRANCE} from './nav.js?v=20261114-v47';
+import {applyFreeEventFatigue} from './patrol-events.js?v=20261114-v47';
 const clamp=n=>Math.max(0,Math.min(100,n));
 const stockShelf=(g,s)=>salesShelves(s).find(sh=>{const product=g.data.catalog.find(p=>p.sku===sh.sku);return product&&!product.lootOnly&&product.unlockStoreLevel<=s.level&&sh.stock<shelfCapacity(sh);});
 const availableShelf=(g,s)=>salesShelves(s).find(sh=>g.available(s,sh)>0);
@@ -11,7 +12,7 @@ export function complaintKind(s,c){
  if(c.state==='OutOfStock')return 'stockout';
  if(c.state==='Angry')return /排隊|收銀|等太久/.test(c.angerReason||'')?'queue':'angry';
  if(['UnhappyExit','AbandonCart'].includes(c.state))return 'disappointed';
- if(['Queue','Checkout','Cart'].includes(c.state)&&((c.wait||0)>=Math.max(2,(c.patience||30)*.5)))return 'queue';
+ if(waitingAtQueue(c)&&((c.wait||0)>=Math.max(2,(c.patience||30)*.5)))return 'queue';
  return null;
 }
 const formats={

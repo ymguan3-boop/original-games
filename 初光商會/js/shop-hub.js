@@ -1,28 +1,28 @@
-import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261114-v46';
-import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261114-v46';
-import {hasDecorModel} from './decor-models-v22.js?v=20261114-v46';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261114-v46';
-import {promoterHireCost} from './shop-entry-rules.js?v=20261114-v46';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261114-v46';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261114-v46';
-import {clockText} from './shop-clock.js?v=20261114-v46';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261114-v46';
-import {pendingRewards} from './reward-collection.js?v=20261114-v46';
+import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261114-v47';
+import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261114-v47';
+import {hasDecorModel} from './decor-models-v22.js?v=20261114-v47';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261114-v47';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261114-v47';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261114-v47';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261114-v47';
+import {clockText} from './shop-clock.js?v=20261114-v47';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261114-v47';
+import {pendingRewards} from './reward-collection.js?v=20261114-v47';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
 import {WEAPONS} from '../../幻靈奇旅/survivors/js/inventory.js?v=20261030-reaper-v2';
-import {spiritPortrait} from './spirit-cards.js?v=20261114-v46';
-import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261114-v46';
-import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261114-v46';
-import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261114-v46';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261114-v46';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261114-v46';
-import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261114-v46';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261114-v46';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261114-v46';
-import {requiresManagerPatrol} from './event-routing.js?v=20261114-v46';
-import {eventEmployee} from './patrol-events.js?v=20261114-v46';
-import {ledgerPanel} from './ledger-panel.js?v=20261114-v46';
+import {spiritPortrait} from './spirit-cards.js?v=20261114-v47';
+import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261114-v47';
+import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261114-v47';
+import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261114-v47';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261114-v47';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261114-v47';
+import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261114-v47';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261114-v47';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261114-v47';
+import {requiresManagerPatrol} from './event-routing.js?v=20261114-v47';
+import {eventEmployee} from './patrol-events.js?v=20261114-v47';
+import {ledgerPanel} from './ledger-panel.js?v=20261114-v47';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -72,7 +72,8 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   decorStore(group){const p=pages.decor(group);return {title:`已購買、未擺放的${group==='furniture'?'家具':'裝飾'}`,note:'倉庫裡的物品免費擺放。',empty:'倉庫裡沒有這類物品。',cards:p._stored};},
   decorBuy(id){const t=decorForLevel(s().level).find(x=>x.id===id);return {purchaseCost:t.cost,title:t.name,art:decorIcon(id,s().level),note:`${t.description} · ${money(t.cost)}`,actions:[['購買並擺放',()=>{const r=act('purchaseDecor',{type:id});if(r.ok){if(s().decorations.length<decorLimit(s().level))startPlacing(id,s().lastPurchasedDecor);else back();}},true]]};},
 
-  shelfGoods(id){const sh=s().shelves.find(x=>x.id===id);if(!sh)return {title:'貨架',note:'貨架不在店內。'};if(isMaterialTray(sh))return {title:'礦木雙槽・各占一半',note:'占地 2×1 格，計為一座貨架。礦石與木材獨立販售及補貨。',cards:trayOffers(sh).map(part=>({key:part.sku,html:`${productIcon(part.sku)}<b>${esc(d.catalog.find(c=>c.sku===part.sku)?.displayName||part.sku)}</b><small>架上 ${part.stock}/${shelfCapacity(part)} · 倉庫 ${s().inventory[part.sku]||0}</small>`,tap:()=>push('product',part.sku)})),actions:[[sh.autoRestock===false?'啟用兩側自動補貨':'關閉兩側自動補貨',()=>{act('toggleAutoRestock',{shelfId:id});render();}]]};return {title:'選擇販售商品',note:`${shelfDefinition(sh).name} · 目前 ${sh.stock}/${shelfCapacity(sh)}`,cards:d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&accepts(sh,c)).map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>${c.sku===sh.sku?'販售中':'售價 '+money(s().prices[c.sku])} · 庫存 ${s().inventory[c.sku]||0}</small>`,tap:()=>{const r=act('setShelfGoods',{shelfId:id,sku:c.sku});if(r.ok)back();}}))};},
+  shelfGoods(id){const sh=s().shelves.find(x=>x.id===id);if(!sh)return {title:'貨架',note:'貨架不在店內。'};if(trayOffers(sh).length>1)return {title:isMaterialTray(sh)?'礦木雙槽・各占一半':'多商品貨架',note:'同一貨架內的商品可同時販售及補貨，共用本座貨架容量。',cards:trayOffers(sh).map(part=>({key:part.sku,html:`${productIcon(part.sku)}<b>${esc(d.catalog.find(c=>c.sku===part.sku)?.displayName||part.sku)}</b><small>架上 ${part.stock}/${shelfCapacity(part)} · 倉庫 ${s().inventory[part.sku]||0}</small>`,tap:()=>push('product',part.sku)})),actions:[...(sh.type==='apothecary'?[['其他可售商品',()=>push('shelfCatalog',id)]]:[]),[sh.autoRestock===false?'啟用整架自動補貨':'關閉整架自動補貨',()=>{act('toggleAutoRestock',{shelfId:id});render();}]]};return {title:'選擇販售商品',note:`${shelfDefinition(sh).name} · 目前 ${sh.stock}/${shelfCapacity(sh)}`,cards:d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&accepts(sh,c)).map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>${c.sku===sh.sku?'販售中':'售價 '+money(s().prices[c.sku])} · 庫存 ${s().inventory[c.sku]||0}</small>`,tap:()=>{const r=act('setShelfGoods',{shelfId:id,sku:c.sku});if(r.ok)back();}}))};},
+  shelfCatalog(id){const sh=s().shelves.find(x=>x.id===id);return {title:'新增販售商品',note:'保留治療與復甦藥；新商品會共用這座貨架的陳列空間。',cards:d.catalog.filter(c=>c.unlockStoreLevel<=s().level&&accepts(sh,c)).map(c=>({key:c.sku,html:`${productIcon(c.sku)}<b>${esc(c.displayName)}</b><small>倉庫 ${s().inventory[c.sku]||0}</small>`,tap:()=>{const result=act('setShelfGoods',{shelfId:id,sku:c.sku});if(result.ok)back();}}))};},
   staff(){const ready=s().employees.filter(e=>staffEvolutionInfo(d,e).eligible).length;return {title:'員工',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人，其餘休息中並恢復疲勞。`,actions:[['招聘',()=>push('hire'),false,false,noticeSnapshot.hireIds?.length>0],['編組與職務',()=>push('roster'),false,false,s().employees.some(e=>e.role!=='standby'&&e.fatigue>=100)],[`自動疲勞替班：${s().autoRelief?.enabled?'開啟':'關閉'}`,relief],[ready?`進化（${ready}）`:'進化',()=>push('evolve'),false,false,ready>0]]};},
   hire(){const list=d.hirePool.filter(h=>!h.evolutionOnly&&!isPromoterLineage(d,h.spiritId||h.id)&&h.level<=s().level&&!s().employees.some(e=>e.baseId===h.id));return {title:'招聘',note:'招聘過的夥伴不會再出現。',empty:'目前市場沒有新夥伴。',cards:[{key:'promoter',tutor:'promoter',html:`${(()=>{const pid=s().promoter?.id||PROMOTERS.find(p=>p.level<=s().level)?.id;return pid?spiritPortrait(spirit(pid),esc):'';})()}<b>宣傳員${s().promoter?'：'+esc(s().promoter.name):''}</b><small>${s().promoter?'點擊更換':'聘請大型幻靈當吉祥物'}</small>`,tap:()=>push('promoters')},...list.map(h=>({key:h.id,notice:noticeSnapshot.hireIds?.includes(h.id),tutor:'hire',html:`${spiritPortrait(spirit(h.spiritId||h.id),esc)}<b>${esc(h.name)}</b><small>${money(h.cost)}</small><small class="hub-passive">${esc(passiveDescription(game,{baseId:h.id,role:d.management.traits[h.id]?.preferredJob,evolutionHistory:[]}))}（擅長職務）</small>`,tap:()=>push('hireOne',h.id)}))]};},
   promoters(){const now=s().promoter;return {title:'宣傳員',note:`大型幻靈在店門外當吉祥物，不佔在班名額。打烊時有機會讓當天毛利再增加 1% 到上限。${now?`<br>目前：${esc(now.name)}`:''}`,empty:'目前沒有可聘請的宣傳員。',cards:PROMOTERS.filter(p=>p.level<=s().level).map(p=>{const sp=spirit(p.id),locked=p.level>s().level,cur=now?.id===p.id;return {key:p.id,tutor:!locked&&!cur&&!PROMOTERS.slice(0,PROMOTERS.indexOf(p)).some(q=>q.level<=s().level&&now?.id!==q.id)?'promoter-pick':undefined,html:`${spiritPortrait(sp,esc)}<b>${esc(sp?.name||p.id)}${cur?'（目前）':''}</b><small>${locked?`商會 Lv.${p.level} 解鎖`:`${promoterHireCost(s(),p)===0?'首次免費':money(p.cost)} · 最多 +${Math.round(p.maxBonus*100)}%`}</small>`,tap:()=>{if(locked)toast(`商會 Lv.${p.level} 才能聘請`,true);else if(!cur)push('promoterOne',p.id);}};})};},

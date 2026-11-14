@@ -1,6 +1,6 @@
 /* 命運／機會卡：主管收銀時可決定本次營業機會是否抽卡，結果在交易中鎖定。
  * 結果由 applyFortune 在存檔交易內套用；畫面只負責翻牌。 */
-import {ENTRANCE} from './nav.js?v=20261114-v46';
+import {ENTRANCE} from './nav.js?v=20261114-v47';
 
 export const FORTUNE=[
  {id:'tip',deck:'機會',icon:'💰',title:'客人塞小費',text:'等到的客人心情大好，多給了小費。',gold:200,weight:5},
@@ -15,7 +15,7 @@ export const FORTUNE=[
  {id:'blackout',deck:'命運',icon:'⚡',title:'停電',text:'店裡突然停電，所有顧客立刻回家，員工留店繼續工作。',queue:'leave',weight:2},
  {id:'typhoon',deck:'命運',icon:'🌀',title:'颱風來襲',text:'強風灌進店裡，所有貨架都壞了，要重新購買。上架的商品已搬回倉庫。',typhoon:true,weight:1}
 ];
-const QUEUE=['Queue','Checkout','Cart'];
+const QUEUE=['Queue','Checkout'];
 export function pickFortune(rand=Math.random){const total=FORTUNE.reduce((n,f)=>n+f.weight,0);let r=rand()*total;for(const f of FORTUNE){r-=f.weight;if(r<0)return f;}return FORTUNE[0];}
 /* 辨識排隊、收銀類客訴；安撫與主管抽卡各自處理。 */
 export function isQueueComplaint(c,reason=''){return !!c&&(/排隊|收銀|等太久|等得/.test(`${reason||''} ${c.angerReason||''}`)||QUEUE.includes(c.state)&&(c.wait||0)>=Math.max(2,(c.patience||30)*.5));}

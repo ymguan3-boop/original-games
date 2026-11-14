@@ -1,13 +1,13 @@
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v46';
-import {ENTRANCE} from './nav.js?v=20261114-v46';
-import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v46';
-import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v46';
-export function spawnShopper(g,s,{visitorId=null}={}){
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v47';
+import {ENTRANCE} from './nav.js?v=20261114-v47';
+import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v47';
+import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v47';
+export function spawnShopper(g,s,{visitorId=null,arrived=false}={}){
  const shelves=salesShelves(s).filter(sh=>g.data.catalog.some(c=>c.sku===sh.sku&&c.isSellable&&c.unlockStoreLevel<=s.level));
- const targets=shelves.filter(sh=>g.available(s,sh)>0||g.data.catalog.find(c=>c.sku===sh.sku)?.lootOnly),index=s.rackDemandCursor||0,target=targets.length?targets[index%targets.length]:null;s.rackDemandCursor=index+1;
+ const unique=new Map();for(const sh of shelves)if(!unique.has(sh.id)||g.available(s,sh)>g.available(s,unique.get(sh.id)))unique.set(sh.id,sh);const targets=[...unique.values()].filter(sh=>g.available(s,sh)>0||g.data.catalog.find(c=>c.sku===sh.sku)?.lootOnly),index=s.rackDemandCursor||0,target=targets.length?targets[index%targets.length]:null;s.rackDemandCursor=index+1;
  const product=g.data.catalog.find(c=>c.sku===target?.sku),ctype=product?.category==='weapon'?'adventurer':pickCustomerType(g,s),cb=customerBudget(g,ctype),personality=['commoner','adventurer','mage','rich'].indexOf(ctype)*2+(g.random(s)<.5?0:1),pool=g.data.hirePool.filter(h=>!h.recruitOnly),sp=pool[Math.floor(g.random(s)*pool.length)];
  const price=target?Math.round(s.prices[target.sku]*shelfDefinition(target).premium):0;
- const c={id:`c-${++s.serial}`,name:CUSTOMER_TYPES[ctype].name,customerType:ctype,visitorId,variant:g.random(s)<.5?'m':'f',personality,spiritId:sp?.spiritId||sp?.id,...ENTRANCE,arrivalRemaining:5,state:'Enter',path:[],basket:[],budget:Math.max(cb.min+Math.floor(g.random(s)*(cb.max-cb.min)),Math.ceil(price*1.25)),patience:45,timer:0,wait:0,visited:[],memory:s.memories[personality]||null,plannedShelfId:target?.id,wantedSku:product?.sku,wantedCategory:product?.category};
+ const c={id:`c-${++s.serial}`,name:CUSTOMER_TYPES[ctype].name,customerType:ctype,visitorId,variant:g.random(s)<.5?'m':'f',personality,spiritId:sp?.spiritId||sp?.id,...ENTRANCE,arrivalRemaining:arrived?0:5,state:'Enter',path:[],basket:[],budget:Math.max(cb.min+Math.floor(g.random(s)*(cb.max-cb.min)),Math.ceil(price*1.25)),patience:45,timer:0,wait:0,visited:[],memory:s.memories[personality]||null,plannedShelfId:target?.id,wantedSku:product?.sku,wantedCategory:product?.category};
  s.customers.push(c);s.stats.visitors=(s.stats.visitors||0)+1;s.stats['visitors_'+ctype]=(s.stats['visitors_'+ctype]||0)+1;return c;
 }
 export function passerAction(g,s,p){
@@ -16,10 +16,11 @@ export function passerAction(g,s,p){
  s.passerInterest??={};const old=s.passerInterest[p.visitorId];if(old?.converted)return '這位路人已答應來店看看！';
  if(old&&s.totalTime-old.at<1.5)return '路人正在回應你的招呼。';
  const desire=Math.min(1,(old?.desire||0)+.35),converted=g.random(s)<desire;
- s.passerInterest[p.visitorId]={desire,converted,at:s.totalTime};if(converted){s.invitedVisitors??=[];s.invitedVisitors.push(p.visitorId);g.log(s,'路人受到招呼，想進店逛逛！');}
+ s.passerInterest[p.visitorId]={desire,converted,at:s.totalTime};if(converted){s.invitedVisitors??=[];s.invitedVisitors.push({id:p.visitorId,ready:false});g.log(s,'路人受到招呼，想進店逛逛！');}
  const keys=Object.keys(s.passerInterest);if(keys.length>120)for(const key of keys.slice(0,keys.length-100))delete s.passerInterest[key];
  return converted?'路人：好啊，我進店看看！':`路人來店意願提升至 ${Math.round(desire*100)}%`;
 }
+export function passerArrival(g,s,id){const visit=s.invitedVisitors?.find(v=>v.id===id);if(!visit)return '已完成進店';visit.ready=true;if(s.phase==='open'&&s.customers.length<g.data.config.maxCustomers&&g.clearOfActors(s,ENTRANCE)){spawnShopper(g,s,{visitorId:id,arrived:true});s.invitedVisitors=s.invitedVisitors.filter(v=>v!==visit);}return '已加入進店顧客';}
 export function stockState(stock,capacity){return stock<=0?'sold-out':stock<=capacity/2?'half':'full';}
 export function patrolDiscovery(g,s,dt){
  if(!g.managerActive)return;s.patrolWalking=(s.patrolWalking||0)+dt;

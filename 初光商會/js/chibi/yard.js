@@ -1,8 +1,8 @@
-import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261114-v46';
+import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261114-v47';
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
 import {addIllustratedOutline} from '../illustrated-outline.js?v=20261111-decor-v22';
-import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261114-v46';
+import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261114-v47';
 const THREE=globalThis.THREE;
 
 const STEP_D=.36;
@@ -268,7 +268,7 @@ export function buildYard(level,opts={}){
   for(const f of anim)f(t);
   for(const p of people){
    if(p.delay>0){p.delay-=dt;if(p.delay<=0){spawnRoute(p,p.shopper);p.g.visible=true;}continue;}
-   if(!p.route)continue;const tg=p.route[0];if(!tg){p.g.visible=false;p.delay=1+R()*5;p.route=null;continue;}
+   if(p.invited&&p.route?.length===0){if(opts.onPasserArrive?.(p.visitorId)){p.invited=false;p.g.visible=false;p.delay=1+R()*5;p.route=null;}continue;}if(!p.route)continue;const tg=p.route[0];if(!tg){p.g.visible=false;p.delay=1+R()*5;p.route=null;continue;}
    if(p.wait>0){p.wait-=dt;p.pose(dt,false);p.head.rotation.y=Math.sin(t*1.3+p.phase)*.6;if(p.wait<=0){p.route.shift();p.head.rotation.y=0;}continue;}
    const dx=tg.x-p.g.position.x,dz=tg.z-p.g.position.z,dist=Math.hypot(dx,dz),step=p.speed*1.1*dt;
    if(dist<=step){p.g.position.x=tg.x;p.g.position.z=tg.z;if(tg.bag)p.props.bag.visible=true;if(tg.wait){p.wait=tg.wait;}else p.route.shift();}
@@ -303,7 +303,7 @@ export function buildYard(level,opts={}){
   for(const p of [...people,...(ambient?[]:[staff]),...idlers])if(p.bub){p.bubT-=dt;p.bub.material.opacity=Math.min(1,p.bubT*3);if(p.bubT<=0){p.g.remove(p.bub);p.bub=null;}}
  }
  root.userData={level,lineMats:props.userData.lineMats,camZ:(zR+(level>=3?[0,0,0,6,7.5,9][level]:2))/2-.6,extent:Y.roadHalf};
- return {root,update,people,staff,greet(id,converted){const p=people.find(p=>p.visitorId===id&&p.g.visible);if(!p)return; say(p,converted?'好啊，去看看！':'謝謝招呼！',2);p.talk=1.2;if(converted)p.route=[{x:DX,z:zS+.25},{x:DX,z:zF+.25}];},dispose(){root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(roadMaps.has(m?.map)){roadMaps.delete(m.map);m.map.dispose();}});for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
+ return {root,update,people,staff,greet(id,converted){const p=people.find(p=>p.visitorId===id&&p.g.visible);if(!p)return; say(p,converted?'好啊，去看看！':'謝謝招呼！',2);p.talk=1.2;if(converted){p.invited=true;p.wait=0;p.route=[{x:DX,z:zS+.25},{x:DX,z:zF+.25}];}},dispose(){root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(roadMaps.has(m?.map)){roadMaps.delete(m.map);m.map.dispose();}});for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
 }
 
 /* 商會用的主角：同一套 Q 版畫風（黑髮、藍外套、黃色背帶與背包），提供商會角色控制介面 */

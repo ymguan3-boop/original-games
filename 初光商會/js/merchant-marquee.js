@@ -1,0 +1,5 @@
+export function createMerchantMarquee(){
+ const root=document.createElement('aside'),text=document.createElement('span');root.id='merchant-marquee';root.setAttribute('role','status');root.setAttribute('aria-live','polite');root.hidden=true;root.append(text);document.body.append(root);
+ let seen=new Set(),pending=[],until=0,initialized=false;
+ return s=>{if(!initialized){initialized=true;seen=new Set((s.announcements||[]).map(a=>a.id));return;}for(const a of s.announcements||[])if(!seen.has(a.id)){seen.add(a.id);pending.push(a);}if(seen.size>200)seen=new Set((s.announcements||[]).map(a=>a.id));if(performance.now()<until)return;const a=pending.shift();if(!a){root.hidden=true;return;}const header=document.querySelector('header');root.style.top=Math.max(8,(header?.getBoundingClientRect().bottom||100)+5)+'px';root.hidden=false;root.dataset.kind=a.kind;text.textContent=a.text;const seconds=Math.max(9,Math.min(28,a.text.length*.18));root.style.setProperty('--marquee-seconds',seconds+'s');text.style.animation='none';void text.offsetWidth;text.style.animation='';until=performance.now()+seconds*1000;};
+}

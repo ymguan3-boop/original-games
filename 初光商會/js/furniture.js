@@ -1,4 +1,4 @@
-import {tierDefinition} from './tier-designs.js?v=20261114-v46';
+import {tierDefinition} from './tier-designs.js?v=20261114-v47';
 export const shelfTypes=[
  {id:'apothecary',name:'草木藥櫃',description:'藥水、補給道具、星露果與小型採集素材',sku:'potion',color:'#70a48b',level:1,cost:160,capacity:30,premium:1,top:1.46},
  {id:'orbs',name:'星藍靈核櫃',description:'球形展示櫃・各式靈核球',sku:'ball-basic',color:'#648fc6',level:1,cost:160,capacity:30,premium:1,top:1.44,productLayout:'orb-v3',productMaxSize:.09},
@@ -12,7 +12,7 @@ export const shelfTypes=[
 export function shelfKind(shelf){return shelf.type&&shelf.type!=='general'?shelf.type:/^ball-/.test(shelf.sku)?'orbs':/^shop-|berry|stone/.test(shelf.sku)?'materials':/sword|knife|blade|guns/.test(shelf.sku)?'armory':'apothecary';}
 export const shelfDefinition=sh=>{const base=shelfTypes.find(t=>t.id===shelfKind(sh))||shelfTypes[0];return sh.tier?tierDefinition(base,sh.tier):base;};
 export const shelvesForLevel=level=>shelfTypes.filter(t=>t.level<=level).map(t=>tierDefinition(t,level));
-export const shelfCapacity=sh=>{const capacity=sh.type&&sh.type!=='general'?shelfDefinition(sh).capacity:30;return sh.materialCompartment?Math.floor(capacity/2):capacity;};
+export const shelfCapacity=sh=>{const capacity=sh.type&&sh.type!=='general'?shelfDefinition(sh).capacity:30;return sh.materialCompartment?Math.floor(capacity/2):sh.offerCompartment?Math.max(0,capacity-(sh.otherStock||0)):capacity;};
 export const shelfLimit=level=>4+Math.max(1,Math.floor(Number(level)||1))*2;
 export const isLimitedWeapon=item=>item?.category==='weapon'&&(['elite','boss'].includes(item.merchantGrade)||/-merchant-(elite|boss)$/.test(item.sku));
 export const ownsUniqueShelf=(s,type)=>[...(s.shelves||[]),...(s.shelfStorage||[])].some(sh=>shelfKind(sh)===type);

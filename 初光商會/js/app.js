@@ -1,35 +1,37 @@
-import {shopNotices} from './shop-notices.js?v=20261114-v46';
+import{createMerchantMarquee}from'./merchant-marquee.js?v=20261114-v47';
+const syncMarquee=createMerchantMarquee();
+import {shopNotices} from './shop-notices.js?v=20261114-v47';
 import {restoreMerchantGuest,carryMerchantGuest} from '../../幻靈奇旅/survivors/js/merchant-guest.js?v=20261111-meadow-v2';
 restoreMerchantGuest();
-import {MEADOW_KEY} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261114-v46';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261114-v46';
-import {openingBlocker} from './shop-entry-rules.js?v=20261114-v46';
-import {resetMerchantRelease,resetMerchantOnly} from './save-reset.js?v=20261114-v46';
-import {createLoadingGate} from './loading-gate.js?v=20261114-v46';
-import {showChaseSuccess} from './chase-celebration.js?v=20261114-v46';
-import {environment} from './environment.js?v=20261114-v46';
-import {activeEvent} from './economy-v2.js?v=20261114-v46';
-import {chapterObjectives} from './shop-chapters.js?v=20261114-v46';
-import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261114-v46';
-import {showLevelUp} from './levelup.js?v=20261114-v46';
-import {installShopNavigation} from './shop-navigation.js?v=20261114-v46';
-import {showZhaocaiNote} from './zhaocai-note.js?v=20261114-v46';
-import {installShopMusic} from './shop-music.js?v=20261114-v46';
-import {createActorVisuals} from './actor-visuals.js?v=20261114-v46';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261114-v46';
-import {loadSpiritCards} from './spirit-cards.js?v=20261114-v46';
-import {createGame} from './core.js?v=20261114-v46';
-import {createStaffOverlay} from './staff-overlay.js?v=20261114-v46';
-import {installPatrolControls} from './patrol-controls.js?v=20261114-v46';
-import {playEvolution3D} from './evolution-3d.js?v=20261114-v46';
-import {createScene} from './scene.js?v=20261114-v46';
-import {createScene2D} from './scene-2d.js?v=20261114-v46';
-import {createHub} from './shop-hub.js?v=20261114-v46';
-import {showManagerDialogue} from './manager-dialogue.js?v=20261114-v46';
-import {dailyTasks} from './management.js?v=20261114-v46';
-import {shelfTypes,accepts as shelfAccepts} from './furniture.js?v=20261114-v46';
-import {decorTypes} from './decorations.js?v=20261114-v46';
-import {buildNotice} from './build-notices.js?v=20261114-v46';
+import {MEADOW_KEY} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261114-v47';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261114-v47';
+import {openingBlocker} from './shop-entry-rules.js?v=20261114-v47';
+import {resetMerchantRelease,resetMerchantOnly} from './save-reset.js?v=20261114-v47';
+import {createLoadingGate} from './loading-gate.js?v=20261114-v47';
+import {showChaseSuccess} from './chase-celebration.js?v=20261114-v47';
+import {environment} from './environment.js?v=20261114-v47';
+import {activeEvent} from './economy-v2.js?v=20261114-v47';
+import {chapterObjectives} from './shop-chapters.js?v=20261114-v47';
+import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261114-v47';
+import {showLevelUp} from './levelup.js?v=20261114-v47';
+import {installShopNavigation} from './shop-navigation.js?v=20261114-v47';
+import {showZhaocaiNote} from './zhaocai-note.js?v=20261114-v47';
+import {installShopMusic} from './shop-music.js?v=20261114-v47';
+import {createActorVisuals} from './actor-visuals.js?v=20261114-v47';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261114-v47';
+import {loadSpiritCards} from './spirit-cards.js?v=20261114-v47';
+import {createGame} from './core.js?v=20261114-v47';
+import {createStaffOverlay} from './staff-overlay.js?v=20261114-v47';
+import {installPatrolControls} from './patrol-controls.js?v=20261114-v47';
+import {playEvolution3D} from './evolution-3d.js?v=20261114-v47';
+import {createScene} from './scene.js?v=20261114-v47';
+import {createScene2D} from './scene-2d.js?v=20261114-v47';
+import {createHub} from './shop-hub.js?v=20261114-v47';
+import {showManagerDialogue} from './manager-dialogue.js?v=20261114-v47';
+import {dailyTasks} from './management.js?v=20261114-v47';
+import {shelfTypes,accepts as shelfAccepts} from './furniture.js?v=20261114-v47';
+import {decorTypes} from './decorations.js?v=20261114-v47';
+import {buildNotice} from './build-notices.js?v=20261114-v47';
 /* 新解鎖在實際查看該分類後記為已讀；可執行提醒保留到完成。 */
 const SEEN_KEY='firstlight-shop-seen-v1',readSeen=()=>{try{return JSON.parse(localStorage.getItem(SEEN_KEY))||{};}catch{return {};}},seenNotice=readSeen();
 const hireable=(g,s)=>g.data.hirePool.filter(h=>!h.evolutionOnly&&!isPromoterLineage(g.data,h.spiritId||h.id)&&h.level<=s.level&&!s.employees.some(e=>e.baseId===h.id)).map(h=>h.id);
@@ -40,7 +42,7 @@ function markSeen(page,arg){if(!game)return;const s=game.state;let ids=[];
  if(page==='decorShop')ids=decorTypes.filter(t=>t.group===arg&&t.level<=s.level).map(t=>t.id);
  if(ids.length)seenNotice.build=[...new Set([...(seenNotice.build||[]),...ids])];
  try{localStorage.setItem(SEEN_KEY,JSON.stringify(seenNotice));}catch{}}
-import {installWindowControls} from './window-controls.js?v=20261114-v46';
+import {installWindowControls} from './window-controls.js?v=20261114-v47';
 /* 2D 測試：在設定輸入代碼後切換並記住；本機開發可用 ?shopDev=1&view=2d 直接進入 */
 const VIEW_KEY='firstlight-shop-view',VIEW_CODE='741216',viewParams=new URLSearchParams(location.search),readView=()=>{try{return localStorage.getItem(VIEW_KEY);}catch{return null;}},view2d=viewParams.get('view')==='2d'&&viewParams.has('shopDev')&&['localhost','127.0.0.1'].includes(location.hostname)||readView()==='2d';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -70,7 +72,7 @@ function syncNotices(s){{const ev=activeEvent(s),key=ev?ev.id+ev.startDay:null;i
  const chase=s.customerChaseResult;if(chase&&seenChase!==chase.id){seenChase=chase.id;if(chase.success){showChaseSuccess(chase);showManagerDialogue('追上顧客了！謝謝你願意再給我們一次機會。',{duration:4200});scene?.playChaseSuccess?.();}else showZhaocaiNote('追客失敗了……');}
  const toolbar=document.querySelector('nav.toolbar'),toolbarRect=toolbar?.getBoundingClientRect();if(toolbarRect?.height)document.documentElement.style.setProperty('--shop-notice-bottom',Math.max(12,innerHeight-toolbarRect.top+10)+'px');const build=buildNotice(game,s,seenNotice.buildTier===s.level?seenNotice.build:[]),notice=$('#shop-notice');notice.hidden=(!s.event&&!build)||s.patrolFocus||hub?.isOpen;if(!notice.hidden)notice.textContent=s.event?`⚠ ${s.event.title}：按「任務」處理`:`📌 ${build.message}`;
 }
-function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncNotices(s);setTimeout(weaponGuide,0);
+function renderHUD(){if(!game)return;syncPatrolSolved();const s=game.state;syncMarquee(s);syncNotices(s);setTimeout(weaponGuide,0);
  let hint=$('#patrol-rack-hint');if(!hint){hint=document.createElement('div');hint.id='patrol-rack-hint';hint.setAttribute('role','status');document.body.append(hint);}const rack=s.patrolShelf;hint.hidden=!(game.managerActive&&rack);if(!hint.hidden){const product=game.data.catalog.find(c=>c.sku===rack.sku);hint.textContent=`${rack.name} · ${product?.displayName||'商品'} ${rack.stock}/${rack.capacity}`;hint.style.top=(document.querySelector('.topbar').getBoundingClientRect().bottom+8)+'px';}
  $('#gold').innerHTML=`${fmt(s.gold)} <em>G</em>`;$('#level-name').textContent=`Lv.${s.level} ${game.data.levels[s.level-1]?.name||''}`;
  {const info=chapterObjectives(s,game.data.levels),pct=upgradeProgress(info);$('#shop-goal').classList.toggle('upgrade-ready',info.ready&&!info.last);$('#shop-goal').setAttribute('aria-label',info.ready&&!info.last?'可升級，點擊打烊並升級':'查看商會升級目標');$('#hud-progress').textContent=s.upgradeProject?`🔨 ${Math.ceil(s.upgradeProject.remaining)}秒`:info.last?'★ 最高級':`▲ ${pct}%`;$('#hud-progress').classList.toggle('ready',info.ready&&!s.upgradeProject);$('#goal-fill').style.width=pct+'%';const next=info.goals.find(g=>!g.done);$('#goal-next').textContent=s.upgradeProject?'施工升級中':next?`${next.title} ${Math.floor(Math.min(next.value,next.target))}/${next.target}`:info.last?'已達最高級':'目標已完成';{const env=environment(s,game.data.config);$('#hud-clock').textContent=`${env.weatherInfo.icon}${env.season.name} ${clockText(s,game.data.config)} ${clockLabel(s,game.data.config)}`;$('#hud-clock').title=`${env.season.name}季・${env.weatherInfo.name}`;}if(s.phase==='report'&&reportShownDay!==s.day&&hub&&!hub.isOpen){reportShownDay=s.day;hub.open('report');}}$('#upgrade-status').hidden=!s.upgradeProject;if(s.upgradeProject)$('#upgrade-status').textContent=`施工至 Lv.${s.upgradeProject.to} · ${Math.ceil(s.upgradeProject.remaining)} 秒`;
