@@ -1,8 +1,8 @@
-import {builder} from './product-models.js?v=20261114-v57r2';
-import {artisanArmory} from './armory-pilot-v41.js?v=20261114-v57r2';
-import {TIER_DESIGNS,tierNumber} from './tier-designs.js?v=20261114-v57r2';
-import {shelfTypes} from './furniture.js?v=20261114-v57r2';
-import {decorTypes} from './decorations.js?v=20261114-v57r2';
+import {builder} from './product-models.js?v=20261114-v57r3';
+import {artisanArmory} from './armory-pilot-v41.js?v=20261114-v57r3';
+import {TIER_DESIGNS,tierNumber} from './tier-designs.js?v=20261114-v57r3';
+import {shelfTypes} from './furniture.js?v=20261114-v57r3';
+import {decorTypes} from './decorations.js?v=20261114-v57r3';
 const cache=new Map();
 export function createTierModel(T,{type,tier=1,decoration=false}={}){
  const n=tierNumber(tier),key=[type,n,decoration].join(':');if(cache.has(key))return cache.get(key);

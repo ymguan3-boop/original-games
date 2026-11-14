@@ -1,5 +1,5 @@
-import{trayOffers,prepareShelfOffers,salesShelves}from'./material-tray.js?v=20261114-v57r2';
-import{shelfCapacity}from'./furniture.js?v=20261114-v57r2';
+import{trayOffers,prepareShelfOffers,salesShelves}from'./material-tray.js?v=20261114-v57r3';
+import{shelfCapacity}from'./furniture.js?v=20261114-v57r3';
 export function broadcast(s,text,kind='stock'){
  s.announcements??=[];s.announcements.push({id:`announcement-${++s.serial}`,text,kind});s.announcements=s.announcements.slice(-20);
 }

@@ -1,4 +1,4 @@
-import{auctionState,auctionProducts,AUCTION_RULES}from'./plaza-auction.js?v=20261114-v57r2';
+import{auctionState,auctionProducts,AUCTION_RULES}from'./plaza-auction.js?v=20261114-v57r3';
 export function installPlazaAuction({game,toast,onOpen=()=>{}}){
  const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('../plaza-auction.css',import.meta.url).href;document.head.append(style);
  const dialog=document.createElement('dialog');dialog.className='plaza-auction';dialog.setAttribute('aria-label','廣場競價大戰');document.body.append(dialog);
@@ -29,7 +29,10 @@ export function installPlazaAuction({game,toast,onOpen=()=>{}}){
  dialog.addEventListener('pointerdown',e=>{if(!e.target.closest('.auction-drag')||e.target.closest('button'))return;const r=dialog.getBoundingClientRect();drag={x:e.clientX,y:e.clientY,l:r.left,t:r.top};dialog.setPointerCapture(e.pointerId);});
  dialog.addEventListener('pointermove',e=>{if(!drag)return;dialog.style.margin='0';dialog.style.left=Math.max(4,Math.min(innerWidth-dialog.offsetWidth-4,drag.l+e.clientX-drag.x))+'px';dialog.style.top=Math.max(4,Math.min(innerHeight-dialog.offsetHeight-4,drag.t+e.clientY-drag.y))+'px';});
  dialog.addEventListener('pointerup',()=>drag=null);
- return {open(){if(game.state.level<AUCTION_RULES.unlock){toast('廣場競價於 Lv.3 解鎖');return;}onOpen();game.auctionPaused=true;draft=game.state.plazaAuction?.session?.player??NaN;render();document.body.classList.add('auction-open');dialog.showModal();},close};
+ function open(){if(game.state.level<AUCTION_RULES.unlock){toast('廣場競價於 Lv.3 解鎖');return;}onOpen();game.auctionPaused=true;draft=game.state.plazaAuction?.session?.player??NaN;render();document.body.classList.add('auction-open');dialog.showModal();}
+ const shortcut=document.createElement('button');shortcut.type='button';shortcut.textContent='廣場競價';shortcut.onclick=open;document.querySelector('#quick-menu .quick-menu-items')?.append(shortcut);
+ const sync=()=>{shortcut.hidden=game.state.level<AUCTION_RULES.unlock;};game.subscribe(sync);sync();
+ return {open,close};
 }
 
 // Crisp DOM text, independent of 3D texture resolution; shared by both renderers.

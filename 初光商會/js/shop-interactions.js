@@ -1,9 +1,9 @@
-import{auctionDemand}from'./plaza-auction.js?v=20261114-v57r2';
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v57r2';
-import {ENTRANCE,walkable,findPath} from './nav.js?v=20261114-v57r2';
-import {obstacles} from './decorations.js?v=20261114-v57r2';
-import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v57r2';
-import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v57r2';
+import{auctionDemand}from'./plaza-auction.js?v=20261114-v57r3';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v57r3';
+import {ENTRANCE,walkable,findPath} from './nav.js?v=20261114-v57r3';
+import {obstacles} from './decorations.js?v=20261114-v57r3';
+import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v57r3';
+import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v57r3';
 export function spawnShopper(g,s,{visitorId=null,arrived=false}={}){
  const shelves=salesShelves(s).filter(sh=>g.data.catalog.some(c=>c.sku===sh.sku&&c.isSellable&&c.unlockStoreLevel<=s.level));
  const unique=new Map();for(const sh of shelves)if(!unique.has(sh.id)||g.available(s,sh)>g.available(s,unique.get(sh.id)))unique.set(sh.id,sh);const targets=[...unique.values()].filter(sh=>g.available(s,sh)>0||g.data.catalog.find(c=>c.sku===sh.sku)?.lootOnly),index=s.rackDemandCursor||0;let target=targets.length?targets[index%targets.length]:null;if(s.plazaAuction?.day===s.day&&s.plazaAuction.effect&&targets.length){const offers=shelves.filter(p=>g.available(s,p)>0||g.data.catalog.find(c=>c.sku===p.sku)?.lootOnly),counts=new Map();for(const p of offers)counts.set(p.id,(counts.get(p.id)||0)+1);const weight=p=>auctionDemand(s,p.sku)/counts.get(p.id),sum=offers.reduce((n,p)=>n+weight(p),0);let roll=g.random(s)*sum;target=offers.find(p=>(roll-=weight(p))<0)||targets.at(-1);}s.rackDemandCursor=index+1;

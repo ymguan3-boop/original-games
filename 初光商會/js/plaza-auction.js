@@ -1,5 +1,5 @@
-import{salesShelves}from'./material-tray.js?v=20261114-v57r2';
-import{broadcast}from'./stock-flow.js?v=20261114-v57r2';
+import{salesShelves}from'./material-tray.js?v=20261114-v57r3';
+import{broadcast}from'./stock-flow.js?v=20261114-v57r3';
 
 // Shared by both views. All amounts are G; owned goods have already been paid for.
 export const AUCTION_RULES=Object.freeze({unlock:3,rounds:3,rivalTraffic:.92,trafficMin:.15,trafficMax:.30,profitMin:.10,profitMax:.30,pityStep:.10,pityCap:3,maxQty:4});

@@ -1,6 +1,6 @@
 import test from'node:test';import assert from'node:assert/strict';import fs from'node:fs';
 import{Game}from'../js/core.js';import{auctionState,auctionSupply,auctionSaleBonus,auctionTraffic,opponentBid}from'../js/plaza-auction.js';
-import{stepCustomers}from'../js/shop-operations.js';import{spawnShopper}from'../js/shop-interactions.js';import{CHECKOUT}from'../js/nav.js?v=20261114-v57r2';
+import{stepCustomers}from'../js/shop-operations.js';import{spawnShopper}from'../js/shop-interactions.js';import{CHECKOUT}from'../js/nav.js?v=20261114-v57r3';
 import{fillShelf}from'../js/stock-flow.js';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8')),data=Object.fromEntries(Object.entries({catalog:'shop-catalog',hirePool:'hire-pool',spirits:'spirits',evolution:'evolution',levels:'store-levels',config:'economy',management:'management'}).map(([k,v])=>[k,read(v)]));
 function setup(){const m=new Map(),storage={getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v)},g=new Game({storage,data});g.transaction(null,s=>{s.level=3;s.phase='open';s.shelves=[];for(const k in s.inventory)s.inventory[k]=0;s.inventory.potion=20;});return {g,storage};}

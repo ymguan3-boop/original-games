@@ -1,9 +1,9 @@
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v57r2';
-import{waitingAtQueue}from'./customer-health.js?v=20261114-v57r2';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v57r3';
+import{waitingAtQueue}from'./customer-health.js?v=20261114-v57r3';
 /* Click-to-resolve customer problems. Uses normal shop transactions; never grants a free sale. */
-import {shelfCapacity} from './furniture.js?v=20261114-v57r2';
-import {ENTRANCE} from './nav.js?v=20261114-v57r2';
-import {applyFreeEventFatigue} from './patrol-events.js?v=20261114-v57r2';
+import {shelfCapacity} from './furniture.js?v=20261114-v57r3';
+import {ENTRANCE} from './nav.js?v=20261114-v57r3';
+import {applyFreeEventFatigue} from './patrol-events.js?v=20261114-v57r3';
 const clamp=n=>Math.max(0,Math.min(100,n));
 const stockShelf=(g,s)=>salesShelves(s).find(sh=>{const product=g.data.catalog.find(p=>p.sku===sh.sku);return product&&!product.lootOnly&&product.unlockStoreLevel<=s.level&&sh.stock<shelfCapacity(sh);});
 const availableShelf=(g,s)=>salesShelves(s).find(sh=>g.available(s,sh)>0);
