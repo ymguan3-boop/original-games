@@ -1,6 +1,6 @@
-import {DOOR_CLEARANCE,ENTRANCE,CHECKOUT,promoterPoint,customerDisplayPoint} from './nav.js?v=20261114-v47';
-import {obstacles} from './decorations.js?v=20261114-v47';
-import {findPath,walkable,dimensions} from './nav.js?v=20261114-v47';
+import {DOOR_CLEARANCE,ENTRANCE,CHECKOUT,promoterPoint,customerDisplayPoint} from './nav.js?v=20261114-v48';
+import {obstacles} from './decorations.js?v=20261114-v48';
+import {findPath,walkable,dimensions} from './nav.js?v=20261114-v48';
 function routingObstacles(s){const list=obstacles(s),room=dimensions(s.level);for(let x=1;x<room.width-1;x++)for(let z=1;z<room.height-1;z++)if(!walkable({x,z},[],s.level))list.push({x,z});return list;}
 function segmentDistance(p,a,b){const dx=b.x-a.x,dz=b.z-a.z,len=dx*dx+dz*dz,t=len?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/len)):0;return Math.hypot(p.x-a.x-t*dx,p.z-a.z-t*dz);}
 export const doorwayBuffer=p=>Math.abs(p.x-ENTRANCE.x)<DOOR_CLEARANCE&&p.z>=ENTRANCE.z-1.05;

@@ -1,6 +1,6 @@
 /* 布置時地板上的可放置格子：2D 與 3D 共用同一份計算。
  * 只在擺放的物件種類或旋轉改變時重算，拖曳時不會每格每幀都跑一次。 */
-import {dimensions} from './nav.js?v=20261114-v47';
+import {dimensions} from './nav.js?v=20261114-v48';
 export function createPlacementCells(game){
  let key='',cells=[];
  return function(placement){
