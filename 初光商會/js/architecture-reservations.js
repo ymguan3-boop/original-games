@@ -1,4 +1,4 @@
-import {dimensions,buildingLevel} from './nav.js?v=20261114-v48';
+import {dimensions,buildingLevel} from './nav.js?v=20261114-v49';
 // Same centers and sizes as chibi/shell.js, including frames, curtains and sconces.
 export function wallFixtures(level){
  const l=buildingLevel(level),{width:w,height:d}=dimensions(l),door=Math.round((w-1)/2)-(w-1)/2,DW=l===1?1.05:l>=4?2.1:1.8,out=[],add=(side,u,width,kind)=>out.push({side,u,width,kind});

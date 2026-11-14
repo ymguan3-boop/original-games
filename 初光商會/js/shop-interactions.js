@@ -1,7 +1,7 @@
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v48';
-import {ENTRANCE} from './nav.js?v=20261114-v48';
-import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v48';
-import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v48';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v49';
+import {ENTRANCE} from './nav.js?v=20261114-v49';
+import {shelfDefinition,shelfCapacity} from './furniture.js?v=20261114-v49';
+import {CUSTOMER_TYPES,pickCustomerType,customerBudget} from './economy-v2.js?v=20261114-v49';
 export function spawnShopper(g,s,{visitorId=null,arrived=false}={}){
  const shelves=salesShelves(s).filter(sh=>g.data.catalog.some(c=>c.sku===sh.sku&&c.isSellable&&c.unlockStoreLevel<=s.level));
  const unique=new Map();for(const sh of shelves)if(!unique.has(sh.id)||g.available(s,sh)>g.available(s,unique.get(sh.id)))unique.set(sh.id,sh);const targets=[...unique.values()].filter(sh=>g.available(s,sh)>0||g.data.catalog.find(c=>c.sku===sh.sku)?.lootOnly),index=s.rackDemandCursor||0,target=targets.length?targets[index%targets.length]:null;s.rackDemandCursor=index+1;

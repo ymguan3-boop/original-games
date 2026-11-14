@@ -1,4 +1,4 @@
-import{occupiedCells,footprintSize}from'./placement-footprint.js?v=20261114-v48';
+import{occupiedCells,footprintSize}from'./placement-footprint.js?v=20261114-v49';
 export function createPlacementGuide(T,parent){const root=new T.Group();root.name='Placement footprint';parent.add(root);let last='';function clear(){for(const o of [...root.children]){root.remove(o);o.geometry?.dispose();o.material?.dispose();}}
  return{update(item,valid=true){root.visible=!!item&&!item.mount;if(!root.visible)return;const key=JSON.stringify([item.x,item.z,item.type,item.rotation,valid]);if(key===last)return;last=key;clear();const size=footprintSize(item),ground=item.type==='carpet',cells=ground?[{x:item.x,z:item.z}]:occupiedCells(item),a=(item.rotation||0)*Math.PI/180;
  for(const c of cells){const w=ground?size.width:1,d=ground?size.depth:1,color=valid?0xffce32:0xff3737,fill=new T.Mesh(new T.PlaneGeometry(w-.06,d-.06),new T.MeshBasicMaterial({color,transparent:true,opacity:.32,depthTest:false,depthWrite:false,side:T.DoubleSide}));fill.rotation.set(-Math.PI/2,0,ground?-a:0);fill.position.set(c.x,.115,c.z);fill.renderOrder=24;root.add(fill);

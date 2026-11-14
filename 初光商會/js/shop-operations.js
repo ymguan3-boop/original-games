@@ -1,14 +1,15 @@
-import{waitingAtQueue}from'./customer-health.js?v=20261114-v48';
-import{fillShelf,finishStockBatch,broadcast}from'./stock-flow.js?v=20261114-v48';
-import{shelfApproach}from'./nav.js?v=20261114-v48';
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v48';
-import {decorEffects,obstacles} from './decorations.js?v=20261114-v48';
-import {purchaseChance} from './economy-v2.js?v=20261114-v48';
-import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261114-v48';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261114-v48';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261114-v48';
-import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261114-v48';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261114-v48';
+import{routeToGoods,atShoppingSpot,waitInside}from'./customer-routing.js?v=20261114-v49';
+import{waitingAtQueue}from'./customer-health.js?v=20261114-v49';
+import{fillShelf,finishStockBatch,broadcast}from'./stock-flow.js?v=20261114-v49';
+import{shelfApproach}from'./nav.js?v=20261114-v49';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v49';
+import {decorEffects,obstacles} from './decorations.js?v=20261114-v49';
+import {purchaseChance} from './economy-v2.js?v=20261114-v49';
+import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261114-v49';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261114-v49';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261114-v49';
+import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261114-v49';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261114-v49';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
@@ -57,7 +58,7 @@ function pay(g,s,c,e){
 }
 export function stepCustomers(g,s,dt){
  /* 出口優先：入場動畫結束時若門內有人，先在室外等，不在同一格互相擋路。也修復舊存檔已重疊的入場顧客。 */
- for(const c of s.customers)if(c.state!=='Leave'&&!c.exitingAtDoor&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.3&&s.customers.some(o=>o!==c&&o.state==='Leave'&&!o.exitingAtDoor&&Math.hypot(o.x-ENTRANCE.x,o.z-ENTRANCE.z)<3))c.arrivalRemaining=Math.max(c.arrivalRemaining||0,.25);
+ for(const c of s.customers)if(c.arrivalRemaining>0&&c.state==='Enter'&&!c.exitingAtDoor&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.3&&s.customers.some(o=>o!==c&&o.state==='Leave'&&!o.exitingAtDoor&&Math.hypot(o.x-ENTRANCE.x,o.z-ENTRANCE.z)<3))c.arrivalRemaining=Math.max(c.arrivalRemaining||0,.25);
  const queued=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));for(const c of queued.slice(4)){c.state='Cart';c.path=[];c.queueSlot=-1;c.wait=0;const p=g.freeSpot(s,{x:2,z:4},c);g.route(s,c,p);}
  const queue=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));
  queue.forEach((c,i)=>{if(c.state==='Checkout')return;const goal={x:CHECKOUT.x,z:3+i};if(i<4&&(c.queueSlot!==i||!c.path.length&&Math.hypot(c.x-goal.x,c.z-goal.z)>.1)){c.queueSlot=i;g.route(s,c,goal);}});
@@ -71,11 +72,11 @@ export function stepCustomers(g,s,dt){
   if(c.exitingAtDoor){c.exitTravel=(c.exitTravel||0)+dt;if(c.exitTravel>=5)s.customers=s.customers.filter(x=>x.id!==c.id);continue;}
   if(c.state==='Leave'&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.25){c.exitingAtDoor=true;c.exitTravel=0;c.path=[];continue;}
   if(waitingAtQueue(c)){if(!(c.calmUntil>s.totalTime))c.wait=(c.wait||0)+dt;if(c.wait>c.patience){angry(g,s,c,cashier?'排隊等太久':'沒有收銀員服務');continue;}}
-  g.safeMove(s,c,dt*2.2,dt);if(c.path.length&&c.state==='Evaluate'&&(c.blocked||0)>=1.2){const t=s.shelves.find(sh=>sh.id===c.targetShelf);if(t&&Math.hypot(c.x-t.x,c.z-(t.z+1))<1.6){c.path=[];c.blocked=0;c.browsingNear=true;}}if(c.path.length)continue;
+  const before={x:c.x,z:c.z};g.safeMove(s,c,dt*2.2,dt);if(c.state==='Evaluate'&&c.path.length){c.browseRouteStall=Math.hypot(c.x-before.x,c.z-before.z)<.02?(c.browseRouteStall||0)+dt:0;if(c.browseRouteStall>=1.2){const target=s.shelves.find(sh=>sh.id===c.targetShelf);if(target&&atShoppingSpot(s,c,target)){c.path=[];c.blocked=0;}else if(target&&!routeToGoods(g,s,c,target)){c.path=[];c.state='Browse';c.visited=c.visited.filter(id=>id!==target.id);waitInside(g,s,c);}}}if(c.path.length)continue;
   if(c.state==='Enter'||c.state==='Browse'){
-   const desired=salesShelves(s).find(sh=>sh.id===c.plannedShelfId&&g.available(s,sh)>0)||salesShelves(s).find(sh=>sh.id===c.plannedShelfId),wanted=g.data.catalog.find(x=>x.sku===c.wantedSku);if(wanted?.lootOnly&&desired&&g.available(s,desired)<=0&&!salesShelves(s).some(sh=>g.available(s,sh)>0&&g.data.catalog.find(x=>x.sku===sh.sku)?.merchantGrade===wanted.merchantGrade)){c.weaponShortage=true;c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}const eligible=salesShelves(s).filter(sh=>g.available(s,sh)>0&&!c.visited.includes(sh.id));eligible.sort((a,b)=>{const ca=g.data.catalog.find(x=>x.sku===a.sku),cb=g.data.catalog.find(x=>x.sku===b.sku),preferred=['item','weapon','item','material','item','item','weapon','material'][c.personality];return Number(b.id===c.plannedShelfId)-Number(a.id===c.plannedShelfId)||Number(b.sku===c.wantedSku)-Number(a.sku===c.wantedSku)||Number(cb.category===preferred)-Number(ca.category===preferred);});const sh=eligible[0];if(!sh){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}c.targetShelf=sh.id;c.targetSku=sh.sku;c.visited.push(sh.id);c.state='Evaluate';c.timer=0;g.route(s,c,shelfApproach(sh));
+   const desired=salesShelves(s).find(sh=>sh.id===c.plannedShelfId&&g.available(s,sh)>0)||salesShelves(s).find(sh=>sh.id===c.plannedShelfId),wanted=g.data.catalog.find(x=>x.sku===c.wantedSku);if(wanted?.lootOnly&&desired&&g.available(s,desired)<=0&&!salesShelves(s).some(sh=>g.available(s,sh)>0&&g.data.catalog.find(x=>x.sku===sh.sku)?.merchantGrade===wanted.merchantGrade)){c.weaponShortage=true;c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}const eligible=salesShelves(s).filter(sh=>g.available(s,sh)>0&&!c.visited.includes(sh.id));eligible.sort((a,b)=>{const ca=g.data.catalog.find(x=>x.sku===a.sku),cb=g.data.catalog.find(x=>x.sku===b.sku),preferred=['item','weapon','item','material','item','item','weapon','material'][c.personality];return Number(b.id===c.plannedShelfId)-Number(a.id===c.plannedShelfId)||Number(b.sku===c.wantedSku)-Number(a.sku===c.wantedSku)||Number(cb.category===preferred)-Number(ca.category===preferred);});const sh=eligible[0];if(!sh){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}if(!routeToGoods(g,s,c,sh)){c.state='Browse';waitInside(g,s,c);continue;}c.targetShelf=sh.id;c.targetSku=sh.sku;c.visited.push(sh.id);c.state='Evaluate';c.timer=0;
   }else if(c.state==='Evaluate'&&c.timer>1){
-   const target=s.shelves.find(sh=>sh.id===c.targetShelf);const alternatives=salesShelves(s).filter(sh=>sh.id===c.targetShelf&&g.available(s,sh)>0);if(alternatives.length&&!alternatives.some(sh=>sh.sku===c.targetSku))c.targetSku=alternatives[0].sku;if(target&&!c.browsingNear&&Math.hypot(c.x-target.x,c.z-(target.z+1))>.15){g.route(s,c,{x:target.x,z:target.z+1});continue;}c.browsingNear=false;
+   const target=s.shelves.find(sh=>sh.id===c.targetShelf);const alternatives=salesShelves(s).filter(sh=>sh.id===c.targetShelf&&g.available(s,sh)>0);if(alternatives.length&&!alternatives.some(sh=>sh.sku===c.targetSku))c.targetSku=alternatives[0].sku;if(target&&!atShoppingSpot(s,c,target)){if(!routeToGoods(g,s,c,target)){c.state='Browse';c.visited=c.visited.filter(id=>id!==target.id);waitInside(g,s,c);}continue;}c.browsingNear=false;
    const sh=saleShelf(s,c.targetShelf,c.targetSku),item=g.data.catalog.find(x=>x.sku===sh?.sku),price=sh?Math.round(s.prices[sh.sku]*shelfDefinition(sh).premium*(1+decorEffects(s).premium)):0,tolerance=(c.personality===4?1.1:1.4)+(g.role(s,'host')?.3:0)+(s.buffs.sales>s.totalTime?.2:0)+(c.memory?.satisfied?.1:c.memory?-.15:0);
    if(sh&&g.available(s,sh)<=0){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.weaponShortage=!!item?.lootOnly;c.wantedSku=sh.sku;c.state='OutOfStock';c.emotion='question';c.timer=0;continue;}if(sh&&g.available(s,sh)>0&&price<=c.budget&&g.random(s)<purchaseChance(s,{type:c.customerType||'commoner',sku:sh.sku,price,ref:item.suggestedRetail*shelfDefinition(sh).premium*(1+decorEffects(s).premium)*(tolerance/1.4)})){c.basket=[{sku:sh.sku,shelfId:sh.id,qty:1,price,cost:s.averageCosts?.[sh.sku]??item.buyCost}];c.state='Cart';c.timer=0;c.wait=0;g.xp(s,g.role(s,'host'),.5);}else{c.state=c.visited.length<s.shelves.length?'Browse':'UnhappyExit';c.timer=0;}
   }else if(c.state==='Cart'){
