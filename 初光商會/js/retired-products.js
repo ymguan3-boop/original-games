@@ -10,6 +10,7 @@ export function retireProducts(s){
  if(qty>0){const refund=Math.round(qty*(s.averageCosts?.[sku]??45));s.gold+=refund;s.stats.rewards=(s.stats.rewards||0)+refund;s.log.push({day:s.day,time:s.time,text:`停售商品已回收 ${qty} 件，退還原進貨款 ${refund} G。`});}
  for(const field of ['inventory','prices','averageCosts'])if(s[field])delete s[field][sku];
  if(s.commissionBoard)s.commissionBoard.entries=s.commissionBoard.entries.filter(q=>q.sku!==sku);
+ if(s.plazaAuction)for(const field of ['session','offer','effect','result'])if(s.plazaAuction[field]?.sku===sku)s.plazaAuction[field]=null;
  for(const key of ['event','operationalEvent','rackReminder'])if(JSON.stringify(s[key]||'').includes(sku)||JSON.stringify(s[key]||'').includes('商會晶礦'))s[key]=null;
  for(const c of s.customers||[]){if(c.basket)c.basket=c.basket.filter(b=>b.sku!==sku);for(const key of ['wantedSku','targetSku','sku'])if(c[key]===sku)c[key]='shop-iron';}
  s.retiredProductsV62=true;
