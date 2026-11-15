@@ -1,5 +1,5 @@
 // Cave adapters use the same wardrobe descriptions as the town, without modifying its save.
-import '../../js/wardrobe-effects.js?v=20261115-v62';
+import '../../js/wardrobe-effects.js?v=20261115-v63';
 export const COSTUMES=globalThis.PhantomWardrobe.costumes;
 export function costumeFor(value){const id=typeof value==='string'?value:value?.costume||value?.heroCostume;return COSTUMES[id]||COSTUMES.trainer;}
 export const costumeAttack=(costume,source='hero',hero)=>source==='hero'?globalThis.PhantomWardrobe.heroAttack(costume,hero?.hp,hero?.maxHp):source==='pet'?costume.petAttack||1:1;

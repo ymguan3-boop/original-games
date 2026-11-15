@@ -1,17 +1,17 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {Game} from '../js/core.js';
-import {spinState,spinStats,advanceSpinMatch,effectiveSpinStats,launchSpinRound,endSpinRound} from '../js/spin-arena-core.js?v=20261115-v62';
-import {tickSpinVisitors,awardSpinPart} from '../js/spin-arena-progression.js?v=20261115-v62';
-import {SPIN_TOPS,SPIN_SKILLS,SPIN_RULES as R} from '../js/spin-arena-config.js?v=20261115-v62';
-import {activeSpinSkills} from '../js/spin-arena-skills.js?v=20261115-v62';
-import {SPIN_SOUND_PROFILES} from '../js/spin-arena-presentation.js?v=20261115-v62';
+import {spinState,spinStats,advanceSpinMatch,effectiveSpinStats,launchSpinRound,endSpinRound} from '../js/spin-arena-core.js?v=20261115-v63';
+import {tickSpinVisitors,awardSpinPart} from '../js/spin-arena-progression.js?v=20261115-v63';
+import {SPIN_TOPS,SPIN_SKILLS,SPIN_RULES as R} from '../js/spin-arena-config.js?v=20261115-v63';
+import {activeSpinSkills} from '../js/spin-arena-skills.js?v=20261115-v63';
+import {SPIN_SOUND_PROFILES} from '../js/spin-arena-presentation.js?v=20261115-v63';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8'));
 const data=Object.fromEntries(Object.entries({catalog:'shop-catalog',hirePool:'hire-pool',spirits:'spirits',evolution:'evolution',levels:'store-levels',config:'economy',management:'management'}).map(([k,v])=>[k,read(v)]));
 function setup(){const memory=new Map(),storage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)},g=new Game({storage,data});g.transaction(null,s=>{s.level=3;s.gold=20000;});return {g,storage};}
 function start(g){g.act('spinBuy',{topId:'flame'});g.act('spinStart',{opponentId:'rookie'});g.act('spinLaunch',{strategy:'balance',round:1,expectedPhase:'strategy'});return g.state.spinArena.match;}
-test('新玩家僅開放一款；六款聲望門檻逐一開放，已收藏者不沒收',()=>{
+test('新玩家僅開放一款；十二款聲望門檻逐一開放，已收藏者不沒收',()=>{
  const {g}=setup();assert.equal(SPIN_TOPS.filter(t=>t.reputation===0).length,1);
- assert.deepEqual(SPIN_TOPS.map(t=>t.reputation),[0,4,10,18,28,40]);
+ assert.deepEqual(SPIN_TOPS.map(t=>t.reputation),[0,4,10,18,28,40,55,75,100,130,165,205]);
  assert(!g.act('spinBuy',{topId:'wind'}).ok);
  for(const t of SPIN_TOPS){g.transaction(null,s=>spinState(s).reputation=t.reputation);assert(g.act('spinBuy',{topId:t.id}).ok);const next=SPIN_TOPS[SPIN_TOPS.indexOf(t)+1];if(next)assert(!g.act('spinBuy',{topId:next.id}).ok);}
  g.transaction(null,s=>s.spinArena.reputation=0);assert(g.act('spinEquip',{topId:'shadow'}).ok);assert(g.act('spinBuy',{topId:'shadow'}).ok);
@@ -51,7 +51,7 @@ test('隨機輪盤／軸心／外環與普通／進階／高級均可入庫；�
   const a=spinState({day:1}),values=[0,(i+.5)/3,r];const part=awardSpinPart(a,{won:true,difficulty:0},()=>values.shift());assert.deepEqual(part,{slot,grade});assert.equal(a.parts[slot][grade],1);
  }
 });
-test('六款技能先轉場並暫停物理，再啟用專屬數值與場上 GIF；存讀檔保持順序',()=>{
+test('十二款技能先轉場並暫停物理，再啟用專屬數值與場上 GIF；存讀檔保持順序',()=>{
  for(const t of SPIN_TOPS){
   const {g}=setup();let m=start(g);m.topId=t.id;m.playerStats=spinStats(t.id);launchSpinRound(m,'balance');m.bodies[0].energy=100;
   assert(g.act('spinSkill').ok);m=g.state.spinArena.match;assert.equal(m.cutin.topId,t.id);assert.equal(activeSpinSkills(m).length,0);
@@ -62,7 +62,7 @@ test('六款技能先轉場並暫停物理，再啟用專屬數值與場上 GIF�
   assert.deepEqual(effectiveSpinStats(m.bodies[0],m.bodies[0].buffUntil+.01),base);
   endSpinRound(m,0,'測試');launchSpinRound(m,'balance');assert.equal(m.cutin,null);assert.deepEqual(m.effects,[]);
  }
- assert.equal(new Set(Object.values(SPIN_SOUND_PROFILES).map(p=>JSON.stringify(p))).size,6);
+ assert.equal(new Set(Object.values(SPIN_SOUND_PROFILES).map(p=>JSON.stringify(p))).size,12);
 });
 test('AI 也必須先登場；雙方排隊施放不覆蓋、不提前傷害或重複消耗',()=>{
  const {g}=setup();let m=start(g);m.bodies[0].x=-.3;m.bodies[1].x=.3;m.bodies.forEach(b=>b.z=0);m.bodies[1].energy=100;

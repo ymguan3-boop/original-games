@@ -1,7 +1,7 @@
 // Visual cues use simulation time so pausing never advances a special attack.
 export const SPIN_SKILL_SECONDS=1.2;
 export const SPIN_SKILL_FRAMES=16;
-export const SPIN_SKILL_IDS=['flame','wind','crystal','thunder','shield','shadow'];
+export const SPIN_SKILL_IDS=['flame','wind','crystal','thunder','shield','shadow','frost','tide','thorn','terra','sun','nebula'];
 export function activeSpinSkills(match){
  if(match?.phase!=='battle')return [];
  const actors=new Map();

@@ -46,5 +46,53 @@
     "size": 192,
     "sheetBytes": 173606,
     "gifBytes": 114281
+  },
+  {
+    "id": "frost",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 173564,
+    "gifBytes": 169308
+  },
+  {
+    "id": "tide",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 173766,
+    "gifBytes": 186590
+  },
+  {
+    "id": "thorn",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 171868,
+    "gifBytes": 186538
+  },
+  {
+    "id": "terra",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 171224,
+    "gifBytes": 173214
+  },
+  {
+    "id": "sun",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 192210,
+    "gifBytes": 199170
+  },
+  {
+    "id": "nebula",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 179788,
+    "gifBytes": 188611
   }
 ]

@@ -1,4 +1,4 @@
-import {WEAPONS} from './inventory.js?v=20261115-v62';
+import {WEAPONS} from './inventory.js?v=20261115-v63';
 export const MEADOW_KEY='firstlight-merchant-meadow-v1';
 export const merchantWeaponName=grade=>grade==='normal'?'武器商品':'限定武器商品';
 export const isMerchantMeadow=typeof location!=='undefined'&&new URLSearchParams(location.search).get('merchantMeadow')==='1';

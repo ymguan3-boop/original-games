@@ -1,8 +1,8 @@
-import{shelfApproach}from'./nav.js?v=20261115-v62';
-import {employeeSpot,employeePath} from './staff-routing.js?v=20261115-v62';
-import {obstacles,decorEffects} from './decorations.js?v=20261115-v62';
-import {findPath,walkable,dimensions} from './nav.js?v=20261115-v62';
-import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261115-v62';
+import{shelfApproach}from'./nav.js?v=20261115-v63';
+import {employeeSpot,employeePath} from './staff-routing.js?v=20261115-v63';
+import {obstacles,decorEffects} from './decorations.js?v=20261115-v63';
+import {findPath,walkable,dimensions} from './nav.js?v=20261115-v63';
+import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261115-v63';
 const stations={stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
 /* The rear wall is z=1. Each resting worker gets their own place and is never
  * mistaken for an idling / slacking employee at an active work station. */
@@ -28,8 +28,8 @@ const wandering=(s,e)=>{
 };
 /* 一鍵最佳配置：鎖定的員工不動，其餘依擅長職務與熟練度排入在班名額 */
 export function autoAssign(g,s,auto=false){
- const capacity=capacityOf(g,s),jobs=WORK_JOBS,locked=s.employees.filter(e=>e.lockedAssignment&&e.role!=='standby'),chosen=new Map(locked.map(e=>[e.id,e.role])),count=j=>[...chosen.values()].filter(r=>r===j).length;
- const free=s.employees.filter(e=>!e.lockedAssignment&&e.fatigue<85).sort((a,b)=>b.workLevel-a.workLevel);
+ const capacity=capacityOf(g,s),jobs=WORK_JOBS,locked=s.employees.filter(e=>e.lockedAssignment&&e.role!=='standby'&&e.fatigue<100&&!e.exhaustedUntilDay),chosen=new Map(locked.map(e=>[e.id,e.role])),count=j=>[...chosen.values()].filter(r=>r===j).length;
+ const free=s.employees.filter(e=>!e.lockedAssignment&&!e.exhaustedUntilDay&&e.fatigue<85).sort((a,b)=>b.workLevel-a.workLevel);
  for(const job of jobs){if(chosen.size>=capacity||count(job))continue;const pick=free.find(e=>!chosen.has(e.id)&&preferredJob(g,e)===job)||null;if(pick)chosen.set(pick.id,job);}
  for(const job of jobs){if(chosen.size>=capacity||count(job))continue;const pick=free.find(e=>!chosen.has(e.id));if(pick)chosen.set(pick.id,job);}
  for(const e of free){if(chosen.size>=capacity)break;if(!chosen.has(e.id))chosen.set(e.id,preferredJob(g,e));}

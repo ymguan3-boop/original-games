@@ -1,7 +1,7 @@
-import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,spinTop}from'./spin-arena-config.js?v=20261115-v62';
-import {spinState,spinStats,awardSpinPart,consumeSpinVisitor,gainSpinMastery,spinRoster} from './spin-arena-progression.js?v=20261115-v62';
-export {spinState,spinStats} from './spin-arena-progression.js?v=20261115-v62';
-import{broadcast}from'./stock-flow.js?v=20261115-v62';
+import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,spinTop}from'./spin-arena-config.js?v=20261115-v63';
+import {spinState,spinStats,awardSpinPart,consumeSpinVisitor,gainSpinMastery,spinRoster} from './spin-arena-progression.js?v=20261115-v63';
+export {spinState,spinStats} from './spin-arena-progression.js?v=20261115-v63';
+import{broadcast}from'./stock-flow.js?v=20261115-v63';
 const check=(v,m)=>{if(!v)throw Error(m);},clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const random=m=>{m.seed=(Math.imul(m.seed,1664525)+1013904223)>>>0;return m.seed/4294967296;};
 const body=(stats,x,strategy,element)=>({x,z:0,vx:0,vz:0,spin:100,hp:100,energy:0,angle:0,stats,strategy,element,shield:0,skillUntil:0,hitCooldown:0});
@@ -20,7 +20,16 @@ function finishCutin(m){
  m.cutin=m.skillQueue?.shift()||null;
 }
 const affinity=(a,b)=>({fire:'wind',wind:'earth',earth:'fire'}[a]===b?1.18:({fire:'wind',wind:'earth',earth:'fire'}[b]===a?.9:1));
-export function endSpinRound(m,winner,reason){if(m.phase!=='battle')return;const tied=winner===null;if(!tied)m.score[winner]++;m.phase=m.score.some(n=>n>=R.roundsToWin)?'result':'roundResult';m.roundResult={winner,reason,tied,round:m.round};m.rounds.push({...m.roundResult,time:m.time,score:[...m.score]});if(!tied&&m.phase!=='result')m.round++;if(m.phase==='result')m.won=m.score[0]>=R.roundsToWin;}
+export function endSpinRound(m,winner,reason){
+ if(m.phase!=='battle')return;const tied=winner===null;
+ m.drawStreak=tied?(m.drawStreak||0)+1:0;
+ if(m.drawStreak>=2)m.suddenDeath=true;
+ if(!tied)m.score[winner]++;
+ m.phase=!tied&&(m.suddenDeath||m.score[winner]>=R.roundsToWin)?'result':'roundResult';
+ m.roundResult={winner,reason,tied,round:m.round,suddenDeath:!!m.suddenDeath};m.rounds.push({...m.roundResult,time:m.time,score:[...m.score]});
+ if(!tied&&m.phase!=='result')m.round++;if(m.phase==='result')m.won=winner===0;
+}
+
 function step(m,dt){
  m.time=Math.min(R.roundSeconds,m.time+dt);const bs=m.bodies;
  for(let i=0;i<2;i++){const b=bs[i],o=bs[1-i],stats=effectiveSpinStats(b,m.time),d=Math.hypot(o.x-b.x,o.z-b.z)||1,near=Math.hypot(b.x,b.z),spd=.5+stats.speed/38;

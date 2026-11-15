@@ -1,4 +1,4 @@
-import {migrateFamilyProgress} from './family-progress.js?v=20261115-v62';
+import {migrateFamilyProgress} from './family-progress.js?v=20261115-v63';
 import {rememberJourney} from './journey.js';
 export const SAVE_KEY = 'phantom-endless-cave-v1';
 export const initialState = () => ({version:1,owned:[],team:[],points:0,autoItems:{},autoPetUltimates:[false,false,false],weaponUpgrades:{},growth:{},training:{},pity:0,inventory:{},materials:{},loadoutVersion:9,weapons:['guns-starter'],equipped:['guns-starter'],starterClaimed:false,transactions:[],history:[],run:null});

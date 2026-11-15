@@ -1,4 +1,4 @@
-import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_OPPONENTS,spinTop,spinPartBonus} from './spin-arena-config.js?v=20261115-v62';
+import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_OPPONENTS,spinTop,spinPartBonus} from './spin-arena-config.js?v=20261115-v63';
 export function spinState(s){
  s.spinArena??={owned:{},equipped:null,parts:{rim:0,axis:0,ring:0},reputation:0,match:null,history:[],serial:0};
  const a=s.spinArena;
@@ -39,7 +39,7 @@ export function tickSpinVisitors(g,s,realSeconds){
  a.nextVisitorIn??=R.visitorMin+g.random(s)*(R.visitorMax-R.visitorMin);
  a.nextVisitorIn-=Math.min(600,realSeconds);
  if(a.nextVisitorIn>0)return;
- const top=SPIN_TOPS[Math.min(5,Math.floor(g.random(s)*6))];
+ const top=SPIN_TOPS[Math.min(SPIN_TOPS.length-1,Math.floor(g.random(s)*SPIN_TOPS.length))];
  const names=['巡迴陀螺師','遠行挑戰者','異鄉技師','流浪冠軍'];
  a.visitor={id:`visitor-${++a.serial}`,name:names[Math.min(3,Math.floor(g.random(s)*4))],topId:top.id,difficulty:3,reward:0,rep:0,visitor:true,status:'waiting'};
  g.notice(s,'manager','外來高手抵達！陀螺 → 選擇對手','good');
@@ -63,6 +63,7 @@ export function consumeSpinVisitor(a,m,random){
 
 // Permanent level growth is independent of equipment and temporary skills.
 export const SPIN_GROWTH={flame:{attack:.055,defense:.025,speed:.035,stamina:.03},wind:{attack:.03,defense:.025,speed:.06,stamina:.03},crystal:{attack:.025,defense:.06,speed:.025,stamina:.04},thunder:{attack:.05,defense:.02,speed:.05,stamina:.025},shield:{attack:.025,defense:.04,speed:.025,stamina:.06},shadow:{attack:.04,defense:.04,speed:.04,stamina:.04}};
+Object.assign(SPIN_GROWTH,{"frost":{"attack":0.04,"defense":0.065,"speed":0.04,"stamina":0.04},"tide":{"attack":0.04,"defense":0.04,"speed":0.04,"stamina":0.065},"thorn":{"attack":0.04,"defense":0.04,"speed":0.065,"stamina":0.04},"terra":{"attack":0.04,"defense":0.065,"speed":0.04,"stamina":0.04},"sun":{"attack":0.06,"defense":0.04,"speed":0.05,"stamina":0.04},"nebula":{"attack":0.04,"defense":0.04,"speed":0.04,"stamina":0.04}});
 export function gainSpinMastery(owned,amount){
  const before=owned.level;amount=Math.max(0,Math.floor(amount));
  if(owned.level>=R.maxUpgrade)return {mastery:0,levels:0,level:R.maxUpgrade};
@@ -78,8 +79,8 @@ export function spinRoster(g,s,refresh=false){
  const used=new Set(),old=a.roster?.entries||[];
  const entries=SPIN_OPPONENTS.map((template,i)=>{
   let index=Math.min(names.length-1,Math.floor(g.random(s)*names.length));while(used.has(index)||names[index]===old[i]?.person)index=(index+1)%names.length;used.add(index);
-  let topIndex=Math.min(5,Math.floor(g.random(s)*6));if(SPIN_TOPS[topIndex].id===old[i]?.topId)topIndex=(topIndex+1)%6;
-  return {...template,name:names[index]+' · '+['新秀','技師','高手'][i],person:names[index],topId:SPIN_TOPS[topIndex].id,shopLevel:level,scale:(1+(level-3)*.2)*(1+i*.07),variation:Object.fromEntries(['attack','defense','speed','stamina'].map(k=>[k,.95+g.random(s)*.1]))};
+  const pool=SPIN_TOPS.filter(t=>t.reputation<=Math.max([10,40,75][i],a.reputation+[10,25,50][i]));let topIndex=Math.min(pool.length-1,Math.floor(g.random(s)*pool.length));if(pool[topIndex].id===old[i]?.topId)topIndex=(topIndex+1)%pool.length;
+  return {...template,name:names[index]+' · '+['新秀','技師','高手'][i],person:names[index],topId:pool[topIndex].id,shopLevel:level,scale:(1+(level-3)*.2)*(1+i*.07),variation:Object.fromEntries(['attack','defense','speed','stamina'].map(k=>[k,.95+g.random(s)*.1]))};
  });
  a.roster={level,entries};return entries;
 }

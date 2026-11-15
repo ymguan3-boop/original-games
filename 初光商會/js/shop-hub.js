@@ -1,28 +1,28 @@
-import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261115-v62';
-import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261115-v62';
-import {hasDecorModel} from './decor-models-v22.js?v=20261115-v62';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261115-v62';
-import {promoterHireCost} from './shop-entry-rules.js?v=20261115-v62';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261115-v62';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261115-v62';
-import {clockText} from './shop-clock.js?v=20261115-v62';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261115-v62';
-import {pendingRewards} from './reward-collection.js?v=20261115-v62';
+import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261115-v63';
+import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261115-v63';
+import {hasDecorModel} from './decor-models-v22.js?v=20261115-v63';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261115-v63';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261115-v63';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261115-v63';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261115-v63';
+import {clockText} from './shop-clock.js?v=20261115-v63';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261115-v63';
+import {pendingRewards} from './reward-collection.js?v=20261115-v63';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
 import {WEAPONS} from '../../幻靈奇旅/survivors/js/inventory.js?v=20261030-reaper-v2';
-import {spiritPortrait} from './spirit-cards.js?v=20261115-v62';
-import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261115-v62';
-import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261115-v62';
-import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261115-v62';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261115-v62';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261115-v62';
-import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261115-v62';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261115-v62';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261115-v62';
-import {requiresManagerPatrol} from './event-routing.js?v=20261115-v62';
-import {eventEmployee} from './patrol-events.js?v=20261115-v62';
-import {ledgerPanel} from './ledger-panel.js?v=20261115-v62';
+import {spiritPortrait} from './spirit-cards.js?v=20261115-v63';
+import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261115-v63';
+import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261115-v63';
+import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261115-v63';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261115-v63';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261115-v63';
+import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261115-v63';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261115-v63';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261115-v63';
+import {requiresManagerPatrol} from './event-routing.js?v=20261115-v63';
+import {eventEmployee} from './patrol-events.js?v=20261115-v63';
+import {ledgerPanel} from './ledger-panel.js?v=20261115-v63';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -79,11 +79,11 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   promoters(){const now=s().promoter;return {title:'宣傳員',note:`大型幻靈在店門外當吉祥物，不佔在班名額。打烊時有機會讓當天毛利再增加 1% 到上限。${now?`<br>目前：${esc(now.name)}`:''}`,empty:'目前沒有可聘請的宣傳員。',cards:PROMOTERS.filter(p=>p.level<=s().level).map(p=>{const sp=spirit(p.id),locked=p.level>s().level,cur=now?.id===p.id;return {key:p.id,tutor:!locked&&!cur&&!PROMOTERS.slice(0,PROMOTERS.indexOf(p)).some(q=>q.level<=s().level&&now?.id!==q.id)?'promoter-pick':undefined,html:`${spiritPortrait(sp,esc)}<b>${esc(sp?.name||p.id)}${cur?'（目前）':''}</b><small>${locked?`商會 Lv.${p.level} 解鎖`:`${promoterHireCost(s(),p)===0?'首次免費':money(p.cost)} · 最多 +${Math.round(p.maxBonus*100)}%`}</small>`,tap:()=>{if(locked)toast(`商會 Lv.${p.level} 才能聘請`,true);else if(!cur)push('promoterOne',p.id);}};})};},
   promoterOne(id){const p=promoterDef(id),sp=spirit(id);return {purchaseCost:promoterHireCost(s(),p),title:sp?.name||id,art:spiritPortrait(sp,esc),note:`${esc(p.text)}<br>聘請費 ${promoterHireCost(s(),p)===0?'首次免費':money(p.cost)}，打烊時 ${Math.round(70)}% 機率讓毛利增加 1%～${Math.round(p.maxBonus*100)}%。${s().promoter?`<br>會取代目前的 ${esc(s().promoter.name)}。`:''}`,actions:[[promoterHireCost(s(),p)===0?'免費聘請':'聘請',()=>{const r=act('hirePromoter',{id});if(r.ok)back();},true]]};},
   hireOne(id){const h=d.hirePool.find(x=>x.id===id),t=d.management.traits[id],need=(s().totals.sales||0)<h.requiredSales;return {purchaseCost:h.cost,title:h.name,art:spiritPortrait(spirit(h.spiritId||h.id),esc),note:`${money(h.cost)} · 擅長${job(t.preferredJob)}<br>專屬被動「${esc(t.name)}」：${esc(t.text)}<br>${esc(passiveDescription(game,{baseId:h.id,role:t.preferredJob,evolutionHistory:[]}))}（擅長職務）${need?`<br>需累計成交 ${h.requiredSales} 筆`:''}`,actions:[['聘用',()=>{const r=act('hire',{id});if(r.ok)back();},true]]};},
-  roster(){const pr=s().promoter,promoterCard=pr?[{key:'promoter',html:`${spiritPortrait(spirit(pr.id),esc)}<b>${esc(pr.name)}</b><small>宣傳員 · 在門口招呼客人</small><small class="hub-passive">不佔在班名額，打烊時有機會提高當天毛利</small>`,tap:()=>push('promoters')}]:[];return {title:'編組與職務',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人${pr?' · 宣傳員 1 位':''}`,empty:'還沒有夥伴，先去招聘吧。',cards:[...promoterCard,...s().employees.map(e=>({key:e.id,notice:e.role!=='standby'&&e.fatigue>=100,tutor:'worker',html:`${staffIcon(e)}<b>${esc(e.name)}${e.lockedAssignment?' 📌':' 🔄'}</b><small>${job(e.role)} · 熟練 Lv.${e.workLevel} · 疲勞 ${Math.floor(e.fatigue)}%</small><small class="hub-passive">${esc(passiveDescription(game,e))}</small>`,tap:()=>push('worker',e.id)}))],actions:[['一鍵最佳配置',()=>{act('autoAssign');render();},true],[`自動疲勞替班：${s().autoRelief?.enabled?'開啟':'關閉'}`,relief]]};},
-  worker(id){const e=s().employees.find(x=>x.id===id);if(!e)return pages.roster();if(e.role!=='standby'&&e.fatigue>=100)return pages.exhausted(id);const t=traitOf(game,e),isDragon=e.spiritId===d.management.dragon.spiritId,task=dragonTask(game,s());return {title:e.name,art:staffIcon(e),note:`${job(e.role)} · 熟練 Lv.${e.workLevel} · EXP ${Math.floor(e.xp)}/${e.workLevel*25}<br>擅長${job(t?.preferredJob)} · 「${esc(t?.name||'')}」${esc(t?.text||'')}<br>${esc(passiveDescription(game,e))}<br>疲勞 ${Math.floor(e.fatigue)}%${isDragon?`<br>駐點：${task?esc(task.name):'未啟用'}`:''}`,actions:[['調整職務',()=>push('jobs',id)],[e.lockedAssignment?'自動分配：關':'自動分配：開',()=>{act('lockAssignment',{employeeId:id});render();}],isDragon?['駐點任務',()=>push('dragon')]:[`經驗券（${s().xpTickets||0}）`,()=>{act('useXpTicket',{employeeId:id});render();},false,!(s().xpTickets>0)]]};},
+  roster(){const pr=s().promoter,promoterCard=pr?[{key:'promoter',html:`${spiritPortrait(spirit(pr.id),esc)}<b>${esc(pr.name)}</b><small>宣傳員 · 在門口招呼客人</small><small class="hub-passive">不佔在班名額，打烊時有機會提高當天毛利</small>`,tap:()=>push('promoters')}]:[];return {title:'編組與職務',note:`在班 ${onDuty(s()).length}/${capacityOf(game,s())} 人${pr?' · 宣傳員 1 位':''}`,empty:'還沒有夥伴，先去招聘吧。',cards:[...promoterCard,...s().employees.map(e=>({key:e.id,notice:e.role!=='standby'&&e.fatigue>=100,tutor:'worker',html:`${staffIcon(e)}<b>${esc(e.name)}${e.lockedAssignment?' 📌':' 🔄'}</b><small>${e.exhaustedUntilDay?'休息中（累壞，隔日恢復）':job(e.role)} · 熟練 Lv.${e.workLevel} · 疲勞 ${Math.floor(e.fatigue)}%</small><small class="hub-passive">${esc(passiveDescription(game,e))}</small>`,tap:()=>push('worker',e.id)}))],actions:[['一鍵最佳配置',()=>{act('autoAssign');render();},true],[`自動疲勞替班：${s().autoRelief?.enabled?'開啟':'關閉'}`,relief]]};},
+  worker(id){const e=s().employees.find(x=>x.id===id);if(!e)return pages.roster();if(e.role!=='standby'&&e.fatigue>=100)return pages.exhausted(id);const t=traitOf(game,e),isDragon=e.spiritId===d.management.dragon.spiritId,task=dragonTask(game,s());return {title:e.name,art:staffIcon(e),note:`${e.exhaustedUntilDay?'休息中（累壞，隔日恢復）':job(e.role)} · 熟練 Lv.${e.workLevel} · EXP ${Math.floor(e.xp)}/${e.workLevel*25}<br>擅長${job(t?.preferredJob)} · 「${esc(t?.name||'')}」${esc(t?.text||'')}<br>${esc(passiveDescription(game,e))}<br>疲勞 ${Math.floor(e.fatigue)}%${isDragon?`<br>駐點：${task?esc(task.name):'未啟用'}`:''}`,actions:[['調整職務',()=>push('jobs',id)],[e.lockedAssignment?'自動分配：關':'自動分配：開',()=>{act('lockAssignment',{employeeId:id});render();}],isDragon?['駐點任務',()=>push('dragon')]:[`經驗券（${s().xpTickets||0}）`,()=>{act('useXpTicket',{employeeId:id});render();},false,!(s().xpTickets>0)]]};},
   exhausted(id){const e=s().employees.find(e=>e.id===id);if(!e||e.role==='standby')return pages.roster();return {title:'已累暴了',note:`${esc(e.name)}疲勞 100%，已停止移動與工作。休息每真實分鐘降低 1% 疲勞。`,actions:[['替換員工',()=>push('replacement',id),true],['先安排休息',()=>{act('rest',{employeeId:id});back();}]]};},
-  replacement(id){const old=s().employees.find(e=>e.id===id);if(!old||old.role==='standby')return pages.roster();const list=s().employees.filter(e=>e.role==='standby'&&e.fatigue<100).sort((a,b)=>a.fatigue-b.fatigue);return {title:'選擇替班員工',note:'接替原職務，疲勞員工將轉為休息中。',empty:'目前沒有可替班員工，可先安排原員工休息。',cards:list.map(e=>({key:e.id,html:`${staffIcon(e)}<b>${esc(e.name)}</b><small>疲勞 ${Math.floor(e.fatigue)}%</small>`,tap:()=>{const r=act('replaceExhausted',{employeeId:id,replacementId:e.id});if(r.ok)close();}}))};},
-  jobs(id){const e=s().employees.find(x=>x.id===id);return {title:'調整職務',note:'第二人起效率遞減，換職不影響熟練度。',cards:[...WORK_JOBS,'standby'].map(j=>({key:j,html:`<b>${job(j)}${traitOf(game,e)?.preferredJob===j?' ★擅長':''}</b><small>${j==='standby'?'休息中：離開店面、恢復疲勞，獲得 20% 經驗':esc(d.management.jobs[j].work)}</small>`,tap:()=>{const r=act('assign',{employeeId:id,role:j});if(r.ok)back();}}))};},
+  replacement(id){const old=s().employees.find(e=>e.id===id);if(!old||old.role==='standby')return pages.roster();const list=s().employees.filter(e=>e.role==='standby'&&e.fatigue<100&&!e.exhaustedUntilDay).sort((a,b)=>a.fatigue-b.fatigue);return {title:'選擇替班員工',note:'接替原職務，疲勞員工將轉為休息中。',empty:'目前沒有可替班員工，可先安排原員工休息。',cards:list.map(e=>({key:e.id,html:`${staffIcon(e)}<b>${esc(e.name)}</b><small>疲勞 ${Math.floor(e.fatigue)}%</small>`,tap:()=>{const r=act('replaceExhausted',{employeeId:id,replacementId:e.id});if(r.ok)close();}}))};},
+  jobs(id){const e=s().employees.find(x=>x.id===id);return {title:'調整職務',note:e.exhaustedUntilDay?'已累壞，休息至隔日恢復後才能派工；新的一天疲勞 -50%。':'第二人起效率遞減，換職不影響熟練度。',cards:(e.exhaustedUntilDay?['standby']:[...WORK_JOBS,'standby']).map(j=>({key:j,html:`<b>${job(j)}${traitOf(game,e)?.preferredJob===j?' ★擅長':''}</b><small>${j==='standby'?'休息中：離開店面、恢復疲勞，獲得 20% 經驗':esc(d.management.jobs[j].work)}</small>`,tap:()=>{const r=act('assign',{employeeId:id,role:j});if(r.ok)back();}}))};},
   dragon(){return {title:'水蛟龍王駐點',note:'一次只能啟用一項任務。',cards:d.management.dragon.tasks.filter(t=>t.level<=s().level).map(t=>({key:t.id,html:`<b>${esc(t.name)}${s().dragonTask===t.id?' ✓':''}</b><small>${esc(t.text)}</small>`,tap:()=>{act('setDragonTask',{id:t.id});render();}}))};},
   evolve(){return {title:'進化',note:'熟練度到 Lv.4、Lv.8 後手動進化。',empty:'還沒有夥伴。',cards:s().employees.map(e=>{const info=staffEvolutionInfo(d,e);return {key:e.id,notice:info.eligible,html:`${staffIcon(e)}<b>${esc(e.name)}${info.eligible?' ✨':''}</b><small>${info.eligible?'可進化':info.next.length?`熟練 Lv.${info.required} 可進化（目前 Lv.${e.workLevel}）`:'已是最終型態'}</small>`,tap:()=>{if(info.eligible){close();evolve(e.id);}else push('evolveOne',e.id);}};})};},
   evolveOne(id){const e=s().employees.find(x=>x.id===id),info=staffEvolutionInfo(d,e);return {title:e.name,art:staffIcon(e),note:info.eligible?'進化會保留熟練度、職務與位置。':info.next.length?`需要熟練 Lv.${info.required}。`:'已是最終型態。',actions:info.eligible?[['開始進化',()=>{close();evolve(id);},true]]:[]};},

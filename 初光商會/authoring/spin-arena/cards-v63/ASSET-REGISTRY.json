@@ -1,0 +1,17 @@
+{
+  "profile": "low-poly",
+  "baseline": "authoring/spin-arena/approved-geometry-20261115/spin-arena-models.js",
+  "approval": "User approved spinning-top model construction and requested six additional variants in current conversation",
+  "runtime": "js/spin-arena-models.js",
+  "budget": "under 40000 triangles per mechanical top; 640x800 card max; 768x768 skill atlas; lazy-loaded per participating pair",
+  "assets": [
+    "frost",
+    "tide",
+    "thorn",
+    "terra",
+    "sun",
+    "nebula"
+  ],
+  "method": "Reuse approved mechanical construction with new blade counts, angular armor silhouettes, emblems and image_gen illustrations; no new rig or GLB pipeline",
+  "status": "TECHNICAL_PASS; new visual variants available in game for user review"
+}

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
-import {CaveWorld} from '../js/world.js';import {createStore} from '../js/save-bridge.js';import {enemyAttackProfile} from '../js/enemy-rules.js?v=20261115-v62';
+import {CaveWorld} from '../js/world.js';import {createStore} from '../js/save-bridge.js';import {enemyAttackProfile} from '../js/enemy-rules.js?v=20261115-v63';
 const read=p=>JSON.parse(readFileSync(new URL(p,import.meta.url),'utf8')),data={spirits:Object.fromEntries(read('../../data/spirits.json').map(s=>[s.id,s])),config:read('../data/config.json'),skills:read('../data/spirit-skills.json'),evolution:read('../data/evolution.json'),passives:read('../data/survival-passives.json')};
 test('洞穴與草原實際模擬：普通怪遠處不出手、能走近、走出射程躲過已起手攻擊',()=>{
  for(const meadow of [false,true]){

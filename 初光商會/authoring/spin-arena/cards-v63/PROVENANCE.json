@@ -1,0 +1,44 @@
+[
+  {
+    "id": "frost",
+    "generator": "built-in image_gen",
+    "source": "C:\\Users\\ymguan\\.codex\\generated_images\\01a18fbb-5899-7563-a059-3e582a4a6fef\\exec-aba3fdca-5213-4557-aace-159b4911bf2d.png",
+    "usage": "collection, cut-in, skill GIF and clocked WebP atlas",
+    "processing": "thumbnail, format encoding, alpha-preserving animation packaging"
+  },
+  {
+    "id": "tide",
+    "generator": "built-in image_gen",
+    "source": "C:\\Users\\ymguan\\.codex\\generated_images\\01a18fbb-5899-7563-a059-3e582a4a6fef\\exec-5fa8ed97-c342-4733-b0f5-4d5fb26046df.png",
+    "usage": "collection, cut-in, skill GIF and clocked WebP atlas",
+    "processing": "thumbnail, format encoding, alpha-preserving animation packaging"
+  },
+  {
+    "id": "thorn",
+    "generator": "built-in image_gen",
+    "source": "C:\\Users\\ymguan\\.codex\\generated_images\\01a18fbb-5899-7563-a059-3e582a4a6fef\\exec-421f6061-5e83-480a-9e99-686d1d6be99f.png",
+    "usage": "collection, cut-in, skill GIF and clocked WebP atlas",
+    "processing": "thumbnail, format encoding, alpha-preserving animation packaging"
+  },
+  {
+    "id": "terra",
+    "generator": "built-in image_gen",
+    "source": "C:\\Users\\ymguan\\.codex\\generated_images\\01a18fbb-5899-7563-a059-3e582a4a6fef\\exec-a7268bda-1fd3-4301-88b3-75b20e50fbea.png",
+    "usage": "collection, cut-in, skill GIF and clocked WebP atlas",
+    "processing": "thumbnail, format encoding, alpha-preserving animation packaging"
+  },
+  {
+    "id": "sun",
+    "generator": "built-in image_gen",
+    "source": "C:\\Users\\ymguan\\.codex\\generated_images\\01a18fbb-5899-7563-a059-3e582a4a6fef\\exec-1d2074b6-371e-4360-96bc-08b11873f5da.png",
+    "usage": "collection, cut-in, skill GIF and clocked WebP atlas",
+    "processing": "thumbnail, format encoding, alpha-preserving animation packaging"
+  },
+  {
+    "id": "nebula",
+    "generator": "built-in image_gen",
+    "source": "C:\\Users\\ymguan\\.codex\\generated_images\\01a18fbb-5899-7563-a059-3e582a4a6fef\\exec-ecd5160b-d655-4b1a-a09f-4782ebc17e4a.png",
+    "usage": "collection, cut-in, skill GIF and clocked WebP atlas",
+    "processing": "thumbnail, format encoding, alpha-preserving animation packaging"
+  }
+]
