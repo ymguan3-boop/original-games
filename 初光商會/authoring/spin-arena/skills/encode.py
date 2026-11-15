@@ -42,5 +42,3 @@ for item in sources:
     print(id,manifest[-1])
 (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
 (author/'PROVENANCE.json').write_text(json.dumps(sources,ensure_ascii=False,indent=2),encoding='utf-8')
-
-
