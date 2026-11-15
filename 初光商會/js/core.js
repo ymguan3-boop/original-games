@@ -1,41 +1,42 @@
-import{spinAction}from'./spin-arena-core.js?v=20261115-v60';
-import{merchantTrafficEffects}from'./merchant-effects.js?v=20261115-v60';
-import{auctionAction,auctionTraffic}from'./plaza-auction.js?v=20261115-v60';
-import{customerHealthTick}from'./customer-health.js?v=20261115-v60';
-import{stockTarget,recordStock,fillShelf,finishStockBatch}from'./stock-flow.js?v=20261115-v60';
-import{prepareShelfOffers}from'./material-tray.js?v=20261115-v60';
-import{shelfApproach}from'./nav.js?v=20261115-v60';
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261115-v60';
-import {passerAction,passerArrival,admitInvited,restoreInvitations,spawnShopper,patrolDiscovery} from './shop-interactions.js?v=20261115-v60';
-import {staffTraffic} from './staff-traffic.js?v=20261115-v60';
-import {syncQueueFortune} from './fortune-cards.js?v=20261115-v60';
-import {tickRealEvents} from './real-time-events.js?v=20261115-v60';
-import {merchantWeaponCatalog,importMerchantCargo} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261115-v60';
-import {specialDecorPose,floorInBounds,rehomeGardenDecor,reconcileArchitecture} from './decor-zones.js?v=20261115-v60';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261115-v60';
-import {openingBlocker} from './shop-entry-rules.js?v=20261115-v60';
-import {syncWorkforce,workforceTick,recoverResting,replaceExhausted} from './workforce.js?v=20261115-v60';
-import {rollWeather,weatherTraffic} from './environment.js?v=20261115-v60';
-import {pickCustomerType,customerBudget,CUSTOMER_TYPES,purchaseChance,costFactor,trafficFactor,rollMarket,settleReputation,ensureMarket} from './economy-v2.js?v=20261115-v60';
-import {settlePromoter,hirePromoter} from './promoters.js?v=20261115-v60';
-import {claimAllRewards} from './reward-collection.js?v=20261115-v60';
-import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261115-v60';
-import {requiresManagerPatrol} from './event-routing.js?v=20261115-v60';
-import {funnyEvents,comicEventEligible} from './funny-events.js?v=20261115-v60';
-import {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue} from './patrol-events.js?v=20261115-v60';
-import {employeeSpot,employeePath,actorPath,doorwayBuffer,yieldDoorway} from './staff-routing.js?v=20261115-v60';
-import {autoAssign,staffAutomation,restingPositions,sendToRest} from './staff-automation.js?v=20261115-v60';
-import {evolveStaffOnce} from './staff-evolution.js?v=20261115-v60';
-import {chapterObjectives,autoChapterConstruction,awardSideChapter} from './shop-chapters.js?v=20261115-v60';
-import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './customer-chase.js?v=20261115-v60';
-import {ensureDailyGoals} from './daily-objectives.js?v=20261115-v60';
-import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js?v=20261115-v60';
-import {decorEffects,decorTypes,obstacles} from './decorations.js?v=20261115-v60';
-import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261115-v60';
-import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfCapacity,shelfDefinition,shelfKind,ownsUniqueShelf} from './furniture.js?v=20261115-v60';
-import {pointSegmentDistance,segmentDistance} from './motion.js?v=20261115-v60';
-import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER,buildingLevel,dimensions,applyRoom} from './nav.js?v=20261115-v60';
-import {legacyRole,managementAction,migrateState,preferredJob,capacityOf,passive,jobPower,dailyTrack,dailyState,systemRestock,workXp,eventGap,eventAllowed,WORK_JOBS} from './management.js?v=20261115-v60';
+import {tickSpinVisitors} from './spin-arena-progression.js?v=20261115-v61';
+import{spinAction}from'./spin-arena-core.js?v=20261115-v61';
+import{merchantTrafficEffects}from'./merchant-effects.js?v=20261115-v61';
+import{auctionAction,auctionTraffic}from'./plaza-auction.js?v=20261115-v61';
+import{customerHealthTick}from'./customer-health.js?v=20261115-v61';
+import{stockTarget,recordStock,fillShelf,finishStockBatch}from'./stock-flow.js?v=20261115-v61';
+import{prepareShelfOffers}from'./material-tray.js?v=20261115-v61';
+import{shelfApproach}from'./nav.js?v=20261115-v61';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261115-v61';
+import {passerAction,passerArrival,admitInvited,restoreInvitations,spawnShopper,patrolDiscovery} from './shop-interactions.js?v=20261115-v61';
+import {staffTraffic} from './staff-traffic.js?v=20261115-v61';
+import {syncQueueFortune} from './fortune-cards.js?v=20261115-v61';
+import {tickRealEvents} from './real-time-events.js?v=20261115-v61';
+import {merchantWeaponCatalog,importMerchantCargo} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261115-v61';
+import {specialDecorPose,floorInBounds,rehomeGardenDecor,reconcileArchitecture} from './decor-zones.js?v=20261115-v61';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261115-v61';
+import {openingBlocker} from './shop-entry-rules.js?v=20261115-v61';
+import {syncWorkforce,workforceTick,recoverResting,replaceExhausted} from './workforce.js?v=20261115-v61';
+import {rollWeather,weatherTraffic} from './environment.js?v=20261115-v61';
+import {pickCustomerType,customerBudget,CUSTOMER_TYPES,purchaseChance,costFactor,trafficFactor,rollMarket,settleReputation,ensureMarket} from './economy-v2.js?v=20261115-v61';
+import {settlePromoter,hirePromoter} from './promoters.js?v=20261115-v61';
+import {claimAllRewards} from './reward-collection.js?v=20261115-v61';
+import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261115-v61';
+import {requiresManagerPatrol} from './event-routing.js?v=20261115-v61';
+import {funnyEvents,comicEventEligible} from './funny-events.js?v=20261115-v61';
+import {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue} from './patrol-events.js?v=20261115-v61';
+import {employeeSpot,employeePath,actorPath,doorwayBuffer,yieldDoorway} from './staff-routing.js?v=20261115-v61';
+import {autoAssign,staffAutomation,restingPositions,sendToRest} from './staff-automation.js?v=20261115-v61';
+import {evolveStaffOnce} from './staff-evolution.js?v=20261115-v61';
+import {chapterObjectives,autoChapterConstruction,awardSideChapter} from './shop-chapters.js?v=20261115-v61';
+import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './customer-chase.js?v=20261115-v61';
+import {ensureDailyGoals} from './daily-objectives.js?v=20261115-v61';
+import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js?v=20261115-v61';
+import {decorEffects,decorTypes,obstacles} from './decorations.js?v=20261115-v61';
+import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261115-v61';
+import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfCapacity,shelfDefinition,shelfKind,ownsUniqueShelf} from './furniture.js?v=20261115-v61';
+import {pointSegmentDistance,segmentDistance} from './motion.js?v=20261115-v61';
+import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER,buildingLevel,dimensions,applyRoom} from './nav.js?v=20261115-v61';
+import {legacyRole,managementAction,migrateState,preferredJob,capacityOf,passive,jobPower,dailyTrack,dailyState,systemRestock,workXp,eventGap,eventAllowed,WORK_JOBS} from './management.js?v=20261115-v61';
 export const jobs=[[ 'stocker','補貨員','自動補貨、縮短缺貨'],['host','招待員','引導顧客、提高購買機率'],['cleaner','清潔員','恢復整潔、提升滿意度'],['standby','休息','離店休息，恢復疲勞；仍獲得 20% 經驗']].map(([id,name,description])=>({id,name,description}));
 const eventEffects=[['checkout',25,'神速結帳 25 秒'],['reputation',3,'顧客推薦使人氣 +3'],['stock',6,'現有倉存補上最多 6 件商品'],['logistics',25,'搬貨效率提升 25 秒'],['sales',25,'價格接受度提升 25 秒'],['reputation',5,'口碑人氣 +5'],['storage',25,'進貨折扣提升 25 秒'],['morale',8,'在班夥伴士氣 +8'],['storage',30,'倉儲採購折扣 30 秒'],['stock',10,'盤點後從倉庫補上最多 10 件'],['patience',30,'客人排隊耐心 +10 秒，持續 30 秒'],['reputation',4,'迷路客口耳相傳，人氣 +4'],['clean',5,'店面整理使滿意度 +5'],['rest',10,'夥伴精神變好'],['traffic',25,'表演加速客流 25 秒'],['rest',15,'夥伴充飽電']];
 const eventNames=[['cashier','零錢排隊跳舞'],['cashier','發票捲成圍巾'],['stocker','紙箱山滑倒'],['stocker','浮空補貨術'],['sales','熱情推銷過頭'],['sales','商品說明接龍'],['smith','鍛爐彩虹煙'],['smith','鐵鎚唱歌'],['warehouse','標籤大風吹'],['warehouse','庫房尋寶'],['security','紙箱假小偷'],['security','門口迷路客'],['cleaner','地板溜冰秀'],['cleaner','泡泡大遊行'],['host','歡迎歌太大聲'],['host','招待員打瞌睡']];
@@ -48,7 +49,7 @@ export const events=eventNames.map(([role,title],i)=>({id:`event-${i+1}`,role:le
 export const combos=[{id:'flow',name:'物流接力',roles:['stocker','host'],description:'30 秒補貨效率提升一倍'},{id:'show',name:'迎賓快線',roles:['host','cleaner'],description:'30 秒結帳效率提升 60%'},{id:'forge',name:'工匠默契',roles:['stocker','cleaner'],description:'30 秒採購成本再減 10%'},{id:'shine',name:'安心閃亮',roles:['cleaner','host'],description:'滿意度 +8'}];
 const clone=x=>JSON.parse(JSON.stringify(x)), clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), assert=(x,m)=>{if(!x)throw Error(m);};
 export async function createGame({storage=globalThis.localStorage,key='firstlight_shop_v1',seed=731,data}={}){
- if(!data){const read=async n=>{const r=await fetch(new URL(`../data/${n}.json?v=20261115-v60`,import.meta.url));if(!r.ok)throw Error(`資料讀取失敗：${n}`);return r.json();};const [catalog,hirePool,spirits,evolution,levels,config,management]=await Promise.all(['shop-catalog','hire-pool','spirits','evolution','store-levels','economy','management'].map(read));data={catalog,hirePool,spirits,evolution,levels,config,management};}
+ if(!data){const read=async n=>{const r=await fetch(new URL(`../data/${n}.json?v=20261115-v61`,import.meta.url));if(!r.ok)throw Error(`資料讀取失敗：${n}`);return r.json();};const [catalog,hirePool,spirits,evolution,levels,config,management]=await Promise.all(['shop-catalog','hire-pool','spirits','evolution','store-levels','economy','management'].map(read));data={catalog,hirePool,spirits,evolution,levels,config,management};}
  data={...data,catalog:[...data.catalog.filter(c=>c.category!=='weapon'),...merchantWeaponCatalog()]};return new Game({storage,key,seed,data});
 }
 export const recipes=[
@@ -144,7 +145,7 @@ export class Game{
  clearRackReminder(s){if(!s.rackReminder)return;const items=this.data.catalog.filter(x=>x.category===s.rackReminder.category);if(s.shelves.some(sh=>items.some(x=>accepts(sh,x))))s.rackReminder=null;}
  autoStaff(s){if(s.phase!=='open'||s.totalTime<(s.autoStaffAt||0))return;s.autoStaffAt=s.totalTime+6;if(s.employees.filter(e=>e.role!=='standby').length>=capacityOf(this,s))return;const pick=s.employees.filter(e=>e.role==='standby'&&!e.lockedAssignment&&(!e.exhausted||s.autoRelief?.enabled)&&e.fatigue<100).sort((a,b)=>a.fatigue-b.fatigue)[0];if(pick){pick.role=preferredJob(this,pick);pick.nextTaskAt=0;syncWorkforce(this,s);}}
 
- tick(dt,realDt=dt){if(typeof document!=='undefined'&&document.hidden)return;if(this.storageBlocked||this.fortunePaused||this.spinArenaPaused||this.auctionPaused||this.state.meadowAway||this.state.paused||this.state.layoutPause||!Number.isFinite(dt)||dt<=0)return;if(this.state.phase!=='open'&&!this.state.upgradeProject&&!this.state.employees.some(e=>(e.reactionUntil||0)>this.state.totalTime)&&!this.state.employees.some(e=>e.role==='standby'&&(e.fatigue>0||e.path?.length))&&!(this.managerActive&&(this.state.manager.path?.length||Math.hypot(this.managerInput.x,this.managerInput.z)>.1)))return;this.pendingReal=(this.pendingReal||0)+(Number.isFinite(realDt)&&realDt>0&&realDt<=2?realDt:0);this.pending+=Math.min(dt,1)*this.state.speed;if(this.pending<(this.managerActive?.1:.25))return;const step=this.pending,realStep=this.pendingReal;this.pending=0;this.pendingReal=0;this.pendingMotion=new Map();const result=this.transaction(null,s=>{s.totalTime+=step;recoverResting(this,s,realStep);tickRealEvents(this,s,realStep,s.time+step>=this.data.config.dayDuration);operationsTick(this,s,step);if(this.managerActive){if(Math.hypot(this.managerInput.x,this.managerInput.z)>.1)this.steerManager(s,step);else this.safeMove(s,s.manager,step*2.7,step);}patrolDiscovery(this,s,step);if(s.phase!=='open'){for(const worker of s.employees)if(worker.role==='standby'&&worker.path?.length)this.safeMove(s,worker,step*2.2,step);return;}if(!s.patrolFocus)this.simulate(s,step);if(s.phase==='open'&&s.customerChase&&!s.patrolFocus)tickCustomerChase(this,s,step);customerHealthTick(this,s,realStep);syncQueueFortune(this,s);if(this.managerActive&&s.phase==='open')this.resolveNearbyEvent(s);});if(result.ok)this.motionFrame={time:this.state.totalTime,duration:step,trails:this.pendingMotion};this.pendingMotion=null;return result;}
+ tick(dt,realDt=dt){if(typeof document!=='undefined'&&document.hidden)return;if(this.storageBlocked||this.fortunePaused||this.spinArenaPaused||this.auctionPaused||this.state.meadowAway||this.state.paused||this.state.layoutPause||!Number.isFinite(dt)||dt<=0)return;if(this.state.phase!=='open'&&!this.state.upgradeProject&&!this.state.employees.some(e=>(e.reactionUntil||0)>this.state.totalTime)&&!this.state.employees.some(e=>e.role==='standby'&&(e.fatigue>0||e.path?.length))&&!(this.managerActive&&(this.state.manager.path?.length||Math.hypot(this.managerInput.x,this.managerInput.z)>.1)))return;this.pendingReal=(this.pendingReal||0)+(Number.isFinite(realDt)&&realDt>0&&realDt<=2?realDt:0);this.pending+=Math.min(dt,1)*this.state.speed;if(this.pending<(this.managerActive?.1:.25))return;const step=this.pending,realStep=this.pendingReal;this.pending=0;this.pendingReal=0;this.pendingMotion=new Map();const result=this.transaction(null,s=>{s.totalTime+=step;tickSpinVisitors(this,s,realStep);recoverResting(this,s,realStep);tickRealEvents(this,s,realStep,s.time+step>=this.data.config.dayDuration);operationsTick(this,s,step);if(this.managerActive){if(Math.hypot(this.managerInput.x,this.managerInput.z)>.1)this.steerManager(s,step);else this.safeMove(s,s.manager,step*2.7,step);}patrolDiscovery(this,s,step);if(s.phase!=='open'){for(const worker of s.employees)if(worker.role==='standby'&&worker.path?.length)this.safeMove(s,worker,step*2.2,step);return;}if(!s.patrolFocus)this.simulate(s,step);if(s.phase==='open'&&s.customerChase&&!s.patrolFocus)tickCustomerChase(this,s,step);customerHealthTick(this,s,realStep);syncQueueFortune(this,s);if(this.managerActive&&s.phase==='open')this.resolveNearbyEvent(s);});if(result.ok)this.motionFrame={time:this.state.totalTime,duration:step,trails:this.pendingMotion};this.pendingMotion=null;return result;}
  resolveNearbyEvent(s){
  const ev=s.event,employee=eventEmployee(s,ev);
  if(!ev||!employee||!managerNearEmployee(s,ev))return false;

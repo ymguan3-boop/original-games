@@ -1,4 +1,4 @@
-import{SPIN_TOPS,plazaArenaTheme}from'./spin-arena-config.js?v=20261115-v60';
+import{SPIN_TOPS,plazaArenaTheme}from'./spin-arena-config.js?v=20261115-v61';
 export function createSpinModels(T){
  const metals=new Set([...SPIN_TOPS.map(t=>t.metal),0xbd944b,0xd1a54b,0xe9ba56]);
  const faces=[];for(let i=0;i<6;i++){const c=document.createElement('canvas');c.width=c.height=64;const ctx=c.getContext('2d'),g=ctx.createLinearGradient(0,0,0,64);g.addColorStop(0,'#f2f5ff');g.addColorStop(.35,'#c9d9ee');g.addColorStop(.48,'#fff2d5');g.addColorStop(.55,'#64758a');g.addColorStop(1,'#252d40');ctx.fillStyle=g;ctx.fillRect(0,0,64,64);ctx.fillStyle=i%2?'#e9f3ff':'#fff5db';ctx.fillRect(8,4,9,36);ctx.fillRect(39,12,5,27);faces.push(c);}const env=new T.CubeTexture(faces);env.encoding=T.sRGBEncoding;env.needsUpdate=true;

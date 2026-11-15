@@ -1,5 +1,5 @@
-import {heroSupportStates} from './pet-ultimate-rules.js?v=20261027-v30';
-import {activeStatuses} from './combat-status.js?v=20261025-v22';
+import {heroSupportStates} from './pet-ultimate-rules.js?v=20261115-v61';
+import {activeStatuses} from './combat-status.js?v=20261115-v61';
 const TYPES=['poison','burn','paralysis','freeze','slow','heal'];
 /** Procedural THREE geometry only: no status image/texture requests. */
 export async function createStatusView(T,scene,heightOf){

@@ -1,4 +1,4 @@
-import {STATUS,immobilized} from './combat-status.js?v=20261025-v22';
+import {STATUS,immobilized} from './combat-status.js?v=20261115-v61';
 const inFamily=(id,ids)=>ids.includes(id),rank=s=>Math.max(1,Math.min(3,s?.stage||1));
 export function petUltimateRule(s){
  const id=s?.id,n=rank(s);
