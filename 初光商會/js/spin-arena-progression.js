@@ -1,4 +1,4 @@
-import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,spinTop,spinPartBonus} from './spin-arena-config.js?v=20261115-v61';
+import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_OPPONENTS,spinTop,spinPartBonus} from './spin-arena-config.js?v=20261115-v62';
 export function spinState(s){
  s.spinArena??={owned:{},equipped:null,parts:{rim:0,axis:0,ring:0},reputation:0,match:null,history:[],serial:0};
  const a=s.spinArena;
@@ -9,6 +9,12 @@ export function spinState(s){
   }
   for(const owned of Object.values(a.owned))for(const [slot,part] of Object.entries(owned.parts||{}))if(typeof part==='string')owned.parts[slot]={value:part,grade:'normal'};
   a.partSchema=2;
+ }
+ for(const owned of Object.values(a.owned)){
+  owned.level=Math.max(1,Math.min(R.maxUpgrade,Math.floor(Number(owned.level)||1)));
+  owned.mastery=Math.max(0,Number(owned.mastery)||0);
+  while(owned.mastery>=100&&owned.level<R.maxUpgrade){owned.mastery-=100;owned.level++;}
+  if(owned.level===R.maxUpgrade)owned.mastery=0;
  }
  if(a.daily?.day!==s.day)a.daily={day:s.day,coins:0,parts:0,traffic:0,firstWin:false};
  return a;
@@ -21,8 +27,8 @@ export function spinStats(id,owned={level:1,parts:{},mastery:0}){
    const part=typeof item==='string'?{value:item,grade:'normal'}:item;
    partBonus+=spinPartBonus(slot,part?.value,part?.grade)[k]||0;
   }
-  const bonus=Math.min(R.statBonusCap,((owned.level||1)-1)*R.upgradeStep+partBonus+Math.min(100,owned.mastery||0)*.0005);
-  stats[k]=t[k]*(1+bonus);
+  const growth=SPIN_GROWTH[id]?.[k]||.03;const bonus=(Math.min(20,owned.level||1)-1)*growth;
+  stats[k]=t[k]*(1+bonus)*(1+Math.min(R.statBonusCap,partBonus));
  }
  return stats;
 }
@@ -53,4 +59,27 @@ export function consumeSpinVisitor(a,m,random){
  if(!m.visitorId)return;
  if(a.visitor?.id===m.visitorId)a.visitor=null;
  a.nextVisitorIn=R.visitorMin+random()*(R.visitorMax-R.visitorMin);
+}
+
+// Permanent level growth is independent of equipment and temporary skills.
+export const SPIN_GROWTH={flame:{attack:.055,defense:.025,speed:.035,stamina:.03},wind:{attack:.03,defense:.025,speed:.06,stamina:.03},crystal:{attack:.025,defense:.06,speed:.025,stamina:.04},thunder:{attack:.05,defense:.02,speed:.05,stamina:.025},shield:{attack:.025,defense:.04,speed:.025,stamina:.06},shadow:{attack:.04,defense:.04,speed:.04,stamina:.04}};
+export function gainSpinMastery(owned,amount){
+ const before=owned.level;amount=Math.max(0,Math.floor(amount));
+ if(owned.level>=R.maxUpgrade)return {mastery:0,levels:0,level:R.maxUpgrade};
+ owned.mastery=(owned.mastery||0)+amount;
+ while(owned.mastery>=100&&owned.level<R.maxUpgrade){owned.mastery-=100;owned.level++;}
+ if(owned.level>=R.maxUpgrade)owned.mastery=0;
+ return {mastery:amount,levels:owned.level-before,level:owned.level};
+}
+export function spinRoster(g,s,refresh=false){
+ const a=spinState(s),level=Math.max(3,Math.min(5,s.level));
+ if(!refresh&&a.roster?.level===level)return a.roster.entries;
+ const names=['風鈴','阿岳','星野','米露','嵐風','小葵','銀砂','夏木','霜葉','青禾','赤石','雨音'];
+ const used=new Set(),old=a.roster?.entries||[];
+ const entries=SPIN_OPPONENTS.map((template,i)=>{
+  let index=Math.min(names.length-1,Math.floor(g.random(s)*names.length));while(used.has(index)||names[index]===old[i]?.person)index=(index+1)%names.length;used.add(index);
+  let topIndex=Math.min(5,Math.floor(g.random(s)*6));if(SPIN_TOPS[topIndex].id===old[i]?.topId)topIndex=(topIndex+1)%6;
+  return {...template,name:names[index]+' · '+['新秀','技師','高手'][i],person:names[index],topId:SPIN_TOPS[topIndex].id,shopLevel:level,scale:(1+(level-3)*.2)*(1+i*.07),variation:Object.fromEntries(['attack','defense','speed','stamina'].map(k=>[k,.95+g.random(s)*.1]))};
+ });
+ a.roster={level,entries};return entries;
 }

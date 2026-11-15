@@ -1,7 +1,7 @@
-import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,spinTop}from'./spin-arena-config.js?v=20261115-v61';
-import {spinState,spinStats,awardSpinPart,consumeSpinVisitor} from './spin-arena-progression.js?v=20261115-v61';
-export {spinState,spinStats} from './spin-arena-progression.js?v=20261115-v61';
-import{broadcast}from'./stock-flow.js?v=20261115-v61';
+import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,spinTop}from'./spin-arena-config.js?v=20261115-v62';
+import {spinState,spinStats,awardSpinPart,consumeSpinVisitor,gainSpinMastery,spinRoster} from './spin-arena-progression.js?v=20261115-v62';
+export {spinState,spinStats} from './spin-arena-progression.js?v=20261115-v62';
+import{broadcast}from'./stock-flow.js?v=20261115-v62';
 const check=(v,m)=>{if(!v)throw Error(m);},clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const random=m=>{m.seed=(Math.imul(m.seed,1664525)+1013904223)>>>0;return m.seed/4294967296;};
 const body=(stats,x,strategy,element)=>({x,z:0,vx:0,vz:0,spin:100,hp:100,energy:0,angle:0,stats,strategy,element,shield:0,skillUntil:0,hitCooldown:0});
@@ -28,13 +28,13 @@ function step(m,dt){
   const evade=i===1&&m.difficulty>0&&o.skillUntil>m.time&&d<1.1?-.8:1,orbit=b.strategy==='defense'?.75:.35,tx=(o.x-b.x)/d*evade+(i?1:-1)*Math.sin(m.time*1.7+(b.phase||0))*orbit,tz=(o.z-b.z)/d*evade+Math.cos(m.time*1.5+(b.phase||0))*orbit;
   b.vx+=(tx*spd-b.vx)*dt*2;b.vz+=(tz*spd-b.vz)*dt*2;
   if(near>R.radius-.4){b.vx-=b.x*dt*1.8;b.vz-=b.z*dt*1.8;}
-  b.x+=b.vx*dt;b.z+=b.vz*dt;b.angle+=dt*(10+b.spin*.25);b.spin=Math.max(0,b.spin-dt*(2.15*25/stats.stamina)*(b.strategy==='attack'?1.14:1));b.energy=Math.min(100,b.energy+dt*(4.5+(i?m.difficulty*.4:0)));b.hitCooldown=Math.max(0,b.hitCooldown-dt);
+  b.x+=b.vx*dt;b.z+=b.vz*dt;b.angle+=dt*(10+b.spin*.25);b.spin=Math.max(0,b.spin-dt*(2.15*25/stats.stamina)*(b.strategy==='attack'?1.14:1));b.energy=Math.min(100,b.energy+dt*R.chargeRate*(4.5+(i?m.difficulty*.4:0)));b.hitCooldown=Math.max(0,b.hitCooldown-dt);
   if(i===1&&b.energy>=100&&d<(m.difficulty>=2?1.6:1.0)&&o.skillUntil<=m.time)attack(m,1);
  }
  if(m.cutin)return;
  const dx=bs[1].x-bs[0].x,dz=bs[1].z-bs[0].z,dist=Math.hypot(dx,dz),contact=R.bodyRadius*2;
  if(dist<contact){const nx=dist?dx/dist:1,nz=dist?dz/dist:0,overlap=(contact-dist)/2;bs[0].x-=nx*overlap;bs[0].z-=nz*overlap;bs[1].x+=nx*overlap;bs[1].z+=nz*overlap;
-  if(m.time-m.lastCollision>.48){m.lastCollision=m.time;for(let i=0;i<2;i++){const b=bs[i],v=bs[1-i],power=effectiveSpinStats(b,m.time).attack*(b.strategy==='attack'?1.15:1)*affinity(b.element,v.element),guard=effectiveSpinStats(v,m.time).defense*(v.strategy==='defense'?1.22:1),damage=clamp((power*.45-guard*.18)*(v.shield>m.time?.5:1),3,24);v.hp=Math.max(0,v.hp-damage);v.spin=Math.max(0,v.spin-damage*.32);b.energy=Math.min(100,b.energy+8);const sign=i===0?1:-1,impulse=1.4+(b.skillUntil>m.time?2.8:0);v.vx+=nx*sign*impulse;v.vz+=nz*sign*impulse;}
+  if(m.time-m.lastCollision>.48){m.lastCollision=m.time;for(let i=0;i<2;i++){const b=bs[i],v=bs[1-i],power=effectiveSpinStats(b,m.time).attack*(b.strategy==='attack'?1.15:1)*affinity(b.element,v.element),guard=effectiveSpinStats(v,m.time).defense*(v.strategy==='defense'?1.22:1),damage=clamp((power*.45-guard*.18)*(v.shield>m.time?.5:1),3,24);v.hp=Math.max(0,v.hp-damage);v.spin=Math.max(0,v.spin-damage*.32);b.energy=Math.min(100,b.energy+8*R.chargeRate);const sign=i===0?1:-1,impulse=1.4+(b.skillUntil>m.time?2.8:0);v.vx+=nx*sign*impulse;v.vz+=nz*sign*impulse;}
    m.effects.push({id:++m.fx,kind:'hit',at:m.time,x:(bs[0].x+bs[1].x)/2,z:(bs[0].z+bs[1].z)/2});m.effects=m.effects.slice(-8);
   }
  }
@@ -46,7 +46,7 @@ export function advanceSpinMatch(m,seconds){if(m?.phase!=='battle')return;m.accu
 export function settleSpinMatch(g,s){
  const a=spinState(s),m=a.match;if(!m||m.phase!=='result'||m.settled)return;m.settled=true;
  const owned=a.owned[m.topId],d=a.daily,opponent=m.opponent||SPIN_OPPONENTS.find(o=>o.id===m.opponentId);
- owned.mastery=Math.min(100,(owned.mastery||0)+(m.won?5:1));let coins=0,traffic=0,reputation=0;
+ const progress=gainSpinMastery(owned,m.won?25:10);let coins=0,traffic=0,reputation=0;
  if(m.won&&!m.visitorId){
   coins=Math.max(0,Math.min(opponent.reward,R.coinCap-d.coins));d.coins+=coins;s.gold+=coins;s.stats.rewards=(s.stats.rewards||0)+coins;
   reputation=opponent.rep;a.reputation+=reputation;
@@ -54,14 +54,16 @@ export function settleSpinMatch(g,s){
  }
  const part=awardSpinPart(a,m,()=>random(m));consumeSpinVisitor(a,m,()=>random(m));
  if(m.won){g.notice(s,'manager','陀螺大會獲勝！','good');broadcast(s,`戰鬥陀螺勝利！${m.visitorId?'外來對手已離場，零件已入庫':`獎金 ${coins} G${traffic?`，今日來客 +${Math.round(traffic*100)}%`:''}`}`,'sale');}
- m.reward={coins,part,traffic,reputation};a.history.push({id:m.id,day:s.day,won:m.won,score:m.score,reward:m.reward,visitor:!!m.visitorId});a.history=a.history.slice(-30);
+ spinRoster(g,s,true);m.reward={coins,part,traffic,reputation,...progress};a.history.push({id:m.id,day:s.day,won:m.won,score:m.score,reward:m.reward,visitor:!!m.visitorId});a.history=a.history.slice(-30);
  g.log(s,`廣場陀螺大會：${m.won?'勝利':'下次再挑戰'} ${m.score.join('：')}，獎金 ${coins} G${part?`，獲得${SPIN_GRADES[part.grade].name}${SPIN_PARTS[part.slot].name}`:''}。`);
 }
 export function spinAction(g,s,type,p){
  if(!type.startsWith('spin'))return null;check(s.level>=R.unlock,'戰鬥陀螺大會於商會 Lv.3 解鎖');const a=spinState(s),t=spinTop(p.topId),owned=a.owned[p.topId];
  if(type==='spinBuy'){check(t,'找不到這顆陀螺');if(owned)return '已收藏這顆陀螺，未重複扣款';check(a.reputation>=t.reputation,`競技聲望 ${t.reputation} 解鎖${t.name}`);g.pay(s,t.cost);s.stats.expenses+=t.cost;a.owned[t.id]={level:1,mastery:0,parts:{}};a.equipped??=t.id;return `已購入${t.name}`;}
  if(type==='spinEquip'){check(owned,'請先購買這顆陀螺');check(!a.match||!['battle','strategy','roundResult'].includes(a.match.phase),'比賽途中不能更換陀螺');a.equipped=p.topId;return '已裝備';}
- if(type==='spinUpgrade'){check(owned,'尚未擁有');check(!a.match||!['battle','strategy','roundResult'].includes(a.match.phase),'比賽途中不能強化');check(p.expectedLevel===owned.level,'強化等級已變更，未重複扣款');check(owned.level<R.maxUpgrade,'已達最高強化 Lv.5');const cost=[0,80,120,180,260][owned.level];g.pay(s,cost);s.stats.expenses+=cost;owned.level++;return `強化至 Lv.${owned.level}`;}
+ if(type==='spinRoster'){spinRoster(g,s);return '對手名單已更新';}
+ if(type==='spinUpgrade')return '強化已改為對戰熟練度升級，無須付費';
+ if(type==='spinUnequip'){check(owned&&SPIN_PARTS[p.slot],'零件設定無效');check(!a.match||!['battle','strategy','roundResult'].includes(a.match.phase),'比賽途中不能改裝');const part=owned.parts[p.slot];if(part){a.parts[p.slot][part.grade]++;delete owned.parts[p.slot];}return '已卸下零件並歸還背包';}
  if(type==='spinBuyPart'){check(SPIN_PARTS[p.slot]&&(!p.grade||p.grade==='normal'),'商店僅販售普通零件，進階與高級須挑戰取得');g.pay(s,100);s.stats.expenses+=100;a.parts[p.slot].normal++;return '已購買普通零件';}
  if(type==='spinPart'){
   const grade=p.grade||'normal';check(owned&&SPIN_PARTS[p.slot]?.choices[p.value]&&SPIN_GRADES[grade],'零件設定無效');
@@ -74,9 +76,9 @@ export function spinAction(g,s,type,p){
  if(type==='spinSound'){a.soundMuted=!!p.muted;return a.soundMuted?'已關閉陀螺音效':'已開啟陀螺音效';}
  if(type==='spinStart'){
   check(a.equipped&&a.owned[a.equipped],'請先購買並裝備至少一顆陀螺');if(a.match&&['battle','strategy','roundResult'].includes(a.match.phase))return '繼續尚未結束的比賽';
-  const o=SPIN_OPPONENTS.find(o=>o.id===p.opponentId)||(a.visitor?.id===p.opponentId&&a.visitor.status==='waiting'?a.visitor:null);check(o,'這位對手已離開，請選擇目前的對手');
+  const o=spinRoster(g,s).find(o=>o.id===p.opponentId)||(a.visitor?.id===p.opponentId&&a.visitor.status==='waiting'?a.visitor:null);check(o,'這位對手已離開，請選擇目前的對手');
   const top=spinTop(a.equipped),other=spinTop(o.topId),playerStats=spinStats(top.id,a.owned[top.id]);
-  const opponentStats=Object.fromEntries(Object.entries(spinStats(o.topId)).map(([k,v])=>[k,o.visitor?Math.max(v*1.35,playerStats[k]*1.12):v*(1+o.difficulty*.07)]));
+  const opponentStats=Object.fromEntries(Object.entries(spinStats(o.topId)).map(([k,v])=>[k,o.visitor?Math.max(v*1.35*(1+(s.level-3)*.2),playerStats[k]*1.12):v*o.scale*(o.variation?.[k]||1)]));
   a.match={id:`spin-${++a.serial}`,day:s.day,topId:top.id,opponentId:o.id,opponentTopId:o.topId,opponent:{...o},visitorId:o.visitor?o.id:null,playerStats,opponentStats,playerElement:top.element,opponentElement:other.element,difficulty:o.difficulty,phase:'strategy',score:[0,0],round:1,rounds:[],seed:Math.floor(g.random(s)*4294967295),effects:[],fx:0};
   if(o.visitor)a.visitor.status='engaged';return '選擇本局策略';
  }

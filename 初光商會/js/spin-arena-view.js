@@ -1,5 +1,5 @@
-import{createSpinModels}from'./spin-arena-models.js?v=20261115-v61';
-import{createSpinSkillEffects}from'./spin-arena-skills.js?v=20261115-v61';
+import{createSpinModels}from'./spin-arena-models.js?v=20261115-v62';
+import{createSpinSkillEffects}from'./spin-arena-skills.js?v=20261115-v62';
 export function createSpinBattleView(canvas,{level=3}={}){const T=globalThis.THREE,renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(1.5,devicePixelRatio));renderer.setClearColor(0x21354a);renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(43,1,.1,60),models=createSpinModels(T),arena=models.arena({level});scene.add(arena,new T.HemisphereLight(0xfff7e1,0x46556c,.8));const sun=new T.DirectionalLight(0xffffff,1.2);sun.position.set(3,7,4);scene.add(sun);
  const tops=[null,null],trails=[],fx=new T.Group();scene.add(fx);const skills=createSpinSkillEffects(T,scene);let angle=1,zoom=1,dead=false,frames=0;

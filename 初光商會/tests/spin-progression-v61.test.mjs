@@ -1,10 +1,10 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {Game} from '../js/core.js';
-import {spinState,spinStats,advanceSpinMatch,effectiveSpinStats,launchSpinRound,endSpinRound} from '../js/spin-arena-core.js?v=20261115-v61';
-import {tickSpinVisitors,awardSpinPart} from '../js/spin-arena-progression.js?v=20261115-v61';
-import {SPIN_TOPS,SPIN_SKILLS,SPIN_RULES as R} from '../js/spin-arena-config.js?v=20261115-v61';
-import {activeSpinSkills} from '../js/spin-arena-skills.js?v=20261115-v61';
-import {SPIN_SOUND_PROFILES} from '../js/spin-arena-presentation.js?v=20261115-v61';
+import {spinState,spinStats,advanceSpinMatch,effectiveSpinStats,launchSpinRound,endSpinRound} from '../js/spin-arena-core.js?v=20261115-v62';
+import {tickSpinVisitors,awardSpinPart} from '../js/spin-arena-progression.js?v=20261115-v62';
+import {SPIN_TOPS,SPIN_SKILLS,SPIN_RULES as R} from '../js/spin-arena-config.js?v=20261115-v62';
+import {activeSpinSkills} from '../js/spin-arena-skills.js?v=20261115-v62';
+import {SPIN_SOUND_PROFILES} from '../js/spin-arena-presentation.js?v=20261115-v62';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8'));
 const data=Object.fromEntries(Object.entries({catalog:'shop-catalog',hirePool:'hire-pool',spirits:'spirits',evolution:'evolution',levels:'store-levels',config:'economy',management:'management'}).map(([k,v])=>[k,read(v)]));
 function setup(){const memory=new Map(),storage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)},g=new Game({storage,data});g.transaction(null,s=>{s.level=3;s.gold=20000;});return {g,storage};}
@@ -69,7 +69,7 @@ test('AI 也必須先登場；雙方排隊施放不覆蓋、不提前傷害或�
  advanceSpinMatch(m,R.fixedStep);assert.equal(m.cutin.actor,1);assert.equal(activeSpinSkills(m).length,0);
  m.bodies[0].energy=100;assert(g.act('spinSkill').ok);m=g.state.spinArena.match;assert.equal(m.skillQueue.length,1);assert(!g.act('spinSkill').ok);m=g.state.spinArena.match;
  const time=m.time,hp=m.bodies.map(b=>b.hp);advanceSpinMatch(m,.8);assert.equal(m.cutin.actor,0);assert.equal(m.effects.filter(e=>e.kind==='skill').length,1);
- advanceSpinMatch(m,.8);assert.equal(m.cutin,null);assert.equal(m.time,time);assert.deepEqual(m.bodies.map(b=>b.hp),hp);assert.equal(activeSpinSkills(m).length,2);assert.equal(m.bodies[0].skillId,'flame');assert.equal(m.bodies[1].skillId,'wind');
+ advanceSpinMatch(m,.8);assert.equal(m.cutin,null);assert.equal(m.time,time);assert.deepEqual(m.bodies.map(b=>b.hp),hp);assert.equal(activeSpinSkills(m).length,2);assert.equal(m.bodies[0].skillId,'flame');assert.equal(m.bodies[1].skillId,m.opponentTopId);
 });
 test('一場實際強化外來對戰可由物理模擬完成三戰兩勝並取得保底零件',()=>{
  const {g}=setup();g.act('spinBuy',{topId:'flame'});g.transaction(null,s=>{s.phase='open';spinState(s).nextVisitorIn=0;tickSpinVisitors(g,s,1);});

@@ -1,4 +1,4 @@
-export const SPIN_RULES=Object.freeze({unlock:3,radius:2.25,bodyRadius:.64,roundSeconds:45,roundsToWin:2,maxUpgrade:5,upgradeStep:.06,statBonusCap:.8,coinCap:450,partCap:3,trafficMin:.05,trafficMax:.15,trafficCap:.15,combinedTrafficCap:1.45,fixedStep:1/60,cutinSeconds:.8,visitorMin:180,visitorMax:300});
+export const SPIN_RULES=Object.freeze({unlock:3,radius:2.25,bodyRadius:.64,roundSeconds:45,roundsToWin:2,maxUpgrade:20,chargeRate:2,upgradeStep:.06,statBonusCap:.8,coinCap:450,partCap:3,trafficMin:.05,trafficMax:.15,trafficCap:.15,combinedTrafficCap:1.45,fixedStep:1/60,cutinSeconds:.8,visitorMin:180,visitorMax:300});
 export const SPIN_TOPS=[
  {id:'flame',name:'烈焰獅王',color:0xa9231c,metal:0xe4af38,kind:'攻擊',element:'fire',cost:300,reputation:0,attack:31,defense:19,speed:23,stamina:22,skill:'獅焰衝鋒',blades:5},
  {id:'wind',name:'蒼風翼龍',color:0x3286d1,metal:0xdce8f0,kind:'速度',element:'wind',cost:300,reputation:4,attack:23,defense:20,speed:33,stamina:20,skill:'風翼迴旋',blades:6},
@@ -16,7 +16,7 @@ export function spinPartBonus(slot,value,grade='normal'){
  return {[value]:g.primary,[secondary]:g.secondary};
 }
 export const SPIN_SKILLS={flame:{seconds:4,bonuses:{attack:.65,speed:.15}},wind:{seconds:4,bonuses:{speed:.65,attack:.15}},crystal:{seconds:5,bonuses:{defense:.7,stamina:.2}},thunder:{seconds:3.5,bonuses:{attack:.45,speed:.45}},shield:{seconds:5,bonuses:{defense:.45,stamina:.65}},shadow:{seconds:4,bonuses:{attack:.3,defense:.2,speed:.3,stamina:.2}}};
-export const spinBonusText=bonuses=>Object.entries(bonuses).map(([k,v])=>`${SPIN_STAT_NAMES[k]} +${Math.round(v*100)}%`).join('／');
+export const spinBonusText=bonuses=>Object.entries(bonuses).map(([k,v])=>`${SPIN_STAT_NAMES[k]} +${Math.round(v*1000)/10}%`).join('／');
 export const SPIN_OPPONENTS=[{id:'rookie',name:'小鎮新秀',topId:'wind',difficulty:0,reward:55,rep:2},{id:'artisan',name:'機巧工匠',topId:'crystal',difficulty:1,reward:95,rep:4},{id:'champion',name:'廣場冠軍',topId:'shadow',difficulty:2,reward:150,rep:6}];
 export const spinTop=id=>SPIN_TOPS.find(t=>t.id===id);
 export function plazaArenaPlacement(level){return {x:0,zOffset:level===3?3.15:level===4?3.85:4.35,radius:level===3?1.65:1.9,stallX:level===3?3.7:level===4?4.7:4};}

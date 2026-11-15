@@ -1,41 +1,41 @@
-import{addRackInk}from'./rack-ink.js?v=20261115-v61';
-import{createPlacementGuide}from'./placement-guide.js?v=20261115-v61';
-import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261115-v61';
-import{footprintCenter,occupiedCells,footprintSize}from'./placement-footprint.js?v=20261115-v61';
-import {createTierModel,createOrbTrim} from './tier-models.js?v=20261115-v61';
-import {fitFurniture} from './furniture-footprint.js?v=20261115-v61';
-import {stockState} from './shop-interactions.js?v=20261115-v61';
-import {fortuneAvailable} from './fortune-cards.js?v=20261115-v61';
-import {createWeatherOutfit,weatherOutfitKind} from './weather-outfits.js?v=20261115-v61';
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261115-v61';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261115-v61';
-import {createChaseCelebration} from './chase-celebration.js?v=20261115-v61';
-import {buildOutdoor} from './outdoor-3d.js?v=20261115-v61';
-import {environment} from './environment.js?v=20261115-v61';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261115-v61';
-import {addProductEdges} from './product-outlines.js?v=20261115-v61';
-import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261115-v61';
-import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261115-v61';
-import {decorateInterior} from './interior-v5.js?v=20261115-v61';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261115-v61';
-import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261115-v61';
-import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261115-v61';
+import{addRackInk}from'./rack-ink.js?v=20261115-v62';
+import{createPlacementGuide}from'./placement-guide.js?v=20261115-v62';
+import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261115-v62';
+import{footprintCenter,occupiedCells,footprintSize}from'./placement-footprint.js?v=20261115-v62';
+import {createTierModel,createOrbTrim} from './tier-models.js?v=20261115-v62';
+import {fitFurniture} from './furniture-footprint.js?v=20261115-v62';
+import {stockState} from './shop-interactions.js?v=20261115-v62';
+import {fortuneAvailable} from './fortune-cards.js?v=20261115-v62';
+import {createWeatherOutfit,weatherOutfitKind} from './weather-outfits.js?v=20261115-v62';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,gardenSlots,PLANT_TYPES,wallLift} from './decor-zones.js?v=20261115-v62';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261115-v62';
+import {createChaseCelebration} from './chase-celebration.js?v=20261115-v62';
+import {buildOutdoor} from './outdoor-3d.js?v=20261115-v62';
+import {environment} from './environment.js?v=20261115-v62';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261115-v62';
+import {addProductEdges} from './product-outlines.js?v=20261115-v62';
+import {finishes,windows,floorFinish} from './architecture-v6.js?v=20261115-v62';
+import {decorTypes,decorDefinition,decorModel,obstacles} from './decorations.js?v=20261115-v62';
+import {decorateInterior} from './interior-v5.js?v=20261115-v62';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261115-v62';
+import {buildShell,buildGround,buildCounter,tune} from './chibi/shell.js?v=20261115-v62';
+import {buildYard,layout as yardLayout} from './chibi/yard.js?v=20261115-v62';
 /* 新版 Q 版店面：剖面建築＋依等級熱鬧的店外街景 */
 const CHIBI=true;
 /* 店內幻靈員工：比原本大 1.3 倍；外框跟 Q 版店面一樣是深咖啡色、只描外輪廓 */
 /* 宣傳員走動：在門前院子隨機選點，直線路徑上不能碰到擺設與建築 */
 const promoterWalker={x:null,z:null,tx:0,tz:0,wait:0,face:null,greetUntil:0,greetCool:0,area:null};
 const STAFF_SCALE=1.3,STAFF_STYLE={diameter:.74*1.3};
-import {createShelfView,tintShelf} from './shelf-view.js?v=20261115-v61';
-import {createAssets} from './asset-resolver.js?v=20261115-v61';
-import {isLayoutValid,ENTRANCE} from './nav.js?v=20261115-v61';
-import {sampleTrail,turnToward} from './motion.js?v=20261115-v61';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261115-v61';
-import {eventEmployee} from './patrol-events.js?v=20261115-v61';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261115-v61';
-import {createPlacementCells} from './placement-cells.js?v=20261115-v61';
-import {hasRackModel,rackModel} from './rack-models.js?v=20261115-v61';
-import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261115-v61';
+import {createShelfView,tintShelf} from './shelf-view.js?v=20261115-v62';
+import {createAssets} from './asset-resolver.js?v=20261115-v62';
+import {isLayoutValid,ENTRANCE} from './nav.js?v=20261115-v62';
+import {sampleTrail,turnToward} from './motion.js?v=20261115-v62';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261115-v62';
+import {eventEmployee} from './patrol-events.js?v=20261115-v62';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition,shelfModel} from './furniture.js?v=20261115-v62';
+import {createPlacementCells} from './placement-cells.js?v=20261115-v62';
+import {hasRackModel,rackModel} from './rack-models.js?v=20261115-v62';
+import {buildProducts,setProductCount,stockCount,productPath,loadProduct} from './shelf-products.js?v=20261115-v62';
 export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const T=globalThis.THREE,metrics={assets:[],errors:[],actors:0,frames:0};
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setClearColor(0xb7dce9);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
@@ -226,7 +226,3 @@ export function createScene({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{
  const ready=fetch('../幻靈奇旅/data/spirits.json').then(r=>{if(!r.ok)throw Error('原角色資料無法讀取');return r.json();}).then(data=>{species=new Map(data.map(d=>[d.id,d]));const s=state();return Promise.all(['bulbasaur','squirtle'].map(id=>assets.load(species.get(id).model)));}).catch(e=>{report(e);throw e;});const gl=renderer.getContext(),debug=gl.getExtension('WEBGL_debug_renderer_info');metrics.gpu=debug?gl.getParameter(debug.UNMASKED_RENDERER_WEBGL):'unknown';setQuality('low');resize();
  return {greetPasser(id,converted){yard?.greet?.(id,converted);},toggleView,get outsideView(){return outsideView;},playChaseSuccess,evolutionActor:path=>assets.actor(path,3,{footprint:99,diameter:99}),update,resize,ready,assetsPending:()=>pending.size,metrics,setQuality,selectShelf,editShelf,beginShelfPlacement,confirmPlacement,cancelPlacement,cancelEdit,projectShelf,projectShelfHead,projectCell(x,z,y=0){const p=new T.Vector3(x,y,z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},setMode(m){if(m==='follow'&&cameraLocked())return {ok:false,message:'請先完成貨架調整或點空白處取消選取，再切換主管巡店'};const previousMode=mode;if(m!=='decorate')cancelPlacement();const result=game.setManagerActive(m==='follow');if(!result.ok){onActionResult(result);return result;}mode=m;keys.clear();joystick={x:0,y:0};game.setManagerInput(0,0);grid.visible=m==='decorate';metrics.mode=m;metrics.managerVisible=m==='follow';if(m!=='decorate')selectShelf(null);if(m!=='follow'&&previousMode==='follow')target.set((dimensions(state().level).width-1)/2,0,(dimensions(state().level).height-1)/2);onModeChange(m);return result;},setJoystick(x,y){joystick={x,y};},rotate(delta=.24){if(cameraLocked())return false;yaw+=delta;return true;},zoom(delta=1){if(cameraLocked())return false;zoomView(1,delta);return true;},setGestureMode(m){if(cameraLocked())return touchDragMode;touchDragMode=m==='rotate'?'rotate':'pan';metrics.gestureMode=touchDragMode;return touchDragMode;},get gestureMode(){return touchDragMode;},get cameraLocked(){return cameraLocked();},get cameraPose(){return {yaw,pitch,distance,followDistance,targetX:target.x,targetY:target.y,targetZ:target.z};},dispose(){alive=false;outdoorYardDispose?.();celebration.dispose();cancelPlacement();resizeObserver?.disconnect();window.removeEventListener('resize',resize);for(const c of sceneContours)c.dispose();for(const v of shelfViews.values())v.contour?.dispose();for(const n of noticeSprites){n.effect.sprite.parent?.remove(n.effect.sprite);n.effect.dispose();}noticeSprites.length=0;for(const a of actorViews.values()){a.feedback?.dispose();a.weatherOutfit?.dispose();a.dispose();}for(const [event,fn]of [['pointerdown',pointerDown],['pointermove',pointerMove],['pointerup',pointerUp],['pointercancel',blur],['contextmenu',context],['wheel',wheel]])canvas.removeEventListener(event,fn);window.removeEventListener('keydown',keyDown);window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',blur);scene.traverse(o=>{o.geometry?.dispose();if(o.material){for(const m of Array.isArray(o.material)?o.material:[o.material]){m.map?.dispose();m.dispose();}}});for(const m of ownedMaterials)m.dispose();assets.dispose();contactShadowTexture.dispose();contactShadowGeometry.dispose();contactShadowMaterial.dispose();placementGuide.dispose();renderer.dispose();}};
 }
-
-
-
-

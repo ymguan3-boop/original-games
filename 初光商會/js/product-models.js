@@ -21,7 +21,6 @@ const RECIPES={
  'buff-pickup'(b,G){flask(b,G,0x3fb86a,{body:'cone',cap:0x7a4a22});b.put(G.half,0xd8301f,0,.3,.31,.14,.14,.05,Math.PI);b.put(G.box,0xdfe8f2,-.14,.32,.31,.05,.06,.04);b.put(G.box,0xdfe8f2,.14,.32,.31,.05,.06,.04);},
  'shop-iron'(b,G){for(const [x,y,z,s,c] of [[0,.24,0,.3,0x565b66],[-.3,.16,.1,.2,0x6a6f7a],[.28,.15,.12,.2,0x4c5059],[.08,.15,-.26,.19,0x60656f],[.02,.46,.04,.17,0x747a85]]){b.put(G.rock,c,x,y,z,s,s*.9,s,x*3,z*4,y*3);b.put(G.oct,0xd9e2ec,x+s*.5,y+s*.5,z+s*.5,s*.22);}},
  'shop-wood'(b,G){for(const [x,y] of [[-.21,.2],[.21,.2],[0,.56]]){b.put(G.cyl,0x9a6538,x,y,0,.2,.92,.2,Math.PI/2);for(const z of[-.465,.465]){b.put(G.cyl,0xe9c98a,x,y,z,.17,.02,.17,Math.PI/2);b.put(G.ring,0xb98a50,x,y,z,.09,.09,.09);}}},
- 'shop-crystal'(b,G){for(const [x,z,h,r,tilt,c] of [[0,0,.82,.15,0,0x4fd6e8],[-.2,.05,.56,.11,.3,0x7fe6f2],[.2,.02,.62,.12,-.28,0x35b4d8],[.04,.2,.42,.09,-.2,0xa6f2f8],[-.03,-.2,.46,.1,.2,0x35b4d8]]){b.put(G.hex,c,x+Math.sin(tilt)*h*.4,h*.4,z,r,h*.8,r,0,0,-tilt);b.put(G.tip,c,x+Math.sin(tilt)*h*.84,h*.86,z,r,h*.2,r,0,0,-tilt);}b.put(G.rock,0x6a5a4e,0,.03,0,.34,.1,.3);},
 };
 export const hasProcedural=sku=>!!RECIPES[sku];
 /* 回傳與 GLTF 相同的 {scene}，後面的貨架程式不用分辨來源 */

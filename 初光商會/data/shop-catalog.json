@@ -369,22 +369,5 @@
     "isRestricted": false,
     "description": "星露果來源為主遊戲 berry；其餘為商會原創經營素材。",
     "assetRef": null
-  },
-  {
-    "sku": "shop-crystal",
-    "sourceItemId": null,
-    "shopOriginal": true,
-    "displayName": "商會晶礦",
-    "category": "material",
-    "buyCost": 45,
-    "suggestedRetail": 90,
-    "stockPerShelf": 30,
-    "supplier": "森野採集行",
-    "unlockStoreLevel": 3,
-    "isSellable": true,
-    "isDisplayOnly": false,
-    "isRestricted": false,
-    "description": "星露果來源為主遊戲 berry；其餘為商會原創經營素材。",
-    "assetRef": null
   }
 ]

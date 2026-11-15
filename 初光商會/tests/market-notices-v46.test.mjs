@@ -9,12 +9,13 @@ import {MERCHANT_DROP_RATES,rollMerchantWeapon,merchantWeaponCatalog} from '../.
 const raw=JSON.parse(fs.readFileSync(new URL('../data/shop-catalog.json',import.meta.url),'utf8')),catalog=[...raw.filter(c=>c.category!=='weapon'),...merchantWeaponCatalog()],g={data:{catalog}},seen=[...shelfTypes,...decorTypes].map(t=>t.id);
 const state=()=>({level:3,day:1,shelves:[],decorStorage:[],shelfStorage:[]});
 const market=id=>({...state(),market:{event:{id,startDay:1,endDay:3,pickedTag:'material'}}});
-test('草原三階掉落率皆為舊版五分之一，臨界值不掉且保留階級',()=>{
- for(const[kind,old]of[['normal',.22],['elite',.8],['boss',1]]){const rate=MERCHANT_DROP_RATES[kind];assert.equal(rate,old/5);assert.equal(rollMerchantWeapon({kind},()=>rate),null);assert.equal(rollMerchantWeapon({kind},()=>rate-.000001).merchantGrade,kind);}
+test('草原普通掉落率為舊版五分之一，小魔王與魔王保證掉落且保留階級',()=>{
+ assert.equal(MERCHANT_DROP_RATES.normal,.22/5);assert.equal(rollMerchantWeapon({kind:'normal'},()=>MERCHANT_DROP_RATES.normal),null);
+ for(const kind of ['elite','boss']){assert.equal(MERCHANT_DROP_RATES[kind],1);assert.equal(rollMerchantWeapon({kind},()=>.999999).merchantGrade,kind);}
 });
 test('十二種市場事件全部作用到實際商品；豐收降素材進價25%，未影響補給',()=>{
  for(const event of MARKET_EVENTS){for(const tag of Object.keys({...event.cost,...event.demand}))assert(tag==='all'||catalog.some(c=>tagsOf(c.sku).includes(tag)),event.id+': '+tag);}
- const s=market('harvest');for(const sku of ['berry','shop-iron','shop-wood','shop-crystal'])assert.equal(costFactor(s,sku),.75);assert.equal(costFactor(s,'potion'),1);assert.deepEqual(eventEffects(activeEvent(s)),['素材進價 -25%']);
+ const s=market('harvest');for(const sku of ['berry','shop-iron','shop-wood'])assert.equal(costFactor(s,sku),.75);assert.equal(costFactor(s,'potion'),1);assert.deepEqual(eventEffects(activeEvent(s)),['素材進價 -25%']);
  assert.equal(demandFactor(market('festival'),'potion'),1.5);assert.equal(demandFactor(market('demon'),'guns-critical-merchant-boss'),1.7);
  assert(!MARKET_EVENTS.some(e=>/食品|防具/.test(e.text+e.shout)));assert(tagsOf('staff-pumpkin').includes('weapon'));
 });

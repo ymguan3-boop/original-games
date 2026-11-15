@@ -1,4 +1,4 @@
-import {SPIN_TOPS,SPIN_SKILLS,spinTop,spinBonusText} from './spin-arena-config.js?v=20261115-v61';
+import {SPIN_TOPS,SPIN_SKILLS,spinTop,spinBonusText} from './spin-arena-config.js?v=20261115-v62';
 export const SPIN_SOUND_PROFILES={
  flame:{wave:'sawtooth',from:130,to:48,noise:.65,filter:650,notes:[1,1.5]},
  wind:{wave:'sine',from:470,to:1250,noise:.6,filter:2800,notes:[1,1.33]},
@@ -9,13 +9,13 @@ export const SPIN_SOUND_PROFILES={
 };
 export function createSpinAudio(){
  let ctx=null,muted=false,played=0,lastId=null,dead=false;const nodes=new Set();
- function unlock(){if(dead)return;try{const C=globalThis.AudioContext||globalThis.webkitAudioContext;if(!C)return;ctx??=new C();if(ctx.state==='suspended')ctx.resume().catch(()=>{});}catch{}}
+ async function unlock(){if(dead)return false;try{const C=globalThis.AudioContext||globalThis.webkitAudioContext;if(!C)return false;ctx??=new C();if(ctx.state!=='running')await ctx.resume();return ctx.state==='running';}catch{return false;}}
  function stop(){for(const n of nodes){try{n.stop();}catch{}}nodes.clear();}
- function play(id){
-  const p=SPIN_SOUND_PROFILES[id];if(!p||muted||dead||ctx?.state!=='running')return;
-  const now=ctx.currentTime,duration=.58,master=ctx.createGain();master.gain.setValueAtTime(.001,now);master.gain.linearRampToValueAtTime(.075,now+.035);master.gain.exponentialRampToValueAtTime(.001,now+duration);master.connect(ctx.destination);
+ function play(id,collision=false){
+  const p=SPIN_SOUND_PROFILES[id];if(!p||muted||dead)return;if(ctx?.state!=='running'){unlock().then(ready=>{if(ready&&!muted&&!dead)play(id,collision);});return;}
+  const now=ctx.currentTime,duration=collision?.1:.58,master=ctx.createGain();master.gain.setValueAtTime(.001,now);master.gain.linearRampToValueAtTime(collision?.16:.45,now+(collision?.008:.035));master.gain.exponentialRampToValueAtTime(.001,now+duration);master.connect(ctx.destination);
   let remaining=p.notes.length+1;const ended=node=>{nodes.delete(node);if(--remaining===0)master.disconnect();};
-  for(const ratio of p.notes){const o=ctx.createOscillator(),gain=ctx.createGain();o.type=p.wave;o.frequency.setValueAtTime(p.from*ratio,now);o.frequency.exponentialRampToValueAtTime(p.to*ratio,now+duration);gain.gain.value=.35/p.notes.length;o.connect(gain);gain.connect(master);nodes.add(o);o.onended=()=>{o.disconnect();gain.disconnect();ended(o);};o.start(now);o.stop(now+duration);}
+  for(const ratio of p.notes){const o=ctx.createOscillator(),gain=ctx.createGain();o.type=p.wave;o.frequency.setValueAtTime((collision?440:p.from)*ratio,now);o.frequency.exponentialRampToValueAtTime(p.to*ratio,now+duration);gain.gain.value=.35/p.notes.length;o.connect(gain);gain.connect(master);nodes.add(o);o.onended=()=>{o.disconnect();gain.disconnect();ended(o);};o.start(now);o.stop(now+duration);}
   const buffer=ctx.createBuffer(1,Math.ceil(ctx.sampleRate*duration),ctx.sampleRate),data=buffer.getChannelData(0);let seed=97+SPIN_TOPS.findIndex(t=>t.id===id)*43;
   for(let i=0;i<data.length;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;data[i]=(seed/2147483648-1)*p.noise;}
   const noise=ctx.createBufferSource(),filter=ctx.createBiquadFilter();filter.type=id==='wind'?'bandpass':'lowpass';filter.frequency.value=p.filter;noise.buffer=buffer;noise.connect(filter);filter.connect(master);nodes.add(noise);noise.onended=()=>{noise.disconnect();filter.disconnect();ended(noise);};noise.start(now);noise.stop(now+duration);played++;lastId=id;
@@ -25,11 +25,11 @@ export function createSpinAudio(){
 export function createSpinPresentation(stage,audio){
  const el=document.createElement('div');el.className='spin-cutin';el.hidden=true;el.setAttribute('role','status');
  el.innerHTML='<div class="spin-cutin-ribbon"></div><img alt=""><div class="spin-cutin-title"><small></small><strong></strong></div><p></p>';stage.append(el);
- const art=el.querySelector('img'),small=el.querySelector('small'),title=el.querySelector('strong'),description=el.querySelector('p');let key=null;
+ const art=el.querySelector('img'),small=el.querySelector('small'),title=el.querySelector('strong'),description=el.querySelector('p');let key=null,hitKey=null;
  // Warm the illustrations while the energy gauge fills, not during the cut-in.
  const images=new Map();function prepare(ids){for(const id of ids){if(!id||images.has(id))continue;const img=new Image();img.src=new URL(`../assets/spin-arena/cards-v61/${id}.webp`,import.meta.url).href;images.set(id,img);}}
  function update(match,extraTime=0){
-  prepare([match.topId,match.opponentTopId]);const cue=match.cutin;
+  prepare([match.topId,match.opponentTopId]);const hit=match.effects?.findLast(fx=>fx.kind==='hit');if(hit){const next=`${match.id}:${match.round}:${hit.id}`;if(hitKey!==next){hitKey=next;if(match.time-hit.at<.25)audio.play(match.topId,true);}}const cue=match.cutin;
   if(!cue){el.hidden=true;key=null;return;}
   const top=spinTop(cue.topId),skill=SPIN_SKILLS[cue.topId];if(!top||!skill)return;
   const nextKey=`${match.id}:${match.round}:${cue.id}`;
