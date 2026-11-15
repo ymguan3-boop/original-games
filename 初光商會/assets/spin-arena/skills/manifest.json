@@ -1,0 +1,50 @@
+[
+  {
+    "id": "flame",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 197522,
+    "gifBytes": 120909
+  },
+  {
+    "id": "wind",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 171578,
+    "gifBytes": 216644
+  },
+  {
+    "id": "crystal",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 173342,
+    "gifBytes": 161430
+  },
+  {
+    "id": "thunder",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 190676,
+    "gifBytes": 104231
+  },
+  {
+    "id": "shield",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 157300,
+    "gifBytes": 187459
+  },
+  {
+    "id": "shadow",
+    "frames": 16,
+    "durationMs": 1200,
+    "size": 192,
+    "sheetBytes": 173606,
+    "gifBytes": 114281
+  }
+]

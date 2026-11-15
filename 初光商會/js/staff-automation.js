@@ -1,8 +1,8 @@
-import{shelfApproach}from'./nav.js?v=20261115-v59';
-import {employeeSpot,employeePath} from './staff-routing.js?v=20261115-v59';
-import {obstacles,decorEffects} from './decorations.js?v=20261115-v59';
-import {findPath,walkable,dimensions} from './nav.js?v=20261115-v59';
-import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261115-v59';
+import{shelfApproach}from'./nav.js?v=20261115-v60';
+import {employeeSpot,employeePath} from './staff-routing.js?v=20261115-v60';
+import {obstacles,decorEffects} from './decorations.js?v=20261115-v60';
+import {findPath,walkable,dimensions} from './nav.js?v=20261115-v60';
+import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261115-v60';
 const stations={stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
 /* The rear wall is z=1. Each resting worker gets their own place and is never
  * mistaken for an idling / slacking employee at an active work station. */

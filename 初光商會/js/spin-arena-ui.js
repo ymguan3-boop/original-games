@@ -1,6 +1,6 @@
-import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_OPPONENTS,spinTop}from'./spin-arena-config.js?v=20261115-v59';
-import{spinState,spinStats}from'./spin-arena-core.js?v=20261115-v59';
-import{createSpinBattleView}from'./spin-arena-view.js?v=20261115-v59';
+import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_OPPONENTS,spinTop}from'./spin-arena-config.js?v=20261115-v60';
+import{spinState,spinStats}from'./spin-arena-core.js?v=20261115-v60';
+import{createSpinBattleView}from'./spin-arena-view.js?v=20261115-v60';
 export function installSpinArena({game,toast,onOpen=()=>{}}){
  const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('../spin-arena.css',import.meta.url);document.head.append(css);
  const dialog=document.createElement('dialog');dialog.className='spin-arena-dialog';dialog.setAttribute('aria-label','廣場戰鬥陀螺大會');document.body.append(dialog);let page='home',view=null,raf=0,previous=0,accumulator=0,battlePhase='',busy=false;
