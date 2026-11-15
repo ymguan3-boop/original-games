@@ -1,6 +1,8 @@
 const check=(ok,message)=>{if(!ok)throw Error(message);};
 export const limitedWeaponCommission=q=>q.kind==='delivery'&&(/-merchant-(elite|boss)$/.test(q.sku||'')||/限定武器/.test(q.name||''));
-export function boostLimitedCommission(q){if(q.status==='active'&&limitedWeaponCommission(q)&&q.limitedRewardVersion!==1){q.baseReward=q.reward;q.reward*=2;q.limitedRewardVersion=1;}return q;}
+// Release 59: ten times the previously doubled reward. Derive from a stable
+// base so opening the board, reloading and batch claiming cannot multiply again.
+export function boostLimitedCommission(q){if(q.status==='active'&&limitedWeaponCommission(q)&&q.limitedRewardVersion!==2){const base=q.baseReward??(q.limitedRewardVersion===1?q.reward/2:q.reward);q.baseReward=base;q.reward=Math.round(base*20);q.limitedRewardVersion=2;}return q;}
 export function commissionState(s){const b=s.commissionBoard??={clock:0,nextAt:12,serial:0,unread:false,entries:[]};for(const q of b.entries)boostLimitedCommission(q);return b;}
 export function commissionProgress(s,q){return q.kind==='delivery'?Math.min(q.qty,s.inventory[q.sku]||0):Math.min(q.qty,Math.max(0,s.totals.sales-q.startSales));}
 export function commissionVisibleEntries(s){

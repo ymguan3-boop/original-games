@@ -1,29 +1,30 @@
-import{trayOffers}from'./material-tray.js?v=20261114-v57r3';
-import{footprintCenter,occupiedCells}from'./placement-footprint.js?v=20261114-v57r3';
-import {tierThumb} from './tier-designs.js?v=20261114-v57r3';
-import {stockState} from './shop-interactions.js?v=20261114-v57r3';
-import {fortuneAvailable} from './fortune-cards.js?v=20261114-v57r3';
+import{plazaArenaTheme}from'./spin-arena-config.js?v=20261115-v59';
+import{trayOffers}from'./material-tray.js?v=20261115-v59';
+import{footprintCenter,occupiedCells}from'./placement-footprint.js?v=20261115-v59';
+import {tierThumb} from './tier-designs.js?v=20261115-v59';
+import {stockState} from './shop-interactions.js?v=20261115-v59';
+import {fortuneAvailable} from './fortune-cards.js?v=20261115-v59';
 import {createYardBattle2D} from './yard-battle-2d.js';
-import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261114-v57r3';
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261114-v57r3';
-import {hasDecorModel} from './decor-models-v22.js?v=20261114-v57r3';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261114-v57r3';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261114-v57r3';
+import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261115-v59';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261115-v59';
+import {hasDecorModel} from './decor-models-v22.js?v=20261115-v59';
+import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261115-v59';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261115-v59';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261114-v57r3';
-import {ENTRANCE} from './nav.js?v=20261114-v57r3';
-import {sampleTrail} from './motion.js?v=20261114-v57r3';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261114-v57r3';
-import {eventEmployee} from './patrol-events.js?v=20261114-v57r3';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261114-v57r3';
-import {stockCount} from './shelf-products.js?v=20261114-v57r3';
-import {createAssets} from './asset-resolver.js?v=20261114-v57r3';
-import {createPlacementCells} from './placement-cells.js?v=20261114-v57r3';
-import {environment} from './environment.js?v=20261114-v57r3';
-import {createEnvironment2D} from './environment-2d.js?v=20261114-v57r3';
-import {spiritArtPath} from './spirit-cards.js?v=20261114-v57r3';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261115-v59';
+import {ENTRANCE} from './nav.js?v=20261115-v59';
+import {sampleTrail} from './motion.js?v=20261115-v59';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261115-v59';
+import {eventEmployee} from './patrol-events.js?v=20261115-v59';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261115-v59';
+import {stockCount} from './shelf-products.js?v=20261115-v59';
+import {createAssets} from './asset-resolver.js?v=20261115-v59';
+import {createPlacementCells} from './placement-cells.js?v=20261115-v59';
+import {environment} from './environment.js?v=20261115-v59';
+import {createEnvironment2D} from './environment-2d.js?v=20261115-v59';
+import {spiritArtPath} from './spirit-cards.js?v=20261115-v59';
 
 const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*2.2,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
@@ -41,7 +42,7 @@ const stateEmotion=(type,d,s)=>{
 
 export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=>{},onFurniturePosition=()=>{},onModeChange=()=>{},onStaffPositions=()=>{},onActorVisuals=()=>{},onPlacementChange=()=>{},onActionResult=()=>{},onError=console.error}){
  const metrics={assets:[],errors:[],actors:0,frames:0,renderer:'2d'},ctx=canvas.getContext('2d'),state=()=>game.state;
- const layer=document.createElement('div');layer.className='world2d';canvas.after(layer);const yardBattle=createYardBattle2D(layer);const rival=document.createElement('div');rival.className='world2d-auction';rival.innerHTML='<img src="./assets/plaza-auction/stall.webp" alt="廣場競價地攤"><span>金幣商販 · 點擊競價</span><div class="auction-crowd"><img src="./assets/customers/commoner-m.gif" alt=""><img src="./assets/customers/adventurer-f.gif" alt=""></div>';layer.append(rival);
+ const layer=document.createElement('div');layer.className='world2d';canvas.after(layer);const yardBattle=createYardBattle2D(layer);const rival=document.createElement('div');rival.className='world2d-auction';rival.innerHTML='<img src="./assets/plaza-auction/stall.webp" alt="廣場競價地攤"><span>金幣商販 · 點擊競價</span><div class="auction-crowd"><img src="./assets/customers/commoner-m.gif" alt=""><img src="./assets/customers/adventurer-f.gif" alt=""></div>';layer.append(rival);const spinArena=document.createElement('div');spinArena.className='world2d-spin-arena';spinArena.innerHTML='<img src="./assets/spin-arena/arena-card.png" alt="真正3D競技場的場景縮圖"><span>戰鬥陀螺大會</span>';layer.append(spinArena);
  let grassImg=null;const grassReady=loadImage(OUT+'grass.webp').then(i=>{grassImg=i;dirty=true;});let bgGrass='#8fc56b',windowSpots=[];const envLayer=createEnvironment2D({world:canvas,getView:()=>{const x0=X0(),y0=Y0(),c=(x,z)=>({X:x0+(x-z)*HW,Y:y0+(x+z)*HH}),a=c(0,0),r=c(dim.width,0),b=c(dim.width,dim.height),l=c(0,dim.height);return {panX,panY,scale,poly:[{X:a.X,Y:a.Y-WALL},{X:r.X,Y:r.Y-WALL},r,b,l,{X:l.X,Y:l.Y-WALL}],windows:windowSpots};}});
  const roomCanvas=document.createElement('canvas'),cellCanvas=document.createElement('canvas');cellCanvas.className='world2d-cells';layer.prepend(cellCanvas);const cellsFor=createPlacementCells(game);let cellKey='';
  /* 布置模式：擺放時綠格可放、紅格不可放；只選取物件時顯示淡格線 */
@@ -108,6 +109,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   const r=canvas.getBoundingClientRect();cw=Math.max(1,r.width);ch=Math.max(1,r.height);if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch;}
   const full=r.height>innerHeight*.9,top=Math.ceil(document.querySelector('.topbar')?.getBoundingClientRect().bottom||50)+8,bottom=full?64:6,base=Math.min(cw/roomW(),(ch-top-bottom)/roomH());scale=base*userZoom;
   if(mode==='follow'&&state().manager){scale=Math.max(base,.9)*userZoom;const m=actors.get('manager')?.pos||state().manager,q=P(m.x,m.z);panX=cw/2-q.X*scale;panY=ch/2-q.Y*scale;}
+  else if(state().level>=3&&mode==='play'){const p=P(dim.width/2,dim.height+8.8),minX=Math.min(MARGIN-HW,p.X-155),maxX=X0()+dim.width*HW+HW,minY=Y0()-WALL-50,maxY=p.Y+60,ww=maxX-minX,hh=maxY-minY,usable=ch-top-bottom-20;scale=Math.min((cw-20)/ww,usable/hh)*Math.min(1.05,userZoom);panX=10+(cw-20-ww*scale)/2-minX*scale;panY=top+10+(usable-hh*scale)/2-minY*scale;}
   else{const free=roomW()*scale,used=roomH()*scale;panX=Math.max(Math.min(0,cw-free),Math.min(free<cw?(cw-free)/2:0,panX||(cw-free)/2));panY=used<ch-top-bottom?top+(ch-top-bottom-used)/2:Math.max(ch-bottom-used,Math.min(top,panY||top));}
   layer.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;layer.style.width=roomW()+'px';layer.style.height=roomH()+'px';dirty=true;
  }
@@ -130,8 +132,8 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  }
  /* 主管依行走方向換圖；側面圖面向右，往左時由 flip 翻轉。GIF 還沒到位時用靜態圖 */
  function setManagerImage(a,walking){const face=a.facing||'front',name=walking?'manager-'+face:face==='front'?'manager-idle':'manager-'+face+'-still';if(a.imageName===name)return;a.imageName=name;const still=name.endsWith('-still');a.img.onerror=()=>{a.img.onerror=null;a.img.src=SPRITES+(walking?name:'manager-'+face)+'.webp';};a.img.src=SPRITES+(still?'manager-'+face+'.webp':name+'.gif');a.img.onerror=still?null:a.img.onerror;}
- function updatePassers(dt){const outcome=state().plazaAuction?.day===state().day?state().plazaAuction?.result:null;rival.dataset.outcome=outcome?(outcome.won?'won':'lost'):'';rival.hidden=state().level<3;if(!rival.hidden){const q=P(dim.width/2+3.7,dim.height+8.3);rival.style.left=q.X+'px';rival.style.top=q.Y+'px';rival.style.width='210px';rival.style.zIndex=Math.round(100+(dim.width/2+3.7+dim.height+8.3)*60);const r=rival.getBoundingClientRect();metrics.rival={screenX:r.left+r.width/2,screenY:r.top+r.height/2};}else metrics.rival=null;const weather=environment(state(),game.data.config).weather;while(passers.length<3){const i=passers.length,el=document.createElement('div'),img=new Image();el.className='world2d-actor world2d-passer';el.dataset.passerId=`passer-2d-${++passerSerial}`;img.src=`./assets/customers/${i%2?'adventurer-f':'commoner-m'}.gif`;el.append(img);layer.append(el);passers.push({id:el.dataset.passerId,el,x:-3+i*5,z:dim.height+5.9,speed:i%2?-.75:.75});}
- metrics.passers=passers.map(a=>({id:a.id,x:a.x,z:a.z}));for(const a of passers){if(a.invited){const gx=ENTRANCE.x,gz=dim.height+.15,dx=gx-a.x,dz=gz-a.z,d=Math.hypot(dx,dz),n=Math.min(d,dt*2.2);if(d>.05){a.x+=dx/d*n;a.z+=dz/d*n;}else {a.arrivalRetry=(a.arrivalRetry||0)-dt;if(a.arrivalRetry>0)continue;a.arrivalRetry=.5;if(!state().customers.some(c=>c.visitorId===a.id))game.act('arrivePasser',{visitorId:a.id});if(state().customers.some(c=>c.visitorId===a.id)){a.invited=false;a.x= -3;a.z=dim.height+5.9;a.id=`passer-2d-${++passerSerial}`;a.el.dataset.passerId=a.id;}}}else a.x+=dt*a.speed;if(a.x>dim.width+4||a.x< -4){a.x=a.speed>0?-3:dim.width+3;a.id=`passer-2d-${++passerSerial}`;a.el.dataset.passerId=a.id;a.invited=false;}if(!a.invited)a.z=dim.height+5.9;const q=P(a.x,a.z),px=ACTOR_SIZE*U;a.el.style.width=px+'px';a.el.style.left=q.X-px/2+'px';a.el.style.top=q.Y-px+'px';a.el.style.zIndex=Math.round(100+(a.x+a.z)*60);a.el.style.opacity='1';a.el.querySelector('img').style.transform=`scaleX(${a.speed>0?1:-1})`;updateWeatherOutfit2D(a.el,{weather,appearanceKey:a.id,outdoors:true});}}
+ function updatePassers(dt){spinArena.hidden=state().level<3;if(!spinArena.hidden){const theme=plazaArenaTheme(state().level);if(spinArena.dataset.level!==String(theme.level)){spinArena.dataset.level=theme.level;spinArena.querySelector('img').src=`./assets/spin-arena/arena-grey-lv${theme.level}-card.png`;spinArena.querySelector('span').textContent=theme.name;spinArena.querySelector('.spin-plaza-audience')?.remove();const crowd=document.createElement('div');crowd.className='spin-plaza-audience';for(let i=0;i<theme.spectators;i++){const img=new Image();img.src=`./assets/spin-arena/crowd/${['clap','cheer','jump','wave'][i%4]}-${Math.floor(i/4)%3}.webp`;img.alt=['拍手觀眾','歡呼觀眾','跳躍觀眾','揮手觀眾'][i%4];img.style.cssText=`position:absolute;width:25px;height:42px;object-fit:contain;left:${10+i/(theme.spectators-1)*80}%;top:${60+Math.sin(i/(theme.spectators-1)*Math.PI)*20}%;transform:translateX(-50%);pointer-events:none`;crowd.append(img);}spinArena.append(crowd);}const q=P(dim.width/2,dim.height+8.8);spinArena.style.left=q.X+'px';spinArena.style.top=q.Y+'px';spinArena.style.width='280px';spinArena.style.zIndex=Math.round(100+(dim.width/2+dim.height+8.8)*60);const r=spinArena.getBoundingClientRect();metrics.spinArena={screenX:r.left+r.width/2,screenY:r.top+r.height*.6};}else metrics.spinArena=null;const outcome=state().plazaAuction?.day===state().day?state().plazaAuction?.result:null;rival.dataset.outcome=outcome?(outcome.won?'won':'lost'):'';rival.hidden=state().level<3;if(!rival.hidden){const q=P(dim.width/2+3.7,dim.height+8.3);rival.style.left=q.X+'px';rival.style.top=q.Y+'px';rival.style.width='210px';rival.style.zIndex=Math.round(100+(dim.width/2+3.7+dim.height+8.3)*60);const r=rival.getBoundingClientRect();metrics.rival={screenX:r.left+r.width/2,screenY:r.top+r.height/2};}else metrics.rival=null;const weather=environment(state(),game.data.config).weather;while(passers.length<3){const i=passers.length,el=document.createElement('div'),img=new Image();el.className='world2d-actor world2d-passer';el.dataset.passerId=`passer-2d-${++passerSerial}`;img.src=`./assets/customers/${i%2?'adventurer-f':'commoner-m'}.gif`;el.append(img);layer.append(el);passers.push({id:el.dataset.passerId,el,x:-3+i*5,z:dim.height+5.9,speed:i%2?-.75:.75});}
+ metrics.passers=passers.map(a=>({id:a.id,x:a.x,z:a.z}));for(const a of passers){if(a.invited){const gx=ENTRANCE.x,gz=dim.height-.25,dx=gx-a.x,dz=gz-a.z,d=Math.hypot(dx,dz),n=Math.min(d,dt*2.2);if(d>.05){a.x+=dx/d*n;a.z+=dz/d*n;}else {a.arrivalRetry=(a.arrivalRetry||0)-dt;if(a.arrivalRetry>0)continue;a.arrivalRetry=.5;if(!state().customers.some(c=>c.visitorId===a.id))game.act('arrivePasser',{visitorId:a.id});if(state().customers.some(c=>c.visitorId===a.id)){a.invited=false;a.x= -3;a.z=dim.height+5.9;a.id=`passer-2d-${++passerSerial}`;a.el.dataset.passerId=a.id;}}}else a.x+=dt*a.speed;if(a.x>dim.width+4||a.x< -4){a.x=a.speed>0?-3:dim.width+3;a.id=`passer-2d-${++passerSerial}`;a.el.dataset.passerId=a.id;a.invited=false;}if(!a.invited)a.z=dim.height+5.9;const q=P(a.x,a.z),px=ACTOR_SIZE*U;a.el.style.width=px+'px';a.el.style.left=q.X-px/2+'px';a.el.style.top=q.Y-px+'px';a.el.style.zIndex=Math.round(100+(a.x+a.z)*60);a.el.style.opacity='1';a.el.querySelector('img').style.transform=`scaleX(${a.speed>0?1:-1})`;updateWeatherOutfit2D(a.el,{weather,appearanceKey:a.id,outdoors:true});}}
  function syncActors(dt){
   const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager&&(mode==='follow'||s.managerDuty!=='standby'))all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:CHECKOUT.x,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,...promoterPoint()},'promoter']);
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));
@@ -147,7 +149,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   if(s.manager&&mode==='follow'){const open=document.querySelector('dialog[open]'),ix=open?0:joystick.x+(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0),iy=open?0:joystick.y+(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0);game.setManagerInput(ix,iy);fit();}
  }
  function headOf(item){if(!item)return null;const sp=spriteFor(item);return toScreen(item.x,item.z,(sp.ground?.3:sp.width*1.1)+(specialDecorPose(item,level)?.y||0));}
- function update(dt){if(!alive)return;dt=Math.min(dt,.1);time+=dt;const l=Math.min(state().level||1,5);if(l!==level){level=l;buildRoom(l);}syncItems();syncActors(dt);updatePassers(dt);drawCells();if(placement)refreshPlacement();else if(selected)onFurniturePosition(headOf(furniture().find(i=>i.id===selected)));drawRoom();const env=environment(state(),game.data.config);envLayer.draw(env,dt);const battlePoint=P(Math.round((dim.width-1)/2)-.6,dim.height+8.2);yardBattle.update({level:l,time,weather:env.weather,x:battlePoint.X,y:battlePoint.Y,zIndex:Math.round(100+(dim.width/2+dim.height+8.2)*60)});metrics.yardBattle={visible:l===2,participants:l===2?3:0,weather:env.weather};metrics.environment={slot:env.slot,weather:env.weather,season:env.season.id};metrics.frames++;}
+ function update(dt){if(!alive||game.spinArenaPaused)return;dt=Math.min(dt,.1);time+=dt;const l=Math.min(state().level||1,5);if(l!==level){level=l;buildRoom(l);}syncItems();syncActors(dt);updatePassers(dt);drawCells();if(placement)refreshPlacement();else if(selected)onFurniturePosition(headOf(furniture().find(i=>i.id===selected)));drawRoom();const env=environment(state(),game.data.config);envLayer.draw(env,dt);const battlePoint=P(Math.round((dim.width-1)/2)-.6,dim.height+8.2);yardBattle.update({level:l,time,weather:env.weather,x:battlePoint.X,y:battlePoint.Y,zIndex:Math.round(100+(dim.width/2+dim.height+8.2)*60)});metrics.yardBattle={visible:l===2,participants:l===2?3:0,weather:env.weather};metrics.environment={slot:env.slot,weather:env.weather,season:env.season.id};metrics.frames++;}
  /* 擺放 */
  const clearGhost=()=>{ghost?.remove();ghost=null;};
  function cancelPlacement(){clearGhost();placement=null;metrics.placement=null;onPlacementChange(null);onFurnitureSelect(null);}
@@ -161,7 +163,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  function editShelf(dx=0,dz=0,rotation=0){if(!placement&&!unlocked)return {ok:false,message:'請再點一次已鎖定物件，才能編輯'};if(placement){placement.rotation=(placement.rotation+rotation+360)%360;refreshPlacement();return {ok:true};}const sh=furniture().find(i=>i.id===selected);if(!sh)return {ok:false,message:'請先點選貨架'};const result=game.act(sh.decoration?'moveDecor':'moveShelf',{shelfId:sh.id,decorId:sh.id,x:sh.x+dx,z:sh.z+dz,rotation:((sh.rotation||0)+rotation+360)%360});selectShelf(sh.id);return result;}
  const showGrid=()=>layer.classList.toggle('show-grid',mode==='decorate');
  /* 點選與手勢 */
- function pick(e){if(state().level>=3){const r=rival.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)return {type:'rivalStall',id:'plaza'};}for(const a of passers){const r=a.el.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)return {type:'passer',id:a.id};}const q=toRoom(e.clientX,e.clientY);for(const[key,a]of [...actors].sort((m,n)=>(n[1].pos.x+n[1].pos.z)-(m[1].pos.x+m[1].pos.z))){const b=a.screen;if(b&&Math.abs(q.X-b.X)<b.w*.35&&q.Y<b.Y&&q.Y>b.Y-b.w*.9)return {type:a.type,id:key};}
+ function pick(e){for(const a of passers){const r=a.el.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)return {type:'passer',id:a.id};}if(state().level>=3){const r=spinArena.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)return {type:'spinArena',id:'plaza-center'};}if(state().level>=3){const r=rival.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)return {type:'rivalStall',id:'plaza'};}const q=toRoom(e.clientX,e.clientY);for(const[key,a]of [...actors].sort((m,n)=>(n[1].pos.x+n[1].pos.z)-(m[1].pos.x+m[1].pos.z))){const b=a.screen;if(b&&Math.abs(q.X-b.X)<b.w*.35&&q.Y<b.Y&&q.Y>b.Y-b.w*.9)return {type:a.type,id:key};}
   let best=null,bestDepth=-1;for(const item of furniture()){const sp=spriteFor(item),p=P(item.x,item.z);p.Y-=(specialDecorPose(item,level)?.y||0)*U;const w=sp.width*U*.45,h=sp.ground?HH*2:sp.width*U*1.1;if(Math.abs(q.X-p.X)<w&&q.Y<p.Y+HH&&q.Y>p.Y-h){const depth=sp.ground?-1:item.x+item.z;if(depth>bestDepth){best={type:'shelf',id:item.id};bestDepth=depth;}}}return best;}
  const pinch=()=>{const p=[...touches.values()].slice(0,2);if(p.length<2)return null;return {distance:Math.max(8,Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y))};};
  const lockedView=()=>!!selected||!!placement;

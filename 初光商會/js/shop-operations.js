@@ -1,16 +1,17 @@
-import{auctionSaleBonus}from'./plaza-auction.js?v=20261114-v57r3';
-import{routeToGoods,atShoppingSpot,waitInside}from'./customer-routing.js?v=20261114-v57r3';
-import{waitingAtQueue}from'./customer-health.js?v=20261114-v57r3';
-import{fillShelf,finishStockBatch,broadcast}from'./stock-flow.js?v=20261114-v57r3';
-import{shelfApproach}from'./nav.js?v=20261114-v57r3';
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261114-v57r3';
-import {decorEffects,obstacles} from './decorations.js?v=20261114-v57r3';
-import {purchaseChance} from './economy-v2.js?v=20261114-v57r3';
-import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261114-v57r3';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261114-v57r3';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261114-v57r3';
-import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261114-v57r3';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261114-v57r3';
+import{entryLanding}from'./shop-interactions.js?v=20261115-v59';
+import{auctionSaleBonus}from'./plaza-auction.js?v=20261115-v59';
+import{routeToGoods,atShoppingSpot,waitInside}from'./customer-routing.js?v=20261115-v59';
+import{waitingAtQueue}from'./customer-health.js?v=20261115-v59';
+import{fillShelf,finishStockBatch,broadcast}from'./stock-flow.js?v=20261115-v59';
+import{shelfApproach}from'./nav.js?v=20261115-v59';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261115-v59';
+import {decorEffects,obstacles} from './decorations.js?v=20261115-v59';
+import {purchaseChance} from './economy-v2.js?v=20261115-v59';
+import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261115-v59';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261115-v59';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261115-v59';
+import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261115-v59';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261115-v59';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
@@ -69,7 +70,7 @@ export function stepCustomers(g,s,dt){
  for(const c of [...s.customers]){
   c.timer+=dt;
   // Never leave a departing customer stuck in the shop when a path is blocked.
-  c.arrivingNow=false;if(c.arrivalRemaining>0){if(c.arrivalRemaining<=dt&&!g.clearOfActors(s,ENTRANCE,c)){c.arrivalRemaining=.25;continue;}c.arrivalRemaining=Math.max(0,c.arrivalRemaining-dt);if(c.arrivalRemaining>0)continue;c.arrivingNow=true;}
+  c.arrivingNow=false;if(c.arrivalRemaining>0){if(c.arrivalRemaining<=dt&&!g.clearOfActors(s,c.arrivalFrom?c:ENTRANCE,c)){c.arrivalWait=(c.arrivalWait||0)+dt;if(c.arrivalFrom&&c.arrivalWait>=1){const landing=entryLanding(g,s,c);if(landing){c.arrivalFrom={x:c.x,z:c.z};Object.assign(c,landing);c.arrivalDuration=.5;c.arrivalRemaining=.5;c.arrivalWait=0;c.state='Enter';c.path=[];continue;}}c.arrivalRemaining=.25;continue;}c.arrivalRemaining=Math.max(0,c.arrivalRemaining-dt);if(c.arrivalRemaining>0)continue;c.arrivingNow=true;}
   if(c.exitingAtDoor){c.exitTravel=(c.exitTravel||0)+dt;if(c.exitTravel>=5)s.customers=s.customers.filter(x=>x.id!==c.id);continue;}
   if(c.state==='Leave'&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.25){c.exitingAtDoor=true;c.exitTravel=0;c.path=[];continue;}
   if(['OutOfStock','UnhappyExit','AbandonCart','Angry'].includes(c.state)&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<1.25&&!c.path.length){const wanted=s.shelves.find(sh=>sh.id===(c.targetShelf||c.plannedShelfId));if(!wanted||!routeToGoods(g,s,c,wanted))waitInside(g,s,c);}

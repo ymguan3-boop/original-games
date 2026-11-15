@@ -1,4 +1,4 @@
-import{occupiedCells}from'./placement-footprint.js?v=20261114-v57r3';
+import{occupiedCells}from'./placement-footprint.js?v=20261115-v59';
 export const ENTRANCE={x:1,z:5}, CHECKOUT={x:6,z:3}, WAREHOUSE={x:2,z:3};
 // Conservative occupied cells include the real furniture silhouette plus actor clearance.
 export const FIXED_CELLS=['5,2','6,2','7,2'];
@@ -25,4 +25,4 @@ export function isLayoutValid(shelves,level=1){const seen=new Set([...FIXED_CELL
 
 /* 宣傳員（幻靈吉祥物）站在門前台階右側，面向街道發傳單 */
 export const promoterPoint=()=>({x:ENTRANCE.x+1.6,z:ENTRANCE.z+5.8});
-export function customerDisplayPoint(c,progress=1,step=.25){const lag=Math.max(0,step*(1-progress));const k=c.arrivalRemaining>0||c.arrivingNow?1-((c.arrivalRemaining||0)+lag)/5:c.exitingAtDoor?1-((c.exitTravel||0)-lag)/5:null;if(k===null)return c;const u=Math.max(0,Math.min(1,k));return {x:ENTRANCE.x,z:ENTRANCE.z+7*(1-u)};}
+export function customerDisplayPoint(c,progress=1,step=.25){if(c.arrivalFrom&&(c.arrivalRemaining>0||c.arrivingNow)){const lag=Math.max(0,step*(1-progress)),u=Math.max(0,Math.min(1,1-((c.arrivalRemaining||0)+lag)/(c.arrivalDuration||1.2)));return{x:c.arrivalFrom.x+(c.x-c.arrivalFrom.x)*u,z:c.arrivalFrom.z+(c.z-c.arrivalFrom.z)*u};}const lag=Math.max(0,step*(1-progress));const k=c.arrivalRemaining>0||c.arrivingNow?1-((c.arrivalRemaining||0)+lag)/5:c.exitingAtDoor?1-((c.exitTravel||0)-lag)/5:null;if(k===null)return c;const u=Math.max(0,Math.min(1,k));return {x:ENTRANCE.x,z:ENTRANCE.z+7*(1-u)};}

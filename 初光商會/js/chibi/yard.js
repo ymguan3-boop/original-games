@@ -1,8 +1,10 @@
-import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261114-v57r3';
+import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261115-v59';
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
 import {addIllustratedOutline} from '../illustrated-outline.js?v=20261111-decor-v22';
-import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261114-v57r3';
+import {LEVELS,GROUND,CFG,tune,rng,shade,hex,canvasTex,ramp,plankTex,stoneTex,stripeTex,cobbleTex,addOutline,hull} from './shell.js?v=20261115-v59';
+import{createSpinModels}from'../spin-arena-models.js?v=20261115-v59';
+import{plazaArenaPlacement,plazaArenaSpectators}from'../spin-arena-config.js?v=20261115-v59';
 const THREE=globalThis.THREE;
 
 const STEP_D=.36;
@@ -75,9 +77,9 @@ function plazaTex(level){if(level<5)return cobbleTex();return canvasTex(256,256,
 /* ---------- 人物 ---------- */
 const faceCache=new Map();
 function faceTex(skin,eye,mouth){const k=skin+'|'+eye+'|'+mouth;if(faceCache.has(k))return faceCache.get(k);
- const t=canvasTex(256,128,(g,W,H)=>{g.fillStyle=hex(skin);g.fillRect(0,0,W,H);const cx=W*.25,cy=H*.54;
-  for(const s of[-1,1]){g.fillStyle=hex(eye);g.beginPath();g.ellipse(cx+s*12,cy,4.2,6.5,0,0,7);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(cx+s*12+1.4,cy-2.6,1.6,0,7);g.fill();g.fillStyle='rgba(240,120,120,.45)';g.beginPath();g.ellipse(cx+s*19,cy+8,4.5,2.6,0,0,7);g.fill();}
-  g.strokeStyle='#6a3a2a';g.fillStyle='#b8423a';g.lineWidth=1.6;g.beginPath();if(mouth==='open'){g.ellipse(cx,cy+13,4,3.6,0,0,7);g.fill();}else{g.arc(cx,cy+9,4,.2*Math.PI,.8*Math.PI);g.stroke();}});
+ const t=canvasTex(256,128,(g,W,H)=>{g.fillStyle=hex(skin);g.fillRect(0,0,W,H);const cx=W*.25,cy=H*.54,joy=['joy','cheer'].includes(mouth);
+  for(const s of[-1,1]){g.fillStyle=hex(eye);g.strokeStyle=hex(eye);g.lineWidth=2.4;g.beginPath();if(joy){g.arc(cx+s*12,cy+1,4.5,Math.PI,Math.PI*2);g.stroke();}else{g.ellipse(cx+s*12,cy,4.2,6.5,0,0,7);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(cx+s*12+1.4,cy-2.6,1.6,0,7);g.fill();}g.fillStyle='rgba(240,120,120,.5)';g.beginPath();g.ellipse(cx+s*19,cy+8,5,3,0,0,7);g.fill();}
+  g.strokeStyle='#6a3a2a';g.fillStyle='#87362e';g.lineWidth=1.6;g.beginPath();if(mouth==='open'||mouth==='cheer'){g.ellipse(cx,cy+13,mouth==='cheer'?6:4,mouth==='cheer'?6:3.6,0,0,7);g.fill();if(mouth==='cheer'){g.fillStyle='#fff4db';g.fillRect(cx-3.5,cy+8,7,2);g.fillStyle='#e98c8c';g.beginPath();g.ellipse(cx,cy+16,3,2,0,0,7);g.fill();}}else{g.arc(cx,cy+9,joy?6:4,.1*Math.PI,.9*Math.PI);g.stroke();}});
  t.wrapS=THREE.ClampToEdgeWrapping;faceCache.set(k,t);return t;}
 const SKINS=[0xffdcbc,0xf6cba4,0xe8b48a,0xc98f62];
 const HAIRS=[0x4a3020,0x2a2226,0xd9a040,0x8a4a2a,0xc8603a,0x5a4a6a];
@@ -94,7 +96,7 @@ export function person(opt={}){
  if(o.patch){B(.08,.08,.02,0xa58660,.08,.6,.19,body).userData.noLine=true;}
  const arms=[];for(const s of[-1,1]){const sh=new THREE.Group();sh.position.set(s*.19,.72,0);body.add(sh);mk(new THREE.CylinderGeometry(.05,.045,.27,8),toon(o.shirt),0,-.13,0,sh,true);const hand=new THREE.Group();hand.position.y=-.29;sh.add(hand);S(.058,o.skin,0,0,0,hand);sh.rotation.z=s*.12;arms.push({sh,hand,side:s});}
  const head=new THREE.Group();head.position.y=1.0;body.add(head);
- const faceM=[faceTex(o.skin,0x3a2418,'smile'),faceTex(o.skin,0x3a2418,'open')].map(t=>new THREE.MeshToonMaterial({map:t,gradientMap:ramp()}));
+ const faceM=(o.spectator?['smile','open','joy','cheer']:['smile','open']).map(m=>faceTex(o.skin,0x3a2418,m)).map(t=>new THREE.MeshToonMaterial({map:t,gradientMap:ramp()}));
  const skull=mk(new THREE.SphereGeometry(.27,22,16),faceM[0],0,0,0,head,true);
  const hm=toon(o.hair);const cap=mk(new THREE.SphereGeometry(.288,22,14,0,Math.PI*2,0,Math.PI*.46),hm,0,0,0,head,true);cap.rotation.x=-.32;
  S(.2,o.hair,0,-.02,-.12,head,1.25,1,.9);/* 後腦 */
@@ -113,6 +115,19 @@ export function person(opt={}){
   if(!p.armOverride){p.arms[0].sh.rotation.x=-sw*.5;p.arms[1].sh.rotation.x=p.props.bag.visible?-.15+sw*.2:sw*.5;}
   p.talk=Math.max(0,p.talk-dt);p.skull.material=p.faceM[p.talk>0&&Math.sin(performance.now()*.02)>0?1:0];};
  weatherPeople.set(g,p);return p;}
+
+/* Shared stadium / review animation. Root positions never drift into paths. */
+export function cheerSpectator(p,t,index=0){
+ p.pose(0,false);const u=t*(1.5+(index%3)*.17)+index*1.31,mode=(Math.floor(t/4)+index)%4;
+ p.body.rotation.z=Math.sin(u*2)*.045;p.head.rotation.z=Math.sin(u*1.7)*.10;p.head.rotation.x=-.07;
+ for(const arm of p.arms){arm.sh.rotation.set(0,0,arm.side*.12);}
+ p.skull.material=p.faceM[mode%2?3:2]||p.faceM[1];
+ if(mode===0){const clap=.60+Math.sin(u*8)*.15;p.arms[0].sh.rotation.set(-1.05,0,clap);p.arms[1].sh.rotation.set(-1.05,0,-clap);p.body.position.y=Math.sin(u*4)*.014;}
+ if(mode===1){p.arms[0].sh.rotation.set(-.3,0,-2.45+Math.sin(u*4)*.25);p.arms[1].sh.rotation.set(-.3,0,2.45-Math.sin(u*4)*.25);p.body.position.y=Math.abs(Math.sin(u*2))*.04;}
+ if(mode===2){const jump=Math.max(0,Math.sin(u*3));p.body.position.y=jump*jump*.20;p.legs[0].rotation.x=-.16*(1-jump);p.legs[1].rotation.x=-.16*(1-jump);p.arms[0].sh.rotation.z=-2.0-jump*.4;p.arms[1].sh.rotation.z=2.0+jump*.4;}
+ if(mode===3){p.arms[0].sh.rotation.set(-.25,0,-2.55+Math.sin(u*6)*.5);p.arms[1].sh.rotation.set(-.7,0,.35);p.head.rotation.z=Math.sin(u*3)*.13;}
+ p.g.userData.cheerMode=['clap','cheer','jump','wave'][mode];p.g.userData.expression=mode%2?'open-cheer':'smiling-eyes';
+}
 
 /* 對話泡泡 */
 function bubble(text){const t=canvasTex(256,96,(g,W,H)=>{g.font='900 34px "Microsoft JhengHei","Noto Sans TC",sans-serif';const tw=Math.min(W-16,g.measureText(text).width+34);const x=(W-tw)/2;g.fillStyle='#fff';g.strokeStyle='#4a2e1c';g.lineWidth=5;g.beginPath();g.roundRect(x,6,tw,62,22);g.fill();g.stroke();g.beginPath();g.moveTo(W/2-10,66);g.lineTo(W/2,88);g.lineTo(W/2+10,66);g.fill();g.stroke();g.fillStyle='#fff';g.fillRect(W/2-8,62,16,6);g.fillStyle='#4a2e1c';g.textAlign='center';g.textBaseline='middle';g.fillText(text,W/2,38);});
@@ -191,7 +206,8 @@ export function buildYard(level,opts={}){
   const across=[0,0,0,6,7.5,9][level];floorStrip(0,zR+1+(across+.3)/2,[0,0,0,10,14,18][level],across+.3,road,.035,4);}
  if(level===5){const c=mk(new THREE.BoxGeometry(1.4,.03,zR-1.3-zS),toon(0xb5201a),DX,G+.07,(zS+zR-1.3)/2,root);c.userData.noLine=true;c.castShadow=false;}
 
- const sideX=half+1.2,across=zR+1.3;
+ const sideX=half+1.2,across=zR+1.3;let spinArena=null;if(level>=3){const placement=plazaArenaPlacement(level),factory=createSpinModels(THREE);spinArena=factory.arena({radius:placement.radius,mini:true,level});spinArena.position.set(0,G,across+placement.zOffset);spinArena.userData.pick={type:'spinArena',id:'plaza-center'};spinArena.userData.disposeEnvironment=()=>factory.disposeEnvironment();spinArena.traverse(o=>{if(o.isMesh)o.userData.noLine=true;});props.add(spinArena);const sign=aBoard(props,-placement.radius-.65,across+placement.zOffset+.6,0,'陀螺大會');sign.userData.pick={type:'spinArena',id:'plaza-center'};}
+ const spinSpectators=[];if(level>=3){for(const spot of plazaArenaSpectators(level)){const a=person({seed:spot.seed,scale:1.04,spectator:true});a.g.name='spin-arena-spectator';a.g.position.set(spot.x,G,across+spot.zOffset);a.g.rotation.y=Math.atan2(-spot.x,plazaArenaPlacement(level).zOffset-spot.zOffset);props.add(a.g);spinSpectators.push(a);anim.push(t=>cheerSpectator(a,t,spinSpectators.indexOf(a)));}}
  let rival=null;if(level>=3){const x=level===3?3.7:level===5?4:4.7,z=across+2.7,stand=stall(props,x,z);stand.name='金幣商販競價地攤';stand.userData.pick={type:'rivalStall',id:'plaza'};rival={root:stand,x,z,crowd:[],coins:[]};for(let i=0;i<7;i++){const c=C(.065,.065,.025,0xffd34f,x,1,z,props,10,false);c.visible=false;c.raycast=()=>{};rival.coins.push(c);}const merchant=person({seed:61,shirt:0xb53d32,pants:0x725039,hair:0x36251c,hat:0xbc3c30,skin:0xffd0a0});merchant.g.position.set(x,G,z+.7);merchant.g.rotation.y=Math.PI;merchant.g.userData.pick={type:'rivalStall',id:'plaza'};props.add(merchant.g);rival.merchant=merchant;S(.15,0xbe9653,.18,.42,.16,merchant.body,1,.9,.65);C(.085,.085,.025,0xeac14d,.18,.47,.29,merchant.body,12);const paddle=B(.045,.35,.04,0x8a542c,0,-.13,.08,merchant.arms[1].hand);S(.13,0xeac895,0,-.32,.08,merchant.arms[1].hand,1,1,.15);aBoard(props,x-1.45,z+.65,0,'廣場競價');for(let i=0;i<3;i++){const a=person({seed:211+i});a.g.position.set(x-1.25+i*1.2,G,z-1.4);props.add(a.g);rival.crowd.push(a);anim.push(t=>a.pose(.016,false));}rival.triangles=0;stand.traverse(o=>{if(o.isMesh)rival.triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;});}
 
  if(level===1){
@@ -220,11 +236,11 @@ export function buildYard(level,opts={}){
   barrel(props,-half-1.1,zF-.6);crate(props,-half-1.1,zF+.3,.5,.3,[0xf25a3a,0x8ac24a]);sack(props,-half-1.6,zF);
  }
  if(level===3){well(props,-4.8,across+3.2);crate(props,6.2,across+3,.45,.2,[0xf7c840]);}
- if(level===4){fountain(props,0,across+3.8,1.5,anim);stall(props,-5.6,across+3.4,{c1:0x3f6fb8});
+ if(level===4){stall(props,-5.6,across+3.4,{c1:0x3f6fb8});
   for(const s of[-1,1])lampPost(props,s*3,across+1,{gold:true});cart(props,-9.5,across+2.5,.4);
   for(let i=0;i<8;i++)bush(props,-half-.6,zF-3+i*.75,.75);for(let i=0;i<8;i++)bush(props,half+.6,zF-3+i*.75,.75);
   const cols=[0xc22d1c,0xf2c040,0x3f6fb8,0xfffaf0];for(const s of[-1,1])bunting(props,new THREE.Vector3(s*half,G+(-G)+H+.1,zF+.1),new THREE.Vector3(s*(half+.3),G+2.5,zR-1.75),cols);bunting(props,new THREE.Vector3(-3,G+2.5,across+1),new THREE.Vector3(3,G+2.5,across+1),cols);}
- if(level===5){fountain(props,0,across+4.4,2.1,anim,true);stall(props,-6.8,across+3.4,{c1:0xa8171a,c2:0xf2c040});stall(props,6.8,across+3.4,{c1:0x3f6fb8,goods:[0xb07ad8,0x5ab8b0,0xf7c840]});stall(props,-9.8,across+6.4,{c1:0x7fb84e,rot:.3});stall(props,9.8,across+6.4,{c1:0xf0904a,rot:-.3,goods:[0xf25a3a,0xffffff]});
+ if(level===5){stall(props,-6.8,across+3.4,{c1:0xa8171a,c2:0xf2c040});stall(props,6.8,across+3.4,{c1:0x3f6fb8,goods:[0xb07ad8,0x5ab8b0,0xf7c840]});stall(props,-9.8,across+6.4,{c1:0x7fb84e,rot:.3});stall(props,9.8,across+6.4,{c1:0xf0904a,rot:-.3,goods:[0xf25a3a,0xffffff]});
   for(const s of[-1,1]){lampPost(props,s*3.4,across+1,{gold:true});lampPost(props,s*3.4,across+7.6,{gold:true});flagPole(props,s*(half+3),zR-1.8,0xf2c040,anim,3.6);}
   arch(props,DX,zS+1,pw+.4,anim);cart(props,-12,across+3,.5);cart(props,12.5,across+2.5,-.4);
   for(let i=0;i<9;i++)bush(props,-half-.6,zF-3.5+i*.75,.8,i%2);for(let i=0;i<9;i++)bush(props,half+.6,zF-3.5+i*.75,.8,i%2);
@@ -305,7 +321,7 @@ export function buildYard(level,opts={}){
   for(const p of [...people,...(ambient?[]:[staff]),...idlers])if(p.bub){p.bubT-=dt;p.bub.material.opacity=Math.min(1,p.bubT*3);if(p.bubT<=0){p.g.remove(p.bub);p.bub=null;}}
  }
  root.userData={level,lineMats:props.userData.lineMats,camZ:(zR+(level>=3?[0,0,0,6,7.5,9][level]:2))/2-.6,extent:Y.roadHalf};
- return {root,update,people,staff,rival,greet(id,converted){const p=people.find(p=>p.visitorId===id&&p.g.visible);if(!p)return; p.talk=1.2;if(converted){p.invited=true;p.wait=0;p.route=[{x:DX,z:zS+.25},{x:DX,z:zF+.25}];}},dispose(){root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(roadMaps.has(m?.map)){roadMaps.delete(m.map);m.map.dispose();}});for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
+ return {root,update,people,staff,rival,spinArena,spinSpectators,greet(id,converted){const p=people.find(p=>p.visitorId===id&&p.g.visible);if(!p)return; p.talk=1.2;if(converted){p.invited=true;p.wait=0;p.route=[{x:DX,z:zS+.25},{x:DX,z:zF+.25}];}},dispose(){spinArena?.userData.disposeEnvironment?.();root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(roadMaps.has(m?.map)){roadMaps.delete(m.map);m.map.dispose();}});for(const b of exposedBattles)b.dispose();for(const p of dressedPeople){p.weatherOutfit?.dispose();p.weatherOutfit=null;}}};
 }
 
 /* 商會用的主角：同一套 Q 版畫風（黑髮、藍外套、黃色背帶與背包），提供商會角色控制介面 */

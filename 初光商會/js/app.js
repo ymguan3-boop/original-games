@@ -1,42 +1,43 @@
-import{installPlazaAuction,showPasserReply}from'./plaza-auction-ui.js?v=20261114-v57r3';
-let plazaAuction;
-import{createMerchantMarquee}from'./merchant-marquee.js?v=20261114-v57r3';
+import{installPlazaAuction,showPasserReply}from'./plaza-auction-ui.js?v=20261115-v59';
+import{installSpinArena}from'./spin-arena-ui.js?v=20261115-v59';
+let plazaAuction,spinArena;
+import{createMerchantMarquee}from'./merchant-marquee.js?v=20261115-v59';
 const syncMarquee=createMerchantMarquee();
-import {shopNotices} from './shop-notices.js?v=20261114-v57r3';
+import {shopNotices} from './shop-notices.js?v=20261115-v59';
 import {restoreMerchantGuest,carryMerchantGuest} from '../../幻靈奇旅/survivors/js/merchant-guest.js?v=20261111-meadow-v2';
 restoreMerchantGuest();
-import {MEADOW_KEY} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261114-v57r3';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261114-v57r3';
-import {openingBlocker} from './shop-entry-rules.js?v=20261114-v57r3';
-import {resetMerchantRelease,resetMerchantOnly} from './save-reset.js?v=20261114-v57r3';
-import {createLoadingGate} from './loading-gate.js?v=20261114-v57r3';
-import {showChaseSuccess} from './chase-celebration.js?v=20261114-v57r3';
-import {environment} from './environment.js?v=20261114-v57r3';
-import {activeEvent} from './economy-v2.js?v=20261114-v57r3';
-import {chapterObjectives} from './shop-chapters.js?v=20261114-v57r3';
-import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261114-v57r3';
-import {showLevelUp} from './levelup.js?v=20261114-v57r3';
-import {installShopNavigation} from './shop-navigation.js?v=20261114-v57r3';
-import {showZhaocaiNote} from './zhaocai-note.js?v=20261114-v57r3';
-import {installShopMusic} from './shop-music.js?v=20261114-v57r3';
-import {createActorVisuals} from './actor-visuals.js?v=20261114-v57r3';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261114-v57r3';
-import {loadSpiritCards} from './spirit-cards.js?v=20261114-v57r3';
-import {createGame} from './core.js?v=20261114-v57r3';
-import {createStaffOverlay} from './staff-overlay.js?v=20261114-v57r3';
-import {installPatrolControls} from './patrol-controls.js?v=20261114-v57r3';
-import {playEvolution3D} from './evolution-3d.js?v=20261114-v57r3';
-import {createScene} from './scene.js?v=20261114-v57r3';
-import {createScene2D} from './scene-2d.js?v=20261114-v57r3';
-import {createHub} from './shop-hub.js?v=20261114-v57r3';
-import {showManagerDialogue} from './manager-dialogue.js?v=20261114-v57r3';
-import {dailyTasks} from './management.js?v=20261114-v57r3';
-import {shelfTypes,accepts as shelfAccepts} from './furniture.js?v=20261114-v57r3';
-import {decorTypes} from './decorations.js?v=20261114-v57r3';
-import {buildNotice} from './build-notices.js?v=20261114-v57r3';
+import {MEADOW_KEY} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261115-v59';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261115-v59';
+import {openingBlocker} from './shop-entry-rules.js?v=20261115-v59';
+import {resetMerchantRelease,resetMerchantOnly} from './save-reset.js?v=20261115-v59';
+import {createLoadingGate} from './loading-gate.js?v=20261115-v59';
+import {showChaseSuccess} from './chase-celebration.js?v=20261115-v59';
+import {environment} from './environment.js?v=20261115-v59';
+import {activeEvent} from './economy-v2.js?v=20261115-v59';
+import {chapterObjectives} from './shop-chapters.js?v=20261115-v59';
+import {clockText,clockLabel,upgradeProgress} from './shop-clock.js?v=20261115-v59';
+import {showLevelUp} from './levelup.js?v=20261115-v59';
+import {installShopNavigation} from './shop-navigation.js?v=20261115-v59';
+import {showZhaocaiNote} from './zhaocai-note.js?v=20261115-v59';
+import {installShopMusic} from './shop-music.js?v=20261115-v59';
+import {createActorVisuals} from './actor-visuals.js?v=20261115-v59';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261115-v59';
+import {loadSpiritCards} from './spirit-cards.js?v=20261115-v59';
+import {createGame} from './core.js?v=20261115-v59';
+import {createStaffOverlay} from './staff-overlay.js?v=20261115-v59';
+import {installPatrolControls} from './patrol-controls.js?v=20261115-v59';
+import {playEvolution3D} from './evolution-3d.js?v=20261115-v59';
+import {createScene} from './scene.js?v=20261115-v59';
+import {createScene2D} from './scene-2d.js?v=20261115-v59';
+import {createHub} from './shop-hub.js?v=20261115-v59';
+import {showManagerDialogue} from './manager-dialogue.js?v=20261115-v59';
+import {dailyTasks} from './management.js?v=20261115-v59';
+import {shelfTypes,accepts as shelfAccepts} from './furniture.js?v=20261115-v59';
+import {decorTypes} from './decorations.js?v=20261115-v59';
+import {buildNotice} from './build-notices.js?v=20261115-v59';
 /* 新解鎖在實際查看該分類後記為已讀；可執行提醒保留到完成。 */
 const SEEN_KEY='firstlight-shop-seen-v1',readSeen=()=>{try{return JSON.parse(localStorage.getItem(SEEN_KEY))||{};}catch{return {};}},seenNotice=readSeen();
-const hireable=(g,s)=>g.data.hirePool.filter(h=>!h.evolutionOnly&&!isPromoterLineage(g.data,h.spiritId||h.id)&&h.level<=s.level&&!s.employees.some(e=>e.baseId===h.id)).map(h=>h.id);
+const hireable=(g,s)=>g.data.hirePool.filter(h=>!h.evolutionOnly&&!h.recruitDisabled&&!isPromoterLineage(g.data,h.spiritId||h.id)&&h.level<=s.level&&!s.employees.some(e=>e.baseId===h.id)).map(h=>h.id);
 function markSeen(page,arg){if(!game)return;const s=game.state;let ids=[];
  if(page==='hire')seenNotice.staff=hireable(game,s);
  if(seenNotice.buildTier!==s.level){seenNotice.build=[];seenNotice.buildTier=s.level;}
@@ -44,7 +45,7 @@ function markSeen(page,arg){if(!game)return;const s=game.state;let ids=[];
  if(page==='decorShop')ids=decorTypes.filter(t=>t.group===arg&&t.level<=s.level).map(t=>t.id);
  if(ids.length)seenNotice.build=[...new Set([...(seenNotice.build||[]),...ids])];
  try{localStorage.setItem(SEEN_KEY,JSON.stringify(seenNotice));}catch{}}
-import {installWindowControls} from './window-controls.js?v=20261114-v57r3';
+import {installWindowControls} from './window-controls.js?v=20261115-v59';
 /* 2D 測試：在設定輸入代碼後切換並記住；本機開發可用 ?shopDev=1&view=2d 直接進入 */
 const VIEW_KEY='firstlight-shop-view',VIEW_CODE='741216',viewParams=new URLSearchParams(location.search),readView=()=>{try{return localStorage.getItem(VIEW_KEY);}catch{return null;}},view2d=viewParams.get('view')==='2d'&&viewParams.has('shopDev')&&['localhost','127.0.0.1'].includes(location.hostname)||readView()==='2d';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -113,12 +114,12 @@ async function boot(){let gate;try{
  shopMusic=installShopMusic();game=await createGame({storage:localStorage,key:'firstlight_shop_v1'});if(game.state.meadowAway)game.act('returnMeadow');game.act('tutorial',{done:true});importMeadow();seenPatrolResolution=game.state.recentPatrolResolution?.id||null;seenChapterClear=game.state.chapterClear?.id||null;seenChase=game.state.customerChaseResult?.id||null;
  shopNavigation=installShopNavigation({game,onError:e=>toast(e.message,true)});
  hub=createHub({game,getScene:()=>scene,act:action,toast,esc,evolve:beginEvolution,leave:()=>$('#return-to-game').click(),settings:{openAuction:()=>plazaAuction.open(),enterMeadow,importMeadow,notices:()=>shopNotices(game,game.state,{...seenNotice,build:seenNotice.buildTier===game.state.level?seenNotice.build:[]}),onVisit:markSeen,buildNotice:()=>buildNotice(game,game.state,seenNotice.buildTier===game.state.level?seenNotice.build:[]),volume:()=>shopMusic?.volume??40,quality:()=>quality,resetTest:()=>{resetMerchantOnly(localStorage);location.reload();},canResetTest:()=>['localhost','127.0.0.1'].includes(location.hostname)&&new URLSearchParams(location.search).has('shopDev'),exportSave,recover:recoverSave,is2D:()=>view2d,switchView},onChange:()=>{game.uiBusy=evolutionInProgress||game.fortunePaused||hub?.isOpen;renderHUD();}});
- plazaAuction=installPlazaAuction({game,toast,onOpen:()=>hub.close()});window.shopAuction=plazaAuction;
+ plazaAuction=installPlazaAuction({game,toast,onOpen:()=>hub.close()});window.shopAuction=plazaAuction;spinArena=installSpinArena({game,toast,onOpen:()=>{hub.close();plazaAuction.close();}});window.shopSpinArena=spinArena;
  const trial=['localhost','127.0.0.1'].includes(location.hostname)&&new URLSearchParams(location.search).has('shopDev');if(innerWidth<700)game.data.config.maxCustomers=6;
  await loadSpiritCards();actorVisuals=createActorVisuals($('#actor-reactions'),{onEventClick:()=>hub.open('event'),onComplaintClick:id=>hub.open('complaint',id),onFortuneClick:()=>hub.openFortune(),onStaffClick:id=>hub.open('exhausted',id)});window.shop=game;window.shopTrial=trial;window.addEventListener('focus',()=>{importMeadow();renderHUD();});
  const sceneFactory=view2d?createScene2D:createScene;document.body.classList.toggle('view-2d',view2d);
  scene=sceneFactory({canvas:$('#world'),game,
-  onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='rivalStall'){plazaAuction.open();return;}if(o.type==='passer'){const r=action('greetPasser',{visitorId:o.id});if(r.ok){const converted=game.state.passerInterest?.[o.id]?.converted;scene.greetPasser?.(o.id,converted);showPasserReply(scene,o.id,converted);}return;}if(o.type==='promoter'){hub.open('promoters');return;}if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){if(game.state.phase==='open'&&!game.state.layoutPause)return;scene.setMode('decorate');scene.selectShelf(o.id);}},
+  onSelect:o=>{if(game.state.patrolFocus)return;if(o.type==='spinArena'){spinArena.open();return;}if(o.type==='rivalStall'){plazaAuction.open();return;}if(o.type==='passer'){const r=action('greetPasser',{visitorId:o.id});if(r.ok){const converted=game.state.passerInterest?.[o.id]?.converted;scene.greetPasser?.(o.id,converted);showPasserReply(scene,o.id,converted);}return;}if(o.type==='promoter'){hub.open('promoters');return;}if(o.type==='staff')hub.open('worker',o.id);else if(o.type==='shelf'&&scene.metrics.mode==='play'){if(game.state.phase==='open'&&!game.state.layoutPause)return;scene.setMode('decorate');scene.selectShelf(o.id);}},
   onStaffPositions:rows=>staffOverlay?.position(rows),
   onActorVisuals:view=>{const focus=game.state.patrolFocus?.employeeId;actorVisuals?.render(focus?{actors:view.actors.filter(v=>v.id===focus),notices:view.notices.filter(n=>n.targetId===focus)}:view);},
   onPlacementChange:p=>{$('#placement-hint').hidden=!p;if(p)$('#placement-message').textContent=p.ok?(p.wall?'點亮起的牆壁位置，再按 ✓':'點地板選位置，再按 ✓'):'這裡不能放：'+p.message;document.body.classList.toggle('placement-bad',!!p&&!p.ok);},

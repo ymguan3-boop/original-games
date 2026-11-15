@@ -37,7 +37,8 @@
     "cost": 450,
     "wage": 0,
     "special": false,
-    "requiredSales": 0
+    "requiredSales": 0,
+    "recruitDisabled": true
   },
   {
     "id": "cyndaquil",
@@ -114,17 +115,18 @@
     "name": "大眼蛙",
     "rarity": "purple",
     "level": 3,
-    "cost": 3200,
+    "cost": 800,
     "wage": 0,
     "special": true,
-    "requiredSales": 60
+    "requiredSales": 60,
+    "recruitDisabled": true
   },
   {
     "id": "raikou",
     "name": "C囝仔",
     "rarity": "purple",
     "level": 3,
-    "cost": 3200,
+    "cost": 800,
     "wage": 0,
     "special": true,
     "requiredSales": 60
@@ -134,17 +136,18 @@
     "name": "水毛蟲",
     "rarity": "purple",
     "level": 3,
-    "cost": 3200,
+    "cost": 800,
     "wage": 0,
     "special": true,
-    "requiredSales": 60
+    "requiredSales": 60,
+    "recruitDisabled": true
   },
   {
     "id": "giratina",
     "name": "小黃",
     "rarity": "purple",
     "level": 3,
-    "cost": 3200,
+    "cost": 800,
     "wage": 0,
     "special": true,
     "requiredSales": 60
@@ -154,7 +157,7 @@
     "name": "綠眼蝙怪",
     "rarity": "red",
     "level": 4,
-    "cost": 12000,
+    "cost": 1100,
     "wage": 0,
     "special": true,
     "requiredSales": 150
@@ -164,7 +167,7 @@
     "name": "歐頭慢",
     "rarity": "red",
     "level": 4,
-    "cost": 12000,
+    "cost": 1100,
     "wage": 0,
     "special": true,
     "requiredSales": 150
@@ -174,7 +177,7 @@
     "name": "小飯團",
     "rarity": "red",
     "level": 4,
-    "cost": 12000,
+    "cost": 1100,
     "wage": 0,
     "special": true,
     "requiredSales": 150
@@ -184,7 +187,7 @@
     "name": "小山",
     "rarity": "red",
     "level": 4,
-    "cost": 12000,
+    "cost": 1100,
     "wage": 0,
     "special": true,
     "requiredSales": 150
@@ -194,7 +197,7 @@
     "name": "光鳳鷹",
     "rarity": "red",
     "level": 4,
-    "cost": 12000,
+    "cost": 1100,
     "wage": 0,
     "special": true,
     "requiredSales": 150
@@ -204,7 +207,7 @@
     "name": "水蛟龍王",
     "rarity": "red",
     "level": 5,
-    "cost": 12000,
+    "cost": 1400,
     "wage": 0,
     "special": true,
     "requiredSales": 150
@@ -214,7 +217,7 @@
     "name": "三色蛋",
     "rarity": "red",
     "level": 4,
-    "cost": 12000,
+    "cost": 1100,
     "wage": 0,
     "special": true,
     "requiredSales": 150,
@@ -226,7 +229,7 @@
     "name": "三色蛋・咕",
     "rarity": "red",
     "level": 4,
-    "cost": 12000,
+    "cost": 1100,
     "wage": 0,
     "special": false,
     "requiredSales": 0,
@@ -248,7 +251,7 @@
     "name": "三色蛋・麻",
     "rarity": "red",
     "level": 4,
-    "cost": 12000,
+    "cost": 1100,
     "wage": 0,
     "special": false,
     "requiredSales": 0,
@@ -270,7 +273,7 @@
     "name": "三色蛋・鷹",
     "rarity": "red",
     "level": 4,
-    "cost": 12000,
+    "cost": 1100,
     "wage": 0,
     "special": false,
     "requiredSales": 0,
@@ -292,7 +295,7 @@
     "name": "招財",
     "rarity": "red",
     "level": 5,
-    "cost": 6000,
+    "cost": 1400,
     "wage": 0,
     "special": false,
     "requiredSales": 0,
