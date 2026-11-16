@@ -1,0 +1,63 @@
+{
+  "generator": "built-in image_gen",
+  "conversion": "Crop generated 2x2 frames, resize with shared bounds, encode a transparent loop. No character redrawing.",
+  "assets": [
+    {
+      "id": "chimchar",
+      "name": "阿宏牛仔",
+      "file": "assets/staff-gifs/chimchar.gif",
+      "size": 54872,
+      "frames": 6,
+      "sourceSheet": "C:\\Users\\ymguan\\.codex\\visualizations\\2026\\10\\28\\01a17fd4-076e-7b92-8618-3d89cee66225\\staff-gifs-v65\\chimchar-sprites-v1.png",
+      "reference": "../幻靈奇旅/cards/art/ahong-cowboy.webp",
+      "prompt": {
+        "useCase": "stylized-concept",
+        "asset": "Transparent 2x2 animation sprite sheet for a 160x160 recruitment GIF",
+        "referenceRoles": [
+          "Character identity: original game card artwork",
+          "Style: existing cute 2D dark-outline staff GIF"
+        ],
+        "request": "Preserve the reference character costume, face, accessories and proportions. gentle hat-tip, blink and wink. Four small loopable poses at equal scale and centered placement. Full body and all accessories visible. Clean 2D chibi illustration, dark outlines and cel shading. Transparent background; no labels, borders, text or watermark."
+      },
+      "finalPrompt": "Use case: stylized-concept. Asset type: transparent 2x2 animation sprite sheet for a 160x160 recruitment GIF. Input images: original character card is identity reference; existing staff GIF first frame is style reference. Four equal-sized square cells in row-major order. Subject: a cheerful young male cowboy with short black hair, brown wide brim hat with gold sheriff star, red neckerchief, white shirt, brown vest, blue jeans and brown boots, two small black-and-gold fantasy toy revolvers held safely upward. Style: polished cute 2D chibi game portrait, clean dark outlines, flat warm colors, minimal cel shading, large expressive face, matching the supplied 2D reference; no photographic scene, no cards or UI borders. Animation: Frame 1 friendly idle smile; frame 2 gentle hat-tip and slight blink; frame 3 full wink with hat-tip; frame 4 return toward the idle pose. Keep motion small and loopable, character proportions consistent across frames, same scale and centered position, full body and all accessories visible. Truly transparent background in every cell, no green screen or white backdrop, no cast floor shadow."
+    },
+    {
+      "id": "infernape",
+      "name": "官胖",
+      "file": "assets/staff-gifs/infernape.gif",
+      "size": 86523,
+      "frames": 6,
+      "sourceSheet": "C:\\Users\\ymguan\\.codex\\visualizations\\2026\\10\\28\\01a17fd4-076e-7b92-8618-3d89cee66225\\staff-gifs-v65\\infernape-sprites-v1.png",
+      "reference": "../幻靈奇旅/cards/art/guanpang.webp",
+      "prompt": {
+        "useCase": "stylized-concept",
+        "asset": "Transparent 2x2 animation sprite sheet for a 160x160 recruitment GIF",
+        "referenceRoles": [
+          "Character identity: original game card artwork",
+          "Style: existing cute 2D dark-outline staff GIF"
+        ],
+        "request": "Preserve the reference character costume, face, accessories and proportions. breathing, proud nod and glowing purple armor crystals. Four small loopable poses at equal scale and centered placement. Full body and all accessories visible. Clean 2D chibi illustration, dark outlines and cel shading. Transparent background; no labels, borders, text or watermark."
+      },
+      "finalPrompt": "Use case: stylized-concept. Asset type: transparent 2x2 animation sprite sheet for a 160x160 recruitment GIF. Input images: original character card is identity reference; existing staff GIF first frame is style reference. Four equal-sized square cells in row-major order. Subject: a friendly stocky male guardian with short curly dark hair, black rectangular glasses, chunky silver armor studded with luminous purple diamond crystals, purple tabard, brown belts, holding his oversized silver-and-purple crystal hammer upright. Style: polished cute 2D chibi game portrait, clean dark outlines, flat warm colors, minimal cel shading, large expressive face, matching the supplied 2D reference; no photographic scene, no cards or UI borders. Animation: Frame 1 friendly idle smile; frame 2 slight breathing lift, brighter crystals; frame 3 blink and small proud nod, crystals glow; frame 4 return toward idle, crystal glow softens. Keep motion small and loopable, character proportions consistent across frames, same scale and centered position, full body and all accessories visible. Truly transparent background in every cell, no green screen or white backdrop, no cast floor shadow."
+    },
+    {
+      "id": "monferno",
+      "name": "藍金星輝法師",
+      "file": "assets/staff-gifs/monferno.gif",
+      "size": 63502,
+      "frames": 6,
+      "sourceSheet": "C:\\Users\\ymguan\\.codex\\visualizations\\2026\\10\\28\\01a17fd4-076e-7b92-8618-3d89cee66225\\staff-gifs-v65\\monferno-sprites-v1.png",
+      "reference": "../幻靈奇旅/cards/art/starlight-mage.webp",
+      "prompt": {
+        "useCase": "stylized-concept",
+        "asset": "Transparent 2x2 animation sprite sheet for a 160x160 recruitment GIF",
+        "referenceRoles": [
+          "Character identity: original game card artwork",
+          "Style: existing cute 2D dark-outline staff GIF"
+        ],
+        "request": "Preserve the reference character costume, face, accessories and proportions. small hand wave, blink and golden sparkles. Four small loopable poses at equal scale and centered placement. Full body and all accessories visible. Clean 2D chibi illustration, dark outlines and cel shading. Transparent background; no labels, borders, text or watermark."
+      },
+      "finalPrompt": "Use case: stylized-concept. Asset type: transparent 2x2 animation sprite sheet for a 160x160 recruitment GIF. Input images: original character card is identity reference; existing staff GIF first frame is style reference. Four equal-sized square cells in row-major order. Subject: a cheerful female star mage with brown hair in a high bun, round gold glasses, white and dark-navy floor-length robes with gold borders and blue gemstones, gold star ornaments and a tall black-and-gold staff topped by a blue orb and gold four-point star. Style: polished cute 2D chibi game portrait, clean dark outlines, flat warm colors, minimal cel shading, large expressive face, matching the supplied 2D reference; no photographic scene, no cards or UI borders. Animation: Frame 1 smiling idle with staff; frame 2 slight free-hand wave and two little gold sparkles; frame 3 blink with gentle wave, sparkles move slightly; frame 4 return toward idle, sparkles fade. Keep motion small and loopable, character proportions consistent across frames, same scale and centered position, full body and all accessories visible. Truly transparent background in every cell, no green screen or white backdrop, no cast floor shadow."
+    }
+  ]
+}

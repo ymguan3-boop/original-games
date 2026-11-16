@@ -11,7 +11,7 @@ import {pendingRewards} from './reward-collection.js?v=20261116-v64';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
 import {WEAPONS} from '../../幻靈奇旅/survivors/js/inventory.js?v=20261030-reaper-v2';
-import {spiritPortrait} from './spirit-cards.js?v=20261116-v64';
+import {spiritPortrait} from './spirit-cards.js?v=20261116-staff-v65';
 import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261116-v64';
 import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261116-v64';
 import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261116-v64';
