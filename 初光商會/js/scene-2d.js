@@ -1,30 +1,30 @@
-import{plazaArenaTheme}from'./spin-arena-config.js?v=20261115-v63';
-import{trayOffers}from'./material-tray.js?v=20261115-v63';
-import{footprintCenter,occupiedCells}from'./placement-footprint.js?v=20261115-v63';
-import {tierThumb} from './tier-designs.js?v=20261115-v63';
-import {stockState} from './shop-interactions.js?v=20261115-v63';
-import {fortuneAvailable} from './fortune-cards.js?v=20261115-v63';
+import{plazaArenaTheme}from'./spin-arena-config.js?v=20261116-v64';
+import{trayOffers}from'./material-tray.js?v=20261116-v64';
+import{footprintCenter,occupiedCells}from'./placement-footprint.js?v=20261116-v64';
+import {tierThumb} from './tier-designs.js?v=20261116-v64';
+import {stockState} from './shop-interactions.js?v=20261116-v64';
+import {fortuneAvailable} from './fortune-cards.js?v=20261116-v64';
 import {createYardBattle2D} from './yard-battle-2d.js';
-import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261115-v63';
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261115-v63';
-import {hasDecorModel} from './decor-models-v22.js?v=20261115-v63';
-import {CHECKOUT,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261115-v63';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261115-v63';
+import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261116-v64';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261116-v64';
+import {hasDecorModel} from './decor-models-v22.js?v=20261116-v64';
+import {CHECKOUT,STATIONS,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261116-v64';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261116-v64';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261115-v63';
-import {ENTRANCE} from './nav.js?v=20261115-v63';
-import {sampleTrail} from './motion.js?v=20261115-v63';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261115-v63';
-import {eventEmployee} from './patrol-events.js?v=20261115-v63';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261115-v63';
-import {stockCount} from './shelf-products.js?v=20261115-v63';
-import {createAssets} from './asset-resolver.js?v=20261115-v63';
-import {createPlacementCells} from './placement-cells.js?v=20261115-v63';
-import {environment} from './environment.js?v=20261115-v63';
-import {createEnvironment2D} from './environment-2d.js?v=20261115-v63';
-import {spiritArtPath} from './spirit-cards.js?v=20261115-v63';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261116-v64';
+import {ENTRANCE} from './nav.js?v=20261116-v64';
+import {sampleTrail} from './motion.js?v=20261116-v64';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261116-v64';
+import {eventEmployee} from './patrol-events.js?v=20261116-v64';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261116-v64';
+import {stockCount} from './shelf-products.js?v=20261116-v64';
+import {createAssets} from './asset-resolver.js?v=20261116-v64';
+import {createPlacementCells} from './placement-cells.js?v=20261116-v64';
+import {environment} from './environment.js?v=20261116-v64';
+import {createEnvironment2D} from './environment-2d.js?v=20261116-v64';
+import {spiritArtPath} from './spirit-cards.js?v=20261116-v64';
 
 const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*2.2,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */
@@ -102,7 +102,7 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
   /* 入口迎賓墊與店外盆栽 */
   g.save();g.setTransform(HW,HH,-HW,HH,x0,y0);g.fillStyle='#fff3cf';g.fillRect(-.7,ENTRANCE.z-.9,1.7,1.8);g.fillStyle='#c35a3a';g.fillRect(-.6,ENTRANCE.z-.8,1.5,1.6);g.restore();
   const front=[[oBush,-1.3,Hd-1.5,1.5],[oBush,Wd+.9,2,1.4],[oBush,Wd+.9,Hd-3,1.5],[oLamp,-1.5,ENTRANCE.z-1.7,.75],[oLamp,-1.5,ENTRANCE.z+1.7,.75],[oBed,-2.4,ENTRANCE.z-3.5,1.9],[oBed,-2.4,ENTRANCE.z+3.5,1.9],[oFence,Wd+1.2,Hd+.4,1.4],[oFence,Wd+1.2,Hd+1.6,1.4],[oTree,-2.2,Hd+1.5,2.4],[oBush,ENTRANCE.x-5.2,Hd+2.6,1.4]];front.sort((a,b)=>(a[1]+a[2])-(b[1]+b[2])).forEach(a=>prop(...a));
-  layer.querySelector('.world2d-counter')?.remove();if(counter){const el=new Image();el.src=ISO+'counter.webp';el.alt='';el.className='world2d-item world2d-counter';if(l===1)el.style.filter='brightness(1.45) saturate(.55) sepia(.25) drop-shadow(1px 0 #6b4b30) drop-shadow(-1px 0 #6b4b30) drop-shadow(0 1px #6b4b30)';layer.append(el);placeItem(el,{rotation:COUNTER_FLIP?180:0},CHECKOUT.x,2,COUNTER_WIDTH);metrics.counter=true;}
+  layer.querySelector('.world2d-counter')?.remove();if(counter){const el=new Image();el.src=ISO+'counter.webp';el.alt='';el.className='world2d-item world2d-counter';if(l===1)el.style.filter='brightness(1.45) saturate(.55) sepia(.25) drop-shadow(1px 0 #6b4b30) drop-shadow(-1px 0 #6b4b30) drop-shadow(0 1px #6b4b30)';layer.append(el);placeItem(el,{rotation:COUNTER_FLIP?180:0},STATIONS[0].counter.x,STATIONS[0].counter.z,COUNTER_WIDTH);metrics.counter=true;}
   metrics.projection='isometric';dirty=true;fit();
  }
  function fit(){
@@ -135,11 +135,11 @@ export function createScene2D({canvas,game,onSelect=()=>{},onFurnitureSelect=()=
  function updatePassers(dt){spinArena.hidden=state().level<3;if(!spinArena.hidden){const theme=plazaArenaTheme(state().level);if(spinArena.dataset.level!==String(theme.level)){spinArena.dataset.level=theme.level;spinArena.querySelector('img').src=`./assets/spin-arena/arena-grey-lv${theme.level}-card.png`;spinArena.querySelector('span').textContent=theme.name;spinArena.querySelector('.spin-plaza-audience')?.remove();const crowd=document.createElement('div');crowd.className='spin-plaza-audience';for(let i=0;i<theme.spectators;i++){const img=new Image();img.src=`./assets/spin-arena/crowd/${['clap','cheer','jump','wave'][i%4]}-${Math.floor(i/4)%3}.webp`;img.alt=['拍手觀眾','歡呼觀眾','跳躍觀眾','揮手觀眾'][i%4];img.style.cssText=`position:absolute;width:25px;height:42px;object-fit:contain;left:${10+i/(theme.spectators-1)*80}%;top:${60+Math.sin(i/(theme.spectators-1)*Math.PI)*20}%;transform:translateX(-50%);pointer-events:none`;crowd.append(img);}spinArena.append(crowd);}const q=P(dim.width/2,dim.height+8.8);spinArena.style.left=q.X+'px';spinArena.style.top=q.Y+'px';spinArena.style.width='280px';spinArena.style.zIndex=Math.round(100+(dim.width/2+dim.height+8.8)*60);const r=spinArena.getBoundingClientRect();metrics.spinArena={screenX:r.left+r.width/2,screenY:r.top+r.height*.6};}else metrics.spinArena=null;const outcome=state().plazaAuction?.day===state().day?state().plazaAuction?.result:null;rival.dataset.outcome=outcome?(outcome.won?'won':'lost'):'';rival.hidden=state().level<3;if(!rival.hidden){const q=P(dim.width/2+3.7,dim.height+8.3);rival.style.left=q.X+'px';rival.style.top=q.Y+'px';rival.style.width='210px';rival.style.zIndex=Math.round(100+(dim.width/2+3.7+dim.height+8.3)*60);const r=rival.getBoundingClientRect();metrics.rival={screenX:r.left+r.width/2,screenY:r.top+r.height/2};}else metrics.rival=null;const weather=environment(state(),game.data.config).weather;while(passers.length<3){const i=passers.length,el=document.createElement('div'),img=new Image();el.className='world2d-actor world2d-passer';el.dataset.passerId=`passer-2d-${++passerSerial}`;img.src=`./assets/customers/${i%2?'adventurer-f':'commoner-m'}.gif`;el.append(img);layer.append(el);passers.push({id:el.dataset.passerId,el,x:-3+i*5,z:dim.height+5.9,speed:i%2?-.75:.75});}
  metrics.passers=passers.map(a=>({id:a.id,x:a.x,z:a.z}));for(const a of passers){if(a.invited){const gx=ENTRANCE.x,gz=dim.height-.25,dx=gx-a.x,dz=gz-a.z,d=Math.hypot(dx,dz),n=Math.min(d,dt*2.2);if(d>.05){a.x+=dx/d*n;a.z+=dz/d*n;}else {a.arrivalRetry=(a.arrivalRetry||0)-dt;if(a.arrivalRetry>0)continue;a.arrivalRetry=.5;if(!state().customers.some(c=>c.visitorId===a.id))game.act('arrivePasser',{visitorId:a.id});if(state().customers.some(c=>c.visitorId===a.id)){a.invited=false;a.x= -3;a.z=dim.height+5.9;a.id=`passer-2d-${++passerSerial}`;a.el.dataset.passerId=a.id;}}}else a.x+=dt*a.speed;if(a.x>dim.width+4||a.x< -4){a.x=a.speed>0?-3:dim.width+3;a.id=`passer-2d-${++passerSerial}`;a.el.dataset.passerId=a.id;a.invited=false;}if(!a.invited)a.z=dim.height+5.9;const q=P(a.x,a.z),px=ACTOR_SIZE*U;a.el.style.width=px+'px';a.el.style.left=q.X-px/2+'px';a.el.style.top=q.Y-px+'px';a.el.style.zIndex=Math.round(100+(a.x+a.z)*60);a.el.style.opacity='1';a.el.querySelector('img').style.transform=`scaleX(${a.speed>0?1:-1})`;updateWeatherOutfit2D(a.el,{weather,appearanceKey:a.id,outdoors:true});}}
  function syncActors(dt){
-  const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager&&(mode==='follow'||s.managerDuty!=='standby'))all.push(['manager',mode==='follow'?s.manager:{id:'manager',x:CHECKOUT.x,z:1},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,...promoterPoint()},'promoter']);
+  const s=state(),all=[...visibleStaff(s.staff||s.employees||[]).map(d=>[d.id,d,'staff']),...(s.customers||[]).map(d=>[d.id,d,'customer'])];if(s.manager&&(mode==='follow'||s.managerDuty!=='standby'))all.push(['manager',mode==='follow'?s.manager:{id:'manager',...STATIONS[0].cashier},'manager']);if(s.promoter)all.push(['promoter',{id:'promoter',spiritId:s.promoter.id,...promoterPoint()},'promoter']);
   if(game.motionFrame?.time!==motionStamp){motionStamp=game.motionFrame?.time;motionProgress=0;}motionProgress=Math.min(1,motionProgress+dt*(s.speed||1)/(game.motionFrame?.duration||.25));
   const moods=[],staffRows=[],active=new Set();
   for(const[key,d,type]of all){active.add(key);const a=ensureActor(key,d,type),trail=type==='manager'&&mode!=='follow'||type==='promoter'?null:game.motionFrame?.trails.get(key),p=type==='customer'&&(d.arrivalRemaining>0||d.arrivingNow||d.exitingAtDoor)?customerDisplayPoint(d,motionProgress,game.motionFrame?.duration||.25):trail?sampleTrail(trail,motionProgress):d,dx=p.x-a.pos.x,dz=p.z-a.pos.z,moved=dx*dx+dz*dz>.000001;a.pos={x:p.x,z:p.z};if(moved){a.moveUntil=time+.14;if(Math.abs(dx)>.002)a.flip=dx<0?-1:1;if(type==='manager')a.facing=Math.abs(dx)>Math.abs(dz)?'side':dz<0?'back':'front';}if(type==='manager')setManagerImage(a,time<a.moveUntil);
-   const px=(type==='promoter'?2.4:type==='manager'?MANAGER_SIZE:ACTOR_SIZE)*U,leaving=1;a.el.style.width=px+'px';const q=P(p.x,p.z);a.el.style.left=q.X-px/2+'px';/* 主角在櫃台：腳踩在檯面後緣的高度，櫃台擋住下半身、露出上半身；巡店走近時平順移過去 */const deskPull=type==='manager'?(mode!=='follow'?1:Math.max(0,1-Math.hypot(p.x-CHECKOUT.x,p.z-1)/1.2)):0,deskFeet=P(CHECKOUT.x,2).Y+HH*.9-COUNTER_WIDTH*U*.4,feet=q.Y+HH*.6;a.el.style.top=feet+(deskFeet-feet)*deskPull-px+'px';if(deskPull>0)a.el.style.left=q.X-px/2-HW*1.3*deskPull+'px';a.el.style.zIndex=Math.max(2,Math.round(100+(p.x+p.z)*60+30));a.screen={X:q.X,Y:q.Y+HH*.6,w:px};a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;const victory=chasePose(time-chaseStarted),celebrating=type==='manager'&&victory.active;a.el.classList.toggle('chase-celebrating',celebrating);if(celebrating)a.img.style.transform+=` translateY(${-victory.hop*U}px) rotate(${victory.lean}rad)`;if(type==='promoter'&&!a.flyer){a.flyer=document.createElement('span');a.flyer.className='promoter-flyer';a.flyer.textContent='初光商會';a.el.append(a.flyer);}a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');const weather=environment(s,game.data.config).weather,weatherKind=updateWeatherOutfit2D(a.el,{weather,appearanceKey:key,outdoors:p.z>dimensions(s.level).height-.3});metrics.weatherOutfits||={};if(weatherKind)metrics.weatherOutfits[key]=weatherKind;else delete metrics.weatherOutfits[key];
+   const px=(type==='promoter'?2.4:type==='manager'?MANAGER_SIZE:ACTOR_SIZE)*U,leaving=1;a.el.style.width=px+'px';const q=P(p.x,p.z);a.el.style.left=q.X-px/2+'px';/* 主角在櫃台：腳踩在檯面後緣的高度，櫃台擋住下半身、露出上半身；巡店走近時平順移過去 */const deskPull=type==='manager'?(mode!=='follow'?1:Math.max(0,1-Math.hypot(p.x-STATIONS[0].cashier.x,p.z-STATIONS[0].cashier.z)/1.2)):0,deskFeet=P(STATIONS[0].counter.x,STATIONS[0].counter.z).Y+HH*.9-COUNTER_WIDTH*U*.4,feet=q.Y+HH*.6;a.el.style.top=feet+(deskFeet-feet)*deskPull-px+'px';if(deskPull>0)a.el.style.left=q.X-px/2-HW*1.3*deskPull+'px';a.el.style.zIndex=Math.max(2,Math.round(100+(p.x+p.z)*60+30));a.screen={X:q.X,Y:q.Y+HH*.6,w:px};a.img.style.transform=`scaleX(${a.flip}) scale(${leaving})`;const victory=chasePose(time-chaseStarted),celebrating=type==='manager'&&victory.active;a.el.classList.toggle('chase-celebrating',celebrating);if(celebrating)a.img.style.transform+=` translateY(${-victory.hop*U}px) rotate(${victory.lean}rad)`;if(type==='promoter'&&!a.flyer){a.flyer=document.createElement('span');a.flyer.className='promoter-flyer';a.flyer.textContent='初光商會';a.el.append(a.flyer);}a.el.classList.toggle('walking',time<a.moveUntil);a.el.classList.toggle('carrying',type==='staff'&&d.workTask?.phase==='carry');const weather=environment(s,game.data.config).weather,weatherKind=updateWeatherOutfit2D(a.el,{weather,appearanceKey:key,outdoors:p.z>dimensions(s.level).height-.3});metrics.weatherOutfits||={};if(weatherKind)metrics.weatherOutfits[key]=weatherKind;else delete metrics.weatherOutfits[key];
    const emotion=stateEmotion(type,d,s),issue=type==='customer'?getCustomerComplaint(s,d,game):null,chase=type==='customer'&&s.customerChase?.customerId===d.id;
    if(emotion||issue||chase){const ev=s.event,related=!!ev&&(type==='staff'&&eventEmployee(s,ev)?.id===d.id||type==='customer'&&ev.description?.includes(d.name)&&['Angry','OutOfStock','Queue','UnhappyExit'].includes(d.state)),head=toScreen(p.x,p.z,ACTOR_SIZE*.95);moods.push({id:key,kind:chase?'impatient':emotion||'impatient',...(type==='staff'&&d.fatigue>=100?{staffId:d.id}:chase?{complaintId:d.id,complaintTitle:'🏃 追上我',chaseTarget:true}:issue?{complaintId:d.id,complaintTitle:issue.title}:related?{eventId:ev.instanceId||ev.id,eventTitle:ev.title}:{}),x:head.x,y:head.y,inFront:true});}
    if(type==='staff'){const head=toScreen(p.x,p.z,ACTOR_SIZE*.9);staffRows.push({id:key,x:head.x,y:head.y});}}

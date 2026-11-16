@@ -1,10 +1,10 @@
-import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_STAT_NAMES,SPIN_OPPONENTS,spinTop,spinPartBonus,spinBonusText} from './spin-arena-config.js?v=20261115-v63';
-import {spinState,spinStats,effectiveSpinStats} from './spin-arena-core.js?v=20261115-v63';
-import {SPIN_GROWTH} from './spin-arena-progression.js?v=20261115-v63';
-import {createSpinBattleView} from './spin-arena-view.js?v=20261115-v63';
-import {createSpinAudio,createSpinPresentation} from './spin-arena-presentation.js?v=20261115-v63';
+import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_STAT_NAMES,SPIN_OPPONENTS,spinTop,spinPartBonus,spinBonusText} from './spin-arena-config.js?v=20261116-v64';
+import {spinState,spinStats,effectiveSpinStats} from './spin-arena-core.js?v=20261116-v64';
+import {SPIN_GROWTH} from './spin-arena-progression.js?v=20261116-v64';
+import {createSpinBattleView} from './spin-arena-view.js?v=20261116-v64';
+import {createSpinAudio,createSpinPresentation} from './spin-arena-presentation.js?v=20261116-v64';
 export function installSpinArena({game,toast,onOpen=()=>{}}){
- const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('../spin-arena.css?v=20261115-v63',import.meta.url);document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('../spin-arena.css?v=20261116-v64',import.meta.url);document.head.append(css);
  const dialog=document.createElement('dialog');dialog.className='spin-arena-dialog';dialog.setAttribute('aria-label','廣場戰鬥陀螺大會');document.body.append(dialog);
  const audio=createSpinAudio();let page='home',selected='flame',selectedSlot='rim',view=null,presentation=null,raf=0,previous=0,accumulator=0,battlePhase='',busy=false;
  const a=()=>spinState(game.state),e=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),name=id=>spinTop(id)?.name||id;

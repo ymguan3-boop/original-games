@@ -1,17 +1,17 @@
-import{entryLanding}from'./shop-interactions.js?v=20261115-v63';
-import{auctionSaleBonus}from'./plaza-auction.js?v=20261115-v63';
-import{routeToGoods,atShoppingSpot,waitInside}from'./customer-routing.js?v=20261115-v63';
-import{waitingAtQueue}from'./customer-health.js?v=20261115-v63';
-import{fillShelf,finishStockBatch,broadcast}from'./stock-flow.js?v=20261115-v63';
-import{shelfApproach}from'./nav.js?v=20261115-v63';
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261115-v63';
-import {decorEffects,obstacles} from './decorations.js?v=20261115-v63';
-import {purchaseChance} from './economy-v2.js?v=20261115-v63';
-import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261115-v63';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,dimensions} from './nav.js?v=20261115-v63';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261115-v63';
-import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261115-v63';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261115-v63';
+import{entryLanding}from'./shop-interactions.js?v=20261116-v64';
+import{auctionSaleBonus}from'./plaza-auction.js?v=20261116-v64';
+import{routeToGoods,atShoppingSpot,waitInside}from'./customer-routing.js?v=20261116-v64';
+import{waitingAtQueue}from'./customer-health.js?v=20261116-v64';
+import{fillShelf,finishStockBatch,broadcast}from'./stock-flow.js?v=20261116-v64';
+import{shelfApproach}from'./nav.js?v=20261116-v64';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261116-v64';
+import {decorEffects,obstacles} from './decorations.js?v=20261116-v64';
+import {purchaseChance} from './economy-v2.js?v=20261116-v64';
+import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261116-v64';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,STATIONS,QUEUE_PER_STATION,dimensions} from './nav.js?v=20261116-v64';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261116-v64';
+import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261116-v64';
+import {passive,jobPower,dailyTrack} from './management.js?v=20261116-v64';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
@@ -46,10 +46,14 @@ export function operationalEvent(g,s,id,title,description,role='cashier'){
 function angry(g,s,c,reason){
  if(c.state==='Angry'||c.state==='Leave')return;c.wasWaitingAtQueue=waitingAtQueue(c);c.basket=[];c.state='Angry';c.path=[];c.timer=0;c.emotion='angry';c.angerReason=reason;s.stats.lost++;const old=s.satisfaction;s.satisfaction=clamp(s.satisfaction-1);if(old>s.satisfaction)g.notice(s,c.id,'滿意 -1','bad');s.memories[c.personality]={day:s.day,satisfied:false,reason};const shortage=reason.includes('缺貨');operationalEvent(g,s,shortage?'stockout':'queue-complaint',shortage?'顧客找不到商品':'顧客生氣了',`${c.name}：${reason}。商品已退回陳列，不會計為收入。`,shortage?'stocker':'cashier');
 }
-function leave(g,s,c){c.state='Leave';c.timer=0;c.exitRerouteAt=2;c.path=[];const side={x:CHECKOUT.x-1,z:3};if(Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.2&&walkable(side,obstacles(s),s.level)){const a=findPath(c,side,obstacles(s),s.level),b=findPath(side,ENTRANCE,obstacles(s),s.level);if(a&&b)c.path=[...a,...b];}if(!c.path.length)g.route(s,c,ENTRANCE);}
+function leave(g,s,c){c.state='Leave';c.timer=0;c.exitRerouteAt=2;c.path=[];const st=STATIONS[c.station||0]||STATIONS[0],side={x:st.pay.x,z:st.pay.z+1};if(Math.hypot(c.x-st.pay.x,c.z-st.pay.z)<.2&&walkable(side,obstacles(s),s.level)){const a=findPath(c,side,obstacles(s),s.level),b=findPath(side,ENTRANCE,obstacles(s),s.level);if(a&&b)c.path=[...a,...b];}if(!c.path.length)g.route(s,c,ENTRANCE);}
 /* 收銀由主角負責：巡店時櫃台沒人，結帳變慢 */
 const AWAY_SLOWDOWN=1.8;
-function cashierAt(g,s){return s.employees.find(e=>e.role==='cashier'&&e.fatigue<100&&Math.hypot(e.x-CHECKOUT.x,e.z-1)<1.3)||(s.managerDuty==='cashier'&&!g.managerActive?s.manager:null);}
+export function stationCashiers(g,s){const near=(e,st)=>Math.hypot(e.x-st.cashier.x,e.z-st.cashier.z)<1.3,staff=s.employees.filter(e=>e.role==='cashier'&&e.fatigue<100),manager=s.managerDuty==='cashier'&&!g.managerActive?s.manager:null,out=STATIONS.map(()=>null);
+ out[1]=STATIONS[1]&&staff.find(e=>near(e,STATIONS[1]))||null;out[0]=manager||staff.find(e=>e!==out[1]&&near(e,STATIONS[0]))||null;return out;}
+function cashierAt(g,s,i=0){return stationCashiers(g,s)[i]||null;}
+/* 排隊：選有收銀員、人比較少的那座 */
+function pickStation(g,s){const cash=stationCashiers(g,s),load=i=>s.customers.filter(x=>['Queue','Checkout'].includes(x.state)&&(x.station||0)===i).length,open=STATIONS.map((_,i)=>i).filter(i=>cash[i]&&load(i)<QUEUE_PER_STATION);if(open.length)return open.sort((a,b)=>load(a)-load(b)||a-b)[0];if(STATIONS.some((_,i)=>cash[i]))return -1;/* 兩座都沒人收銀時才排到 0 號（主角櫃台）等候 */const any=STATIONS.map((_,i)=>i).filter(i=>load(i)<QUEUE_PER_STATION);return any.length?any.sort((a,b)=>load(a)-load(b)||a-b)[0]:-1;}
 function pay(g,s,c,e){
  const saleId='sale-'+c.id;
  if(s.txIds.includes(saleId)||s.ledger.some(x=>x.id===saleId)){c.basket=[];c.state='Paid';c.timer=0;return;}
@@ -61,12 +65,11 @@ function pay(g,s,c,e){
 export function stepCustomers(g,s,dt){
  /* 出口優先：入場動畫結束時若門內有人，先在室外等，不在同一格互相擋路。也修復舊存檔已重疊的入場顧客。 */
  for(const c of s.customers)if(c.arrivalRemaining>0&&c.state==='Enter'&&!c.exitingAtDoor&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.3&&s.customers.some(o=>o!==c&&o.state==='Leave'&&!o.exitingAtDoor&&Math.hypot(o.x-ENTRANCE.x,o.z-ENTRANCE.z)<3))c.arrivalRemaining=Math.max(c.arrivalRemaining||0,.25);
- const queued=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));for(const c of queued.slice(4)){c.state='Cart';c.path=[];c.queueSlot=-1;c.wait=0;const p=g.freeSpot(s,{x:2,z:4},c);g.route(s,c,p);}
- const queue=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0));
- queue.forEach((c,i)=>{if(c.state==='Checkout')return;const goal={x:CHECKOUT.x,z:3+i};if(i<4&&(c.queueSlot!==i||!c.path.length&&Math.hypot(c.x-goal.x,c.z-goal.z)>.1)){c.queueSlot=i;g.route(s,c,goal);}});
+ STATIONS.forEach((st,k)=>{const line=s.customers.filter(c=>['Queue','Checkout'].includes(c.state)&&(c.station||0)===k).sort((a,b)=>(a.state==='Checkout'?-1:0)-(b.state==='Checkout'?-1:0)||(a.queueOrder||0)-(b.queueOrder||0));for(const c of line.slice(QUEUE_PER_STATION)){c.state='Cart';c.path=[];c.queueSlot=-1;c.wait=0;const p=g.freeSpot(s,{x:2,z:4},c);g.route(s,c,p);}
+  line.slice(0,QUEUE_PER_STATION).forEach((c,i)=>{if(c.state==='Checkout')return;const goal=st.queue[i];if(c.queueSlot!==i||!c.path.length&&Math.hypot(c.x-goal.x,c.z-goal.z)>.1){c.queueSlot=i;g.route(s,c,goal);}});});
  /* 已經誤闖收銀台後方的顧客：帶回櫃台前面 */
- for(const c of s.customers){if(c.path.length||Math.abs(c.x-CHECKOUT.x)>1.6||c.z>1.6||['Paid'].includes(c.state)||(c.rescueAt||0)>s.totalTime)continue;c.rescueAt=s.totalTime+1;const out=[{x:CHECKOUT.x+1,z:3},{x:CHECKOUT.x-1,z:3},{x:CHECKOUT.x+2,z:3},{x:CHECKOUT.x+2,z:2}].find(p=>walkable(p,obstacles(s),s.level));if(out)g.route(s,c,out);}
- const cashier=cashierAt(g,s);
+ for(const c of s.customers){const st=STATIONS.find(st=>c.x>st.counter.x-.4&&Math.abs(c.z-st.z)<1.2);if(!st||c.path.length||['Paid'].includes(c.state)||(c.rescueAt||0)>s.totalTime)continue;c.rescueAt=s.totalTime+1;const out=[{x:st.pay.x,z:st.z+1},{x:st.pay.x-1,z:st.z+1},{x:st.pay.x,z:st.z-1}].find(p=>walkable(p,obstacles(s),s.level));if(out)g.route(s,c,out);}
+ const cashiers=stationCashiers(g,s);
  for(const c of [...s.customers]){
   c.timer+=dt;
   // Never leave a departing customer stuck in the shop when a path is blocked.
@@ -74,7 +77,7 @@ export function stepCustomers(g,s,dt){
   if(c.exitingAtDoor){c.exitTravel=(c.exitTravel||0)+dt;if(c.exitTravel>=5)s.customers=s.customers.filter(x=>x.id!==c.id);continue;}
   if(c.state==='Leave'&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<.25){c.exitingAtDoor=true;c.exitTravel=0;c.path=[];continue;}
   if(['OutOfStock','UnhappyExit','AbandonCart','Angry'].includes(c.state)&&Math.hypot(c.x-ENTRANCE.x,c.z-ENTRANCE.z)<1.25&&!c.path.length){const wanted=s.shelves.find(sh=>sh.id===(c.targetShelf||c.plannedShelfId));if(!wanted||!routeToGoods(g,s,c,wanted))waitInside(g,s,c);}
-  if(waitingAtQueue(c)){if(!(c.calmUntil>s.totalTime))c.wait=(c.wait||0)+dt;if(c.wait>c.patience){angry(g,s,c,cashier?'排隊等太久':'沒有收銀員服務');continue;}}
+  if(waitingAtQueue(c)){if(!(c.calmUntil>s.totalTime))c.wait=(c.wait||0)+dt;if(c.wait>c.patience){angry(g,s,c,cashiers[c.station||0]?'排隊等太久':'沒有收銀員服務');continue;}}
   const before={x:c.x,z:c.z};g.safeMove(s,c,dt*2.2,dt);if(c.state==='Evaluate'&&c.path.length){c.browseRouteStall=Math.hypot(c.x-before.x,c.z-before.z)<.02?(c.browseRouteStall||0)+dt:0;if(c.browseRouteStall>=1.2){const target=s.shelves.find(sh=>sh.id===c.targetShelf);if(target&&atShoppingSpot(s,c,target)){c.path=[];c.blocked=0;}else if(target&&!routeToGoods(g,s,c,target)){c.path=[];c.state='Browse';c.visited=c.visited.filter(id=>id!==target.id);waitInside(g,s,c);}}}if(c.path.length)continue;
   if(c.state==='Enter'||c.state==='Browse'){
    const desired=salesShelves(s).find(sh=>sh.id===c.plannedShelfId&&g.available(s,sh)>0)||salesShelves(s).find(sh=>sh.id===c.plannedShelfId),wanted=g.data.catalog.find(x=>x.sku===c.wantedSku);if(wanted?.lootOnly&&desired&&g.available(s,desired)<=0&&!salesShelves(s).some(sh=>g.available(s,sh)>0&&g.data.catalog.find(x=>x.sku===sh.sku)?.merchantGrade===wanted.merchantGrade)){c.weaponShortage=true;c.state='OutOfStock';c.emotion='question';c.timer=0;const rack=s.shelves.find(sh=>sh.id===(c.targetShelf||c.plannedShelfId));if(!rack||!routeToGoods(g,s,c,rack))waitInside(g,s,c);continue;}const eligible=salesShelves(s).filter(sh=>g.available(s,sh)>0&&!c.visited.includes(sh.id));eligible.sort((a,b)=>{const ca=g.data.catalog.find(x=>x.sku===a.sku),cb=g.data.catalog.find(x=>x.sku===b.sku),preferred=['item','weapon','item','material','item','item','weapon','material'][c.personality];return Number(b.id===c.plannedShelfId)-Number(a.id===c.plannedShelfId)||Number(b.sku===c.wantedSku)-Number(a.sku===c.wantedSku)||Number(cb.category===preferred)-Number(ca.category===preferred);});const sh=eligible[0];if(!sh){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.state='OutOfStock';c.emotion='question';c.timer=0;const rack=s.shelves.find(sh=>sh.id===(c.targetShelf||c.plannedShelfId));if(!rack||!routeToGoods(g,s,c,rack))waitInside(g,s,c);continue;}if(!routeToGoods(g,s,c,sh)){c.state='Browse';waitInside(g,s,c);continue;}c.targetShelf=sh.id;c.targetSku=sh.sku;c.visited.push(sh.id);c.state='Evaluate';c.timer=0;
@@ -83,11 +86,11 @@ export function stepCustomers(g,s,dt){
    const sh=saleShelf(s,c.targetShelf,c.targetSku),item=g.data.catalog.find(x=>x.sku===sh?.sku),price=sh?Math.round(s.prices[sh.sku]*shelfDefinition(sh).premium*(1+decorEffects(s).premium)):0,tolerance=(c.personality===4?1.1:1.4)+(g.role(s,'host')?.3:0)+(s.buffs.sales>s.totalTime?.2:0)+(c.memory?.satisfied?.1:c.memory?-.15:0);
    if(sh&&g.available(s,sh)<=0){if(!c.stockoutCounted){c.stockoutCounted=true;s.stats.stockouts=(s.stats.stockouts||0)+1;}c.weaponShortage=!!item?.lootOnly;c.wantedSku=sh.sku;c.state='OutOfStock';c.emotion='question';c.timer=0;const rack=s.shelves.find(sh=>sh.id===(c.targetShelf||c.plannedShelfId));if(!rack||!routeToGoods(g,s,c,rack))waitInside(g,s,c);continue;}if(sh&&g.available(s,sh)>0&&price<=c.budget&&g.random(s)<purchaseChance(s,{type:c.customerType||'commoner',sku:sh.sku,price,ref:item.suggestedRetail*shelfDefinition(sh).premium*(1+decorEffects(s).premium)*(tolerance/1.4)})){c.basket=[{sku:sh.sku,shelfId:sh.id,qty:1,price,cost:s.averageCosts?.[sh.sku]??item.buyCost}];c.state='Cart';c.timer=0;c.wait=0;g.xp(s,g.role(s,'host'),.5);}else{c.state=c.visited.length<s.shelves.length?'Browse':'UnhappyExit';c.timer=0;}
   }else if(c.state==='Cart'){
-   if(s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).length>=4)continue;c.state='Queue';c.queueOrder=++s.serial;c.queueSlot=-1;c.timer=0;
+   const k=pickStation(g,s);if(k<0)continue;c.station=k;c.state='Queue';c.queueOrder=++s.serial;c.queueSlot=-1;c.timer=0;
   }else if(c.state==='Queue'){
-   const first=s.customers.filter(x=>['Queue','Checkout'].includes(x.state)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0))[0];if(first===c&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1){c.state='Checkout';c.timer=0;}
+   const st=STATIONS[c.station||0]||STATIONS[0],first=s.customers.filter(x=>['Queue','Checkout'].includes(x.state)&&(x.station||0)===(c.station||0)).sort((a,b)=>(a.queueOrder||0)-(b.queueOrder||0))[0];if(first===c&&Math.hypot(c.x-st.pay.x,c.z-st.pay.z)<.1){c.state='Checkout';c.timer=0;}
   }else if(c.state==='Checkout'){
-   const duration=g.data.config.checkoutSeconds*(g.managerActive?AWAY_SLOWDOWN:1)/(1+passive(g,s,'checkout'))/(s.buffs.show>s.totalTime||s.buffs.checkout>s.totalTime?1.6:1);if(cashier&&c.timer>=duration&&Math.hypot(c.x-CHECKOUT.x,c.z-CHECKOUT.z)<.1)pay(g,s,c,cashier===s.manager?null:cashier);
+   const st=STATIONS[c.station||0]||STATIONS[0],cashier=cashiers[c.station||0],duration=g.data.config.checkoutSeconds*((c.station||0)===0&&g.managerActive?AWAY_SLOWDOWN:1)/(1+passive(g,s,'checkout'))/(s.buffs.show>s.totalTime||s.buffs.checkout>s.totalTime?1.6:1);if(cashier&&c.timer>=duration&&Math.hypot(c.x-st.pay.x,c.z-st.pay.z)<.1)pay(g,s,c,cashier===s.manager?null:cashier);
   }else if(c.state==='Paid'&&c.timer>.6)leave(g,s,c);
   else if(c.state==='Angry'&&c.timer>14&&s.customerChase?.customerId!==c.id)leave(g,s,c);
   else if(['OutOfStock','UnhappyExit','AbandonCart'].includes(c.state)){if(c.timer>=16&&s.customerChase?.customerId!==c.id)angry(g,s,c,c.state==='OutOfStock'?'想買的商品缺貨':'沒有買到合適商品');else c.emotion=c.state==='OutOfStock'?'question':'confused';}

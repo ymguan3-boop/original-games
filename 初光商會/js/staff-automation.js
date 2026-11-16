@@ -1,9 +1,9 @@
-import{shelfApproach}from'./nav.js?v=20261115-v63';
-import {employeeSpot,employeePath} from './staff-routing.js?v=20261115-v63';
-import {obstacles,decorEffects} from './decorations.js?v=20261115-v63';
-import {findPath,walkable,dimensions} from './nav.js?v=20261115-v63';
-import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261115-v63';
-const stations={stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1}};
+import{shelfApproach}from'./nav.js?v=20261116-v64';
+import {employeeSpot,employeePath} from './staff-routing.js?v=20261116-v64';
+import {obstacles,decorEffects} from './decorations.js?v=20261116-v64';
+import {findPath,walkable,dimensions,STATIONS} from './nav.js?v=20261116-v64';
+import {capacityOf,preferredJob,WORK_JOBS} from './management.js?v=20261116-v64';
+const stations={stocker:{x:3,z:3},host:{x:5,z:9},cleaner:{x:3,z:7},standby:{x:3,z:1},get cashier(){return {...(STATIONS[1]||STATIONS[0]).cashier};}};
 /* The rear wall is z=1. Each resting worker gets their own place and is never
  * mistaken for an idling / slacking employee at an active work station. */
 export function restingPositions(s){
@@ -51,6 +51,8 @@ export function staffAutomation(g,s,dt){
   if((e.path||[]).length){e.path=[];e.nextTaskAt=0;}
   /* 大型幻靈固定在寬敞的工作點，不到處走，避免穿過貨架 */
   if(e.spiritId===g.data.management.dragon.spiritId){const zone=g.data.management.dragon.zone;if(Math.hypot(e.x-zone.x,e.z-zone.z)>.6){const spot=employeeSpot(g,s,e,zone);if(spot)g.route(s,e,spot);}e.reaction='work';continue;}
+  /* 收銀員固定站在收銀台後方：第一位顧 1 號櫃台；主角沒在收銀時，第二位補 0 號 */
+  if(e.role==='cashier'){const others=s.employees.filter(x=>x!==e&&x.role==='cashier'),taken=st=>others.some(x=>Math.hypot(x.x-st.cashier.x,x.z-st.cashier.z)<.3),order=s.managerDuty==='cashier'?[STATIONS[1]]:[STATIONS[1],STATIONS[0]],desk=order.find(st=>st&&!taken(st))||null;if(desk&&Math.hypot(e.x-desk.cashier.x,e.z-desk.cashier.z)>.15){if((e.nextTaskAt||0)<=s.totalTime){e.nextTaskAt=s.totalTime+1;g.route(s,e,desk.cashier);}e.reaction=(e.path||[]).length?'walk':'work';continue;}e.facing=-Math.PI/2;e.reaction='work';continue;}
   if((e.nextTaskAt||0)>s.totalTime){e.reaction='work';continue;}
   e.nextTaskAt=s.totalTime+2.5;
   const preferred=wandering(s,e);

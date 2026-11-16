@@ -1,10 +1,10 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {Game} from '../js/core.js';
-import {spinState,spinStats,launchSpinRound,advanceSpinMatch} from '../js/spin-arena-core.js?v=20261115-v63';
-import {gainSpinMastery,spinRoster} from '../js/spin-arena-progression.js?v=20261115-v63';
-import {retireProducts} from '../js/retired-products.js?v=20261115-v63';
-import {enemyAttackProfile,enemyCanHit} from '../../幻靈奇旅/survivors/js/enemy-rules.js?v=20261115-v63';
-import {HERO_ATTACKS} from '../../幻靈奇旅/survivors/js/combat-profile.js?v=20261115-v63';
+import {spinState,spinStats,launchSpinRound,advanceSpinMatch} from '../js/spin-arena-core.js?v=20261116-v64';
+import {gainSpinMastery,spinRoster} from '../js/spin-arena-progression.js?v=20261116-v64';
+import {retireProducts} from '../js/retired-products.js?v=20261116-v64';
+import {enemyAttackProfile,enemyCanHit} from '../../幻靈奇旅/survivors/js/enemy-rules.js?v=20261116-v64';
+import {HERO_ATTACKS} from '../../幻靈奇旅/survivors/js/combat-profile.js?v=20261116-v64';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8'));
 const data=Object.fromEntries(Object.entries({catalog:'shop-catalog',hirePool:'hire-pool',spirits:'spirits',evolution:'evolution',levels:'store-levels',config:'economy',management:'management'}).map(([k,v])=>[k,read(v)]));
 function setup(){const store=new Map(),storage={getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},g=new Game({storage,data});g.transaction(null,s=>{s.level=3;s.gold=10000;});g.act('spinBuy',{topId:'flame'});return {g,storage};}

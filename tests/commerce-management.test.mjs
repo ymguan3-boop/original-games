@@ -81,7 +81,7 @@ test('水蛟龍王一次只有一項駐點任務，加成真實生效',()=>{
  const g=fresh({level:8});g.act('hire',{id:'kyogre'});g.transaction(null,s=>{s.employees[0].workLevel=8;s.employees[0].spiritId='mewtwo';s.employees[0].role='host';return 'x';});
  assert.equal(g.act('setDragonTask',{id:'treasure'}).ok,true);const income=passive(g,g.state,'income');assert.ok(income>=.08);g.act('setDragonTask',{id:'brew'});assert.ok(passive(g,g.state,'income')<income);assert.ok(passive(g,g.state,'potion')>=.12);
 });
-test('主角平常在櫃台收銀，巡店從櫃台後方出發',()=>{const g=fresh();g.transaction(null,s=>{s.manager.x=3;s.manager.z=3;return 'x';});g.setManagerActive(true);assert.ok(Math.abs(g.state.manager.x-CHECKOUT.x)<=1&&Math.abs(g.state.manager.z-1)<=1);});
+test('主角平常在櫃台收銀，巡店從櫃台後方出發',()=>{const g=fresh();g.transaction(null,s=>{s.manager.x=3;s.manager.z=3;return 'x';});g.setManagerActive(true);/* 主角的收銀位置在 0 號櫃台後方：結帳點右邊兩格 */assert.ok(Math.abs(g.state.manager.x-(CHECKOUT.x+2))<=1&&Math.abs(g.state.manager.z-CHECKOUT.z)<=1);});
 test('宣傳員：等級不足不能聘請、不佔在班名額、只在毛利為正時加成',()=>{
  const g=fresh({level:1});assert.equal(g.act('hirePromoter',{id:'blissey'}).ok,false);assert.equal(g.act('hirePromoter',{id:'swampert'}).ok,true);assert.equal(g.state.promoter.id,'swampert');assert.equal(g.state.employees.length,0);
 });

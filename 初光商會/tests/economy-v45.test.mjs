@@ -28,15 +28,15 @@ test('一般與限定武器名稱統一、限定品僅進專櫃且Lv2可售',()=
 test('限定武器櫃跨店內及收納限購一座，一般架不會自動選入限定品',async()=>{
  const {g}=await setup();g.transaction(null,s=>{s.level=2;s.gold=5000;});
  assert(g.act('purchaseShelf',{type:'limited-armory'}).ok);assert.equal(g.act('purchaseShelf',{type:'limited-armory'}).ok,false);
- assert.equal(g.act('addShelf',{type:'limited-armory',x:4,z:5}).ok,false);
- const sh=g.state.shelfStorage[0];assert(g.act('placeShelf',{shelfId:sh.id,x:4,z:5}).ok);assert.equal(g.act('purchaseShelf',{type:'limited-armory'}).ok,false);
+ assert.equal(g.act('addShelf',{type:'limited-armory',x:2,z:5}).ok,false);
+ const sh=g.state.shelfStorage[0];assert(g.act('placeShelf',{shelfId:sh.id,x:2,z:5}).ok);assert.equal(g.act('purchaseShelf',{type:'limited-armory'}).ok,false);
  const normal=merchantWeaponCatalog().find(c=>c.merchantGrade==='normal'),limited=merchantWeaponCatalog().find(c=>c.merchantGrade==='elite');
  g.transaction(null,s=>{s.inventory[limited.sku]=4;s.inventory[normal.sku]=3;const plain={type:'armory',sku:normal.sku,stock:0};g.autoStock(s,plain);assert.equal(plain.sku,normal.sku);const premium=s.shelves[0];g.autoStock(s,premium);assert.equal(premium.sku,limited.sku);});
  assert.equal(g.act('restock',{shelfId:sh.id,sku:normal.sku,qty:1}).ok,false);
 });
 test('舊貨架上的限定武器安全退庫，保留SKU與已匯入計數且再次讀檔不複製',async()=>{
  const {g,storage}=await setup(),sku='guns-critical-merchant-elite';
- g.transaction(null,s=>{s.level=2;s.shelves=[{id:'old',type:'armory',x:4,z:5,rotation:0,sku,stock:4}];s.inventory[sku]=2;s.meadowImported={[sku]:10};});
+ g.transaction(null,s=>{s.level=2;s.shelves=[{id:'old',type:'armory',x:2,z:5,rotation:0,sku,stock:4}];s.inventory[sku]=2;s.meadowImported={[sku]:10};});
  const reload=await createGame({storage,data});assert.equal(reload.state.inventory[sku],6);assert.equal(reload.state.shelves[0].stock,0);assert.equal(reload.state.shelves[0].sku,'sword-starter');assert.equal(reload.state.meadowImported[sku],10);
  reload.transaction(null,()=>{});const twice=await createGame({storage,data});assert.equal(twice.state.inventory[sku],6);assert.equal(twice.state.meadowImported[sku],10);
 });

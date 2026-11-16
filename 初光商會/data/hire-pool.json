@@ -203,6 +203,36 @@
     "requiredSales": 150
   },
   {
+    "id": "chimchar",
+    "name": "阿宏牛仔",
+    "rarity": "purple",
+    "level": 3,
+    "cost": 800,
+    "wage": 0,
+    "special": true,
+    "requiredSales": 60
+  },
+  {
+    "id": "infernape",
+    "name": "官胖",
+    "rarity": "red",
+    "level": 4,
+    "cost": 1100,
+    "wage": 0,
+    "special": true,
+    "requiredSales": 150
+  },
+  {
+    "id": "monferno",
+    "name": "藍金星輝法師",
+    "rarity": "red",
+    "level": 4,
+    "cost": 1100,
+    "wage": 0,
+    "special": true,
+    "requiredSales": 150
+  },
+  {
     "id": "mewtwo",
     "name": "水蛟龍王",
     "rarity": "red",

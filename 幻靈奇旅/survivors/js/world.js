@@ -1,27 +1,28 @@
-import {isMerchantMeadow,rollMerchantWeapon,merchantQuantity,addMerchantCargo,merchantWeaponName} from './merchant-meadow.js?v=20261115-v63';
-import {constrainMeadow} from './meadow-terrain.js?v=20261115-v63';
-import {getMonsterMult,dropMultOf} from './run-options.js?v=20261115-v63';
-import {canEnemyUltimate,warningFor,insideWarning,enemyAttackProfile,enemyCanHit} from './enemy-rules.js?v=20261115-v63';
-import {ultimateBusy,claimUltimate} from './ultimate-turn.js?v=20261115-v63';
-import {encounterPools,normalTier} from './encounter-rules.js?v=20261115-v63';
-import {petUltimateRule,applyPetUltimate,tickHeroSupport,queueAutoUltimate} from './pet-ultimate-rules.js?v=20261115-v63';
-import {SCYTHE_COMBO,heroWeaponProfile,heroWeaponCombo,nearestEnemy,blinkPosition,bossWeaponDrop} from './weapon-rules.js?v=20261115-v63';
-import {trainingOf,familyGrowth} from './family-progress.js?v=20261115-v63';
-import {waveScales,spawnInterval} from './difficulty.js?v=20261115-v63';
-import {canCaptureEnemy} from './capture-rules.js?v=20261115-v63';
-import {costumeFor,costumeAttack,costumeReach,costumeBall} from './costume-effects.js?v=20261115-v63';
+import {isMerchantMeadow,rollMerchantWeapon,merchantQuantity,addMerchantCargo,merchantWeaponName} from './merchant-meadow.js?v=20261116-v64';
+import {constrainMeadow} from './meadow-terrain.js?v=20261116-v64';
+import {getMonsterMult,dropMultOf} from './run-options.js?v=20261116-v64';
+import {canEnemyUltimate,warningFor,insideWarning,enemyAttackProfile,enemyCanHit} from './enemy-rules.js?v=20261116-v64';
+import {ultimateBusy,claimUltimate} from './ultimate-turn.js?v=20261116-v64';
+import {encounterPools,normalTier} from './encounter-rules.js?v=20261116-v64';
+import {petUltimateRule,applyPetUltimate,tickHeroSupport,queueAutoUltimate} from './pet-ultimate-rules.js?v=20261116-v64';
+import {SCYTHE_COMBO,heroWeaponProfile,heroWeaponCombo,nearestEnemy,blinkPosition,bossWeaponDrop} from './weapon-rules.js?v=20261116-v64';
+import {trainingOf,familyGrowth} from './family-progress.js?v=20261116-v64';
+import {waveScales,spawnInterval} from './difficulty.js?v=20261116-v64';
+import {quotaStep,countSpawn,meadowTarget} from './spawn-quota.js?v=20261116-quota1';
+import {canCaptureEnemy} from './capture-rules.js?v=20261116-v64';
+import {costumeFor,costumeAttack,costumeReach,costumeBall} from './costume-effects.js?v=20261116-v64';
 import {rememberJourney} from './journey.js';
-import {statusPassives} from './status-passives.js?v=20261115-v63';
-import {ownPassives} from './growth.js?v=20261115-v63';
+import {statusPassives} from './status-passives.js?v=20261116-v64';
+import {ownPassives} from './growth.js?v=20261116-v64';
 import {cardBase} from './card-balance.js';
-import {advanceProjectile,advancePiercing} from './projectiles.js?v=20261115-v63';
-import {projectileStyle,projectileTint} from './actor-layout.js?v=20261115-v63';
-import {setStatus,hasStatus,immobilized,movementScale} from './combat-status.js?v=20261115-v63';
-import {evolutionOptions,evolvePet,petUltimateCooldown} from './manual-evolution.js?v=20261115-v63';
-import {attackProfile,baseAttackProfile,ROLL_DURATION} from './combat-profile.js?v=20261115-v63';
-import {calculateDamage,applyHit,inShape} from './damage.js?v=20261115-v63';
-import {petMaxHealth,makePet,switchPet,passiveTotals,grantPetXp} from './pet-party.js?v=20261115-v63';
-import {addBuff,addTemporaryWeapon,WEAPONS,ITEMS,BUFF_CAPS,consumeBall,expireBuffs,weaponStats} from './inventory.js?v=20261115-v63';
+import {advanceProjectile,advancePiercing} from './projectiles.js?v=20261116-v64';
+import {projectileStyle,projectileTint} from './actor-layout.js?v=20261116-v64';
+import {setStatus,hasStatus,immobilized,movementScale} from './combat-status.js?v=20261116-v64';
+import {evolutionOptions,evolvePet,petUltimateCooldown} from './manual-evolution.js?v=20261116-v64';
+import {attackProfile,baseAttackProfile,ROLL_DURATION} from './combat-profile.js?v=20261116-v64';
+import {calculateDamage,applyHit,inShape} from './damage.js?v=20261116-v64';
+import {petMaxHealth,makePet,switchPet,passiveTotals,grantPetXp} from './pet-party.js?v=20261116-v64';
+import {addBuff,addTemporaryWeapon,WEAPONS,ITEMS,BUFF_CAPS,consumeBall,expireBuffs,weaponStats} from './inventory.js?v=20261116-v64';
 const hCrit=r=>r.hero.critBoostUntil>r.time;
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 const uid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`;
@@ -107,7 +108,7 @@ export class CaveWorld{
  update(dt,input={x:0,z:0}){let r=this.run;if(!r||r.status!=='active')return;if(r.hero.hp<=0){r.status='defeated';this.emit('defeated');return;}if(r.pendingUpgrade)return;r.time+=dt;r.completedWaves=Math.floor(this.waveElapsed(r)/24);if(this.merchantMeadow){r.completedWaves=Math.min(10,r.completedWaves);r.meadowWavesEnded=this.waveElapsed(r)>=240;}if(r.captureFlight&&r.time>=r.captureFlight.at){this.resolveCapture();r=this.run;if(r.status!=='active')return;}this.statusDt=dt;this.tickStatuses();if(r.hero.hp<=0){r.status='defeated';this.emit('defeated');return;}expireBuffs(r);this.syncHealth();tickHeroSupport(this);const h=r.hero,p=this.passives;for(const key of ['attackCd','ultimateCd','rollCd','invincible'])h[key]=Math.max(0,(h[key]||0)-dt);r.switchCd=Math.max(0,r.switchCd-dt);
  for(const pet of r.pets){pet.ultimateCd=Math.max(0,pet.ultimateCd-dt);pet.attackCd=Math.max(0,pet.attackCd-dt);}const heroFrom={x:h.x,z:h.z};const len=Math.hypot(input.x,input.z);h.moving=len>.1&&!immobilized(h,r.time)&&!(h.hitReactUntil>r.time);if(h.roll){const roll=h.roll;roll.elapsed=Math.min(roll.duration,roll.elapsed+dt);const u=roll.elapsed/roll.duration,eased=u*u*(3-2*u);h.x=Math.max(-34,Math.min(34,roll.x+roll.dx*eased));h.z=Math.max(-34,Math.min(34,roll.z+roll.dz*eased));h.moving=false;if(u>=1)h.roll=null;}else if(h.moving){h.heading=Math.atan2(input.x,input.z);const speed=5*(1+(p.speed||0))*(this.costume.speed||1)*movementScale(h,r.time);h.x=Math.max(-34,Math.min(34,h.x+input.x/Math.max(1,len)*speed*dt));h.z=Math.max(-34,Math.min(34,h.z+input.z/Math.max(1,len)*speed*dt));}if(this.merchantMeadow)Object.assign(h,constrainMeadow(h,heroFrom));this.heal(h,h.maxHp*(p.regen||0)*dt);for(const pet of r.pets){if(pet.hp>0)this.heal(pet,pet.maxHp*(this.bonuses(pet).regen||0)*dt);}
  const elapsed=this.waveElapsed(r);const wave=this.waveNumber(r);r.bossWave??=0;for(let n=r.bossWave+1;n<=wave;n++){if(n%5===0){const kind=n%10===0?'boss':'elite',count=Math.ceil(n/10);for(let i=0;i<count;i++)this.spawn(kind,kind==='boss'?3:2,false,n);}}r.bossWave=wave;
- if(r.time>=r.spawnAt&&(!this.merchantMeadow||!r.meadowWavesEnded&&!r.meadowFinalBossResolved)){this.spawn('normal',normalTier(wave,this.random));r.spawnAt=Math.max(r.spawnAt,r.time-.1)+spawnInterval(wave)/(r.monsterMult||1)/2.5;}
+ /* 普通怪物：分波配額＋分批生成（spawn-quota.js）；草原總配額生成完才停 */{const meadow=this.merchantMeadow,mult=r.monsterMult||1;/* 草原：第 10 波計時結束後不再生成普通怪（沿用原規則） */if(!meadow||!r.meadowWavesEnded&&!r.meadowFinalBossResolved){const alive=r.enemies.filter(e=>e.hp>0&&e.kind==='normal').length,n=quotaStep(r,{meadow,wave,alive,random:this.random,mult,waveSeconds:this.waveSeconds,waveClock:elapsed%this.waveSeconds});for(let i=0;i<n;i++){const before=r.enemies.length;this.spawn('normal',normalTier(wave,this.random));if(r.enemies.length>before)countSpawn(r,1);}}}
  const minute=Math.floor(elapsed/this.waveSeconds);if(minute>r.specialMinute&&(!this.merchantMeadow||!r.meadowWavesEnded&&!r.meadowFinalBossResolved)){r.specialMinute=minute;const i=Math.min(3,Math.floor(elapsed/(this.waveSeconds*5))),tier=this.random()<(i>=2?.35:i>=1?.12:0)?3:this.random()<i*.22?2:1;for(const [kind,rates]of [['chest',[.12,.18,.25,.3]],['book',[.1,.16,.22,.28]]])if(!r.enemies.some(e=>e.kind===kind&&e.hp>0)&&this.random()<rates[i])this.spawn(kind,tier);}
  const w=this.weapon(),kind=w.kind,profile=heroWeaponProfile(w),range=this.attackRange(profile.range);h.attackRange=range;const target=this.target(h,range);if(target)r.attackTargetId=target.id;
  if(h.pendingAttack&&!immobilized(h,r.time)&&r.time>=h.pendingAttack.at){const a=h.pendingAttack;h.pendingAttack=null;this.strike(h,a.type,a.range,a.attack,1,a.element,false,a.targetId);this.emit('heroNormal',{pumpkinStaff:!!w.pumpkinStaff,kind:a.kind,swordWave:!!w.swordWave,element:a.element,heading:h.heading,x:h.x,z:h.z,targetId:a.targetId,range:this.attackRange(a.range)});}

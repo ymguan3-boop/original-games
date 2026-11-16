@@ -1,10 +1,10 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {Game} from '../js/core.js';
-import {spinState,spinStats,advanceSpinMatch,effectiveSpinStats,launchSpinRound,endSpinRound} from '../js/spin-arena-core.js?v=20261115-v63';
-import {tickSpinVisitors,awardSpinPart} from '../js/spin-arena-progression.js?v=20261115-v63';
-import {SPIN_TOPS,SPIN_SKILLS,SPIN_RULES as R} from '../js/spin-arena-config.js?v=20261115-v63';
-import {activeSpinSkills} from '../js/spin-arena-skills.js?v=20261115-v63';
-import {SPIN_SOUND_PROFILES} from '../js/spin-arena-presentation.js?v=20261115-v63';
+import {spinState,spinStats,advanceSpinMatch,effectiveSpinStats,launchSpinRound,endSpinRound} from '../js/spin-arena-core.js?v=20261116-v64';
+import {tickSpinVisitors,awardSpinPart} from '../js/spin-arena-progression.js?v=20261116-v64';
+import {SPIN_TOPS,SPIN_SKILLS,SPIN_RULES as R} from '../js/spin-arena-config.js?v=20261116-v64';
+import {activeSpinSkills} from '../js/spin-arena-skills.js?v=20261116-v64';
+import {SPIN_SOUND_PROFILES} from '../js/spin-arena-presentation.js?v=20261116-v64';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8'));
 const data=Object.fromEntries(Object.entries({catalog:'shop-catalog',hirePool:'hire-pool',spirits:'spirits',evolution:'evolution',levels:'store-levels',config:'economy',management:'management'}).map(([k,v])=>[k,read(v)]));
 function setup(){const memory=new Map(),storage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)},g=new Game({storage,data});g.transaction(null,s=>{s.level=3;s.gold=20000;});return {g,storage};}

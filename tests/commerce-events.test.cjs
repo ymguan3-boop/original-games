@@ -3,7 +3,7 @@ const ROOT=path.resolve(__dirname,'../初光商會');
 const text=file=>fs.readFileSync(path.join(ROOT,file),'utf8');
 function simulation(){
  const source=text('js/shop-operations.js').replace(/^import[^\n]*\n/gm,'').replace(/\bexport\s+(?=function)/g,'');
- const env={console,structuredClone,decorEffects:()=>({patience:0,premium:0}),obstacles:()=>[],findPath:(from,to)=>[{x:to.x,z:to.z}],walkable:()=>true,shelfDefinition:()=>({premium:1}),ENTRANCE:{x:6,z:10},CHECKOUT:{x:10,z:3}};
+ const env={console,structuredClone,decorEffects:()=>({patience:0,premium:0}),obstacles:()=>[],findPath:(from,to)=>[{x:to.x,z:to.z}],walkable:()=>true,shelfDefinition:()=>({premium:1}),ENTRANCE:{x:6,z:10},CHECKOUT:{x:10,z:3},QUEUE_PER_STATION:3,STATIONS:[{id:0,z:3,counter:{x:10,z:2},cashier:{x:10,z:1},pay:{x:10,z:3},queue:[{x:10,z:3},{x:10,z:4},{x:10,z:5}]}]};
  vm.runInNewContext(source+'\n globalThis.__sim={stepCustomers,react};',env);
  return env.__sim;
 }

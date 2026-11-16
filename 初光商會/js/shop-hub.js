@@ -1,28 +1,28 @@
-import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261115-v63';
-import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261115-v63';
-import {hasDecorModel} from './decor-models-v22.js?v=20261115-v63';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261115-v63';
-import {promoterHireCost} from './shop-entry-rules.js?v=20261115-v63';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261115-v63';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261115-v63';
-import {clockText} from './shop-clock.js?v=20261115-v63';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261115-v63';
-import {pendingRewards} from './reward-collection.js?v=20261115-v63';
+import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261116-v64';
+import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261116-v64';
+import {hasDecorModel} from './decor-models-v22.js?v=20261116-v64';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261116-v64';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261116-v64';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261116-v64';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261116-v64';
+import {clockText} from './shop-clock.js?v=20261116-v64';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261116-v64';
+import {pendingRewards} from './reward-collection.js?v=20261116-v64';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
 import {WEAPONS} from '../../幻靈奇旅/survivors/js/inventory.js?v=20261030-reaper-v2';
-import {spiritPortrait} from './spirit-cards.js?v=20261115-v63';
-import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261115-v63';
-import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261115-v63';
-import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261115-v63';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261115-v63';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261115-v63';
-import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261115-v63';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261115-v63';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261115-v63';
-import {requiresManagerPatrol} from './event-routing.js?v=20261115-v63';
-import {eventEmployee} from './patrol-events.js?v=20261115-v63';
-import {ledgerPanel} from './ledger-panel.js?v=20261115-v63';
+import {spiritPortrait} from './spirit-cards.js?v=20261116-v64';
+import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261116-v64';
+import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261116-v64';
+import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261116-v64';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261116-v64';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261116-v64';
+import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261116-v64';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261116-v64';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261116-v64';
+import {requiresManagerPatrol} from './event-routing.js?v=20261116-v64';
+import {eventEmployee} from './patrol-events.js?v=20261116-v64';
+import {ledgerPanel} from './ledger-panel.js?v=20261116-v64';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -93,7 +93,7 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
   report(){const r=s().lastReport||s().report||{};const gross=(r.revenue||0)-(r.cogs||0);return {title:`第 ${r.day||s().day} 天結算`,note:`營業時間 07:00～20:00 已結束。`,cards:[['營業額',money(r.revenue)],['毛利',money(gross)],...(r.promoterBonus?[['宣傳員加成','+'+money(r.promoterBonus)]]:[]),['支出',money(r.expenses)],['淨利',money(r.netProfit)],['成交',`${r.sales||0} 筆`],['聲譽',`${Math.round(ensureMarket(s()).reputation)}（${(r.reputationDelta||0)>=0?'+':''}${Math.round((r.reputationDelta||0)*10)/10}）`]].map(([a,b],i)=>({key:'r'+i,html:`<b>${a}</b><small>${b}</small>`})),actions:[['店舖整備',()=>{act('nextDay');close();}],['新的一天',()=>{const r=act('nextDay');if(r?.ok!==false)act('open');close();},true]]};},
   claimed(){const c=s().lastClaim||{items:[]};return {title:'領取成功',note:`共獲得 ${money(c.gold)}${c.tickets>0?`、經驗券 ${c.tickets} 張`:''}。`,cards:c.items.map((x,i)=>({key:'c'+i,status:'claimed',html:`<b>${esc(x.name)}</b><small>${x.gold>0?'+'+money(x.gold):'已領取'}</small>`}))};},
   daily(){const data=dailyTasks(game,s()),firsts=game.questList(s()).filter(q=>q.done&&!s().quests[q.id]).slice(0,3),all=data.tasks.every(t=>t.claimed);return {title:'每日任務',note:`經驗券 ${s().xpTickets||0} 張`,cards:[...firsts.map(q=>({key:q.id,tutor:'quest',status:'ready',html:`<b>${esc(q.name)}</b><small>可領 ${money(q.reward)}</small>`,tap:()=>{act('claimQuest',{id:q.id});render();}})),...data.tasks.map(t=>({key:t.id,done:t.claimed,status:rewardState(t.done,t.claimed),html:`<b>${esc(t.label)}</b><small>${t.claimed?'已領取':`${Math.min(t.value,t.target)}/${t.target} ${t.unit} · ${money(t.reward)}`}</small>`,tap:()=>{if(t.done&&!t.claimed){act('claimDaily',{id:t.id});render();}else toast(t.claimed?'已領取':'任務尚未完成');}})),{key:'bonus',done:data.bonus,status:rewardState(all,data.bonus),html:`<b>全勤獎勵</b><small>${data.bonus?'已領取':`${money(d.management.daily.bonusGold)} 與經驗券`}</small>`,tap:()=>{if(all&&!data.bonus){act('claimDailyBonus');render();}else toast(data.bonus?'已領取':'三項任務領完才能領');}}]};},
-  orders(){const list=activeCommissions(s());return {title:'商會訊息',note:'委託訊息會不定時送達，完成後點訊息領取獎勵。',empty:'目前沒有新委託，請稍候。',actions:[['商會管理',()=>push('shop')]],cards:list.map(q=>{const now=commissionProgress(s(),q),ok=now>=q.qty;return {key:q.id,status:rewardState(ok),html:`<b>${esc(q.client||'委託')}</b><small>${q.kind==='delivery'?`交付 ${esc(q.name)}`:'完成成交'} ${now}/${q.qty} · ${money(q.reward)}</small>`,tap:()=>{if(ok){act('claimCommission',{id:q.id});render();}else toast('尚未達成');}};})};},
+  orders(){const list=activeCommissions(s());return {title:'商會訊息',note:'委託訊息會不定時送達，完成後點訊息領取獎勵。',empty:'目前沒有新委託，請稍候。',actions:[['商會管理',()=>push('shop')]],cards:list.map(q=>{const now=commissionProgress(s(),q),ok=now>=q.qty,weapon=q.kind==='delivery'&&!!d.catalog.find(c=>c.sku===q.sku)?.lootOnly;return {key:q.id,status:rewardState(ok),html:`<b>${esc(q.client||'委託')}</b><small>${q.kind==='delivery'?`交付 ${esc(q.name)}`:'完成成交'} ${now}/${q.qty} · ${money(q.reward)}</small>${weapon&&!ok?'<small class="hub-passive">⚔ 點這裡直接前往草原採集</small>':''}`,tap:()=>{if(ok){act('claimCommission',{id:q.id});render();}else if(weapon)settings.enterMeadow();else toast('尚未達成');}};})};},
   chapter(){const c=chapterObjectives(s(),d.levels);return {title:`第 ${c.level} 章 ${c.title}`,note:esc(c.story),cards:[...c.goals.map(g=>({key:g.id,done:g.done,status:g.done?'complete':'pending',html:`<b>${esc(g.title)}</b><small>${Math.floor(Math.min(g.value,g.target))}/${g.target}</small>`})),...c.side.map(m=>({key:m.id,done:m.claimed,status:rewardState(m.done,m.claimed),html:`<b>${esc(m.title)}</b><small>${m.claimed?'已領取':`${Math.min(m.value,m.target)}/${m.target} · ${money(m.reward)}`}</small>`,tap:()=>{if(m.done&&!m.claimed){act('claimChapterSide',{id:m.id});render();}}}))]};},
   event(){const ev=s().event;if(!ev)return {title:'事件',note:'事件已結束。'};const who=eventEmployee(s(),ev)?.name,patrol=requiresManagerPatrol(ev);return {title:'⚠ 突發委託：'+ev.title,note:`${who?esc(who)+'：':''}${esc(ev.dialogue||ev.description)}`,actions:patrol?[['主管巡查',()=>{close();getScene().setMode('follow');},true]]:ev.choices.slice(0,3).map((c,i)=>[`${c.label}${c.cost?` ${c.cost}G`:''}`,()=>{const r=act('resolveEvent',{choice:c.id});if(r.ok)close();},i===0,c.cost>s().gold])};},
   complaint(id){const c=s().customers.find(x=>x.id===id),info=c&&getCustomerComplaint(s(),c,game);

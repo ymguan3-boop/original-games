@@ -1,9 +1,12 @@
-import {wallFixtures,wallItemWidth} from './architecture-reservations.js?v=20261115-v63';
-import {dimensions,buildingLevel} from './nav.js?v=20261115-v63';
+import {wallFixtures,wallItemWidth} from './architecture-reservations.js?v=20261116-v64';
+import {dimensions,buildingLevel} from './nav.js?v=20261116-v64';
 /* 小件掛得比較高（眼睛高度），大幅掛畫底邊較低 */
 export const wallLift=type=>({couplet:.45,clock:0,painting:.2,'painting-large':0})[type]||0;
 export const WALL_TYPES=new Set(['clock','painting','painting-large','couplet']);
-export const PLANT_TYPES=new Set(['plant','fern','lavender','citrus']);
+export const PLANT_TYPES=new Set(['plant','fern','lavender','citrus','lantern','pine-planter','art-installation']);
+/* 只能放門外花園的物件，以及在花園裡占的寬度（格） */
+export const OUTDOOR_ONLY=new Set(['lantern','pine-planter','art-installation']);
+export const gardenSpan=type=>['pine-planter','art-installation'].includes(type)?2:1;
 const sideNames={back:'後牆',front:'門面牆',left:'左牆',right:'右牆'};
 /* 與 chibi/shell.js 的窗、門及柱列同一組尺寸。裝飾外框以 .95m 寬保守保留間距。 */
 export function wallSlots(level,free=false,type=''){
@@ -19,16 +22,17 @@ export function gardenSlots(level){const {width,height}=dimensions(level),door=M
 export const nearestSlot=(list,p)=>list.slice().sort((a,b)=>Math.hypot(a.x-p.x,a.z-p.z)-Math.hypot(b.x-p.x,b.z-p.z))[0];
 export function specialDecorPose(item,level){
  if(item.mount){const slot=wallSlots(level,item.mount.includes('-free-'),item.type).find(s=>s.mount===item.mount);return slot&&{...slot,y:slot.y+wallLift(item.type)};}
- if(item.garden==='garden-free'){const {width,height}=dimensions(level),door=Math.round((width-1)/2);return item.x>=-.1&&item.x<=width-.9&&item.z>=height+1.1&&item.z<=height+4.8&&Math.abs(item.x-door)>=2?{garden:'garden-free',x:item.x,z:Math.min(item.z,Math.floor((height+2.9)*4)/4),y:-.07,rotation:item.rotation||0}:null;}
+ if(item.garden==='garden-free'){const {width,height}=dimensions(level),door=Math.round((width-1)/2);const half=(gardenSpan(item.type)-1)/2;return item.x-half>=-.1&&item.x+half<=width-.9&&item.z>=height+1.1&&item.z<=height+4.8&&Math.abs(item.x-door)>=2+half?{garden:'garden-free',x:item.x,z:Math.min(item.z,Math.floor((height+2.9)*4)/4),y:-.07,rotation:item.rotation||0}:null;}
  return item.garden?gardenSlots(level).find(s=>s.garden===item.garden):null;
 }
 export const specialDecor=item=>!!(item.mount||item.garden);
 export function resolveDecorPlacement(item,p,level){
  if(WALL_TYPES.has(item.type)){const slots=wallSlots(level,!!p.mount?.includes('-free-')||!p.mount,item.type),slot=p.mount?slots.find(x=>x.mount===p.mount):nearestSlot(slots,p);if(!slot)throw Error('沒有可用的牆面位置');return {...slot};}
  const {height}=dimensions(level);
+ if(OUTDOOR_ONLY.has(item.type)&&!(p.garden||p.z>=height+.5))throw Error('這件只能擺在門外的花園');
  if(PLANT_TYPES.has(item.type)&&(p.garden||p.z>=height+.5)){
   if(p.garden&&p.garden!=='garden-free'){const slot=gardenSlots(level).find(x=>x.garden===p.garden);if(!slot)throw Error('沒有可用的花園位置');return {...slot};}
-  if(p.z<height+1.1||p.z>height+2.9)throw Error('請放在門口兩側花園，保留道路通行');const pose=specialDecorPose({garden:'garden-free',x:Math.round(p.x*4)/4,z:Math.round(p.z*4)/4,rotation:p.rotation??item.rotation},level);if(!pose)throw Error('請放在門口兩側花園，門前中央與道路保留通行');return pose;
+  if(p.z<height+1.1||p.z>height+2.9)throw Error('請放在門口兩側花園，保留道路通行');const pose=specialDecorPose({type:item.type,garden:'garden-free',x:Math.round(p.x*4)/4,z:Math.round(p.z*4)/4,rotation:p.rotation??item.rotation},level);if(!pose)throw Error('請放在門口兩側花園，門前中央與道路保留通行');return pose;
  }
  return {x:p.x,z:p.z,rotation:p.rotation??item.rotation??0};
 }

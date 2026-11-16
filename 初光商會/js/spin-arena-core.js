@@ -1,7 +1,7 @@
-import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,spinTop}from'./spin-arena-config.js?v=20261115-v63';
-import {spinState,spinStats,awardSpinPart,consumeSpinVisitor,gainSpinMastery,spinRoster} from './spin-arena-progression.js?v=20261115-v63';
-export {spinState,spinStats} from './spin-arena-progression.js?v=20261115-v63';
-import{broadcast}from'./stock-flow.js?v=20261115-v63';
+import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,spinTop}from'./spin-arena-config.js?v=20261116-v64';
+import {spinState,spinStats,awardSpinPart,consumeSpinVisitor,gainSpinMastery,spinRoster} from './spin-arena-progression.js?v=20261116-v64';
+export {spinState,spinStats} from './spin-arena-progression.js?v=20261116-v64';
+import{broadcast}from'./stock-flow.js?v=20261116-v64';
 const check=(v,m)=>{if(!v)throw Error(m);},clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const random=m=>{m.seed=(Math.imul(m.seed,1664525)+1013904223)>>>0;return m.seed/4294967296;};
 const body=(stats,x,strategy,element)=>({x,z:0,vx:0,vz:0,spin:100,hp:100,energy:0,angle:0,stats,strategy,element,shield:0,skillUntil:0,hitCooldown:0});
