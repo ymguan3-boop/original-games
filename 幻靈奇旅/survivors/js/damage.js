@@ -1,4 +1,4 @@
-import {canCaptureEnemy} from './capture-rules.js?v=20261116-v64';
+import {canCaptureEnemy} from './capture-rules.js?v=20261117-v66';
 export const ELEMENTS=['光','焰','森','潮','雷','念'];
 export function elementMultiplier(a,b){const i=ELEMENTS.indexOf(a),j=ELEMENTS.indexOf(b);if(i<0||j<0)return 1;return (i+1)%6===j?1.5:(j+1)%6===i?.75:1;}
 export function calculateDamage({attack,multiplier=1,element,targetElement,buff=1,defense=0,crit=false,critMultiplier=1.5}){return Math.max(1,Math.round(attack*multiplier*elementMultiplier(element,targetElement)*buff*(crit?critMultiplier:1)*100/(100+Math.max(0,defense))));}

@@ -1,30 +1,30 @@
-import{plazaArenaTheme}from'./spin-arena-config.js?v=20261116-v64';
-import{trayOffers}from'./material-tray.js?v=20261116-v64';
-import{footprintCenter,occupiedCells}from'./placement-footprint.js?v=20261116-v64';
-import {tierThumb} from './tier-designs.js?v=20261116-v64';
-import {stockState} from './shop-interactions.js?v=20261116-v64';
-import {fortuneAvailable} from './fortune-cards.js?v=20261116-v64';
+import{plazaArenaTheme}from'./spin-arena-config.js?v=20261117-v66';
+import{trayOffers}from'./material-tray.js?v=20261117-v66';
+import{footprintCenter,occupiedCells}from'./placement-footprint.js?v=20261117-v66';
+import {tierThumb} from './tier-designs.js?v=20261117-v66';
+import {stockState} from './shop-interactions.js?v=20261117-v66';
+import {fortuneAvailable} from './fortune-cards.js?v=20261117-v66';
 import {createYardBattle2D} from './yard-battle-2d.js';
-import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261116-v64';
-import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261116-v64';
-import {hasDecorModel} from './decor-models-v22.js?v=20261116-v64';
-import {CHECKOUT,STATIONS,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261116-v64';
-import {visibleStaff,chasePose} from './shop-presentation.js?v=20261116-v64';
+import {updateWeatherOutfit2D} from './weather-outfits.js?v=20261117-v66';
+import {specialDecorPose,resolveDecorPlacement,wallSlots,WALL_TYPES,wallWindowCenters} from './decor-zones.js?v=20261117-v66';
+import {hasDecorModel} from './decor-models-v22.js?v=20261117-v66';
+import {CHECKOUT,STATIONS,dimensions,promoterPoint,customerDisplayPoint} from './nav.js?v=20261117-v66';
+import {visibleStaff,chasePose} from './shop-presentation.js?v=20261117-v66';
 /* 初光商會 2D 場景：對外介面與 3D 的 createScene 相同，遊戲邏輯、選單與存檔都不需要更動。
  * 視角是 2.5D 等角：地板是菱形格，後方左右兩面牆都看得到；x 往右下、z 往左下。
  * 地板、牆面與店外庭院畫進背景，貨架、家具與角色是依 x+z 排序的 DOM 圖片，GIF 才能持續播放。 */
-import {decorTypes,decorDefinition} from './decorations.js?v=20261116-v64';
-import {ENTRANCE} from './nav.js?v=20261116-v64';
-import {sampleTrail} from './motion.js?v=20261116-v64';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261116-v64';
-import {eventEmployee} from './patrol-events.js?v=20261116-v64';
-import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261116-v64';
-import {stockCount} from './shelf-products.js?v=20261116-v64';
-import {createAssets} from './asset-resolver.js?v=20261116-v64';
-import {createPlacementCells} from './placement-cells.js?v=20261116-v64';
-import {environment} from './environment.js?v=20261116-v64';
-import {createEnvironment2D} from './environment-2d.js?v=20261116-v64';
-import {spiritArtPath} from './spirit-cards.js?v=20261116-v64';
+import {decorTypes,decorDefinition} from './decorations.js?v=20261117-v66';
+import {ENTRANCE} from './nav.js?v=20261117-v66';
+import {sampleTrail} from './motion.js?v=20261117-v66';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261117-v66';
+import {eventEmployee} from './patrol-events.js?v=20261117-v66';
+import {shelfTypes,shelfKind,shelfCapacity,shelfDefinition} from './furniture.js?v=20261117-v66';
+import {stockCount} from './shelf-products.js?v=20261117-v66';
+import {createAssets} from './asset-resolver.js?v=20261117-v66';
+import {createPlacementCells} from './placement-cells.js?v=20261117-v66';
+import {environment} from './environment.js?v=20261117-v66';
+import {createEnvironment2D} from './environment-2d.js?v=20261117-v66';
+import {spiritArtPath} from './spirit-cards.js?v=20261117-v66';
 
 const U=64,HW=U*.5,HH=U*.25,WALL=2.6*U,MARGIN=U*2.2,SPRITES='./assets/sprites-v1/',ISO='./assets/iso-v1/',OUT='./assets/outdoor-v1/',TOPM=U*1.6,COUNTER_FLIP=true,SLANT=Math.hypot(HW,HH);
 /* 各等級的牆面飾條與柱子配色，參考使用者提供的五階店面 */

@@ -17,3 +17,15 @@
 .spin-radar{margin:8px auto;max-width:300px;text-align:center}.spin-radar svg{width:100%;height:auto}.radar-grid{fill:none;stroke:#d7c39a;stroke-width:1}.radar-value{fill:#799e6c66;stroke:#527b46;stroke-width:2.5}.spin-radar text{font-size:13px;fill:#57402c;font-weight:700}.spin-radar figcaption{font-size:11px;color:#7c6b54}
 .spin-fitting>small{display:block;margin:8px 0}
 .spin-mastery{display:grid;gap:8px;padding:12px;background:#eee4cf;border-radius:12px;margin:12px 0}.spin-mastery progress{width:100%;accent-color:#6c8b4b}.spin-equipment{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0}.spin-equipment .equipment-slot{min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 3px;border:2px solid var(--grade);background:#fffcf3}.spin-equipment .selected{outline:3px solid #e4b747;outline-offset:1px}.equipment-slot small{white-space:normal;font-size:10px;overflow-wrap:anywhere}.spin-part-icon{font-size:30px;color:var(--grade,#91754e);line-height:1.2}.spin-backpack{display:grid;gap:10px}.spin-backpack article{display:grid;gap:8px;border:2px solid var(--grade);padding:12px;border-radius:12px;background:#f9f4e6}.spin-backpack button{display:grid;gap:3px;width:100%;white-space:normal}.spin-backpack small{white-space:normal}.spin-empty-bag{padding:18px 10px;background:#eee9db;border-radius:10px;color:#75634e}
+/* v65：對戰中放大擂台（全螢幕對話框、畫布占大部分高度） */
+.spin-arena-dialog.spin-battle-mode{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0;border-width:0;display:flex;flex-direction:column;overflow:hidden}
+.spin-arena-dialog.spin-battle-mode main{flex:1;min-height:0;display:flex;flex-direction:column;gap:4px;padding:6px 8px;overflow:hidden}
+.spin-arena-dialog.spin-battle-mode .spin-battle-stage{flex:1;min-height:0}
+.spin-arena-dialog.spin-battle-mode .spin-battle-stage .spin-battle-canvas{height:100%;min-height:300px}
+.spin-arena-dialog.spin-battle-mode main>small{font-size:10px;line-height:1.4}
+.spin-arena-dialog.spin-battle-mode .spin-score{margin:2px 0}
+.spin-arena-dialog.spin-battle-mode footer{position:static;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+.spin-arena-dialog.spin-battle-mode footer button{min-height:40px}
+/* v65：「繼續未完成的比賽」獨立一列，不與下方固定按鈕列重疊 */
+.spin-arena-dialog .spin-resume{display:block;width:100%;margin:8px 0 12px;background:#6b8a42;color:#fff;border-color:#4d6a2c;position:relative;z-index:1}
+.spin-arena-dialog main{padding-bottom:16px}

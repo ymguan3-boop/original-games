@@ -26,6 +26,10 @@ Object.assign(SPIN_SKILLS,{"frost":{"seconds":5,"bonuses":{"defense":0.75,"speed
 export const spinBonusText=bonuses=>Object.entries(bonuses).map(([k,v])=>`${SPIN_STAT_NAMES[k]} +${Math.round(v*1000)/10}%`).join('／');
 export const SPIN_OPPONENTS=[{id:'rookie',name:'小鎮新秀',topId:'wind',difficulty:0,reward:55,rep:2},{id:'artisan',name:'機巧工匠',topId:'crystal',difficulty:1,reward:95,rep:4},{id:'champion',name:'廣場冠軍',topId:'shadow',difficulty:2,reward:150,rep:6}];
 export const spinTop=id=>SPIN_TOPS.find(t=>t.id===id);
+/* 商會 Lv.4／Lv.5 挑戰一般對手獲勝的額外獎金（不受每日一般獎金上限影響） */
+export const spinLevelBonus=level=>level>=5?600:level>=4?350:0;
+/* 隨機來訪的外來高手：獲勝獎金與聲望固定 */
+export const SPIN_VISITOR_REWARD=Object.freeze({coins:1500,rep:50});
 export function plazaArenaPlacement(level){return {x:0,zOffset:level===3?3.15:level===4?3.85:4.35,radius:level===3?1.65:1.9,stallX:level===3?3.7:level===4?4.7:4};}
 export function plazaArenaTheme(level){const tier=Math.max(3,Math.min(5,Math.floor(level)));return {level:tier,name:['灰岩青銅場','寶石拱冠場','皇家獅冠場'][tier-3],spectators:4+(tier-3)*4};}
 export function plazaArenaSpectators(level){const p=plazaArenaPlacement(level),theme=plazaArenaTheme(level),r=p.radius+.65;return Array.from({length:theme.spectators},(_,i)=>{const angle=Math.PI*(.15+.72*i/(theme.spectators-1));return {x:Math.cos(angle)*r,zOffset:p.zOffset+Math.sin(angle)*r,angle,seed:6300+i*29};});}

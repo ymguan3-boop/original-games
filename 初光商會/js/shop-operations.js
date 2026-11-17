@@ -1,17 +1,17 @@
-import{entryLanding}from'./shop-interactions.js?v=20261116-v64';
-import{auctionSaleBonus}from'./plaza-auction.js?v=20261116-v64';
-import{routeToGoods,atShoppingSpot,waitInside}from'./customer-routing.js?v=20261116-v64';
-import{waitingAtQueue}from'./customer-health.js?v=20261116-v64';
-import{fillShelf,finishStockBatch,broadcast}from'./stock-flow.js?v=20261116-v64';
-import{shelfApproach}from'./nav.js?v=20261116-v64';
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261116-v64';
-import {decorEffects,obstacles} from './decorations.js?v=20261116-v64';
-import {purchaseChance} from './economy-v2.js?v=20261116-v64';
-import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261116-v64';
-import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,STATIONS,QUEUE_PER_STATION,dimensions} from './nav.js?v=20261116-v64';
-import {resolveCustomerComplaint} from './customer-complaints.js?v=20261116-v64';
-import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261116-v64';
-import {passive,jobPower,dailyTrack} from './management.js?v=20261116-v64';
+import{entryLanding}from'./shop-interactions.js?v=20261117-v66';
+import{auctionSaleBonus}from'./plaza-auction.js?v=20261117-v66';
+import{routeToGoods,atShoppingSpot,waitInside}from'./customer-routing.js?v=20261117-v66';
+import{waitingAtQueue}from'./customer-health.js?v=20261117-v66';
+import{fillShelf,finishStockBatch,broadcast}from'./stock-flow.js?v=20261117-v66';
+import{shelfApproach}from'./nav.js?v=20261117-v66';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261117-v66';
+import {decorEffects,obstacles} from './decorations.js?v=20261117-v66';
+import {purchaseChance} from './economy-v2.js?v=20261117-v66';
+import {shelfTypes,shelvesForLevel,shelfLimit,shelfKind,shelfCapacity,shelfDefinition,ownsUniqueShelf} from './furniture.js?v=20261117-v66';
+import {isLayoutValid,walkable,findPath,ENTRANCE,CHECKOUT,STATIONS,QUEUE_PER_STATION,dimensions} from './nav.js?v=20261117-v66';
+import {resolveCustomerComplaint} from './customer-complaints.js?v=20261117-v66';
+import {chapterObjectives,autoChapterConstruction,beginChapterConstruction,finishChapterConstruction} from './shop-chapters.js?v=20261117-v66';
+import {passive,jobPower,dailyTrack,cashierIncomeBonus} from './management.js?v=20261117-v66';
 const check=(v,m)=>{if(!v)throw Error(m)},clamp=n=>Math.max(0,Math.min(100,n));
 export function react(s,e,kind,seconds=5){if(!e)return;e.reaction=kind;e.feedbackKind=kind;e.reactionSeq=(e.reactionSeq||0)+1;e.reactionUntil=s.totalTime+seconds;}
 export function upgradeSeconds(level){return [0,0,30,60,90,150,180,210,240,270,300][level]??30;}
@@ -59,8 +59,8 @@ function pay(g,s,c,e){
  if(s.txIds.includes(saleId)||s.ledger.some(x=>x.id===saleId)){c.basket=[];c.state='Paid';c.timer=0;return;}
  if(!c.basket.length)return;const limited=c.basket.filter(b=>['elite','boss'].includes(g.data.catalog.find(p=>p.sku===b.sku)?.merchantGrade));
 
- const listed=c.basket.reduce((n,b)=>n+b.price*b.qty,0),sale=Math.round(listed*(1+passive(g,s,'income')))+auctionSaleBonus(s,c.basket),cost=Math.round(c.basket.reduce((n,b)=>n+b.cost*b.qty,0)*100)/100;check(c.budget>=listed,'顧客預算不足');for(const b of c.basket){const sh=saleShelf(s,b.shelfId,b.sku);check(sh&&sh.stock>=b.qty,'結帳庫存不足');sh.stock-=b.qty;}
- if(limited.length)broadcast(s,`限定武器成交！${limited.reduce((n,b)=>n+b.qty,0)} 件，售出 ${limited.reduce((n,b)=>n+b.qty*b.price,0)} G`,'sale');s.txIds.push(saleId);s.stats.units=(s.stats.units||0)+c.basket.reduce((n,b)=>n+b.qty,0);c.budget-=listed;s.gold+=sale;dailyTrack(g,s,'sales',1);dailyTrack(g,s,'gold',sale);s.stats.revenue+=sale;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.stats.sales++;s.stats.served++;s.totals.revenue+=sale;s.totals.sales++;s.ledger.push({id:`sale-${c.id}`,day:s.day,customerType:c.customerType||'commoner',auctionBonus:auctionSaleBonus(s,c.basket),revenue:sale,cogs:cost,items:structuredClone(c.basket)});s.ledger=s.ledger.slice(-200);for(const b of c.basket){const sh=saleShelf(s,b.shelfId,b.sku);if(sh)sh.lastSaleAt=s.totalTime;}c.purchaseItems=structuredClone(c.basket);c.basket=[];c.state='Paid';c.timer=0;c.emotion='happy';{const previous=s.satisfaction,bonus=(g.role(s,'cleaner')?2:1)*(1+passive(g,s,'satisfaction'));s.satisfaction=clamp(s.satisfaction+bonus);const gained=Math.round((s.satisfaction-previous)*10)/10;if(gained>0)g.notice(s,c.id,`滿意 +${gained}`,'good');}g.xp(s,e,1);g.xp(s,g.role(s,'cleaner'),.5);if(e&&!(e.reactionUntil>s.totalTime&&['training','proud','stressed'].includes(e.feedbackKind)))react(s,e,'work',2);g.log(s,`${c.name}在收銀台完成付款 +${sale} G`);s.memories[c.personality]={day:s.day,satisfied:true,spent:sale};
+ const listed=c.basket.reduce((n,b)=>n+b.price*b.qty,0),cashierBonus=cashierIncomeBonus(g,e),sale=Math.round(listed*(1+passive(g,s,'income')+cashierBonus))+auctionSaleBonus(s,c.basket),cost=Math.round(c.basket.reduce((n,b)=>n+b.cost*b.qty,0)*100)/100;check(c.budget>=listed,'顧客預算不足');for(const b of c.basket){const sh=saleShelf(s,b.shelfId,b.sku);check(sh&&sh.stock>=b.qty,'結帳庫存不足');sh.stock-=b.qty;}
+ if(limited.length)broadcast(s,`限定武器成交！${limited.reduce((n,b)=>n+b.qty,0)} 件，售出 ${limited.reduce((n,b)=>n+b.qty*b.price,0)} G`,'sale');s.txIds.push(saleId);s.stats.units=(s.stats.units||0)+c.basket.reduce((n,b)=>n+b.qty,0);c.budget-=listed;s.gold+=sale;dailyTrack(g,s,'sales',1);dailyTrack(g,s,'gold',sale);s.stats.revenue+=sale;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.stats.sales++;s.stats.served++;s.totals.revenue+=sale;s.totals.sales++;s.ledger.push({id:`sale-${c.id}`,day:s.day,customerType:c.customerType||'commoner',auctionBonus:auctionSaleBonus(s,c.basket),revenue:sale,cogs:cost,items:structuredClone(c.basket)});s.ledger=s.ledger.slice(-200);for(const b of c.basket){const sh=saleShelf(s,b.shelfId,b.sku);if(sh)sh.lastSaleAt=s.totalTime;}c.purchaseItems=structuredClone(c.basket);c.basket=[];c.state='Paid';c.timer=0;c.emotion='happy';{const previous=s.satisfaction,bonus=(g.role(s,'cleaner')?2:1)*(1+passive(g,s,'satisfaction'));s.satisfaction=clamp(s.satisfaction+bonus);const gained=Math.round((s.satisfaction-previous)*10)/10;if(gained>0)g.notice(s,c.id,`滿意 +${gained}`,'good');}g.xp(s,e,1);g.xp(s,g.role(s,'cleaner'),.5);if(e&&!(e.reactionUntil>s.totalTime&&['training','proud','stressed'].includes(e.feedbackKind)))react(s,e,'work',2);g.log(s,`${c.name}在收銀台完成付款 +${sale} G${cashierBonus?`（${e.name}收銀專長 +${Math.round(cashierBonus*100)}%）`:''}`);if(cashierBonus)g.notice(s,e.id,`收銀專長 +${Math.round(cashierBonus*100)}%`,'good');s.memories[c.personality]={day:s.day,satisfied:true,spent:sale};
 }
 export function stepCustomers(g,s,dt){
  /* 出口優先：入場動畫結束時若門內有人，先在室外等，不在同一格互相擋路。也修復舊存檔已重疊的入場顧客。 */

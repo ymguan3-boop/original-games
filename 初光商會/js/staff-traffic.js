@@ -1,6 +1,6 @@
-import {CHECKOUT,STATIONS,queueCellKeys,dimensions,walkable} from './nav.js?v=20261116-v64';
-import {obstacles} from './decorations.js?v=20261116-v64';
-import {doorwayBuffer,employeeSpot,actorPath} from './staff-routing.js?v=20261116-v64';
+import {CHECKOUT,STATIONS,queueCellKeys,dimensions,walkable} from './nav.js?v=20261117-v66';
+import {obstacles} from './decorations.js?v=20261117-v66';
+import {doorwayBuffer,employeeSpot,actorPath} from './staff-routing.js?v=20261117-v66';
 const near=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 export function nearestShelfRefuge(g,s,e){
  const candidates=s.shelves.flatMap(sh=>[[0,1],[-1,0],[1,0],[0,-1]].map(([dx,dz])=>({x:sh.x+dx,z:sh.z+dz,shelfId:sh.id}))),room=dimensions(s.level);

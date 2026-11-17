@@ -1,28 +1,28 @@
-import {isMerchantMeadow,rollMerchantWeapon,merchantQuantity,addMerchantCargo,merchantWeaponName} from './merchant-meadow.js?v=20261116-v64';
-import {constrainMeadow} from './meadow-terrain.js?v=20261116-v64';
-import {getMonsterMult,dropMultOf} from './run-options.js?v=20261116-v64';
-import {canEnemyUltimate,warningFor,insideWarning,enemyAttackProfile,enemyCanHit} from './enemy-rules.js?v=20261116-v64';
-import {ultimateBusy,claimUltimate} from './ultimate-turn.js?v=20261116-v64';
-import {encounterPools,normalTier} from './encounter-rules.js?v=20261116-v64';
-import {petUltimateRule,applyPetUltimate,tickHeroSupport,queueAutoUltimate} from './pet-ultimate-rules.js?v=20261116-v64';
-import {SCYTHE_COMBO,heroWeaponProfile,heroWeaponCombo,nearestEnemy,blinkPosition,bossWeaponDrop} from './weapon-rules.js?v=20261116-v64';
-import {trainingOf,familyGrowth} from './family-progress.js?v=20261116-v64';
-import {waveScales,spawnInterval} from './difficulty.js?v=20261116-v64';
+import {isMerchantMeadow,rollMerchantWeapon,merchantQuantity,addMerchantCargo,merchantWeaponName} from './merchant-meadow.js?v=20261117-v66';
+import {constrainMeadow} from './meadow-terrain.js?v=20261117-v66';
+import {getMonsterMult,dropMultOf} from './run-options.js?v=20261117-v66';
+import {canEnemyUltimate,warningFor,insideWarning,enemyAttackProfile,enemyCanHit} from './enemy-rules.js?v=20261117-v66';
+import {ultimateBusy,claimUltimate} from './ultimate-turn.js?v=20261117-v66';
+import {encounterPools,normalTier} from './encounter-rules.js?v=20261117-v66';
+import {petUltimateRule,applyPetUltimate,tickHeroSupport,queueAutoUltimate} from './pet-ultimate-rules.js?v=20261117-v66';
+import {SCYTHE_COMBO,heroWeaponProfile,heroWeaponCombo,nearestEnemy,blinkPosition,bossWeaponDrop} from './weapon-rules.js?v=20261117-v66';
+import {trainingOf,familyGrowth} from './family-progress.js?v=20261117-v66';
+import {waveScales,spawnInterval} from './difficulty.js?v=20261117-v66';
 import {quotaStep,countSpawn,meadowTarget} from './spawn-quota.js?v=20261116-quota1';
-import {canCaptureEnemy} from './capture-rules.js?v=20261116-v64';
-import {costumeFor,costumeAttack,costumeReach,costumeBall} from './costume-effects.js?v=20261116-v64';
+import {canCaptureEnemy} from './capture-rules.js?v=20261117-v66';
+import {costumeFor,costumeAttack,costumeReach,costumeBall} from './costume-effects.js?v=20261117-v66';
 import {rememberJourney} from './journey.js';
-import {statusPassives} from './status-passives.js?v=20261116-v64';
-import {ownPassives} from './growth.js?v=20261116-v64';
+import {statusPassives} from './status-passives.js?v=20261117-v66';
+import {ownPassives} from './growth.js?v=20261117-v66';
 import {cardBase} from './card-balance.js';
-import {advanceProjectile,advancePiercing} from './projectiles.js?v=20261116-v64';
-import {projectileStyle,projectileTint} from './actor-layout.js?v=20261116-v64';
-import {setStatus,hasStatus,immobilized,movementScale} from './combat-status.js?v=20261116-v64';
-import {evolutionOptions,evolvePet,petUltimateCooldown} from './manual-evolution.js?v=20261116-v64';
-import {attackProfile,baseAttackProfile,ROLL_DURATION} from './combat-profile.js?v=20261116-v64';
-import {calculateDamage,applyHit,inShape} from './damage.js?v=20261116-v64';
-import {petMaxHealth,makePet,switchPet,passiveTotals,grantPetXp} from './pet-party.js?v=20261116-v64';
-import {addBuff,addTemporaryWeapon,WEAPONS,ITEMS,BUFF_CAPS,consumeBall,expireBuffs,weaponStats} from './inventory.js?v=20261116-v64';
+import {advanceProjectile,advancePiercing} from './projectiles.js?v=20261117-v66';
+import {projectileStyle,projectileTint} from './actor-layout.js?v=20261117-v66';
+import {setStatus,hasStatus,immobilized,movementScale} from './combat-status.js?v=20261117-v66';
+import {evolutionOptions,evolvePet,petUltimateCooldown} from './manual-evolution.js?v=20261117-v66';
+import {attackProfile,baseAttackProfile,ROLL_DURATION} from './combat-profile.js?v=20261117-v66';
+import {calculateDamage,applyHit,inShape} from './damage.js?v=20261117-v66';
+import {petMaxHealth,makePet,switchPet,passiveTotals,grantPetXp} from './pet-party.js?v=20261117-v66';
+import {addBuff,addTemporaryWeapon,WEAPONS,ITEMS,BUFF_CAPS,consumeBall,expireBuffs,weaponStats} from './inventory.js?v=20261117-v66';
 const hCrit=r=>r.hero.critBoostUntil>r.time;
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 const uid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`;
@@ -141,9 +141,9 @@ export class CaveWorld{
 
  {const special=r.pickups.filter(p=>['weapon','augmentation'].includes(p.kind)),common=r.pickups.filter(p=>!['weapon','augmentation'].includes(p.kind));r.pickups=[...common.slice(-180),...special];}r.enemies=r.enemies.filter(e=>e.hp>0);if(r.targetId&&!r.enemies.some(e=>e.id===r.targetId))r.targetId=null;if(h.hp<=0){r.status='defeated';this.emit('defeated');}else {this.tickCostume(dt);this.collectLoot();this.checkMeadowCompletion();}}
  dropMerchantWeapon(enemy,run=this.run){if(!this.merchantMeadow||enemy.merchantLootDropped)return null;enemy.merchantLootDropped=true;let first=true;const dr=run.dropMult||1,loot=rollMerchantWeapon(enemy,()=>{const v=this.random();if(first){first=false;return ['elite','boss'].includes(enemy.kind)?v:v/dr;}return v;});if(!loot)return null;const pickup={id:'p'+run.nextId++,x:enemy.x,z:enemy.z,...loot,pickupAfter:run.time+(['boss','elite'].includes(enemy.kind)?.65:0)};run.pickups.push(pickup);return pickup;}
- checkMeadowCompletion(){const r=this.run;if(!this.merchantMeadow||!r||r.status!=='active')return false;const weapons=r.pickups.filter(p=>p.kind==='weapon').length;r.meadowWeaponsRemaining=weapons;if(this.waveElapsed(r)<240||!r.meadowFinalBossResolved||r.captureFlight||r.enemies.some(e=>e.hp>0&&!e.rewarded)||weapons)return false;r.completedWaves=10;r.meadowCompletionVersion=1;r.status='meadow-completed';this.save();return true;}
+ checkMeadowCompletion(){const r=this.run;if(!this.merchantMeadow||!r||r.status!=='active')return false;/* 第 10 波前就開始追蹤：大魔王的限定武器真的撿到才算勝利 */if(r.meadowBossLoot===undefined&&(r.bossWave||0)<10)r.meadowBossLoot=false;if(r.meadowFinalBossResolved&&r.meadowBossLoot===false&&!r.pickups.some(p=>p.kind==='weapon'&&p.merchantGrade==='boss')){const loot=rollMerchantWeapon({kind:'boss'},this.random)||{kind:'weapon',weaponId:null,merchantGrade:'boss',quantity:10};if(loot.weaponId){const a=this.random()*Math.PI*2;r.pickups.push({id:'p'+r.nextId++,x:r.hero.x+Math.cos(a)*1.4,z:r.hero.z+Math.sin(a)*1.4,...loot,pickupAfter:r.time+.65});this.emit('message','大魔王留下了限定武器，走近拾取！');}}const weapons=r.pickups.filter(p=>p.kind==='weapon').length;r.meadowWeaponsRemaining=weapons;if(this.waveElapsed(r)<240||!r.meadowFinalBossResolved||r.captureFlight||r.enemies.some(e=>e.hp>0&&!e.rewarded)||weapons)return false;r.completedWaves=10;r.meadowCompletionVersion=1;r.status='meadow-completed';this.save();return true;}
  collectLoot(){const r=this.run,passives=this.passives,radius=2.5*(1+(passives.pickup||0)+(r.buffs.pickup||0));const vacuum=!!r.vacuumRequested,loot=(vacuum?r.pickups:r.pickups.filter(p=>distance(r.hero,p)<radius)).filter(p=>!(p.pickupAfter>r.time));if(!loot.length){if(vacuum)delete r.vacuumRequested;return;}const ids=loot.map(p=>p.id),selected=new Set(ids);const result=this.store.transact('loot:'+r.id+':'+ids.join(','),s=>{const current=s.run;if(!current||current.id!==r.id)throw Error('戰局已變更');if(vacuum)delete current.vacuumRequested;const messages=[];for(const item of current.pickups.filter(p=>selected.has(p.id))){if(item.xp)this.gainXp(item.xp,current);if(item.amount){s.points+=item.amount;current.earned+=item.amount;}if(item.itemId)s.inventory[item.itemId]=(s.inventory[item.itemId]||0)+1;if(item.ball)s.inventory['ball-basic']=(s.inventory['ball-basic']||0)+item.ball;if(item.heal){const a=current.hero,before=a.hp;a.hp=Math.min(a.maxHp,a.hp+item.heal*(1+(passives.heal||0)));if(a.hp>before)a.healUntil=current.time+.75;}
- if(item.kind==='weapon'&&this.merchantMeadow&&item.merchantGrade){addMerchantCargo(s,item);current.weaponGoods=(current.weaponGoods||0)+merchantQuantity(item);if(['elite','boss'].includes(item.merchantGrade))current.limitedWeaponGoods=(current.limitedWeaponGoods||0)+merchantQuantity(item);current.lastReward={kind:'chest',name:merchantWeaponName(item.merchantGrade)+' ×'+merchantQuantity(item),text:'已收進採集袋，回商會即可上架',until:current.time+3};}else if(item.kind==='weapon'){if(this.merchantMeadow)addMerchantCargo(s,item);const permanent=item.permanent&&WEAPONS[item.weaponId]?.bossOnly;let reward;if(permanent&&!s.weapons.includes(item.weaponId)){s.weapons.push(item.weaponId);s.weaponUnlockPending||=[];s.weaponUnlockPending.push(item.weaponId);reward={permanent:true};}else if(permanent){s.weaponUpgrades||={};s.weaponUpgrades[item.weaponId]=(s.weaponUpgrades[item.weaponId]||0)+1;reward={upgrade:s.weaponUpgrades[item.weaponId]};}else reward=addTemporaryWeapon(current,item.weaponId,s.weapons);current.lastReward={kind:'chest',name:this.merchantMeadow?merchantWeaponName(item.merchantGrade||(WEAPONS[item.weaponId]?.bossOnly?'boss':'normal')):WEAPONS[item.weaponId].name,text:reward.permanent?'已永久取得，跨局保留':reward.upgrade?'重複魔王武器：永久攻擊力 +1（累計 +'+reward.upgrade+'）':reward.fusion?'武器融合 '+reward.fusion+' 階':'武器已加入本局武器庫',until:current.time+8};messages.push(this.merchantMeadow?'拾取 '+merchantWeaponName(item.merchantGrade||(WEAPONS[item.weaponId]?.bossOnly?'boss':'normal'))+'，已收進商會採集袋':'拾取 '+WEAPONS[item.weaponId].name+'，可點武器按鈕裝備');}
+ if(item.kind==='weapon'&&this.merchantMeadow&&item.merchantGrade){addMerchantCargo(s,item);current.weaponGoods=(current.weaponGoods||0)+merchantQuantity(item);if(['elite','boss'].includes(item.merchantGrade))current.limitedWeaponGoods=(current.limitedWeaponGoods||0)+merchantQuantity(item);if(item.merchantGrade==='boss'){current.meadowBossLoot=true;current.meadowBossLootQty=(current.meadowBossLootQty||0)+merchantQuantity(item);}current.lastReward={kind:'chest',name:merchantWeaponName(item.merchantGrade)+' ×'+merchantQuantity(item),text:'已收進採集袋，回商會即可上架',until:current.time+3};}else if(item.kind==='weapon'){if(this.merchantMeadow)addMerchantCargo(s,item);const permanent=item.permanent&&WEAPONS[item.weaponId]?.bossOnly;let reward;if(permanent&&!s.weapons.includes(item.weaponId)){s.weapons.push(item.weaponId);s.weaponUnlockPending||=[];s.weaponUnlockPending.push(item.weaponId);reward={permanent:true};}else if(permanent){s.weaponUpgrades||={};s.weaponUpgrades[item.weaponId]=(s.weaponUpgrades[item.weaponId]||0)+1;reward={upgrade:s.weaponUpgrades[item.weaponId]};}else reward=addTemporaryWeapon(current,item.weaponId,s.weapons);current.lastReward={kind:'chest',name:this.merchantMeadow?merchantWeaponName(item.merchantGrade||(WEAPONS[item.weaponId]?.bossOnly?'boss':'normal')):WEAPONS[item.weaponId].name,text:reward.permanent?'已永久取得，跨局保留':reward.upgrade?'重複魔王武器：永久攻擊力 +1（累計 +'+reward.upgrade+'）':reward.fusion?'武器融合 '+reward.fusion+' 階':'武器已加入本局武器庫',until:current.time+8};messages.push(this.merchantMeadow?'拾取 '+merchantWeaponName(item.merchantGrade||(WEAPONS[item.weaponId]?.bossOnly?'boss':'normal'))+'，已收進商會採集袋':'拾取 '+WEAPONS[item.weaponId].name+'，可點武器按鈕裝備');}
  if(item.kind==='augmentation'){const choices=UPGRADES.filter(u=>u.instant||((current.buffs[u.key]||0)<BUFF_CAPS[u.key])),u=choices.find(u=>u.key===item.upgradeKey)||choices[0];if(u?.instant){if(current.pickups.some(p=>!selected.has(p.id)))current.vacuumRequested=true;current.lastReward={kind:'book',name:'萬象吸取',text:'吸取場地上所有掉落物',until:current.time+8};messages.push('技能書：萬象吸取已啟動');}else if(u){const delta=addBuff(current,u.key,u.value);current.lastReward={kind:'book',name:u.name,text:'拾取書本：增幅 +'+Math.round(delta*100)+'%',until:current.time+8};messages.push('拾取技能書：'+u.name+'增幅已生效');}else{const a=current.hero,before=a.hp;a.hp=Math.min(a.maxHp,a.hp+50);if(a.hp>before)a.healUntil=current.time+.75;messages.push('增幅已全滿，技能書轉為恢復50生命');}}
  }current.pickups=current.pickups.filter(p=>!selected.has(p.id));return messages;});if(!result.replayed)for(const message of result.value)this.emit('message',message);}
 

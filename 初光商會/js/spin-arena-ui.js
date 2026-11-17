@@ -1,12 +1,13 @@
-import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_STAT_NAMES,SPIN_OPPONENTS,spinTop,spinPartBonus,spinBonusText} from './spin-arena-config.js?v=20261116-v64';
-import {spinState,spinStats,effectiveSpinStats} from './spin-arena-core.js?v=20261116-v64';
-import {SPIN_GROWTH} from './spin-arena-progression.js?v=20261116-v64';
-import {createSpinBattleView} from './spin-arena-view.js?v=20261116-v64';
-import {createSpinAudio,createSpinPresentation} from './spin-arena-presentation.js?v=20261116-v64';
-export function installSpinArena({game,toast,onOpen=()=>{}}){
- const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('../spin-arena.css?v=20261116-v64',import.meta.url);document.head.append(css);
+import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_STAT_NAMES,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinLevelBonus,spinTop,spinPartBonus,spinBonusText} from './spin-arena-config.js?v=20261117-v66';
+import {spinState,spinStats,effectiveSpinStats} from './spin-arena-core.js?v=20261117-v66';
+import {SPIN_GROWTH} from './spin-arena-progression.js?v=20261117-v66';
+import {createSpinBattleView} from './spin-arena-view.js?v=20261117-v66';
+import {createSpinAudio,createSpinPresentation} from './spin-arena-presentation.js?v=20261117-v66';
+import {spinSkillCooldown} from './spin-arena-paths.js?v=20261117-v66';
+export function installSpinArena({game,toast,music=null,onOpen=()=>{}}){
+ const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('../spin-arena.css?v=20261117-v66',import.meta.url);document.head.append(css);
  const dialog=document.createElement('dialog');dialog.className='spin-arena-dialog';dialog.setAttribute('aria-label','廣場戰鬥陀螺大會');document.body.append(dialog);
- const audio=createSpinAudio();let page='home',selected='flame',selectedSlot='rim',view=null,presentation=null,raf=0,previous=0,accumulator=0,battlePhase='',busy=false;
+ const audio=createSpinAudio();let page='home',selected='flame',selectedSlot='rim',view=null,presentation=null,raf=0,previous=0,accumulator=0,battlePhase='',busy=false,cinematic=null,slowUntil=0;
  const a=()=>spinState(game.state),e=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),name=id=>spinTop(id)?.name||id;
  const art=id=>`./assets/spin-arena/${SPIN_TOPS.findIndex(t=>t.id===id)>=6?'cards-v63':'cards-v61'}/${id}.webp`,img=id=>`<img class="spin-thumb" src="${art(id)}" alt="${e(name(id))}" loading="lazy">`;
  const statsHTML=stats=>{
@@ -16,7 +17,8 @@ export function installSpinArena({game,toast,onOpen=()=>{}}){
  const partText=part=>{if(!part)return '本次沒有額外零件';if(typeof part==='string')return `普通${SPIN_PARTS[part]?.name||'零件'}`;return `${SPIN_GRADES[part.grade]?.name||''}${SPIN_PARTS[part.slot]?.name||'零件'}`;};
  function act(type,p={}){if(busy)return {ok:false};busy=true;let r;try{r=game.act(type,p);}finally{busy=false;}if(!r.ok)toast(r.message,true);return r;}
  function release(){presentation?.dispose();presentation=null;view?.dispose();view=null;}
- function close(){dialog.close();game.spinArenaPaused=false;document.body.classList.remove('spin-arena-open');cancelAnimationFrame(raf);release();audio.stop();}
+ function syncMusic(){const m=a().match,on=dialog.open&&page==='battle'&&m&&m.phase!=='result'&&!a().soundMuted;if(on){audio.startMusic();music?.suspend(true);}else{audio.stopMusic();music?.suspend(dialog.open&&audio.musicPlaying);}}
+ function close(){dialog.close();game.spinArenaPaused=false;document.body.classList.remove('spin-arena-open');cancelAnimationFrame(raf);release();cinematic=null;audio.stop();audio.stopMusic();music?.suspend(false);}
  function navigate(next){release();page=next;render();dialog.scrollTop=0;}
  const nav=()=>[['商店',()=>navigate('store')],['收藏／裝備',()=>navigate('collection')],['選擇對手',()=>navigate('opponents')],['回廣場',close]];
  function card(t,{clickable=false}={}){
@@ -32,7 +34,7 @@ export function installSpinArena({game,toast,onOpen=()=>{}}){
   const savedScroll=dialog.scrollTop;release();const s=game.state,state=a();audio.setMuted(state.soundMuted);let title='廣場戰鬥陀螺大會',content='',buttons=nav();
   if(page==='home'){
    const next=SPIN_TOPS.find(t=>!state.owned[t.id]&&state.reputation<t.reputation);
-   content=`<p>Lv.3 解鎖 · 三戰兩勝 · 每局 45 秒</p><div class="spin-summary">競技聲望 <b>${state.reputation}</b> · 收藏 ${Object.keys(state.owned).length}/${SPIN_TOPS.length}<br>目前出戰：${state.equipped?e(name(state.equipped)):'尚未收藏陀螺'}${next?`<br>下一款：${next.name} · 聲望 ${next.reputation}`:''}</div>${state.visitor?'<button data-visitor-entry class="spin-visitor-banner">外來高手抵達！選擇對手 → 挑戰<br><small>勝敗都保證給零件，不增加聲望</small></button>':''}<p>先收藏烈焰獅王，透過對戰累積聲望，再逐款解鎖。對戰會暫停商會營業。</p><small>今日一般獎金 ${state.daily.coins}/${R.coinCap} G · 一般零件 ${state.daily.parts}/${R.partCap}<br>外來對手保證的零件不受每日上限影響。失敗不扣款、不失去陀螺。</small>`;
+   content=`<p>Lv.3 解鎖 · 三戰兩勝 · 每局打到分出勝負</p><div class="spin-summary">競技聲望 <b>${state.reputation}</b> · 收藏 ${Object.keys(state.owned).length}/${SPIN_TOPS.length}<br>目前出戰：${state.equipped?e(name(state.equipped)):'尚未收藏陀螺'}${next?`<br>下一款：${next.name} · 聲望 ${next.reputation}`:''}</div>${state.visitor?'<button data-visitor-entry class="spin-visitor-banner">外來高手抵達！選擇對手 → 挑戰<br><small>勝利 ${SPIN_VISITOR_REWARD.coins} G · 聲望 +${SPIN_VISITOR_REWARD.rep} · 勝敗都保證給零件</small></button>':''}<p>先收藏烈焰獅王，透過對戰累積聲望，再逐款解鎖。對戰會暫停商會營業。</p><small>今日一般獎金 ${state.daily.coins}/${R.coinCap} G · 一般零件 ${state.daily.parts}/${R.partCap}<br>外來對手保證的零件不受每日上限影響。失敗不扣款、不失去陀螺。</small>`;
   }else if(page==='store'){
    title='廣場陀螺商店';content=`<p>持有 ${Math.floor(s.gold)} G · 競技聲望 ${state.reputation}</p><div class="spin-grid spin-store">${SPIN_TOPS.map(t=>`<article>${card(t)}<button data-buy="${t.id}" ${state.owned[t.id]||state.reputation<t.reputation||s.gold<t.cost?'disabled':''}>${state.owned[t.id]?'已收藏':state.reputation<t.reputation?`聲望 ${t.reputation} 解鎖`:`收藏 ${t.cost} G`}</button></article>`).join('')}</div><details><summary>普通零件補給（每份 100 G）</summary><small>進階與高級零件須由對戰取得。</small><div class="spin-parts">${Object.entries(SPIN_PARTS).map(([k,v])=>`<button data-part-buy="${k}" ${s.gold<100?'disabled':''}>${v.name} · 普通 ${state.parts[k].normal}</button>`).join('')}</div></details>`;
   }else if(page==='collection'){
@@ -43,7 +45,7 @@ export function installSpinArena({game,toast,onOpen=()=>{}}){
    buttons=[['返回收藏冊',()=>navigate('collection')],['選擇對手',()=>navigate('opponents')],['回廣場',close]];
   }else if(page==='opponents'){
    title='選擇對手';const m=state.match,v=state.visitor;
-   content=`<p>${state.equipped?`出戰：${e(name(state.equipped))}`:'請先收藏並裝備烈焰獅王。'}</p>${m&&['strategy','battle','roundResult'].includes(m.phase)?'<button data-resume>繼續未完成的比賽</button>':''}${v?`<article class="spin-visitor-banner">${img(v.topId)}<h3>${e(v.name)} · 外來高手</h3><p>各項能力至少高於目前出戰配置 12%。<br>勝敗保證進階或高級零件，聲望 +0。<br>本場結束後就會離開。</p><button data-opponent="${v.id}" ${!state.equipped||v.status!=='waiting'?'disabled':''}>${v.status==='waiting'?'挑戰外來高手':'挑戰進行中'}</button></article>`:''}<div class="spin-grid">${(state.roster?.entries||[]).map((o,i)=>`<article>${img(o.topId)}<b>${o.name}</b><small>${['新秀','進階','高手'][i]} · ${e(name(o.topId))}</small><small>商會 Lv.${o.shopLevel} · 能力倍率 ${o.scale.toFixed(2)}×</small><p>勝利獎金最多 ${o.reward} G<br>聲望 +${o.rep}</p><button data-opponent="${o.id}" ${!state.equipped?'disabled':''}>挑戰</button></article>`).join('')}</div><details><summary>零件掉落規則</summary><p>一般對手：勝利 65%、落敗 25% 機率獲得一份隨機零件，每日最多 ${R.partCap} 份。高手較容易掉落高級零件。</p><p>外來高手：勝敗都保證一份，進階 55%、高級 45%，輪盤／軸心／外環隨機；不給聲望與首勝來客加成，不受一般零件每日上限影響。</p></details>`;
+   content=`<p>${state.equipped?`出戰：${e(name(state.equipped))}`:'請先收藏並裝備烈焰獅王。'}</p>${m&&['strategy','battle','roundResult'].includes(m.phase)?'<button data-resume class="spin-resume">▶ 繼續未完成的比賽</button>':''}${v?`<article class="spin-visitor-banner">${img(v.topId)}<h3>${e(v.name)} · 外來高手</h3><p>各項能力至少高於目前出戰配置 12%。<br>勝利獎金 ${SPIN_VISITOR_REWARD.coins} G · 聲望 +${SPIN_VISITOR_REWARD.rep}（不受每日上限）。<br>勝敗都保證進階或高級零件。<br>本場結束後就會離開。</p><button data-opponent="${v.id}" ${!state.equipped||v.status!=='waiting'?'disabled':''}>${v.status==='waiting'?'挑戰外來高手':'挑戰進行中'}</button></article>`:''}<div class="spin-grid">${(state.roster?.entries||[]).map((o,i)=>`<article>${img(o.topId)}<b>${o.name}</b><small>${['新秀','進階','高手'][i]} · ${e(name(o.topId))}</small><small>商會 Lv.${o.shopLevel} · 能力倍率 ${o.scale.toFixed(2)}×</small><p>勝利獎金最多 ${o.reward+spinLevelBonus(s.level)} G${spinLevelBonus(s.level)?`<br><small>含 Lv.${s.level} 加碼 ${spinLevelBonus(s.level)} G</small>`:''}<br>聲望 +${o.rep}</p><button data-opponent="${o.id}" ${!state.equipped?'disabled':''}>挑戰</button></article>`).join('')}</div><details><summary>零件掉落規則</summary><p>一般對手：勝利 65%、落敗 25% 機率獲得一份隨機零件，每日最多 ${R.partCap} 份。高手較容易掉落高級零件。</p><p>外來高手：勝敗都保證一份，進階 55%、高級 45%，輪盤／軸心／外環隨機；勝利固定 ${SPIN_VISITOR_REWARD.coins} G、聲望 +${SPIN_VISITOR_REWARD.rep}；不給首勝來客加成，不受每日上限影響。<br>商會 Lv.4／Lv.5 挑戰一般對手獲勝，另加碼 350 G／600 G（不受每日一般獎金上限）。</p></details>`;
   }else if(page==='battle'){
    const m=state.match;if(!m){page='opponents';render();return;}title=`${name(m.topId)} VS ${m.opponent?.name||SPIN_OPPONENTS.find(o=>o.id===m.opponentId)?.name||'挑戰者'}`;
    if(m.phase==='result'){
@@ -52,13 +54,14 @@ export function installSpinArena({game,toast,onOpen=()=>{}}){
     content=`<p>比分 ${m.score.join('：')} · 第 ${m.round} 局</p>${m.roundResult?`<p>${m.roundResult.tied?'本局平手':m.roundResult.winner===0?'本局獲勝':'對手拿下一局'}：${e(m.roundResult.reason)}</p>`:''}<p>${m.suddenDeath?'連續平局：進入一勝決勝！下一位勝出的選手直接贏得整場。':'每局能量、耐久重置。'}請選擇策略：</p><p>攻擊：撞擊較強、旋轉消耗較快。<br>防禦：減傷與守護。<br>平衡：維持原本能力。</p>`;
     buttons=[...['attack','defense','balance'].map((strategy,i)=>[['攻擊出戰','防禦出戰','平衡出戰'][i],()=>{const r=act('spinLaunch',{strategy,round:m.round,expectedPhase:m.phase});if(r.ok){battlePhase='';render();}}]),['暫存離開',close]];
    }else{
-    content=`<div class="spin-bars"><div><b>${name(m.topId)}</b><span data-player></span><small data-buff="0"></small></div><div><b>${name(m.opponentTopId)}</b><span data-enemy></span><small data-buff="1"></small></div></div><p class="spin-score" data-score></p><div class="spin-battle-stage"><canvas class="spin-battle-canvas" aria-label="3D 戰鬥陀螺競技場"></canvas></div><small>必殺技滿 100 才能施放。登場演出時戰鬥暫停；加成持續數秒。出界、耐久或旋轉能量歸零即敗。</small>`;
-    buttons=[['必殺技',()=>act('spinSkill')],['鏡頭：斜俯視',()=>{dialog.querySelector('[data-action="1"]').textContent='鏡頭：'+view.changeCamera();}],['縮放',()=>view.zoom()],['暫存離開',close]];
+    content=`<div class="spin-bars"><div><b>${name(m.topId)}</b><span data-player></span><small data-buff="0"></small></div><div><b>${name(m.opponentTopId)}</b><span data-enemy></span><small data-buff="1"></small></div></div><p class="spin-score" data-score></p><div class="spin-battle-stage"><canvas class="spin-battle-canvas" aria-label="3D 戰鬥陀螺競技場"></canvas></div><small>技能依各陀螺「速」的冷卻時間自動施放（速越高冷卻越短）。登場演出時戰鬥暫停。比賽持續到出界、耐久或旋轉能量歸零才分勝負；按「快轉」直接看本局結果。</small>`;
+    buttons=[['快轉 ▶▶',()=>{if(cinematic)return;cinematic=null;const r=act('spinFastForward');if(r.ok){battlePhase='';render();}}],['鏡頭：斜俯視',()=>{dialog.querySelector('[data-action="1"]').textContent='鏡頭：'+view.changeCamera();}],['縮放',()=>view.zoom()],['暫存離開',close]];
    }
   }
+  dialog.classList.toggle('spin-battle-mode',page==='battle'&&a().match?.phase==='battle');
   dialog.innerHTML=`<header><strong>${e(title)}</strong><button class="spin-sound" data-sound aria-label="${state.soundMuted?'開啟':'關閉'}陀螺音效">${state.soundMuted?'♪×':'♪'}</button><button data-close aria-label="關閉戰鬥陀螺大會">×</button></header><main>${content}</main><footer>${buttons.map(([label],i)=>`<button data-action="${i}" ${label==='選擇對手'&&state.visitor?.status==='waiting'?'class="has-notice" title="外來高手等待挑戰"':''}>${e(label)}</button>`).join('')}</footer>`;
   dialog.querySelector('[data-close]').onclick=close;
-  dialog.querySelector('[data-sound]').onclick=()=>{audio.unlock();const muted=!a().soundMuted;act('spinSound',{muted});audio.setMuted(muted);const button=dialog.querySelector('[data-sound]');if(!muted)audio.play(a().equipped||'flame');button.textContent=muted?'♪×':'♪';button.setAttribute('aria-label',(muted?'開啟':'關閉')+'陀螺音效');};
+  dialog.querySelector('[data-sound]').onclick=()=>{audio.unlock();const muted=!a().soundMuted;act('spinSound',{muted});audio.setMuted(muted);const button=dialog.querySelector('[data-sound]');if(!muted)audio.play(a().equipped||'flame');button.textContent=muted?'♪×':'♪';button.setAttribute('aria-label',(muted?'開啟':'關閉')+'陀螺音效');syncMusic();};
   dialog.querySelectorAll('[data-action]').forEach(b=>b.onclick=buttons[+b.dataset.action][1]);
   dialog.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>{selected=b.dataset.detail;navigate('detail');});
   dialog.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{act('spinBuy',{topId:b.dataset.buy});render();});
@@ -70,21 +73,23 @@ export function installSpinArena({game,toast,onOpen=()=>{}}){
   dialog.querySelectorAll('[data-opponent]').forEach(b=>b.onclick=()=>{if(act('spinStart',{opponentId:b.dataset.opponent}).ok)navigate('battle');});
   const resume=dialog.querySelector('[data-resume]');if(resume)resume.onclick=()=>navigate('battle');
   const visitorEntry=dialog.querySelector('[data-visitor-entry]');if(visitorEntry)visitorEntry.onclick=()=>navigate('opponents');
-  const canvas=dialog.querySelector('canvas');if(canvas){view=createSpinBattleView(canvas,{level:s.level});presentation=createSpinPresentation(dialog.querySelector('.spin-battle-stage'),audio);battlePhase=a().match.phase;view.render(a().match,performance.now()/1000);presentation.update(a().match);}
-  dialog.scrollTop=savedScroll;
+  const canvas=dialog.querySelector('canvas');if(canvas){view=createSpinBattleView(canvas,{level:s.level,lowPower:(navigator.hardwareConcurrency||8)<=4});presentation=createSpinPresentation(dialog.querySelector('.spin-battle-stage'),audio);battlePhase=a().match.phase;view.render(a().match,performance.now()/1000);presentation.update(a().match);}
+  dialog.scrollTop=savedScroll;syncMusic();
  }
  function frame(now){
   if(!dialog.open)return;const dt=previous?Math.min(.1,(now-previous)/1000):0;previous=now;
+  /* 敗北特寫：本局已分出勝負，先演出（停轉倒下／撞飛出場）再切到結果頁；不再推進模擬 */
+  if(cinematic&&view){cinematic.t+=dt;const m=a().match;if(m)view.render(m,now/1000,cinematic);if(cinematic.t>=cinematic.length){cinematic=null;render();}raf=requestAnimationFrame(frame);return;}
   if(page==='battle'&&a().match?.phase==='battle'&&!document.hidden){
-   accumulator+=dt;if(accumulator>=.1){act('spinAdvance',{seconds:accumulator});accumulator=0;}
-   const m=a().match;if(m.phase!==battlePhase)render();else{
-    view.render(m,now/1000);presentation.update(m,accumulator);
+   accumulator+=dt*(slowUntil>now?.35:1);if(accumulator>=.1){act('spinAdvance',{seconds:accumulator});accumulator=0;}
+   const m=a().match;if(m.phase!==battlePhase){const rr=m.roundResult;if(view&&rr&&!m.fastForward&&battlePhase==='battle'){cinematic={t:0,loser:rr.loser,cause:rr.cause,vx:rr.loserVelocity?.x||0,vz:rr.loserVelocity?.z||0,length:rr.tied?.9:rr.cause==='out'?2.1:2.3};battlePhase=m.phase;const label=dialog.querySelector('[data-score]');if(label)label.textContent=rr.tied?'同時出局！':(rr.loser===0?'我方':'對手')+(rr.cause==='out'?'被撞飛出場':'停止旋轉')+'！';const ff=dialog.querySelector('[data-action="0"]');if(ff)ff.disabled=true;}else render();}
+   else{
+    const out=view.render(m,now/1000);if(out?.slow)slowUntil=now+300;presentation.update(m,accumulator);
     for(const [k,i] of [['player',0],['enemy',1]]){
-     const b=m.bodies[i],stats=effectiveSpinStats(b,m.time);dialog.querySelector(`[data-${k}]`).textContent=`旋轉 ${Math.ceil(b.spin)}% · 耐久 ${Math.ceil(b.hp)}%`;
-     dialog.querySelector(`[data-buff="${i}"]`).textContent=b.buffUntil>m.time?`${spinBonusText(SPIN_SKILLS[b.skillId].bonuses)} · ${(b.buffUntil-m.time).toFixed(1)}秒`:`攻${Math.round(stats.attack)} 防${Math.round(stats.defense)} 速${Math.round(stats.speed)} 持${Math.round(stats.stamina)}`;
+     const b=m.bodies[i],stats=effectiveSpinStats(b,m.time),cd=spinSkillCooldown(stats.speed),left=Math.max(0,(100-b.energy)/100*cd);dialog.querySelector(`[data-${k}]`).textContent=`旋轉 ${Math.ceil(b.spin)}% · 耐久 ${Math.ceil(b.hp)}% · 技能 ${b.energy>=100?'施放！':left.toFixed(1)+'秒'}`;
+     dialog.querySelector(`[data-buff="${i}"]`).textContent=b.buffUntil>m.time?`${spinTop(i?m.opponentTopId:m.topId).skill}：${spinBonusText(SPIN_SKILLS[b.skillId].bonuses)} · ${(b.buffUntil-m.time).toFixed(1)}秒`:`攻${Math.round(stats.attack)} 防${Math.round(stats.defense)} 速${Math.round(stats.speed)}（冷卻 ${cd.toFixed(1)} 秒） 持${Math.round(stats.stamina)}`;
     }
-    dialog.querySelector('[data-score]').textContent=`比分 ${m.score.join('：')} · 第 ${m.round} 局 · ${Math.ceil(R.roundSeconds-m.time)} 秒${m.suddenDeath?' · 一勝決勝':''}${m.cutin?' · 技能登場':''}`;
-    const skill=dialog.querySelector('[data-action="0"]');skill.disabled=m.bodies[0].energy<100||!!m.cutin;skill.textContent=m.cutin?'登場演出中':m.bodies[0].energy>=100?spinTop(m.topId).skill+'！':`必殺技 ${Math.floor(m.bodies[0].energy)}%`;
+    dialog.querySelector('[data-score]').textContent=`比分 ${m.score.join('：')} · 第 ${m.round} 局 · ${Math.floor(m.time)} 秒${m.suddenDeath?' · 一勝決勝':''}${m.cutin?' · 技能登場':''}`;
    }
   }
   raf=requestAnimationFrame(frame);

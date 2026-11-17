@@ -1,5 +1,5 @@
-import{addRackInk}from'./rack-ink.js?v=20261116-v64';
-import {addIllustratedOutline} from './illustrated-outline.js?v=20261116-v64';
+import{addRackInk}from'./rack-ink.js?v=20261117-v66';
+import {addIllustratedOutline} from './illustrated-outline.js?v=20261117-v66';
 
 // Shared safe derivative used by the approved local game integration and reviews.
 export function createSphericalOrbRuntime(T,source){

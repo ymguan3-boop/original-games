@@ -1,19 +1,19 @@
-import {isMerchantMeadow} from './merchant-meadow.js?v=20261116-v64';
-import {buildMeadow,constrainMeadow} from './meadow-terrain.js?v=20261116-v64';
-import {createPumpkinStaff,createPumpkinHead} from './pumpkin-staff.js?v=20261116-v64';
-import {createLeekSword} from './leek-weapon.js?v=20261116-v64';
-import {createViewLimits} from './view-limits.js?v=20261116-v64';
-import {modelRoomPlan,originalPresentation,createModelRoomEffect} from './model-room-effects.js?v=20261116-v64';
-import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261116-v64';
-import {flightMotion} from './avian-motion-v17.js?v=20261116-v64';
-import {createCostumeView} from './costume-view.js?v=20261116-v64';
-import {createLootView} from './loot-view.js?v=20261116-v64';
-import {createStatusView} from './status-view.js?v=20261116-v64';
-import {immobilized} from './combat-status.js?v=20261116-v64';
-import {modelHeight} from './actor-layout.js?v=20261116-v64';
-import {createProjectileView} from './projectile-view.js?v=20261116-v64';
+import {isMerchantMeadow} from './merchant-meadow.js?v=20261117-v66';
+import {buildMeadow,constrainMeadow} from './meadow-terrain.js?v=20261117-v66';
+import {createPumpkinStaff,createPumpkinHead} from './pumpkin-staff.js?v=20261117-v66';
+import {createLeekSword} from './leek-weapon.js?v=20261117-v66';
+import {createViewLimits} from './view-limits.js?v=20261117-v66';
+import {modelRoomPlan,originalPresentation,createModelRoomEffect} from './model-room-effects.js?v=20261117-v66';
+import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261117-v66';
+import {flightMotion} from './avian-motion-v17.js?v=20261117-v66';
+import {createCostumeView} from './costume-view.js?v=20261117-v66';
+import {createLootView} from './loot-view.js?v=20261117-v66';
+import {createStatusView} from './status-view.js?v=20261117-v66';
+import {immobilized} from './combat-status.js?v=20261117-v66';
+import {modelHeight} from './actor-layout.js?v=20261117-v66';
+import {createProjectileView} from './projectile-view.js?v=20261117-v66';
 import {playEvolutionSequence} from './evolution-view.js';
-import {baseAttackProfile,attackProfile,HERO_ATTACKS,ROLL_DURATION} from './combat-profile.js?v=20261116-v64';
+import {baseAttackProfile,attackProfile,HERO_ATTACKS,ROLL_DURATION} from './combat-profile.js?v=20261117-v66';
 import {TOWER_ULTIMATES} from './tower-ultimates.js';
 /* Rendering only. Reuses the town's assets and animation contracts; owns no save data. */
 const BASE = new URL('../../', import.meta.url);
@@ -27,7 +27,7 @@ function script(path, globalName) {
   return scripts.get(path);
 }
 export async function createScene(canvas, {spirits = [], catalog = {}, onSelect, onReady, onError, onSound} = {}) {
-  await script('vendor/three.min.js', 'THREE');await script('js/fx/vfx3d.js?v=20261116-v64','Vfx3D');await script('js/fx/boomerang-chain.js?v=20261116-v64','BoomerangChain');await script('js/outoman-v2-fx.js?v=20261116-v64','createOutomanV2Fx');await Promise.all([script('js/arena-fx.js','SpiritVfx'),script('js/duo-combat-vfx.js','createDuoCombatVFX'),script('js/guanpang-combat-vfx.js','createGuanpangCombatVFX')]);if(!globalThis.THREE.GLTFLoader)await script('vendor/GLTFLoader.js');globalThis.PhantomLoading?.install();
+  await script('vendor/three.min.js', 'THREE');await script('js/fx/vfx3d.js?v=20261117-v66','Vfx3D');await script('js/fx/boomerang-chain.js?v=20261117-v66','BoomerangChain');await script('js/outoman-v2-fx.js?v=20261117-v66','createOutomanV2Fx');await Promise.all([script('js/arena-fx.js','SpiritVfx'),script('js/duo-combat-vfx.js','createDuoCombatVFX'),script('js/guanpang-combat-vfx.js','createGuanpangCombatVFX')]);if(!globalThis.THREE.GLTFLoader)await script('vendor/GLTFLoader.js');globalThis.PhantomLoading?.install();
   const T = globalThis.THREE, species = new Map((Array.isArray(spirits)?spirits:Object.values(spirits)).map(s => [s.id, s]));
   const entries = new Map((catalog.entries || []).map(s => [s.id,s]));
   const renderer = new T.WebGLRenderer({canvas, antialias: true, powerPreference:'high-performance'});
@@ -78,7 +78,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
     if(prefix==='native'){await script('js/fx/toon-outline.js');await script('models/native/birds-blueprint.js');await script('models/native/elephants-blueprint.js');await script('models/native/families.js','NativeFamilies');return {g:NativeFamilies.build(path)};}
     if(prefix==='avian'){const id=path.split('://')[1],file={jigglypuff:'tricolor-egg',treecko:'small-birds',grovyle:'small-birds',sceptile:'little-eagle',palkia:'dapeng'}[id];await script('models/native/'+file+'.js');await script('models/native/avian-spirits.js','AvianSpirits');api=AvianSpirits;}
     else if(['green-eye-bat','rabbit-evolution'].includes(prefix)){await script('models/native/replacement-spirits.js','ReplacementSpirits');api=ReplacementSpirits;}
-    else if(prefix==='robot-evolution'){await script('survivors/js/robot-evolution-v08.js?v=20261116-v64','CaveRobotEvolution');await script('models/native/robot-spirits.js','RobotSpirits');const stage={cyndaquil:1,quilava:2,typhlosion:3}[path.split('://')[1]];return{g:{animations:[],create:()=>{const c=CaveRobotEvolution.create({stage,inPlace:true});c.root.userData.caveBounds=c.getState().bounds;return c;}},api:RobotSpirits};}
+    else if(prefix==='robot-evolution'){await script('survivors/js/robot-evolution-v08.js?v=20261117-v66','CaveRobotEvolution');await script('models/native/robot-spirits.js','RobotSpirits');const stage={cyndaquil:1,quilava:2,typhlosion:3}[path.split('://')[1]];return{g:{animations:[],create:()=>{const c=CaveRobotEvolution.create({stage,inPlace:true});c.root.userData.caveBounds=c.getState().bounds;return c;}},api:RobotSpirits};}
     else if(prefix==='leaf-frog'){await script('models/native/leaf-frogs.js');await script('models/native/frog-spirits.js','FrogSpirits');api=FrogSpirits;}
     if(api){const g=api.load?await api.load(path):{create:()=>api.create(path),animations:[]};return {g,api};}
     if(prefix==='crown'){await script('models/native/small-birds.js','SmallBirds');await script('models/native/crown-birds.js','CrownBirds');return {g:{animations:[],create:()=>CrownBirds.create({kind:path.split('://')[1]})}};}
@@ -122,8 +122,8 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
   const leek=createLeekSword(T);right.add(leek);mounts.push({name:'Sword',variant:'leek',mesh:leek});metrics.leekWeapon={...leek.userData.weaponBudget,appearance:'leek',mountedTo:'propR'};
   const lootView=createLootView(T,scene,renderer,{...Object.fromEntries(mounts.filter(m=>!m.variant).map(m=>[m.name.toLowerCase(),m.mesh])), 'sword-leek':leek},metrics);
 
-  await script('js/hero-costumes.js?v=20261116-v64','HeroCostumes');const costumes=globalThis.HeroCostumes.create(T),costumeView=createCostumeView(T,scene,hero,costumes,{prepareSound:()=>script('models/native/xiaoshan.js','XiaoshanSpirit'),makeCompanion:()=>actor(species.get('mew').model,.95,'wardrobe-companion'),releaseActor,metrics,onError:report});
-  await Promise.all([script('js/scythe-motion.js?v=20261116-v64','createScytheGripMotion'),script('js/scythe-runtime.js?v=20261116-v64','PhantomScythe'),script('js/reaper-effects.js?v=20261116-v64','PhantomReaperEffects')]);
+  await script('js/hero-costumes.js?v=20261117-v66','HeroCostumes');const costumes=globalThis.HeroCostumes.create(T),costumeView=createCostumeView(T,scene,hero,costumes,{prepareSound:()=>script('models/native/xiaoshan.js','XiaoshanSpirit'),makeCompanion:()=>actor(species.get('mew').model,.95,'wardrobe-companion'),releaseActor,metrics,onError:report});
+  await Promise.all([script('js/scythe-motion.js?v=20261117-v66','createScytheGripMotion'),script('js/scythe-runtime.js?v=20261117-v66','PhantomScythe'),script('js/reaper-effects.js?v=20261117-v66','PhantomReaperEffects')]);
   costumes.prepare(hero.object);
   const scytheOptions={THREE:T,model:hero.object,clips:(await load('models/hero.glb')).animations,weapon:cloneModel((await load('models/props/starlight-scythe.glb')).scene),sound:false};const scythe=globalThis.PhantomScythe.create(scytheOptions);
   let scytheAttackId=0,scytheAttackPulse=false,scytheUltimate=false;

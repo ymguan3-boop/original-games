@@ -1,28 +1,28 @@
-import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261116-v64';
-import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261116-v64';
-import {hasDecorModel} from './decor-models-v22.js?v=20261116-v64';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261116-v64';
-import {promoterHireCost} from './shop-entry-rules.js?v=20261116-v64';
-import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261116-v64';
-import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261116-v64';
-import {clockText} from './shop-clock.js?v=20261116-v64';
-import {PROMOTERS,promoterDef} from './promoters.js?v=20261116-v64';
-import {pendingRewards} from './reward-collection.js?v=20261116-v64';
+import{trayOffers,isMaterialTray}from'./material-tray.js?v=20261117-v66';
+import {tierThumb,TIER_DESIGNS} from './tier-designs.js?v=20261117-v66';
+import {hasDecorModel} from './decor-models-v22.js?v=20261117-v66';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261117-v66';
+import {promoterHireCost} from './shop-entry-rules.js?v=20261117-v66';
+import {rewardState,rewardLabels,passiveDescription} from './shop-presentation.js?v=20261117-v66';
+import {CUSTOMER_TYPES,competitionIndex,purchaseChance,demandFactor,costFactor,activeEvent,eventEffects,ensureMarket} from './economy-v2.js?v=20261117-v66';
+import {clockText} from './shop-clock.js?v=20261117-v66';
+import {PROMOTERS,promoterDef} from './promoters.js?v=20261117-v66';
+import {pendingRewards} from './reward-collection.js?v=20261117-v66';
 /* 商會的分層頁面。每頁最多四個操作鈕（含返回），超過的功能往下一層放；
  * 列表項目是內容卡片，點進去才有確認頁。右上角 X 回上一層，根頁則關閉；點空白處一律關閉。 */
 import {WEAPONS} from '../../幻靈奇旅/survivors/js/inventory.js?v=20261030-reaper-v2';
-import {spiritPortrait} from './spirit-cards.js?v=20261116-staff-v65';
-import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261116-v64';
-import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261116-v64';
-import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261116-v64';
-import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261116-v64';
-import {staffEvolutionInfo} from './staff-evolution.js?v=20261116-v64';
-import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261116-v64';
-import {activeCommissions,commissionProgress} from './commissions.js?v=20261116-v64';
-import {getCustomerComplaint} from './customer-complaints.js?v=20261116-v64';
-import {requiresManagerPatrol} from './event-routing.js?v=20261116-v64';
-import {eventEmployee} from './patrol-events.js?v=20261116-v64';
-import {ledgerPanel} from './ledger-panel.js?v=20261116-v64';
+import {spiritPortrait} from './spirit-cards.js?v=20261117-v66';
+import {showFortune,fortuneAvailable} from './fortune-cards.js?v=20261117-v66';
+import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfDefinition,shelfCapacity,ownsUniqueShelf} from './furniture.js?v=20261117-v66';
+import {decorTypes,decorForLevel,decorLimit,decorDefinition,decorCounts} from './decorations.js?v=20261117-v66';
+import {capacityOf,onDuty,traitOf,dailyTasks,dragonTask,WORK_JOBS} from './management.js?v=20261117-v66';
+import {staffEvolutionInfo} from './staff-evolution.js?v=20261117-v66';
+import {chapterObjectives,upgradeRefund} from './shop-chapters.js?v=20261117-v66';
+import {activeCommissions,commissionProgress} from './commissions.js?v=20261117-v66';
+import {getCustomerComplaint} from './customer-complaints.js?v=20261117-v66';
+import {requiresManagerPatrol} from './event-routing.js?v=20261117-v66';
+import {eventEmployee} from './patrol-events.js?v=20261117-v66';
+import {ledgerPanel} from './ledger-panel.js?v=20261117-v66';
 export const MAX_ACTIONS=4;
 /* 商品、貨架、家具與裝飾的 2D 圖示（assets/icons-v12） */
 const icon=name=>`<img class="hub-thumb" src="./assets/icons-v12/${name}.webp" alt="">`;
@@ -114,7 +114,9 @@ export function createHub({game,getScene,act,toast,esc,evolve,leave,settings,onC
  function render(){const top=stack.at(-1);if(!top)return;root.dataset.page=top.page;const page=pages[top.page](top.arg),acts=[...(page.actions||[])];const shortfall=Number.isFinite(page.purchaseCost)?Math.max(0,page.purchaseCost-s().gold):0;if(shortfall&&acts[0]){acts[0]=[...acts[0]];acts[0][0]='金錢不足';acts[0][3]=true;}const limits=top.page==='build'?`<small class="hub-build-limits" aria-label="本級可擺放上限">貨架上限 ${shelfLimit(s().level)}<br>家具＋裝飾共 ${decorLimit(s().level)}</small>`:'';if(stack.length>1)acts.push(['返回',back]);if(acts.length>MAX_ACTIONS)throw Error(`${top.page} 超過四個操作鈕`);
   const cards=page.cards||[];box.innerHTML=`<button type="button" class="hub-x" data-close aria-label="關閉">×</button><div class="hub-head">${page.art||''}<h2>${page.title}</h2>${limits}</div>${shortfall?`<p class="hub-money-warning" role="status">金錢不足，還差 ${money(shortfall)}<small>需要 ${money(page.purchaseCost)} · 目前 ${money(s().gold)}</small></p>`:''}${page.note?`<p class="hub-note">${page.note}</p>`:''}${page.html||''}${cards.length?`<div class="hub-cards">${cards.map((c,i)=>`<button type="button" class="hub-card ${c.done?'done':''} ${c.notice||['ready','urgent'].includes(c.status)?'has-notice':''} ${c.status?'status-'+c.status:''}" data-card="${i}" ${c.tutor?`data-tutor="${c.tutor}"`:''} ${c.tap?'':'tabindex="-1"'}>${c.status?`<span class="reward-status">${rewardLabels[c.status]}</span>`:''}${c.html}</button>`).join('')}</div>`:page.empty?`<p class="hub-note">${page.empty}</p>`:''}<div class="hub-actions">${acts.map(([label,,primary,disabled,notice],i)=>`<button type="button" class="hub-action ${primary?'primary':''} ${notice?'has-notice':''}" data-act="${i}" data-label="${esc(label)}" ${disabled?'disabled':''}>${esc(label)}</button>`).join('')}</div>${stack.length===1?'<small class="hub-hint">點空白處關閉</small>':''}`;
   box.scrollTop=0;box.querySelector('[data-close]').onclick=back;const viewButton=box.querySelector('#view-switch');if(viewButton)viewButton.onclick=()=>settings.switchView(box.querySelector('#view-code')?.value||'');box.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>acts[+b.dataset.act][1]());box.querySelectorAll('[data-card]').forEach(b=>b.onclick=()=>{const c=cards[+b.dataset.card];if(c.tap)c.tap();else b.classList.toggle('expanded');});box.querySelectorAll('.hub-note').forEach(n=>n.onclick=()=>n.classList.toggle('expanded'));
-  root.hidden=false;document.body.classList.add('hub-open');onChange();}
+  root.hidden=false;document.body.classList.add('hub-open');onChange();watchOrders(top.page,cards);}
+ /* 委託畫面開著時，進度變化（例如補貨把武器搬上架、新委託送達）就自動重畫，避免顯示舊狀態而點不到 */
+ let ordersTimer=0;function watchOrders(page,cards){clearTimeout(ordersTimer);if(page!=='orders')return;const sig=cards.map(c=>c.key+':'+c.status).join();const tick=()=>{if(root.hidden||stack.at(-1)?.page!=='orders')return;let now='';try{now=pages.orders().cards.map(c=>c.key+':'+c.status).join();}catch{return;}if(now!==sig){const y=box.querySelector('.hub-cards')?.scrollTop||0;render();const c=box.querySelector('.hub-cards');if(c)c.scrollTop=y;}else ordersTimer=setTimeout(tick,1000);};ordersTimer=setTimeout(tick,1000);}
  root.addEventListener('click',e=>{if(e.target===root)close();});
  /* 還沒做好動態頭像的夥伴改顯示卡面 */
  root.addEventListener('error',e=>{const i=e.target,f=i?.dataset?.fallback;if(f&&i.getAttribute('src')!==f)i.src=f;else if(i?.classList?.contains('staff'))i.style.visibility='hidden';},true);addEventListener('keydown',e=>{if(e.key==='Escape'&&!root.hidden)back();});

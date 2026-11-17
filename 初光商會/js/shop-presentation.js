@@ -1,10 +1,11 @@
-import {traitOf,passiveValue} from './management.js?v=20261116-v64';
+import {traitOf,passiveValue,cashierSkillBonus} from './management.js?v=20261117-v66';
 export const visibleStaff=employees=>employees.filter(e=>e.role&&e.role!=='standby');
 export function rewardState(done,claimed=false){return claimed?'claimed':done?'ready':'pending';}
 export const rewardLabels={pending:'尚未完成',ready:'可領獎',claimed:'已完成・已領取',complete:'已完成',urgent:'突發委託'};
 export function passiveDescription(game,employee){
  const trait=traitOf(game,employee);if(!trait)return '沒有專屬被動';
  const resting=employee.role==='standby',value=resting?0:passiveValue(game,employee);
- return `${trait.name}｜${trait.text} +${Number((value*100).toFixed(1))}%${resting?'（休息中，未生效）':''}`;
+ const cash=cashierSkillBonus(game,employee.baseId),skill=cash?`・收銀專長：結帳收益 +${Math.round(cash*100)}%${employee.role&&employee.role!=='cashier'?'（擔任收銀員時生效）':''}`:'';
+ return `${trait.name}｜${trait.text} +${Number((value*100).toFixed(1))}%${resting?'（休息中，未生效）':''}${skill}`;
 }
 export function chasePose(elapsed){const progress=Math.max(0,Math.min(1,elapsed/1.8));return {active:elapsed>=0&&elapsed<1.8,hop:Math.abs(Math.sin(progress*Math.PI*3))*.22*(1-progress),lean:Math.sin(progress*Math.PI*4)*.12*(1-progress),progress};}
