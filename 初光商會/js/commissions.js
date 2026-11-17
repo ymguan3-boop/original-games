@@ -1,5 +1,5 @@
-import {normalWeapons} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261117-v66';
-import {salesShelves} from './material-tray.js?v=20261117-v66';
+import {normalWeapons} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261117-v67';
+import {salesShelves} from './material-tray.js?v=20261117-v67';
 const check=(ok,message)=>{if(!ok)throw Error(message);};
 const LIMITED_SKU=/-merchant-(elite|boss)$/;
 /* 武器委託只寫「武器商品／限定武器商品」，玩家分不出是哪一把：同類武器都算數 */

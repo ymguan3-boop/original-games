@@ -1,4 +1,4 @@
-export const SPIN_RULES=Object.freeze({unlock:3,radius:2.25,bodyRadius:.64,roundSeconds:45,roundsToWin:2,maxUpgrade:20,chargeRate:2,upgradeStep:.06,statBonusCap:.8,coinCap:450,partCap:3,trafficMin:.05,trafficMax:.15,trafficCap:.15,combinedTrafficCap:1.45,fixedStep:1/60,cutinSeconds:.8,visitorMin:180,visitorMax:300});
+export const SPIN_RULES=Object.freeze({unlock:3,radius:4.5,bodyRadius:.544,roundSeconds:45,roundsToWin:2,maxUpgrade:20,chargeRate:2,upgradeStep:.06,statBonusCap:.8,coinCap:450,partCap:3,trafficMin:.05,trafficMax:.15,trafficCap:.15,combinedTrafficCap:1.45,fixedStep:1/60,cutinSeconds:.8,visitorMin:180,visitorMax:300});
 export const SPIN_TOPS=[
  {id:'flame',name:'烈焰獅王',color:0xa9231c,metal:0xe4af38,kind:'攻擊',element:'fire',cost:300,reputation:0,attack:31,defense:19,speed:23,stamina:22,skill:'獅焰衝鋒',blades:5},
  {id:'wind',name:'蒼風翼龍',color:0x3286d1,metal:0xdce8f0,kind:'速度',element:'wind',cost:300,reputation:4,attack:23,defense:20,speed:33,stamina:20,skill:'風翼迴旋',blades:6},

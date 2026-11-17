@@ -1,9 +1,9 @@
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261117-v66';
-import {canStartTutorial} from './shop-entry-rules.js?v=20261117-v66';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261117-v67';
+import {canStartTutorial} from './shop-entry-rules.js?v=20261117-v67';
 /* 簡化經營規則：四職務、在班名額、專屬被動、自動工作、每日任務與舊存檔遷移。
  * 所有數值都放在 data/management.json，這裡只有規則。 */
-import {shelfCapacity,accepts} from './furniture.js?v=20261117-v66';
-import {applyFortune} from './fortune-cards.js?v=20261117-v66';
+import {shelfCapacity,accepts} from './furniture.js?v=20261117-v67';
+import {applyFortune} from './fortune-cards.js?v=20261117-v67';
 export const WORK_JOBS=['stocker','host','cleaner','cashier'];
 const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner'};
 export const legacyRole=r=>LEGACY_ROLES[r]||r;

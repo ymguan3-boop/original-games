@@ -1,4 +1,4 @@
-import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinTop,spinPartBonus} from './spin-arena-config.js?v=20261117-v66';
+import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinTop,spinPartBonus} from './spin-arena-config.js?v=20261117-v67';
 export function spinState(s){
  s.spinArena??={owned:{},equipped:null,parts:{rim:0,axis:0,ring:0},reputation:0,match:null,history:[],serial:0};
  const a=s.spinArena;

@@ -1,5 +1,5 @@
-import{CHECKOUT,ENTRANCE,STATIONS,walkable}from'./nav.js?v=20261117-v66';
-import{obstacles}from'./decorations.js?v=20261117-v66';
+import{CHECKOUT,ENTRANCE,STATIONS,walkable}from'./nav.js?v=20261117-v67';
+import{obstacles}from'./decorations.js?v=20261117-v67';
 const queue=c=>['Queue','Checkout'].includes(c.state);
 export function waitingAtQueue(c){const st=STATIONS[c.station||0]||STATIONS[0],p=!st?CHECKOUT:c.state==='Checkout'?st.pay:st.queue[Math.max(0,Math.min(st.queue.length-1,c.queueSlot||0))];return queue(c)&&Math.hypot(c.x-p.x,c.z-p.z)<.6;}
 export function customerHealthTick(g,s,realDt){

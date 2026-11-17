@@ -1,4 +1,4 @@
-import {tierDefinition} from './tier-designs.js?v=20261117-v66';
+import {tierDefinition} from './tier-designs.js?v=20261117-v67';
 export const decorTypes=[
  {id:'lantern',name:'守夜工藝立燈',group:'decor',level:4,cost:320,height:1.25,outdoor:true,outdoorOnly:true,description:'門外花園專用・柔和燈光・顧客耐心 +4 秒',effect:{patience:4}},{id:'pine-planter',name:'松柏長方盆栽',group:'decor',level:3,cost:300,height:1.2,outdoor:true,outdoorOnly:true,span:2,description:'門外花園專用・占 2 格・滿意度緩慢提升',effect:{satisfaction:.012}},{id:'art-installation',name:'晨光裝置藝術',group:'decor',level:5,cost:520,height:1.5,outdoor:true,outdoorOnly:true,span:2,description:'門外花園專用・占 2 格・來客速度 +6%',effect:{traffic:.06}},
  {id:'crystal-art',name:'晶礦收藏雕塑',group:'decor',level:7,cost:850,height:1.15,description:'收藏藝術・成交價 +3%',effect:{premium:.03}},

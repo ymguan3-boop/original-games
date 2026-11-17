@@ -1,10 +1,12 @@
-import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinLevelBonus,spinTop}from'./spin-arena-config.js?v=20261117-v66';
-import {spinState,spinStats,awardSpinPart,consumeSpinVisitor,gainSpinMastery,spinRoster} from './spin-arena-progression.js?v=20261117-v66';
-export {spinState,spinStats} from './spin-arena-progression.js?v=20261117-v66';
-import{broadcast}from'./stock-flow.js?v=20261117-v66';
-import{archetypeOf,steer,classifyHit,spinSkillCooldown}from'./spin-arena-paths.js?v=20261117-v66';
+import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinLevelBonus,spinTop}from'./spin-arena-config.js?v=20261117-v67';
+import {spinState,spinStats,awardSpinPart,consumeSpinVisitor,gainSpinMastery,spinRoster} from './spin-arena-progression.js?v=20261117-v67';
+export {spinState,spinStats} from './spin-arena-progression.js?v=20261117-v67';
+import{broadcast}from'./stock-flow.js?v=20261117-v67';
+import{archetypeOf,steer,classifyHit,spinSkillCooldown}from'./spin-arena-paths.js?v=20261117-v67';
 /* 安全上限：一局一般會在旋轉能量耗盡前分出勝負；萬一沒有，240 秒後才用比分判定 */
 export const SPIN_SAFETY_SECONDS=240;
+/* 場地倍率（相對舊版半徑 2.25）與移動速度倍率：場地放大後陀螺跑得比較快，交手頻率接近舊版 */
+export const SPIN_ARENA_SCALE=R.radius/2.25,SPIN_MOVE_SCALE=1.6;
 /* 暴擊：基礎 5%，攻高於對方防時提高，技能撞擊 +10%，上限 25%；傷害 ×1.5、單次上限 36。
  * 一般撞擊傷害同步降為 90%，整體節奏與改版前相近。暴擊後對方耐久 ≤15 即爆裂敗北。 */
 export const SPIN_CRIT=Object.freeze({base:.05,perStat:1/200,skill:.1,max:.25,mult:1.5,cap:36,normalScale:.9,normalCap:24,burstHp:15});
@@ -12,7 +14,7 @@ export function spinCritChance(attack,defense,skill){return clamp(SPIN_CRIT.base
 const check=(v,m)=>{if(!v)throw Error(m);},clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const random=m=>{m.seed=(Math.imul(m.seed,1664525)+1013904223)>>>0;return m.seed/4294967296;};
 const body=(stats,x,strategy,element,topId)=>({x,z:0,vx:0,vz:0,spin:100,hp:100,energy:55,angle:0,stats,strategy,element,topId,archetype:archetypeOf(topId),shield:0,skillUntil:0,hitCooldown:0,dodgeUntil:0,dodgeCd:0,counterUntil:0});
-export function launchSpinRound(m,strategy){check(['attack','defense','balance'].includes(strategy),'請選擇本局策略');m.strategy=strategy;m.time=0;m.accumulator=0;m.effects=[];m.cutin=null;m.skillQueue=[];m.phase='battle';m.bodies=[body(m.playerStats,-.85,strategy,m.playerElement,m.topId),body(m.opponentStats,.85,['attack','defense','balance'][(m.round+m.difficulty)%3],m.opponentElement,m.opponentTopId)];m.lastHitAt=[-10,-10];m.fastForward=false;for(const b of m.bodies){b.z=(random(m)-.5)*.25;b.phase=random(m)*Math.PI*2;}m.lastCollision=-10;m.roundResult=null;}
+export function launchSpinRound(m,strategy){check(['attack','defense','balance'].includes(strategy),'請選擇本局策略');m.strategy=strategy;m.time=0;m.accumulator=0;m.effects=[];m.cutin=null;m.skillQueue=[];m.phase='battle';m.bodies=[body(m.playerStats,-.85*SPIN_ARENA_SCALE,strategy,m.playerElement,m.topId),body(m.opponentStats,.85*SPIN_ARENA_SCALE,['attack','defense','balance'][(m.round+m.difficulty)%3],m.opponentElement,m.opponentTopId)];m.lastHitAt=[-10,-10];m.fastForward=false;for(const b of m.bodies){b.z=(random(m)-.5)*.25;b.phase=random(m)*Math.PI*2;}m.lastCollision=-10;m.roundResult=null;}
 export function effectiveSpinStats(body,time){const skill=body.buffUntil>time?SPIN_SKILLS[body.skillId]:null;return Object.fromEntries(Object.entries(body.stats).map(([k,v])=>[k,v*(1+(skill?.bonuses[k]||0))]));}
 function attack(m,i){
  const b=m.bodies[i];if(b.energy<100)return false;b.energy=0;
@@ -22,7 +24,7 @@ function attack(m,i){
 function finishCutin(m){
  const cue=m.cutin,b=m.bodies[cue.actor],v=m.bodies[1-cue.actor],skill=SPIN_SKILLS[cue.topId];
  b.skillId=cue.topId;b.buffUntil=m.time+(skill?.seconds||4);b.skillUntil=m.time+1.1;
- const dx=v.x-b.x,dz=v.z-b.z,d=Math.hypot(dx,dz)||1;b.vx+=dx/d*3;b.vz+=dz/d*3;b.shield=b.strategy==='defense'?m.time+2.5:0;
+ const dx=v.x-b.x,dz=v.z-b.z,d=Math.hypot(dx,dz)||1;b.vx+=dx/d*3*SPIN_MOVE_SCALE;b.vz+=dz/d*3*SPIN_MOVE_SCALE;b.shield=b.strategy==='defense'?m.time+2.5:0;
  m.effects.push({id:cue.id,kind:'skill',actor:cue.actor,at:m.time,archetype:b.archetype});m.effects=m.effects.slice(-16);
  m.cutin=m.skillQueue?.shift()||null;
 }
@@ -40,11 +42,11 @@ export function endSpinRound(m,winner,reason){
 
 function step(m,dt){
  m.time+=dt;const bs=m.bodies;
- for(let i=0;i<2;i++){const b=bs[i],o=bs[1-i],stats=effectiveSpinStats(b,m.time),d=Math.hypot(o.x-b.x,o.z-b.z)||1,near=Math.hypot(b.x,b.z),spd=.5+stats.speed/38;
+ for(let i=0;i<2;i++){const b=bs[i],o=bs[1-i],stats=effectiveSpinStats(b,m.time),d=Math.hypot(o.x-b.x,o.z-b.z)||1,near=Math.hypot(b.x,b.z),spd=(.5+stats.speed/38)*SPIN_MOVE_SCALE;
   b.archetype??=archetypeOf(i?m.opponentTopId:m.topId);
   // 閃避：對手技能衝刺逼近時，以速度差判定；成功才演出、才免傷
-  if(o.skillUntil>m.time&&d<1.35&&b.dodgeCd<=m.time&&b.dodgeUntil<=m.time){const os=effectiveSpinStats(o,m.time).speed,chance=clamp(.12+(stats.speed-os)/70+(['counter','speed'].includes(b.archetype)?.22:0)+(i?m.difficulty*.04:0),.05,.65);if(random(m)<chance){const sx=-(o.z-b.z)/d,sz=(o.x-b.x)/d,side=random(m)<.5?1:-1,style=b.archetype==='counter'?'behind':b.archetype==='speed'?'slide':stats.speed>os?'feint':'brake';b.vx+=sx*side*2.6;b.vz+=sz*side*2.6;b.dodgeUntil=m.time+.42;b.dodgeCd=m.time+2.6;if(b.archetype==='counter')b.counterUntil=m.time+.9;m.effects.push({id:++m.fx,kind:'dodge',actor:i,style,at:m.time,x:b.x,z:b.z});m.effects=m.effects.slice(-16);}else b.dodgeCd=m.time+1;}
-  const plan=steer(b.archetype,b,o,m.time,i,b.skillUntil>m.time),dl=Math.hypot(plan.dir[0],plan.dir[1])||1,tx=plan.dir[0]/dl,tz=plan.dir[1]/dl,mult=plan.speed*(b.counterUntil>m.time?1.25:1);
+  if(o.skillUntil>m.time&&d<1.35*Math.sqrt(SPIN_ARENA_SCALE)&&b.dodgeCd<=m.time&&b.dodgeUntil<=m.time){const os=effectiveSpinStats(o,m.time).speed,chance=clamp(.12+(stats.speed-os)/70+(['counter','speed'].includes(b.archetype)?.22:0)+(i?m.difficulty*.04:0),.05,.65);if(random(m)<chance){const sx=-(o.z-b.z)/d,sz=(o.x-b.x)/d,side=random(m)<.5?1:-1,style=b.archetype==='counter'?'behind':b.archetype==='speed'?'slide':stats.speed>os?'feint':'brake';b.vx+=sx*side*2.6*SPIN_MOVE_SCALE;b.vz+=sz*side*2.6*SPIN_MOVE_SCALE;b.dodgeUntil=m.time+.42;b.dodgeCd=m.time+2.6;if(b.archetype==='counter')b.counterUntil=m.time+.9;m.effects.push({id:++m.fx,kind:'dodge',actor:i,style,at:m.time,x:b.x,z:b.z});m.effects=m.effects.slice(-16);}else b.dodgeCd=m.time+1;}
+  const plan=steer(b.archetype,b,o,m.time,i,b.skillUntil>m.time,SPIN_ARENA_SCALE),dl=Math.hypot(plan.dir[0],plan.dir[1])||1,tx=plan.dir[0]/dl,tz=plan.dir[1]/dl,mult=plan.speed*(b.counterUntil>m.time?1.25:1);
   b.vx+=(tx*spd*mult-b.vx)*dt*2;b.vz+=(tz*spd*mult-b.vz)*dt*2;
   if(near>R.radius-.4){b.vx-=b.x*dt*1.8;b.vz-=b.z*dt*1.8;}
   b.x+=b.vx*dt;b.z+=b.vz*dt;b.angle+=dt*(10+b.spin*.25);b.spin=Math.max(0,b.spin-dt*(2.15*25/stats.stamina)*(b.strategy==='attack'?1.14:1));b.hitCooldown=Math.max(0,b.hitCooldown-dt);
@@ -56,7 +58,7 @@ function step(m,dt){
  const dx=bs[1].x-bs[0].x,dz=bs[1].z-bs[0].z,dist=Math.hypot(dx,dz),contact=R.bodyRadius*2;
  if(dist<contact){const nx=dist?dx/dist:1,nz=dist?dz/dist:0,overlap=(contact-dist)/2;bs[0].x-=nx*overlap;bs[0].z-=nz*overlap;bs[1].x+=nx*overlap;bs[1].z+=nz*overlap;
   if(m.time-m.lastCollision>.48){m.hitChain=m.time-m.lastCollision<1.2?(m.hitChain||0)+1:0;const recent=m.hitChain>=2;m.lastCollision=m.time;const shielded=bs.some(b=>b.shield>m.time),kind=classifyHit(bs[0],bs[1],nx,nz,recent,shielded),dodged=bs.map(b=>b.dodgeUntil>m.time),crits=[];let total=0;
-   for(let i=0;i<2;i++){const b=bs[i],v=bs[1-i],power=effectiveSpinStats(b,m.time).attack*(b.strategy==='attack'?1.15:1)*affinity(b.element,v.element)*(b.counterUntil>m.time?1.2:1),guard=effectiveSpinStats(v,m.time).defense*(v.strategy==='defense'?1.22:1),canCrit=!dodged[1-i]&&kind.type!=='graze'&&!(v.shield>m.time),crit=canCrit&&random(m)<spinCritChance(effectiveSpinStats(b,m.time).attack,effectiveSpinStats(v,m.time).defense,b.skillUntil>m.time),raw=(power*.45-guard*.18)*(v.shield>m.time?.5:1)*SPIN_CRIT.normalScale,damage=dodged[1-i]?0:crit?clamp(raw*SPIN_CRIT.mult,3,SPIN_CRIT.cap):clamp(raw,3,SPIN_CRIT.normalCap);v.hp=Math.max(0,v.hp-damage);if(crit){crits.push(i);if(v.hp>0&&v.hp<=SPIN_CRIT.burstHp)v.hp=0;if(v.hp<=0)v.burst=true;}v.spin=Math.max(0,v.spin-damage*.32);total+=damage;const sign=i===0?1:-1,impulse=1.4+(b.skillUntil>m.time?2.8:0);v.vx+=nx*sign*impulse;v.vz+=nz*sign*impulse;}
+   for(let i=0;i<2;i++){const b=bs[i],v=bs[1-i],power=effectiveSpinStats(b,m.time).attack*(b.strategy==='attack'?1.15:1)*affinity(b.element,v.element)*(b.counterUntil>m.time?1.2:1),guard=effectiveSpinStats(v,m.time).defense*(v.strategy==='defense'?1.22:1),canCrit=!dodged[1-i]&&kind.type!=='graze'&&!(v.shield>m.time),crit=canCrit&&random(m)<spinCritChance(effectiveSpinStats(b,m.time).attack,effectiveSpinStats(v,m.time).defense,b.skillUntil>m.time),raw=(power*.45-guard*.18)*(v.shield>m.time?.5:1)*SPIN_CRIT.normalScale,damage=dodged[1-i]?0:crit?clamp(raw*SPIN_CRIT.mult,3,SPIN_CRIT.cap):clamp(raw,3,SPIN_CRIT.normalCap);v.hp=Math.max(0,v.hp-damage);if(crit){crits.push(i);if(v.hp>0&&v.hp<=SPIN_CRIT.burstHp)v.hp=0;if(v.hp<=0)v.burst=true;}v.spin=Math.max(0,v.spin-damage*.32);total+=damage;const sign=i===0?1:-1,impulse=(1.4+(b.skillUntil>m.time?2.8:0))*SPIN_MOVE_SCALE;v.vx+=nx*sign*impulse;v.vz+=nz*sign*impulse;}
    const strong=bs.some(b=>b.skillUntil>m.time)||total>=30||crits.length>0;
    m.effects.push({id:++m.fx,kind:'hit',type:dodged.some(Boolean)?'graze':kind.type,power:kind.power,strong,crit:crits.length?crits:null,burst:bs.some(b=>b.burst)||null,damage:Math.round(total),at:m.time,x:(bs[0].x+bs[1].x)/2,z:(bs[0].z+bs[1].z)/2,nx,nz});m.effects=m.effects.slice(-16);
   }

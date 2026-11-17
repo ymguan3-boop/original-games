@@ -1,4 +1,4 @@
-import {SPIN_TOPS,SPIN_SKILLS,spinTop,spinBonusText} from './spin-arena-config.js?v=20261117-v66';
+import {SPIN_TOPS,SPIN_SKILLS,spinTop,spinBonusText} from './spin-arena-config.js?v=20261117-v67';
 export const SPIN_SOUND_PROFILES={
  flame:{wave:'sawtooth',from:130,to:48,noise:.65,filter:650,notes:[1,1.5]},
  wind:{wave:'sine',from:470,to:1250,noise:.6,filter:2800,notes:[1,1.33]},

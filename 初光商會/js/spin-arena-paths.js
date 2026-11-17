@@ -34,11 +34,12 @@ export const archetypeOf=id=>SPIN_ARCHETYPES[id]||'balance';
 export const spinSkillCooldown=speed=>Math.max(4.5,Math.min(14,270/Math.max(1,speed)));
 const unit=(x,z)=>{const d=Math.hypot(x,z)||1;return [x/d,z/d];};
 /* 回傳期望方向（未正規化）與速度倍率。skill=true 為技能播放期間（GIF 播放時）的專屬路徑 */
-export function steer(type,b,o,t,i,skill){
+export function steer(type,b,o,t,i,skill,S=1){
+ const near=Math.sqrt(S);
  const [ux,uz]=unit(o.x-b.x,o.z-b.z),sg=i?1:-1,px=-uz*sg,pz=ux*sg,ph=b.phase||0,d=Math.hypot(o.x-b.x,o.z-b.z),r=Math.hypot(b.x,b.z)||1e-6,[rx,rz]=[b.x/r,b.z/r],tx=-rz*sg,tz=rx*sg;
- const orbit=(radius,k=1)=>[tx*k-rx*(r-radius)*1.6,tz*k-rz*(r-radius)*1.6];
- const mix=(a,wa,c,wc)=>[a[0]*wa+c[0]*wc,a[1]*wa+c[1]*wc];
- const cyc=(len)=>((t+ph)%len)/len,toward=[ux,uz],side=[px,pz],center=[-b.x,-b.z];
+ const orbit=(radius,k=1)=>[tx*k-rx*(r-radius*S)*1.6/S,tz*k-rz*(r-radius*S)*1.6/S];
+ const mix=(a,wa,c,wc)=>[a[0]*wa+c[0]*wc,a[1]*wa+c[1]*wc];const center0=[-b.x/S,-b.z/S];
+ const cyc=(len)=>((t+ph)%len)/len,toward=[ux,uz],side=[px,pz],center=[-b.x/S,-b.z/S];
  if(skill){
   switch(type){
    case 'assault':return {dir:toward,speed:1.9};
@@ -48,17 +49,17 @@ export function steer(type,b,o,t,i,skill){
    case 'lightning':return {dir:mix(toward,1,side,Math.sign(Math.sin(t*14+ph))*1.2),speed:2};
    case 'blaze':return {dir:mix(toward,.7,side,1),speed:1.7};
    case 'frost':return {dir:mix(toward,1,side,.25),speed:1.65};
-   case 'cyclone':return {dir:mix(orbit(Math.max(.4,d*.8),1.2),.8,toward,.7),speed:1.6};
+   case 'cyclone':return {dir:mix(orbit(Math.max(.4,d/S*.8),1.2),.8,toward,.7),speed:1.6};
    case 'heavy':return {dir:toward,speed:cyc(1.1)<.3?.15:2.2};
    case 'combo':return {dir:mix(toward,1,side,Math.sign(Math.sin(t*11+ph))*.9),speed:1.75};
-   case 'counter':return d>1.5?{dir:mix(side,1,toward,.35),speed:1.7}:{dir:mix(toward,1,side,-.6),speed:1.9};
+   case 'counter':return d>1.5*near?{dir:mix(side,1,toward,.35),speed:1.7}:{dir:mix(toward,1,side,-.6),speed:1.9};
    default:return {dir:mix(center,.4,toward,.15),speed:.5};
   }
  }
  switch(type){
   case 'assault':return cyc(2.4)<.62?{dir:mix(toward,1,side,.12),speed:1.25}:{dir:mix(toward,.35,side,.95),speed:.95};
   case 'speed':return cyc(2.2)<.72?{dir:mix(orbit(1.45,1.1),1,toward,.35),speed:1.3}:{dir:mix(toward,1,side,.55),speed:1.35};
-  case 'guard':return d<1.25?{dir:toward,speed:1.05}:{dir:mix(center,.7,side,Math.sin(t*1.6+ph)*.35),speed:.65};
+  case 'guard':return d<1.25*near?{dir:toward,speed:1.05}:{dir:mix(center,.7,side,Math.sin(t*1.6+ph)*.35),speed:.65};
   case 'balance':return {dir:mix(toward,.75,side,Math.sin(t*2.1+ph)*.95),speed:1};
   case 'lightning':return {dir:mix(toward,.85,side,Math.sign(Math.sin(t*4.6+ph))*.95),speed:1.15};
   case 'blaze':{const rad=1.7-cyc(3.2)*1.25;return cyc(3.2)<.8?{dir:mix(orbit(rad,1),1,toward,.3),speed:1.05}:{dir:toward,speed:1.4};}
@@ -66,7 +67,7 @@ export function steer(type,b,o,t,i,skill){
   case 'cyclone':{const rad=1.8-cyc(4)*1.4;return {dir:mix(orbit(rad,1.15),1,toward,.25+cyc(4)*.5),speed:1.1};}
   case 'heavy':{const c=cyc(3.2);return c<.62?{dir:toward,speed:.62}:c<.78?{dir:toward,speed:.18}:{dir:toward,speed:1.65};}
   case 'combo':return {dir:mix(toward,.9,side,Math.sign(Math.sin(t*6.5+ph))*.65),speed:1.1};
-  case 'counter':{if(d<1.5){const bx=o.x-ux*.2+px*1.1-b.x,bz=o.z-uz*.2+pz*1.1-b.z;return {dir:[bx,bz],speed:1.2};}return {dir:mix(toward,.8,side,Math.sin(t*3+ph)*.7),speed:1.05};}
+  case 'counter':{if(d<1.5*near){const bx=o.x-ux*.2+px*1.1-b.x,bz=o.z-uz*.2+pz*1.1-b.z;return {dir:[bx,bz],speed:1.2};}return {dir:mix(toward,.8,side,Math.sin(t*3+ph)*.7),speed:1.05};}
   default:return cyc(3)<.8?{dir:mix(center,.55,side,Math.sin(t*2+ph)*.4),speed:.75}:{dir:toward,speed:1.2};
  }
 }

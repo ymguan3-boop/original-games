@@ -1,5 +1,5 @@
-import {heroSupportStates} from './pet-ultimate-rules.js?v=20261117-v66';
-import {STATUS,activeStatuses} from './combat-status.js?v=20261117-v66';
+import {heroSupportStates} from './pet-ultimate-rules.js?v=20261117-v67';
+import {STATUS,activeStatuses} from './combat-status.js?v=20261117-v67';
 export function createFeedback(scene){const host=document.createElement('div');host.id='combatFeedback';host.setAttribute('aria-hidden','true');document.body.append(host);const entries=[],badges=new Map();
  function clear(){entries.splice(0).forEach(e=>e.el.remove());badges.forEach(e=>e.remove());badges.clear();}
  function write(item){const ev=item.ev;item.el.replaceChildren();if(ev.amount){const badge=document.createElement('small');badge.textContent=ev.status?STATUS[ev.status]?.name||'':'';if(badge.textContent)item.el.append(badge);/* 暴擊、絕招：前面加爆擊箭頭，數字放大，用顏色區分 */if(ev.critical||ev.ultimate){const burst=document.createElement('i');burst.className='hit-burst';item.el.append(burst);}const number=document.createElement('b');number.textContent='−'+Math.round(ev.amount);item.el.append(number);}else item.el.textContent=STATUS[ev.status]?.name||ev.text||'';}

@@ -1,11 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {Game} from '../js/core.js';
-import {commissionProgress,commissionAction} from '../js/commissions.js?v=20261117-v66';
-import {cashierSkillBonus,cashierIncomeBonus,ON_DUTY_XP_BONUS} from '../js/management.js?v=20261117-v66';
-import {spinLevelBonus,SPIN_VISITOR_REWARD,SPIN_TOPS} from '../js/spin-arena-config.js?v=20261117-v66';
-import {spinState,fastForwardSpinRound} from '../js/spin-arena-core.js?v=20261117-v66';
-import {SPIN_ARCHETYPES,spinSkillCooldown,steer} from '../js/spin-arena-paths.js?v=20261117-v66';
-import {importMerchantCargo,merchantWeaponCatalog} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261117-v66';
+import {commissionProgress,commissionAction} from '../js/commissions.js?v=20261117-v67';
+import {cashierSkillBonus,cashierIncomeBonus,ON_DUTY_XP_BONUS} from '../js/management.js?v=20261117-v67';
+import {spinLevelBonus,SPIN_VISITOR_REWARD,SPIN_TOPS} from '../js/spin-arena-config.js?v=20261117-v67';
+import {spinState,fastForwardSpinRound} from '../js/spin-arena-core.js?v=20261117-v67';
+import {SPIN_ARCHETYPES,spinSkillCooldown,steer} from '../js/spin-arena-paths.js?v=20261117-v67';
+import {importMerchantCargo,merchantWeaponCatalog} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261117-v67';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8')),data=Object.fromEntries(Object.entries({catalog:'shop-catalog',hirePool:'hire-pool',spirits:'spirits',evolution:'evolution',levels:'store-levels',config:'economy',management:'management'}).map(([k,v])=>[k,read(v)]));data.catalog=[...data.catalog.filter(c=>c.category!=='weapon'),...merchantWeaponCatalog()];
 function setup(level=5){const m=new Map(),storage={getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v)},g=new Game({storage,data});g.transaction(null,s=>{s.level=level;s.gold=50000;});return {g,storage};}
 const limited=sku=>/-merchant-(elite|boss)$/.test(sku);
@@ -53,11 +53,16 @@ test('12 顆陀螺各有動作原型與技能路徑，路徑方向有限且可�
  assert(spinSkillCooldown(40)<spinSkillCooldown(20));
 });
 test('暴擊：機率 5%～25%（攻高於防與技能撞擊提高），傷害 ×1.5 上限 36；暴擊後耐久 ≤15 即爆裂敗北',async()=>{
- const {SPIN_CRIT,spinCritChance,launchSpinRound,advanceSpinMatch}=await import('../js/spin-arena-core.js?v=20261117-v66');
+ const {SPIN_CRIT,spinCritChance,launchSpinRound,advanceSpinMatch}=await import('../js/spin-arena-core.js?v=20261117-v67');
  assert.equal(spinCritChance(20,40,false),.05);assert(Math.abs(spinCritChance(40,20,false)-.15)<1e-12);assert.equal(spinCritChance(40,20,true),.25);assert.equal(spinCritChance(200,0,true),.25);
  assert.equal(SPIN_CRIT.mult,1.5);assert.equal(SPIN_CRIT.cap,36);assert.equal(SPIN_CRIT.normalScale,.9);
  let crits=0,bursts=0;for(let k=0;k<60;k++){const {g}=setup(3);g.act('spinBuy',{topId:'flame'});g.act('spinRoster');g.act('spinStart',{opponentId:g.state.spinArena.roster.entries[k%3].id});const m=g.state.spinArena.match;m.seed=1000+k;launchSpinRound(m,'attack');let n=0;while(m.phase==='battle'&&n++<4000)advanceSpinMatch(m,.25);
   for(const e of m.effects)if(e.kind==='hit'&&e.crit)crits++;
   if(m.roundResult.cause==='burst'){bursts++;assert.equal(m.roundResult.reason,'暴擊爆裂');assert.equal(m.bodies[m.roundResult.loser].hp,0);}}
  assert(crits>0,'應該出現暴擊');assert(bursts>0,'應該出現爆裂敗北');
+});
+test('場地兩倍大、陀螺縮小；倒下的陀螺依傾角抬高，不會嵌進場地',async()=>{
+ const {SPIN_RULES}=await import('../js/spin-arena-config.js?v=20261117-v67');assert.equal(SPIN_RULES.radius,4.5);assert(SPIN_RULES.bodyRadius<.64);
+ globalThis.document??={createElement:()=>({getContext:()=>null})};const {spinFloorY}=await import('../js/spin-arena-view.js?v=20261117-v67');
+ assert(Math.abs(spinFloorY(0,0)-.34)<1e-9);assert(spinFloorY(4,0)>spinFloorY(2,0));
 });

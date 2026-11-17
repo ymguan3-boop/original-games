@@ -2,7 +2,7 @@ export const canEnemyUltimate=e=>e.kind==='elite'||e.kind==='boss';
 export function warningFor(e,target,time,release=.5){return {x:target.x,z:target.z,radius:e.kind==='boss'?4.5:3,startedAt:time,until:time+Math.max(1.25,release)};}
 export const insideWarning=(actor,warning)=>Math.hypot(actor.x-warning.x,actor.z-warning.z)<warning.radius;
 
-import {HERO_ATTACKS,baseAttackProfile} from './combat-profile.js?v=20261117-v66';
+import {HERO_ATTACKS,baseAttackProfile} from './combat-profile.js?v=20261117-v67';
 export function enemyAttackProfile(enemy,spec,skills){
  const base=baseAttackProfile(spec,skills);
  if(canEnemyUltimate(enemy))return base;
