@@ -52,3 +52,12 @@ test('12 顆陀螺各有動作原型與技能路徑，路徑方向有限且可�
  const b={x:-.5,z:.2,vx:0,vz:0,phase:1},o={x:.6,z:-.1};for(const type of Object.values(SPIN_ARCHETYPES))for(const skill of [false,true]){const p=steer(type,b,o,3.2,0,skill);assert(Number.isFinite(p.dir[0])&&Number.isFinite(p.dir[1])&&p.speed>0);assert.deepEqual(steer(type,b,o,3.2,0,skill),p);}
  assert(spinSkillCooldown(40)<spinSkillCooldown(20));
 });
+test('暴擊：機率 5%～25%（攻高於防與技能撞擊提高），傷害 ×1.5 上限 36；暴擊後耐久 ≤15 即爆裂敗北',async()=>{
+ const {SPIN_CRIT,spinCritChance,launchSpinRound,advanceSpinMatch}=await import('../js/spin-arena-core.js?v=20261117-v66');
+ assert.equal(spinCritChance(20,40,false),.05);assert(Math.abs(spinCritChance(40,20,false)-.15)<1e-12);assert.equal(spinCritChance(40,20,true),.25);assert.equal(spinCritChance(200,0,true),.25);
+ assert.equal(SPIN_CRIT.mult,1.5);assert.equal(SPIN_CRIT.cap,36);assert.equal(SPIN_CRIT.normalScale,.9);
+ let crits=0,bursts=0;for(let k=0;k<60;k++){const {g}=setup(3);g.act('spinBuy',{topId:'flame'});g.act('spinRoster');g.act('spinStart',{opponentId:g.state.spinArena.roster.entries[k%3].id});const m=g.state.spinArena.match;m.seed=1000+k;launchSpinRound(m,'attack');let n=0;while(m.phase==='battle'&&n++<4000)advanceSpinMatch(m,.25);
+  for(const e of m.effects)if(e.kind==='hit'&&e.crit)crits++;
+  if(m.roundResult.cause==='burst'){bursts++;assert.equal(m.roundResult.reason,'暴擊爆裂');assert.equal(m.bodies[m.roundResult.loser].hp,0);}}
+ assert(crits>0,'應該出現暴擊');assert(bursts>0,'應該出現爆裂敗北');
+});

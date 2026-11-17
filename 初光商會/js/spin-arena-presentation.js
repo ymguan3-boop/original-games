@@ -34,6 +34,13 @@ export function createSpinAudio(){
   for(const n of kill)nodes.add(n);setTimeout(()=>{for(const n of kill)nodes.delete(n);out.disconnect();},1300);played++;lastId=id;
  }
  /* 熱血對戰 BGM：158 BPM 小調搖滾，程式即時合成（不需另外下載音檔），可循環 */
+ /* 暴擊音：金屬高音＋重擊；爆裂時加長碎裂聲 */
+ function crit(burst=false){if(muted||dead)return;if(ctx?.state!=='running'){unlock().then(ready=>{if(ready&&!muted&&!dead)crit(burst);});return;}
+  const now=ctx.currentTime,out=ctx.createGain();out.gain.value=.6;out.connect(ctx.destination);const list=[];
+  const tone=(type,f0,f1,t0,dur,vol)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(f0,now+t0);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),now+t0+dur);g.gain.setValueAtTime(vol,now+t0);g.gain.exponentialRampToValueAtTime(.0001,now+t0+dur);o.connect(g);g.connect(out);o.start(now+t0);o.stop(now+t0+dur+.02);list.push(o);o.onended=()=>{o.disconnect();g.disconnect();};};
+  tone('square',2400,1800,0,.12,.18);tone('triangle',3600,2900,.01,.18,.1);tone('sine',140,40,0,.32,.9);
+  if(burst){const len=Math.ceil(ctx.sampleRate*.7),buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);let sd=991;for(let i=0;i<len;i++){sd=(Math.imul(sd,1664525)+1013904223)>>>0;d[i]=(sd/2147483648-1)*(1-i/len)**2;}const src=ctx.createBufferSource(),hp=ctx.createBiquadFilter();src.buffer=buf;hp.type='highpass';hp.frequency.value=1200;src.connect(hp);hp.connect(out);src.start(now+.02);list.push(src);src.onended=()=>{src.disconnect();hp.disconnect();};for(let k=0;k<4;k++)tone('sine',1800+k*700,900+k*300,.05+k*.06,.3,.08);}
+  for(const n of list)nodes.add(n);setTimeout(()=>{for(const n of list)nodes.delete(n);out.disconnect();},1200);played++;}
  let music=null;
  function startMusic(){
   if(music||muted||dead)return;if(ctx?.state!=='running'){unlock().then(ready=>{if(ready&&!muted&&!dead)startMusic();});return;}
@@ -54,7 +61,7 @@ export function createSpinAudio(){
   music={bus,comp,timer:setInterval(tick,60)};tick();
  }
  function stopMusic(){if(!music)return;const m=music;music=null;clearInterval(m.timer);try{m.bus.gain.cancelScheduledValues(ctx.currentTime);m.bus.gain.setValueAtTime(m.bus.gain.value,ctx.currentTime);m.bus.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.35);}catch{}setTimeout(()=>{m.bus.disconnect();m.comp.disconnect();},500);}
- return {unlock,play,skill,startMusic,stopMusic,stop,setMuted(value){muted=!!value;if(muted){stop();stopMusic();}},get musicPlaying(){return !!music;},get metrics(){return {state:ctx?.state||'locked',played,lastId,voices:nodes.size,muted,music:!!music};},dispose(){if(dead)return;dead=true;stop();stopMusic();ctx?.close().catch(()=>{});}};
+ return {unlock,play,skill,crit,startMusic,stopMusic,stop,setMuted(value){muted=!!value;if(muted){stop();stopMusic();}},get musicPlaying(){return !!music;},get metrics(){return {state:ctx?.state||'locked',played,lastId,voices:nodes.size,muted,music:!!music};},dispose(){if(dead)return;dead=true;stop();stopMusic();ctx?.close().catch(()=>{});}};
 }
 export function createSpinPresentation(stage,audio){
  const el=document.createElement('div');el.className='spin-cutin';el.hidden=true;el.setAttribute('role','status');
@@ -63,7 +70,7 @@ export function createSpinPresentation(stage,audio){
  // Warm the illustrations while the energy gauge fills, not during the cut-in.
  const images=new Map();function prepare(ids){for(const id of ids){if(!id||images.has(id))continue;const img=new Image();img.src=new URL(`../assets/spin-arena/${SPIN_TOPS.findIndex(t=>t.id===id)>=6?'cards-v63':'cards-v61'}/${id}.webp`,import.meta.url).href;images.set(id,img);}}
  function update(match,extraTime=0){
-  prepare([match.topId,match.opponentTopId]);const hit=match.effects?.findLast(fx=>fx.kind==='hit');if(hit){const next=`${match.id}:${match.round}:${hit.id}`;if(hitKey!==next){hitKey=next;if(match.time-hit.at<.25)audio.play(match.topId,true);}}const cue=match.cutin;
+  prepare([match.topId,match.opponentTopId]);const hit=match.effects?.findLast(fx=>fx.kind==='hit');if(hit){const next=`${match.id}:${match.round}:${hit.id}`;if(hitKey!==next){hitKey=next;if(match.time-hit.at<.25){if(hit.crit)audio.crit(false);else audio.play(match.topId,true);}}}const cue=match.cutin;
   if(!cue){el.hidden=true;key=null;return;}
   const top=spinTop(cue.topId),skill=SPIN_SKILLS[cue.topId];if(!top||!skill)return;
   const nextKey=`${match.id}:${match.round}:${cue.id}`;

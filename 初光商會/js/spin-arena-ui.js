@@ -82,7 +82,7 @@ export function installSpinArena({game,toast,music=null,onOpen=()=>{}}){
   if(cinematic&&view){cinematic.t+=dt;const m=a().match;if(m)view.render(m,now/1000,cinematic);if(cinematic.t>=cinematic.length){cinematic=null;render();}raf=requestAnimationFrame(frame);return;}
   if(page==='battle'&&a().match?.phase==='battle'&&!document.hidden){
    accumulator+=dt*(slowUntil>now?.35:1);if(accumulator>=.1){act('spinAdvance',{seconds:accumulator});accumulator=0;}
-   const m=a().match;if(m.phase!==battlePhase){const rr=m.roundResult;if(view&&rr&&!m.fastForward&&battlePhase==='battle'){cinematic={t:0,loser:rr.loser,cause:rr.cause,vx:rr.loserVelocity?.x||0,vz:rr.loserVelocity?.z||0,length:rr.tied?.9:rr.cause==='out'?2.1:2.3};battlePhase=m.phase;const label=dialog.querySelector('[data-score]');if(label)label.textContent=rr.tied?'同時出局！':(rr.loser===0?'我方':'對手')+(rr.cause==='out'?'被撞飛出場':'停止旋轉')+'！';const ff=dialog.querySelector('[data-action="0"]');if(ff)ff.disabled=true;}else render();}
+   const m=a().match;if(m.phase!==battlePhase){const rr=m.roundResult;if(view&&rr&&!m.fastForward&&battlePhase==='battle'){cinematic={t:0,loser:rr.loser,cause:rr.cause,vx:rr.loserVelocity?.x||0,vz:rr.loserVelocity?.z||0,length:rr.tied?.9:rr.cause==='out'?2.1:rr.cause==='burst'?2.6:2.3};if(rr.cause==='burst')audio.crit(true);battlePhase=m.phase;const label=dialog.querySelector('[data-score]');if(label)label.textContent=rr.tied?'同時出局！':(rr.loser===0?'我方':'對手')+(rr.cause==='burst'?'被暴擊爆裂':rr.cause==='out'?'被撞飛出場':'停止旋轉')+'！';const ff=dialog.querySelector('[data-action="0"]');if(ff)ff.disabled=true;}else render();}
    else{
     const out=view.render(m,now/1000);if(out?.slow)slowUntil=now+300;presentation.update(m,accumulator);
     for(const [k,i] of [['player',0],['enemy',1]]){
