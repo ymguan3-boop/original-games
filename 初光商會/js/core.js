@@ -1,6 +1,6 @@
 import {retireProducts} from './retired-products.js?v=20261117-v67';
-import {tickSpinVisitors} from './spin-arena-progression.js?v=20261117-v67';
-import{spinAction}from'./spin-arena-core.js?v=20261117-v67';
+import {tickSpinVisitors} from './spin-arena-progression.js?v=20261117-parts-v68';
+import{spinAction}from'./spin-arena-core.js?v=20261117-parts-v68';
 import{merchantTrafficEffects}from'./merchant-effects.js?v=20261117-v67';
 import{auctionAction,auctionTraffic}from'./plaza-auction.js?v=20261117-v67';
 import{customerHealthTick}from'./customer-health.js?v=20261117-v67';

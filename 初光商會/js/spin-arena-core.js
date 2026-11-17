@@ -1,6 +1,7 @@
-import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinLevelBonus,spinTop}from'./spin-arena-config.js?v=20261117-v67';
-import {spinState,spinStats,awardSpinPart,consumeSpinVisitor,gainSpinMastery,spinRoster} from './spin-arena-progression.js?v=20261117-v67';
-export {spinState,spinStats} from './spin-arena-progression.js?v=20261117-v67';
+import {partLevel,partStock,changePartStock,fuseSpinPart} from './spin-part-inventory.js?v=20261117-parts-v68';
+import{SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinLevelBonus,spinTop}from'./spin-arena-config.js?v=20261117-parts-v68';
+import {spinState,spinStats,awardSpinPart,consumeSpinVisitor,gainSpinMastery,spinRoster} from './spin-arena-progression.js?v=20261117-parts-v68';
+export {spinState,spinStats} from './spin-arena-progression.js?v=20261117-parts-v68';
 import{broadcast}from'./stock-flow.js?v=20261117-v67';
 import{archetypeOf,steer,classifyHit,spinSkillCooldown}from'./spin-arena-paths.js?v=20261117-v67';
 /* 安全上限：一局一般會在旋轉能量耗盡前分出勝負；萬一沒有，240 秒後才用比分判定 */
@@ -90,16 +91,17 @@ export function spinAction(g,s,type,p){
  if(type==='spinEquip'){check(owned,'請先購買這顆陀螺');check(!a.match||!['battle','strategy','roundResult'].includes(a.match.phase),'比賽途中不能更換陀螺');a.equipped=p.topId;return '已裝備';}
  if(type==='spinRoster'){spinRoster(g,s);return '對手名單已更新';}
  if(type==='spinUpgrade')return '強化已改為對戰熟練度升級，無須付費';
- if(type==='spinUnequip'){check(owned&&SPIN_PARTS[p.slot],'零件設定無效');check(!a.match||!['battle','strategy','roundResult'].includes(a.match.phase),'比賽途中不能改裝');const part=owned.parts[p.slot];if(part){a.parts[p.slot][part.grade]++;delete owned.parts[p.slot];}return '已卸下零件並歸還背包';}
+ if(type==='spinUnequip'){check(owned&&SPIN_PARTS[p.slot],'零件設定無效');check(!a.match||!['battle','strategy','roundResult'].includes(a.match.phase),'比賽途中不能改裝');const part=owned.parts[p.slot];if(part){changePartStock(a,p.slot,part.grade,partLevel(part.enhancement),1);delete owned.parts[p.slot];}return '已卸下零件並歸還背包';}
  if(type==='spinBuyPart'){check(SPIN_PARTS[p.slot]&&(!p.grade||p.grade==='normal'),'商店僅販售普通零件，進階與高級須挑戰取得');g.pay(s,100);s.stats.expenses+=100;a.parts[p.slot].normal++;return '已購買普通零件';}
  if(type==='spinPart'){
-  const grade=p.grade||'normal';check(owned&&SPIN_PARTS[p.slot]?.choices[p.value]&&SPIN_GRADES[grade],'零件設定無效');
+  const grade=p.grade||'normal',enhancement=partLevel(p.enhancement);check(owned&&SPIN_PARTS[p.slot]?.choices[p.value]&&SPIN_GRADES[grade],'零件設定無效');
   check(!a.match||!['battle','strategy','roundResult'].includes(a.match.phase),'比賽途中不能改裝');
-  const old=owned.parts[p.slot];if(old?.value===p.value&&old.grade===grade)return '已安裝，未重複消耗';
-  check(a.parts[p.slot][grade]>0,'沒有這種等級的零件，請先挑戰取得');a.parts[p.slot][grade]--;
-  if(old&&SPIN_GRADES[old.grade])a.parts[p.slot][old.grade]++;
-  owned.parts[p.slot]={value:p.value,grade};return '改裝完成，原零件已歸還';
+  const old=owned.parts[p.slot];if(old?.value===p.value&&old.grade===grade&&(old.enhancement||0)===enhancement)return '已安裝，未重複消耗';
+  check(partStock(a,p.slot,grade,enhancement)>0,'沒有這種強化值的零件，請先挑戰或合成取得');changePartStock(a,p.slot,grade,enhancement,-1);
+  if(old&&SPIN_GRADES[old.grade])changePartStock(a,p.slot,old.grade,partLevel(old.enhancement),1);
+  owned.parts[p.slot]={value:p.value,grade,...(enhancement?{enhancement}:{})};return '改裝完成，原零件已歸還';
  }
+ if(type==='spinFusePart'){check(!a.match||!['battle','strategy','roundResult'].includes(a.match.phase),'比賽途中不能合成零件');check(owned,'請先收藏陀螺');return fuseSpinPart(a,owned,p);}
  if(type==='spinSound'){a.soundMuted=!!p.muted;return a.soundMuted?'已關閉陀螺音效':'已開啟陀螺音效';}
  if(type==='spinStart'){
   check(a.equipped&&a.owned[a.equipped],'請先購買並裝備至少一顆陀螺');if(a.match&&['battle','strategy','roundResult'].includes(a.match.phase))return '繼續尚未結束的比賽';

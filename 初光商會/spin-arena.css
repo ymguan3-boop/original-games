@@ -29,3 +29,5 @@
 /* v65：「繼續未完成的比賽」獨立一列，不與下方固定按鈕列重疊 */
 .spin-arena-dialog .spin-resume{display:block;width:100%;margin:8px 0 12px;background:#6b8a42;color:#fff;border-color:#4d6a2c;position:relative;z-index:1}
 .spin-arena-dialog main{padding-bottom:16px}
+
+.spin-part-art{position:relative;display:inline-flex;align-items:center;justify-content:center;width:84px;height:78px;max-width:100%;flex:none}.spin-part-art img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 3px #533b2533)}.spin-part-plus{position:absolute;right:0;bottom:0;padding:2px 6px;border-radius:8px;background:#365c24;color:#fff;border:1px solid #d8bc70;font-size:13px;line-height:1.2}.spin-fusion button{margin-top:8px}.spin-fusion article>small{display:block;font-size:12px}.spin-equipment .equipment-slot .spin-part-art{width:74px;height:68px}@media(max-width:360px){.spin-equipment .equipment-slot .spin-part-art{width:60px;height:58px}.spin-equipment{gap:5px}}

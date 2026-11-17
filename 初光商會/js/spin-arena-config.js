@@ -16,10 +16,11 @@ export const SPIN_TOPS=[
 export const SPIN_PARTS={rim:{name:'輪盤',choices:{attack:'鋒刃（攻擊）',defense:'厚甲（防禦）',stamina:'平衡環（持久）'}},axis:{name:'軸心',choices:{speed:'疾行軸（速度）',defense:'定心軸（穩定）',stamina:'長轉軸（持久）'}},ring:{name:'外環',choices:{attack:'爆發環（攻擊）',defense:'護盾環（防禦）',speed:'迅捷環（速度）'}}};
 export const SPIN_GRADES={normal:{name:'普通',primary:.08,secondary:.02,color:'#827659'},advanced:{name:'進階',primary:.14,secondary:.04,color:'#397fa6'},high:{name:'高級',primary:.22,secondary:.06,color:'#9457ad'}};
 export const SPIN_STAT_NAMES={attack:'攻',defense:'防',speed:'速',stamina:'持久'};
-export function spinPartBonus(slot,value,grade='normal'){
+export const SPIN_PART_MAX_ENHANCEMENT=10;
+export function spinPartBonus(slot,value,grade='normal',enhancement=0){
  const g=SPIN_GRADES[grade];if(!g||!SPIN_PARTS[slot]?.choices[value])return {};
  const secondary={rim:{attack:'speed',defense:'stamina',stamina:'defense'},axis:{speed:'stamina',defense:'speed',stamina:'speed'},ring:{attack:'defense',defense:'stamina',speed:'attack'}}[slot][value];
- return {[value]:g.primary,[secondary]:g.secondary};
+ const scale=1+.1*Math.max(0,Math.min(SPIN_PART_MAX_ENHANCEMENT,Math.floor(Number(enhancement)||0)));return {[value]:g.primary*scale,[secondary]:g.secondary*scale};
 }
 export const SPIN_SKILLS={flame:{seconds:4,bonuses:{attack:.65,speed:.15}},wind:{seconds:4,bonuses:{speed:.65,attack:.15}},crystal:{seconds:5,bonuses:{defense:.7,stamina:.2}},thunder:{seconds:3.5,bonuses:{attack:.45,speed:.45}},shield:{seconds:5,bonuses:{defense:.45,stamina:.65}},shadow:{seconds:4,bonuses:{attack:.3,defense:.2,speed:.3,stamina:.2}}};
 Object.assign(SPIN_SKILLS,{"frost":{"seconds":5,"bonuses":{"defense":0.75,"speed":0.2}},"tide":{"seconds":5,"bonuses":{"stamina":0.75,"attack":0.2}},"thorn":{"seconds":4,"bonuses":{"speed":0.75,"attack":0.25}},"terra":{"seconds":5,"bonuses":{"defense":0.8,"stamina":0.3}},"sun":{"seconds":3.5,"bonuses":{"attack":0.65,"speed":0.45}},"nebula":{"seconds":4.5,"bonuses":{"attack":0.4,"defense":0.4,"speed":0.4,"stamina":0.4}}});

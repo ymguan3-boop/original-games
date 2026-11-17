@@ -1,5 +1,5 @@
 import{installPlazaAuction,showPasserReply}from'./plaza-auction-ui.js?v=20261117-v67';
-import{installSpinArena}from'./spin-arena-ui.js?v=20261117-v67';
+import{installSpinArena}from'./spin-arena-ui.js?v=20261117-parts-v68';
 let plazaAuction,spinArena;
 import{createMerchantMarquee}from'./merchant-marquee.js?v=20261117-v67';
 const syncMarquee=createMerchantMarquee();
@@ -23,7 +23,7 @@ import {installShopMusic} from './shop-music.js?v=20261117-v67';
 import {createActorVisuals} from './actor-visuals.js?v=20261117-v67';
 import {staffEvolutionInfo} from './staff-evolution.js?v=20261117-v67';
 import {loadSpiritCards} from './spirit-cards.js?v=20261117-v67';
-import {createGame} from './core.js?v=20261117-v67';
+import {createGame} from './core.js?v=20261117-parts-v68';
 import {createStaffOverlay} from './staff-overlay.js?v=20261117-v67';
 import {installPatrolControls} from './patrol-controls.js?v=20261117-v67';
 import {playEvolution3D} from './evolution-3d.js?v=20261117-v67';

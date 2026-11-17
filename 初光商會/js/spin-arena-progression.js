@@ -1,4 +1,4 @@
-import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinTop,spinPartBonus} from './spin-arena-config.js?v=20261117-v67';
+import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinTop,spinPartBonus} from './spin-arena-config.js?v=20261117-parts-v68';
 export function spinState(s){
  s.spinArena??={owned:{},equipped:null,parts:{rim:0,axis:0,ring:0},reputation:0,match:null,history:[],serial:0};
  const a=s.spinArena;
@@ -25,7 +25,7 @@ export function spinStats(id,owned={level:1,parts:{},mastery:0}){
   let partBonus=0;
   for(const [slot,item] of Object.entries(owned.parts||{})){
    const part=typeof item==='string'?{value:item,grade:'normal'}:item;
-   partBonus+=spinPartBonus(slot,part?.value,part?.grade)[k]||0;
+   partBonus+=spinPartBonus(slot,part?.value,part?.grade,part?.enhancement)[k]||0;
   }
   const growth=SPIN_GROWTH[id]?.[k]||.03;const bonus=(Math.min(20,owned.level||1)-1)*growth;
   stats[k]=t[k]*(1+bonus)*(1+Math.min(R.statBonusCap,partBonus));
