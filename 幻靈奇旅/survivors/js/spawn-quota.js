@@ -1,7 +1,7 @@
 /* 普通怪物的分波配額與分批生成（Boss、寶箱、書本不在這裡）。
  * 草原：固定 10 波、總配額 404，同時存活上限依波次；沒在時限內生成完的配額延續到下一波，確保總數正確。
  * 洞穴：以原本的生成率換算成每波配額再乘 4；同場上限 36 不變；每波沒生成完的部分不延續，記錄在 caveQuotaShortfall。 */
-import {spawnInterval} from './difficulty.js?v=20261117-v67';
+import {spawnInterval} from './difficulty.js?v=20261119-v68';
 export const MEADOW_QUOTA=[12,20,24,28,32,40,48,56,64,80];
 export const MEADOW_CAP=[6,7,8,9,10,11,12,14,16,18];
 export const MEADOW_TOTAL=MEADOW_QUOTA.reduce((a,b)=>a+b,0);

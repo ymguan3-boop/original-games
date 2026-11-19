@@ -9,7 +9,6 @@ import {ENTRANCE,applyRoom,dimensions,isLayoutValid,findPath,CHECKOUT} from '../
 import {resetMerchantRelease,SHOP_RESET_VERSION} from '../../初光商會/js/save-reset.js';
 import {createLoadingGate} from '../../初光商會/js/loading-gate.js';
 import {canStartTutorial,openingBlocker,promoterHireCost} from '../../初光商會/js/shop-entry-rules.js';
-import {installTutorial} from '../../初光商會/js/shop-tutorial.js';
 const read=n=>JSON.parse(fs.readFileSync(new URL('../../初光商會/data/'+n+'.json',import.meta.url)));
 const data=()=>Object.fromEntries([['catalog','shop-catalog'],['hirePool','hire-pool'],['spirits','spirits'],['evolution','evolution'],['levels','store-levels'],['config','economy'],['management','management']].map(([k,n])=>[k,read(n)]));
 const memory=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,v)=>m.set(k,v)};};
@@ -31,31 +30,7 @@ test('empty-shop tutorial, mandatory placed shelf and promoter, and first free h
  assert.equal(g.act('hirePromoter',{id:'swampert'}).ok,false);
 });
 
-test('onboarding skips an already furnished shop but continues after its own first shelf placement',()=>{
- const old={document:globalThis.document,MutationObserver:globalThis.MutationObserver};
- const nodes=new Map(),listeners=[];const node=()=>({hidden:false,classList:{add(){},remove(){}},contains:()=>false,getClientRects:()=>[{}]});
- const box=node();box.querySelector=q=>{if(!nodes.has(q))nodes.set(q,node());return nodes.get(q);};
- globalThis.document={getElementById:id=>id==='tutor'?box:null,querySelector:()=>node(),addEventListener(type,fn){if(type==='click')listeners.push(fn);},body:{dataset:{},removeAttribute(){},classList:{contains:()=>false}}};
- globalThis.MutationObserver=class{observe(){}};
- try{
-  const g=new Game({storage:memory(),data:data()});
-  g.act('purchaseShelf',{type:'apothecary'});g.act('placeShelf',{shelfId:g.state.lastPurchasedShelf,x:3,z:5});
-  const tutorial=installTutorial({game:g,act:(...args)=>g.act(...args),confirmSkip(){},fullscreen(){}});tutorial.sync();
-  assert.equal(g.state.tutorialState.done,true);assert.equal(box.hidden,true);
-  const fresh=new Game({storage:memory(),data:data()});
-  const first=installTutorial({game:fresh,act:(...args)=>fresh.act(...args),confirmSkip(){},fullscreen(){}});first.sync();
-  assert.equal(nodes.get('[data-skip]').disabled,true,'a newcomer cannot skip the required promoter hire');
-  fresh.act('purchaseShelf',{type:'apothecary'});fresh.act('placeShelf',{shelfId:fresh.state.lastPurchasedShelf,x:3,z:5});first.sync();
-  assert.equal(fresh.state.tutorialState.done,false,'placing the tutorial shelf must not terminate the running tutorial');
-  fresh.act('hirePromoter',{id:'swampert'});first.sync();assert.equal(nodes.get('[data-skip]').disabled,false);
-  fresh.act('tutorial',{patch:{step:'tour-tasks'}});first.sync();let blocked=0;
-  const event=target=>({target,preventDefault(){blocked++;},stopPropagation(){},stopImmediatePropagation(){}});
-  for(const listen of listeners)listen(event({closest:selector=>selector.includes('#confirm')}));
-  assert.equal(blocked,0,'confirmation dialog remains usable under a focused tutorial');
-  for(const listen of listeners)listen(event({closest:()=>false}));
-  assert.ok(blocked>0,'unrelated controls remain blocked');
- }finally{Object.assign(globalThis,old);}
-});
+/* 舊版蓋版教學（shop-tutorial.js）已於 11/11 移除，相關 DOM 教學測試一併刪除；空店引導改由上面的 canStartTutorial／openingBlocker 規則驗證 */
 test('updated front door remains reachable at every tier and reserves the actual door cell',()=>{
  for(let level=1;level<=10;level++){applyRoom(level);assert.equal(ENTRANCE.x,Math.round((dimensions(level).width-1)/2));assert.equal(ENTRANCE.z,Math.floor(dimensions(level).height)-2);assert.ok(findPath(ENTRANCE,CHECKOUT,[],level));assert.ok(isLayoutValid([],level));assert.equal(isLayoutValid([{...ENTRANCE}],level),false);}
 });
@@ -65,12 +40,13 @@ test('reloading a previous schema preserves gold and inventory; stale tab cannot
  assert.equal(a.act('purchaseShelf',{type:'apothecary'}).ok,true);assert.equal(b.act('purchaseShelf',{type:'apothecary'}).ok,false);assert.match(b.lastError,/另一分頁/);
 });
 test('checkout settles a customer once even if its old Checkout state is replayed after reload',()=>{
+ /* 其他測試會切換房間等級，先回到 Lv.1 的收銀台座標 */applyRoom(1);
  const storage=memory(),d=data(),g=new Game({storage,data:d});const sku=d.catalog[0].sku;
- const customer={id:'c-regression',name:'旅人',x:6,z:3,budget:999,path:[],basket:[{sku,shelfId:'rack-test',qty:1,price:30,cost:10}],state:'Checkout',timer:100,personality:0,customerType:'commoner'};
+ /* 顧客站在 0 號收銀台的結帳點上 */const customer={id:'c-regression',name:'旅人',x:CHECKOUT.x,z:CHECKOUT.z,budget:999,path:[],basket:[{sku,shelfId:'rack-test',qty:1,price:30,cost:10}],state:'Checkout',timer:100,personality:0,customerType:'commoner'};
  g.transaction(null,s=>{s.phase='open';s.shelves=[{id:'rack-test',type:'apothecary',sku,x:4,z:5,stock:5}];s.customers=[structuredClone(customer)];stepCustomers(g,s,.25);});
- const gold=g.state.gold,stock=g.state.shelves[0].stock;assert.equal(g.state.stats.sales,1);assert.equal(g.state.stats.units,1);
+ /* 讀檔時貨架庫存可能改記在 stockBySku 或退回倉庫，所以比對這項商品的總數量 */const units=st=>(st.inventory[sku]||0)+[...st.shelves,...(st.shelfStorage||[])].reduce((n,sh)=>n+(sh.sku===sku?sh.stock||0:0)+(sh.sku!==sku?sh.stockBySku?.[sku]||0:0),0);const gold=g.state.gold,stock=units(g.state);assert.equal(g.state.stats.sales,1);assert.equal(g.state.stats.units,1);
  const reloaded=new Game({storage,data:d});reloaded.transaction(null,s=>{s.customers=[structuredClone(customer)];stepCustomers(reloaded,s,.25);});
- assert.equal(reloaded.state.gold,gold);assert.equal(reloaded.state.shelves[0].stock,stock);assert.equal(reloaded.state.stats.sales,1);
+ assert.equal(reloaded.state.gold,gold);assert.equal(units(reloaded.state),stock);assert.equal(reloaded.state.stats.sales,1);
 });
 test('weekly report weights average price and stockouts across days without counting report twice',()=>{
  const s={day:2,phase:'report',history:[{day:1,revenue:100,cogs:40,units:2,visitors:10,stockouts:2,visitors_commoner:10},{day:2,revenue:60,cogs:20,units:1,visitors:5,stockouts:1,visitors_mage:5}],stats:{revenue:60}};
@@ -82,7 +58,7 @@ test('competition is stable within a day and a rival promotion diverts traffic',
 test('employee and promoter recruitment reject occupying the same spirit',()=>{
  const g=new Game({storage:memory(),data:data()});g.transaction(null,s=>{s.level=5;s.gold=999999;s.totals.sales=999999;});
  assert.equal(g.act('hirePromoter',{id:'mewtwo'}).ok,true);assert.equal(g.act('hire',{id:'mewtwo'}).ok,false);
- const h=new Game({storage:memory(),data:data()});h.transaction(null,s=>{s.level=5;s.gold=999999;s.totals.sales=999999;});assert.equal(h.act('hire',{id:'mewtwo'}).ok,true);assert.equal(h.act('hirePromoter',{id:'mewtwo'}).ok,false);
+ /* 宣傳員進化系列不能當一般員工聘用，所以同一隻幻靈不會同時佔兩個位置 */const h=new Game({storage:memory(),data:data()});h.transaction(null,s=>{s.level=5;s.gold=999999;s.totals.sales=999999;});for(const id of ['swampert','feraligatr','empoleon','blissey','mewtwo'])if(h.data.hirePool.some(x=>x.id===id))assert.equal(h.act('hire',{id}).ok,false,id);assert.equal(h.act('hirePromoter',{id:'mewtwo'}).ok,true);
 });
 test('every building tier has exactly half its former floor area',()=>{
  for(let level=1;level<=5;level++){const d=dimensions(level);assert.ok(Math.abs(d.width*d.height/((13+level)*(11+level))-.5)<1e-12);}

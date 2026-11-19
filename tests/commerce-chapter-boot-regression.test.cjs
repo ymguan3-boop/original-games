@@ -8,7 +8,8 @@ const read = name => fs.readFileSync(path.join(root, name), 'utf8');
 
 test('mobile page and core use fresh chapter-aware boot modules', () => {
   const html = read('index.html'), app = read('js/app.js'), core = read('js/core.js');
-  assert.match(html, /app\.js\?v=\d{8}-/);
+  assert.match(html, /entry\.js\?v=\d{8}-/);
+  assert.match(read('js/entry.js'), /app\.js\?v=\d{8}-/);
   assert.match(app, /core\.js\?v=\d{8}-/);
   assert.match(core, /shop-operations\.js\?v=\d{8}-/);
   assert.match(core, /import\s*\{[^}]*chapterObjectives[^}]*\}\s*from\s*['"]\.\/shop-chapters\.js(?:\?v=[^'"]+)?['"]/);

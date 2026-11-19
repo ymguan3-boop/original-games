@@ -1,0 +1,11 @@
+/* 畫面外的大、小魔王方向標示 */
+#bossMarkers{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.boss-marker{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:4px;padding:3px 9px 3px 5px;border-radius:999px;background:rgba(48,10,16,.86);border:2px solid #ff5466;color:#fff;font:800 12px/1.1 system-ui,"Microsoft JhengHei",sans-serif;white-space:nowrap;box-shadow:0 0 12px rgba(255,70,90,.65);animation:bossMarkerPulse 1.1s ease-in-out infinite}
+.boss-marker[hidden]{display:none}
+.boss-marker[data-kind=elite]{background:rgba(34,14,52,.86);border-color:#c48bff;box-shadow:0 0 12px rgba(180,120,255,.6)}
+.boss-marker i{display:inline-block;font-style:normal;font-size:12px;line-height:1;color:#ff8b97;transform-origin:50% 50%}
+.boss-marker[data-kind=elite] i{color:#dcb8ff}
+.boss-marker small{font-size:11px;font-weight:700;opacity:.85}
+@keyframes bossMarkerPulse{50%{box-shadow:0 0 20px rgba(255,90,110,.95)}}
+@media (prefers-reduced-motion:reduce){.boss-marker{animation:none}}
+body:not(.playing) #bossMarkers{display:none}

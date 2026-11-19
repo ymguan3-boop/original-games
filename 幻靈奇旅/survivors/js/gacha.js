@@ -1,4 +1,4 @@
-import {addInventory,WEAPONS} from './inventory.js?v=20261117-v67';
+import {addInventory,WEAPONS} from './inventory.js?v=20261119-v68';
 export const DRAW_COST=100;
 export const DUPLICATE_POINTS=Object.freeze({yellow:50,purple:100,red:500});
 const EXCLUDED_SPIRITS=new Set(['mewtwo']);

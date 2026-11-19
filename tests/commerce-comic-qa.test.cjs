@@ -3,7 +3,7 @@ const ROOT=path.resolve(__dirname,'../初光商會'),read=p=>fs.readFileSync(pat
 const load=(file,expression,context={})=>{vm.runInNewContext(read(file).replace(/^import .*?;\n/gm,'').replace(/\bexport\s+(?=(?:function|const|class))/g,'')+';this.output='+expression,context);return context.output;};
 test('mood overlay is sharp HTML with distinct happy, angry, tired, question and training colors',()=>{
  const src=read('js/actor-visuals.js').replace(/\bexport\s+(?=(?:const|function))/g,'');
- const created=[],context={innerWidth:390,innerHeight:844,performance:{now:()=>2000},document:{createElement:()=>{const node={children:[],dataset:{},style:{},hidden:false,addEventListener(){},setAttribute(){},removeAttribute(){},append(...els){this.children.push(...els);},remove(){this.removed=true;}};created.push(node);return node;}}};
+ const created=[],context={innerWidth:390,innerHeight:844,performance:{now:()=>2000},document:{createElement:()=>{const node={children:[],dataset:{},style:{},hidden:false,addEventListener(){},setAttribute(){},removeAttribute(){},append(...els){this.children.push(...els);},remove(){this.removed=true;}};created.push(node);return node;},querySelector:()=>null}};
  const overlays=vm.runInNewContext(src+';this.output=createActorVisuals;',context),host={append(){}};
  const ui=overlays(host);
  ui.render({actors:[{id:'happy',x:90,y:350,kind:'happy'},{id:'angry',x:180,y:350,kind:'angry'},{id:'tired',x:270,y:350,kind:'tired'}],notices:[]});

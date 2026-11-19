@@ -4,7 +4,7 @@ export const ENTRANCE={x:1,z:5}, CHECKOUT={x:6,z:3}, WAREHOUSE={x:2,z:3};
 export const FIXED_CELLS=['6,2','6,4'];
 /* 收銀站：櫃台直立靠右牆，收銀員站櫃台右側、顧客在左側結帳，排隊往左延伸。0 號由主角收銀，1 號由員工收銀。 */
 export const STATIONS=[];export const QUEUE_PER_STATION=3;
-export function computeStations(level=1){const d=dimensions(level),W=Math.floor(d.width),H=Math.floor(d.height),cx=W-3,zA=2,zB=Math.min(H-4,zA+3);return [zA,zB].map((z,i)=>({id:i,z,counter:{x:cx,z},cashier:{x:cx+1,z},pay:{x:cx-1,z},queue:Array.from({length:QUEUE_PER_STATION},(_,j)=>({x:cx-1-j,z}))}));}
+export function computeStations(level=1){const d=dimensions(level),W=Math.floor(d.width),H=Math.floor(d.height),cx=W-3,zA=2,zB=Math.min(H-4,zA+3);/* Lv.1、Lv.2 只有一座收銀台，Lv.3 起才有第二座 */return (level<=2?[zA]:[zA,zB]).map((z,i)=>({id:i,z,counter:{x:cx,z},cashier:{x:cx+1,z},pay:{x:cx-1,z},queue:Array.from({length:QUEUE_PER_STATION},(_,j)=>({x:cx-1-j,z}))}));}
 export const queueCellKeys=()=>new Set(STATIONS.flatMap(st=>st.queue.map(p=>p.x+','+p.z)));
 export const nearCashierSpot=(p,r=.2)=>STATIONS.find(st=>Math.hypot(p.x-st.cashier.x,p.z-st.cashier.z)<r)||null;
 export const ACTOR_DIAMETER=.82;

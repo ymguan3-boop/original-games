@@ -11,8 +11,8 @@ function fixture(status='OutOfStock',inventory=0){
  const g={data:{catalog:[{sku:'potion',buyCost:18,unlockStoreLevel:1}]},available:(s,sh)=>sh.stock,pay:(s,n)=>{if(s.gold<n)throw Error('金幣不足');s.gold-=n},notice:(s,id,message)=>notice.push(message),route:(s,c,target)=>{c.path=[target];return true;},log:()=>{}};
  return {c,s,g,notice};
 }
-test('restocking from existing inventory does not charge extra',()=>{
- const {resolveCustomerComplaint}=complaints(),{c,s,g}=fixture('OutOfStock',2);
+test('restocking from existing inventory does not charge extra',async()=>{
+ const {resolveCustomerComplaint}=await import(require('node:url').pathToFileURL(path.join(root,'js/customer-complaints.js')).href),{c,s,g}=fixture('OutOfStock',2);
  resolveCustomerComplaint(g,s,{customerId:c.id,choice:'restock'});
  assert.equal(s.gold,100);assert.equal(s.inventory.potion,1);assert.equal(s.shelves[0].stock,1);
 });

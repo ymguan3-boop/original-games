@@ -207,7 +207,7 @@
     "name": "阿宏牛仔",
     "rarity": "purple",
     "level": 5,
-    "cost": 800,
+    "cost": 1400,
     "wage": 0,
     "special": true,
     "requiredSales": 60
@@ -217,7 +217,7 @@
     "name": "官胖",
     "rarity": "red",
     "level": 5,
-    "cost": 1100,
+    "cost": 1400,
     "wage": 0,
     "special": true,
     "requiredSales": 150
@@ -227,7 +227,7 @@
     "name": "藍金星輝法師",
     "rarity": "red",
     "level": 5,
-    "cost": 1100,
+    "cost": 1400,
     "wage": 0,
     "special": true,
     "requiredSales": 150

@@ -1,19 +1,20 @@
-import {isMerchantMeadow} from './merchant-meadow.js?v=20261117-v67';
-import {buildMeadow,constrainMeadow} from './meadow-terrain.js?v=20261117-v67';
-import {createPumpkinStaff,createPumpkinHead} from './pumpkin-staff.js?v=20261117-v67';
-import {createLeekSword} from './leek-weapon.js?v=20261117-v67';
-import {createViewLimits} from './view-limits.js?v=20261117-v67';
-import {modelRoomPlan,originalPresentation,createModelRoomEffect} from './model-room-effects.js?v=20261117-v67';
-import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261117-v67';
-import {flightMotion} from './avian-motion-v17.js?v=20261117-v67';
-import {createCostumeView} from './costume-view.js?v=20261117-v67';
-import {createLootView} from './loot-view.js?v=20261117-v67';
-import {createStatusView} from './status-view.js?v=20261117-v67';
-import {immobilized} from './combat-status.js?v=20261117-v67';
-import {modelHeight} from './actor-layout.js?v=20261117-v67';
-import {createProjectileView} from './projectile-view.js?v=20261117-v67';
+import {isMerchantMeadow} from './merchant-meadow.js?v=20261119-v68';
+import {buildMeadow,constrainMeadow} from './meadow-terrain.js?v=20261119-v68';
+import {createPumpkinStaff,createPumpkinHead} from './pumpkin-staff.js?v=20261119-v68';
+import {createLeekSword} from './leek-weapon.js?v=20261119-v68';
+import {createViewLimits} from './view-limits.js?v=20261119-v68';
+import {createBossMarkers} from './boss-markers.js?v=20261119-v68';
+import {modelRoomPlan,originalPresentation,createModelRoomEffect} from './model-room-effects.js?v=20261119-v68';
+import {createCombatVfx,jumpUltimateHeight} from './combat-vfx-v17.js?v=20261119-v68';
+import {flightMotion} from './avian-motion-v17.js?v=20261119-v68';
+import {createCostumeView} from './costume-view.js?v=20261119-v68';
+import {createLootView} from './loot-view.js?v=20261119-v68';
+import {createStatusView} from './status-view.js?v=20261119-v68';
+import {immobilized} from './combat-status.js?v=20261119-v68';
+import {modelHeight} from './actor-layout.js?v=20261119-v68';
+import {createProjectileView} from './projectile-view.js?v=20261119-v68';
 import {playEvolutionSequence} from './evolution-view.js';
-import {baseAttackProfile,attackProfile,HERO_ATTACKS,ROLL_DURATION} from './combat-profile.js?v=20261117-v67';
+import {baseAttackProfile,attackProfile,HERO_ATTACKS,ROLL_DURATION} from './combat-profile.js?v=20261119-v68';
 import {TOWER_ULTIMATES} from './tower-ultimates.js';
 /* Rendering only. Reuses the town's assets and animation contracts; owns no save data. */
 const BASE = new URL('../../', import.meta.url);
@@ -27,7 +28,7 @@ function script(path, globalName) {
   return scripts.get(path);
 }
 export async function createScene(canvas, {spirits = [], catalog = {}, onSelect, onReady, onError, onSound} = {}) {
-  await script('vendor/three.min.js', 'THREE');await script('js/fx/vfx3d.js?v=20261117-v67','Vfx3D');await script('js/fx/boomerang-chain.js?v=20261117-v67','BoomerangChain');await script('js/outoman-v2-fx.js?v=20261117-v67','createOutomanV2Fx');await Promise.all([script('js/arena-fx.js','SpiritVfx'),script('js/duo-combat-vfx.js','createDuoCombatVFX'),script('js/guanpang-combat-vfx.js','createGuanpangCombatVFX')]);if(!globalThis.THREE.GLTFLoader)await script('vendor/GLTFLoader.js');globalThis.PhantomLoading?.install();
+  await script('vendor/three.min.js', 'THREE');await script('js/fx/vfx3d.js?v=20261119-v68','Vfx3D');await script('js/fx/boomerang-chain.js?v=20261119-v68','BoomerangChain');await script('js/outoman-v2-fx.js?v=20261119-v68','createOutomanV2Fx');await Promise.all([script('js/arena-fx.js','SpiritVfx'),script('js/duo-combat-vfx.js','createDuoCombatVFX'),script('js/guanpang-combat-vfx.js','createGuanpangCombatVFX')]);if(!globalThis.THREE.GLTFLoader)await script('vendor/GLTFLoader.js');globalThis.PhantomLoading?.install();
   const T = globalThis.THREE, species = new Map((Array.isArray(spirits)?spirits:Object.values(spirits)).map(s => [s.id, s]));
   const entries = new Map((catalog.entries || []).map(s => [s.id,s]));
   const renderer = new T.WebGLRenderer({canvas, antialias: true, powerPreference:'high-performance'});
@@ -40,6 +41,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
   let enemyGeneration=0,zoom=1;try{const v=Number(localStorage.getItem('phantom-cave-camera-zoom'));if(v>=.65&&v<=1.6)zoom=v;}catch{}
   function setZoom(value){zoom=Math.max(.65,Math.min(1.6,Number(value)||1));metrics.cameraZoom=zoom;try{localStorage.setItem('phantom-cave-camera-zoom',String(zoom));}catch{}return zoom;}setZoom(zoom);
   const viewLimits=createViewLimits(T);
+  let bossMarkers=null;
   const specials = new Map(), pending = new Set(), enemyRetries=new Map(), resources = new Set();
   function releaseActor(a){if(!a)return;if(metrics.modelRoomActors)delete metrics.modelRoomActors[a.actorKey||a.id];a.roomFx?.dispose();a.outomanFx?.dispose();a.duoFx?.dispose();a.guanpangFx?.dispose();a.mixer.stopAllAction();a.mixer.uncacheRoot(a.object);if(!a.controller)return;if(a.controller?.dispose){a.controller.dispose();return;}const gs=new Set(),ms=new Set(),ts=new Set();a.root.traverse(o=>{if(o.geometry)gs.add(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){ms.add(m);for(const v of Object.values(m))if(v?.isTexture)ts.add(v);}});gs.forEach(g=>g.dispose());ms.forEach(m=>m.dispose());ts.forEach(t=>t.dispose());}
   const own = x => (resources.add(x),x);
@@ -78,7 +80,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
     if(prefix==='native'){await script('js/fx/toon-outline.js');await script('models/native/birds-blueprint.js');await script('models/native/elephants-blueprint.js');await script('models/native/families.js','NativeFamilies');return {g:NativeFamilies.build(path)};}
     if(prefix==='avian'){const id=path.split('://')[1],file={jigglypuff:'tricolor-egg',treecko:'small-birds',grovyle:'small-birds',sceptile:'little-eagle',palkia:'dapeng'}[id];await script('models/native/'+file+'.js');await script('models/native/avian-spirits.js','AvianSpirits');api=AvianSpirits;}
     else if(['green-eye-bat','rabbit-evolution'].includes(prefix)){await script('models/native/replacement-spirits.js','ReplacementSpirits');api=ReplacementSpirits;}
-    else if(prefix==='robot-evolution'){await script('survivors/js/robot-evolution-v08.js?v=20261117-v67','CaveRobotEvolution');await script('models/native/robot-spirits.js','RobotSpirits');const stage={cyndaquil:1,quilava:2,typhlosion:3}[path.split('://')[1]];return{g:{animations:[],create:()=>{const c=CaveRobotEvolution.create({stage,inPlace:true});c.root.userData.caveBounds=c.getState().bounds;return c;}},api:RobotSpirits};}
+    else if(prefix==='robot-evolution'){await script('survivors/js/robot-evolution-v08.js?v=20261119-v68','CaveRobotEvolution');await script('models/native/robot-spirits.js','RobotSpirits');const stage={cyndaquil:1,quilava:2,typhlosion:3}[path.split('://')[1]];return{g:{animations:[],create:()=>{const c=CaveRobotEvolution.create({stage,inPlace:true});c.root.userData.caveBounds=c.getState().bounds;return c;}},api:RobotSpirits};}
     else if(prefix==='leaf-frog'){await script('models/native/leaf-frogs.js');await script('models/native/frog-spirits.js','FrogSpirits');api=FrogSpirits;}
     if(api){const g=api.load?await api.load(path):{create:()=>api.create(path),animations:[]};return {g,api};}
     if(prefix==='crown'){await script('models/native/small-birds.js','SmallBirds');await script('models/native/crown-birds.js','CrownBirds');return {g:{animations:[],create:()=>CrownBirds.create({kind:path.split('://')[1]})}};}
@@ -122,8 +124,8 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
   const leek=createLeekSword(T);right.add(leek);mounts.push({name:'Sword',variant:'leek',mesh:leek});metrics.leekWeapon={...leek.userData.weaponBudget,appearance:'leek',mountedTo:'propR'};
   const lootView=createLootView(T,scene,renderer,{...Object.fromEntries(mounts.filter(m=>!m.variant).map(m=>[m.name.toLowerCase(),m.mesh])), 'sword-leek':leek},metrics);
 
-  await script('js/hero-costumes.js?v=20261117-v67','HeroCostumes');const costumes=globalThis.HeroCostumes.create(T),costumeView=createCostumeView(T,scene,hero,costumes,{prepareSound:()=>script('models/native/xiaoshan.js','XiaoshanSpirit'),makeCompanion:()=>actor(species.get('mew').model,.95,'wardrobe-companion'),releaseActor,metrics,onError:report});
-  await Promise.all([script('js/scythe-motion.js?v=20261117-v67','createScytheGripMotion'),script('js/scythe-runtime.js?v=20261117-v67','PhantomScythe'),script('js/reaper-effects.js?v=20261117-v67','PhantomReaperEffects')]);
+  await script('js/hero-costumes.js?v=20261119-v68','HeroCostumes');const costumes=globalThis.HeroCostumes.create(T),costumeView=createCostumeView(T,scene,hero,costumes,{prepareSound:()=>script('models/native/xiaoshan.js','XiaoshanSpirit'),makeCompanion:()=>actor(species.get('mew').model,.95,'wardrobe-companion'),releaseActor,metrics,onError:report});
+  await Promise.all([script('js/scythe-motion.js?v=20261119-v68','createScytheGripMotion'),script('js/scythe-runtime.js?v=20261119-v68','PhantomScythe'),script('js/reaper-effects.js?v=20261119-v68','PhantomReaperEffects')]);
   costumes.prepare(hero.object);
   const scytheOptions={THREE:T,model:hero.object,clips:(await load('models/hero.glb')).animations,weapon:cloneModel((await load('models/props/starlight-scythe.glb')).scene),sound:false};const scythe=globalThis.PhantomScythe.create(scytheOptions);
   let scytheAttackId=0,scytheAttackPulse=false,scytheUltimate=false;
@@ -187,6 +189,7 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
     hero.root.position.set(h.x,0,h.z);hero.root.rotation.y=h.heading||0;hero.tick(dt,h);costumeView.update(run,dt);scytheOptions.volume=(globalThis.PhantomBgm?.sfxVolume??55)/100;scythe.update(immobilized(h,run?.time)?0:dt,{enabled:usingScythe(),motion:h.hp<=0?'Death':h.roll?'Roll':hero.reaction?'Hurt':hero.mode,cancel:!run?.heroCombo?.scythe||!!run?.heroCombo?.strong,speed:run?.heroCombo?.speed||1,attack:scytheAttackPulse,attackId:scytheAttackId,ultimate:scytheUltimate,sound:!globalThis.PhantomBgm?.sfxMuted});scytheAttackPulse=false;const attackRange=h.attackRange||HERO_ATTACKS[weapon.toLowerCase()]?.range||4.2;attackRing.visible=h.hp>0&&!!run;attackRing.position.set(h.x,.027,h.z);attackRing.scale.setScalar(attackRange);metrics.attackCircle={radius:attackRange,color:'#ff3b42',x:h.x,z:h.z,visible:attackRing.visible};
     const ps=run?.pets?.[run.activePet??0];requestPet(ps);if(pet&&ps){pet.root.position.set(ps.x??h.x-1.6,0,ps.z??h.z+1);pet.root.rotation.y=ps.heading||0;pet.tick(dt,ps);const safe=constrainPet({...ps,x:pet.root.position.x,z:pet.root.position.z},h);pet.root.position.x=safe.x;pet.root.position.z=safe.z;}
     prepareView(h);const enemies=run?.enemies||[];let visibleEnemies=0;for(const e of enemies){if(e.hp<=0)continue;const cached=specials.get(e.id);if(!viewLimits.visible(e,heightOf(e.speciesId)*(['boss','elite'].includes(e.kind)?1.5:1))){if(cached){cached.root.visible=false;cached.roomFx?.dispose();cached.roomFx=null;cached.hold=0;}continue;}if(cached)cached.root.visible=true;requestSpecial(e);const a=specials.get(e.id);if(a){visibleEnemies++;a.root.position.set(e.x,0,e.z);a.root.rotation.y=e.heading||0;if(e.attackSerial&&a.lastAttack!==e.attackSerial){a.lastAttack=e.attackSerial;skill(a,!!e.skillStrong,run.hero);}a.tick(dt,{...e,moving:!e.warning&&e.weakUntil<=run.time&&!(e.captureStunUntil>run.time)&&!(e.hitReactUntil>run.time)});}}metrics.enemyInstances=0;metrics.enemyModels=visibleEnemies;for(const e of enemies.filter(e=>e.hp>0&&['boss','elite'].includes(e.kind))){let ring=bossRings.get(e.id);if(!ring){ring=new T.Mesh(bossRingGeo,bossRingMat);ring.rotation.x=-Math.PI/2;scene.add(ring);bossRings.set(e.id,ring);}ring.position.set(e.x,.045,e.z);ring.scale.setScalar(heightOf(e.speciesId)*.8);ring.visible=true;}for(const[id,ring]of bossRings)if(!enemies.some(e=>e.id===id&&e.hp>0)){scene.remove(ring);bossRings.delete(id);}metrics.bossCircles=bossRings.size;
+    bossMarkers??=createBossMarkers(T,camera,canvas);metrics.bossMarkers=bossMarkers.update(run,h);
     for(const [id,a] of specials)if(!enemies.some(e=>e.id===id&&e.hp>0)){if(a){scene.remove(a.root);releaseActor(a);}specials.delete(id);}
     const warnings=enemies.filter(e=>e.hp>0&&e.warning).map(e=>e.warning);metrics.enemyWarnings=warnings.map(w=>({...w}));warningPool.forEach((m,j)=>{const w=warnings[j];m.visible=!!w;if(w){m.position.set(w.x,.09,w.z);m.scale.setScalar(w.radius);m.material.opacity=.45+Math.sin(time*15)*.2;}});
     lootView.update(run?.pickups||[],time);
@@ -200,6 +203,6 @@ export async function createScene(canvas, {spirits = [], catalog = {}, onSelect,
   }
   function project(pos){const p=new T.Vector3(pos.x,pos.y??1,pos.z).project(camera);return {x:(p.x+1)*.5*canvas.clientWidth,y:(1-p.y)*.5*canvas.clientHeight,visible:p.z<1};}
   function resetTransient(){vfx3d?.clear();reaperFx.clear();scytheAttackPulse=false;scythe.update(0,{enabled:false});giantPumpkin.visible=false;pumpkinUntil=0;for(const ring of bossRings.values())scene.remove(ring);bossRings.clear();costumeView.reset();combatVfx.clear();shakeLevel=0;++enemyGeneration;pending.clear();enemyRetries.clear();for(const a of specials.values())if(a){scene.remove(a.root);releaseActor(a);}specials.clear();++petGeneration;petKey='';if(pet){scene.remove(pet.root);releaseActor(pet);pet=null;}metrics.activePetModels=0;hero.roomFx?.dispose();hero.hold=0;hero.reaction=null;hero.dead=false;hero.mode=null;hero.root.rotation.set(0,0,0);hero.play(weapon+'Ready');lootView.clear();statusView.clear();projectileView.clear();for(const f of ballFlights){scene.remove(f.root);f.resolve(null);}ballFlights.length=0;}
-  function dispose(){vfx3d?.dispose();reaperFx.dispose();scythe.dispose();canvas.removeEventListener('wheel',wheelZoom);canvas.removeEventListener('touchstart',pinchStart);canvas.removeEventListener('touchmove',pinchMove);canvas.removeEventListener('touchend',pinchEnd);canvas.removeEventListener('touchcancel',pinchEnd);costumeView.dispose();lootView.dispose();statusView.dispose();projectileView.dispose();combatVfx.dispose();disposed=true;++petGeneration;canvas.removeEventListener('pointerdown',pointerDown);canvas.removeEventListener('pointerup',pointerUp);pet?.roomFx?.dispose();pet?.outomanFx?.dispose();pet?.duoFx?.dispose();pet?.guanpangFx?.dispose();pet?.controller?.dispose?.();specials.forEach(a=>{a?.roomFx?.dispose();a?.outomanFx?.dispose();a?.duoFx?.dispose();a?.guanpangFx?.dispose();a?.controller?.dispose?.();});const mats=new Set(),geos=new Set(),textures=new Set();scene.traverse(o=>{if(o.geometry)geos.add(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){mats.add(m);for(const v of Object.values(m))if(v?.isTexture)textures.add(v);}});geos.forEach(g=>g.dispose());mats.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());resources.forEach(r=>r.dispose());renderer.dispose();}
+  function dispose(){bossMarkers?.dispose();bossMarkers=null;vfx3d?.dispose();reaperFx.dispose();scythe.dispose();canvas.removeEventListener('wheel',wheelZoom);canvas.removeEventListener('touchstart',pinchStart);canvas.removeEventListener('touchmove',pinchMove);canvas.removeEventListener('touchend',pinchEnd);canvas.removeEventListener('touchcancel',pinchEnd);costumeView.dispose();lootView.dispose();statusView.dispose();projectileView.dispose();combatVfx.dispose();disposed=true;++petGeneration;canvas.removeEventListener('pointerdown',pointerDown);canvas.removeEventListener('pointerup',pointerUp);pet?.roomFx?.dispose();pet?.outomanFx?.dispose();pet?.duoFx?.dispose();pet?.guanpangFx?.dispose();pet?.controller?.dispose?.();specials.forEach(a=>{a?.roomFx?.dispose();a?.outomanFx?.dispose();a?.duoFx?.dispose();a?.guanpangFx?.dispose();a?.controller?.dispose?.();});const mats=new Set(),geos=new Set(),textures=new Set();scene.traverse(o=>{if(o.geometry)geos.add(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){mats.add(m);for(const v of Object.values(m))if(v?.isTexture)textures.add(v);}});geos.forEach(g=>g.dispose());mats.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());resources.forEach(r=>r.dispose());renderer.dispose();}
   renderer.compile(scene,camera);onReady?.(metrics);return {update,prepare,resize,constrainPet,petTargetVisible,setZoom,adjustZoom:delta=>setZoom(zoom+delta),dispose,playHero,playPet,petAction,heroNormal,heroBlink,supportCast,throwBall,heroStart,heroStrike,impact,projectileOrigin:(id,hand)=>actorPoint(id,true,undefined,hand),projectileImpact,enemyAction,feedbackAnchor,heroHealthAnchor,inspectActor,effect,project,heightOf,evolution,spellRelease,resetTransient,metrics};
 }

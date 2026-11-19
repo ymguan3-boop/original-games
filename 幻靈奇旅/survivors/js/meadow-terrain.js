@@ -7,6 +7,14 @@ export const MEADOW_SOLIDS=[
 ];
 for(let i=0;i<12;i++){const a=i/12*Math.PI*2;MEADOW_SOLIDS.push({id:'shore'+i,kind:'rock',x:-16+Math.sin(a)*5.2,z:-7+Math.cos(a)*3.8,rx:.5,rz:.4});}
 export function meadowBlocked(p,radius=.45){return MEADOW_SOLIDS.some(o=>((p.x-o.x)/(o.rx+radius))**2+((p.z-o.z)/(o.rz+radius))**2<1);}
+/* 怪物繞道：前方 2.4m 內有障礙就改走偏轉角度最小的通路，並記住繞行方向避免左右擺動 */
+function meadowClear(from,heading,radius){radius+=.08;for(const d of [.12,.35,.7,1.1,1.6,2.4])if(meadowBlocked({x:from.x+Math.sin(heading)*d,z:from.z+Math.cos(heading)*d},radius))return false;return true;}
+export function meadowSteer(from,heading,radius=.55,side=0){
+ if(meadowClear(from,heading,radius))return {heading,side:0};
+ const find=s=>{for(let k=1;k<=11;k++){const h=heading+s*k*Math.PI/12;if(meadowClear(from,h,radius))return {heading:h,side:s,k};}return null;};
+ let pick;if(side)pick=find(side)||find(-side);else{const l=find(1),r=find(-1);pick=!l?r:!r?l:l.k<=r.k?l:r;}
+ return pick?{heading:pick.heading,side:pick.side}:{heading,side};
+}
 export function constrainMeadow(p,from=p,radius=.45){let at={x:from.x,z:from.z};if(meadowBlocked(at,radius)){for(const o of MEADOW_SOLIDS){const dx=at.x-o.x,dz=at.z-o.z,a=o.rx+radius+.02,b=o.rz+radius+.02,k=Math.hypot(dx/a,dz/b);if(k<1){at={x:o.x+(k>0?dx/k:a),z:o.z+(k>0?dz/k:0)};}}}
  const distance=Math.hypot(p.x-at.x,p.z-at.z),steps=Math.max(1,Math.ceil(distance/.2)),dx=(p.x-at.x)/steps,dz=(p.z-at.z)/steps;for(let i=0;i<steps;i++){const full={x:at.x+dx,z:at.z+dz};if(!meadowBlocked(full,radius))at=full;else{const x={x:at.x+dx,z:at.z},z={x:at.x,z:at.z+dz};if(!meadowBlocked(x,radius))at=x;else if(!meadowBlocked(z,radius))at=z;}}
  return at;

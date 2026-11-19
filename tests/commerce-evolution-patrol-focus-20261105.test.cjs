@@ -41,7 +41,7 @@ test('one card click evolves exactly one stage, preserves the employee identity,
 test('patrol completion is impossible for required events before the selected focus, and auto-clears when nearby',()=>{
  const {requiresManagerPatrol}=helper('js/event-routing.js',['requiresManagerPatrol']);
  const {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue}=helper('js/patrol-events.js',['eventEmployee','managerNearEmployee','sleepEvent','applyFreeEventFatigue']);
- const core=read('js/core.js'),start=core.indexOf('resolveNearbyEvent(s){'),end=core.indexOf('setManagerActive(active)',start);
+ /* 以大括號配對取出整個方法，不依賴下一個方法的名稱 */const core=read('js/core.js'),start=core.indexOf('resolveNearbyEvent(s){');let depth=0,end=start;for(let i=core.indexOf('{',start);i<core.length;i++){if(core[i]==='{')depth++;else if(core[i]==='}'&&--depth===0){end=i+1;break;}}
  const method=core.slice(start,end);
  const react=(s,e,kind)=>{e.reaction=kind};
  const resolve=new Function('eventEmployee','managerNearEmployee','sleepEvent','applyFreeEventFatigue','react','requiresManagerPatrol','return ({'+method+'}).resolveNearbyEvent;')
