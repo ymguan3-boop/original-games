@@ -70,3 +70,8 @@ button{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
  .ref{width:min(100%,360px);justify-self:center}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+
+.collections{display:flex;gap:6px;flex-wrap:wrap}
+.collections a{padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);text-decoration:none;font-weight:700}
+.collections a[aria-current]{background:var(--accent);color:var(--accent-fg)}
+#merchant-gallery iframe{width:100%;height:calc(100dvh - 155px);min-height:490px;border:0;border-radius:12px;background:#f6edda}

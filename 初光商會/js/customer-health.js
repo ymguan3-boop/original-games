@@ -1,7 +1,7 @@
 import{CHECKOUT,ENTRANCE,walkable}from'./nav.js?v=20261115-v63';
 import{obstacles}from'./decorations.js?v=20261115-v63';
 const queue=c=>['Queue','Checkout'].includes(c.state);
-export function waitingAtQueue(c){return queue(c)&&Math.hypot(c.x-CHECKOUT.x,c.z-(c.state==='Checkout'?CHECKOUT.z:3+Math.max(0,c.queueSlot||0)))<.6;}
+export function waitingAtQueue(c){return queue(c)&&Math.hypot(c.x-(c.queueDeskX??CHECKOUT.x),c.z-(c.state==='Checkout'?CHECKOUT.z:3+Math.max(0,c.queueSlot||0)))<.6;}
 export function customerHealthTick(g,s,realDt){
  s.customerHealthSeconds=(s.customerHealthSeconds||0)+realDt;
  for(const c of s.customers){const p=c.healthPosition,moved=!p||p.state!==c.state||Math.hypot(p.x-c.x,p.z-c.z)>.15;c.healthIdle=moved?0:(c.healthIdle||0)+realDt;if(moved)c.healthPosition={x:c.x,z:c.z,state:c.state};if(!queue(c)||!waitingAtQueue(c))c.wait=0;}

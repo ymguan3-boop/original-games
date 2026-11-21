@@ -1,3 +1,4 @@
+import {createStoryBoy} from '../storybook-boy.js';
 import {createWeatherOutfit,weatherOutfitKind,createWeatherExposure,surfaceSnowPatches} from '../weather-outfits.js?v=20261115-v63';
 /* 商會門外：依等級變熱鬧的街景、進出的顧客、門口發傳單的店員。
    全部是原創造型：石板路、市集攤位、噴泉、旗幟。 */
@@ -9,6 +10,9 @@ const THREE=globalThis.THREE;
 
 const STEP_D=.36;
 const weatherPeople=new WeakMap(),weatherBattles=new WeakMap();
+import {storybookEnabled} from '../storybook-mode.js';
+import {storyTree,storyPaving,addMarketCanopy,storyLamp} from '../storybook-town.js';
+import {dressYardVisitor} from '../storybook-cast.js';
 export function layout(level,o={}){const L={...LEVELS[level],...(o.w?{w:o.w}:{}),...(o.d?{d:o.d}:{})},{w,d,t,H}=L,n=Math.max(2,Math.ceil(-GROUND/.16)),half=w/2+t,zF=d/2+t,zS=zF+.18+n*STEP_D,pathLen=[0,2.4,2.6,2.8,3,3.2][level],zR=zS+pathLen+1.3;
  return {doorX:o.doorX||0,L,w,d,t,H,half,zF,zS,zR,nSteps:n,stepW:(level===1?1.05:level>=4?2.1:1.8)+.9+.25,pw:level===1?1.8:level>=4?3.4:2.6,roadHalf:half+[0,5,6,7,8,10][level]};}
 
@@ -23,7 +27,7 @@ const S=(r,c,x,y,z,p,sx=1,sy=1,sz=1)=>{const o=mk(new THREE.SphereGeometry(r,14,
 
 /* ---------- 擺設 ---------- */
 let G=GROUND;
-function tree(p,x,z,s=1,kind='round'){const g=new THREE.Group();g.position.set(x,G,z);g.scale.setScalar(s);p.add(g);C(.13,.18,1.1,0x8a5a34,0,.55,0,g,10);
+function tree(p,x,z,s=1,kind='round'){if(storybookEnabled)return storyTree(THREE,p,x,z,s,kind,G);const g=new THREE.Group();g.position.set(x,G,z);g.scale.setScalar(s);p.add(g);C(.13,.18,1.1,0x8a5a34,0,.55,0,g,10);
  if(kind==='pine'){for(let i=0;i<3;i++){const c=mk(new THREE.ConeGeometry(.75-i*.18,.8,12),toon(i%2?0x4f9a3a:0x5aa846),0,1.1+i*.45,0,g,true);}}
  else{S(.62,0x5fae44,0,1.45,0,g);S(.48,0x6cbc4e,.42,1.25,.15,g);S(.5,0x56a03e,-.4,1.3,-.1,g);S(.42,0x74c454,.05,1.85,.1,g);}
  return g;}
@@ -32,18 +36,27 @@ function flowerBed(p,x,z,w,d,border=0xb9ad98){const g=new THREE.Group();g.positi
  const R=rng(Math.round(x*13+z*7)+5),n=Math.round(w*d*7);for(let i=0;i<n;i++){const fx=(R()-.5)*(w-.25),fz=(R()-.5)*(d-.25);S(.07,i%3?0x5fae44:0x6cbc4e,fx,.14,fz,g,1,.8,1).userData.noLine=true;if(R()<.6)S(.05,[0xf27a8a,0xffffff,0xf7c840,0xb07ad8][i%4],fx,.22,fz,g);}return g;}
 function fence(p,x1,z1,x2,z2,{color=0xf7ead0,broken=false}={}){const g=new THREE.Group();p.add(g);const len=Math.hypot(x2-x1,z2-z1),n=Math.max(2,Math.round(len/.32)),ang=Math.atan2(x2-x1,z2-z1),R=rng(Math.round(x1*7+z1*3)+11);
  for(let i=0;i<=n;i++){if(broken&&R()<.3)continue;const f=i/n,px=x1+(x2-x1)*f,pz=z1+(z2-z1)*f,h=broken?.4+R()*.25:.6;const pk=B(.09,h,.05,color,px,G+h/2,pz,g);pk.rotation.y=ang;if(broken)pk.rotation.z=(R()-.5)*.35;}
+ if(storybookEnabled){
+  for(const f of [0,1]){const px=x1+(x2-x1)*f,pz=z1+(z2-z1)*f;B(.15,.7,.15,color,px,G+.35,pz,g);C(0,.13,.18,shade(color,-.16),px,G+.78,pz,g,4,false).rotation.y=Math.PI/4;}
+ }
  for(const y of[.18,.42]){if(broken&&y>.3)continue;const r=B(.04,.06,len,shade(color,-.12),(x1+x2)/2,G+y,(z1+z2)/2,g);r.rotation.y=ang;if(broken)r.rotation.x=.06;}return g;}
-function lampPost(p,x,z,{gold=false,anim}={}){const g=new THREE.Group();g.position.set(x,G,z);p.add(g);const pc=gold?0xd9a521:0x3e3a36;C(.16,.2,.18,pc,0,.09,0,g);C(.05,.06,2.3,pc,0,1.25,0,g,8);B(.32,.05,.32,pc,0,2.42,0,g);const l=B(.26,.34,.26,toon(0xffe08a,{emissive:0xffb648,emissiveIntensity:.55}),0,2.62,0,g);const cap=mk(new THREE.ConeGeometry(.24,.2,4),toon(pc),0,2.89,0,g,false);cap.rotation.y=Math.PI/4;S(.04,pc,0,3.0,0,g);return g;}
-function barrel(p,x,z,s=1,broken=false){const g=new THREE.Group();g.position.set(x,G,z);g.scale.setScalar(s);p.add(g);const b=mk(new THREE.CylinderGeometry(.27,.27,.62,14),texMat(plankTex({base:0x9a6a40,dark:0x5a3a22,n:8,seed:4}),2,1),0,.31,0,g,true);b.scale.set(1,1,1);for(const y of[.1,.52])C(.285,.285,.05,0x4a4440,0,y,0,g,14,false);if(!broken)C(.25,.25,.02,0x7a5232,0,.625,0,g,14,false);else b.rotation.z=1.3,b.position.y=.27;return g;}
-function crate(p,x,z,s=.5,rot=0,fill=null){const g=new THREE.Group();g.position.set(x,G,z);g.rotation.y=rot;p.add(g);B(s,s,s,texMat(plankTex({base:0xc08a52,dark:0x6e4a2a,n:3,vertical:false,seed:7}),1,1),0,s/2,0,g);if(fill){const R=rng(Math.round(x*9+z*5));for(let i=0;i<6;i++)S(s*.15,fill[i%fill.length],(R()-.5)*s*.6,s+.02,(R()-.5)*s*.6,g);}return g;}
+function lampPost(p,x,z,{gold=false,anim}={}){if(storybookEnabled)return storyLamp(THREE,p,x,z,gold,G);const g=new THREE.Group();g.position.set(x,G,z);p.add(g);const pc=gold?0xd9a521:0x3e3a36;C(.16,.2,.18,pc,0,.09,0,g);C(.05,.06,2.3,pc,0,1.25,0,g,8);B(.32,.05,.32,pc,0,2.42,0,g);const l=B(.26,.34,.26,toon(0xffe08a,{emissive:0xffb648,emissiveIntensity:.55}),0,2.62,0,g);const cap=mk(new THREE.ConeGeometry(.24,.2,4),toon(pc),0,2.89,0,g,false);cap.rotation.y=Math.PI/4;S(.04,pc,0,3.0,0,g);return g;}
+function barrel(p,x,z,s=1,broken=false){const g=new THREE.Group();g.position.set(x,G,z);g.scale.setScalar(s);p.add(g);const b=mk(new THREE.CylinderGeometry(.27,.27,.62,14),texMat(plankTex({base:0x9a6a40,dark:0x5a3a22,n:8,seed:4}),2,1),0,.31,0,g,true);if(storybookEnabled&&!broken){
+  const old=b.geometry;b.geometry=new THREE.LatheGeometry([[.21,0],[.25,.04],[.31,.25],[.31,.36],[.25,.58],[.22,.62]].map(([r,h])=>new THREE.Vector2(r,h-.31)),14);
+  for(const child of b.children)if(child.geometry===old)child.geometry=b.geometry;old.dispose();
+ }
+ b.scale.set(1,1,1);for(const y of[.1,.52])C(.285,.285,.05,0x4a4440,0,y,0,g,14,false);if(!broken)C(.25,.25,.02,0x7a5232,0,.625,0,g,14,false);else b.rotation.z=1.3,b.position.y=.27;return g;}
+function crate(p,x,z,s=.5,rot=0,fill=null){const g=new THREE.Group();g.position.set(x,G,z);g.rotation.y=rot;p.add(g);B(s,s,s,texMat(plankTex({base:0xc08a52,dark:0x6e4a2a,n:3,vertical:false,seed:7}),1,1),0,s/2,0,g);if(storybookEnabled){for(const side of [-1,1]){const rail=B(s*.95,s*.11,.03,0xe3b27b,0,s*.5,side*s*.51,g);rail.rotation.z=side*.72;}}
+ if(fill){const R=rng(Math.round(x*9+z*5));for(let i=0;i<6;i++)S(s*.15,fill[i%fill.length],(R()-.5)*s*.6,s+.02,(R()-.5)*s*.6,g);}return g;}
 function sack(p,x,z){const g=new THREE.Group();g.position.set(x,G,z);p.add(g);S(.22,0xd9c49a,0,.2,0,g,1,1.1,.9);C(.06,.1,.12,0xd9c49a,0,.44,0,g,8);return g;}
-function bench(p,x,z,rot=0){const g=new THREE.Group();g.position.set(x,G,z);g.rotation.y=rot;p.add(g);B(1.4,.08,.42,0xb07a44,0,.42,0,g);B(1.4,.3,.06,0xb07a44,0,.68,-.2,g);for(const s of[-1,1]){B(.08,.42,.08,0x5c3e26,s*.6,.21,.15,g);B(.08,.7,.08,0x5c3e26,s*.6,.35,-.18,g);}return g;}
+function bench(p,x,z,rot=0){const g=new THREE.Group();g.position.set(x,G,z);g.rotation.y=rot;p.add(g);B(1.4,.08,.42,0xb07a44,0,.42,0,g);B(1.4,.3,.06,storybookEnabled?0x568477:0xb07a44,0,.68,-.2,g);if(storybookEnabled){for(const k of [-1,1]){const arm=mk(new THREE.TorusGeometry(.18,.038,6,12,Math.PI),toon(0xaa8358),k*.6,.5,.01,g);arm.rotation.y=Math.PI/2;}B(1.45,.065,.09,0xd5aa77,0,.84,-.2,g);}for(const s of[-1,1]){B(.08,.42,.08,0x5c3e26,s*.6,.21,.15,g);B(.08,.7,.08,0x5c3e26,s*.6,.35,-.18,g);}return g;}
 function aBoard(p,x,z,rot=0,text='今日特價'){const g=new THREE.Group();g.position.set(x,G,z);g.rotation.y=rot;p.add(g);const t=canvasTex(128,160,(c,W,H)=>{c.fillStyle='#2f3b33';c.fillRect(0,0,W,H);c.fillStyle='#fff';c.font='900 26px "Microsoft JhengHei",sans-serif';c.textAlign='center';c.fillText(text.slice(0,2),W/2,52);c.fillText(text.slice(2),W/2,86);c.fillStyle='#f7c840';c.fillText('★ ★',W/2,128);});
  for(const s of[-1,1]){const pl=B(.62,.86,.05,0x9a6438,0,.42,s*.14,g);pl.rotation.x=s*.2;const face=mk(new THREE.PlaneGeometry(.5,.68),new THREE.MeshBasicMaterial({map:t}),0,.44,s*.17,g);face.rotation.x=s*.2;face.rotation.y=s>0?0:Math.PI;face.userData.noLine=true;}return g;}
 function stall(p,x,z,{c1=0xd94a3a,c2=0xfff4df,goods=[0xf25a3a,0xf7c840,0x8ac24a,0xf0904a],rot=0}={}){const g=new THREE.Group();g.position.set(x,G,z);g.rotation.y=rot+Math.PI;p.add(g);
  B(2,.7,.9,texMat(plankTex({base:0xc08a52,dark:0x6e4a2a,n:4,vertical:false,seed:9}),1,1),0,.35,0,g);B(2.1,.06,1,0x9a6438,0,.72,0,g);
  const R=rng(Math.round(x*11+z*3)+3);for(let i=0;i<4;i++){const cx=-.72+i*.48;B(.4,.12,.36,0x8a5a32,cx,.81,.1,g);for(let k=0;k<5;k++)S(.07,goods[(i+k)%goods.length],cx+(R()-.5)*.25,.92,.1+(R()-.5)*.2,g);}
  for(const sx of[-1,1])for(const sz of[-1,1])C(.04,.04,2,0x8a5a34,sx*.95,1,sz*.42,g,8,false);
+ if(storybookEnabled){addMarketCanopy(THREE,g,c1,c2);return g;}
  const can=mk(new THREE.BoxGeometry(2.3,.05,1.3),new THREE.MeshToonMaterial({map:stripeTex(c1,c2,9),gradientMap:ramp()}),0,2.05,.08,g);can.rotation.x=.18;
  const n=9,sw=2.3/n;for(let i=0;i<n;i++){const sh=new THREE.Shape();sh.moveTo(-sw/2,0);sh.absarc(0,0,sw/2,Math.PI,2*Math.PI,false);mk(new THREE.ExtrudeGeometry(sh,{depth:.03,bevelEnabled:false,curveSegments:8}),toon(i%2?c2:c1),-1.15+sw*(i+.5),1.93,.73,g);}
  return g;}
@@ -105,6 +118,7 @@ export function person(opt={}){
  if(o.style==='bun')S(.12,o.hair,0,.28,-.1,head);
  if(o.style==='long'){S(.17,o.hair,-.2,-.18,-.04,head,.7,1.4,.9);S(.17,o.hair,.2,-.18,-.04,head,.7,1.4,.9);}
  if(o.style==='cap'||o.hat){const hc=o.hat||pick([0xd94a3a,0x5a8fd0,0xf2c040]);const hat=mk(new THREE.SphereGeometry(.295,18,10,0,Math.PI*2,0,Math.PI*.42),toon(hc),0,.02,0,head,true);hat.rotation.x=-.2;const brim=C(.2,.2,.03,hc,0,.07,.24,head,14,false);brim.scale.z=.7;}
+ if(storybookEnabled)dressYardVisitor(THREE,body,head,o);
  const props={};
  if(o.flyers){props.stack=B(.16,.06,.2,0xfff8e8,0,-.03,.06,arms[0].hand);props.stack.rotation.x=.3;}
  props.flyer=B(.15,.2,.01,0xfff2c0,0,-.08,.08,arms[1].hand);props.flyer.visible=false;props.flyer.userData.noLine=true;
@@ -197,13 +211,15 @@ export function buildYard(level,opts={}){
  G=GROUND;const ambient=!!opts.ambient;const Y=layout(level,opts),{w,d,half,zF,zS,zR,pw,H,doorX:DX}=Y,root=new THREE.Group(),props=new THREE.Group(),anim=[];root.add(props);
  const R=rng(level*131+17);
  /* 地面：L1 泥土路；L2 石板小徑；L3 以上整片石板廣場 */
- const road=level===1?dirtTex():roadPavingTex();
+ const road=storybookEnabled?storyPaving(canvasTex,level):level===1?dirtTex():roadPavingTex();
+ const approach=storybookEnabled&&level===1?storyPaving(canvasTex,level,true):road;
+ const roadTile=storybookEnabled?[0,2.2,1.8,2,2.6,2.7][level]:level===1?1.2:4;
  const floorStrip=(x,z,ww,dd,tex,y=.02,r=1.2)=>{const m=mk(new THREE.BoxGeometry(ww,.04,dd),texMat(tex,ww/r,dd/r),x,G+y,z,root);m.castShadow=false;m.userData.noLine=true;return m;};
- floorStrip(DX,(zS+zR)/2,pw,zR-zS,road);/* 步道一路接到馬路 */
- floorStrip(0,zR,Y.roadHalf*2+20,2.2,road,.05,level===1?1.2:4);
+ floorStrip(DX,(zS+zR)/2,pw,zR-zS,approach,.02,storybookEnabled?roadTile:1.2);/* 步道一路接到馬路 */
+ floorStrip(0,zR,Y.roadHalf*2+20,2.2,road,.05,roadTile);
  if(level>=2){const trim=level>=4?0xc7b79b:0xb7ad9b;for(const side of [-1,1]){const curb=B(Y.roadHalf*2+20,.045,.09,trim,0,G+.079,zR+side*1.055,root);curb.castShadow=false;curb.userData.noLine=true;const edge=B(.08,.035,zR-zS-1.1,trim,DX+side*(pw/2-.045),G+.045,(zS+zR-1.1)/2,root);edge.castShadow=false;edge.userData.noLine=true;}}
  /* 門前保留草皮（放植栽用），只鋪步道與馬路 */if(level>=3){
-  const across=[0,0,0,6,7.5,9][level];floorStrip(0,zR+1+(across+.3)/2,[0,0,0,10,14,18][level],across+.3,road,.035,4);}
+  const across=[0,0,0,6,7.5,9][level];floorStrip(0,zR+1+(across+.3)/2,[0,0,0,10,14,18][level],across+.3,road,.035,roadTile);}
  if(level===5){const c=mk(new THREE.BoxGeometry(1.4,.03,zR-1.3-zS),toon(0xb5201a),DX,G+.07,(zS+zR-1.3)/2,root);c.userData.noLine=true;c.castShadow=false;}
 
  const sideX=half+1.2,across=zR+1.3;let spinArena=null;if(level>=3){const placement=plazaArenaPlacement(level),factory=createSpinModels(THREE);spinArena=factory.arena({radius:placement.radius,mini:true,level});spinArena.position.set(0,G,across+placement.zOffset);spinArena.userData.pick={type:'spinArena',id:'plaza-center'};spinArena.userData.disposeEnvironment=()=>factory.disposeEnvironment();spinArena.traverse(o=>{if(o.isMesh)o.userData.noLine=true;});props.add(spinArena);const sign=aBoard(props,-placement.radius-.65,across+placement.zOffset+.6,0,'陀螺大會');sign.userData.pick={type:'spinArena',id:'plaza-center'};}
@@ -326,6 +342,7 @@ export function buildYard(level,opts={}){
 
 /* 商會用的主角：同一套 Q 版畫風（黑髮、藍外套、黃色背帶與背包），提供商會角色控制介面 */
 export function createHeroChibi(){
+ if(storybookEnabled)return createStoryBoy(THREE);
  const p=person({seed:4242,skin:0xffdcbc,hair:0x2a2226,shirt:0x3f7fd0,pants:0x5a5f72,shoes:0x8a4a2a,style:'short',skirt:false,scale:1});
  const strap=toon(0xf2c040),pack=toon(0x9a6438);
  for(const s of[-1,1]){const st=mk(new THREE.BoxGeometry(.05,.42,.02),strap,s*.09,.56,.165,p.body);st.rotation.z=s*.12;st.userData.noLine=true;}

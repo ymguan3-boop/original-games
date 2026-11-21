@@ -1,4 +1,6 @@
 /* 商品與武器架的程序模型：不必下載檔案，每種商品併成單一網格後即可 InstancedMesh 批次擺上貨架。 */
+import {storybookEnabled} from './storybook-mode.js';
+import {storyProduct} from './storybook-products.js';
 const cache=new Map();
 export function builder(T){
  const pos=[],nor=[],col=[],m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),c=new T.Color(),n3=new T.Matrix3(),v=new T.Vector3();
@@ -22,9 +24,18 @@ const RECIPES={
  'shop-iron'(b,G){for(const [x,y,z,s,c] of [[0,.24,0,.3,0x565b66],[-.3,.16,.1,.2,0x6a6f7a],[.28,.15,.12,.2,0x4c5059],[.08,.15,-.26,.19,0x60656f],[.02,.46,.04,.17,0x747a85]]){b.put(G.rock,c,x,y,z,s,s*.9,s,x*3,z*4,y*3);b.put(G.oct,0xd9e2ec,x+s*.5,y+s*.5,z+s*.5,s*.22);}},
  'shop-wood'(b,G){for(const [x,y] of [[-.21,.2],[.21,.2],[0,.56]]){b.put(G.cyl,0x9a6538,x,y,0,.2,.92,.2,Math.PI/2);for(const z of[-.465,.465]){b.put(G.cyl,0xe9c98a,x,y,z,.17,.02,.17,Math.PI/2);b.put(G.ring,0xb98a50,x,y,z,.09,.09,.09);}}},
 };
-export const hasProcedural=sku=>!!RECIPES[sku];
+export const hasProcedural=sku=>!!RECIPES[sku]||(storybookEnabled&&/^(ball-|berry$|sword|knife|blade|guns|weapon)/.test(sku));
 /* 回傳與 GLTF 相同的 {scene}，後面的貨架程式不用分辨來源 */
-export function productModel(T,sku){const key='p:'+sku;if(!cache.has(key)){const b=builder(T),G=kit(T);RECIPES[sku](b,G);const scene=new T.Group();scene.add(b.mesh());scene.name=sku;cache.set(key,{scene});}return cache.get(key);}
+export function productModel(T,sku){
+ const key='p:'+sku;
+ if(!cache.has(key)){
+  const b=builder(T),G=kit(T);
+  if(!storybookEnabled||!storyProduct(T,b,G,sku))RECIPES[sku](b,G);
+  const scene=new T.Group();scene.add(b.mesh());scene.name=sku;
+  Object.values(G).forEach(geometry=>geometry.dispose());cache.set(key,{scene});
+ }
+ return cache.get(key);
+}
 /* 武器架：背板三排掛桿，武器直立靠掛，前方看得到每一把 */
 export function armoryRack(T){if(cache.has('rack'))return cache.get('rack');const b=builder(T),G=kit(T),W=0x9a5a2c,D=0x6e3f1e,MET=0xc9b27a;
  b.put(G.box,D,0,.05,.04,1,.1,.74);b.put(G.box,W,0,.72,-.3,.96,1.3,.07);for(const s of[-1,1]){b.put(G.box,D,s*.46,.7,-.27,.09,1.36,.12);b.put(G.box,W,s*.46,.14,.02,.07,.07,.6);}

@@ -3,11 +3,13 @@ import {artisanArmory} from './armory-pilot-v41.js?v=20261115-v63';
 import {TIER_DESIGNS,tierNumber} from './tier-designs.js?v=20261115-v63';
 import {shelfTypes} from './furniture.js?v=20261115-v63';
 import {decorTypes} from './decorations.js?v=20261115-v63';
+import {storybookEnabled} from './storybook-mode.js';
+import {storyPalette,dressStoryFixture} from './storybook-interior.js';
 const cache=new Map();
 export function createTierModel(T,{type,tier=1,decoration=false}={}){
  const n=tierNumber(tier),key=[type,n,decoration].join(':');if(cache.has(key))return cache.get(key);
- if(type==='armory'&&n===1&&!decoration)return artisanArmory(T);
- const C=TIER_DESIGNS[n],b=builder(T),shapes={},owned=[];
+ if(!storybookEnabled&&type==='armory'&&n===1&&!decoration)return artisanArmory(T);
+ const C=storybookEnabled?{...TIER_DESIGNS[n],...storyPalette(n)}:TIER_DESIGNS[n],b=builder(T),shapes={},owned=[];
  const geo=(id,create)=>shapes[id]||(owned.push(shapes[id]=create()),shapes[id]);
  const G={box:geo('box',()=>new T.BoxGeometry(1,1,1)),ball:geo('ball',()=>new T.SphereGeometry(1,10,7)),cyl:geo('cyl',()=>new T.CylinderGeometry(1,1,1,12)),cone:geo('cone',()=>new T.ConeGeometry(1,1,8)),gem:geo('gem',()=>new T.OctahedronGeometry(1)),ring:geo('ring',()=>new T.TorusGeometry(1,.09,5,20))};
  function B(c,x,y,z,w,h,d,rz=0){b.put(G.box,c,x,y,z,w,h,d,0,0,rz);}
@@ -53,6 +55,12 @@ export function createTierModel(T,{type,tier=1,decoration=false}={}){
    bar(C.dark,0,.20,-.02,.89,.18,.70);bar(C.panel,0,h*.53+.12,-.30,.74,h-.02,.055);for(const side of[-1,1])post(side*.40,h-.04);
    for(const y of[.23,.74,1.25].filter(y=>y<h)){bar(C.wood,0,y-.015,0,.78,.055,.59);bar(C.trim,0,y,.31,.80,.04,.025);for(const side of[-1,1])pin(side*.34,y,.33);}
    for(let i=-1;i<=1;i++){bar(C.wood,i*.25,.19,.335,.235,.12,.035);pin(i*.25,.19,.36);}cornice(h);
+   if(kind==='xp-crystal'){
+    for(const side of [-1,1]){
+     b.put(G.gem,side<0?0xae79be:0xe393b5,side*.10,h+.27,-.13,.095,.18,.08,0,0,-side*.34);
+     b.put(G.ring,C.trim,side*.10,h+.27,-.13,.14,.18,.023,0,0,-side*.34);
+    }
+   }
    if(kind==='apothecary'||kind==='arcane'){for(const side of[-1,1]){bar(C.panel,side*.40,h+.18,-.20,.09,.15,.11);bar(C.trim,side*.40,h+.27,-.20,.11,.045,.13);}if(kind==='arcane')for(const side of[-1,1])for(let j=0;j<4;j++)leaf(side*.42,.38+j*.29,.0,side*.6);}
    if(kind==='materials'){for(const y of[.27,.75,1.23])for(const side of[-1,1]){B(C.dark,side*.40,y,.02,.12,.09,.10);pin(side*.40,y,.077);}for(const side of[-1,1])B(C.trim,side*.2,.82,-.255,.035,.98,.015,-side*.4);for(const x of[-.12,0,.12])b.put(G.gem,C.accent,x,h+.12,-.13,.07,.09,.06);}
    if(kind==='relic'||kind==='royal'){for(const side of[-1,1])for(let j=0;j<5;j++)pin(side*.405,.35+j*.25,.0);motif(kind==='royal'?'crown':'pearl',0,h+.34,-.16,.11);}
@@ -81,6 +89,19 @@ export function createTierModel(T,{type,tier=1,decoration=false}={}){
   else{bar(C.dark,0,.10,0,.64,.20,.52);b.put(G.cyl,C.wood,0,.32,0,.22,.28,.22);const sun=type==='sun-art';if(sun){b.put(G.ring,C.trim,0,1.0,0,.38,.38,.08);motif('sun',0,1.0,.04,.30);}else for(let i=0;i<5;i++){const a=i*2.4;b.put(G.gem,i%2?C.trim:C.accent,Math.sin(a)*.16,.65+(i%3)*.15,Math.cos(a)*.14,.09,.30,.09);}}
  }
  if(decoration)decorationModel(type);else cabinet(type);
+ if(storybookEnabled) dressStoryFixture(T,b,G,C,type,n,shelfTypes.find(s=>s.id===type)?.top||0,decoration);
  const scene=new T.Group(),mesh=b.mesh(.72,.06);scene.add(mesh);if(type==='materials'&&!decoration)scene.scale.x=2;scene.name=`lv${n}-${type}`;scene.userData={tier:n,type,triangles:mesh.geometry.attributes.position.count/3,approvedPathway:'armory-pilot-v41',footprint:decoration&&type==='carpet'?[2.7,1.9]:type==='materials'?[2,1]:[1,1]};owned.forEach(g=>g.dispose());const r={scene};cache.set(key,r);return r;
 }
-export function createOrbTrim(T,tier){const C=TIER_DESIGNS[tierNumber(tier)],b=builder(T),ring=new T.TorusGeometry(.445,.012,5,36),gem=new T.OctahedronGeometry(.035),ball=new T.SphereGeometry(.024,8,6);b.put(ring,C.trim,0,.72,0,1,1,1,Math.PI/2);for(let i=0;i<4+tierNumber(tier)%3;i++){const a=i*Math.PI*2/(4+tierNumber(tier)%3);b.put(tier>=4?gem:ball,i%2?C.accent:C.trim,Math.sin(a)*.445,.72,Math.cos(a)*.445);}const root=new T.Group();root.add(b.mesh(.5,.15));for(const g of[ring,gem,ball])g.dispose();return root;}
+export function createOrbTrim(T,tier){
+ const C=storybookEnabled?storyPalette(tier):TIER_DESIGNS[tierNumber(tier)],b=builder(T);
+ const ring=new T.TorusGeometry(.445,.012,5,36),gem=new T.OctahedronGeometry(.035),ball=new T.SphereGeometry(.024,8,6);
+ b.put(ring,C.trim,0,.72,0,1,1,1,Math.PI/2);
+ const count=4+tierNumber(tier)%3;
+ for(let i=0;i<count;i++){const a=i*Math.PI*2/count;b.put(tier>=4?gem:ball,i%2?C.accent:C.trim,Math.sin(a)*.445,.72,Math.cos(a)*.445);}
+ if(storybookEnabled){
+  // Enamel petals cradle the globe beneath the display opening.
+  for(let i=0;i<10;i++){const a=i*Math.PI/5;b.put(ball,i%2?C.panel:C.wood,.257*Math.sin(a),.33,.257*Math.cos(a),2.1,4.7,1.2,0,a,-.18);}
+  b.put(ring,C.trim,0,.323,0,.66,.66,.66,Math.PI/2);
+ }
+ const root=new T.Group();root.add(b.mesh(.5,.15));for(const g of[ring,gem,ball])g.dispose();return root;
+}

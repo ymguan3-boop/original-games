@@ -2,6 +2,10 @@
    風格：Q 版手繪感、深咖啡外框、三階卡通明暗。
    座標：室內地板頂面 y=0，室內範圍 x∈[-w/2,w/2]、z∈[-d/2,d/2]，門面朝 +z。 */
 import {addIllustratedOutline} from '../illustrated-outline.js?v=20261111-decor-v22';
+import {storybookEnabled} from '../storybook-mode.js';
+import {buildStorybookRoof,frontEaveZ} from '../storybook-roof.js';
+import {townPaint,addStoryRoof} from '../storybook-town.js';
+import {storyFloor,storyGrass} from '../storybook-surfaces.js';
 const THREE=globalThis.THREE;
 /* 商會畫面是 sRGB 輸出：顏色與貼圖要轉成線性空間，否則會偏白 */
 export const CFG={linear:true,outline:.009,gain:.62};
@@ -41,6 +45,7 @@ export function plasterTex(base,seed=2){const R=rng(seed);return canvasTex(256,2
 export function stoneTex({base,mortar,rows=4,cols=3,seed=3,rough=.14}){const R=rng(seed);return canvasTex(256,256,(g,W,H)=>{g.fillStyle=hex(mortar);g.fillRect(0,0,W,H);const rh=H/rows;
  for(let r=0;r<rows;r++){const cw=W/cols,off=r%2?cw/2:0;for(let c=-1;c<=cols;c++){const x=c*cw+off+3,y=r*rh+3,w=cw-6,h=rh-6;g.fillStyle=hex(shade(base,(R()-.5)*rough));g.beginPath();g.roundRect?g.roundRect(x,y,w,h,6):g.rect(x,y,w,h);g.fill();g.fillStyle='rgba(255,255,255,.18)';g.fillRect(x+4,y+3,w-8,3);}}});}
 function floorTex(level){
+ if(storybookEnabled)return storyFloor(canvasTex,level);
  if(level===1)return plankTex({base:0xe9d5b1,dark:0xa8865f,n:6,vertical:false,worn:1,seed:11,nails:true});
  if(level===2)return plankTex({base:0xd9a566,dark:0x8a5a30,n:6,vertical:false,seed:12});
  const R=rng(20+level);
@@ -50,7 +55,7 @@ function floorTex(level){
 }
 export function stripeTex(a,b,n=8,gold=false){return canvasTex(256,64,(g,W,H)=>{for(let i=0;i<n;i++){g.fillStyle=hex(i%2?b:a);g.fillRect(i*W/n,0,W/n,H);}if(gold){g.fillStyle='#e8b52c';for(let i=1;i<n;i++)g.fillRect(i*W/n-2,0,4,H);}g.fillStyle='rgba(0,0,0,.08)';g.fillRect(0,H-10,W,10);});}
 export function glassTex(tint){return canvasTex(128,128,(g,W,H)=>{const gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,hex(shade(tint,.35)));gr.addColorStop(1,hex(tint));g.fillStyle=gr;g.fillRect(0,0,W,H);g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=9;g.beginPath();g.moveTo(18,62);g.lineTo(62,18);g.stroke();g.lineWidth=5;g.beginPath();g.moveTo(34,78);g.lineTo(78,34);g.stroke();});}
-export function grassTex(){const R=rng(77);return canvasTex(256,256,(g,W,H)=>{g.fillStyle='#78c24a';g.fillRect(0,0,W,H);for(let i=0;i<260;i++){const x=R()*W,y=R()*H;g.strokeStyle=R()<.5?'#5ea83a':'#93d25e';g.lineWidth=2;g.beginPath();g.moveTo(x,y);g.lineTo(x+(R()-.5)*5,y-6-R()*5);g.stroke();}for(let i=0;i<30;i++){g.fillStyle='rgba(255,255,255,.1)';g.beginPath();g.ellipse(R()*W,R()*H,10+R()*16,6+R()*8,0,0,7);g.fill();}});}
+export function grassTex(){if(storybookEnabled)return storyGrass(canvasTex);const R=rng(77);return canvasTex(256,256,(g,W,H)=>{g.fillStyle='#78c24a';g.fillRect(0,0,W,H);for(let i=0;i<260;i++){const x=R()*W,y=R()*H;g.strokeStyle=R()<.5?'#5ea83a':'#93d25e';g.lineWidth=2;g.beginPath();g.moveTo(x,y);g.lineTo(x+(R()-.5)*5,y-6-R()*5);g.stroke();}for(let i=0;i<30;i++){g.fillStyle='rgba(255,255,255,.1)';g.beginPath();g.ellipse(R()*W,R()*H,10+R()*16,6+R()*8,0,0,7);g.fill();}});}
 export function cobbleTex(){const R=rng(55);return canvasTex(256,256,(g,W,H)=>{g.fillStyle='#8f8a80';g.fillRect(0,0,W,H);for(let y=0;y<8;y++)for(let x=-1;x<8;x++){const cx=x*34+(y%2)*17+17,cy=y*32+16;g.fillStyle=hex(shade(0xcfc6b4,(R()-.5)*.18));g.beginPath();g.ellipse(cx,cy,14+R()*2,12+R()*2,R(),0,7);g.fill();g.fillStyle='rgba(255,255,255,.25)';g.beginPath();g.ellipse(cx-3,cy-4,7,4,0,0,7);g.fill();}});}
 function signTex(level){
  const T={1:{bg:'#f6e7cb',fg:'#6b4b30',edge:'#9b7854'},2:{bg:'#fff3d8',fg:'#3d6e2a',edge:'#7a5230'},3:{bg:'#fff4df',fg:'#7a2416',edge:'#c98a1e'},4:{bg:'#fffaf0',fg:'#8a1f12',edge:'#d9a521'},5:{bg:'#7c1a14',fg:'#ffd75a',edge:'#ffd75a'}}[level];
@@ -82,8 +87,14 @@ export function addOutline(root,width){const meshes=[];root.traverse(o=>{if(o.is
 const hullMats=new Map();
 export function hull(mesh,th=.014){let mat=hullMats.get(th);if(!mat){mat=new THREE.MeshBasicMaterial({color:INK,side:THREE.BackSide});mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <begin_vertex>','vec3 transformed = position + normal * '+th.toFixed(4)+';');};hullMats.set(th,mat);}
  const h=new THREE.Mesh(mesh.geometry,mat);h.userData.noLine=true;h.userData.isHull=true;mesh.add(h);mesh.userData.noLine=true;return h;}
+function storyShellStyle(level){
+ const base=STYLE[level],p=townPaint[level];
+ return {...base,cap:p.frame,trim:p.trim,frame:p.frame,glass:level===1?0xd7c4a3:0xaaccc7,awning:[p.roof,p.trim],door:p.frame,
+  wallOut:()=>level===1?plankTex({base:0xd8bd91,dark:0x96764f,n:5,seed:31,worn:1,nails:true}):plasterTex(p.wall,30+level),
+  wallIn:()=>plasterTex(shade(p.wall,.22),80+level)};
+}
 export function buildShell(level,opts={}){
- GROUND=opts.ground??-.42;const L={...LEVELS[level],...(opts.w?{w:opts.w}:{}),...(opts.d?{d:opts.d}:{})},S=STYLE[level],{w,d,H,t}=L,root=new THREE.Group();root.name='shop-lv'+level;
+ GROUND=opts.ground??-.42;const L={...LEVELS[level],...(opts.w?{w:opts.w}:{}),...(opts.d?{d:opts.d}:{})},S=storybookEnabled?storyShellStyle(level):STYLE[level],{w,d,H,t}=L,root=new THREE.Group();root.name='shop-lv'+level;
  const doorX=opts.doorX||0,low=!!opts.lowWalls,LOWH=.55;let P=root;
  const mats=new Map(),R=rng(level*97+5);
  const toon=(color,o={})=>{const k=color+JSON.stringify(o);if(!mats.has(k)){const m=new THREE.MeshToonMaterial({color,gradientMap:ramp(),...o});if(CFG.linear){m.color.convertSRGBToLinear();m.emissive?.convertSRGBToLinear();}mats.set(k,m);}return mats.get(k);};
@@ -148,6 +159,11 @@ export function buildShell(level,opts={}){
  if(worn){const dm=texMat(plankTex({base:0xddc399,dark:0xac8a60,n:4,worn:1,seed:91,nails:true}),1,1);box(DW-.06,DH-.04,.08,dm,0,DH/2,0,door);box(DW-.1,.12,.1,toon(0xa17e56),0,DH*.72,.05,door);box(DW-.1,.12,.1,toon(0xa17e56),0,DH*.25,.05,door);const brace=box(.1,DH*.6,.08,toon(0xa17e56),0,DH*.49,.06,door);brace.rotation.z=.48;cyl(.04,.04,.06,toon(0x806044),DW/2-.18,DH*.5,.11,door,8).rotation.x=Math.PI/2;door.rotation.z=.012;}
  else{const fm=toon(S.door);for(const s of[-1,1]){const leaf=new THREE.Group();leaf.position.x=s*DW/4;door.add(leaf);const lw=DW/2-.03;box(lw-.14,DH-.42,.03,glassMat,0,DH/2+.1,0,leaf,true);for(const ss of[-1,1])box(.08,DH,.08,fm,ss*(lw/2-.04),DH/2,0,leaf);box(lw,.08,.08,fm,0,DH-.04,0,leaf);box(lw,.32,.08,fm,0,.16,0,leaf);box(lw,.06,.08,fm,0,DH*.58,0,leaf);cyl(.025,.025,.42,toon(level>=3?S.trim:0xd9a521),-s*(lw/2-.18),DH*.52,.07,leaf,8);}}
  door.position.set(0,0,d/2+t/2);P.add(door);
+ const doorLeaves=[...door.children];
+ root.userData.setDoorOpen=open=>{
+  if(worn)door.position.x=-DW*.90*open;
+  else doorLeaves.forEach((leaf,i)=>{leaf.position.x=(i===0?-1:1)*DW*(.25+.42*open);});
+ };
  /* 門框 */
  {const fm=toon(worn?0xa17e56:level>=4?S.trim:S.cap),fz=d/2+t+.04;for(const s of[-1,1])box(.14,DH+.1,.1,fm,s*(DW/2+.07),(DH+.1)/2,fz);box(DW+.28,.16,.12,fm,0,DH+.08,fz);
   if(!worn){/* 室內門框 */for(const s of[-1,1])box(.1,DH+.05,.06,fm,s*(DW/2+.05),(DH+.05)/2,d/2-.03);box(DW+.2,.1,.06,fm,0,DH+.05,d/2-.03);}}
@@ -170,10 +186,22 @@ export function buildShell(level,opts={}){
  }
 
  /* 招牌：立在門面牆頂 */
- {const sw=[0,1.9,2.6,3.2,3.7,4.3][level],sh=sw*.35,sy=H+capH+sh/2+(worn?.02:.08),sz=d/2+t/2;
-  const frame=box(sw+.22,sh+.22,.16,toon(worn?0xa17e56:level===2?0x8a5a32:S.trim),0,sy,sz);const sign=add(new THREE.PlaneGeometry(sw,sh),new THREE.MeshBasicMaterial({map:signTex(level)}),0,sy,sz+.085,P,true);
+ {const sw=storybookEnabled&&worn?2.25:[0,1.9,2.6,3.2,3.7,4.3][level],sh=sw*.35,sy=H+capH+sh/2+(worn?.02:.08)+(storybookEnabled?.16:0);
+  const sz=storybookEnabled?frontEaveZ(d,t)+.48:d/2+t/2;
+  const frame=box(sw+.22,sh+.22,.16,toon(worn?0xa17e56:level===2?0x8a5a32:S.trim),0,sy,sz);const sign=add(new THREE.PlaneGeometry(sw,sh),new THREE.MeshBasicMaterial({map:signTex(level)}),0,sy,sz+(storybookEnabled?.108:.085),P,true);
+  sign.name='初光商會招牌字面';
   if(worn){frame.rotation.z=sign.rotation.z=-.06;}
-  for(const s of[-1,1])box(.1,.2,.1,toon(worn?0xa17e56:S.cap),s*sw*.32,H+capH+.1,sz);
+  if(storybookEnabled){
+   // Wall brackets reach out past the shingles and carry both edges of the fascia.
+   const wall=d/2+t,reach=sz-wall-.08,bracket=toon(worn?0x846344:S.cap);
+   for(const side of [-1,1]){
+    const x=side*sw*.34,y=H-.12;
+    box(.13,.13,reach,bracket,x,y,wall+reach/2,P);
+    const brace=box(.10,.10,Math.hypot(reach,.48),bracket,x,y-.24,wall+reach/2,P);brace.rotation.x=-Math.atan2(.48,reach);
+    box(.17,.53,.11,bracket,x,y-.25,wall+.04,P);
+    box(.13,sy-y,.12,bracket,x,(sy+y)/2,sz-.135,P);
+   }
+  }else for(const s of[-1,1])box(.1,.2,.1,toon(worn?0xa17e56:S.cap),s*sw*.32,H+capH+.1,sz);
   if(level===2){/* 葉片徽章 */const lf=add(new THREE.SphereGeometry(.2,12,8),toon(0x6aac46),0,sy+sh/2+.22,sz);lf.scale.set(1.4,.9,.35);}
   if(level>=3){const crest=new THREE.Shape(),cr=sw*.5+.25;crest.moveTo(-cr,0);crest.absarc(0,0,cr,Math.PI,0,true);crest.lineTo(-cr,0);const cm=add(new THREE.ExtrudeGeometry(crest,{depth:.1,bevelEnabled:false,curveSegments:28}),toon(level===5?0xfff4dc:shade(S.plinth,.06)),0,sy-.02,sz-.14);cm.scale.y=level===3?.62:.72;
    const rim=add(new THREE.TorusGeometry(cr,.06,8,32,Math.PI),toon(S.trim),0,sy-.02,sz-.06);rim.scale.y=cm.scale.y;}
@@ -196,13 +224,27 @@ export function buildShell(level,opts={}){
  }
  /* 後牆與側牆內側的窗 */
  {const nb=[0,1,2,3,3,4][level],span=w-1.6,ww=worn?.85:level>=4?1.1:1,wh=worn?.75:level>=4?1.3:1.05,wy=worn?1.3:level>=4?1.55:1.45;
-  if(!low)for(let i=0;i<nb;i++){const x=nb===1?.6:-span/2+span*(i+.5)/nb;face('backIn',x,wy,windowNode(ww,wh,{boarded:worn,curtain:worn?null:S.curtain}));face('backOut',x,wy,windowNode(ww,wh,{arched:level>=3}));
+  if(!low)for(let i=0;i<nb;i++){const x=nb===1?.6:-span/2+span*(i+.5)/nb;face('backIn',x,wy,windowNode(ww,wh,{boarded:!storybookEnabled&&worn,curtain:worn?null:S.curtain}));face('backOut',x,wy,windowNode(ww,wh,{arched:level>=3}));
    if(!worn&&i<nb-1)face('backIn',x+span/nb/2,wy+.55,sconce());}
-  const ns=level>=4?2:1;for(let i=0;i<ns;i++){const z=ns===1?-.4:(i?d*.2:-d*.22);for(const side of low?['leftIn']:['leftIn','rightIn'])face(side,z,wy,windowNode(ww,wh,{boarded:worn&&side==='rightIn',curtain:worn?null:S.curtain}));for(const side of low?['leftOut']:['leftOut','rightOut'])face(side,z,wy,windowNode(ww,wh,{}));}
+  const ns=level>=4?2:1;for(let i=0;i<ns;i++){const z=ns===1?-.4:(i?d*.2:-d*.22);for(const side of low?['leftIn']:['leftIn','rightIn'])face(side,z,wy,windowNode(ww,wh,{boarded:!storybookEnabled&&worn&&side==='rightIn',curtain:worn?null:S.curtain}));for(const side of low?['leftOut']:['leftOut','rightOut'])face(side,z,wy,windowNode(ww,wh,{}));}
  }
 
  /* 第一階的破損：補丁、裂縫、蜘蛛網 */
- if(worn){const pm=toon(0xd6bf99);for(const [where,u,y,wd,ht,r] of [['frontOut',-w/2+.55,.55,.5,.38,.1],['frontOut',w/2-.6,1.9,.42,.3,-.15],['leftOut',1.2,.7,.5,.35,.08]]){const g=new THREE.Group();const p=box(wd,ht,.04,pm,0,0,.02,g);p.rotation.z=r;for(const s of[-1,1])cyl(.025,.025,.03,toon(0x806044),s*(wd/2-.06),0,.05,g,6).rotation.x=Math.PI/2;face(where,u,y,g);}
+ if(worn&&storybookEnabled){
+  for(const [where,u,y,r] of [['frontOut',w*.39,.82,-.10],['rightOut',-d*.25,.7,.12]]){
+   const patch=new THREE.Group();
+   for(let i=0;i<3;i++){
+    const wd=[1.03,.97,1.12][i],board=box(wd,.17,.055,toon([0xac8460,0xbf9769,0xa17c56][i]),0,i*.155,.04,patch);
+    board.rotation.z=r+i*.025;
+    for(const side of [-1,1]){
+     const dx=side*(wd/2-.10);
+     cyl(.026,.026,.025,toon(0x635445),Math.cos(board.rotation.z)*dx,i*.155+Math.sin(board.rotation.z)*dx,.079,patch,6).rotation.x=Math.PI/2;
+    }
+   }
+   face(where,u,y,patch);
+  }
+ }
+ if(worn&&!storybookEnabled){const pm=toon(0xd6bf99);for(const [where,u,y,wd,ht,r] of [['frontOut',-w/2+.55,.55,.5,.38,.1],['frontOut',w/2-.6,1.9,.42,.3,-.15],['leftOut',1.2,.7,.5,.35,.08]]){const g=new THREE.Group();const p=box(wd,ht,.04,pm,0,0,.02,g);p.rotation.z=r;for(const s of[-1,1])cyl(.025,.025,.03,toon(0x806044),s*(wd/2-.06),0,.05,g,6).rotation.x=Math.PI/2;face(where,u,y,g);}
   for(const [x,z] of low?[]:[[-w/2+.02,-d/2+.02]]){const web=new THREE.Group();for(let i=0;i<5;i++){const a=i/4*Math.PI/2;const l=box(.6,.012,.012,toon(0xe8e4dc),Math.cos(a)*.3,-Math.sin(a)*.3,0,web,true);l.rotation.z=-a;}web.position.set(x+.02,H-.03,z+.02);web.rotation.y=-Math.PI/4;root.add(web);}
   /* 室內地板破洞 */for(const [x,z,r] of [[1.6,-1.2,.38],[-2.1,1.1,.28]]){const h=add(new THREE.CircleGeometry(r,10),toon(0xaa8964,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),x,.004,z,root,true);h.rotation.x=-Math.PI/2;h.scale.y=.7;h.receiveShadow=false;h.castShadow=false;}
  }
@@ -221,6 +263,7 @@ export function buildShell(level,opts={}){
    const win=windowNode(.42,.62,{arched:true});const ang=Math.atan2(sx,sz);win.position.set(x+Math.sin(ang)*TR*1.02,1.5,z+Math.cos(ang)*TR*1.02);win.rotation.y=ang;root.add(win);}
   for(const [len,along,x,z] of low?[[w,'x',0,zf],[d,'z',-w/2-t/2,0]]:[[w,'x',0,zb],[w,'x',0,zf],[d,'z',-w/2-t/2,0],[d,'z',w/2+t/2,0]]){const n=Math.floor(len/.7);for(let i=0;i<n;i++){const p=-len/2+(i+.5)*len/n;if(along==='x'&&z===zf&&Math.abs(p-doorX)<2.6)continue;box(along==='x'?.3:capW+.02,.2,along==='x'?capW+.02:.3,gm,along==='x'?p:x,H+capH+.1,along==='x'?z:p);}}}
 
+ if(storybookEnabled)addStoryRoof(THREE,root,{level,w,d,H,t,doorX});
  root.userData.frontCutoff=d/2-.12;const lineMat=addOutline(root,level===1?.018:undefined);root.userData.outline={color:INK,thickness:level===1?.018:CFG.outline};
  /* 正面牆一整片（牆、招牌、雨篷、窗、前方塔樓）：進店內視角時淡出，看得到門口一帶 */
  {root.updateMatrixWorld(true);const v=new THREE.Vector3(),cloned=new Map(),fadeMats=[],hulls=[];
@@ -228,6 +271,19 @@ export function buildShell(level,opts={}){
    const list=Array.isArray(o.material)?o.material:[o.material],next=list.map(m=>{if(!cloned.has(m)){const c=m.clone();c.transparent=true;fadeMats.push(c);cloned.set(m,c);}return cloned.get(m);});o.material=Array.isArray(o.material)?next:next[0];
    for(const s of o.parent.children)if(s.userData.illustratedOutline&&s.geometry===o.geometry)hulls.push(s);});
   root.userData.setFrontFade=a=>{for(const m of fadeMats){m.opacity=a;m.depthWrite=a>.95;}for(const h of hulls)h.visible=a>.6;};}
+ if(storybookEnabled){
+  const roof=buildStorybookRoof(THREE,{level,w,d,H,t,doorX});root.add(roof);
+  root.userData.setRoofVisible=visible=>{roof.visible=visible;};
+  const roofMeshes=[],roofMaterials=new Set();
+  roof.traverse(mesh=>{if(mesh.isMesh){roofMeshes.push(mesh);roofMaterials.add(mesh.material);}});
+  let wasTranslucent=false;
+  root.userData.setRoofTranslucent=on=>{
+   if(on===wasTranslucent)return;
+   wasTranslucent=on;
+   for(const m of roofMaterials){m.transparent=on;m.opacity=on?.13:1;m.depthWrite=!on;m.needsUpdate=true;}
+   for(const mesh of roofMeshes)mesh.castShadow=!on;
+  };
+ }
  root.userData={...root.userData,level,name:L.name,lineMat,size:{w:w+2*t,d:d+2*t+1.6}};
  return root;
 }
@@ -247,7 +303,11 @@ export function buildPath(level){const L=LEVELS[level],{d,t}=L,ct=cobbleTex(),g=
 export function tune(root,gain=CFG.gain??.62){const seen=new Set();root.traverse(o=>{if(!o.material)return;for(const m of Array.isArray(o.material)?o.material:[o.material]){if(seen.has(m)||m.userData.tuned)continue;seen.add(m);m.userData.tuned=true;if(m.isMeshToonMaterial){m.color.multiplyScalar(gain);m.toneMapped=false;}else if(m.isMeshBasicMaterial&&!o.userData.isHull&&!o.userData.illustratedOutline){m.toneMapped=false;}}});return root;}
 
 /* 收銀台：依商會等級換造型。原點在櫃台中心地面，長邊沿 x，正面（顧客那側）朝 +z；台面高約 .6 */
+import {storybookEnabled as storyCounterEnabled} from '../storybook-mode.js';
+import {storyCounter} from '../storybook-interior.js';
+import {builder as counterBuilder} from '../product-models.js?v=20261115-v63';
 export function buildCounter(level){
+ if(storyCounterEnabled){const g=storyCounter(THREE,counterBuilder,level);addOutline(g,.009);return g;}
  const g=new THREE.Group();g.name='counter-lv'+level;const mats=new Map();
  const toon=(c,o={})=>{const k=c+JSON.stringify(o);if(!mats.has(k)){const m=new THREE.MeshToonMaterial({color:c,gradientMap:ramp(),...o});if(CFG.linear){m.color.convertSRGBToLinear();m.emissive?.convertSRGBToLinear();}mats.set(k,m);}return mats.get(k);};
  const texMat=(t,rx,ry)=>{const m=t.clone();m.needsUpdate=true;m.repeat.set(rx,ry);return new THREE.MeshToonMaterial({map:m,gradientMap:ramp()});};

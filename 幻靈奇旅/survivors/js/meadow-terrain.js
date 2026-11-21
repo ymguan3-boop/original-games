@@ -13,13 +13,45 @@ export function constrainMeadow(p,from=p,radius=.45){let at={x:from.x,z:from.z};
 }
 export function buildMeadow(T,scene,own,metrics){
  const group=new T.Group();group.name='商會草原';scene.add(group);const mat=color=>{const m=own(new T.MeshStandardMaterial({color,roughness:.92,flatShading:true}));m.color.convertSRGBToLinear();return m;};
- const bark=mat(0x775335),leaf=mat(0x548749),pine=mat(0x446f4a),rock=mat(0x85897d),cliff=mat(0x9c947b),water=own(new T.MeshStandardMaterial({color:0x328caa,roughness:.28,metalness:.12,transparent:true,opacity:.83}));
+ const illustrated=new URLSearchParams(globalThis.location?.search).get('art')==='storybook';
+ const bark=mat(illustrated?0x875240:0x775335),leaf=mat(illustrated?0xa1bf6b:0x548749),pine=mat(illustrated?0x39786d:0x446f4a),rock=mat(illustrated?0x958ea3:0x85897d),cliff=mat(illustrated?0xc78573:0x9c947b),water=own(new T.MeshStandardMaterial({color:illustrated?0x62c6be:0x328caa,roughness:.28,metalness:.12,transparent:true,opacity:.83}));
  water.color.convertSRGBToLinear();const geo=own(new T.IcosahedronGeometry(1,1)),trunk=own(new T.CylinderGeometry(.65,1,1,8)),cone=own(new T.ConeGeometry(1,1,8));let triangles=0;
  const mesh=(g,m,x,y,z,sx,sy,sz)=>{const n=new T.Mesh(g,m);n.position.set(x,y,z);n.scale.set(sx,sy,sz);group.add(n);triangles+=(g.index?g.index.count:g.attributes.position.count)/3;return n;};
  for(const o of MEADOW_SOLIDS){if(o.kind==='pond'){const g=own(new T.CircleGeometry(1,48)),n=mesh(g,water,o.x,.005,o.z,o.rx,o.rz,1);n.rotation.x=-Math.PI/2;}
  else if(o.kind==='tree'){mesh(trunk,bark,o.x,o.height*.28,o.z,o.rx,o.height*.56,o.rz);for(let j=0;j<3;j++){const size=(o.pine?1.8:1.65)*(1-j*.2);mesh(o.pine?cone:geo,o.pine?pine:leaf,o.x+(o.pine?0:Math.sin(j*2)*.45),o.height*(.55+j*.14),o.z+(o.pine?0:Math.cos(j*2)*.4),size,size*(o.pine?1.4:.85),size);}}
  else if(o.kind==='cliff'){for(let j=0;j<5;j++)mesh(geo,cliff,o.x-4+j*2,1.8+j%2*.8,o.z,2.7,3+j%2,o.rz);}
  else mesh(geo,rock,o.x,o.rx*.45,o.z,o.rx,o.rx*.7,o.rz);}
+ if(illustrated){
+  const pebble=own(new T.IcosahedronGeometry(1,0)), disc=own(new T.CylinderGeometry(1,.91,1,9));
+  const ripple=own(new T.TorusGeometry(1,.025,3,16,Math.PI*1.45));
+  const mint=mat(0xbce6cc),cream=mat(0xffdf9c),pink=mat(0xd97c80);
+  for(const site of MEADOW_SOLIDS){
+   const {x,z}=site;
+   if(site.kind==='pond'){
+    for(let i=0;i<4;i++){
+     const px=x-2.45+i*1.45,pz=z+Math.sin(i*2.8)*1.2;
+     const ring=mesh(ripple,mint,px,.035,pz,.76,.46,1);ring.rotation.x=-Math.PI/2;
+     mesh(disc,leaf,px,.062,pz,.29,.045,.21);
+     for(let k=0;k<5;k++){
+      const a=k*Math.PI*2/5;
+      mesh(pebble,i%2?cream:pink,px+Math.cos(a)*.13,.14,pz+Math.sin(a)*.10,.12,.095,.10);
+     }
+    }
+   }else if(site.kind==='tree'){
+    const h=site.height;
+    for(const side of [-1,1]){
+     const branch=mesh(trunk,bark,x+side*.34,h*.47,z,.13,h*.29,.13);branch.rotation.z=-side*.69;
+     mesh(site.pine?cone:pebble,site.pine?leaf:mint,x+side*.82,h*(side>0?.61:.57),z+.16,1.06,h*.23,1.08);
+    }
+   }else if(site.kind==='cliff'){
+    for(let i=0;i<5;i++){
+     const h=2.45+(i%2)*1.32;
+     mesh(disc,cream,x-4+i*2,h,z,1.86,.34,2.18);
+     mesh(pebble,leaf,x-4+i*2,h+.35,z-.32,1.65,.47,1.58);
+    }
+   }
+  }
+ }
  /* 相同材質合併，樹木、岩岸不會各自增加一次 draw call。 */
  const batches=new Map();for(const n of group.children){n.updateMatrix();const g=(n.geometry.index?n.geometry.toNonIndexed():n.geometry.clone()).applyMatrix4(n.matrix),data=batches.get(n.material)||{positions:[],normals:[]};data.positions.push(...g.attributes.position.array);data.normals.push(...g.attributes.normal.array);batches.set(n.material,data);g.dispose();}
  group.clear();for(const[material,data]of batches){const g=own(new T.BufferGeometry());g.setAttribute('position',new T.Float32BufferAttribute(data.positions,3));g.setAttribute('normal',new T.Float32BufferAttribute(data.normals,3));g.computeBoundingSphere();group.add(new T.Mesh(g,material));}

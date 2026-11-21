@@ -64,3 +64,5 @@ dialog.compact-shelves{width:min(460px,calc(100vw - 24px));max-height:min(650px,
  .upgrade-status{top:132px;max-width:calc(100vw - 20px);font-size:11px}
  #placement-hint{bottom:90px;max-width:calc(100vw - 16px)}
 }
+
+.quick-menu-items .exterior-option{display:flex;align-items:center;gap:.45em;cursor:pointer;padding:.38em .55em}.exterior-option input{accent-color:#537742;width:1.15em;height:1.15em;margin:0}

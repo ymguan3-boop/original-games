@@ -48,55 +48,5 @@
     "satisfaction": 85,
     "days": 5,
     "upgradeSeconds": 150
-  },
-  {
-    "level": 6,
-    "name": "繁榮商會",
-    "cost": 120000,
-    "capacity": 6,
-    "revenue": 100000,
-    "satisfaction": 86,
-    "days": 7,
-    "upgradeSeconds": 180
-  },
-  {
-    "level": 7,
-    "name": "高級商會",
-    "cost": 200000,
-    "capacity": 7,
-    "revenue": 180000,
-    "satisfaction": 87,
-    "days": 9,
-    "upgradeSeconds": 210
-  },
-  {
-    "level": 8,
-    "name": "魔法百貨",
-    "cost": 320000,
-    "capacity": 8,
-    "revenue": 300000,
-    "satisfaction": 88,
-    "days": 11,
-    "upgradeSeconds": 240
-  },
-  {
-    "level": 9,
-    "name": "皇家商會",
-    "cost": 480000,
-    "capacity": 9,
-    "revenue": 480000,
-    "satisfaction": 89,
-    "days": 13,
-    "upgradeSeconds": 270
-  },
-  {
-    "level": 10,
-    "name": "傳說商會",
-    "cost": 700000,
-    "capacity": 10,
-    "revenue": 720000,
-    "satisfaction": 90,
-    "days": 15,
-    "upgradeSeconds": 300
   }
 ]

@@ -1,3 +1,4 @@
+import{occupiedCells}from'./placement-footprint.js?v=20261115-v63';
 import {retireProducts} from './retired-products.js?v=20261115-v63';
 import {tickSpinVisitors} from './spin-arena-progression.js?v=20261115-v63';
 import{spinAction}from'./spin-arena-core.js?v=20261115-v63';
@@ -16,7 +17,7 @@ import {merchantWeaponCatalog,importMerchantCargo} from '../../幻靈奇旅/surv
 import {specialDecorPose,floorInBounds,rehomeGardenDecor,reconcileArchitecture} from './decor-zones.js?v=20261115-v63';
 import {isPromoterLineage} from './promoter-lineage.js?v=20261115-v63';
 import {openingBlocker} from './shop-entry-rules.js?v=20261115-v63';
-import {syncWorkforce,workforceTick,recoverResting,replaceExhausted} from './workforce.js?v=20261115-v63';
+import {releaseWork,syncWorkforce,workforceTick,recoverResting,replaceExhausted} from './workforce.js?v=20261115-v63';
 import {rollWeather,weatherTraffic} from './environment.js?v=20261115-v63';
 import {pickCustomerType,customerBudget,CUSTOMER_TYPES,purchaseChance,costFactor,trafficFactor,rollMarket,settleReputation,ensureMarket} from './economy-v2.js?v=20261115-v63';
 import {settlePromoter,hirePromoter} from './promoters.js?v=20261115-v63';
@@ -32,7 +33,7 @@ import {chapterObjectives,autoChapterConstruction,awardSideChapter} from './shop
 import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './customer-chase.js?v=20261115-v63';
 import {ensureDailyGoals} from './daily-objectives.js?v=20261115-v63';
 import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js?v=20261115-v63';
-import {decorEffects,decorTypes,obstacles} from './decorations.js?v=20261115-v63';
+import {decorEffects,decorLimit,decorTypes,obstacles} from './decorations.js?v=20261115-v63';
 import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261115-v63';
 import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfCapacity,shelfDefinition,shelfKind,ownsUniqueShelf} from './furniture.js?v=20261115-v63';
 import {pointSegmentDistance,segmentDistance} from './motion.js?v=20261115-v63';
@@ -59,13 +60,37 @@ export const recipes=[
  {id:'blades',sku:'blades-starter',materials:{'shop-iron':3,'shop-wood':1},fee:10,seconds:18}
 ];
 export class Game{
- constructor({storage,key='firstlight_shop_v1',seed=731,data}){this.storage=storage;this.key=key;this.data={...data,jobs,events,combos,recipes};this.listeners=new Set();this.pending=0;this.managerActive=false;this.managerInput={x:0,z:0};this.lastError='';this.storageBlocked=false;const raw=storage.getItem(key);if(raw){try{this._state=JSON.parse(raw);retireProducts(this._state);this._state.shelfStorage??=[];this._state.decorations??=[];this._state.decorStorage??=[];this._state.visualEvents??=[];this._state.tutorialSeen??={};this._state.incidentHistory??=[];this._state.customerChase=null;this._state.patrolFocus=null;for(const sh of this._state.shelves){if(!sh.type||sh.type==='general')sh.type=shelfKind(sh);const item=this.data.catalog.find(c=>c.sku===sh.sku);if(item&&!accepts(sh,item)){this._state.inventory[sh.sku]=(this._state.inventory[sh.sku]||0)+sh.stock;sh.stock=0;sh.sku=shelfDefinition(sh).sku;}}if(this._state.upgradeProject){const old=this._state.upgradeProject;this._state.gold+=old.cost||0;this._state.stats.expenses=Math.max(0,this._state.stats.expenses-(old.cost||0));this._state.upgradeProject=null;}for(const item of [...this._state.shelves,...this._state.shelfStorage,...this._state.decorations,...this._state.decorStorage])item.tier??=this._state.level;migrateMaterialTrays(this._state,shelfCapacity,this.data.catalog);commissionState(this._state);migrateState(this,this._state);restoreInvitations(this._state);for(const c of this.data.catalog){this._state.inventory[c.sku]??=0;this._state.prices[c.sku]??=c.suggestedRetail;}this._state.managerDuty='cashier';this._state.layoutPause=false;applyRoom(this._state.level);this.fitRoom(this._state);syncWorkforce(this,this._state);try{this.validate(this._state);}catch(first){/* 大門搬到正面後，舊配置可能擋住新動線：家具收回倉庫再驗一次 */this.repairLayout(this._state);this.validate(this._state);this._state.repairNote=String(first.message||first);}}catch(e){throw Error(`商會存檔損壞，已保留原資料；請匯出備份後處理。（${e.message||e}）`);}}else{this._state=this.initial(seed);applyRoom(1);commissionState(this._state);syncWorkforce(this,this._state);storage.setItem(key,JSON.stringify(this._state));}}
+ constructor({storage,key='firstlight_shop_v1',seed=731,data}){this.storage=storage;this.key=key;this.data={...data,jobs,events,combos,recipes};this.listeners=new Set();this.pending=0;this.managerActive=false;this.managerInput={x:0,z:0};this.lastError='';this.storageBlocked=false;const raw=storage.getItem(key);if(raw){try{this._state=JSON.parse(raw);retireProducts(this._state);this._state.shelfStorage??=[];this._state.decorations??=[];this._state.decorStorage??=[];this._state.visualEvents??=[];this._state.tutorialSeen??={};this._state.incidentHistory??=[];this._state.customerChase=null;this._state.patrolFocus=null;for(const sh of this._state.shelves){if(!sh.type||sh.type==='general')sh.type=shelfKind(sh);const item=this.data.catalog.find(c=>c.sku===sh.sku);if(item&&!accepts(sh,item)){this._state.inventory[sh.sku]=(this._state.inventory[sh.sku]||0)+sh.stock;sh.stock=0;sh.sku=shelfDefinition(sh).sku;}}if(this._state.upgradeProject){const old=this._state.upgradeProject;this._state.gold+=old.cost||0;this._state.stats.expenses=Math.max(0,this._state.stats.expenses-(old.cost||0));this._state.upgradeProject=null;}for(const item of [...this._state.shelves,...this._state.shelfStorage,...this._state.decorations,...this._state.decorStorage])item.tier??=this._state.level;const consolidated=this.consolidateLegacyLevel(this._state);migrateMaterialTrays(this._state,shelfCapacity,this.data.catalog);commissionState(this._state);migrateState(this,this._state);restoreInvitations(this._state);for(const c of this.data.catalog){this._state.inventory[c.sku]??=0;this._state.prices[c.sku]??=c.suggestedRetail;}this._state.managerDuty='cashier';this._state.layoutPause=false;applyRoom(this._state.level);this.fitRoom(this._state);syncWorkforce(this,this._state);try{this.validate(this._state);}catch(first){/* 大門搬到正面後，舊配置可能擋住新動線：家具收回倉庫再驗一次 */this.repairLayout(this._state);this.validate(this._state);this._state.repairNote=String(first.message||first);}if(consolidated){assert(storage.getItem(key)===raw,'另一分頁已更新存檔，請重新整理');storage.setItem(key+'.backup',raw);this._state.revision++;storage.setItem(key,JSON.stringify(this._state));}}catch(e){throw Error(`商會存檔損壞，已保留原資料；請匯出備份後處理。（${e.message||e}）`);}}else{this._state=this.initial(seed);applyRoom(1);commissionState(this._state);syncWorkforce(this,this._state);storage.setItem(key,JSON.stringify(this._state));}}
+ // Cap only recognized legacy shop chapters; employee, top and item levels are independent.
+ consolidateLegacyLevel(s){
+  const top=this.data.levels.at(-1);
+  if(!Number.isInteger(s.level)||s.level<=top.level||s.level>10)return false;
+  s.level=top.level;
+  if(s.chapterClear?.level>top.level)s.chapterClear=null;
+  // Preserve earned stock, paid purchase prices and vintage item tiers.
+  const storedIds=new Set();
+  for(const shelf of s.shelves.splice(shelfLimit(s.level))){
+   returnShelfStock(s,shelf);storedIds.add(shelf.id);
+   delete shelf.x;delete shelf.z;
+   shelf.purchasePrice??=shelfDefinition(shelf).cost;s.shelfStorage.push(shelf);
+  }
+  for(const decor of s.decorations.splice(decorLimit(s.level))){
+   delete decor.x;delete decor.z;delete decor.mount;delete decor.garden;s.decorStorage.push(decor);
+  }
+  for(const c of s.customers)c.basket=c.basket.filter(b=>!storedIds.has(b.shelfId));
+  for(const e of s.employees.filter(e=>e.role!=='standby').slice(top.capacity)){
+   releaseWork(s,e);e.role='standby';e.offDuty=true;
+  }
+  s.undo=null;
+  this.log(s,'商會等級已整併為 Lv.5。原有資產及收藏保留，超過上限的擺設已收納，在班超額的夥伴已休息。');
+  return true;
+ }
  /* 讀檔修復：裝潢全部收回倉庫；貨架仍擋住動線就一起收回（商品退回倉庫），顧客重新進場。不刪任何東西 */
  repairLayout(s){s.customers=[];for(const a of [...s.employees,s.manager])if(a)a.path=[];try{this.validate(s);return;}catch{}s.decorStorage??=[];s.shelfStorage??=[];for(const d of s.decorations||[]){const saved={...d};delete saved.x;delete saved.z;s.decorStorage.push(saved);}s.decorations=[];
   if(!isLayoutValid(obstacles(s),s.level)){for(const sh of s.shelves){returnShelfStock(s,sh);const saved={...sh,stock:0,purchasePrice:sh.purchasePrice??this.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);}s.shelves=[];}
   s.customers=[];s.forge=s.forge&&s.employees.some(e=>e.id===s.forge.employeeId)?s.forge:null;for(const a of [...s.employees,s.manager])if(a)a.path=[];this.log?.(s,'讀檔時發現舊的擺設擋住新大門，已把家具收回倉庫，請到「店舖整備」重新擺放。');}
  /* 舊存檔的店面比較長：超出新範圍的貨架與裝潢收回倉庫，員工站回店內，不刪任何東西 */
- fitRoom(s){const {width,height}=dimensions(s.level),out=o=>o.x<1||o.z<1||o.x>width-2||o.z>height-2,keep=[];for(const sh of s.shelves){if(out(sh)||!isLayoutValid([...keep,sh],s.level)){returnShelfStock(s,sh);const saved={...sh,stock:0,purchasePrice:sh.purchasePrice??this.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);}else keep.push(sh);}s.shelves=keep;s.decorStorage??=[];rehomeGardenDecor(s);{const n=reconcileArchitecture(s);if(n)this.log(s,`${n} 件裝潢因入口或門窗位置調整，已保留於收納區。`);}for(const d of [...(s.decorations||[])]){const pose=specialDecorPose(d,s.level);if(pose)Object.assign(d,pose);if(!pose&&(d.type==='carpet'?!floorInBounds(d,s.level):!!d.mount||out(d)||d.x===ENTRANCE.x&&d.z===ENTRANCE.z)){s.decorations=s.decorations.filter(x=>x!==d);const saved={...d};delete saved.x;delete saved.z;delete saved.mount;delete saved.garden;s.decorStorage.push(saved);}}for(const a of [...s.employees,s.manager])if(out(a)){a.x=Math.min(a.x,width-3);a.z=Math.min(a.z,height-3);a.path=[];}s.customers=s.customers.filter(c=>!out(c));}
+ fitRoom(s){const {width,height}=dimensions(s.level),out=o=>o.x<1||o.z<1||o.x>width-2||o.z>height-2,keep=[];for(const sh of s.shelves){if(out(sh)||!isLayoutValid([...keep,sh],s.level)){returnShelfStock(s,sh);const saved={...sh,stock:0,purchasePrice:sh.purchasePrice??this.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);}else keep.push(sh);}const keptIds=new Set(keep.map(sh=>sh.id));for(const c of s.customers){if(c.basket?.some(b=>!keptIds.has(b.shelfId))){c.basket=c.basket.filter(b=>keptIds.has(b.shelfId));if(!c.basket.length){c.state='Browse';c.path=[];c.wait=0;}}}s.shelves=keep;s.decorStorage??=[];rehomeGardenDecor(s);{const n=reconcileArchitecture(s);if(n)this.log(s,`${n} 件裝潢因入口或門窗位置調整，已保留於收納區。`);}for(const d of [...(s.decorations||[])]){const pose=specialDecorPose(d,s.level);if(pose)Object.assign(d,pose);if(!pose&&(d.type==='carpet'?!floorInBounds(d,s.level):!!d.mount||out(d)||s.level>=3&&occupiedCells(d).some(p=>Math.abs(p.x-(CHECKOUT.x-4))<=1&&p.z===2||p.x===CHECKOUT.x-4&&p.z>=3&&p.z<=6)||d.x===ENTRANCE.x&&d.z===ENTRANCE.z)){s.decorations=s.decorations.filter(x=>x!==d);const saved={...d};delete saved.x;delete saved.z;delete saved.mount;delete saved.garden;s.decorStorage.push(saved);}}for(const a of [...s.employees,s.manager])if(out(a)){a.x=Math.min(a.x,width-3);a.z=Math.min(a.z,height-3);a.path=[];}s.customers=s.customers.filter(c=>!out(c));}
  validate(s){validateCommissions(s,this.data.catalog);
  const finite=(n,min=0,max=Infinity)=>Number.isFinite(n)&&n>=min&&n<=max;
  assert(s&&s.version===1&&Number.isInteger(s.revision)&&s.revision>=0,'版本或revision不支援');

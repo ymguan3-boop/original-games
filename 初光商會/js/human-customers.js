@@ -1,6 +1,8 @@
 /* 四類人形顧客（平民、富豪、冒險者、魔法師，各分男女）的程序建模。
  * 依 3d-builder 程序建模標準：關節比照主角（hips > chest > head、upperArm > forearm > hand、thigh > shin > foot），
  * 全部曲面、五官畫在貼合頭部的表情圖集上，走路手腳交錯，待機會呼吸、轉頭。外觀參考 GPT 生成的 2D 三視圖。 */
+import {storybookEnabled} from './storybook-mode.js';
+import {dressTownShopper} from './storybook-cast.js';
 const LIT=.66;
 function builder(T){
  const pos=[],nor=[],col=[],m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),c=new T.Color(),n3=new T.Matrix3(),v=new T.Vector3();
@@ -18,7 +20,11 @@ function faceTexture(T,skin,eyeColor){
  const line=(pts,w=5)=>{g.strokeStyle=INK;g.lineWidth=w;g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke();};
  const mouth=(y,w,h)=>{g.fillStyle='#8a2a1c';g.beginPath();g.ellipse(128,y,w,h,0,0,7);g.fill();g.fillStyle='#f08a8a';g.beginPath();g.ellipse(128,y+h*.4,w*.6,h*.45,0,0,7);g.fill();};
  const draw={idle(){eye(84,120);eye(172,120);arc(128,160,16,.3,Math.PI-.3);},blink(){arc(84,128,15,Math.PI+.3,-.3);arc(172,128,15,Math.PI+.3,-.3);arc(128,160,16,.3,Math.PI-.3);},happy(){arc(84,128,15,Math.PI+.2,-.2,6);arc(172,128,15,Math.PI+.2,-.2,6);mouth(164,20,15);},talk(){eye(84,120);eye(172,120);mouth(166,13,11);},wow(){eye(84,116);eye(172,116);mouth(168,10,14);},sad(){line([[66,100],[96,92]]);line([[190,100],[160,92]]);eye(84,124);eye(172,124);arc(128,182,14,Math.PI+.4,-.4);},angry(){line([[66,96],[100,108]],6);line([[190,96],[156,108]],6);eye(84,124);eye(172,124);line([[110,172],[146,172]],6);},think(){eye(84,120);eye(172,120);line([[112,168],[146,162]],5);}};
- FACES.forEach((n,i)=>{g.save();g.translate((i%4)*C,Math.floor(i/4)*C);g.fillStyle='rgba(255,130,120,.45)';for(const x of [56,200]){g.beginPath();g.ellipse(x,150,20,11,0,0,7);g.fill();}draw[n]();g.restore();});
+ FACES.forEach((n,i)=>{g.save();g.translate((i%4)*C,Math.floor(i/4)*C);g.fillStyle='rgba(255,130,120,.45)';for(const x of [56,200]){g.beginPath();g.ellipse(x,150,20,11,0,0,7);g.fill();}if(storybookEnabled){
+    g.fillStyle='rgba(122,60,38,.66)';
+    for(const [x,y] of [[52,146],[60,151],[65,144],[191,146],[197,151],[204,144]]){g.beginPath();g.arc(x,y,1.8,0,Math.PI*2);g.fill();}
+    if(!['sad','angry'].includes(n)){g.strokeStyle='#633f31';g.lineWidth=4;for(const x of [84,172]){g.beginPath();g.moveTo(x-12,98);g.quadraticCurveTo(x,89,x+12,96);g.stroke();}}
+   }draw[n]();g.restore();});
  const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=4;t.repeat.set(.25,.5);return t;
 }
 /* 外觀設定：衣服顏色、配件與髮色；男女在髮型、下身與配色上不同 */
@@ -57,7 +63,7 @@ export function buildHuman(T,type='commoner',variant='m'){
  const head=joint('head',chest,0,.5,0,put=>{
   put(S.ball,L.skin,0,.3,0,.36,.34,.34);for(const s of [-1,1])put(S.ball,L.skin,s*.35,.3,0,.06,.08,.05);
   /* 頭髮：頭頂半球、瀏海、側髮；女性加長髮或馬尾 */
-  put(S.dome,L.hair,0,.33,-.02,.38,.36,.37);for(const k of [-2,-1,0,1,2])put(S.ball,L.hair,k*.11,.5,.25,.1,.08,.07);for(const s of [-1,1])put(S.ball,L.hair,s*.33,.27,-.03,.08,.16,.12);
+  put(S.dome,L.hair,0,.33,-.02,.38,.36,.37);if(storybookEnabled){for(const [x,y,tilt] of [[-.24,.46,-.48],[-.14,.49,-.56],[-.02,.52,-.60],[.11,.53,-.45],[.23,.49,.33]])put(S.ball,L.hair,x,y,.255,.10,.125,.075,0,0,tilt);}else for(const k of [-2,-1,0,1,2])put(S.ball,L.hair,k*.11,.5,.25,.1,.08,.07);for(const s of [-1,1])put(S.ball,L.hair,s*.33,.27,-.03,.08,.16,.12);
   if(L.longHair)put(S.ball,L.hair,0,.1,-.2,.33,.36,.18);if(L.ponytail){put(S.ball,L.hair,0,.42,-.36,.09);put(S.ball,L.hair,0,.2,-.42,.08,.18,.08);}
   if(L.tiara){put(S.ring,GOLD,0,.62,0,.22,.22,.4,Math.PI/2);put(S.ball,0x8ae0ff,0,.68,.18,.04);}
   if(L.witchHat){put(S.rod,L.top,0,.58,0,.6,.03,.6);put(S.cone,L.top,0,.6,0,.5,.62,.5,-.25);put(S.ring,GOLD,0,.62,0,.38,.38,.35,Math.PI/2);put(S.ball,0xffd24a,0,.67,.36,.07,.07,.03);for(const[x,y]of[[-.22,.72],[.2,.8],[-.05,.95]])put(S.ball,0xffd24a,x,y,.18,.03);}
@@ -80,6 +86,7 @@ export function buildHuman(T,type='commoner',variant='m'){
   if(L.knee)joint('knee'+(s<0?'L':'R'),shin,0,.02,.04,put=>{put(S.ball,0x9a8a7a,0,0,.03,.06,.055,.04);});
   return {thigh,shin,foot,s};});
  if(L.sword){joint('sword',hips,-.27,0,.04,put=>{put(S.rod,0x6a4222,0,-.05,0,.02,.16,.02,.3);put(S.rod,0xd8dde6,0,-.3,.05,.025,.38,.012,.3);put(S.ring,GOLD,0,.04,-.02,.05,.05,.2,0,0,Math.PI/2);});}
+ if(storybookEnabled) dressTownShopper(T,chest,head,type,variant);
  Object.values(S).forEach(g=>g.dispose());
  return {root,hips,chest,head,arms,legs,setFace,type,variant};
 }

@@ -1,0 +1,11 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><base href="../"><title>初光商會｜場景畫冊</title>
+<link rel="stylesheet" href="./model-room/storybook.css"></head><body>
+<header><div><span class="imprint">FIRSTLIGHT MERCHANTS</span><h1>初光商會<span>場景畫冊</span></h1></div><a id="play" href="./">進入商會 ↗</a></header>
+<main>
+<nav id="chapters" aria-label="場景"></nav>
+<section class="stage"><canvas id="model" aria-label="可拖曳旋轉的 Three.js 場景"></canvas><div id="status" role="status">繪製場景中…</div>
+<div class="caption"><p id="english"></p><h2 id="title"></h2><p id="detail"></p></div></section>
+<footer><label>商會等級 <select id="level"></select></label><label id="objectLabel" hidden>展品 <select id="object"></select></label>
+<button id="district" type="button" hidden>街坊全景</button><span id="cutaway" hidden><label><input type="checkbox" id="roof">透明屋頂</label> <label><input type="checkbox" id="front">透明正面</label></span>
+<button id="back" title="回到預設視角">還原視角</button><small>拖曳旋轉 · 滾輪或雙指縮放</small></footer>
+</main><script src="../幻靈奇旅/vendor/three.min.js"></script><script src="../幻靈奇旅/vendor/GLTFLoader.js"></script><script type="module" src="./model-room/storybook.js"></script></body></html>

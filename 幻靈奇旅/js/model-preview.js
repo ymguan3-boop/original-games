@@ -2,6 +2,21 @@
    八個統一動作：待機、移動、跑步、特殊（打招呼）、開心（歡呼）、受擊、普攻、絕招。
    模型沒有對應動作時，以待機／行走為底加上程序動作補上（跑步＝加速行走、打招呼＝搖擺小跳、歡呼＝雙跳旋身、受擊＝後退抖動）。 */
 (async()=>{'use strict';
+const collectionQuery=new URLSearchParams(location.search);
+if(collectionQuery.get('collection')==='merchant'){
+ document.querySelector('.picker').hidden=true;
+ document.querySelector('.main').hidden=true;
+ document.getElementById('model-title').textContent='Blender 模型室 · 初光商會';
+ document.getElementById('lede').hidden=true;
+ document.getElementById('creature-collection').removeAttribute('aria-current');
+ document.getElementById('merchant-collection').setAttribute('aria-current','page');
+ const host=document.getElementById('merchant-gallery'),frame=document.createElement('iframe');
+ const url=new URL('model-room/index.html',PhantomCommerce.shopURL(document.baseURI));
+ for(const key of ['scene','level','item'])if(collectionQuery.has(key))url.searchParams.set(key,collectionQuery.get(key));
+ url.searchParams.set('embedded','1');
+ frame.title='初光商會模型預覽';frame.src=url.href;host.hidden=false;host.append(frame);
+ return;
+}
 PhantomLoading.install();const T=THREE,C=ModelRoomSettings,$=id=>document.getElementById(id),host=$('stage');
 const scene=new T.Scene();
 const renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.domElement.setAttribute('aria-label','可拖曳旋轉與縮放的立體幻靈家族');host.prepend(renderer.domElement);
