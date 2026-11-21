@@ -1,10 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+import {spinSkillCooldown} from '../js/spin-arena-paths.js?v=20261117-v67';
 import {Game} from '../js/core.js';
-import {spinState,spinStats,launchSpinRound,advanceSpinMatch} from '../js/spin-arena-core.js?v=20261115-v63';
-import {gainSpinMastery,spinRoster} from '../js/spin-arena-progression.js?v=20261115-v63';
-import {retireProducts} from '../js/retired-products.js?v=20261115-v63';
-import {enemyAttackProfile,enemyCanHit} from '../../幻靈奇旅/survivors/js/enemy-rules.js?v=20261115-v63';
-import {HERO_ATTACKS} from '../../幻靈奇旅/survivors/js/combat-profile.js?v=20261115-v63';
+import {spinState,spinStats,launchSpinRound,advanceSpinMatch} from '../js/spin-arena-core.js?v=20261117-v67';
+import {gainSpinMastery,spinRoster} from '../js/spin-arena-progression.js?v=20261117-v67';
+import {retireProducts} from '../js/retired-products.js?v=20261117-v67';
+import {enemyAttackProfile,enemyCanHit} from '../../幻靈奇旅/survivors/js/enemy-rules.js?v=20261117-v67';
+import {HERO_ATTACKS} from '../../幻靈奇旅/survivors/js/combat-profile.js?v=20261117-v67';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8'));
 const data=Object.fromEntries(Object.entries({catalog:'shop-catalog',hirePool:'hire-pool',spirits:'spirits',evolution:'evolution',levels:'store-levels',config:'economy',management:'management'}).map(([k,v])=>[k,read(v)]));
 function setup(){const store=new Map(),storage={getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},g=new Game({storage,data});g.transaction(null,s=>{s.level=3;s.gold=10000;});g.act('spinBuy',{topId:'flame'});return {g,storage};}
@@ -18,9 +19,10 @@ test('勝敗熟練只結算一次、升級不收費；裝卸庫存守恆',()=>{
  const {g}=setup();g.transaction(null,s=>s.spinArena.owned.flame.mastery=90);g.act('spinStart',{opponentId:'rookie'});g.transaction(null,s=>{s.spinArena.match.phase='result';s.spinArena.match.won=true;s.spinArena.match.score=[2,0];});g.act('spinSettle');g.act('spinSettle');assert.equal(g.state.spinArena.owned.flame.level,2);assert.equal(g.state.spinArena.owned.flame.mastery,15);
  g.act('spinBuyPart',{slot:'rim'});assert(g.act('spinPart',{topId:'flame',slot:'rim',value:'attack'}).ok);const before=g.state.spinArena.parts.rim.normal;assert(g.act('spinUnequip',{topId:'flame',slot:'rim'}).ok);assert.equal(g.state.spinArena.parts.rim.normal,before+1);g.act('spinUnequip',{topId:'flame',slot:'rim'});assert.equal(g.state.spinArena.parts.rim.normal,before+1);
 });
-test('被動集氣與碰撞集氣均為原兩倍',()=>{
- const {g}=setup();g.act('spinStart',{opponentId:'rookie'});let m=g.state.spinArena.match;launchSpinRound(m,'balance');m.bodies[0].x=-1;m.bodies[1].x=1;advanceSpinMatch(m,1/60);assert(Math.abs(m.bodies[0].energy-.15)<1e-9);
- launchSpinRound(m,'balance');m.bodies[0].x=-.3;m.bodies[1].x=.3;m.bodies.forEach(b=>b.z=0);advanceSpinMatch(m,1/60);assert(Math.abs(m.bodies[0].energy-16.15)<1e-9);
+test('技能冷卻依「速」計算（速越高越短），碰撞不再額外集氣',()=>{
+ const {g}=setup();g.act('spinStart',{opponentId:'rookie'});let m=g.state.spinArena.match;launchSpinRound(m,'balance');m.bodies[0].x=-1;m.bodies[1].x=1;const cd=spinSkillCooldown(m.bodies[0].stats.speed);advanceSpinMatch(m,1/60);assert(Math.abs(m.bodies[0].energy-(55+100/cd/60))<1e-9);
+ launchSpinRound(m,'balance');m.bodies[0].x=-.3;m.bodies[1].x=.3;m.bodies.forEach(b=>b.z=0);advanceSpinMatch(m,1/60);assert(Math.abs(m.bodies[0].energy-(55+100/cd/60))<1e-9);
+ assert(spinSkillCooldown(39)<spinSkillCooldown(19));assert.equal(spinSkillCooldown(5),14);assert.equal(spinSkillCooldown(200),4.5);
 });
 test('對手名單穩定存檔、每場換人換陀螺；商會Lv5比Lv3提高能力',()=>{
  const {g,storage}=setup();g.act('spinRoster');const before=structuredClone(g.state.spinArena.roster.entries);const re=new Game({storage,data});assert.deepEqual(re.state.spinArena.roster.entries,before);

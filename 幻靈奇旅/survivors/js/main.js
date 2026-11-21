@@ -1,36 +1,36 @@
-import {restoreMerchantGuest,carryMerchantGuest} from './merchant-guest.js?v=20261115-v63';
+import {restoreMerchantGuest,carryMerchantGuest} from './merchant-guest.js?v=20261119-v68';
 restoreMerchantGuest();
-import {isMerchantMeadow,MEADOW_KEY,initializeMeadowStorage} from './merchant-meadow.js?v=20261115-v63';
-import {claimHalloweenWeapon} from './halloween-event.js?v=20261115-v63';
-import {teamFirstRoster} from './team-roster.js?v=20261115-v63';
-import {caveGuide} from './cave-guide.js?v=20261115-v63';
-import {shopWeaponEntries} from './weapon-rules.js?v=20261115-v63';
-import {weaponPassiveText} from './weapon-passives.js?v=20261115-v63';
-import {familyRoot,isTrainingBase,ownsFamily,trainingOf,familyMembers} from './family-progress.js?v=20261115-v63';
-import {canCaptureEnemy} from './capture-rules.js?v=20261115-v63';
-import {verifyTestPassword} from './test-access.js?v=20261115-v63';
-import {createCombatAudio} from './combat-audio-v17.js?v=20261115-v63';
-import {costumeFor} from './costume-effects.js?v=20261115-v63';
-import {chooseTestPet} from './test-pets.js?v=20261115-v63';
-import {createCaveTutorial} from './tutorial.js?v=20261115-v63';
-import {passiveSummary} from './status-passives.js?v=20261115-v63';
-import {STATUS} from './combat-status.js?v=20261115-v63';
+import {isMerchantMeadow,MEADOW_KEY,initializeMeadowStorage} from './merchant-meadow.js?v=20261119-v68';
+import {claimHalloweenWeapon} from './halloween-event.js?v=20261119-v68';
+import {teamFirstRoster} from './team-roster.js?v=20261119-v68';
+import {caveGuide} from './cave-guide.js?v=20261119-v68';
+import {shopWeaponEntries} from './weapon-rules.js?v=20261119-v68';
+import {weaponPassiveText} from './weapon-passives.js?v=20261119-v68';
+import {familyRoot,isTrainingBase,ownsFamily,trainingOf,familyMembers} from './family-progress.js?v=20261119-v68';
+import {canCaptureEnemy} from './capture-rules.js?v=20261119-v68';
+import {verifyTestPassword} from './test-access.js?v=20261119-v68';
+import {createCombatAudio} from './combat-audio-v17.js?v=20261119-v68';
+import {costumeFor} from './costume-effects.js?v=20261119-v68';
+import {chooseTestPet} from './test-pets.js?v=20261119-v68';
+import {createCaveTutorial} from './tutorial.js?v=20261119-v68';
+import {passiveSummary} from './status-passives.js?v=20261119-v68';
+import {STATUS} from './combat-status.js?v=20261119-v68';
 import {groupRewards} from './reward-groups.js';
-import {itemPicture} from './item-pictures.js?v=20261115-v63';
-import {itemReady,setAutoItem,runAutoItems} from './auto-items.js?v=20261115-v63';
-import {createFeedback} from './feedback.js?v=20261115-v63';
-import {petUltimateCooldown} from './manual-evolution.js?v=20261115-v63';
-import {summonMarkup,summonDuration,startSummon} from './summon-view.js?v=20261115-v63';
-import {skillDescription} from './combat-profile.js?v=20261115-v63';
-import {growthOf,basicStats,passiveAt,buyExperience,xpRequired,xpPrice} from './growth.js?v=20261115-v63';
-import {trainPet,TRAINING,trainingCost} from './training.js?v=20261115-v63';
+import {itemPicture} from './item-pictures.js?v=20261119-v68';
+import {itemReady,setAutoItem,runAutoItems} from './auto-items.js?v=20261119-v68';
+import {createFeedback} from './feedback.js?v=20261119-v68';
+import {petUltimateCooldown} from './manual-evolution.js?v=20261119-v68';
+import {summonMarkup,summonDuration,startSummon} from './summon-view.js?v=20261119-v68';
+import {skillDescription} from './combat-profile.js?v=20261119-v68';
+import {growthOf,basicStats,passiveAt,buyExperience,xpRequired,xpPrice} from './growth.js?v=20261119-v68';
+import {trainPet,TRAINING,trainingCost} from './training.js?v=20261119-v68';
 import {icon} from './ui-art.js';
-import {createStore,initialState} from './save-bridge.js?v=20261115-v63';
-import {claimStarter,draw,eligiblePool,validatePool} from './gacha.js?v=20261115-v63';
-import {ITEMS,WEAPONS,BOSS_WEAPONS,weaponStats,useItem,buyItem,buyWeapon} from './inventory.js?v=20261115-v63';
-import {CaveWorld,createRun} from './world.js?v=20261115-v63';
-import {MONSTER_MULTS,getMonsterMult,setMonsterMult,dropMultOf} from './run-options.js?v=20261115-v63';
-import {CARD_GROUPS,dexSpecies,evolutionSummary,evolutionDetail,evolutionMechanics} from './dex-evolution.js?v=20261115-v63';
+import {createStore,initialState} from './save-bridge.js?v=20261119-v68';
+import {claimStarter,draw,eligiblePool,validatePool} from './gacha.js?v=20261119-v68';
+import {ITEMS,WEAPONS,BOSS_WEAPONS,weaponStats,useItem,buyItem,buyWeapon} from './inventory.js?v=20261119-v68';
+import {CaveWorld,createRun} from './world.js?v=20261119-v68';
+import {MONSTER_MULTS,getMonsterMult,setMonsterMult,dropMultOf} from './run-options.js?v=20261119-v68';
+import {CARD_GROUPS,dexSpecies,evolutionSummary,evolutionDetail,evolutionMechanics} from './dex-evolution.js?v=20261119-v68';
 
 const combatAudio=createCombatAudio();let testUnlocked=false;
 function movementInput(){return{x:input.x+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0),z:input.z+(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0)};}
@@ -39,7 +39,7 @@ function requestRoll(){if(!playing||entering||panel.open||evolving)return false;
 const $=id=>document.getElementById(id),panel=$('panel'),input={x:0,z:0},keys=new Set();
 let scenePromise=null,launchPromise=null,entering=false;
 const transition=(label,work)=>globalThis.PhantomTransition?.run(label,work)||Promise.resolve().then(work);
-async function ensureScene(){if(scene)return scene;if(scenePromise)return scenePromise;PhantomLoading.begin(isMerchantMeadow?'正在進入晨光草原':'正在準備洞穴戰場');scenePromise=(async()=>{try{PhantomLoading.stage('讀取旅人、武器與戰鬥動作',.12);for(const [src,ready] of [['../vendor/three.min.js',()=>!!globalThis.THREE],['../vendor/GLTFLoader.js',()=>!!globalThis.THREE?.GLTFLoader]]){if(!ready())await new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=src;el.onload=resolve;el.onerror=()=>{el.remove();reject(Error('引擎讀取失敗，請重試'));};document.head.append(el);});}PhantomLoading.install();const {createScene}=await import('./scene.js?v=20261115-v63');scene=await createScene($('world'),{spirits:Object.values(data.spirits),catalog:data.catalog,onSound:ev=>combatAudio.play(ev),onSelect:id=>{if(playing&&!panel.open)world.select(id);},onError:e=>toast('素材問題：'+(e.message||e))});feedback=createFeedback(scene);data.config.rollDuration=scene.metrics.rollDuration;PhantomLoading.stage('戰場準備完成',.97);PhantomLoading.end();return scene;}catch(e){scenePromise=null;PhantomLoading.fail('場景讀取失敗，請重試');throw e;}})();return scenePromise;}
+async function ensureScene(){if(scene)return scene;if(scenePromise)return scenePromise;PhantomLoading.begin(isMerchantMeadow?'正在進入晨光草原':'正在準備洞穴戰場');scenePromise=(async()=>{try{PhantomLoading.stage('讀取旅人、武器與戰鬥動作',.12);for(const [src,ready] of [['../vendor/three.min.js',()=>!!globalThis.THREE],['../vendor/GLTFLoader.js',()=>!!globalThis.THREE?.GLTFLoader]]){if(!ready())await new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=src;el.onload=resolve;el.onerror=()=>{el.remove();reject(Error('引擎讀取失敗，請重試'));};document.head.append(el);});}PhantomLoading.install();const {createScene}=await import('./scene.js?v=20261119-v68');scene=await createScene($('world'),{spirits:Object.values(data.spirits),catalog:data.catalog,onSound:ev=>combatAudio.play(ev),onSelect:id=>{if(playing&&!panel.open)world.select(id);},onError:e=>toast('素材問題：'+(e.message||e))});feedback=createFeedback(scene);data.config.rollDuration=scene.metrics.rollDuration;PhantomLoading.stage('戰場準備完成',.97);PhantomLoading.end();return scene;}catch(e){scenePromise=null;PhantomLoading.fail('場景讀取失敗，請重試');throw e;}})();return scenePromise;}
 let tutorial=null;
 let shopTab='items',trainingId='';
 let store,data,world,scene,preview,playing=false,frame=0,lastTime=0,lastSave=0,lastHud=0,toastTimer,modalType='',pendingAction=false,ball='ball-basic',autoCapture=false,autoCaptureAt=0,capturePendingPoints=0,feedback=null,captureEpoch=0,evolving=false,summonController=null;
@@ -136,7 +136,7 @@ function showMeadowVictory(){
  const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
  word.animate([{opacity:0,filter:'blur(10px)',transform:'translateY(16px) scale(.94)'},{opacity:1,filter:'blur(0)',transform:'translateY(0) scale(1)'}],{duration:reduced?120:1800,easing:'ease-out',fill:'both'}).finished.then(()=>{
   overlay.remove();if(modalType!=='meadow-victory'||world.run?.id!==runId||world.run.status!=='meadow-completed')return;
-  open('草原採集完成','<p>已完成全部 10 波！本次拾取的武器商品已保存，可帶回商會販售。</p>','meadow-completed',false);
+  const run=world.run,boss=run.meadowBossLootQty||0,limited=run.limitedWeaponGoods||0,normal=Math.max(0,(run.weaponGoods||0)-limited);open('草原採集完成','<p>已完成全部 10 波！</p><p><strong>本次取得</strong><br>大魔王限定武器 ×'+boss+'<br>限定武器（含小魔王）共 ×'+limited+'<br>武器商品 ×'+normal+'</p><p>已收進採集袋，回商會會自動入庫，並計入商會委託。</p>','meadow-completed',false);
   button('帶回商會',()=>{finish('草原10波完成');returnToTown();},$('panelBody'),'primary');
  }).catch(()=>overlay.remove());
 }

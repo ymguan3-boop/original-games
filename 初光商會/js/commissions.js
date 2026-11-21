@@ -1,10 +1,28 @@
+import {normalWeapons} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261117-v67';
+import {salesShelves} from './material-tray.js?v=20261121-storybook';
 const check=(ok,message)=>{if(!ok)throw Error(message);};
+const LIMITED_SKU=/-merchant-(elite|boss)$/;
+/* 武器委託只寫「武器商品／限定武器商品」，玩家分不出是哪一把：同類武器都算數 */
+export function commissionSkus(s,q){
+ if(q.kind!=='delivery')return [];
+ if(LIMITED_SKU.test(q.sku||'')){const all=new Set([...Object.keys(s.inventory||{}),...salesShelves(s).map(sh=>sh.sku)].filter(sku=>LIMITED_SKU.test(sku)));all.add(q.sku);return [...all];}
+ if(normalWeapons.includes(q.sku))return normalWeapons;
+ return [q.sku];
+}
+/* 倉庫＋貨架上的數量都算已取得（補貨員把貨搬上架，委託進度不會倒退） */
+const shelfStock=(s,sku)=>salesShelves(s).filter(sh=>sh.sku===sku).reduce((n,sh)=>n+(Number(sh.stock)||0),0);
+export const commissionHeld=(s,q)=>commissionSkus(s,q).reduce((n,sku)=>n+(s.inventory?.[sku]||0)+shelfStock(s,sku),0);
+/* 交付：先扣倉庫，不夠再從貨架取；回傳實際扣掉的品項 */
+function takeForCommission(s,q){let left=q.qty;const items=[];
+ for(const sku of commissionSkus(s,q)){const n=Math.min(left,s.inventory?.[sku]||0);if(n>0){s.inventory[sku]-=n;left-=n;items.push({sku,qty:n});}if(!left)break;}
+ for(const sh of salesShelves(s)){if(!left)break;if(!commissionSkus(s,q).includes(sh.sku))continue;const n=Math.min(left,Number(sh.stock)||0);if(n>0){const sku=sh.sku;sh.stock=(Number(sh.stock)||0)-n;left-=n;const it=items.find(i=>i.sku===sku);if(it)it.qty+=n;else items.push({sku,qty:n});}}
+ return items;}
 export const limitedWeaponCommission=q=>q.kind==='delivery'&&(/-merchant-(elite|boss)$/.test(q.sku||'')||/限定武器/.test(q.name||''));
 // Release 59: ten times the previously doubled reward. Derive from a stable
 // base so opening the board, reloading and batch claiming cannot multiply again.
 export function boostLimitedCommission(q){if(q.status==='active'&&limitedWeaponCommission(q)&&q.limitedRewardVersion!==2){const base=q.baseReward??(q.limitedRewardVersion===1?q.reward/2:q.reward);q.baseReward=base;q.reward=Math.round(base*20);q.limitedRewardVersion=2;}return q;}
 export function commissionState(s){const b=s.commissionBoard??={clock:0,nextAt:12,serial:0,unread:false,entries:[]};for(const q of b.entries)boostLimitedCommission(q);return b;}
-export function commissionProgress(s,q){return q.kind==='delivery'?Math.min(q.qty,s.inventory[q.sku]||0):Math.min(q.qty,Math.max(0,s.totals.sales-q.startSales));}
+export function commissionProgress(s,q){return q.kind==='delivery'?Math.min(q.qty,commissionHeld(s,q)):Math.min(q.qty,Math.max(0,s.totals.sales-q.startSales));}
 export function commissionVisibleEntries(s){
  const b=s.commissionBoard;if(!b)return [];
  // Older save files have no createdDay; retain a still-valid commission only until nextDay.
@@ -33,7 +51,7 @@ export function commissionsTick(g,s,dt){if(s.phase!=='open'||s.paused)return;con
  const q={id:`commission-${++b.serial}`,createdDay:s.day,kind,level,client,sku:kind==='delivery'?product.sku:null,name:kind==='delivery'?product.displayName:'商店成交',qty,reward:kind==='delivery'?Math.ceil(product.buyCost*qty*1.7+level*75):level*180+qty*35,startSales:s.totals.sales,createdAt:b.clock,expiresAt:b.clock+duration,status:'active'};
  boostLimitedCommission(q);b.entries.push(q);b.entries=b.entries.slice(-12);b.unread=true;g.log(s,`${client}傳來限時委託，請查看商會訊息。`);
 }
-export function commissionAction(g,s,type,p){if(!['readCommissions','claimCommission'].includes(type))return null;const b=commissionState(s);if(type==='readCommissions'){b.unread=false;return '已讀取商會訊息';}const q=b.entries.find(q=>q.id===p.id);check(q&&q.status==='active'&&q.expiresAt>b.clock&&(q.createdDay===undefined||q.createdDay===s.day),'委託已結束或獎勵已領取');check(commissionProgress(s,q)>=q.qty,q.kind==='delivery'?'庫房商品不足，請先採購':'成交目標尚未達成');
- if(q.kind==='delivery'){s.inventory[q.sku]-=q.qty;const product=g.data.catalog.find(p=>p.sku===q.sku),cost=Math.round((s.averageCosts?.[q.sku]??product.buyCost)*q.qty*100)/100;s.stats.revenue+=q.reward;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.totals.revenue+=q.reward;s.ledger.push({id:q.id,day:s.day,revenue:q.reward,cogs:cost,items:[{sku:q.sku,qty:q.qty}],kind:'commission'});s.ledger=s.ledger.slice(-200);}else s.stats.rewards+=q.reward;
+export function commissionAction(g,s,type,p){if(!['readCommissions','claimCommission'].includes(type))return null;const b=commissionState(s);if(type==='readCommissions'){b.unread=false;return '已讀取商會訊息';}const q=b.entries.find(q=>q.id===p.id);check(q&&q.status==='active'&&q.expiresAt>b.clock&&(q.createdDay===undefined||q.createdDay===s.day),'委託已結束或獎勵已領取');check(commissionProgress(s,q)>=q.qty,q.kind==='delivery'?(limitedWeaponCommission(q)?'限定武器不足，請到草原擊敗小魔王或大魔王':'庫房商品不足，請先採購'):'成交目標尚未達成');
+ if(q.kind==='delivery'){const items=takeForCommission(s,q),cost=Math.round(items.reduce((n,it)=>n+(s.averageCosts?.[it.sku]??g.data.catalog.find(p=>p.sku===it.sku)?.buyCost??0)*it.qty,0)*100)/100;s.stats.revenue+=q.reward;s.stats.cogs=Math.round((s.stats.cogs+cost)*100)/100;s.totals.revenue+=q.reward;s.ledger.push({id:q.id,day:s.day,revenue:q.reward,cogs:cost,items,kind:'commission'});s.ledger=s.ledger.slice(-200);}else s.stats.rewards+=q.reward;
  s.gold+=q.reward;if(s.phase==='report'&&s.report){Object.assign(s.report,{revenue:s.stats.revenue,cogs:s.stats.cogs,rewards:s.stats.rewards,gold:s.gold,grossProfit:s.stats.revenue-s.stats.cogs,netProfit:s.stats.revenue+(s.stats.furnitureSales||0)-s.stats.cogs-s.stats.wages-s.stats.expenses});if(s.history.at(-1)?.day===s.day)s.history[s.history.length-1]={...s.report};}q.status='claimed';q.claimedAt=b.clock;g.log(s,`完成${q.client}委託，${q.kind==='delivery'?`交付 ${q.name} ${q.qty} 件，`:'成交獎勵'}收到 ${q.reward} G。`);return `委託完成，收到 ${q.reward} G`;
 }

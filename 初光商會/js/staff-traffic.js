@@ -1,15 +1,15 @@
-import {CHECKOUT,dimensions,walkable} from './nav.js?v=20261115-v63';
-import {obstacles} from './decorations.js?v=20261115-v63';
-import {doorwayBuffer,employeeSpot,actorPath} from './staff-routing.js?v=20261115-v63';
+import {CHECKOUT,STATIONS,queueCellKeys,dimensions,walkable} from './nav.js?v=20261121-storybook';
+import {obstacles} from './decorations.js?v=20261121-storybook';
+import {doorwayBuffer,employeeSpot,actorPath} from './staff-routing.js?v=20261121-storybook';
 const near=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 export function nearestShelfRefuge(g,s,e){
  const candidates=s.shelves.flatMap(sh=>[[0,1],[-1,0],[1,0],[0,-1]].map(([dx,dz])=>({x:sh.x+dx,z:sh.z+dz,shelfId:sh.id}))),room=dimensions(s.level);
  if(!candidates.length)for(let z=2;z<room.height-2;z++)for(let x=1;x<room.width-2;x++)candidates.push({x,z});
- return candidates.filter(p=>!doorwayBuffer(p)&&!(p.x===CHECKOUT.x&&p.z>=3&&p.z<=6)&&walkable(p,obstacles(s),s.level)&&g.clearOfActors(s,p,e)).sort((a,b)=>near(a,e)-near(b,e))[0]||null;
+ return candidates.filter(p=>!doorwayBuffer(p)&&!queueCellKeys().has(p.x+','+p.z)&&!STATIONS.some(st=>st.cashier.x===p.x&&st.cashier.z===p.z)&&walkable(p,obstacles(s),s.level)&&g.clearOfActors(s,p,e)).sort((a,b)=>near(a,e)-near(b,e))[0]||null;
 }
 export function staffTraffic(g,s,dt){
  const customers=s.customers.filter(c=>!(c.arrivalRemaining>0)&&!c.exitingAtDoor);
- for(const e of s.employees){if(e.role==='standby'||e.fatigue>=100){e.crowdingSeconds=0;continue;}
+ for(const e of s.employees){if(e.role==='standby'||e.role==='cashier'||e.fatigue>=100){e.crowdingSeconds=0;continue;}
   const c=customers.slice().sort((a,b)=>near(e,a)-near(e,b))[0],crowded=c&&near(e,c)<1.05;
   e.crowdingSeconds=crowded?(e.crowdingSeconds||0)+dt:0;
   if(e.crowdingSeconds>=3){const refuge=nearestShelfRefuge(g,s,e);if(refuge){Object.assign(e,{x:refuge.x,z:refuge.z,path:[],blocked:0,crowdingSeconds:0,nextTaskAt:s.totalTime+.8});g.pendingMotion?.set(e.id,[{x:e.x,z:e.z,t:0},{x:e.x,z:e.z,t:1}]);g.notice(s,e.id,'讓路・回到貨架旁','good');}continue;}

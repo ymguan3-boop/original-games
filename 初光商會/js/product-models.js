@@ -1,6 +1,6 @@
 /* 商品與武器架的程序模型：不必下載檔案，每種商品併成單一網格後即可 InstancedMesh 批次擺上貨架。 */
-import {storybookEnabled} from './storybook-mode.js';
-import {storyProduct} from './storybook-products.js';
+import {storybookEnabled} from './storybook-mode.js?v=20261121-storybook';
+import {storyProduct} from './storybook-products.js?v=20261121-storybook';
 const cache=new Map();
 export function builder(T){
  const pos=[],nor=[],col=[],m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),c=new T.Color(),n3=new T.Matrix3(),v=new T.Vector3();

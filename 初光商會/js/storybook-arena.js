@@ -1,4 +1,4 @@
-import {ornament} from './storybook-cast.js';
+import {ornament} from './storybook-cast.js?v=20261121-storybook';
 
 // Recessed crest tiles and painted compass rays follow the existing shallow arena bowl.
 export function dressStoryArena(T,root,level) {

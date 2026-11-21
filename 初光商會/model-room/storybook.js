@@ -1,15 +1,15 @@
-import {buildStoryHorizon} from '../js/storybook-landscape.js';
-import {buildShell,buildCounter,buildGround,tune} from '../js/chibi/shell.js?v=20261115-v63';
-import {buildYard,createHeroChibi,layout} from '../js/chibi/yard.js?v=20261115-v63';
-import {createHuman,LOOKS} from '../js/human-customers.js?v=20261115-v63';
-import {createAssets} from '../js/asset-resolver.js?v=20261115-v63';
-import {createShelfView} from '../js/shelf-view.js?v=20261115-v63';
-import {shelvesForLevel} from '../js/furniture.js?v=20261115-v63';
-import {decorForLevel} from '../js/decorations.js?v=20261115-v63';
-import {loadProduct,buildProducts,setProductCount} from '../js/shelf-products.js?v=20261115-v63';
-import {createSpinModels} from '../js/spin-arena-models.js?v=20261115-v63';
-import {SPIN_TOPS} from '../js/spin-arena-config.js?v=20261115-v63';
-import {counterPositions,dimensions} from '../js/nav.js?v=20261115-v63';
+import {buildStoryHorizon} from '../js/storybook-landscape.js?v=20261121-storybook';
+import {buildShell,buildCounter,buildGround,tune} from '../js/chibi/shell.js?v=20261121-storybook';
+import {buildYard,createHeroChibi,layout} from '../js/chibi/yard.js?v=20261121-storybook';
+import {createHuman,LOOKS} from '../js/human-customers.js?v=20261121-storybook';
+import {createAssets} from '../js/asset-resolver.js?v=20261121-storybook';
+import {createShelfView} from '../js/shelf-view.js?v=20261121-storybook';
+import {shelvesForLevel} from '../js/furniture.js?v=20261121-storybook';
+import {decorForLevel} from '../js/decorations.js?v=20261121-storybook';
+import {loadProduct,buildProducts,setProductCount} from '../js/shelf-products.js?v=20261121-storybook';
+import {createSpinModels} from '../js/spin-arena-models.js?v=20261121-storybook';
+import {SPIN_TOPS} from '../js/spin-arena-config.js?v=20261121-storybook';
+import {counterPositions,dimensions} from '../js/nav.js?v=20261121-storybook';
 import {buildMeadow} from '../../幻靈奇旅/survivors/js/meadow-terrain.js?v=20261115-v63';
 import {merchantWeaponCatalog} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261115-v63';
 
@@ -74,7 +74,7 @@ async function drawChapter(){
     input.onchange=()=>{set(input.checked);if(input.checked)params.set(id,'clear');else params.delete(id);history.replaceState(null,'',current);};
    }
   }
-  for(const desk of counterPositions(level))addAt(tune(buildCounter(tier)),desk.x-(w-1)/2,0,desk.z-(d-1)/2);
+  for(const desk of counterPositions(level)){const counter=tune(buildCounter(tier));counter.scale.x=.62;counter.rotation.y=-Math.PI/2;addAt(counter,desk.x-(w-1)/2,0,desk.z-(d-1)/2);}
   if(chapter==='inside'){
    shell.userData.setFrontFade?.(.10);shell.userData.setRoofVisible?.(false);
    const display=[racks[0],racks.find(r=>r.id==='armory'),racks.find(r=>r.id==='materials')].filter(Boolean);

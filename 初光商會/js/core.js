@@ -1,48 +1,48 @@
-import{occupiedCells}from'./placement-footprint.js?v=20261115-v63';
-import {retireProducts} from './retired-products.js?v=20261115-v63';
-import {tickSpinVisitors} from './spin-arena-progression.js?v=20261115-v63';
-import{spinAction}from'./spin-arena-core.js?v=20261115-v63';
-import{merchantTrafficEffects}from'./merchant-effects.js?v=20261115-v63';
-import{auctionAction,auctionTraffic}from'./plaza-auction.js?v=20261115-v63';
-import{customerHealthTick}from'./customer-health.js?v=20261115-v63';
-import{stockTarget,recordStock,fillShelf,finishStockBatch}from'./stock-flow.js?v=20261115-v63';
-import{prepareShelfOffers}from'./material-tray.js?v=20261115-v63';
-import{shelfApproach}from'./nav.js?v=20261115-v63';
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261115-v63';
-import {passerAction,passerArrival,admitInvited,restoreInvitations,spawnShopper,patrolDiscovery} from './shop-interactions.js?v=20261115-v63';
-import {staffTraffic} from './staff-traffic.js?v=20261115-v63';
-import {syncQueueFortune} from './fortune-cards.js?v=20261115-v63';
-import {tickRealEvents} from './real-time-events.js?v=20261115-v63';
-import {merchantWeaponCatalog,importMerchantCargo} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261115-v63';
-import {specialDecorPose,floorInBounds,rehomeGardenDecor,reconcileArchitecture} from './decor-zones.js?v=20261115-v63';
-import {isPromoterLineage} from './promoter-lineage.js?v=20261115-v63';
-import {openingBlocker} from './shop-entry-rules.js?v=20261115-v63';
-import {releaseWork,syncWorkforce,workforceTick,recoverResting,replaceExhausted} from './workforce.js?v=20261115-v63';
-import {rollWeather,weatherTraffic} from './environment.js?v=20261115-v63';
-import {pickCustomerType,customerBudget,CUSTOMER_TYPES,purchaseChance,costFactor,trafficFactor,rollMarket,settleReputation,ensureMarket} from './economy-v2.js?v=20261115-v63';
-import {settlePromoter,hirePromoter} from './promoters.js?v=20261115-v63';
-import {claimAllRewards} from './reward-collection.js?v=20261115-v63';
-import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261115-v63';
-import {requiresManagerPatrol} from './event-routing.js?v=20261115-v63';
-import {funnyEvents,comicEventEligible} from './funny-events.js?v=20261115-v63';
-import {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue} from './patrol-events.js?v=20261115-v63';
-import {employeeSpot,employeePath,actorPath,doorwayBuffer,yieldDoorway} from './staff-routing.js?v=20261115-v63';
-import {autoAssign,staffAutomation,restingPositions,sendToRest} from './staff-automation.js?v=20261115-v63';
-import {evolveStaffOnce} from './staff-evolution.js?v=20261115-v63';
-import {chapterObjectives,autoChapterConstruction,awardSideChapter} from './shop-chapters.js?v=20261115-v63';
-import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './customer-chase.js?v=20261115-v63';
-import {ensureDailyGoals} from './daily-objectives.js?v=20261115-v63';
-import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js?v=20261115-v63';
-import {decorEffects,decorLimit,decorTypes,obstacles} from './decorations.js?v=20261115-v63';
-import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261115-v63';
-import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfCapacity,shelfDefinition,shelfKind,ownsUniqueShelf} from './furniture.js?v=20261115-v63';
-import {pointSegmentDistance,segmentDistance} from './motion.js?v=20261115-v63';
-import {findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER,buildingLevel,dimensions,applyRoom} from './nav.js?v=20261115-v63';
-import {legacyRole,managementAction,migrateState,preferredJob,capacityOf,passive,jobPower,dailyTrack,dailyState,systemRestock,workXp,eventGap,eventAllowed,WORK_JOBS} from './management.js?v=20261115-v63';
-export const jobs=[[ 'stocker','補貨員','自動補貨、縮短缺貨'],['host','招待員','引導顧客、提高購買機率'],['cleaner','清潔員','恢復整潔、提升滿意度'],['standby','休息','離店休息，恢復疲勞；仍獲得 20% 經驗']].map(([id,name,description])=>({id,name,description}));
+import{occupiedCells}from'./placement-footprint.js?v=20261121-storybook';
+import {retireProducts} from './retired-products.js?v=20261121-storybook';
+import {tickSpinVisitors} from './spin-arena-progression.js?v=20261121-storybook';
+import{spinAction}from'./spin-arena-core.js?v=20261121-storybook';
+import{merchantTrafficEffects}from'./merchant-effects.js?v=20261121-storybook';
+import{auctionAction,auctionTraffic}from'./plaza-auction.js?v=20261121-storybook';
+import{customerHealthTick}from'./customer-health.js?v=20261121-storybook';
+import{stockTarget,recordStock,fillShelf,finishStockBatch}from'./stock-flow.js?v=20261121-storybook';
+import{prepareShelfOffers}from'./material-tray.js?v=20261121-storybook';
+import{shelfApproach}from'./nav.js?v=20261121-storybook';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261121-storybook';
+import {passerAction,passerArrival,admitInvited,restoreInvitations,spawnShopper,patrolDiscovery} from './shop-interactions.js?v=20261121-storybook';
+import {staffTraffic} from './staff-traffic.js?v=20261121-storybook';
+import {syncQueueFortune} from './fortune-cards.js?v=20261121-storybook';
+import {tickRealEvents} from './real-time-events.js?v=20261121-storybook';
+import {merchantWeaponCatalog,importMerchantCargo} from '../../幻靈奇旅/survivors/js/merchant-meadow.js?v=20261117-v67';
+import {specialDecorPose,floorInBounds,rehomeGardenDecor,reconcileArchitecture} from './decor-zones.js?v=20261121-storybook';
+import {isPromoterLineage} from './promoter-lineage.js?v=20261121-storybook';
+import {openingBlocker} from './shop-entry-rules.js?v=20261121-storybook';
+import {releaseWork,syncWorkforce,workforceTick,recoverResting,replaceExhausted} from './workforce.js?v=20261121-storybook';
+import {rollWeather,weatherTraffic} from './environment.js?v=20261121-storybook';
+import {pickCustomerType,customerBudget,CUSTOMER_TYPES,purchaseChance,costFactor,trafficFactor,rollMarket,settleReputation,ensureMarket} from './economy-v2.js?v=20261121-storybook';
+import {settlePromoter,hirePromoter} from './promoters.js?v=20261121-storybook';
+import {claimAllRewards} from './reward-collection.js?v=20261121-storybook';
+import {commissionState,commissionsTick,commissionAction,validateCommissions,resetCommissionsForNewDay} from './commissions.js?v=20261121-storybook';
+import {requiresManagerPatrol} from './event-routing.js?v=20261121-storybook';
+import {funnyEvents,comicEventEligible} from './funny-events.js?v=20261121-storybook';
+import {eventEmployee,managerNearEmployee,sleepEvent,applyFreeEventFatigue} from './patrol-events.js?v=20261121-storybook';
+import {employeeSpot,employeePath,actorPath,doorwayBuffer,yieldDoorway} from './staff-routing.js?v=20261121-storybook';
+import {autoAssign,staffAutomation,restingPositions,sendToRest} from './staff-automation.js?v=20261121-storybook';
+import {evolveStaffOnce} from './staff-evolution.js?v=20261121-storybook';
+import {chapterObjectives,autoChapterConstruction,awardSideChapter} from './shop-chapters.js?v=20261121-storybook';
+import {startCustomerChase,tickCustomerChase,cancelCustomerChase} from './customer-chase.js?v=20261121-storybook';
+import {ensureDailyGoals} from './daily-objectives.js?v=20261121-storybook';
+import {decorAction,decorPlacement,validateDecorLayout} from './decor-operations.js?v=20261121-storybook';
+import {decorEffects,decorLimit,decorTypes,obstacles} from './decorations.js?v=20261121-storybook';
+import {shopAction,operationsTick,stepCustomers,react,operationalEvent} from './shop-operations.js?v=20261121-storybook';
+import {shelfTypes,shelvesForLevel,accepts,shelfLimit,shelfCapacity,shelfDefinition,shelfKind,ownsUniqueShelf} from './furniture.js?v=20261121-storybook';
+import {pointSegmentDistance,segmentDistance} from './motion.js?v=20261121-storybook';
+import {STATIONS,findPath,isLayoutValid,ENTRANCE,CHECKOUT,WAREHOUSE,walkable,ACTOR_DIAMETER,buildingLevel,dimensions,applyRoom} from './nav.js?v=20261121-storybook';
+import {legacyRole,managementAction,migrateState,preferredJob,capacityOf,passive,jobPower,dailyTrack,dailyState,systemRestock,workXp,eventGap,eventAllowed,WORK_JOBS,ON_DUTY_XP_BONUS} from './management.js?v=20261121-storybook';
+export const jobs=[[ 'stocker','補貨員','自動補貨、縮短缺貨'],['host','招待員','引導顧客、提高購買機率'],['cleaner','清潔員','恢復整潔、提升滿意度'],['cashier','收銀員','在第二座收銀台結帳，主角負責另一座'],['standby','休息','離店休息，恢復疲勞；仍獲得 20% 經驗']].map(([id,name,description])=>({id,name,description}));
 const eventEffects=[['checkout',25,'神速結帳 25 秒'],['reputation',3,'顧客推薦使人氣 +3'],['stock',6,'現有倉存補上最多 6 件商品'],['logistics',25,'搬貨效率提升 25 秒'],['sales',25,'價格接受度提升 25 秒'],['reputation',5,'口碑人氣 +5'],['storage',25,'進貨折扣提升 25 秒'],['morale',8,'在班夥伴士氣 +8'],['storage',30,'倉儲採購折扣 30 秒'],['stock',10,'盤點後從倉庫補上最多 10 件'],['patience',30,'客人排隊耐心 +10 秒，持續 30 秒'],['reputation',4,'迷路客口耳相傳，人氣 +4'],['clean',5,'店面整理使滿意度 +5'],['rest',10,'夥伴精神變好'],['traffic',25,'表演加速客流 25 秒'],['rest',15,'夥伴充飽電']];
 const eventNames=[['cashier','零錢排隊跳舞'],['cashier','發票捲成圍巾'],['stocker','紙箱山滑倒'],['stocker','浮空補貨術'],['sales','熱情推銷過頭'],['sales','商品說明接龍'],['smith','鍛爐彩虹煙'],['smith','鐵鎚唱歌'],['warehouse','標籤大風吹'],['warehouse','庫房尋寶'],['security','紙箱假小偷'],['security','門口迷路客'],['cleaner','地板溜冰秀'],['cleaner','泡泡大遊行'],['host','歡迎歌太大聲'],['host','招待員打瞌睡']];
-export const events=eventNames.map(([role,title],i)=>({id:`event-${i+1}`,role:legacyRole(role),title,description:`${title}！${eventEffects[i][2]}。`,effect:eventEffects[i][0],effectValue:eventEffects[i][1],effectText:eventEffects[i][2],cooldown:70,choices:[{id:'help',label:'出資協助',cost:40,mood:12,satisfaction:4,xp:10},{id:'coach',label:'耐心指導',cost:0,mood:4,satisfaction:1,xp:4}]})).concat(funnyEvents.map(ev=>({...ev,role:legacyRole(ev.role)}))).map(ev=>ev.id==='event-11'?{
+export const events=eventNames.map(([role,title],i)=>({id:`event-${i+1}`,role:role==='cashier'?'host':legacyRole(role),title,description:`${title}！${eventEffects[i][2]}。`,effect:eventEffects[i][0],effectValue:eventEffects[i][1],effectText:eventEffects[i][2],cooldown:70,choices:[{id:'help',label:'出資協助',cost:40,mood:12,satisfaction:4,xp:10},{id:'coach',label:'耐心指導',cost:0,mood:4,satisfaction:1,xp:4}]})).concat(funnyEvents.map(ev=>({...ev,role:legacyRole(ev.role)}))).map(ev=>ev.id==='event-11'?{
  ...ev,
  // A genuine one-action capture-style store event (not a new collectible spirit).
  description:'紙箱假小偷在商會裡惡作劇！快親自抓住他。',
@@ -51,7 +51,7 @@ export const events=eventNames.map(([role,title],i)=>({id:`event-${i+1}`,role:le
 export const combos=[{id:'flow',name:'物流接力',roles:['stocker','host'],description:'30 秒補貨效率提升一倍'},{id:'show',name:'迎賓快線',roles:['host','cleaner'],description:'30 秒結帳效率提升 60%'},{id:'forge',name:'工匠默契',roles:['stocker','cleaner'],description:'30 秒採購成本再減 10%'},{id:'shine',name:'安心閃亮',roles:['cleaner','host'],description:'滿意度 +8'}];
 const clone=x=>JSON.parse(JSON.stringify(x)), clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), assert=(x,m)=>{if(!x)throw Error(m);};
 export async function createGame({storage=globalThis.localStorage,key='firstlight_shop_v1',seed=731,data}={}){
- if(!data){const read=async n=>{const r=await fetch(new URL(`../data/${n}.json?v=20261115-v63`,import.meta.url));if(!r.ok)throw Error(`資料讀取失敗：${n}`);return r.json();};const [catalog,hirePool,spirits,evolution,levels,config,management]=await Promise.all(['shop-catalog','hire-pool','spirits','evolution','store-levels','economy','management'].map(read));data={catalog,hirePool,spirits,evolution,levels,config,management};}
+ if(!data){const read=async n=>{const r=await fetch(new URL(`../data/${n}.json?v=${n==='hire-pool'?'20261116-staff-v65':'20261117-v67'}`,import.meta.url));if(!r.ok)throw Error(`資料讀取失敗：${n}`);return r.json();};const [catalog,hirePool,spirits,evolution,levels,config,management]=await Promise.all(['shop-catalog','hire-pool','spirits','evolution','store-levels','economy','management'].map(read));data={catalog,hirePool,spirits,evolution,levels,config,management};}
  data={...data,catalog:[...data.catalog.filter(c=>c.category!=='weapon'),...merchantWeaponCatalog()]};return new Game({storage,key,seed,data});
 }
 export const recipes=[
@@ -90,7 +90,7 @@ export class Game{
   if(!isLayoutValid(obstacles(s),s.level)){for(const sh of s.shelves){returnShelfStock(s,sh);const saved={...sh,stock:0,purchasePrice:sh.purchasePrice??this.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);}s.shelves=[];}
   s.customers=[];s.forge=s.forge&&s.employees.some(e=>e.id===s.forge.employeeId)?s.forge:null;for(const a of [...s.employees,s.manager])if(a)a.path=[];this.log?.(s,'讀檔時發現舊的擺設擋住新大門，已把家具收回倉庫，請到「店舖整備」重新擺放。');}
  /* 舊存檔的店面比較長：超出新範圍的貨架與裝潢收回倉庫，員工站回店內，不刪任何東西 */
- fitRoom(s){const {width,height}=dimensions(s.level),out=o=>o.x<1||o.z<1||o.x>width-2||o.z>height-2,keep=[];for(const sh of s.shelves){if(out(sh)||!isLayoutValid([...keep,sh],s.level)){returnShelfStock(s,sh);const saved={...sh,stock:0,purchasePrice:sh.purchasePrice??this.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);}else keep.push(sh);}const keptIds=new Set(keep.map(sh=>sh.id));for(const c of s.customers){if(c.basket?.some(b=>!keptIds.has(b.shelfId))){c.basket=c.basket.filter(b=>keptIds.has(b.shelfId));if(!c.basket.length){c.state='Browse';c.path=[];c.wait=0;}}}s.shelves=keep;s.decorStorage??=[];rehomeGardenDecor(s);{const n=reconcileArchitecture(s);if(n)this.log(s,`${n} 件裝潢因入口或門窗位置調整，已保留於收納區。`);}for(const d of [...(s.decorations||[])]){const pose=specialDecorPose(d,s.level);if(pose)Object.assign(d,pose);if(!pose&&(d.type==='carpet'?!floorInBounds(d,s.level):!!d.mount||out(d)||s.level>=3&&occupiedCells(d).some(p=>Math.abs(p.x-(CHECKOUT.x-4))<=1&&p.z===2||p.x===CHECKOUT.x-4&&p.z>=3&&p.z<=6)||d.x===ENTRANCE.x&&d.z===ENTRANCE.z)){s.decorations=s.decorations.filter(x=>x!==d);const saved={...d};delete saved.x;delete saved.z;delete saved.mount;delete saved.garden;s.decorStorage.push(saved);}}for(const a of [...s.employees,s.manager])if(out(a)){a.x=Math.min(a.x,width-3);a.z=Math.min(a.z,height-3);a.path=[];}s.customers=s.customers.filter(c=>!out(c));}
+ fitRoom(s){const {width,height}=dimensions(s.level),out=o=>o.x<1||o.z<1||o.x>width-2||o.z>height-2,keep=[];for(const sh of s.shelves){if(out(sh)||!isLayoutValid([...keep,sh],s.level)){returnShelfStock(s,sh);const saved={...sh,stock:0,purchasePrice:sh.purchasePrice??this.data.config.shelfCost};delete saved.x;delete saved.z;s.shelfStorage.push(saved);}else keep.push(sh);}const keptIds=new Set(keep.map(sh=>sh.id));for(const c of s.customers){if(c.basket?.some(b=>!keptIds.has(b.shelfId))){c.basket=c.basket.filter(b=>keptIds.has(b.shelfId));if(!c.basket.length){c.state='Browse';c.path=[];c.wait=0;}}}s.shelves=keep;s.decorStorage??=[];rehomeGardenDecor(s);{const n=reconcileArchitecture(s);if(n)this.log(s,`${n} 件裝潢因入口或門窗位置調整，已保留於收納區。`);}for(const d of [...(s.decorations||[])]){const pose=specialDecorPose(d,s.level);if(pose)Object.assign(d,pose);if(!pose&&(d.type==='carpet'?!floorInBounds(d,s.level):!!d.mount||out(d)||occupiedCells(d).some(p=>STATIONS.some(st=>[st.counter,st.cashier,...st.queue].some(q=>p.x===q.x&&p.z===q.z)))||d.x===ENTRANCE.x&&d.z===ENTRANCE.z)){s.decorations=s.decorations.filter(x=>x!==d);const saved={...d};delete saved.x;delete saved.z;delete saved.mount;delete saved.garden;s.decorStorage.push(saved);}}for(const a of [...s.employees,s.manager])if(out(a)){a.x=Math.min(a.x,width-3);a.z=Math.min(a.z,height-3);a.path=[];}s.customers=s.customers.filter(c=>!out(c));}
  validate(s){validateCommissions(s,this.data.catalog);
  const finite=(n,min=0,max=Infinity)=>Number.isFinite(n)&&n>=min&&n<=max;
  assert(s&&s.version===1&&Number.isInteger(s.revision)&&s.revision>=0,'版本或revision不支援');
@@ -114,11 +114,11 @@ export class Game{
  emit(){for(const fn of this.listeners)fn(this.state);}
  initial(seed){const inventory={},prices={};for(const c of this.data.catalog){inventory[c.sku]=!c.lootOnly&&c.unlockStoreLevel===1?12:0;prices[c.sku]=c.suggestedRetail;}return {version:1,revision:0,seed,gold:3000,level:1,day:1,phase:'closed',time:0,totalTime:0,paused:false,speed:1,popularity:20,satisfaction:75,schemaVersion:this.data.management.schemaVersion,tutorialState:{step:'welcome',done:false,version:1},xpTickets:0,employees:[],shelves:[],inventory,prices,averageCosts:Object.fromEntries(this.data.catalog.map(c=>[c.sku,c.buyCost])),shelfStorage:[],decorations:[],decorStorage:[],upgradeProject:null,customers:[],managerDuty:'cashier',manager:{x:6,z:1,path:[]},log:[{time:0,text:'歡迎來到初光商會！'}],stats:this.emptyStats(),totals:{revenue:0,sales:0,days:0},report:null,history:[],ledger:[],txIds:[],cooldowns:{autoEvent:this.data.management.events.firstDelay},event:null,buffs:{},quests:{},memories:{},visualEvents:[],tutorialSeen:{},incidentHistory:[],serial:0,spawnTimer:0,workTimer:0,patrols:0,undo:null,demand:0};}
  emptyStats(){return {revenue:0,cogs:0,sales:0,served:0,lost:0,wages:0,expenses:0,purchases:0,rewards:0};}
- employee(id,role='standby'){const h=this.data.hirePool.find(x=>x.id===id),sp=this.data.spirits.find(x=>x.id===(h.spiritId||id));const t=this.data.management.traits[id];return {id:`emp-${id}`,baseId:id,spiritId:sp.id,name:h.name||sp.name,rarity:h.rarity,rarityAtHire:h.rarity,role,preferredJob:t?.preferredJob,passiveId:t?.passiveId,lockedAssignment:false,xp:0,workLevel:1,mood:80,fatigue:0,wage:h.wage,passiveSlots:{yellow:1,purple:2,red:3}[h.rarity],evolutionHistory:[],xpToday:0,x:role==='cashier'?CHECKOUT.x:3,z:role==='cashier'?1:3,reaction:'idle'};}
+ employee(id,role='standby'){const h=this.data.hirePool.find(x=>x.id===id),sp=this.data.spirits.find(x=>x.id===(h.spiritId||id));const t=this.data.management.traits[id];return {id:`emp-${id}`,baseId:id,spiritId:sp.id,name:h.name||sp.name,rarity:h.rarity,rarityAtHire:h.rarity,role,preferredJob:t?.preferredJob,passiveId:t?.passiveId,lockedAssignment:false,xp:0,workLevel:1,mood:80,fatigue:0,wage:h.wage,passiveSlots:{yellow:1,purple:2,red:3}[h.rarity],evolutionHistory:[],xpToday:0,x:role==='cashier'?(STATIONS[1]||STATIONS[0]).cashier.x:3,z:role==='cashier'?(STATIONS[1]||STATIONS[0]).cashier.z:3,reaction:'idle'};}
  random(s){s.seed=(Math.imul(s.seed,1664525)+1013904223)>>>0;return s.seed/4294967296;}
  log(s,text){s.log.push({day:s.day,time:s.time,text});s.log=s.log.slice(-120);}
  notice(s,targetId,text,tone='good'){if(!targetId)return;s.visualEvents??=[];s.visualEvents.push({id:`visual-${++s.serial}`,targetId,text:String(text).slice(0,30),tone});s.visualEvents=s.visualEvents.slice(-24);}
- xp(s,e,amount){if(!e)return;amount=Math.min(amount*(1+passive(this,s,'xp')),1000-e.xpToday);if(amount<=0)return;const previousLevel=e.workLevel;e.xpToday+=amount;e.xp+=amount;dailyTrack(this,s,'exp',amount);while(e.workLevel<50&&e.xp>=e.workLevel*25){e.xp-=e.workLevel*25;e.workLevel++;}if(e.workLevel===50)e.xp=0;/* Level-up unlocks evolution; a player taps the employee card to confirm. */e.efficiency=this.efficiency(e);if(e.workLevel>previousLevel)this.notice(s,e.id,`熟練 Lv.${e.workLevel}`,'level');}
+ xp(s,e,amount,{ticket=false}={}){if(!e)return;amount=Math.min(amount*(1+passive(this,s,'xp'))*(!ticket&&e.role&&e.role!=='standby'?1+ON_DUTY_XP_BONUS:1),1000-e.xpToday);if(amount<=0)return;const previousLevel=e.workLevel;e.xpToday+=amount;e.xp+=amount;dailyTrack(this,s,'exp',amount);while(e.workLevel<50&&e.xp>=e.workLevel*25){e.xp-=e.workLevel*25;e.workLevel++;}if(e.workLevel===50)e.xp=0;/* Level-up unlocks evolution; a player taps the employee card to confirm. */e.efficiency=this.efficiency(e);if(e.workLevel>previousLevel)this.notice(s,e.id,`熟練 Lv.${e.workLevel}`,'level');}
  efficiency(e){if(e.fatigue>=100)return 0;const stage=this.data.spirits.find(x=>x.id===e.spiritId)?.stage||1,tiers={yellow:[1,1.3,1.6],purple:[1.45,2,2.2,2.4],red:[2.6,2.9,3.2]};return Math.min(3,(tiers[e.rarity][Math.min(stage-1,tiers[e.rarity].length-1)])*(1+Math.floor(e.workLevel/10)*.1))*(1-Math.min(100,e.fatigue||0)/200);}
  role(s,id){return s.employees.find(e=>e.role===id&&e.fatigue<100);}
  transaction(id,fn){let storageStage=true;try{const current=this.storage.getItem(this.key),stored=current?JSON.parse(current):null;assert(stored?.revision===this.state.revision,'另一分頁已更新存檔，請重新整理');if(id&&this.state.txIds.includes(id))return {ok:true,message:'此交易已完成，未重複處理',duplicate:true};storageStage=false;const next=clone(this.state),message=fn(next)||'已完成';if(!next.layoutPause)autoChapterConstruction(this,next);applyRoom(next.level);if(next.level!==this.state.level)this.fitRoom(next);syncWorkforce(this,next);next.revision++;if(id)next.txIds.push(id);storageStage=true;if(current)this.storage.setItem(this.key+'.backup',current);this.storage.setItem(this.key,JSON.stringify(next));this._state=next;this.lastError='';this.storageBlocked=false;this.emit();return {ok:true,message};}catch(e){this.lastError=e.message;if(storageStage)this.storageBlocked=true;return {ok:false,message:`未執行：${e.message}`};}}
@@ -196,8 +196,8 @@ export class Game{
  s.event=s.incidents?.shift()||null;
  return true;
 }
- setManagerDuty(duty){if(!['cashier','standby'].includes(duty))return {ok:false,message:'主管職務無效'};if(this.state.patrolFocus)return {ok:false,message:'請先完成主管巡店任務'};const result=this.transaction(null,s=>{s.managerDuty=duty;Object.assign(s.manager,{x:CHECKOUT.x,z:1,path:[]});return duty==='cashier'?'主管已到櫃台收銀':'主管停止收銀；顧客會等待主管回到櫃台';});if(result.ok){this.managerActive=false;this.managerInput={x:0,z:0};}return result;}
- setManagerActive(active){active=!!active;if(!active&&this.state.patrolFocus)return {ok:false,message:'先完成這件主管巡店任務，才能返回商會總覽'};if(active===this.managerActive)return {ok:true};const result=this.transaction(null,s=>{/* 主角平常在櫃台收銀，巡店從櫃台後方出發 */s.managerDuty=active?'patrol':'cashier';if(active){Object.assign(s.manager,this.freeSpot(s,{x:CHECKOUT.x,z:1},s.manager));s.manager.facing=0;}s.manager.path=[];return active?'主管開始巡店':'已返回商會總覽';});if(result.ok){this.managerActive=active;this.managerInput={x:0,z:0};this.motionFrame=null;this.pending=0;}return result;}
+ setManagerDuty(duty){if(!['cashier','standby'].includes(duty))return {ok:false,message:'主管職務無效'};if(this.state.patrolFocus)return {ok:false,message:'請先完成主管巡店任務'};const result=this.transaction(null,s=>{s.managerDuty=duty;Object.assign(s.manager,{...STATIONS[0].cashier,path:[]});return duty==='cashier'?'主管已到櫃台收銀':'主管停止收銀；顧客會等待主管回到櫃台';});if(result.ok){this.managerActive=false;this.managerInput={x:0,z:0};}return result;}
+ setManagerActive(active){active=!!active;if(!active&&this.state.patrolFocus)return {ok:false,message:'先完成這件主管巡店任務，才能返回商會總覽'};if(active===this.managerActive)return {ok:true};const result=this.transaction(null,s=>{/* 主角平常在櫃台收銀，巡店從櫃台後方出發 */s.managerDuty=active?'patrol':'cashier';if(active){Object.assign(s.manager,this.freeSpot(s,STATIONS[0].cashier,s.manager));s.manager.facing=-Math.PI/2;}s.manager.path=[];return active?'主管開始巡店':'已返回商會總覽';});if(result.ok){this.managerActive=active;this.managerInput={x:0,z:0};this.motionFrame=null;this.pending=0;}return result;}
  setManagerInput(x,z){const length=Math.hypot(x,z);this.managerInput={x:length>1?x/length:x,z:length>1?z/length:z};}
  steerManager(s,dt){const a=s.manager,delta=dt*2.7,trail=[{x:a.x,z:a.z,t:0}],steps=Math.max(1,Math.ceil(delta/.08));a.path=[];for(let i=1;i<=steps;i++){const dx=this.managerInput.x*delta/steps,dz=this.managerInput.z*delta/steps,next={x:a.x+dx,z:a.z+dz};if(walkable(next,obstacles(s),s.level)&&this.sweptClear(s,a,next)){a.x=next.x;a.z=next.z;}else{for(const p of [{x:a.x+dx,z:a.z},{x:a.x,z:a.z+dz}])if(walkable(p,obstacles(s),s.level)&&this.sweptClear(s,a,p)){a.x=p.x;a.z=p.z;}}trail.push({x:a.x,z:a.z,t:i/steps});}this.pendingMotion?.set('manager',trail);}
  placementStatus(p,s=this.state){
@@ -231,7 +231,7 @@ export class Game{
  staffAutomation(this,s,dt);this.forgeTick(s,dt);
  const host=this.role(s,'host'),interval=cfg.spawnInterval/(1+.3*jobPower(this,s,'host'))/(1+passive(this,s,'traffic'))/(s.buffs.traffic>s.totalTime?1.7:1)/(1+decorEffects(s).traffic)/trafficFactor(s)/weatherTraffic(s)/merchantTrafficEffects(s,auctionTraffic(s));
  const invited=s.invitedVisitors?.find(v=>typeof v==='string'||v.ready);if(invited){if(admitInvited(this,s,invited)){s.spawnTimer=0;if(host)this.xp(s,host,.5);}}else if(s.spawnTimer>=interval&&s.customers.length+(s.invitedVisitors?.length||0)<cfg.maxCustomers&&this.clearOfActors(s,ENTRANCE)){s.spawnTimer=0;spawnShopper(this,s);if(host)this.xp(s,host,.5);}
- if(s.workTimer>=cfg.restockInterval){s.workTimer=0;for(const shelf of salesShelves(s)){if(shelf.autoRestock===false||shelf.stock>=shelfCapacity(shelf))continue;this.autoStock(s,shelf);}for(const e of s.employees.filter(e=>e.role!=='standby'&&e.fatigue<100)){if(!e.workTask){const busy=new Set(s.employees.filter(w=>w.workTask).map(w=>w.workTask.shelfId+':'+w.workTask.sku));const sh=salesShelves(s).filter(x=>!busy.has(x.id+':'+x.sku)&&(x.autoRestock!==false||x.stock===0)&&x.stock<stockTarget(x)&&s.inventory[x.sku]>0&&(e.role==='stocker'||x.stock===0||x.autoRestock!==false)).sort((a,b)=>a.stock-b.stock)[0];if(sh){const n=Math.min(s.inventory[sh.sku],Math.ceil(6*this.efficiency(e)*(1+passive(this,s,'restock'))*(1+(/potion|revive/.test(sh.sku)?passive(this,s,'potion'):0))*(this.data.management.traits[e.baseId]?.preferredJob==='stocker'?1.25:1)*(s.buffs.flow>s.totalTime||s.buffs.logistics>s.totalTime?2:1)),stockTarget(sh)-sh.stock);e.workTask={phase:'pickup',shelfId:sh.id,sku:sh.sku,qty:n};this.route(s,e,WAREHOUSE);e.reaction='work';}}}}
+ if(s.workTimer>=cfg.restockInterval){s.workTimer=0;for(const shelf of salesShelves(s)){if(shelf.autoRestock===false||shelf.stock>=shelfCapacity(shelf))continue;this.autoStock(s,shelf);}for(const e of s.employees.filter(e=>e.role!=='standby'&&e.role!=='cashier'&&e.fatigue<100)){if(!e.workTask){const busy=new Set(s.employees.filter(w=>w.workTask).map(w=>w.workTask.shelfId+':'+w.workTask.sku));const sh=salesShelves(s).filter(x=>!busy.has(x.id+':'+x.sku)&&(x.autoRestock!==false||x.stock===0)&&x.stock<stockTarget(x)&&s.inventory[x.sku]>0&&(e.role==='stocker'||x.stock===0||x.autoRestock!==false)).sort((a,b)=>a.stock-b.stock)[0];if(sh){const n=Math.min(s.inventory[sh.sku],Math.ceil(6*this.efficiency(e)*(1+passive(this,s,'restock'))*(1+(/potion|revive/.test(sh.sku)?passive(this,s,'potion'):0))*(this.data.management.traits[e.baseId]?.preferredJob==='stocker'?1.25:1)*(s.buffs.flow>s.totalTime||s.buffs.logistics>s.totalTime?2:1)),stockTarget(sh)-sh.stock);e.workTask={phase:'pickup',shelfId:sh.id,sku:sh.sku,qty:n};this.route(s,e,WAREHOUSE);e.reaction='work';}}}}
  if(!s.employees.some(e=>e.role!=='standby'&&e.fatigue<100)){for(const sh of s.shelves)if(sh.autoRestock!==false)fillShelf(this,s,sh);}
  stepCustomers(this,s,dt);finishStockBatch(this,s);
  }

@@ -1,8 +1,8 @@
 /* 四類人形顧客（平民、富豪、冒險者、魔法師，各分男女）的程序建模。
  * 依 3d-builder 程序建模標準：關節比照主角（hips > chest > head、upperArm > forearm > hand、thigh > shin > foot），
  * 全部曲面、五官畫在貼合頭部的表情圖集上，走路手腳交錯，待機會呼吸、轉頭。外觀參考 GPT 生成的 2D 三視圖。 */
-import {storybookEnabled} from './storybook-mode.js';
-import {dressTownShopper} from './storybook-cast.js';
+import {storybookEnabled} from './storybook-mode.js?v=20261121-storybook';
+import {dressTownShopper} from './storybook-cast.js?v=20261121-storybook';
 const LIT=.66;
 function builder(T){
  const pos=[],nor=[],col=[],m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),c=new T.Color(),n3=new T.Matrix3(),v=new T.Vector3();

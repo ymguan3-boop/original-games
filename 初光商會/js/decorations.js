@@ -1,6 +1,6 @@
-import {tierDefinition} from './tier-designs.js?v=20261115-v63';
+import {tierDefinition} from './tier-designs.js?v=20261121-storybook';
 export const decorTypes=[
- {id:'lantern',name:'守夜工藝立燈',group:'decor',level:4,cost:320,height:1.25,description:'柔和燈光・顧客耐心 +4 秒',effect:{patience:4}},
+ {id:'lantern',name:'守夜工藝立燈',group:'decor',level:4,cost:320,height:1.25,outdoor:true,outdoorOnly:true,description:'門外花園專用・柔和燈光・顧客耐心 +4 秒',effect:{patience:4}},{id:'pine-planter',name:'松柏長方盆栽',group:'decor',level:3,cost:300,height:1.2,outdoor:true,outdoorOnly:true,span:2,description:'門外花園專用・占 2 格・滿意度緩慢提升',effect:{satisfaction:.012}},{id:'art-installation',name:'晨光裝置藝術',group:'decor',level:5,cost:520,height:1.5,outdoor:true,outdoorOnly:true,span:2,description:'門外花園專用・占 2 格・來客速度 +6%',effect:{traffic:.06}},
  {id:'crystal-art',name:'晶礦收藏雕塑',group:'decor',level:4,cost:850,height:1.15,description:'收藏藝術・成交價 +3%',effect:{premium:.03}},
  {id:'sun-art',name:'天曜日輪藝術座',group:'decor',level:5,cost:2400,height:1.65,description:'神話藝術・來客速度 +20%、成交價 +6%',effect:{traffic:.20,premium:.06}},
  {id:'clock',name:'橡木報時鐘',group:'furniture',level:1,cost:160,height:.70,wall:true,description:'牆面專用・顧客耐心 +2 秒',effect:{patience:2}},
@@ -19,7 +19,7 @@ export const decorTypes=[
 ];
 export const decorDefinition=item=>{const base=decorTypes.find(t=>t.id===item.type);return base&&item.tier?tierDefinition(base,item.tier):base;};
 export const decorForLevel=level=>decorTypes.filter(t=>t.level<=level).map(t=>tierDefinition(t,level));
-export const decorModel=(type,level=1)=>['clock','painting','painting-large','couplet','fern','lavender','citrus'].includes(type)?'@decor/'+type:type==='carpet'?'@carpet/'+Math.min(level,5):'@shop/assets/art-v6/decor/'+(type==='phoenix'?'phoenix-fit-v2':type)+'.glb';
+export const decorModel=type=>'procedural:'+type;
 export const decorLimit=level=>4+Math.max(1,Math.floor(Number(level)||1))*2;
 export function decorEffects(s){const effects={traffic:0,rest:0,patience:0,satisfaction:0,premium:0},seen=new Set();for(const item of s.decorations||[]){if(seen.has(item.type))continue;seen.add(item.type);const d=decorDefinition(item);for(const [key,value]of Object.entries(d?.effect||{}))effects[key]+=value;}effects.traffic=Math.min(effects.traffic,.15);effects.premium=Math.min(effects.premium,.15);return effects;}
 export const obstacles=s=>[...s.shelves,...(s.decorations||[]).filter(d=>!decorDefinition(d)?.ground&&!decorDefinition(d)?.wall&&!d.garden)];

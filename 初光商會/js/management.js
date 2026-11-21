@@ -1,17 +1,22 @@
-import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261115-v63';
-import {canStartTutorial} from './shop-entry-rules.js?v=20261115-v63';
+import{trayOffers,salesShelves,saleShelf,returnShelfStock,migrateMaterialTrays,isMaterialTray}from'./material-tray.js?v=20261121-storybook';
+import {canStartTutorial} from './shop-entry-rules.js?v=20261121-storybook';
 /* 簡化經營規則：四職務、在班名額、專屬被動、自動工作、每日任務與舊存檔遷移。
  * 所有數值都放在 data/management.json，這裡只有規則。 */
-import {shelfCapacity,accepts} from './furniture.js?v=20261115-v63';
-import {applyFortune} from './fortune-cards.js?v=20261115-v63';
-export const WORK_JOBS=['stocker','host','cleaner'];
-const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner',cashier:'host'};
+import {shelfCapacity,accepts} from './furniture.js?v=20261121-storybook';
+import {applyFortune} from './fortune-cards.js?v=20261121-storybook';
+export const WORK_JOBS=['stocker','host','cleaner','cashier'];
+const LEGACY_ROLES={sales:'host',warehouse:'stocker',smith:'stocker',security:'cleaner'};
 export const legacyRole=r=>LEGACY_ROLES[r]||r;
 export const capacityOf=(g,s)=>g.data.levels[s.level-1]?.capacity||1;
 export const onDuty=s=>s.employees.filter(e=>e.role!=='standby');
 export const traitOf=(g,e)=>g.data.management.traits[e.baseId]||null;
 export const preferredJob=(g,e)=>legacyRole(traitOf(g,e)?.preferredJob||'host');
 export const stageIndex=e=>Math.min(2,e.evolutionHistory?.length||0);
+/* Lv.4／Lv.5 招聘的收銀員：在收銀台結帳時，該筆收益 +30%／+50%（另計，不受被動上限影響） */
+export function cashierSkillBonus(g,id){const h=g.data.hirePool?.find(x=>x.id===id),t=g.data.management.traits[id];if(!h||t?.preferredJob!=='cashier')return 0;return h.level>=5?.5:h.level>=4?.3:0;}
+export function cashierIncomeBonus(g,e){return e&&e.role==='cashier'&&e.fatigue<100?cashierSkillBonus(g,e.baseId):0;}
+/* 上工員工（非待命）獲得的工作經驗 +50% */
+export const ON_DUTY_XP_BONUS=.5;
 export function passiveValue(g,e){const t=traitOf(g,e);if(!t)return 0;return (e.role===t.preferredJob?t.boosted:t.base)[stageIndex(e)];}
 export function dragonTask(g,s){if(!s.dragonTask)return null;const d=g.data.management.dragon,on=s.employees.some(e=>e.spiritId===d.spiritId&&e.role!=='standby');return on?d.tasks.find(t=>t.id===s.dragonTask&&t.level<=s.level)||null:null;}
 /* 全店被動合計。只算在班員工，並設上限，避免疊到破壞平衡 */
@@ -28,7 +33,7 @@ export function managementAction(g,s,type,p){
  const m=g.data.management,assert=(v,msg)=>{if(!v)throw Error(msg);};
  if(type==='claimDaily'){const state=dailyState(g,s),task=m.daily.tasks.find(t=>t.id===p.id);assert(task&&(state[task.id]||0)>=task.target&&!state.claimed[task.id],'任務未完成或已領取');state.claimed[task.id]=true;s.gold+=task.reward;s.stats.rewards+=task.reward;return `獲得 ${task.reward} G`;}
  if(type==='claimDailyBonus'){const state=dailyState(g,s);assert(m.daily.tasks.every(t=>state.claimed[t.id])&&!state.bonus,'三項任務領完才能領全勤獎勵');state.bonus=true;s.gold+=m.daily.bonusGold;s.stats.rewards+=m.daily.bonusGold;s.xpTickets=(s.xpTickets||0)+m.daily.bonusTickets;return `全勤獎勵：${m.daily.bonusGold} G 與經驗券`;}
- if(type==='useXpTicket'){const e=s.employees.find(x=>x.id===p.employeeId);assert(e&&(s.xpTickets||0)>0,'沒有可用的經驗券');s.xpTickets--;g.xp(s,e,m.daily.ticketXp);return `${e.name} 獲得 ${m.daily.ticketXp} EXP`;}
+ if(type==='useXpTicket'){const e=s.employees.find(x=>x.id===p.employeeId);assert(e&&(s.xpTickets||0)>0,'沒有可用的經驗券');s.xpTickets--;g.xp(s,e,m.daily.ticketXp,{ticket:true});return `${e.name} 獲得 ${m.daily.ticketXp} EXP`;}
  if(type==='lockAssignment'){const e=s.employees.find(x=>x.id===p.employeeId);assert(e,'找不到員工');e.lockedAssignment=!e.lockedAssignment;s.autoStaffAt=0;return e.lockedAssignment?'已關閉自動分配，職務固定不動':'已開啟自動分配：人手不足時會自動替補';}
  if(type==='setDragonTask'){assert(s.employees.some(e=>e.spiritId===m.dragon.spiritId),'需要水蛟龍王');const task=m.dragon.tasks.find(t=>t.id===p.id);assert(task&&task.level<=s.level,'任務尚未解鎖');s.dragonTask=task.id;return `水蛟龍王開始「${task.name}」`;}
  if(type==='setLayoutPause'){s.layoutPause=!!p.value;for(const a of [...s.employees,...s.customers])a.path=[];return s.layoutPause?'布置模式：商店暫停':'繼續營業';}

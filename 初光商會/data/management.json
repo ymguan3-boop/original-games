@@ -379,7 +379,7 @@
       "text": "同伴經驗增加"
     },
     "dialga": {
-      "preferredJob": "cleaner",
+      "preferredJob": "cashier",
       "passiveId": "bat-sonar",
       "name": "夜巡超音波",
       "kind": "patience",
@@ -481,7 +481,7 @@
       "text": "同伴經驗增加"
     },
     "jigglypuff": {
-      "preferredJob": "host",
+      "preferredJob": "cashier",
       "passiveId": "egg-luck",
       "name": "三色好運",
       "kind": "income",
@@ -498,7 +498,7 @@
       "text": "交易收入提升"
     },
     "egg-gu": {
-      "preferredJob": "host",
+      "preferredJob": "cashier",
       "passiveId": "rooster-call",
       "name": "晨啼招客",
       "kind": "traffic",
@@ -515,7 +515,7 @@
       "text": "客流增加"
     },
     "egg-ma": {
-      "preferredJob": "cleaner",
+      "preferredJob": "cashier",
       "passiveId": "sparrow-sweep",
       "name": "羽翼拂塵",
       "kind": "clean",
@@ -532,7 +532,7 @@
       "text": "環境恢復加快"
     },
     "egg-ying": {
-      "preferredJob": "stocker",
+      "preferredJob": "cashier",
       "passiveId": "eagle-haul",
       "name": "鷹爪搬運",
       "kind": "restock",
@@ -564,6 +564,57 @@
         0.15
       ],
       "text": "交易收入提升"
+    },
+    "chimchar": {
+      "preferredJob": "cashier",
+      "passiveId": "cowboy-quickdraw",
+      "name": "快手找零",
+      "kind": "checkout",
+      "base": [
+        0.05,
+        0.07,
+        0.09
+      ],
+      "boosted": [
+        0.1,
+        0.13,
+        0.15
+      ],
+      "text": "結帳速度提升"
+    },
+    "infernape": {
+      "preferredJob": "cashier",
+      "passiveId": "guanpang-ledger",
+      "name": "官胖算盤",
+      "kind": "income",
+      "base": [
+        0.03,
+        0.04,
+        0.05
+      ],
+      "boosted": [
+        0.06,
+        0.08,
+        0.1
+      ],
+      "text": "交易收入提升"
+    },
+    "monferno": {
+      "preferredJob": "cashier",
+      "passiveId": "starlight-counting",
+      "name": "星輝點鈔",
+      "kind": "checkout",
+      "base": [
+        0.06,
+        0.08,
+        0.1
+      ],
+      "boosted": [
+        0.12,
+        0.15,
+        0.18
+      ],
+      "text": "結帳速度提升"
     }
   }
 }

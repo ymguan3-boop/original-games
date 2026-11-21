@@ -1,0 +1,24 @@
+{
+  "generator": "built-in image_gen",
+  "reference": "assets/spin-arena/cards-v61/flame.webp (material style only)",
+  "assets": [
+    {
+      "id": "rim",
+      "name": "輪盤",
+      "file": "assets/spin-arena/parts-v68/rim.webp",
+      "prompt": "A single isolated realistic premium spinning-top 輪盤 component, with brushed gold and silver metal, blue molded accents where applicable, visible assembly details and a clear distinct silhouette. Three-quarter studio view, centered full component on genuine transparent background. No assembled top, labels, text, extra parts, flames or animal."
+    },
+    {
+      "id": "axis",
+      "name": "軸心",
+      "file": "assets/spin-arena/parts-v68/axis.webp",
+      "prompt": "A single isolated realistic premium spinning-top 軸心 component, with brushed gold and silver metal, blue molded accents where applicable, visible assembly details and a clear distinct silhouette. Three-quarter studio view, centered full component on genuine transparent background. No assembled top, labels, text, extra parts, flames or animal."
+    },
+    {
+      "id": "ring",
+      "name": "外環",
+      "file": "assets/spin-arena/parts-v68/ring.webp",
+      "prompt": "A single isolated realistic premium spinning-top 外環 component, with brushed gold and silver metal, blue molded accents where applicable, visible assembly details and a clear distinct silhouette. Three-quarter studio view, centered full component on genuine transparent background. No assembled top, labels, text, extra parts, flames or animal."
+    }
+  ]
+}

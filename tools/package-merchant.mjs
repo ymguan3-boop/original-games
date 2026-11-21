@@ -47,7 +47,7 @@ const catalog=JSON.parse(await fs.readFile(path.join(source,'data/shop-catalog.j
 for(const item of catalog){const model=productPath(item.sku);if(model.startsWith('@shop/'))await add(model,'catalog product');else await addExternal(model,'catalog product');await add(productPreview(item.sku),'catalog preview');}
 for(const skin of wallSkins.filter(Boolean))await add('assets/art-v7/'+skin.file,'wall registry');
 for(const name of ['floor','royal-floor','marble'])await add(`assets/art-v6/${name}.png`,'floor level variants');
-for(const name of ['cash-counter','sesame-chair'])await add(`assets/art-v5/interior/${name}.glb`,'interior loader');
+// Checkout and chair geometry are built by the merchant scene.
 for(const name of ['patrol','trade','ledger','prestige'])await add(`assets/art-v5/quest-${name}.png`,'quest icons');
 const html=await fs.readFile(path.join(source,'index.html'),'utf8');
 for(const match of html.matchAll(/data-icon=["']([^"']+)/g))await add(`assets/ui-generated/icon-${match[1]}.png`,'HTML icon registry');

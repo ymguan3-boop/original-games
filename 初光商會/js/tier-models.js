@@ -1,10 +1,10 @@
-import {builder} from './product-models.js?v=20261115-v63';
-import {artisanArmory} from './armory-pilot-v41.js?v=20261115-v63';
-import {TIER_DESIGNS,tierNumber} from './tier-designs.js?v=20261115-v63';
-import {shelfTypes} from './furniture.js?v=20261115-v63';
-import {decorTypes} from './decorations.js?v=20261115-v63';
-import {storybookEnabled} from './storybook-mode.js';
-import {storyPalette,dressStoryFixture} from './storybook-interior.js';
+import {builder} from './product-models.js?v=20261121-storybook';
+import {artisanArmory} from './armory-pilot-v41.js?v=20261121-storybook';
+import {TIER_DESIGNS,tierNumber} from './tier-designs.js?v=20261121-storybook';
+import {shelfTypes} from './furniture.js?v=20261121-storybook';
+import {decorTypes} from './decorations.js?v=20261121-storybook';
+import {storybookEnabled} from './storybook-mode.js?v=20261121-storybook';
+import {storyPalette,dressStoryFixture} from './storybook-interior.js?v=20261121-storybook';
 const cache=new Map();
 export function createTierModel(T,{type,tier=1,decoration=false}={}){
  const n=tierNumber(tier),key=[type,n,decoration].join(':');if(cache.has(key))return cache.get(key);
@@ -45,6 +45,34 @@ export function createTierModel(T,{type,tier=1,decoration=false}={}){
   for(let i=-3;i<=3;i++)B(C.dark,i*.105,.238,0,.004,.005,.45);
   bar(C.dark,0,.32,0,.025,.20,.59);bar(C.trim,0,.43,0,.035,.035,.63);if(n>=4)for(const side of[-1,1])motif(C.motif,side*.33,.305,.345,.045);
  }
+ // The opening faces +Z. Shelf heights match the existing orb stock slots.
+ function orbCabinet(){
+  const centre=.82,r=.47,teal=0x246d68,ivory=0xedd9b4;
+  const shell=(phi,length,theta,arc,paint)=>{
+   const g=new T.SphereGeometry(r,36,12,phi,length,theta,arc);
+   b.put(g,paint,0,centre,0);g.dispose();
+  };
+  for(const [theta,arc,paint] of [[0,Math.PI/2,teal],[Math.PI/2,Math.PI/2,ivory]]){
+   shell(Math.PI,Math.PI,theta,arc,paint);
+   // Inward-facing enamel gives the open-front display a finished lining.
+   const lining=new T.SphereGeometry(r-.012,36,12,0,Math.PI,theta,arc);
+   b.put(lining,paint,0,centre,0,1,1,-1);lining.dispose();
+  }
+  shell(0,Math.PI,0,.52,teal);shell(0,Math.PI,Math.PI-.58,.58,ivory);
+  const rim=new T.TorusGeometry(r,.012,6,44);
+  for(const angle of [0,Math.PI/2])b.put(rim,C.trim,0,centre,0,1,1,1,angle);
+  rim.dispose();
+  for(const y of [.425,.742,1.064]){
+   const radius=Math.sqrt(r*r-(y-centre)**2)-.012;
+   b.put(G.cyl,C.wood,0,y-.014,0,radius,.028,radius);
+   b.put(G.cyl,C.trim,0,y-.001,0,radius,.006,radius);
+  }
+  b.put(G.cyl,C.dark,0,.065,0,.32,.09,.27);
+  b.put(G.cyl,C.wood,0,.21,0,.285,.23,.235);
+  b.put(G.cyl,C.trim,0,.335,0,.32,.05,.26);
+  for(const side of [-1,1]){bar(C.wood,side*.18,1.32,-.24,.04,.26,.05);pin(side*.18,1.38,-.207);}
+  bar(C.dark,0,1.46,-.24,.62,.09,.07);
+ }
  function cabinet(kind){if(kind==='materials'){materialTray();return;}const def=shelfTypes.find(t=>t.id===kind)||shelfTypes[0],h=def.top-.21;feet();
   if(kind==='armory'||kind==='limited-armory'){
    for(const side of[-1,1])post(side*.37,h-.06);for(const side of[-1,1])B(C.dark,side*.18,.78,-.24,.035,1.03,.04,-side*.38);
@@ -55,6 +83,7 @@ export function createTierModel(T,{type,tier=1,decoration=false}={}){
    bar(C.dark,0,.20,-.02,.89,.18,.70);bar(C.panel,0,h*.53+.12,-.30,.74,h-.02,.055);for(const side of[-1,1])post(side*.40,h-.04);
    for(const y of[.23,.74,1.25].filter(y=>y<h)){bar(C.wood,0,y-.015,0,.78,.055,.59);bar(C.trim,0,y,.31,.80,.04,.025);for(const side of[-1,1])pin(side*.34,y,.33);}
    for(let i=-1;i<=1;i++){bar(C.wood,i*.25,.19,.335,.235,.12,.035);pin(i*.25,.19,.36);}cornice(h);
+   if(kind==='gadget'){for(const side of[-1,1]){b.put(G.gem,C.accent,side*.30,h+.20,-.12,.07,.13,.07);b.put(G.cyl,C.trim,side*.30,h+.06,-.12,.06,.05,.06);}b.put(G.ring,C.trim,0,h+.24,-.14,.13,.13,.04,Math.PI/2);O(0x8fe6ff,0,h+.24,-.14,.06,.06,.06);for(const side of[-1,1])for(let j=0;j<3;j++)O(0x9feaff,side*.405,.42+j*.38,.0,.026);}
    if(kind==='xp-crystal'){
     for(const side of [-1,1]){
      b.put(G.gem,side<0?0xae79be:0xe393b5,side*.10,h+.27,-.13,.095,.18,.08,0,0,-side*.34);
@@ -84,13 +113,15 @@ export function createTierModel(T,{type,tier=1,decoration=false}={}){
   else if(type==='lantern'){b.put(G.cyl,C.dark,0,.07,0,.29,.14,.29);b.put(G.cyl,C.wood,0,.53,0,.06,.9,.06);bar(C.dark,0,.99,0,.38,.38,.30);bar(0xe9ca83,0,.99,.16,.28,.27,.025);for(const side of[-1,1])bar(C.trim,side*.18,.99,.17,.035,.38,.035);b.put(G.cone,C.wood,0,1.25,0,.29,.22,.24);motif(C.motif,0,1.02,.19,.08);}
   else if(type==='lucky-cat'){bar(C.dark,0,.09,0,.66,.15,.55);O(C.wood,0,.43,0,.23,.28,.19);O(C.accent,0,.73,.01,.23,.22,.18);for(const side of[-1,1])b.put(G.cone,C.accent,side*.15,.94,0,.09,.18,.065);for(const side of[-1,1]){O(C.dark,side*.075,.75,.17,.018);O(C.panel,side*.12,.68,.17,.035,.015,.01);}O(C.trim,0,.58,.18,.04);O(C.accent,.27,.72,.0,.07,.16,.07);b.put(G.ring,C.trim,0,.33,.17,.09,.12,.025);}
   else if(type==='fountain'){b.put(G.cyl,C.dark,0,.08,0,.45,.14,.45);b.put(G.cyl,C.wood,0,.23,0,.42,.20,.42);b.put(G.cyl,C.accent,0,.34,0,.36,.025,.36);b.put(G.cyl,C.trim,0,.67,0,.075,.69,.075);b.put(G.cyl,C.wood,0,.90,0,.25,.13,.25);b.put(G.cyl,C.accent,0,.98,0,.21,.018,.21);for(let i=0;i<6;i++){const a=i*Math.PI/3;O(C.accent,Math.cos(a)*.15,.65,Math.sin(a)*.15,.018,.19,.018);}b.put(G.gem,C.accent,0,1.17,0,.10,.21,.10);}
+  else if(type==='pine-planter'){bar(C.dark,0,.07,0,1.86,.12,.56);bar(C.wood,0,.29,0,1.80,.36,.50);bar(C.trim,0,.48,.26,1.84,.05,.04);bar(C.trim,0,.48,-.26,1.84,.05,.04);bar(0x6b4a2e,0,.47,0,1.70,.03,.42);for(const x of[-.62,0,.62]){b.put(G.cyl,0x7a5232,x,.62,0,.04,.30,.04);for(let k=0;k<3;k++)b.put(G.cone,k%2?0x3f7a3a:0x4f8a42,x,.82+k*.17,0,.22-k*.05,.26,.22-k*.05);}for(let i=0;i<5;i++)O(0x7fae5c,-.82+i*.41,.52,.17,.07,.05,.06);}
+  else if(type==='art-installation'){bar(C.dark,0,.08,0,1.86,.14,.62);bar(C.wood,0,.20,0,1.72,.12,.5);for(const x of[-.55,.55]){b.put(G.cyl,C.trim,x,.75,0,.05,1.0,.05);b.put(G.ring,C.accent,x,1.30,0,.24,.24,.06,0,0,x>0?.4:-.4);}b.put(G.ring,C.trim,0,1.02,0,.46,.30,.06);b.put(G.gem,0xffd76a,0,1.02,0,.13,.22,.13);for(let i=0;i<6;i++){const a=i/6*Math.PI*2;O(i%2?C.accent:0xffe9a8,Math.cos(a)*.62,.95+Math.sin(a)*.38,0,.045);}motif(C.motif,0,1.52,.02,.10);}
   else if(type==='artwork'){for(const x of[-.32,.32])bar(C.dark,x,.11,0,.14,.19,.39);for(let i=-1;i<=1;i++){const x=i*.26;bar(C.wood,x,.88,0,.25,1.42,.10);bar(C.panel,x,.90,.06,.19,1.23,.02);for(let j=0;j<4;j++)leaf(x,.43+j*.25,.08,i*.4,C.trim);}motif(C.motif,0,1.68,.03,.12);}
   else if(type==='phoenix'){bar(C.dark,0,.12,0,.65,.23,.50);O(C.wood,0,.65,0,.18,.31,.17);for(const side of[-1,1])for(let i=0;i<5;i++)b.put(G.ball,i%2?C.trim:C.accent,side*(.14+i*.055),.80+i*.07,0,.045,.36-i*.035,.055,0,0,-side*(.4+i*.16));O(C.trim,0,1.05,.02,.12,.14,.10);b.put(G.cone,C.accent,0,1.2,.02,.08,.17,.07);}
   else{bar(C.dark,0,.10,0,.64,.20,.52);b.put(G.cyl,C.wood,0,.32,0,.22,.28,.22);const sun=type==='sun-art';if(sun){b.put(G.ring,C.trim,0,1.0,0,.38,.38,.08);motif('sun',0,1.0,.04,.30);}else for(let i=0;i<5;i++){const a=i*2.4;b.put(G.gem,i%2?C.trim:C.accent,Math.sin(a)*.16,.65+(i%3)*.15,Math.cos(a)*.14,.09,.30,.09);}}
  }
- if(decoration)decorationModel(type);else cabinet(type);
- if(storybookEnabled) dressStoryFixture(T,b,G,C,type,n,shelfTypes.find(s=>s.id===type)?.top||0,decoration);
- const scene=new T.Group(),mesh=b.mesh(.72,.06);scene.add(mesh);if(type==='materials'&&!decoration)scene.scale.x=2;scene.name=`lv${n}-${type}`;scene.userData={tier:n,type,triangles:mesh.geometry.attributes.position.count/3,approvedPathway:'armory-pilot-v41',footprint:decoration&&type==='carpet'?[2.7,1.9]:type==='materials'?[2,1]:[1,1]};owned.forEach(g=>g.dispose());const r={scene};cache.set(key,r);return r;
+ if(decoration)decorationModel(type);else if(type==='orbs')orbCabinet();else cabinet(type);
+ if(storybookEnabled&&type!=='orbs') dressStoryFixture(T,b,G,C,type,n,shelfTypes.find(s=>s.id===type)?.top||0,decoration);
+ const scene=new T.Group(),mesh=b.mesh(.72,.06);scene.add(mesh);if(type==='materials'&&!decoration)scene.scale.x=2;scene.name=`lv${n}-${type}`;scene.userData={tier:n,type,triangles:mesh.geometry.attributes.position.count/3,approvedPathway:'armory-pilot-v41',footprint:decoration&&type==='carpet'?[2.7,1.9]:type==='materials'||decoration&&['pine-planter','art-installation'].includes(type)?[2,1]:[1,1]};owned.forEach(g=>g.dispose());const r={scene};cache.set(key,r);return r;
 }
 export function createOrbTrim(T,tier){
  const C=storybookEnabled?storyPalette(tier):TIER_DESIGNS[tierNumber(tier)],b=builder(T);

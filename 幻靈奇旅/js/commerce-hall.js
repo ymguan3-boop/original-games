@@ -46,7 +46,7 @@ function makePerson(T,shared){
 }
 
 async function create({THREE:T,scene}){
- const {buildTownHall}=await import(new URL('js/town-hall.js',shopURL()).href);
+ const {buildTownHall}=await import(new URL('js/town-hall.js?v=20261121-storybook',shopURL()).href);
  const root=new T.Group();root.name='CommerceHall';scene.add(root);root.add(buildLot(T));
  const hallRoot=new T.Group();hallRoot.position.z=0;root.add(hallRoot);
  const shared=new Map();shared.geo={torso:new T.CylinderGeometry(.24,.32,.86,10),head:new T.SphereGeometry(.27,12,10),hair:new T.SphereGeometry(.285,12,8,0,Math.PI*2,0,Math.PI*.55),brim:new T.CylinderGeometry(.4,.4,.04,14),crown:new T.CylinderGeometry(.2,.24,.2,12),bag:new T.BoxGeometry(.16,.3,.26),leg:new T.CylinderGeometry(.095,.085,.62,8),shoe:new T.BoxGeometry(.17,.1,.3),arm:new T.CylinderGeometry(.07,.065,.52,8),hand:new T.SphereGeometry(.08,8,6)};
