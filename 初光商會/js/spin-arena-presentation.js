@@ -52,7 +52,11 @@ export function createSpinAudio(){
   const note=(type,f,t,dur,vol,cut=2400)=>{const o=ctx.createOscillator(),g=ctx.createGain(),lp=ctx.createBiquadFilter();o.type=type;o.frequency.value=f;lp.type='lowpass';lp.frequency.value=cut;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(lp);lp.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+.02);o.onended=()=>{o.disconnect();lp.disconnect();g.disconnect();};};
   const noise=(t,dur,vol,type,f)=>{const src=ctx.createBufferSource(),fl=ctx.createBiquadFilter(),g=ctx.createGain();src.buffer=nb;fl.type=type;fl.frequency.value=f;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);src.connect(fl);fl.connect(g);g.connect(bus);src.start(t);src.stop(t+dur+.02);src.onended=()=>{src.disconnect();fl.disconnect();g.disconnect();};};
   const kick=t=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(42,t+.12);g.gain.setValueAtTime(.9,t);g.gain.exponentialRampToValueAtTime(.0001,t+.16);o.connect(g);g.connect(bus);o.start(t);o.stop(t+.18);o.onended=()=>{o.disconnect();g.disconnect();};};
-  const tick=()=>{if(!music)return;while(next<ctx.currentTime+.25){const i=n%16,bar=Math.floor(n/16)%4,ch=chords[bar];
+  const tick=()=>{if(!music)return;
+   // A suspended tab can miss entire bars. Resume on the next beat without
+   // creating voices for notes whose scheduled playback has already passed.
+   if(next<ctx.currentTime-step){const missed=Math.ceil((ctx.currentTime-next)/step);next+=missed*step;n+=missed;}
+   while(next<ctx.currentTime+.25){const i=n%16,bar=Math.floor(n/16)%4,ch=chords[bar];
     if(i%4===0||i===10)kick(next);if(i===4||i===12)noise(next,.16,.5,'bandpass',1800);if(i%2===0)noise(next,.04,.16,'highpass',7000);
     note('sawtooth',hz(E2,root[i]+ch[0]),next,step*.9,.22,700);
     if(i%8===0)for(const c of ch)note('sawtooth',hz(E2*2,c),next,step*7.5,.06,1800);

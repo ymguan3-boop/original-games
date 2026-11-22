@@ -3,7 +3,7 @@ import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_STAT_N
 import {spinState,spinStats,effectiveSpinStats,advanceSpinMatch} from './spin-arena-core.js?v=20261121-storybook';
 import {SPIN_GROWTH} from './spin-arena-progression.js?v=20261121-storybook';
 import {createSpinBattleView} from './spin-arena-view.js?v=20261122-battle';
-import {createSpinAudio,createSpinPresentation} from './spin-arena-presentation.js?v=20261121-storybook';
+import {createSpinAudio,createSpinPresentation} from './spin-arena-presentation.js?v=20261122-battle';
 import {spinSkillCooldown} from './spin-arena-paths.js?v=20261121-storybook';
 export function installSpinArena({game,toast,music=null,onOpen=()=>{}}){
  const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('../spin-arena.css?v=20261117-parts-v68',import.meta.url);document.head.append(css);
@@ -124,7 +124,7 @@ export function installSpinArena({game,toast,music=null,onOpen=()=>{}}){
   raf=requestAnimationFrame(frame);
  }
  function open(){if(game.state.level<R.unlock){toast('戰鬥陀螺大會於 Lv.3 解鎖');return;}onOpen();act('spinRoster');audio.unlock();game.spinArenaPaused=true;document.body.classList.add('spin-arena-open');page='home';render();dialog.showModal();previous=0;accumulator=0;raf=requestAnimationFrame(frame);}
- document.addEventListener('visibilitychange',()=>{if(document.hidden&&dialog.open){checkpoint();previous=0;}});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden&&dialog.open){if(!checkpoint())close();previous=0;}});
  dialog.addEventListener('pointerdown',()=>audio.unlock(),{passive:true});dialog.addEventListener('keydown',()=>audio.unlock());dialog.addEventListener('cancel',ev=>{ev.preventDefault();close();});window.addEventListener('pagehide',()=>{close();audio.dispose();},{once:true});
  const entry=document.createElement('button');entry.type='button';entry.className='spin-arena-entry';entry.textContent='戰鬥陀螺大會';entry.onclick=open;document.querySelector('#quick-menu .quick-menu-items')?.append(entry);
  const sync=()=>{entry.hidden=game.state.level<R.unlock;const waiting=game.state.spinArena?.visitor?.status==='waiting';entry.classList.toggle('has-notice',!!waiting);entry.title=waiting?'外來高手等待挑戰':'';};game.subscribe(sync);sync();
