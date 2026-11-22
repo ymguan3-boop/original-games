@@ -9,5 +9,5 @@ export function patrolEventInstructions(event,{patrol=false}={}){
  if(!requiresManagerPatrol(event))return null;
  return patrol
   ? '已經在主管巡店：使用左下搖桿走近發生事件的員工，系統會自動處理並顯示完成通知。'
-  : '這項事件需要主管親自到場：請進入主管巡店，操作主角靠近該員工，將自動完成處理。';
+  : '這項事件需要主管親自到場：請進入主管巡店，操作宏宏靠近該員工，將自動完成處理。';
 }

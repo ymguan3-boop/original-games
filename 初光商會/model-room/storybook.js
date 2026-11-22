@@ -19,7 +19,7 @@ const chapters={
  square:['街道廣場','MARKET SQUARE','街道與商會對面的活動場地'],
  stock:['貨架與家具','THE WORKSHOP','旋轉展品，查看側面與背面的做工'],
  goods:['商品','THE MERCHANDISE','架上商品的單件近照'],
- people:['角色','TOWNSFOLK','商會主角、顧客與幻靈'],
+ people:['角色','TOWNSFOLK','呈呈、店長宏宏、顧客與幻靈'],
  arena:['陀螺競技場','THE TOURNAMENT','廣場擂台與對戰陀螺'],
  meadow:['採集草原','THE MEADOW','草原水岸、岩壁與林木']
 };
@@ -39,7 +39,7 @@ function choose(items){const id=items.some(i=>i.id===params.get('item'))?params.
  $('objectLabel').hidden=false;$('object').onchange=()=>location.assign(link({item:$('object').value}));
  const obj=items.find(i=>i.id===id);$('title').textContent=obj.name;return obj;}
 const canvas=$('model'), root=new T.Scene(), camera=new T.PerspectiveCamera(36,1,.025,300);
-const assets=createAssets(T,{}), focus=new T.Vector3();
+const assets=createAssets(T,{assets:[]}), focus=new T.Vector3();
 let yaw=.36,pitch=.41,span=11,zoom=1,preset;
 function pose(x,y,z,size,az,el){focus.set(x,y,z);span=size;yaw=az;pitch=el;zoom=1;preset=[x,y,z,size,az,el];}
 $('back').onclick=()=>preset&&pose(...preset);
@@ -108,7 +108,7 @@ async function drawChapter(){
   const c=new T.Box3().setFromObject(o).getCenter(new T.Vector3());pose(c.x,c.y,c.z,2,.48,.27);
  }else if(chapter==='people'){
   const spirits=await(await fetch('./data/spirits.json')).json(),names={commoner:'平民',rich:'富商',adventurer:'冒險者',mage:'法師'};
-  const item=choose([{id:'hero',name:'商會主角'},...Object.keys(LOOKS).flatMap(id=>['m','f'].map(v=>({id:id+'-'+v,name:(names[id]||id)+' · '+(v==='m'?'男':'女'),job:id,v}))),...spirits.map(o=>({id:o.id,name:o.name,path:o.model}))]);
+  const item=choose([{id:'hero',name:'宏宏・商會店長'},{id:'chengcheng',name:'呈呈・冒險旅人',path:'models/hero.glb'},...Object.keys(LOOKS).flatMap(id=>['m','f'].map(v=>({id:id+'-'+v,name:(names[id]||id)+' · '+(v==='m'?'男':'女'),job:id,v}))),...spirits.map(o=>({id:o.id,name:o.name,path:o.model}))]);
   const actor=item.path?await assets.actor(item.path,1.55,{footprint:2,diameter:2}):item.job?createHuman(T,item.job,item.v):createHeroChibi();
   if(item.id==='hero')actor.setAction?.('portrait');
   root.add(actor.root);tick.push(dt=>actor.update?.(dt));platform(1.18);

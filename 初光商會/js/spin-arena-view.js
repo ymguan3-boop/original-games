@@ -1,5 +1,5 @@
 import{createSpinModels}from'./spin-arena-models.js?v=20261121-storybook';
-import{createSpinSkillEffects}from'./spin-arena-skills.js?v=20261121-storybook';
+import{createSpinSkillEffects}from'./spin-arena-skills.js?v=20261122-battle';
 import{SPIN_FX}from'./spin-arena-paths.js?v=20261121-storybook';
 import{SPIN_TOPS,SPIN_RULES}from'./spin-arena-config.js?v=20261121-storybook';
 const SPIN_TOP=id=>SPIN_TOPS.find(t=>t.id===id)||{color:0xffffff,metal:0xdddddd,blades:6};
@@ -32,7 +32,7 @@ export function createSpinBattleView(canvas,{level=3,lowPower=false}={}){const T
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(40,1,.1,90),models=createSpinModels(T),arena=models.arena({level});arena.scale.setScalar(AS);const hemi=new T.HemisphereLight(0xfff7e1,0x46556c,.8);scene.add(arena,hemi);const sun=new T.DirectionalLight(0xffffff,1.2);sun.position.set(6,14,8);scene.add(sun);
  /* 遊戲物件放在 play 群組：高度與舊版相同，場地放大造成的地面抬升由 LIFT 補回 */
  const play=new T.Group();play.position.y=LIFT;scene.add(play);
- const tops=[null,null],auras=[],blurs=[],fx=new T.Group();play.add(fx);const skills=createSpinSkillEffects(T,play);let angle=1,zoom=1,dead=false,frames=0;
+ const tops=[null,null],auras=[],blurs=[],fx=new T.Group();play.add(fx);const skills=createSpinSkillEffects(T,play,renderer);let angle=1,zoom=1,dead=false,frames=0;
  const geos=[],mats=[];const G=g=>(geos.push(g),g),M=m=>(mats.push(m),m);
  for(let i=0;i<2;i++){const ring=new T.Mesh(G(new T.TorusGeometry(.4,.04,6,40)),M(new T.MeshBasicMaterial({color:i?0x68d1ff:0xffbb5c,transparent:true,opacity:.6,depthWrite:false})));ring.rotation.x=-Math.PI/2;play.add(ring);auras.push(ring);}
  const sparkGeo=G(new T.SphereGeometry(.03,5,4)),sparks=Array.from({length:POOL.sparks},()=>{const p=new T.Mesh(sparkGeo,M(new T.MeshBasicMaterial({color:0xffffff,transparent:true,depthWrite:false})));p.visible=false;p.userData={};fx.add(p);return p;});
@@ -88,7 +88,7 @@ export function createSpinBattleView(canvas,{level=3,lowPower=false}={}){const T
   }}
  let critAt=0;function critLabel(x,z){const sp=critLabels[critAt++%2];sp.position.set(x,spinFloorY(x,z)+.85,z);sp.userData={born:clockNow};sp.visible=true;}
  function burst(cin,b,match){const top=SPIN_TOP(cin.loser?match.opponentTopId:match.topId),fy=spinFloorY(b.x,b.z);for(let k=0;k<shards.length;k++){const m=shards[k],a=k/shards.length*Math.PI*2+Math.random()*.4,sp=1.6+Math.random()*1.4;m.material.color.setHex(k%2?top.metal:top.color);m.material.opacity=1;m.position.set(b.x,fy+.15,b.z);m.rotation.set(Math.random()*3,a,Math.random()*3);m.userData={vx:Math.cos(a)*sp,vy:2.2+Math.random()*1.6,vz:Math.sin(a)*sp,spin:(Math.random()-.5)*14,born:clockNow};m.visible=true;}emitRing(b.x,b.z,0xffffff,.55,2.2);emitRing(b.x,b.z,0xffc04a,.8,1.4);for(let k=0;k<20;k++){const a=Math.random()*Math.PI*2;emitSpark(b.x,fy+.25,b.z,Math.cos(a)*4,1+Math.random()*3,Math.sin(a)*4,k%2?0xffffff:0xffd252,.6,1.6);}shakeUntil=clockNow+.4;shakePower=.2;}
- let sparkAt=0,ringAt=0,partAt=0,lastSeen=0,shakeUntil=0,shakePower=0,lastShake=-9,closeUntil=0,closeStart=0,closeActor=0,clockNow=0,slowRequest=false;const ghostTrail=[[],[]],spinAngle=[0,0];
+ let sparkAt=0,ringAt=0,partAt=0,lastSeen=0,shakeUntil=0,shakePower=0,lastShake=-9,closeUntil=0,closeStart=0,closeActor=0,closeBearing=0,clockNow=0,slowRequest=false;const ghostTrail=[[],[]],spinAngle=[0,0];
  const ids=[];function fxOf(i,match){return SPIN_FX[i?match.opponentTopId:match.topId]||SPIN_FX.flame;}
  function emitSpark(x,y,z,vx,vy,vz,color,life=.45,size=1){const p=sparks[sparkAt++%sparks.length];p.position.set(x,y,z);p.userData={vx,vy,vz,born:clockNow,life};p.material.color.setHex(color);p.material.opacity=1;p.scale.setScalar(size);p.visible=true;}
  function emitRing(x,z,color,life=.5,size=1){const r=rings[ringAt++%rings.length];r.position.set(x,spinFloorY(x,z)+.07,z);r.userData={born:clockNow,life,size};r.material.color.setHex(color);r.visible=true;}
@@ -103,7 +103,7 @@ export function createSpinBattleView(canvas,{level=3,lowPower=false}={}){const T
  function dodge(e,match){const f=fxOf(e.actor,match),b=match.bodies[e.actor];for(let k=0;k<POOL.ghosts;k++){const g=ghosts[e.actor][k],x=e.x+(b.x-e.x)*k/POOL.ghosts,z=e.z+(b.z-e.z)*k/POOL.ghosts;g.position.set(x,spinFloorY(x,z)+.12,z);g.material.color.setHex(f.glow);g.material.opacity=.45;g.userData.until=clockNow+.35+k*.03;g.visible=true;}for(let k=0;k<6;k++)emitParticle('streak',e.x,spinFloorY(e.x,e.z)+.15,e.z,(b.x-e.x)*4+(Math.random()-.5),.3,(b.z-e.z)*4+(Math.random()-.5),f.trail,.35);if(e.style==='behind')emitRing(b.x,b.z,f.glow,.35,.8);}
  /* 必殺技開始：特寫＋光柱＋守護靈，時間與技能序列圖（1.2 秒）同步 */
  const FINISH=1.3;
- function skillStart(e,match){const f=fxOf(e.actor,match),b=match.bodies[e.actor],id=e.actor?match.opponentTopId:match.topId,fz=finisher[e.actor];closeUntil=clockNow+FINISH;closeStart=clockNow;closeActor=e.actor;fz.start=clockNow;fz.until=clockNow+FINISH;fz.actor=e.actor;fz.pillar.material.color.setHex(f.glow);fz.spirals.forEach((s,k)=>s.material.color.setHex(k%2?f.trail:f.glow));sigStart(e.actor,id);
+ function skillStart(e,match){const f=fxOf(e.actor,match),b=match.bodies[e.actor],id=e.actor?match.opponentTopId:match.topId,fz=finisher[e.actor];closeUntil=clockNow+FINISH;closeStart=clockNow;closeActor=e.actor;const other=match.bodies[1-e.actor];closeBearing=Math.atan2(b.x-other.x,b.z-other.z);fz.start=clockNow;fz.until=clockNow+FINISH;fz.actor=e.actor;fz.pillar.material.color.setHex(f.glow);fz.spirals.forEach((s,k)=>s.material.color.setHex(k%2?f.trail:f.glow));sigStart(e.actor,id);
   emitRing(b.x,b.z,f.glow,.5,1.4);for(let k=0;k<14;k++){const a=k/14*Math.PI*2;emitParticle(f.particle,b.x+Math.cos(a)*.4,spinFloorY(b.x,b.z)+.2,b.z+Math.sin(a)*.4,Math.cos(a)*1.6,.8+Math.random(),Math.sin(a)*1.6,k%2?f.trail:f.glow,.8);}}
  function updateFinisher(match,clock,dt){let dim=0;for(const fz of finisher){const on=match?.bodies&&fz.until>clock;for(const o of[fz.pillar,...fz.spirals])o.visible=on;if(!on){sig[fz.actor].group.visible=false;continue;}const b=match.bodies[fz.actor],fy=spinFloorY(b.x,b.z),t=(clock-fz.start)/FINISH,env=Math.min(1,t/.15,(1-t)/.2);dim=Math.max(dim,env);
    fz.pillar.position.set(b.x,fy+2.1,b.z);fz.pillar.scale.set(.6+env*.5,.3+Math.min(1,t*4)*.7,.6+env*.5);fz.pillar.rotation.y+=dt*6;fz.pillar.material.opacity=.14*env;
@@ -121,16 +121,17 @@ export function createSpinBattleView(canvas,{level=3,lowPower=false}={}){const T
  /* 視覺轉速：每格轉「葉片間距的 42%」，在 60fps 下看起來是高速正轉（避免車輪錯覺看成慢轉）；旋轉能量低於 25% 才明顯變慢 */
  const fullRate=id=>.42*Math.PI*2/(SPIN_TOP(id).blades||6)*60;
  const spinRatio=spin=>Math.max(0,Math.min(1,spin/25));
+ let lastWidth=0,lastHeight=0;
  function render(match,clock,cinematic=null){if(dead)return {slow:false};clockNow=clock;slowRequest=false;const dt=Math.min(.05,frames?clock-(render.last||clock):0);render.last=clock;
-  const r=canvas.getBoundingClientRect(),w=Math.max(1,r.width),h=Math.max(1,r.height);if(canvas.width!==Math.round(w*renderer.getPixelRatio())||canvas.height!==Math.round(h*renderer.getPixelRatio()))renderer.setSize(w,h,false);camera.aspect=w/h;
+  const r=canvas.getBoundingClientRect(),w=Math.max(1,r.width),h=Math.max(1,r.height);if(w!==lastWidth||h!==lastHeight){lastWidth=w;lastHeight=h;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   if(match?.phase==='battle'&&!cinematic)readEffects(match);else if(match)lastSeen=Math.max(lastSeen,...(match.effects||[]).map(e=>e.id||0),0);
   /* 鏡頭：平時全景看整個場地；只有施放技能時低角度環繞特寫施放者 */
   const wide=(w/h<.75?1.5:w/h<1?1.25:1)*AS*.82,focus=match?.bodies?.[0]||{x:0,z:0};let lx=0,ly=.1+LIFT,lz=0,cx,cy,cz;
   if(angle===0){cx=0;cy=6.6*wide/zoom;cz=.01;}else if(angle===1){cx=0;cy=4.3*wide/zoom;cz=5.2*wide/zoom;}else{cx=focus.x*.6;cy=3.6*wide/zoom;cz=focus.z*.6+4.2*wide/zoom;lx=focus.x*.4;lz=focus.z*.4;}
   if(match?.bodies&&closeUntil>clock&&!cinematic){const b=match.bodies[closeActor],fy=spinFloorY(b.x,b.z)+LIFT,t=(clock-closeStart)/FINISH,s=Math.max(0,Math.min(1,t/.18,(1-t)/.22)),e=s*s*(3-2*s),a=-.5+t*1.1;
-   /* 鏡頭放在施放者「背對對手」那側，避免對手擋住；小幅環繞 */const o=match.bodies[1-closeActor],base=Math.atan2(b.x-o.x,b.z-o.z),px=b.x+Math.sin(base+a*.6)*4.4,py=fy+1.6,pz=b.z+Math.cos(base+a*.6)*4.4;cx+=(px-cx)*e;cy+=(py-cy)*e;cz+=(pz-cz)*e;lx+=(b.x-lx)*e;ly+=(fy+.95-ly)*e;lz+=(b.z-lz)*e;}
+   /* 鏡頭放在施放者「背對對手」那側，避免對手擋住；小幅環繞 */const base=closeBearing,px=b.x+Math.sin(base+a*.6)*4.4,py=fy+1.6,pz=b.z+Math.cos(base+a*.6)*4.4;cx+=(px-cx)*e;cy+=(py-cy)*e;cz+=(pz-cz)*e;lx+=(b.x-lx)*e;ly+=(fy+.95-ly)*e;lz+=(b.z-lz)*e;}
   if(shakeUntil>clock){const a=shakePower*(shakeUntil-clock)/.28;cx+=(Math.random()-.5)*a;cy+=(Math.random()-.5)*a;}
-  camera.position.set(cx,cy,cz);camera.lookAt(lx,ly,lz);camera.updateProjectionMatrix();
+  camera.position.set(cx,cy,cz);camera.lookAt(lx,ly,lz);
   let follow=null;
   for(let i=0;i<2;i++){const id=i?match?.opponentTopId:match?.topId;if(id!==ids[i]){if(tops[i]){play.remove(tops[i]);models.dispose(tops[i]);}tops[i]=id?models.top(id):null;blurs[i]=null;if(tops[i]){tops[i].scale.setScalar(TOP_SCALE);const top=SPIN_TOP(id),disc=new T.Mesh(G(new T.CircleGeometry(.6,32)),M(new T.MeshBasicMaterial({color:top.metal,transparent:true,opacity:0,depthWrite:false})));disc.rotation.x=-Math.PI/2;disc.position.y=.47;tops[i].add(disc);blurs[i]=disc;play.add(tops[i]);}ids[i]=id;ghostTrail[i]=[];}
    const b=match?.bodies?.[i];if(!tops[i])continue;tops[i].visible=!!b;auras[i].visible=false;if(!b)continue;const f=fxOf(i,match),skillOn=b.skillUntil>match.time||b.buffUntil>match.time;

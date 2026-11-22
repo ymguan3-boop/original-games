@@ -16,7 +16,7 @@ function shopURL(href=location.href){
 }
 
 /* 街區：z 向南。FRONT_Z 是門面，北側只有中央道路接進來。 */
-const LOT={minX:-17,maxX:17,minZ:36,maxZ:68,gate:3.6},FRONT_Z=50.5,DOOR_Z=FRONT_Z+.25;
+const LOT={minX:-17,maxX:17,minZ:36,maxZ:75,gate:3.6},FRONT_Z=57.5,DOOR_Z=FRONT_Z+.25;
 const QUEUE=[0,2,3,5,6,8],SLOT_GAP=1.3,FIRST_SLOT=FRONT_Z+2.1;
 const HALL_SCALE=1,LIT=.46;
 /* the street around the hall: lawn, the central road carried on, a loop round the building and the forecourt */
@@ -24,9 +24,10 @@ function buildLot(T){
  const g=new T.Group(),tex=[],flat=(w,d,color,x,z,y)=>{const o=new T.Mesh(new T.PlaneGeometry(w,d).rotateX(-Math.PI/2),new T.MeshLambertMaterial({color}));o.material.color.multiplyScalar(.62);o.position.set(x,y,z);o.receiveShadow=true;g.add(o);return o;};
  const LAWN=0xa6cc9e,ROAD=0xd9d2c0,cx=(LOT.minX+LOT.maxX)/2,cz=(LOT.minZ+LOT.maxZ)/2,w=LOT.maxX-LOT.minX,d=LOT.maxZ-LOT.minZ;
  flat(w+3,d+3,0xd8d2c2,cx,cz+1,.004);flat(w,d,LAWN,cx,cz,.012);
- flat(LOT.gate*2,4,ROAD,0,LOT.minZ+.6,.03);flat(28,3.2,ROAD,0,39.4,.024);for(const s of[-1,1])flat(3.2,16,ROAD,s*12.4,47,.024);
- flat(28,13,ROAD,0,59,.024);flat(16,10.6,0xcfc2a4,0,58.2,.032);
- const leaf=[0x6fae96,0x9dbb76,0x7fb49e];for(const [x,z,s] of[[-15.4,44,1.15],[15.4,44,1.2],[-15.2,53,1],[15.3,54,1.05],[-14.5,66,1.2],[14.6,66,1.15],[-7,66.4,.9],[7,66.4,.95]]){const t=new T.Group(),tr=new T.Mesh(new T.CylinderGeometry(.22,.3,1.6,8),new T.MeshLambertMaterial({color:0xb98a5a}));tr.position.y=.8;t.add(tr);for(const [dx,dy,r] of[[0,2.2,1],[.55,1.8,.72],[-.5,1.9,.7]]){const b=new T.Mesh(new T.SphereGeometry(r,10,8),new T.MeshLambertMaterial({color:leaf[((x>0)+(z>50))%3]}));b.position.set(dx,dy,0);b.castShadow=true;t.add(b);}t.position.set(x,0,z);t.scale.setScalar(s);g.add(t);}
+ const northRoad=LOT.minZ+3.4,forecourt=FRONT_Z+8.5,sideEnd=forecourt-5.5;
+ flat(LOT.gate*2,4,ROAD,0,LOT.minZ+.6,.03);flat(28,3.2,ROAD,0,northRoad,.024);for(const s of[-1,1])flat(3.2,sideEnd-northRoad,ROAD,s*12.4,(sideEnd+northRoad)/2,.024);
+ flat(28,13,ROAD,0,forecourt,.024);flat(16,10.6,0xcfc2a4,0,forecourt-.8,.032);
+ const leaf=[0x6fae96,0x9dbb76,0x7fb49e];for(const [x,z,s] of[[-15.4,44,1.15],[15.4,44,1.2],[-15.2,53,1],[15.3,54,1.05],[-14.5,LOT.maxZ-2,1.2],[14.6,LOT.maxZ-2,1.15],[-7,LOT.maxZ-1.6,.9],[7,LOT.maxZ-1.6,.95]]){const t=new T.Group(),tr=new T.Mesh(new T.CylinderGeometry(.22,.3,1.6,8),new T.MeshLambertMaterial({color:0xb98a5a}));tr.position.y=.8;t.add(tr);for(const [dx,dy,r] of[[0,2.2,1],[.55,1.8,.72],[-.5,1.9,.7]]){const b=new T.Mesh(new T.SphereGeometry(r,10,8),new T.MeshLambertMaterial({color:leaf[((x>0)+(z>50))%3]}));b.position.set(dx,dy,0);b.castShadow=true;t.add(b);}t.position.set(x,0,z);t.scale.setScalar(s);g.add(t);}
  return g;
 }
 
@@ -71,7 +72,7 @@ async function create({THREE:T,scene}){
   r.x=nx;r.z=nz;p.root.rotation.y=Math.atan2(dx,dz);p.moving=true;return false;
  }
  function update(dt,player){
-  const near=!!player&&Math.hypot(player.x,player.z-52)<46;root.visible=near;if(near)gate?.update(dt,player,{unlocked:gateUnlocked});if(!near||!hall)return;
+  const near=!!player&&Math.hypot(player.x,player.z-(LOT.minZ+LOT.maxZ)/2)<46;root.visible=near;if(near)gate?.update(dt,player,{unlocked:gateUnlocked});if(!near||!hall)return;
   time+=dt;
   /* the front of the line goes in now and then; everyone steps up; a newcomer joins the back */
   if(time>=leaveAt&&people.length){const f=people.find(p=>p.slot===0&&p.state==='wait'&&Math.hypot(p.root.position.x-slotAt(0).x,p.root.position.z-slotAt(0).z)<.1);if(f){f.state='inside';f.slot=-1;for(const p of people)if(p.slot>0)p.slot--;leaveAt=time+3.2+Math.random()*2.8;}}
@@ -100,5 +101,5 @@ async function create({THREE:T,scene}){
  refresh();
  return {root,update,setLevel,refresh,blocked,inLot,gate,unlockGate(on=true){gateUnlocked=on;},dispose(){gate?.dispose();window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',onStorage);hall?.dispose();root.traverse(o=>o.geometry?.dispose());for(const material of shared.values())material.dispose();scene.remove(root);},get level(){return level;},get people(){return people;},nearDoor(p){return Math.abs(p.x)<3.4&&p.z>FRONT_Z+1.2&&p.z<FRONT_Z+5.2;}};
 }
-window.PhantomCommerce={create,currentLevel,shopURL,SHOP_SAVE_KEY,LEVEL_META_KEY,QUEUE,MAX_LEVEL,LOT};
+window.PhantomCommerce={create,currentLevel,shopURL,SHOP_SAVE_KEY,LEVEL_META_KEY,QUEUE,MAX_LEVEL,LOT,FRONT_Z};
 })();

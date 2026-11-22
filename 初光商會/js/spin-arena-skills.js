@@ -14,11 +14,11 @@ export function activeSpinSkills(match){
  }
  return [...actors.values()];
 }
-export function createSpinSkillEffects(T,scene){
+export function createSpinSkillEffects(T,scene,renderer){
  const textures=new Map(),sprites=[null,null];let dead=false;
  function texture(id,actor){
   const key=`${actor}:${id}`;if(textures.has(key))return textures.get(key);
-  const map=new T.TextureLoader().load(new URL(`../assets/spin-arena/skills/${id}-sheet.webp`,import.meta.url).href,()=>{if(dead)map.dispose();});
+  const map=new T.TextureLoader().load(new URL(`../assets/spin-arena/skills/${id}-sheet.webp`,import.meta.url).href,()=>{if(dead)map.dispose();else renderer?.initTexture(map);});
   map.encoding=T.sRGBEncoding;map.minFilter=T.LinearFilter;map.magFilter=T.LinearFilter;map.generateMipmaps=false;map.repeat.set(.25,.25);textures.set(key,map);return map;
  }
  function prepare(id,actor){return texture(id,actor);}

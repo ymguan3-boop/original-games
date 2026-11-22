@@ -1,22 +1,39 @@
 import test from 'node:test';
+import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const src = (p) => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
 const game = src('js/game.js'), gate = src('js/commerce-gate.js'), hall = src('js/commerce-hall.js');
 
-test('every answer to 招財 ends in the takeover, and he only leaves once the shop is really entered', () => {
-  const lines = game.match(/const ZHAOCAI_LINES=\[[\s\S]*?\n\];/)[0];
-  assert.ok((lines.match(/\n \['/g) || []).length >= 6);
-  assert.match(game, /S\.state\.zhaocai=1;save\(\);closeDialog\(\);syncZhaocai\(\)/);
-  assert.match(game, /function enterCommerce[^\n]*S\.state\.zhaocai=2;/);
-  assert.match(game, /if\(st>=2\)g\.setPhase\('gone'\)/);
+function playHandover(stage=0){
+  const state={zhaocai:stage}, player={x:0,z:0}, actions=[], nodes=new Map();
+  const $=id=>{if(!nodes.has(id))nodes.set(id,{style:{}});return nodes.get(id);};
+  const gate={post:{x:0,z:0},dog:{rotation:{},position:{x:0,z:0}},setPhase(p){this.phase=p;},setTalking(){}};
+  const ctx=vm.createContext({S:{state,player,stick:{}},hero:{root:{rotation:{}},play(){}},commerce:{gate,unlockGate(){}},
+    dialog:null,modal:false,battle:false,place:null,throwing:false,roll:false,enterBusy:false,
+    window:{PhantomCommerce:{shopURL:()=>'/shop'},PhantomOnboarding:null},PhantomTransition:{navigate:url=>actions.push(url)},
+    boatmanRush:null,labEvent:null,elapsed:1,save:()=>true,cancelNavigation(){},clearTarget(){},esc:s=>s,toast(){},$});
+  const segment=(from,to)=>game.slice(game.indexOf(from),game.indexOf(to,game.indexOf(from)));
+  vm.runInContext(segment('const ZHAOCAI_LINES','let boatmanRush')+segment('function enterCommerce()','function portalCheck')+segment('function closeDialog()','function talk(n)'),ctx);
+  return {ctx,state,player,actions,$,gate};
+}
+
+test('呈呈 can decline and reapproach, then hand the shop to 宏宏 and enter immediately',()=>{
+  const {ctx,state,player,actions,$,gate}=playHandover();
+  ctx.tickZhaocai();assert.match($('npcText').textContent,/呈呈/);
+  ctx.closeDialog();ctx.tickZhaocai();assert.equal(ctx.dialog,null);assert.equal(state.zhaocai,0);
+  player.x=6;ctx.tickZhaocai();player.x=0;ctx.tickZhaocai();
+  ctx.advanceZhaocai();assert.equal(state.zhaocai,1);assert.match($('npcActions').innerHTML,/弟弟宏宏/);
+  ctx.advanceZhaocai();assert.match($('npcText').textContent,/宏宏接過鑰匙/);
+  ctx.advanceZhaocai();assert.equal(state.zhaocai,2);assert.equal(gate.phase,'gone');assert.deepEqual(actions,['/shop']);
 });
 
-test('after the talk 招財 walks the player to the door and straight into the shop', () => {
-  assert.match(game, /if\(zhaocaiEscort\)return stepZhaocaiEscort\(dt\)/);
-  assert.match(game, /zhaocaiEscort=true;enterBusy=true/);
-  assert.match(game, /enterBusy=false;document\.body\.classList\.remove\('zhaocai-escort'\);enterCommerce\(\)/);
-  assert.match(gate, /setLeash\(v\)/);
+test('old pending saves resume at handoff, completed saves enter directly, failed saves can retry',()=>{
+  const {ctx,state,actions,$}=playHandover(1);
+  ctx.enterCommerce();assert.match($('npcActions').innerHTML,/弟弟宏宏/);ctx.advanceZhaocai();
+  ctx.save=()=>false;ctx.advanceZhaocai();assert.equal(state.zhaocai,1);assert.deepEqual(actions,[]);
+  ctx.save=()=>true;ctx.advanceZhaocai();assert.deepEqual(actions,['/shop']);
+  const old=playHandover(2);old.ctx.enterCommerce();assert.equal(old.ctx.dialog,null);assert.deepEqual(old.actions,['/shop']);
 });
 
 test('a spirit auto-joined on capture still reads as joined', () => {
@@ -61,7 +78,7 @@ test('招財 uses the hero joint set and smooth surfaces', () => {
   assert.ok(gate.includes('poseDog(dog,time,stride,act)'));
   assert.ok(gate.includes("const FACES=['idle','blink','happy','talk','shout','star','sad','wow']"));
   assert.ok(gate.includes('attack:{length:1.15') && gate.includes('ultimate:{length:3.3'));
-  assert.ok(game.includes("g?.setTalking(dialog?.data?.id==='zhaocai')"));
+  assert.ok(game.includes("g?.setTalking(dialog?.data?.id==='zhaocai'&&zhaocaiStep<2)"));
 });
 
 test('fence and gate are outlined, 招財 has none, and all stay cheap', () => {

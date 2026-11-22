@@ -5,7 +5,7 @@ import {ENTRANCE} from './nav.js?v=20261121-storybook';
 export const FORTUNE=[
  {id:'tip',deck:'機會',icon:'💰',title:'客人塞小費',text:'等到的客人心情大好，多給了小費。',gold:200,weight:5},
  {id:'wallet',deck:'機會',icon:'👛',title:'撿到錢包',text:'把客人掉的錢包還回去，收到一筆謝禮。',gold:500,weight:3},
- {id:'laugh',deck:'機會',icon:'😄',title:'排隊講笑話',text:'主角在隊伍旁講笑話，大家都笑了。滿意度 +2。',satisfaction:2,weight:4},
+ {id:'laugh',deck:'機會',icon:'😄',title:'排隊講笑話',text:'店長宏宏在隊伍旁講笑話，大家都笑了。滿意度 +2。',satisfaction:2,weight:4},
  {id:'zhaocai',deck:'機會',icon:'🐶',title:'招財來幫忙',text:'招財協助櫃台，收銀加速 25 秒，排隊顧客重新安心等待。',queue:'serve',checkout:25,weight:4},
  {id:'calm',deck:'機會',icon:'🎀',title:'付費安撫服務',text:'花費 25 G 準備小禮物，暫時清除排隊顧客的不耐。資金不足則無法發送，本次機會仍會結束。',cost:25,queue:'serve',weight:3},
  {id:'merchant',deck:'機會',icon:'🎁',title:'神秘商人',text:'路過的商人留下一箱貨，倉庫多了 5 件商品。',gift:5,weight:3},

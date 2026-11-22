@@ -1,5 +1,5 @@
 import{installPlazaAuction,showPasserReply}from'./plaza-auction-ui.js?v=20261121-storybook';
-import{installSpinArena}from'./spin-arena-ui.js?v=20261121-storybook';
+import{installSpinArena}from'./spin-arena-ui.js?v=20261122-battle';
 let plazaAuction,spinArena;
 import{createMerchantMarquee}from'./merchant-marquee.js?v=20261121-storybook';
 const syncMarquee=createMerchantMarquee();
@@ -126,7 +126,7 @@ async function boot(){let gate;try{
  window.shopScene=scene;window.shopHub=hub;
  staffOverlay=createStaffOverlay({game,labels:$('#staff-labels'),card:$('#staff-card'),escape:esc,onEventClick:()=>hub.open('event'),onOpen:id=>hub.open('worker',id)});staffOverlay.render();
  patrolControls=installPatrolControls({joystick:$('#joystick'),stick:$('#stick'),scene});scene.setMode('play');renderHUD();await scene.ready;await gate.wait(scene);gate.dispose();$('#loading').setAttribute('aria-busy','false');$('#loading').style.display='none';document.body.classList.remove('app-loading');
- let last=performance.now(),ui=0;function frame(now){requestAnimationFrame(frame);const elapsed=(now-last)/1000,dt=Math.min(.1,elapsed);last=now;if(document.hidden||document.body.classList.contains('orientation-blocked')||shopNavigation?.leaving)return;try{if(!evolutionInProgress&&!$('#confirm').open){const result=game.tick(dt,elapsed);if(result&&!result.ok)toast(result.message,true);}scene.update(dt);}catch(e){if(!window.lastShopError){console.error(e);toast('執行發生錯誤：'+e.message,true);window.lastShopError=e.message;}}ui+=dt;if(ui>.5){ui=0;renderHUD();staffOverlay?.render();if(hub.isOpen&&['chapter','upgrade','daily'].includes(document.querySelector('#hub')?.dataset.page))hub.render();}}requestAnimationFrame(frame);
+ let last=performance.now(),ui=0;function frame(now){requestAnimationFrame(frame);const elapsed=(now-last)/1000,dt=Math.min(.1,elapsed);last=now;if(document.hidden||game.spinArenaPaused||document.body.classList.contains('orientation-blocked')||shopNavigation?.leaving)return;try{if(!evolutionInProgress&&!$('#confirm').open){const result=game.tick(dt,elapsed);if(result&&!result.ok)toast(result.message,true);}scene.update(dt);}catch(e){if(!window.lastShopError){console.error(e);toast('執行發生錯誤：'+e.message,true);window.lastShopError=e.message;}}ui+=dt;if(ui>.5){ui=0;renderHUD();staffOverlay?.render();if(hub.isOpen&&['chapter','upgrade','daily'].includes(document.querySelector('#hub')?.dataset.page))hub.render();}}requestAnimationFrame(frame);
  if(innerWidth<700)scene.setQuality?.('low');
 }catch(e){console.error(e);gate?.dispose();$('#loading').innerHTML=`<h2>商會素材尚未就緒</h2><p>${esc(e.message)}</p><button id="retry-shop">重新載入</button><button id="reset-shop">重置商會並重試</button>`;$('#retry-shop').onclick=()=>location.reload();$('#reset-shop').onclick=()=>{resetMerchantOnly(localStorage);location.reload();};}}
 boot();

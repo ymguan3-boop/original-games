@@ -1,8 +1,8 @@
 import {partStock,partVariants} from './spin-part-inventory.js?v=20261121-storybook';
 import {SPIN_RULES as R,SPIN_TOPS,SPIN_PARTS,SPIN_GRADES,SPIN_SKILLS,SPIN_STAT_NAMES,SPIN_OPPONENTS,SPIN_VISITOR_REWARD,spinLevelBonus,spinTop,spinPartBonus,spinBonusText} from './spin-arena-config.js?v=20261121-storybook';
-import {spinState,spinStats,effectiveSpinStats} from './spin-arena-core.js?v=20261121-storybook';
+import {spinState,spinStats,effectiveSpinStats,advanceSpinMatch} from './spin-arena-core.js?v=20261121-storybook';
 import {SPIN_GROWTH} from './spin-arena-progression.js?v=20261121-storybook';
-import {createSpinBattleView} from './spin-arena-view.js?v=20261121-storybook';
+import {createSpinBattleView} from './spin-arena-view.js?v=20261122-battle';
 import {createSpinAudio,createSpinPresentation} from './spin-arena-presentation.js?v=20261121-storybook';
 import {spinSkillCooldown} from './spin-arena-paths.js?v=20261121-storybook';
 export function installSpinArena({game,toast,music=null,onOpen=()=>{}}){
@@ -17,9 +17,19 @@ export function installSpinArena({game,toast,music=null,onOpen=()=>{}}){
  };
  const partText=part=>{if(!part)return '本次沒有額外零件';if(typeof part==='string')return `普通${SPIN_PARTS[part]?.name||'零件'}`;return `${SPIN_GRADES[part.grade]?.name||''}${SPIN_PARTS[part.slot]?.name||'零件'}`;};
  function act(type,p={}){if(busy)return {ok:false};busy=true;let r;try{r=game.act(type,p);}finally{busy=false;}if(!r.ok)toast(r.message,true);return r;}
+ // Render the deterministic 60 Hz match locally. Persist elapsed whole steps through
+ // the normal shop transaction on checkpoints, round boundaries and exit.
+ let liveMatch=null, pendingSteps=0, nextHud=0;
+ function checkpoint(){
+  if(!pendingSteps)return true;
+  const result=act('spinAdvance',{seconds:pendingSteps*R.fixedStep});
+  pendingSteps=0;
+  if(!result.ok){liveMatch=null;return false;}
+  return true;
+ }
  function release(){presentation?.dispose();presentation=null;view?.dispose();view=null;}
  function syncMusic(){const m=a().match,on=dialog.open&&page==='battle'&&m&&m.phase!=='result'&&!a().soundMuted;if(on){audio.startMusic();music?.suspend(true);}else{audio.stopMusic();music?.suspend(dialog.open&&audio.musicPlaying);}}
- function close(){dialog.close();game.spinArenaPaused=false;document.body.classList.remove('spin-arena-open');cancelAnimationFrame(raf);release();cinematic=null;audio.stop();audio.stopMusic();music?.suspend(false);}
+ function close(){checkpoint();liveMatch=null;dialog.close();game.spinArenaPaused=false;document.body.classList.remove('spin-arena-open');cancelAnimationFrame(raf);release();cinematic=null;audio.stop();audio.stopMusic();music?.suspend(false);}
  function navigate(next){release();page=next;render();dialog.scrollTop=0;}
  const nav=()=>[['商店',()=>navigate('store')],['收藏／裝備',()=>navigate('collection')],['選擇對手',()=>navigate('opponents')],['回廣場',close]];
  function card(t,{clickable=false}={}){
@@ -66,7 +76,7 @@ export function installSpinArena({game,toast,music=null,onOpen=()=>{}}){
     buttons=[...['attack','defense','balance'].map((strategy,i)=>[['攻擊出戰','防禦出戰','平衡出戰'][i],()=>{const r=act('spinLaunch',{strategy,round:m.round,expectedPhase:m.phase});if(r.ok){battlePhase='';render();}}]),['暫存離開',close]];
    }else{
     content=`<div class="spin-bars"><div><b>${name(m.topId)}</b><span data-player></span><small data-buff="0"></small></div><div><b>${name(m.opponentTopId)}</b><span data-enemy></span><small data-buff="1"></small></div></div><p class="spin-score" data-score></p><div class="spin-battle-stage"><canvas class="spin-battle-canvas" aria-label="3D 戰鬥陀螺競技場"></canvas></div><small>技能依各陀螺「速」的冷卻時間自動施放（速越高冷卻越短）。登場演出時戰鬥暫停。比賽持續到出界、耐久或旋轉能量歸零才分勝負；按「快轉」直接看本局結果。</small>`;
-    buttons=[['快轉 ▶▶',()=>{if(cinematic)return;cinematic=null;const r=act('spinFastForward');if(r.ok){battlePhase='';render();}}],['鏡頭：斜俯視',()=>{dialog.querySelector('[data-action="1"]').textContent='鏡頭：'+view.changeCamera();}],['縮放',()=>view.zoom()],['暫存離開',close]];
+    buttons=[['快轉 ▶▶',()=>{if(cinematic||!checkpoint())return;cinematic=null;const r=act('spinFastForward');if(r.ok){battlePhase='';render();}}],['鏡頭：斜俯視',()=>{dialog.querySelector('[data-action="1"]').textContent='鏡頭：'+view.changeCamera();}],['縮放',()=>view.zoom()],['暫存離開',close]];
    }
   }
   dialog.classList.toggle('spin-battle-mode',page==='battle'&&a().match?.phase==='battle');
@@ -85,28 +95,36 @@ export function installSpinArena({game,toast,music=null,onOpen=()=>{}}){
   dialog.querySelectorAll('[data-opponent]').forEach(b=>b.onclick=()=>{if(act('spinStart',{opponentId:b.dataset.opponent}).ok)navigate('battle');});
   const resume=dialog.querySelector('[data-resume]');if(resume)resume.onclick=()=>navigate('battle');
   const visitorEntry=dialog.querySelector('[data-visitor-entry]');if(visitorEntry)visitorEntry.onclick=()=>navigate('opponents');
-  const canvas=dialog.querySelector('canvas');if(canvas){view=createSpinBattleView(canvas,{level:s.level,lowPower:(navigator.hardwareConcurrency||8)<=4});presentation=createSpinPresentation(dialog.querySelector('.spin-battle-stage'),audio);battlePhase=a().match.phase;view.render(a().match,performance.now()/1000);presentation.update(a().match);}
+  const canvas=dialog.querySelector('canvas');if(canvas){liveMatch=structuredClone(state.match);pendingSteps=0;accumulator=0;nextHud=0;view=createSpinBattleView(canvas,{level:s.level,lowPower:(navigator.hardwareConcurrency||8)<=4});presentation=createSpinPresentation(dialog.querySelector('.spin-battle-stage'),audio);battlePhase=a().match.phase;view.render(a().match,performance.now()/1000);presentation.update(a().match);}
   dialog.scrollTop=savedScroll;syncMusic();
  }
  function frame(now){
   if(!dialog.open)return;const dt=previous?Math.min(.1,(now-previous)/1000):0;previous=now;
   /* 敗北特寫：本局已分出勝負，先演出（停轉倒下／撞飛出場）再切到結果頁；不再推進模擬 */
   if(cinematic&&view){cinematic.t+=dt;const m=a().match;if(m)view.render(m,now/1000,cinematic);if(cinematic.t>=cinematic.length){cinematic=null;render();}raf=requestAnimationFrame(frame);return;}
-  if(page==='battle'&&a().match?.phase==='battle'&&!document.hidden){
-   accumulator+=dt*(slowUntil>now?.35:1);if(accumulator>=.1){act('spinAdvance',{seconds:accumulator});accumulator=0;}
-   const m=a().match;if(m.phase!==battlePhase){const rr=m.roundResult;if(view&&rr&&!m.fastForward&&battlePhase==='battle'){cinematic={t:0,loser:rr.loser,cause:rr.cause,vx:rr.loserVelocity?.x||0,vz:rr.loserVelocity?.z||0,length:rr.tied?.9:rr.cause==='out'?2.1:rr.cause==='burst'?2.6:2.3};if(rr.cause==='burst')audio.crit(true);battlePhase=m.phase;const label=dialog.querySelector('[data-score]');if(label)label.textContent=rr.tied?'同時出局！':(rr.loser===0?'我方':'對手')+(rr.cause==='burst'?'被暴擊爆裂':rr.cause==='out'?'被撞飛出場':'停止旋轉')+'！';const ff=dialog.querySelector('[data-action="0"]');if(ff)ff.disabled=true;}else render();}
+  if(page==='battle'&&liveMatch?.phase==='battle'&&!document.hidden){
+   accumulator+=dt*(slowUntil>now?.35:1);const steps=Math.floor((accumulator+1e-9)/R.fixedStep);
+   if(steps){
+    accumulator=Math.max(0,accumulator-steps*R.fixedStep);
+    advanceSpinMatch(liveMatch,steps*R.fixedStep);pendingSteps+=steps;
+    if((pendingSteps>=60||liveMatch.phase!=='battle')&&!checkpoint()){close();return;}
+   }
+   const m=liveMatch;if(m.phase!==battlePhase){const rr=m.roundResult;if(view&&rr&&!m.fastForward&&battlePhase==='battle'){cinematic={t:0,loser:rr.loser,cause:rr.cause,vx:rr.loserVelocity?.x||0,vz:rr.loserVelocity?.z||0,length:rr.tied?.9:rr.cause==='out'?2.1:rr.cause==='burst'?2.6:2.3};if(rr.cause==='burst')audio.crit(true);battlePhase=m.phase;const label=dialog.querySelector('[data-score]');if(label)label.textContent=rr.tied?'同時出局！':(rr.loser===0?'我方':'對手')+(rr.cause==='burst'?'被暴擊爆裂':rr.cause==='out'?'被撞飛出場':'停止旋轉')+'！';const ff=dialog.querySelector('[data-action="0"]');if(ff)ff.disabled=true;}else render();}
    else{
     const out=view.render(m,now/1000);if(out?.slow)slowUntil=now+300;presentation.update(m,accumulator);
+    if(now>=nextHud){nextHud=now+100;
     for(const [k,i] of [['player',0],['enemy',1]]){
      const b=m.bodies[i],stats=effectiveSpinStats(b,m.time),cd=spinSkillCooldown(stats.speed),left=Math.max(0,(100-b.energy)/100*cd);dialog.querySelector(`[data-${k}]`).textContent=`旋轉 ${Math.ceil(b.spin)}% · 耐久 ${Math.ceil(b.hp)}% · 技能 ${b.energy>=100?'施放！':left.toFixed(1)+'秒'}`;
      dialog.querySelector(`[data-buff="${i}"]`).textContent=b.buffUntil>m.time?`${spinTop(i?m.opponentTopId:m.topId).skill}：${spinBonusText(SPIN_SKILLS[b.skillId].bonuses)} · ${(b.buffUntil-m.time).toFixed(1)}秒`:`攻${Math.round(stats.attack)} 防${Math.round(stats.defense)} 速${Math.round(stats.speed)}（冷卻 ${cd.toFixed(1)} 秒） 持${Math.round(stats.stamina)}`;
     }
     dialog.querySelector('[data-score]').textContent=`比分 ${m.score.join('：')} · 第 ${m.round} 局 · ${Math.floor(m.time)} 秒${m.suddenDeath?' · 一勝決勝':''}${m.cutin?' · 技能登場':''}`;
+    }
    }
   }
   raf=requestAnimationFrame(frame);
  }
  function open(){if(game.state.level<R.unlock){toast('戰鬥陀螺大會於 Lv.3 解鎖');return;}onOpen();act('spinRoster');audio.unlock();game.spinArenaPaused=true;document.body.classList.add('spin-arena-open');page='home';render();dialog.showModal();previous=0;accumulator=0;raf=requestAnimationFrame(frame);}
+ document.addEventListener('visibilitychange',()=>{if(document.hidden&&dialog.open){checkpoint();previous=0;}});
  dialog.addEventListener('pointerdown',()=>audio.unlock(),{passive:true});dialog.addEventListener('keydown',()=>audio.unlock());dialog.addEventListener('cancel',ev=>{ev.preventDefault();close();});window.addEventListener('pagehide',()=>{close();audio.dispose();},{once:true});
  const entry=document.createElement('button');entry.type='button';entry.className='spin-arena-entry';entry.textContent='戰鬥陀螺大會';entry.onclick=open;document.querySelector('#quick-menu .quick-menu-items')?.append(entry);
  const sync=()=>{entry.hidden=game.state.level<R.unlock;const waiting=game.state.spinArena?.visitor?.status==='waiting';entry.classList.toggle('has-notice',!!waiting);entry.title=waiting?'外來高手等待挑戰':'';};game.subscribe(sync);sync();
