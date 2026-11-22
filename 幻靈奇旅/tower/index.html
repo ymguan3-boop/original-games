@@ -203,7 +203,8 @@ body.impact-heavy .vignette{box-shadow:inset 0 0 110px #ffbf5933}body.impact-lig
 @media(prefers-reduced-motion:reduce){
  .towerFirstCardOverlay .towerCollectedCard{animation:none}
 }
-</style><link rel="stylesheet" href="tower-controls.css?v=20261030-weapon-menu-v3"><link rel="stylesheet" href="shop-art.css?v=20261023-shop-motion-v1"><link rel="icon" href="data:,"><link rel="stylesheet" href="../css/scene-loading.css?v=20261027-v30"><script src="../js/scene-loading.js?v=20261027-v30"></script></head>
+</style><link rel="stylesheet" href="tower-controls.css?v=20261030-weapon-menu-v3"><link rel="stylesheet" href="shop-art.css?v=20261023-shop-motion-v1"><link rel="icon" href="data:,"><link rel="stylesheet" href="../css/scene-loading.css?v=20261027-v30"><script src="../js/tutorial-preference.js"></script>
+<script src="../js/scene-loading.js?v=20261027-v30"></script></head>
 <body><script>PhantomLoading.begin("正在準備星穹挑戰塔");PhantomTransition.begin("正在準備星穹挑戰塔");</script>
 
  <main id="game"><canvas id="world" aria-label="星穹挑戰塔 3D 戰場" tabindex="0"></canvas><div class="vignette"></div>
@@ -795,6 +796,7 @@ $('panelContent').addEventListener('click',e=>{const clicked=e.target.closest('[
  if(action?.startsWith('shop-')){const id=action.slice(5);if(h.save.weaponsOwned[id]?h.equipShopWeapon(id):h.purchase(id)){save();openPanel('shop');toast('武器已裝備：'+SHOP_WEAPONS.find(w=>w.id===id)?.name);}return;}if(action==='resume')closePanel();if(action==='retry')load(h.level);if(action==='next')load((h.level+1)%LEVELS.length);if(action==='cardBoost'){const used=h.purchaseCardBoost();if(used){save();openPanel('victory');toast('消耗 '+used+' ×1｜永久攻擊 +1%（目前 '+h.cardBoost()+'%）');}return;}});
 $('panel').addEventListener('cancel',e=>{e.preventDefault();closePanel();});$('closePanel').onclick=closePanel;
 function markJourneyTowerChallengeStarted(){
+ if(window.FirstlightTutorials.isSkipped())return;
  // Only actual stage selection counts, not opening the tower / choosing a menu.
  try{
   const key='phantom_journey_v1',state=JSON.parse(localStorage.getItem(key)||'null');

@@ -124,3 +124,4 @@ body.hub-open #shop-notice,body:has(dialog[open]) #shop-notice,body:has(#manager
 /* v65：商會訊息（委託）固定為單欄直式清單，不受 2D／卡片數量影響；卡片不壓縮 */
 html body #hub[data-page=orders] .hub-cards{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;grid-template-columns:none!important;grid-auto-flow:row!important;overflow-x:hidden!important;overflow-y:auto!important;align-items:stretch!important}
 html body #hub[data-page=orders] .hub-card{flex:0 0 auto!important;align-self:stretch!important;width:100%!important;max-width:none!important;min-height:64px!important;cursor:pointer}
+.manager-guide-options:not([hidden]){display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin-top:6px}.manager-guide-options button{padding:4px 9px;min-height:32px}

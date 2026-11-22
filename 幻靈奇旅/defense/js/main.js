@@ -25,7 +25,7 @@ import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-fixes-r1';
 import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-fixes-r1';
 import {icon} from '../../survivors/js/ui-art.js?v=20261107-fixes-r1';
 import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-fixes-r1';
-import {createTutorial} from './tutorial.js?v=20261107-fixes-r1';
+import {createTutorial} from './tutorial.js?v=20261122-tutorial';
 import {initIcons, ico} from './ui-icons.js?v=20261107-fixes-r1';
 import {createCombatAudio} from './combat-audio.js?v=20261107-fixes-r1';
 
@@ -290,7 +290,7 @@ function quickDeck() {
   if (baseFilled() < DECK_BASE) toast('夥伴還不夠，先去轉蛋吧！'); else toast('已完成一鍵編組');
 }
 function openIslandMenu() {
-  menuPage('選單', [['返回初光鎮', sailHome], ['教學重播', () => { $('modal').close(); tutorial.replay(); }], ['畫面設定', openDisplayMenu], ['測試', openTestCode], ['關閉', () => $('modal').close()]]);
+  menuPage('選單', [['返回初光鎮', sailHome], ...(window.FirstlightTutorials.isSkipped() ? [] : [['教學重播', () => { $('modal').close(); tutorial.replay(); }]]), ['畫面設定', openDisplayMenu], ['測試', openTestCode], ['關閉', () => $('modal').close()]]);
 }
 /* 測試：輸入密碼後領取轉蛋點數與全部卡片，點數每次輸入都會入帳。招財要先解鎖才讀得到資料，所以這裡一併解鎖並重新載入 */
 const TEST_CODE = '741216', TEST_POINTS = 100000;

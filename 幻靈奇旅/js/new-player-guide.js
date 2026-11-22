@@ -154,7 +154,7 @@
    const reward=task.reward[1]?task.reward[2]+' ×'+task.reward[1]:'首次進入有操作教學';
    markup+='<li class="'+(doneTask?'is-done':active?'is-current':'is-later')+'"><button class="journeyTaskLine" type="button" data-journey="inspect" data-task="'+task.id+'" aria-expanded="'+inspecting+'"><span class="journeyMark" aria-hidden="true">'+(doneTask?'✓':active?'✦':'·')+'</span><b>'+esc(task.title)+'</b><span class="journeyChevron">'+(inspecting?'−':'+')+'</span></button>'+
     '<small class="journeyReward">'+(doneTask?'已獲獎勵：':'完成獎勵：')+esc(reward)+'</small>'+
-    (inspecting?'<p>'+esc(task.detail)+'</p>':'')+
+    (inspecting?'<p>'+esc(task.id==='tools'&&window.FirstlightTutorials?.isSkipped()?'開啟旅人手冊，認識各項功能。':task.detail)+'</p>':'')+
     (inspecting&&(task.id==='collect30'||task.id==='collect50')?'<div class="journeyProgress"><i style="width:'+Math.min(100,Math.round(100*p.owned/p.total))+'%"></i></div><small>圖鑑 '+p.owned+' / '+p.total+' 種</small>':'')+
     (inspecting&&['cave-books','cave-chests'].includes(task.id)?'<p class="journeyCaveProgress">已收錄 '+PhantomCaveBridge.collectionProgress(api.state,task.id).found.length+' / 3 階段</p>':'')+
     (inspecting&&task.id==='cave-fishing'?'<p class="journeyCaveProgress">釣魚勝場 '+Math.min(3,api.state.caveQuest?.fishingWins||0)+' / 3</p>':'')+
@@ -190,7 +190,7 @@
   onLabExit(){record('exitedLab');},
   onCostume(id){if(id==='adventure')record('outfitEquipped');else refresh();},
   onWildCapture(){record('firstWildCapture');},
-  onMenuOpened(){refresh();},
+  onMenuOpened(){if(window.FirstlightTutorials?.isSkipped())record('menuViewed');refresh();},
   onArenaFinished(){record('arenaFinished');},
   onGymCleared(){rewardSync(true);refresh();},
   onTowerChallengeStarted(){record('towerEntered');},

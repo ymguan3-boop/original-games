@@ -2,6 +2,7 @@
 (()=>{'use strict';
  const controls=['move','roll','lock','berry','throw'];
  let api,card,ring,last='',timer;
+ const skipped=()=>!!window.FirstlightTutorials?.isSkipped();
  const state=()=>api?.state;
  const flags=()=>state()?.journeyGuide;
  const progress=()=>flags()?.onboarding;
@@ -17,6 +18,7 @@
   return f.onboarding;
  }
  function next(s,c={}){
+  if(skipped())return 'done';
   const f=s.journeyGuide||{},p=f.onboarding||{controls:{}};
   const starter=s.dreamLabLegendClaimed||f.legacyStarter;
   const second=f.exitedLab&&s.adventureClaimed&&f.outfitEquipped&&f.firstWildCapture&&f.controlsPracticed;
@@ -88,8 +90,9 @@
  function ensure(){
   if(card)return;
   card=document.createElement('aside');card.id='missionCoach';card.setAttribute('aria-label','新手任務引導');
-  card.innerHTML='<small></small><button type="button" class="coach-toggle" aria-expanded="true">收合提示</button><h3></h3><p aria-live="polite"></p><button type="button" class="coach-action"></button>';
+  card.innerHTML='<small></small><button type="button" class="coach-toggle" aria-expanded="true">收合提示</button><h3></h3><p aria-live="polite"></p><button type="button" class="coach-action"></button><button type="button" class="coach-skip" aria-label="跳過所有新手教學" title="跳過所有新手教學">跳過</button>';
   card.querySelector('.coach-toggle').onclick=()=>{const collapsed=card.classList.toggle('coach-collapsed');const b=card.querySelector('.coach-toggle');b.textContent=collapsed?'展開提示':'收合提示';b.setAttribute('aria-expanded',String(!collapsed));tick();};
+  card.querySelector('.coach-skip').onclick=()=>window.FirstlightTutorials.skip();
   ring=document.createElement('div');ring.id='missionCoachRing';ring.setAttribute('aria-hidden','true');
   document.body.append(ring,card);
  }
@@ -116,6 +119,7 @@
  }
  function tick(){
   if(!api)return;
+  if(skipped()){clearInterval(timer);if(card)card.hidden=true;if(ring)ring.hidden=true;return;}
   ensure();const c=context();
   if(!window.PhantomControlsReady||document.querySelector('#firstControls[open]')||document.body.dataset.ready!=='true'||c.busy||document.hidden){card.hidden=true;ring.hidden=true;return;}
   const step=next(state(),c);
@@ -138,14 +142,16 @@
  }
  function capture(){if(!api)return;const p=progress();if(controls.every(k=>p.controls[k]))commit((p,f)=>f.controlsPracticed=true);else tick();}
  function init(options){
-  api=options;prepare(state());api.save();ensure();
+  api=options;prepare(state());api.save();
   document.addEventListener('pointerdown',e=>{const ids={joystick:'move',rollBtn:'roll',lockBtn:'lock',berryBtn:'berry',captureBtn:'throw'};const id=e.target.closest('#joystick,button')?.id;if(ids[id])recordControl(ids[id]);},{passive:true,capture:true});
   document.addEventListener('click',e=>{const ids={rollBtn:'roll',lockBtn:'lock',berryBtn:'berry',captureBtn:'throw'};const id=e.target.closest('button')?.id;if(ids[id])recordControl(ids[id]);},true);
   // During the two short menu explanations, clicking the highlighted item advances the explanation instead of leaving it.
   document.addEventListener('click',e=>{const id=e.target.closest('[data-menu]')?.dataset.menu,c=context(),step=next(state(),c);if(step===id&&['gym','tower'].includes(step)){e.preventDefault();e.stopImmediatePropagation();commit(p=>p[step]=true);}},true);
   window.addEventListener('phantom-controls-ready',tick);window.addEventListener('resize',tick);
+  window.addEventListener('firstlight:tutorials-skipped',tick);
+  if(skipped())return;
   clearInterval(timer);timer=setInterval(tick,250);tick();
  }
  function onMenuClosed(){if(api&&context().title==='旅人手冊'&&progress()?.gym&&progress()?.tower&&!flags().menuViewed){flags().menuViewed=true;api.save();window.PhantomJourneyGuide?.refresh();}}
- window.PhantomOnboarding={init,tick,onCapture:capture,onMenuClosed,next,prepare,get active(){return !!api&&next(state(),context())!=='done'},holdLabGreeting:()=>!window.PhantomControlsReady||!progress()?.taskLocation};
+ window.PhantomOnboarding={init,tick,onCapture:capture,onMenuClosed,next,prepare,get active(){return !!api&&next(state(),context())!=='done'},holdLabGreeting:()=>!skipped()&&(!window.PhantomControlsReady||!progress()?.taskLocation)};
 })();
