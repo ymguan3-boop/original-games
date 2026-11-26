@@ -77,3 +77,6 @@ body.merchant-meadow .battle-wallet{align-items:center!important}
 /* 十波採集完成：先獨立淡入勝利，再顯示帶回商會的結算。 */
 body.merchant-meadow #meadowVictory{position:fixed;inset:0;z-index:9000;display:grid;place-items:center;background:radial-gradient(ellipse at center,#234220b3,#142116eb);pointer-events:auto;touch-action:none}
 body.merchant-meadow #meadowVictory strong{font-family:serif;font-weight:900;font-size:clamp(64px,18vw,112px);letter-spacing:.16em;padding-left:.16em;color:#fff0a8;text-shadow:0 3px 0 #633b18,0 0 28px #edc25d88;line-height:1.4}
+
+/* 草原主題的文字色會套到獎勵數量徽章，改成淺字深底才看得到「×1」 */
+body.merchant-meadow .reward-qty{background:#4a2e1c!important;color:#fff8ea!important;text-shadow:none!important}

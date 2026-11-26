@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+// 版本號只需不早於該修正的日期；之後再更新版本不應讓舊測試失敗。
+const versionAtLeast=(html,file,min)=>{const B=String.fromCharCode(92),m=html.match(new RegExp(file.split(".").join(B+".")+B+"?v=([0-9]{8})"));return !!m&&m[1]>=min;};
 
 const css = readFileSync(new URL('../css/defense.css', import.meta.url), 'utf8');
 const main = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
@@ -36,6 +38,6 @@ test('fusion and evolution no longer create flying yellow stars', () => {
 });
 
 test('published HTML has updated CSS and JS versions to bypass cached old layout', () => {
-  assert.match(html,/defense\.css\?v=20261110-shop-pk-r1/);
-  assert.match(html,/main\.js\?v=20261110-shop-pk-r1/);
+  assert.ok(versionAtLeast(html,'defense.css','20261110'));
+  assert.ok(versionAtLeast(html,'main.js','20261110'));
 });

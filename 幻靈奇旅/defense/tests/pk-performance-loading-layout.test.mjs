@@ -4,6 +4,8 @@ import {readFileSync} from 'node:fs';
 import {STAGES,buildPath} from '../js/stages.js';
 import {PK_STAGE, PK_ARENAS, pkArenaFor, createGame, TRIAL_ROSTER} from '../js/rules.js';
 import {createMirror} from '../js/pk-sync.js';
+// 版本號只需不早於該修正的日期；之後再更新版本不應讓舊測試失敗。
+const versionAtLeast=(html,file,min)=>{const B=String.fromCharCode(92),m=html.match(new RegExp(file.split(".").join(B+".")+B+"?v=([0-9]{8})"));return !!m&&m[1]>=min;};
 
 const read = (p) => readFileSync(new URL(p, import.meta.url), 'utf8');
 const main = read('../js/main.js'), view = read('../js/view.js');
@@ -74,7 +76,7 @@ test('landscape deck keeps Complete and gacha buttons outside scrollable card li
   assert.match(css,/flex:0 0 auto/);
   assert.match(css,/@media \(orientation:landscape\) and \(max-height:600px\)/);
   assert.match(css,/max-height:calc\(100dvh - 62px\)/);
-  assert.match(html,/20261110-shop-pk-r1/);
+  assert.ok(versionAtLeast(html,'main.js','20261110'));
 });
 
 
@@ -186,7 +188,7 @@ test('top points and four action shortcuts share all available width at phone an
   assert.match(top,/#lobby \.chart-head \.chart-tools button\.tool span/);
   assert.match(top,/#lobby \.chart-head \.chart-tools \.points-badge/);
   assert.match(top,/sortie-base-warning/);
-  assert.match(html,/20261110-shop-pk-r1/,'main script needs a new version after hit isolation');
+  assert.ok(versionAtLeast(html,'main.js','20261110'),'main script needs a new version after hit isolation');
 });
 
 test('win screen keeps Next Stage button in a fixed accessible footer on landscape phones', () => {
@@ -273,7 +275,7 @@ test('stage and weather use separate content-sized chips without orphaned words'
   assert.match(styles,/flex-wrap:nowrap/);
   assert.match(main,/!html\.includes\('class="stage-result-content"'\)/,'result navigation must remain outside content scroller');
   assert.match(styles,/height:30px;min-height:30px/);
-  assert.match(html,/20261110-shop-pk-r1/);
+  assert.ok(versionAtLeast(html,'main.js','20261110'));
 });
 
 test('evolution cutscene and obsolete camera button stay removed in solo and PK', () => {
@@ -328,7 +330,7 @@ test('all stages share localized thunder animations and climate cannot flash scr
   assert.match(view,/sun\.intensity !== c\.sunPower/);
   assert.match(sea,/function lockWeather\(\)/);
   assert.match(rules,/state\.stage\.id === 'waterfall'/);
-  assert.match(html,/main\.js\?v=20261110-shop-pk-r1/);
+  assert.ok(versionAtLeast(html,'main.js','20261110'));
 });
 
 test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local barrel feedback', () => {
@@ -349,6 +351,6 @@ test('hits cannot recolor the CSS weather: alpha WebGL, frozen shadows and local
   assert.match(view,/body\.scale\.set\(1 \+ k, 1 - k, 1 \+ k\)/,'local barrel squash remains');
   assert.match(view,/Math\.sin\(b\.userData\.flash \/ 0\.18 \* Math\.PI\) \* 0\.018/);
   assert.match(css,/#world \{[^}]+background-position: center; background-size: cover;/);
-  assert.match(html,/defense\.css\?v=20261110-shop-pk-r1/);
-  assert.match(html,/main\.js\?v=20261110-shop-pk-r1/);
+  assert.ok(versionAtLeast(html,'defense.css','20261110'));
+  assert.ok(versionAtLeast(html,'main.js','20261110'));
 });

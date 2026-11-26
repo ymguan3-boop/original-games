@@ -5,6 +5,8 @@ import {createGame, moveCard, playCard, step, mergeResult, useBagItem,
   isThreeColorEgg, validEggPosition, goldfishPair, TRIAL_ROSTER, PK_STAGE,
   WATER_DRAGON, GOLDFISH_KING, GOLDFISH_QUEEN, THREE_COLOR_EGG} from '../js/rules.js';
 import {snapshot, createMirror, applySnapshot} from '../js/pk-sync.js';
+// 版本號只需不早於該修正的日期；之後再更新版本不應讓舊測試失敗。
+const versionAtLeast=(html,file,min)=>{const B=String.fromCharCode(92),m=html.match(new RegExp(file.split(".").join(B+".")+B+"?v=([0-9]{8})"));return !!m&&m[1]>=min;};
 
 const read = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
 const spirits = read('../../data/spirits.json');
@@ -129,7 +131,7 @@ test('sortie deck editor, flipped card descriptions, and how-to explain actual f
   assert.match(main,/卡組與升星/,'how-to also updated');
   assert.match(css,/\.deck-special-rules/);
   assert.match(css,/\.deck-special-note/);
-  assert.match(html,/20261110-shop-pk-r1/);
+  assert.ok(versionAtLeast(html,'main.js','20261110'));
 });
 
 test('三色蛋：空位不足時整張卡不生效，也不能放第二組', () => {

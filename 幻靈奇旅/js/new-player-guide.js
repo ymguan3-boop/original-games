@@ -34,7 +34,7 @@
    case 'exit':return !!f?.exitedLab;
    case 'claim':return !!s.adventureClaimed;
    case 'equip':return !!f?.outfitEquipped;
-   case 'capture':return !!f?.firstWildCapture&&(!f?.onboarding||!!f.controlsPracticed);
+   case 'capture':return !!f?.firstWildCapture&&(!f?.onboarding||!!f.controlsPracticed||!!window.FirstlightTutorials?.isSkipped());// 跳過教學後不再記錄五種按鈕練習，只要求完成首次捕捉
    case 'tools':return !!f?.menuViewed;
    case 'collect30':return p.owned>=Rules.countAt(p.total,Rules.thresholds.tutorialArena);
    case 'arena':return !!f?.arenaFinished;
@@ -154,7 +154,7 @@
    const reward=task.reward[1]?task.reward[2]+' ×'+task.reward[1]:'首次進入有操作教學';
    markup+='<li class="'+(doneTask?'is-done':active?'is-current':'is-later')+'"><button class="journeyTaskLine" type="button" data-journey="inspect" data-task="'+task.id+'" aria-expanded="'+inspecting+'"><span class="journeyMark" aria-hidden="true">'+(doneTask?'✓':active?'✦':'·')+'</span><b>'+esc(task.title)+'</b><span class="journeyChevron">'+(inspecting?'−':'+')+'</span></button>'+
     '<small class="journeyReward">'+(doneTask?'已獲獎勵：':'完成獎勵：')+esc(reward)+'</small>'+
-    (inspecting?'<p>'+esc(task.id==='tools'&&window.FirstlightTutorials?.isSkipped()?'開啟旅人手冊，認識各項功能。':task.detail)+'</p>':'')+
+    (inspecting?'<p>'+esc(window.FirstlightTutorials?.isSkipped()&&task.id==='tools'?'開啟旅人手冊，認識各項功能。':window.FirstlightTutorials?.isSkipped()&&task.id==='capture'?'回到初光鎮，靠近野生幻靈並投出靈核球，完成首次野外捕捉。':task.detail)+'</p>':'')+
     (inspecting&&(task.id==='collect30'||task.id==='collect50')?'<div class="journeyProgress"><i style="width:'+Math.min(100,Math.round(100*p.owned/p.total))+'%"></i></div><small>圖鑑 '+p.owned+' / '+p.total+' 種</small>':'')+
     (inspecting&&['cave-books','cave-chests'].includes(task.id)?'<p class="journeyCaveProgress">已收錄 '+PhantomCaveBridge.collectionProgress(api.state,task.id).found.length+' / 3 階段</p>':'')+
     (inspecting&&task.id==='cave-fishing'?'<p class="journeyCaveProgress">釣魚勝場 '+Math.min(3,api.state.caveQuest?.fishingWins||0)+' / 3</p>':'')+

@@ -18,7 +18,7 @@ test('the four upgraded racks are procedural, match their slots and have fresh p
  for(const id of ['materials','arcane','relic','royal']){assert.match(racks,new RegExp('function '+id+'\\(b,S\\)'));assert.ok(fs.existsSync(path.join(ROOT,'assets/icons-v12/rack-'+id+'.webp')),id);}
  assert.ok(fs.existsSync(path.join(ROOT,'assets/icons-v12/rack-armory.webp')));
  assert.match(racks,/ys=\[\.23,\.74,1\.25\],h=1\.4/);assert.match(racks,/ys=\[\.23,\.62,1\.01,1\.4\]/);assert.match(racks,/ys=\[\.23,\.58,\.93,1\.28,1\.63\]/);
- /* 架子外觀改由分級模型統一產生，球體櫃另用專用模型 */assert.match(read('js/shelf-view.js'),/type==='orbs'&&!decoration\?assets\.load\(shelfModel\(type\)\):Promise\.resolve\(createTierModel\(T,\{type,tier,decoration\}\)\)/);
+ /* 架子外觀全部由分級模型統一產生（球體櫃的舊專用模型已於繪本版移除） */assert.match(read('js/shelf-view.js'),/const promise=Promise\.resolve\(createTierModel\(T,\{type,tier,decoration\}\)\)/);assert.doesNotMatch(read('js/shelf-view.js'),/assets\.load\(shelfModel\(type\)\)/);
 });
 test('shopping spirits use overworld proportions and birds stay on foot with folded wings',()=>{
  const scene=read('js/scene.js'),assets=read('js/asset-resolver.js');

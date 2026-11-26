@@ -25,7 +25,7 @@ import {stageWeather, STAGE_WEATHER} from './seascape.js?v=20261107-fixes-r1';
 import {openingFor, OPENING_SECONDS} from './boss-openings.js?v=20261107-fixes-r1';
 import {icon} from '../../survivors/js/ui-art.js?v=20261107-fixes-r1';
 import {initFullscreen,toggleFullscreen,isFullscreen,nativeFullscreen} from './fullscreen.js?v=20261107-fixes-r1';
-import {createTutorial} from './tutorial.js?v=20261122-tutorial';
+import {createTutorial} from './tutorial.js?v=20261126-guide-fix';
 import {initIcons, ico} from './ui-icons.js?v=20261107-fixes-r1';
 import {createCombatAudio} from './combat-audio.js?v=20261107-fixes-r1';
 

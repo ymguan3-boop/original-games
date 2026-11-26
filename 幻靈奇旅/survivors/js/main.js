@@ -12,7 +12,7 @@ import {verifyTestPassword} from './test-access.js?v=20261119-v68';
 import {createCombatAudio} from './combat-audio-v17.js?v=20261119-v68';
 import {costumeFor} from './costume-effects.js?v=20261119-v68';
 import {chooseTestPet} from './test-pets.js?v=20261119-v68';
-import {createCaveTutorial} from './tutorial.js?v=20261122-skip';
+import {createCaveTutorial} from './tutorial.js?v=20261126-guide-fix';
 import {passiveSummary} from './status-passives.js?v=20261119-v68';
 import {STATUS} from './combat-status.js?v=20261119-v68';
 import {groupRewards} from './reward-groups.js';
